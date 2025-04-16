@@ -46,48 +46,62 @@ export async function jobExists(id: string) {
 
 // Create jobsite
 export async function createJobsite(formData: FormData) {
+  console.log("Creating jobsite...");
+  console.log(formData);
+
+  const name = formData.get("temporaryJobsiteName") as string;
+  const address = formData.get("address") as string;
+  const city = formData.get("city") as string;
+  const state = formData.get("state") as string;
+  const zipCode = formData.get("zipCode") as string;
+  const createdById = formData.get("createdById") as string;
+  const qrId = formData.get("qrCode") as string;
+
+  const creationComment = formData.get("creationComment") as string;
+  const creationReasoning = formData.get("creationReasoning") as string;
   try {
-    console.log("Creating jobsite...");
-    console.log(formData);
-    const tags = formData.getAll("tags") as string[];
-    const qrId = formData.get("qrId") as string;
-    const name = formData.get("name") as string;
-    const address = formData.get("address") as string;
-    const zipCode = formData.get("zipCode") as string;
-    const city = formData.get("city") as string;
-    const state = formData.get("state") as string;
-    const description = formData.get("description") as string;
-    const comment = formData.get("jobsite_comment") as string;
-
-    const verify = await prisma.jobsite.findMany({
-      where: { name: name, address: address, city: city, zipCode: zipCode },
-    });
-    // Check if jobsite already exists based on id
-
-    if (verify.length > 0) {
-      console.log("Jobsite already exists.");
-      throw new Error("Jobsite already exists.");
-    }
-
-    await prisma.jobsite.create({
-      data: {
-        qrId,
-        name,
-        description,
-        isActive: true,
-        address,
-        city,
-        state,
-        zipCode,
-        comment: comment || null,
-        CCTags: {
-          connect: [...tags.map((tag) => ({ id: tag }))],
+    prisma.$transaction(async (prisma) => {
+      const existingJobsites = await prisma.jobsite.findMany({
+        where: {
+          name,
+          address,
+          city,
+          state,
+          zipCode,
         },
-      },
+      });
+
+      if (existingJobsites.length > 0) {
+        throw new Error(
+          "A jobsite with the same name, address, city, state, and zip code already exists."
+        );
+      }
+
+      await prisma.jobsite.create({
+        data: {
+          name,
+          qrId,
+          address,
+          city,
+          state,
+          zipCode,
+          description: creationReasoning,
+          comment: creationComment,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          CreationLogs: {
+            create: {
+              createdById,
+              comment: creationComment,
+            },
+          },
+        },
+      });
+      revalidatePath("/dashboard/qr-generator");
     });
     console.log("Jobsite created successfully.");
-    // Revalidate the path
-    revalidatePath(`/dashboard/qr-generator`);
+    return { success: true };
   } catch (error) {
     console.error("Error creating jobsite:", error);
     throw error;

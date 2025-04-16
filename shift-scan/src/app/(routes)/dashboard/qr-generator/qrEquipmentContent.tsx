@@ -13,6 +13,8 @@ import { z } from "zod";
 import { EquipmentCodes } from "@/lib/types";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Titles } from "@/components/(reusable)/titles";
+import NewCodeFinder from "@/components/(search)/newCodeFinder";
+import { Texts } from "@/components/(reusable)/texts";
 
 // Zod schema for EquipmentCodes
 const EquipmentCodesSchema = z.object({
@@ -21,16 +23,19 @@ const EquipmentCodesSchema = z.object({
   name: z.string(),
 });
 
+type Option = {
+  label: string;
+  code: string;
+};
 // Zod schema for equipment list response
 const EquipmentListSchema = z.array(EquipmentCodesSchema);
 
 export default function QrEquipmentContent() {
   const router = useRouter();
-  const [generatedList, setGeneratedList] = useState<EquipmentCodes[]>([]);
-  const [generatedRecentList, setGeneratedRecentList] = useState<
-    EquipmentCodes[]
-  >([]);
-  const [selectedEquipment, setSelectedEquipment] = useState<string>("");
+  const [generatedList, setGeneratedList] = useState<Option[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [loading, setLoading] = useState(true);
@@ -50,14 +55,18 @@ export default function QrEquipmentContent() {
         // Validate fetched equipment data with Zod
         try {
           EquipmentListSchema.parse(equipmentData);
-          setGeneratedList(equipmentData);
         } catch (error) {
           if (error instanceof z.ZodError) {
             console.error("Validation error in equipment data:", error.errors);
             return;
           }
         }
-
+        setGeneratedList(
+          equipmentData.map((item: EquipmentCodes) => ({
+            label: item.name.toUpperCase(),
+            code: item.qrId.toUpperCase(),
+          }))
+        );
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -68,45 +77,10 @@ export default function QrEquipmentContent() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchRecentEquipment = async () => {
-      try {
-        const equipmentResponse = await fetch("/api/getRecentEquipment");
-
-        if (!equipmentResponse.ok) {
-          throw new Error("Failed to fetch recent equipment");
-        }
-
-        const recentEquipmentData = await equipmentResponse.json();
-
-        // Validate fetched recent equipment data with Zod
-        try {
-          EquipmentListSchema.parse(recentEquipmentData);
-          setGeneratedRecentList(recentEquipmentData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error(
-              "Validation error in recent equipment data:",
-              error.errors
-            );
-            return;
-          }
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchRecentEquipment();
-  }, []);
-
   const handleGenerate = async () => {
     if (selectedEquipment) {
       try {
-        const url = await QRCode.toDataURL(selectedEquipment);
+        const url = await QRCode.toDataURL(selectedEquipment.code);
         setQrCodeUrl(url);
         setIsModalOpen(true);
       } catch (err) {
@@ -121,98 +95,72 @@ export default function QrEquipmentContent() {
     router.push("/dashboard/qr-generator/add-equipment");
   };
 
-  const handleSelectEquipment = (selectedOption: EquipmentCodes) => {
-    setSelectedEquipment(selectedOption.qrId);
+  const handleSearchSelectChange = (selectedOption: Option | null) => {
+    if (selectedOption) {
+      setSelectedEquipment({
+        label: selectedOption.label,
+        code: selectedOption.code,
+      });
+    } else {
+      setSelectedEquipment(null);
+      return;
+    }
   };
 
   return (
-    <>
-      {loading ? (
-        <Grids rows={"6"} cols={"3"} gap={"5"}>
-          <Holds className="row-span-5 col-span-3 h-full">
-            <SearchSelect
-              loading={true}
-              datatype={`${t("Loading")}`}
-              options={generatedList}
-              handleGenerate={handleGenerate}
-              recentOptions={generatedRecentList}
-              onSelect={handleSelectEquipment}
-              setSelectedJobSite={setSelectedEquipment}
-            />
-          </Holds>
+    <Grids rows={"7"} cols={"3"} gap={"5"} className="h-full w-full">
+      <Holds className="row-start-1 row-end-7 col-span-3 h-full">
+        <NewCodeFinder
+          options={generatedList}
+          selectedOption={selectedEquipment}
+          onSelect={handleSearchSelectChange}
+          placeholder={t("TypeHere")}
+          label="Select Job Site"
+        />
+      </Holds>
 
-          <Holds
-            size={"full"}
-            className="row-span-1 col-start-3 col-end-4 h-full"
-          >
-            <Buttons background={"green"} onClick={handleNew}>
-              <Holds>
-                <Images
-                  titleImg={"/plus.svg"}
-                  titleImgAlt={"plus"}
-                  size={"40"}
-                />
-              </Holds>
-            </Buttons>
-          </Holds>
-        </Grids>
-      ) : (
-        <Grids rows={"6"} cols={"3"} gap={"5"}>
-          <Holds className="row-span-5 col-span-3 h-full">
-            <SearchSelect
-              loading={false}
-              datatype={`${t("EquipmentDatatype")}`}
-              options={generatedList}
-              handleGenerate={handleGenerate}
-              recentOptions={generatedRecentList}
-              onSelect={handleSelectEquipment}
-              setSelectedJobSite={setSelectedEquipment}
-            />
-          </Holds>
-          <Holds className="row-start-6 row-end-7 col-start-1 col-end-3 h-full">
-            <Buttons
-              background={selectedEquipment === "" ? "darkGray" : "orange"}
-              disabled={!selectedEquipment}
-              onClick={handleGenerate}
-            >
-              <Titles size={"h3"}>{t("GenerateCode")}</Titles>
-            </Buttons>
-          </Holds>
+      <Holds className="row-start-7 row-end-8 col-start-1 col-end-2 h-full">
+        <Buttons
+          background={selectedEquipment ? "lightBlue" : "darkGray"}
+          disabled={!selectedEquipment}
+          onClick={handleGenerate}
+          className="w-full h-full justify-center items-center"
+        >
+          <Images
+            src="/qr.svg"
+            alt="Team"
+            className="w-8 h-8 mx-auto"
+            titleImg={""}
+            titleImgAlt={""}
+          />
+        </Buttons>
+      </Holds>
+      <Holds
+        size={"full"}
+        className="row-start-7 row-end-8 col-start-2 col-end-4 h-full"
+      >
+        <Buttons background={"green"} onClick={handleNew}>
+          <Titles size={"h4"}>{t("CreateNewEquipment")}</Titles>
+        </Buttons>
+      </Holds>
 
-          <Holds
-            size={"full"}
-            className="row-start-6 row-end-7 col-start-3 col-end-4 h-full"
-          >
-            <Buttons background={"green"} onClick={handleNew}>
-              <Holds>
-                <Images
-                  titleImg={"/plus.svg"}
-                  titleImgAlt={"plus"}
-                  size={"40"}
-                />
-              </Holds>
-            </Buttons>
-          </Holds>
-
-          <NModals
-            isOpen={isModalOpen}
-            handleClose={() => setIsModalOpen(false)}
-            size={"xlWS"}
-          >
-            {selectedEquipment && (
-              <>
-                <Holds className="fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col max-w-[90%] max-h-[90%] w-auto h-auto">
-                  <Images
-                    titleImg={qrCodeUrl}
-                    titleImgAlt="QR Code"
-                    className="h-full w-full object-contain"
-                  />
-                </Holds>
-              </>
-            )}
-          </NModals>
-        </Grids>
-      )}
-    </>
+      <NModals
+        isOpen={isModalOpen}
+        handleClose={() => setIsModalOpen(false)}
+        size={"xlWS"}
+      >
+        {selectedEquipment && (
+          <>
+            <Holds className="fixed rounded-[10px] p-2 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col max-w-[75%] max-h-[75%] w-full h-auto">
+              <Images
+                titleImg={qrCodeUrl}
+                titleImgAlt="QR Code"
+                className="h-full w-full object-contain"
+              />
+            </Holds>
+          </>
+        )}
+      </NModals>
+    </Grids>
   );
 }

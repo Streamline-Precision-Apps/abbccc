@@ -27,6 +27,7 @@ export const JobsiteSelector = ({
       code: jobSite.qrId,
       label: jobSite.name,
     }));
+
     setJobsiteOptions(options);
   }, [jobsiteResults]);
 

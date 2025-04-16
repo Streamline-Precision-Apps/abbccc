@@ -104,12 +104,6 @@ export default function CodeFinder({
               background={"white"}
               className="flex justify-center items-center h-full w-full opacity-10 relative"
             ></Holds>
-            <Texts
-              text={"white"}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "
-            >
-              {t("noResults")}
-            </Texts>
           </Holds>
         )}
       </Holds>
