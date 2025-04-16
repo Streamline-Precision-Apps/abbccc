@@ -179,11 +179,11 @@ export default function MechanicVerificationStep({
                           hour: "2-digit",
                           minute: "2-digit",
                           second: "2-digit",
-                          hour12: false,
+                          hour12: true,
                         })}
                       </Texts>
                     </Holds>
-                    <Labels size={"p4"} position={"left"}>
+                    <Labels size={"p3"} position={"left"}>
                       {t("LaborType")}
                     </Labels>
                     <Inputs
@@ -194,7 +194,7 @@ export default function MechanicVerificationStep({
                       className="text-center"
                     />
 
-                    <Labels size={"p4"} position={"left"}>
+                    <Labels size={"p3"} position={"left"}>
                       {t("JobSite-label")}
                     </Labels>
                     <Inputs
@@ -204,7 +204,7 @@ export default function MechanicVerificationStep({
                       data={jobsite?.label || ""}
                       className="text-center"
                     />
-                    <Labels size={"p4"} position={"left"}>
+                    <Labels size={"p3"} position={"left"}>
                       {t("CostCode-label")}
                     </Labels>
                     <Inputs

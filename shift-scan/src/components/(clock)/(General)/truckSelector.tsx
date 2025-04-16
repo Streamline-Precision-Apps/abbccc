@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBEquipment } from "@/app/context/dbCodeContext";
+import { useTranslations } from "next-intl";
 
 type Option = {
   code: string;
@@ -17,6 +18,7 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
   const [selectedTruck, setSelectedTruck] = useState<Option | null>(null);
   const [truckOptions, setTruckOptions] = useState<Option[]>([]);
   const { equipmentResults } = useDBEquipment();
+  const t = useTranslations("Clock");
   // Initialize with the passed initialValue
   useEffect(() => {
     const options = equipmentResults
@@ -50,7 +52,7 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
       options={truckOptions}
       selectedOption={selectedTruck}
       onSelect={handleSelect}
-      placeholder="Type here..."
+      placeholder={t("SearchBarPlaceholder")}
       label="Select a truck"
     />
   );

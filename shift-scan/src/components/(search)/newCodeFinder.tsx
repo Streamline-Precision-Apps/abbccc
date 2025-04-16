@@ -34,15 +34,15 @@ export default function CodeFinder({
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredOptions = useMemo(() => {
-    return options.filter(
-      (option) =>
-        option.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        option.code.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return options
+      .filter((option) =>
+        option.label.toLowerCase().startsWith(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [options, searchTerm]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    setSearchTerm(e.target.value.toUpperCase()); // Convert to uppercase
   };
 
   const clearSelection = () => {
@@ -99,7 +99,18 @@ export default function CodeFinder({
             </Holds>
           ))
         ) : (
-          <Texts>{t("noResults")}</Texts>
+          <Holds className="h-full w-full p-1.5 ">
+            <Holds
+              background={"white"}
+              className="flex justify-center items-center h-full w-full opacity-10 relative"
+            ></Holds>
+            <Texts
+              text={"white"}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "
+            >
+              {t("noResults")}
+            </Texts>
+          </Holds>
         )}
       </Holds>
     </Grids>
@@ -137,7 +148,7 @@ const SearchBar = ({
             value={searchTerm}
             onChange={onSearchChange}
             placeholder={placeholder}
-            className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
+            className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px] "
             aria-label={label}
           />
         </Holds>

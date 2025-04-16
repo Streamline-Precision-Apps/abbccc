@@ -82,18 +82,16 @@ export default function TascoClockInForm({
           >
             <>
               {clockInRoleTypes === "tascoAbcdLabor" ? (
-                <Titles size={"h1"} className="pb-5">
-                  {t("SelectMaterialType")}
-                </Titles>
+                <Titles size={"h1"}>{t("SelectMaterialType")}</Titles>
               ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
-                <Titles size={"h3"} className="pb-5">
+                <Titles size={"h2"}>
                   {t("SelectMaterialTypeAndEquipment")}
                 </Titles>
               ) : clockInRoleTypes === "tascoEEquipment" ? (
-                <Titles size={"h1"} className="pb-5">
-                  {t("Title-equipment-operator")}
-                </Titles>
-              ) : null}
+                <Titles size={"h1"}>{t("Title-equipment-operator")}</Titles>
+              ) : (
+                ""
+              )}
             </>
           </TitleBoxes>
         </Holds>
@@ -101,8 +99,8 @@ export default function TascoClockInForm({
         <Holds className="row-start-2 row-end-8 h-full w-full">
           <Contents width={"section"}>
             <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5 ">
-              <Holds className="row-start-1 row-end-7 h-full w-full">
-                {clockInRoleTypes === "tascoEEquipment" ? (
+              {clockInRoleTypes === "tascoEEquipment" ? (
+                <Holds className="row-start-1 row-end-7 h-full w-full">
                   <EquipmentSelector
                     onEquipmentSelect={(equipment) => {
                       if (equipment) {
@@ -113,21 +111,27 @@ export default function TascoClockInForm({
                     }}
                     initialValue={equipment}
                   />
-                ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
-                  <Holds className="h-full">
-                    <Selects
-                      value={materialType || ""}
-                      onChange={(e) => setMaterialType(e.target.value)}
-                      className="text-center"
-                    >
-                      <option value="">{t("SelectMaterialType")}</option>
-                      {materialTypes.map((option) => (
-                        <option key={option.id} value={option.name}>
-                          {option.name}
-                        </option>
-                      ))}
-                    </Selects>
-                    <Holds className="h-full">
+                </Holds>
+              ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
+                <Holds className="row-start-1 row-end-7 h-full w-full">
+                  <Grids rows={"10"}>
+                    <Holds className="row-start-1 row-end-2 w-full">
+                      <Selects
+                        value={materialType || ""}
+                        onChange={(e) => setMaterialType(e.target.value)}
+                        className={`text-center ${
+                          materialType === "" ? "text-app-dark-gray" : ""
+                        } `}
+                      >
+                        <option value="">{t("SelectMaterialHere")}</option>
+                        {materialTypes.map((option) => (
+                          <option key={option.id} value={option.name}>
+                            {option.name}
+                          </option>
+                        ))}
+                      </Selects>
+                    </Holds>
+                    <Holds className="row-start-2 row-end-11 h-full w-full">
                       <EquipmentSelector
                         onEquipmentSelect={(equipment) => {
                           if (equipment) {
@@ -139,8 +143,10 @@ export default function TascoClockInForm({
                         initialValue={equipment}
                       />
                     </Holds>
-                  </Holds>
-                ) : clockInRoleTypes === "tascoAbcdLabor" ? (
+                  </Grids>
+                </Holds>
+              ) : clockInRoleTypes === "tascoAbcdLabor" ? (
+                <Holds className="row-start-1 row-end-7 h-full w-full">
                   <Selects
                     value={materialType || ""}
                     onChange={(e) => setMaterialType(e.target.value)}
@@ -155,8 +161,9 @@ export default function TascoClockInForm({
                       </option>
                     ))}
                   </Selects>
-                ) : null}
-              </Holds>
+                </Holds>
+              ) : null}
+
               <Holds className="row-start-7 row-end-8  w-full">
                 {clockInRoleTypes === "tascoEEquipment" ? (
                   <Buttons

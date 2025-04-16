@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import VerificationStep from "./verification-step";
 import TruckClockInForm from "./(Truck)/truckClockInForm";
 import VerificationEQStep from "./verification-eq-step";
@@ -17,7 +16,6 @@ import { useSession } from "next-auth/react";
 import QRMultiRoles from "./QRMultiRoles";
 import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
-import { useOperator } from "@/app/context/operatorContext";
 import EquipmentQRStep from "./qr-equipment-handler";
 import StepButtons from "./step-buttons";
 import { Grids } from "../(reusable)/grids";
@@ -28,7 +26,6 @@ import MechanicVerificationStep from "./(Mechanic)/Verification-step-mechanic";
 import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
 import TascoClockInForm from "./(Tasco)/tascoClockInForm";
 import TruckVerificationStep from "./(Truck)/Verification-step-truck";
-import { Images } from "../(reusable)/images";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -603,23 +600,21 @@ export default function NewClockProcess({
         </Holds>
       )}
       {step === 5 && clockInRole === "tasco" && (
-        <Holds className="h-full w-full">
-          <TascoClockInForm
-            handleNextStep={handleNextStep}
-            handlePrevStep={handlePrevStep}
-            setLaborType={setLaborType}
-            laborType={laborType}
-            materialType={materialType}
-            setMaterialType={setMaterialType}
-            shiftType={shiftType}
-            setShiftType={setShiftType}
-            clockInRoleTypes={clockInRoleTypes}
-            returnPathUsed={returnPathUsed}
-            setStep={setStep}
-            equipment={equipment}
-            setEquipment={setEquipment}
-          />
-        </Holds>
+        <TascoClockInForm
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+          setLaborType={setLaborType}
+          laborType={laborType}
+          materialType={materialType}
+          setMaterialType={setMaterialType}
+          shiftType={shiftType}
+          setShiftType={setShiftType}
+          clockInRoleTypes={clockInRoleTypes}
+          returnPathUsed={returnPathUsed}
+          setStep={setStep}
+          equipment={equipment}
+          setEquipment={setEquipment}
+        />
       )}
       {step === 6 && clockInRole === "tasco" && (
         <TascoVerificationStep

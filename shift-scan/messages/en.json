@@ -322,7 +322,7 @@
   },
   "Clock": {
     "Equipment": "Equipment",
-    "SelectMaterialTypeAndEquipment": "Select Material Type and Equipment",
+    "SelectMaterialTypeAndEquipment": "Select Material & Equipment",
     "StartDay": "Start Day",
     "SearchBarPlaceholder": "Type here...",
     "SelectedEquipment": "Selected Equipment",
@@ -338,6 +338,7 @@
     "search-equipment-operator": "Search Equipment",
     "SelectShiftType": "Select Shift Type",
     "SelectMaterialType": "Select Material Type",
+    "SelectMaterialHere": "Select Material Here",
     "EquipmentOperator": "Equipment Operator",
     "Operator": "Operator",
     "TruckDriver": "Truck Driver",
