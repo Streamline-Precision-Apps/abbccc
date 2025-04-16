@@ -188,7 +188,7 @@ export default function TruckVerificationStep({
                             hour: "2-digit",
                             minute: "2-digit",
                             second: "2-digit",
-                            hour12: false,
+                            hour12: true,
                           })}
                         </Texts>
                       </Holds>
@@ -202,7 +202,7 @@ export default function TruckVerificationStep({
                       >
                         <Labels
                           htmlFor="clockInRole"
-                          size={"p6"}
+                          size={"p3"}
                           position={"left"}
                         >
                           {t("LaborType")}
@@ -224,7 +224,7 @@ export default function TruckVerificationStep({
                       <Holds className={"row-span-1 col-span-2"}>
                         <Labels
                           htmlFor="jobsiteId"
-                          size={"p6"}
+                          size={"p3"}
                           position={"left"}
                         >
                           {t("JobSite-label")}
@@ -240,7 +240,7 @@ export default function TruckVerificationStep({
                       <Holds className={"row-span-1 col-span-2"}>
                         <Labels
                           htmlFor="costcode"
-                          size={"p6"}
+                          size={"p3"}
                           position={"left"}
                         >
                           {t("CostCode-label")}
@@ -257,7 +257,7 @@ export default function TruckVerificationStep({
                         <Holds className={"row-span-1 col-span-2"}>
                           <Labels
                             htmlFor="truckId"
-                            size={"p6"}
+                            size={"p3"}
                             position={"left"}
                           >
                             {t("Truck-label")}
@@ -275,7 +275,7 @@ export default function TruckVerificationStep({
                         <Holds className={"row-span-1 col-span-2"}>
                           <Labels
                             htmlFor="SelectedEquipment"
-                            size={"p6"}
+                            size={"p3"}
                             position={"left"}
                           >
                             {t("SelectedEquipment")}

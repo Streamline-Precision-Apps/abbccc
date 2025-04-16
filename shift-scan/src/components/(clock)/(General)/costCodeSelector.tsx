@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useDBCostcode } from "@/app/context/dbCodeContext";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
+import { useTranslations } from "next-intl";
 
 type Option = {
   code: string;
@@ -20,7 +21,7 @@ export const CostCodeSelector = ({
   const [selectedCostCode, setSelectedCostCode] = useState<Option | null>(null);
   const [costCodeOptions, setCostCodeOptions] = useState<Option[]>([]);
   const { costcodeResults } = useDBCostcode();
-
+  const t = useTranslations("Clock");
   useEffect(() => {
     const options = costcodeResults.map((costcode) => ({
       code: costcode.name,
@@ -52,7 +53,7 @@ export const CostCodeSelector = ({
       options={costCodeOptions}
       selectedOption={selectedCostCode}
       onSelect={handleSelect}
-      placeholder="Search Cost Code..."
+      placeholder={t("SearchBarPlaceholder")}
       label="Select Cost Code"
     />
   );

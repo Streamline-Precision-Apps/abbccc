@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
+import { useTranslations } from "next-intl";
 
 type Option = {
   code: string;
@@ -20,7 +21,7 @@ export const JobsiteSelector = ({
   const [selectedJobsite, setSelectedJobsite] = useState<Option | null>(null);
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
   const { jobsiteResults } = useDBJobsite();
-
+  const t = useTranslations("Clock");
   useEffect(() => {
     const options = jobsiteResults.map((jobSite) => ({
       code: jobSite.qrId,
@@ -52,7 +53,7 @@ export const JobsiteSelector = ({
       options={jobsiteOptions}
       selectedOption={selectedJobsite}
       onSelect={handleSelect}
-      placeholder="Search Job Sites..."
+      placeholder={t("SearchBarPlaceholder")}
       label="Select Job Site"
     />
   );

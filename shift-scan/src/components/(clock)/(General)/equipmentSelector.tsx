@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBEquipment } from "@/app/context/dbCodeContext";
+import { useTranslations } from "next-intl";
 
 type Option = {
   code: string;
@@ -21,16 +22,14 @@ export const EquipmentSelector = ({
     null
   );
   const [equipmentOptions, setEquipmentOptions] = useState<Option[]>([]);
-
+  const t = useTranslations("Clock");
   const { equipmentResults } = useDBEquipment();
 
   useEffect(() => {
-    const options = equipmentResults
-      .filter((equipment) => equipment.equipmentTag !== "TRUCK")
-      .map((costcode) => ({
-        code: costcode.name,
-        label: costcode.name,
-      }));
+    const options = equipmentResults.map((costcode) => ({
+      code: costcode.name,
+      label: costcode.name,
+    }));
     setEquipmentOptions(options);
   }, [equipmentResults]);
 
@@ -57,7 +56,7 @@ export const EquipmentSelector = ({
       options={equipmentOptions}
       selectedOption={selectedEquipment}
       onSelect={handleSelect}
-      placeholder="Search equipment..."
+      placeholder={t("SearchBarPlaceholder")}
       label="Select an equipment"
     />
   );

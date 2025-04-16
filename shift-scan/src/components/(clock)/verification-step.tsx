@@ -150,7 +150,7 @@ export default function VerificationStep({
               <Images
                 titleImg="/clock-in.svg"
                 titleImgAlt="Verify"
-                className="w-8 h-8"
+                className="w-10 h-10"
               />
             </TitleBoxes>
           </Holds>
@@ -175,12 +175,12 @@ export default function VerificationStep({
                           hour: "2-digit",
                           minute: "2-digit",
                           second: "2-digit",
-                          hour12: false,
+                          hour12: true,
                         })}
                       </Texts>
                     </Holds>
 
-                    <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
+                    <Labels htmlFor="jobsiteId" size={"p3"} position={"left"}>
                       {t("LaborType")}
                     </Labels>
                     <Inputs
@@ -191,7 +191,7 @@ export default function VerificationStep({
                       className="text-center"
                     />
 
-                    <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
+                    <Labels htmlFor="jobsiteId" size={"p3"} position={"left"}>
                       {t("JobSite-label")}
                     </Labels>
                     <Inputs
@@ -201,7 +201,7 @@ export default function VerificationStep({
                       data={jobsite?.label || ""}
                       className="text-center"
                     />
-                    <Labels htmlFor="costcode" size={"p4"} position={"left"}>
+                    <Labels htmlFor="costcode" size={"p3"} position={"left"}>
                       {t("CostCode-label")}
                     </Labels>
                     <Inputs
