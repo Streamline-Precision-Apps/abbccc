@@ -145,85 +145,91 @@ export default function MechanicVerificationStep({
         background={"white"}
         className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `}
       >
-        <Contents width={"section"}>
-          <TitleBoxes position={"row"} gap={3} onClick={handlePrevStep}>
-            <Titles position={"right"} size={"h1"}>
-              {t("VerifyJobSite")}
-            </Titles>
-            <Images
-              titleImg="/clock-in.svg"
-              titleImgAlt="Verify"
-              className="w-10 h-10"
-            />
-          </TitleBoxes>
-          <Grids rows={"8"} gap={"5"} className="h-full w-full pt-8 pb-5">
-            <Holds
-              background={"timeCardYellow"}
-              className="row-start-1 row-end-8 border-[3px] rounded-[10px] border-black h-full pt-1"
-            >
-              <Contents width={"section"} className="h-full">
-                <Holds className="flex flex-row justify-between pb-3">
-                  <Texts size={"p7"} position={"left"}>
-                    {date.toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                    })}
-                  </Texts>
-                  <Texts size={"p7"} position={"right"}>
-                    {date.toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: false,
-                    })}
-                  </Texts>
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Holds className="row-start-1 row-end-2 h-full w-full">
+            <TitleBoxes position={"row"} gap={3} onClick={handlePrevStep}>
+              <Titles position={"right"} size={"h1"}>
+                {t("VerifyJobSite")}
+              </Titles>
+              <Images
+                titleImg="/clock-in.svg"
+                titleImgAlt="Verify"
+                className="w-10 h-10"
+              />
+            </TitleBoxes>
+          </Holds>
+          <Holds className="row-start-2 row-end-8 h-full w-full">
+            <Contents width={"section"}>
+              <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                <Holds
+                  background={"timeCardYellow"}
+                  className="row-start-1 row-end-7 border-[3px] rounded-[10px] border-black h-full pt-1"
+                >
+                  <Contents width={"section"} className="h-full">
+                    <Holds className="flex flex-row justify-between pb-3">
+                      <Texts size={"p7"} position={"left"}>
+                        {date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      </Texts>
+                      <Texts size={"p7"} position={"right"}>
+                        {date.toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        })}
+                      </Texts>
+                    </Holds>
+                    <Labels size={"p4"} position={"left"}>
+                      {t("LaborType")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="jobsiteId"
+                      variant={"white"}
+                      data={Capitalize(role)}
+                      className="text-center"
+                    />
+
+                    <Labels size={"p4"} position={"left"}>
+                      {t("JobSite-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="jobsiteId"
+                      variant={"white"}
+                      data={jobsite?.label || ""}
+                      className="text-center"
+                    />
+                    <Labels size={"p4"} position={"left"}>
+                      {t("CostCode-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="costcode"
+                      variant={"white"}
+                      data={costCode}
+                      className="text-center"
+                    />
+                  </Contents>
                 </Holds>
-                <Labels size={"p4"} position={"left"}>
-                  {t("LaborType")}
-                </Labels>
-                <Inputs
-                  state="disabled"
-                  name="jobsiteId"
-                  variant={"white"}
-                  data={Capitalize(role)}
-                  className="text-center"
-                />
 
-                <Labels size={"p4"} position={"left"}>
-                  {t("JobSite-label")}
-                </Labels>
-                <Inputs
-                  state="disabled"
-                  name="jobsiteId"
-                  variant={"white"}
-                  data={jobsite?.label || ""}
-                  className="text-center"
-                />
-                <Labels size={"p4"} position={"left"}>
-                  {t("CostCode-label")}
-                </Labels>
-                <Inputs
-                  state="disabled"
-                  name="costcode"
-                  variant={"white"}
-                  data={costCode}
-                  className="text-center"
-                />
-              </Contents>
-            </Holds>
-
-            <Holds className="row-start-8 row-end-9 h-full  ">
-              <Buttons
-                onClick={() => handleSubmit()}
-                background={"green"}
-                className=" w-full h-full"
-              >
-                <Titles size={"h2"}>{t("StartDay")}</Titles>
-              </Buttons>
-            </Holds>
-          </Grids>
-        </Contents>
+                <Holds className="row-start-7 row-end-8">
+                  <Buttons
+                    onClick={() => handleSubmit()}
+                    background={"green"}
+                    className=" w-full h-full py-2"
+                  >
+                    <Titles size={"h2"}>{t("StartDay")}</Titles>
+                  </Buttons>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+        </Grids>
       </Holds>
     </>
   );

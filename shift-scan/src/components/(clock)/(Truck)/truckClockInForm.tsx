@@ -77,7 +77,7 @@ export default function TruckClockInForm({
 
   return (
     <Holds background={"white"} className={"w-full h-full"}>
-      <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+      <Grids rows={"7"} gap={"5"} className="h-full w-full ">
         <Holds className="row-start-1 row-end-2 h-full w-full">
           <TitleBoxes
             onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}

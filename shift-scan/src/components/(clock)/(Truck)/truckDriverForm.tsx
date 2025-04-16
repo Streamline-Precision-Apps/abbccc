@@ -36,55 +36,61 @@ export default function TruckDriverForm({
 }: TruckDriverFormProps) {
   const t = useTranslations("Clock");
   return (
-    <Grids rows={"7"} gap={"5"} className="h-full w-full">
-      <Holds className="row-start-1 row-end-2 ">
-        <Inputs
-          type="text"
-          name={"startingMileage"}
-          value={displayValue}
-          placeholder={t("StartingMileage")}
-          onChange={(e) => {
-            // Strip non-numeric characters
-            const numericValue = e.target.value.replace(/[^0-9]/g, "");
-            const number = Number(numericValue);
+    <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+      <Holds className="row-start-1 row-end-7 h-full w-full ">
+        <Grids rows={"10"}>
+          <Holds className="row-start-1 row-end-2 h-full w-full">
+            <Inputs
+              type="text"
+              name={"startingMileage"}
+              value={displayValue}
+              placeholder={t("StartingMileage")}
+              onChange={(e) => {
+                // Strip non-numeric characters
+                const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                const number = Number(numericValue);
 
-            // Update display value with commas
-            setDisplayValue(number.toLocaleString());
-            setStartingMileage(number);
-          }}
-          onBlur={() => {
-            if (startingMileage) {
-              setDisplayValue(`${startingMileage.toLocaleString()} Miles`);
-            }
-          }}
-          onFocus={() => {
-            // Remove commas when focusing to allow easy editing
-            setDisplayValue(startingMileage?.toString() || "");
-          }}
-          className="text-center placeholder:text-sm"
-        />
-      </Holds>
-      <Holds className="row-start-2 row-end-7 h-full w-full">
-        <TruckSelector
-          onTruckSelect={(selectedTruck) => {
-            if (selectedTruck) {
-              setTruck(selectedTruck); // Update the truck state with the full Option object
-            } else {
-              setTruck({ code: "", label: "" }); // Reset if null
-            }
-            setSelectedOpt(!!selectedTruck);
-          }}
-          initialValue={truck}
-        />
+                // Update display value with commas
+                setDisplayValue(number.toLocaleString());
+                setStartingMileage(number);
+              }}
+              onBlur={() => {
+                if (startingMileage) {
+                  setDisplayValue(`${startingMileage.toLocaleString()} Miles`);
+                }
+              }}
+              onFocus={() => {
+                // Remove commas when focusing to allow easy editing
+                setDisplayValue(startingMileage?.toString() || "");
+              }}
+              className="text-center placeholder:text-sm"
+            />
+          </Holds>
+          <Holds className="row-start-2 row-end-11 h-full w-full">
+            <TruckSelector
+              onTruckSelect={(selectedTruck) => {
+                if (selectedTruck) {
+                  setTruck(selectedTruck); // Update the truck state with the full Option object
+                } else {
+                  setTruck({ code: "", label: "" }); // Reset if null
+                }
+                setSelectedOpt(!!selectedTruck);
+              }}
+              initialValue={truck}
+            />
+          </Holds>
+        </Grids>
       </Holds>
       <Holds className="row-start-7 row-end-8 w-full">
         <Buttons
           className="py-2"
-          background={!startingMileage || !selectedOpt ? "darkGray" : "orange"}
+          background={
+            !startingMileage || truck.code === "" ? "darkGray" : "orange"
+          }
           onClick={() => {
             handleNextStep();
           }}
-          disabled={!selectedOpt || !startingMileage}
+          disabled={truck.code === "" || !startingMileage}
         >
           <Titles>{t("Continue")}</Titles>
         </Buttons>

@@ -139,113 +139,94 @@ export default function VerificationStep({
       )}
       <Holds
         background={"white"}
-        className={
-          loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
-        }
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `}
       >
-        <Contents width={"section"}>
-          <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2 ">
-              <Holds className="h-full w-full">
-                <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
-                  <Holds className="col-span-1 row-span-1 flex items-center justify-center">
-                    <Buttons
-                      onClick={handlePreviousStep}
-                      background={"none"}
-                      position={"left"}
-                      size={"50"}
-                      shadow={"none"}
-                    >
-                      <Images
-                        titleImg="/turnBack.svg"
-                        titleImgAlt={"Back"}
-                        className="max-w-8 h-auto object-contain"
-                      />
-                    </Buttons>
-                  </Holds>
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Holds className="row-start-1 row-end-2 h-full w-full">
+            <TitleBoxes position={"row"} onClick={handlePreviousStep}>
+              <Titles position={"right"} size={"h1"}>
+                {t("VerifyJobSite")}
+              </Titles>
+              <Images
+                titleImg="/clock-in.svg"
+                titleImgAlt="Verify"
+                className="w-8 h-8"
+              />
+            </TitleBoxes>
+          </Holds>
+          <Holds className="row-start-2 row-end-8 h-full w-full">
+            <Contents width={"section"}>
+              <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                <Holds
+                  background={"timeCardYellow"}
+                  className="row-start-1 row-end-7 h-full border-[3px] rounded-[10px] border-black"
+                >
+                  <Contents width={"section"} className="h-full py-2">
+                    <Holds className="flex flex-row justify-between pb-3">
+                      <Texts size={"p7"} position={"left"}>
+                        {date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      </Texts>
+                      <Texts size={"p7"} position={"right"}>
+                        {date.toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        })}
+                      </Texts>
+                    </Holds>
 
-                  <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex flex-row gap-2 items-center justify-center">
-                    <Titles position={"right"} size={"h1"}>
-                      {t("VerifyJobSite")}
-                    </Titles>
-                    <Images
-                      titleImg="/clock-in.svg"
-                      titleImgAlt="Verify"
-                      className="w-8 h-8"
+                    <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
+                      {t("LaborType")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="jobsiteId"
+                      variant={"white"}
+                      data={"General Labor"}
+                      className="text-center"
                     />
-                  </Holds>
-                </Grids>
-              </Holds>
-            </Holds>
 
-            <Holds
-              background={"timeCardYellow"}
-              className="row-start-2 row-end-8 h-full border-[3px] rounded-[10px] border-black"
-            >
-              <Contents width={"section"} className="h-full py-2">
-                <Holds className="flex flex-row justify-between pb-3">
-                  <Texts size={"p7"} position={"left"}>
-                    {date.toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                    })}
-                  </Texts>
-                  <Texts size={"p7"} position={"right"}>
-                    {date.toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: false,
-                    })}
-                  </Texts>
+                    <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
+                      {t("JobSite-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="jobsiteId"
+                      variant={"white"}
+                      data={jobsite?.label || ""}
+                      className="text-center"
+                    />
+                    <Labels htmlFor="costcode" size={"p4"} position={"left"}>
+                      {t("CostCode-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="costcode"
+                      variant={"white"}
+                      data={cc?.label || ""}
+                      className="text-center"
+                    />
+                  </Contents>
                 </Holds>
 
-                <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
-                  {t("LaborType")}
-                </Labels>
-                <Inputs
-                  state="disabled"
-                  name="jobsiteId"
-                  variant={"white"}
-                  data={"General Labor"}
-                  className="text-center"
-                />
-
-                <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
-                  {t("JobSite-label")}
-                </Labels>
-                <Inputs
-                  state="disabled"
-                  name="jobsiteId"
-                  variant={"white"}
-                  data={jobsite?.label || ""}
-                  className="text-center"
-                />
-                <Labels htmlFor="costcode" size={"p4"} position={"left"}>
-                  {t("CostCode-label")}
-                </Labels>
-                <Inputs
-                  state="disabled"
-                  name="costcode"
-                  variant={"white"}
-                  data={cc?.label || ""}
-                  className="text-center"
-                />
-              </Contents>
-            </Holds>
-
-            <Holds className="row-start-8 row-end-9 h-full  ">
-              <Buttons
-                onClick={() => handleSubmit()}
-                background={"green"}
-                className=" w-full h-full"
-              >
-                <Titles size={"h2"}>{t("StartDay")}</Titles>
-              </Buttons>
-            </Holds>
-          </Grids>
-        </Contents>
+                <Holds className="row-start-7 row-end-8   ">
+                  <Buttons
+                    onClick={() => handleSubmit()}
+                    background={"green"}
+                    className=" w-full h-full py-2"
+                  >
+                    <Titles size={"h2"}>{t("StartDay")}</Titles>
+                  </Buttons>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+        </Grids>
       </Holds>
     </Holds>
   );

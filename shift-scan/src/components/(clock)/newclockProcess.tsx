@@ -440,18 +440,16 @@ export default function NewClockProcess({
 
       {step === 3 && (
         <Holds background={"white"} className="h-full w-full">
-          <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h1"} className="pb-5">
-                  {t("Title-jobsite")}
-                </Titles>
+                <Titles size={"h1"}>{t("Title-jobsite")}</Titles>
               </TitleBoxes>
             </Holds>
             <Holds className="row-start-2 row-end-8 h-full w-full">
-              <Grids rows={"7"} gap={"5"} className="h-full w-full">
-                <Holds className={"row-start-1 row-end-7 h-full w-full "}>
-                  <Contents width="section">
+              <Contents width="section">
+                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                  <Holds className={"row-start-1 row-end-7 h-full w-full "}>
                     <JobsiteSelector
                       onJobsiteSelect={(jobsite) => {
                         if (jobsite) {
@@ -462,21 +460,20 @@ export default function NewClockProcess({
                       }}
                       initialValue={jobsite}
                     />
-                  </Contents>
-                </Holds>
-                <Holds className="row-start-7 row-end-8  w-full justify-center">
-                  <Contents width="section">
+                  </Holds>
+                  <Holds className="row-start-7 row-end-8 w-full justify-center">
                     <StepButtons
                       handleNextStep={handleNextStep}
-                      disabled={!jobsite}
+                      disabled={jobsite.code === ""}
                     />
-                  </Contents>
-                </Holds>
-              </Grids>
+                  </Holds>
+                </Grids>
+              </Contents>
             </Holds>
           </Grids>
         </Holds>
       )}
+
       {/* Mechanic Roles START ---------------------*/}
       {step === 4 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
@@ -495,21 +492,19 @@ export default function NewClockProcess({
       {/* ------------------------- Mechanic Role END */}
 
       {/* Trucking Role start ---------------------*/}
-
       {step === 4 && clockInRole === "truck" && (
         <Holds background={"white"} className="h-full w-full">
-          <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles position={"right"} size={"h1"}>
-                  {t(`Title-costcode`)}
-                </Titles>
+                <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
               </TitleBoxes>
             </Holds>
-            <Holds className="row-start-2 row-end-8 h-full w-full">
+
+            <Holds className={"row-start-2 row-end-8 h-full w-full"}>
               <Contents width="section">
-                <Grids rows={"7"} gap={"5"} className="h-full w-full">
-                  <Holds className={"row-start-1 row-end-7 h-full w-full"}>
+                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                  <Holds className={"row-start-1 row-end-7 h-full w-full "}>
                     <CostCodeSelector
                       onCostCodeSelect={(costCode) => {
                         if (costCode) {
@@ -521,10 +516,11 @@ export default function NewClockProcess({
                       initialValue={cc}
                     />
                   </Holds>
+
                   <Holds className="row-start-7 row-end-8 w-full justify-center">
                     <StepButtons
                       handleNextStep={handleNextStep}
-                      disabled={!jobsite}
+                      disabled={cc.code === ""}
                     />
                   </Holds>
                 </Grids>
@@ -571,34 +567,39 @@ export default function NewClockProcess({
 
       {step === 4 && clockInRole === "tasco" && (
         <Holds background={"white"} className="h-full w-full">
-          <TitleBoxes onClick={handlePrevStep}>
-            <Titles size={"h1"} className="pb-5">
-              {t(`Title-costcode`)}
-            </Titles>
-          </TitleBoxes>
-          <Contents width="section">
-            <Grids rows={"8"} className="h-full w-full">
-              <Holds className={"row-start-1 row-end-7 h-full w-full "}>
-                <CostCodeSelector
-                  onCostCodeSelect={(costCode) => {
-                    if (costCode) {
-                      setCC(costCode); // Update the equipment state with the full Option object
-                    } else {
-                      setCC({ code: "", label: "" }); // Reset if null
-                    }
-                  }}
-                  initialValue={cc}
-                />
-              </Holds>
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full w-full">
+              <TitleBoxes onClick={handlePrevStep}>
+                <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
+              </TitleBoxes>
+            </Holds>
 
-              <Holds className="row-span-1 w-full justify-center">
-                <StepButtons
-                  handleNextStep={handleNextStep}
-                  disabled={!jobsite}
-                />
-              </Holds>
-            </Grids>
-          </Contents>
+            <Holds className={"row-start-2 row-end-8 h-full w-full"}>
+              <Contents width="section">
+                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                  <Holds className={"row-start-1 row-end-7 h-full w-full "}>
+                    <CostCodeSelector
+                      onCostCodeSelect={(costCode) => {
+                        if (costCode) {
+                          setCC(costCode); // Update the equipment state with the full Option object
+                        } else {
+                          setCC({ code: "", label: "" }); // Reset if null
+                        }
+                      }}
+                      initialValue={cc}
+                    />
+                  </Holds>
+
+                  <Holds className="row-start-7 row-end-8 w-full justify-center">
+                    <StepButtons
+                      handleNextStep={handleNextStep}
+                      disabled={cc.code === ""}
+                    />
+                  </Holds>
+                </Grids>
+              </Contents>
+            </Holds>
+          </Grids>
         </Holds>
       )}
       {step === 5 && clockInRole === "tasco" && (
@@ -642,39 +643,41 @@ export default function NewClockProcess({
       {/* --------------------- Tasco Role End */}
 
       {/* General Role ---------------------*/}
-
       {step === 4 && clockInRole === "general" && (
-        <Holds background={"white"} className="h-full w-full py-5">
-          <Contents width="section">
-            <Grids rows={"8"} gap={"5"} className="h-full w-full">
-              <Holds className="h-full row-start-1 row-end-2">
-                <TitleBoxes onClick={handlePrevStep}>
-                  <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
-                </TitleBoxes>
-              </Holds>
+        <Holds background={"white"} className="h-full w-full">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full w-full">
+              <TitleBoxes onClick={handlePrevStep}>
+                <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
+              </TitleBoxes>
+            </Holds>
 
-              <Holds className={"row-start-2 row-end-8 h-full w-full pt-5"}>
-                <CostCodeSelector
-                  onCostCodeSelect={(costCode) => {
-                    if (costCode) {
-                      setCC(costCode); // Update the equipment state with the full Option object
-                    } else {
-                      setCC({ code: "", label: "" }); // Reset if null
-                    }
-                  }}
-                  initialValue={cc}
-                />
-              </Holds>
-              {handleNextStep && (
-                <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
-                  <StepButtons
-                    handleNextStep={handleNextStep}
-                    disabled={!jobsite}
-                  />
-                </Holds>
-              )}
-            </Grids>
-          </Contents>
+            <Holds className={"row-start-2 row-end-8 h-full w-full"}>
+              <Contents width="section">
+                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                  <Holds className={"row-start-1 row-end-7 h-full w-full "}>
+                    <CostCodeSelector
+                      onCostCodeSelect={(costCode) => {
+                        if (costCode) {
+                          setCC(costCode); // Update the equipment state with the full Option object
+                        } else {
+                          setCC({ code: "", label: "" }); // Reset if null
+                        }
+                      }}
+                      initialValue={cc}
+                    />
+                  </Holds>
+
+                  <Holds className="row-start-7 row-end-8 w-full justify-center">
+                    <StepButtons
+                      handleNextStep={handleNextStep}
+                      disabled={cc.code === ""}
+                    />
+                  </Holds>
+                </Grids>
+              </Contents>
+            </Holds>
+          </Grids>
         </Holds>
       )}
       {step === 5 && clockInRole === "general" && (

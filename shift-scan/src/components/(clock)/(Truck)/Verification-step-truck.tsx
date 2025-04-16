@@ -13,7 +13,6 @@ import {
   setWorkRole,
 } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
-import { useOperator } from "@/app/context/operatorContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
@@ -26,6 +25,7 @@ import { Titles } from "@/components/(reusable)/titles";
 
 import { useSession } from "next-auth/react";
 import Spinner from "@/components/(animations)/spinner";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type Options = {
   label: string;
@@ -151,161 +151,160 @@ export default function TruckVerificationStep({
         <Holds
           background={"white"}
           className={
-            loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
+            loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `
           }
         >
-          <Contents width={"section"}>
-            <Grids rows={"8"} gap={"5"} className="h-full w-full">
-              <Holds className="h-full w-full row-start-1 row-end-2 ">
-                <Holds className="h-full w-full">
-                  <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
-                    <Holds className="col-span-1 row-span-1 flex items-center justify-center">
-                      <Buttons
-                        onClick={handlePrevStep}
-                        background={"none"}
-                        position={"left"}
-                        size={"50"}
-                        shadow={"none"}
-                      >
-                        <Images
-                          titleImg="/turnBack.svg"
-                          titleImgAlt={"Back"}
-                          className="max-w-8 h-auto object-contain"
-                        />
-                      </Buttons>
-                    </Holds>
-
-                    <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex flex-row gap-2 items-center justify-center">
-                      <Titles position={"right"} size={"h1"}>
-                        {t("VerifyJobSite")}
-                      </Titles>
-                      <Images
-                        titleImg="/clock-in.svg"
-                        titleImgAlt="Verify"
-                        className="w-8 h-8"
-                      />
-                    </Holds>
-                  </Grids>
-                </Holds>
-              </Holds>
-
-              <Holds
-                background={"timeCardYellow"}
-                className="row-start-2 row-end-8 w-full h-full rounded-[10px] border-[3px] border-black"
-              >
-                <Contents width={"section"} className="h-full py-2">
-                  <Holds className="flex flex-row justify-between pb-3">
-                    <Texts size={"p7"} position={"left"}>
-                      {date.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                      })}
-                    </Texts>
-                    <Texts size={"p7"} position={"right"}>
-                      {date.toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: false,
-                      })}
-                    </Texts>
-                  </Holds>
-
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full w-full">
+              <TitleBoxes position={"row"} onClick={handlePrevStep}>
+                <Titles position={"right"} size={"h1"}>
+                  {t("VerifyJobSite")}
+                </Titles>
+                <Images
+                  titleImg="/clock-in.svg"
+                  titleImgAlt="Verify"
+                  className="w-8 h-8"
+                />
+              </TitleBoxes>
+            </Holds>
+            <Holds className="row-start-2 row-end-8 h-full w-full">
+              <Contents width={"section"}>
+                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
                   <Holds
-                    className={
-                      clockInRoleTypes === "truckDriver"
-                        ? "row-span-1 col-span-1"
-                        : "row-span-1 col-span-2"
-                    }
+                    background={"timeCardYellow"}
+                    className="row-start-1 row-end-7 w-full h-full rounded-[10px] border-[3px] border-black"
                   >
-                    <Labels htmlFor="clockInRole" size={"p6"} position={"left"}>
-                      {t("LaborType")}
-                    </Labels>
-                    <Inputs
-                      state="disabled"
-                      name="clockInRole"
-                      variant={"white"}
-                      data={
-                        clockInRoleTypes === "truckDriver"
-                          ? t("TruckDriver")
-                          : clockInRoleTypes === "truckEquipmentOperator"
-                          ? t("TruckEquipmentOperator")
-                          : t("TruckLabor")
-                      }
-                      className={"pl-2 text-base text-center"}
-                    />
-                  </Holds>
-                  <Holds className={"row-span-1 col-span-2"}>
-                    <Labels htmlFor="jobsiteId" size={"p6"} position={"left"}>
-                      {t("JobSite-label")}
-                    </Labels>
-                    <Inputs
-                      state="disabled"
-                      name="jobsiteId"
-                      variant={"white"}
-                      data={jobsite?.label || ""}
-                      className={"pl-2 text-base text-center"}
-                    />
-                  </Holds>
-                  <Holds className={"row-span-1 col-span-2"}>
-                    <Labels htmlFor="costcode" size={"p6"} position={"left"}>
-                      {t("CostCode-label")}
-                    </Labels>
-                    <Inputs
-                      state="disabled"
-                      name="costcode"
-                      variant={"white"}
-                      data={cc?.label || ""}
-                      className={"pl-2 text-base text-center"}
-                    />
-                  </Holds>
-                  {clockInRoleTypes === "truckDriver" && (
-                    <Holds className={"row-span-1 col-span-2"}>
-                      <Labels htmlFor="truckId" size={"p6"} position={"left"}>
-                        {t("Truck-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="truckId"
-                        variant={"white"}
-                        data={truck?.label || ""}
-                        className={"pl-2 text-base text-center"}
-                      />
-                    </Holds>
-                  )}
-                  {clockInRoleTypes === "truckEquipmentOperator" && (
-                    <Holds className={"row-span-1 col-span-2"}>
-                      <Labels
-                        htmlFor="SelectedEquipment"
-                        size={"p6"}
-                        position={"left"}
-                      >
-                        {t("SelectedEquipment")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="SelectedEquipment"
-                        variant={"white"}
-                        data={equipment?.label || ""}
-                        className={"pl-2 text-base text-center"}
-                      />
-                    </Holds>
-                  )}
-                </Contents>
-              </Holds>
+                    <Contents width={"section"} className="h-full py-2">
+                      <Holds className="flex flex-row justify-between pb-3">
+                        <Texts size={"p7"} position={"left"}>
+                          {date.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "numeric",
+                            day: "numeric",
+                          })}
+                        </Texts>
+                        <Texts size={"p7"} position={"right"}>
+                          {date.toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                          })}
+                        </Texts>
+                      </Holds>
 
-              <Holds className="row-start-8 row-end-9 h-full  ">
-                <Buttons
-                  onClick={() => handleSubmit()}
-                  background={"green"}
-                  className=" w-full h-full"
-                >
-                  <Titles size={"h2"}>{t("StartDay")}</Titles>
-                </Buttons>
-              </Holds>
-            </Grids>
-          </Contents>
+                      <Holds
+                        className={
+                          clockInRoleTypes === "truckDriver"
+                            ? "row-span-1 col-span-1"
+                            : "row-span-1 col-span-2"
+                        }
+                      >
+                        <Labels
+                          htmlFor="clockInRole"
+                          size={"p6"}
+                          position={"left"}
+                        >
+                          {t("LaborType")}
+                        </Labels>
+                        <Inputs
+                          state="disabled"
+                          name="clockInRole"
+                          variant={"white"}
+                          data={
+                            clockInRoleTypes === "truckDriver"
+                              ? t("TruckDriver")
+                              : clockInRoleTypes === "truckEquipmentOperator"
+                              ? t("TruckEquipmentOperator")
+                              : t("TruckLabor")
+                          }
+                          className={"pl-2 text-base text-center"}
+                        />
+                      </Holds>
+                      <Holds className={"row-span-1 col-span-2"}>
+                        <Labels
+                          htmlFor="jobsiteId"
+                          size={"p6"}
+                          position={"left"}
+                        >
+                          {t("JobSite-label")}
+                        </Labels>
+                        <Inputs
+                          state="disabled"
+                          name="jobsiteId"
+                          variant={"white"}
+                          data={jobsite?.label || ""}
+                          className={"pl-2 text-base text-center"}
+                        />
+                      </Holds>
+                      <Holds className={"row-span-1 col-span-2"}>
+                        <Labels
+                          htmlFor="costcode"
+                          size={"p6"}
+                          position={"left"}
+                        >
+                          {t("CostCode-label")}
+                        </Labels>
+                        <Inputs
+                          state="disabled"
+                          name="costcode"
+                          variant={"white"}
+                          data={cc?.label || ""}
+                          className={"pl-2 text-base text-center"}
+                        />
+                      </Holds>
+                      {clockInRoleTypes === "truckDriver" && (
+                        <Holds className={"row-span-1 col-span-2"}>
+                          <Labels
+                            htmlFor="truckId"
+                            size={"p6"}
+                            position={"left"}
+                          >
+                            {t("Truck-label")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="truckId"
+                            variant={"white"}
+                            data={truck?.label || ""}
+                            className={"pl-2 text-base text-center"}
+                          />
+                        </Holds>
+                      )}
+                      {clockInRoleTypes === "truckEquipmentOperator" && (
+                        <Holds className={"row-span-1 col-span-2"}>
+                          <Labels
+                            htmlFor="SelectedEquipment"
+                            size={"p6"}
+                            position={"left"}
+                          >
+                            {t("SelectedEquipment")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="SelectedEquipment"
+                            variant={"white"}
+                            data={equipment?.label || ""}
+                            className={"pl-2 text-base text-center"}
+                          />
+                        </Holds>
+                      )}
+                    </Contents>
+                  </Holds>
+
+                  <Holds className="row-start-7 row-end-8">
+                    <Buttons
+                      onClick={() => handleSubmit()}
+                      background={"green"}
+                      className=" w-full h-full py-2"
+                    >
+                      <Titles size={"h2"}>{t("StartDay")}</Titles>
+                    </Buttons>
+                  </Holds>
+                </Grids>
+              </Contents>
+            </Holds>
+          </Grids>
         </Holds>
       </Holds>
     </>
