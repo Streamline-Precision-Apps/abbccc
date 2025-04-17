@@ -72,116 +72,14 @@ export default function EditWorkNew({
   };
 
   // Filters out updated timesheets by comparing original and edited states
-  const getUpdatedSheets = (
-    original: TimeSheet[],
-    edited: TimeSheet[]
-  ): TimeSheet[] => {
-    return edited.filter((editedSheet) => {
-      const originalSheet = original.find(
-        (sheet) => sheet.id === editedSheet.id
-      );
-
-      if (!originalSheet) return false;
-
-      return (
-        editedSheet.date !== originalSheet.date ||
-        editedSheet.startTime !== originalSheet.startTime ||
-        editedSheet.endTime !== originalSheet.endTime ||
-        editedSheet.workType !== originalSheet.workType ||
-        editedSheet.comment !== originalSheet.comment ||
-        editedSheet.location !== originalSheet.location
-      );
-    });
-  };
 
   // Save changes
-  const onSaveChanges = async () => {
-    const updatedSheets = getUpdatedSheets(timeSheet, editedTimesheet);
-
-    if (updatedSheets.length > 0) {
-      // Convert date and time to ISO format
-      const isoFormattedSheets = updatedSheets.map((sheet) => {
-        const startTime = sheet.startTime;
-        const endTime = sheet.endTime;
-
-        // Convert startTime to ISO
-        if (startTime) {
-          sheet.startTime = parseISO(formatISO(startTime)).toISOString();
-        }
-
-        // Convert endTime to ISO
-        if (endTime) {
-          sheet.endTime = parseISO(formatISO(endTime)).toISOString();
-        }
-
-        console.log(
-          "Updated Timesheets (ISO):",
-          sheet.startTime,
-          sheet.endTime
-        );
-        return sheet;
-      });
-
-      // Persist changes to the backend
-      await updateTimeSheets(isoFormattedSheets, manager);
-    } else {
-      console.log("No changes were made.");
-    }
-
-    setEdit(false);
-  };
 
   // Cancel edits and reset state
-  const onCancelEdits = () => {
-    setEditedTimesheet([...timeSheet]); // Reset editedTimesheet to the original timesheet
-    setEdit(false);
-  };
 
   return (
     <Holds className="w-full h-full">
       <Grids rows={"7"}>
-        {/* Header for save/cancel/edit actions */}
-        <Holds className="row-start-7 row-end-8 h-full  border-t-[1px] border-gray-100">
-          {edit ? (
-            <Holds position={"row"} className="justify-between my-auto ">
-              <Holds
-                background={"green"}
-                className="w-1/4 ml-4 "
-                onClick={onSaveChanges}
-              >
-                <Images
-                  titleImg={"/save-edit.svg"}
-                  titleImgAlt={"Save"}
-                  size={"30"}
-                />
-              </Holds>
-              <Holds
-                background={"red"}
-                className="w-1/4  mr-4"
-                onClick={onCancelEdits}
-              >
-                <Images
-                  titleImg={"/undo-edit.svg"}
-                  titleImgAlt={"Cancel"}
-                  size={"30"}
-                />
-              </Holds>
-            </Holds>
-          ) : (
-            <Holds
-              background={"orange"}
-              className=" w-1/4 my-auto"
-              onClick={() => setEdit(true)}
-            >
-              <Images
-                titleImg={"/edit-form.svg"}
-                titleImgAlt={"Edit"}
-                size={"30"}
-              />
-            </Holds>
-          )}
-        </Holds>
-
         {/* Timesheet Editing Section */}
         <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full p-3">
           {editedTimesheet.map((sheet) => (

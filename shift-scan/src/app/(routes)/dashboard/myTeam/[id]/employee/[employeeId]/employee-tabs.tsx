@@ -121,9 +121,12 @@ export default function EmployeeTabs() {
   }, [date]);
 
   return (
-    <Holds className="h-full">
-      <Grids rows={"7"} gap={"5"} className="h-full">
-        <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+    <Holds className="h-full w-full">
+      <Grids rows={"7"} gap={"5"} className="h-full w-full">
+        <Holds
+          background={"white"}
+          className="row-start-1 row-end-2 h-full w-full"
+        >
           <TitleBoxes
             onClick={() =>
               router.push(rPath ? rPath : `/dashboard/myTeam/${myTeam}`)
@@ -138,14 +141,15 @@ export default function EmployeeTabs() {
         </Holds>
 
         <Holds
-          className={
-            loading
-              ? "h-full row-start-2 row-end-8  animate-pulse"
-              : "row-start-2 row-end-8 h-full"
-          }
+          className={`w-full h-full row-start-2 row-end-8 ${
+            loading ? "animate-pulse" : ""
+          }`}
         >
-          <Grids rows={"10"}>
-            <Holds position={"row"} className={"row-span-1  gap-1"}>
+          <Grids rows={"10"} className="h-full w-full">
+            <Holds
+              position={"row"}
+              className={"row-start-1 row-end-2 h-full gap-1"}
+            >
               <NewTab
                 onClick={() => setActiveTab(1)}
                 isActive={activeTab === 1}
@@ -165,10 +169,7 @@ export default function EmployeeTabs() {
                 {t("TimeCards")}
               </NewTab>
             </Holds>
-            <Holds
-              background={"white"}
-              className={"rounded-t-none row-span-9 h-full"}
-            >
+            <Holds className="h-full w-full row-span-9">
               {activeTab === 1 && (
                 <EmployeeInfo
                   employee={employee}

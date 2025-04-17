@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -11,6 +11,13 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Labels } from "@/components/(reusable)/labels";
 import { TimeSheet } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
+import { Content } from "next/font/google";
+import { Contents } from "@/components/(reusable)/contents";
+import { Selects } from "@/components/(reusable)/selects";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
+import { formatISO, parseISO } from "date-fns";
+import { updateTimeSheets } from "@/actions/timeSheetActions";
 
 export const EmployeeTimeSheets = ({
   date,
@@ -30,67 +37,195 @@ export const EmployeeTimeSheets = ({
   manager: string;
 }) => {
   const t = useTranslations("MyTeam");
+  const [timeSheetFilter, setTimeSheetFilter] = useState("");
+  const [editedTimesheet, setEditedTimesheet] =
+    useState<TimeSheet[]>(timeSheets);
+
+  const getUpdatedSheets = (
+    original: TimeSheet[],
+    edited: TimeSheet[]
+  ): TimeSheet[] => {
+    return edited.filter((editedSheet) => {
+      const originalSheet = original.find(
+        (sheet) => sheet.id === editedSheet.id
+      );
+
+      if (!originalSheet) return false;
+
+      return (
+        editedSheet.date !== originalSheet.date ||
+        editedSheet.startTime !== originalSheet.startTime ||
+        editedSheet.endTime !== originalSheet.endTime ||
+        editedSheet.workType !== originalSheet.workType ||
+        editedSheet.comment !== originalSheet.comment ||
+        editedSheet.location !== originalSheet.location
+      );
+    });
+  };
+
+  const onSaveChanges = async () => {
+    const updatedSheets = getUpdatedSheets(timeSheets, editedTimesheet);
+
+    if (updatedSheets.length > 0) {
+      // Convert date and time to ISO format
+      const isoFormattedSheets = updatedSheets.map((sheet) => {
+        const startTime = sheet.startTime;
+        const endTime = sheet.endTime;
+
+        // Convert startTime to ISO
+        if (startTime) {
+          sheet.startTime = parseISO(formatISO(startTime)).toISOString();
+        }
+
+        // Convert endTime to ISO
+        if (endTime) {
+          sheet.endTime = parseISO(formatISO(endTime)).toISOString();
+        }
+
+        console.log(
+          "Updated Timesheets (ISO):",
+          sheet.startTime,
+          sheet.endTime
+        );
+        return sheet;
+      });
+
+      // Persist changes to the backend
+      await updateTimeSheets(isoFormattedSheets, manager);
+    } else {
+      console.log("No changes were made.");
+    }
+
+    setEdit(false);
+  };
+
+  const onCancelEdits = () => {
+    setEditedTimesheet([...timeSheets]); // Reset editedTimesheet to the original timesheet
+    setEdit(false);
+  };
 
   return (
-    <Holds background={"white"} className="h-full w-full">
-      <Grids rows={"6"} className=" h-full w-full ">
-        {loading ? (
-          <Holds
-            background={"white"}
-            className="row-start-2 row-end-7 h-full justify-center items-center animate-pulse"
-          >
-            <Spinner size={70} />
-          </Holds>
-        ) : (
-          <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
-            {timeSheets.length > 0 && (
-              <EditWorkNew
-                timeSheet={timeSheets}
-                edit={edit}
-                setEdit={setEdit}
-                manager={manager}
-              />
-            )}
-
-            {/* Display a message if no timesheets are found */}
-            {date && timeSheets.length === 0 && (
-              <Holds size={"full"} className="w-full h-full p-6">
-                <Titles size={"h4"} text={"black"}>
-                  {t("NoTimesheetsFound")}
-                </Titles>
-                <Titles size={"h5"} text={"black"}>
-                  {t("ForThisDate")}
-                </Titles>
+    <>
+      <Grids rows={"3"} gap={"5"} className="h-full w-full ">
+        <Holds
+          background={"white"}
+          className={"row-start-1 row-end-2 h-full w-full rounded-t-none "}
+        >
+          <Contents width={"section"} className="h-full">
+            <Grids rows={"3"} gap={"3"} className="h-full w-full pt-1 pb-3">
+              <Holds className="row-start-1 row-end-2 ">
+                <label htmlFor="date" className="text-xs">
+                  {t("SelectDate")}
+                </label>
+                <Inputs
+                  type="date"
+                  name="date"
+                  id="date"
+                  value={date} // Bind input value to state
+                  className="text-xs text-center border-[3px] border-black "
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setDate(e.target.value)
+                  }
+                />
               </Holds>
-            )}
-          </Holds>
-        )}
+              <Holds className="row-start-2 row-end-3 ">
+                <Selects
+                  onChange={(e) => setTimeSheetFilter(e.target.value)}
+                  className="text-center text-xs"
+                >
+                  <option value="timesheetHighlights">
+                    Timesheet Highlights
+                  </option>
+                  <option value="truckingMileage">Trucking Mileage</option>
+                  <option value="truckingHaulLogs">Trucking Haul Logs</option>
+                  <option value="truckingRefuelLogs">
+                    Trucking Refuel Logs
+                  </option>
+                  <option value="truckingStateLogs">Trucking State Logs</option>
+                  <option value="tascoHaulLogs">TASCO Haul Logs</option>
+                  <option value="tascoRefuelLogs">TASCO Refuel Logs</option>
+                  <option value="equipmentLogs">Equipment Logs</option>
+                </Selects>
+              </Holds>
+              <Holds
+                position={"row"}
+                className="row-start-3 row-end-4 justify-between "
+              >
+                {edit ? (
+                  <>
+                    {" "}
+                    <Holds
+                      background={"green"}
+                      className="w-1/4 ml-4 "
+                      onClick={onSaveChanges}
+                    >
+                      <Images
+                        titleImg={"/save-edit.svg"}
+                        titleImgAlt={"Save"}
+                        size={"30"}
+                      />
+                    </Holds>
+                    <Holds
+                      background={"red"}
+                      className="w-1/4  mr-4"
+                      onClick={onCancelEdits}
+                    >
+                      <Images
+                        titleImg={"/undo-edit.svg"}
+                        titleImgAlt={"Cancel"}
+                        size={"30"}
+                      />
+                    </Holds>
+                  </>
+                ) : (
+                  <Buttons
+                    background={"orange"}
+                    className="text-center text-base py-2 "
+                    onClick={() => setEdit(true)}
+                  >
+                    <Images
+                      titleImg="/edit-form.svg"
+                      titleImgAlt="Edit Icon"
+                      className="w-5 h-5 mx-auto"
+                    />
+                  </Buttons>
+                )}
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
 
         <Holds
-          background={"darkBlue"}
-          className="row-start-1 row-end-2 rounded-none h-full  "
+          background={"white"}
+          className={"row-start-2 row-end-4 h-full w-full"}
         >
-          <Labels
-            size={"p5"}
-            text={"white"}
-            position={"left"}
-            htmlFor="date"
-            className="pl-1"
-          >
-            {t("SelectDate")}
-          </Labels>
-          <Inputs
-            type="date"
-            name="date"
-            id="date"
-            value={date} // Bind input value to state
-            className="flex  text-black bg-white  border-2 border-black "
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setDate(e.target.value)
-            }
-          />
+          <Contents width={"section"} className="pt-2 pb-5">
+            {loading ? (
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-7 h-full justify-center items-center animate-pulse"
+              >
+                <Spinner size={70} />
+              </Holds>
+            ) : (
+              <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
+                {timeSheets.length > 0 ? (
+                  <EditWorkNew
+                    timeSheet={timeSheets}
+                    edit={edit}
+                    setEdit={setEdit}
+                    manager={manager}
+                  />
+                ) : (
+                  <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                    <Titles>{t("NoTimesheetsFound")}</Titles>
+                  </Holds>
+                )}
+              </Holds>
+            )}
+          </Contents>
         </Holds>
       </Grids>
-    </Holds>
+    </>
   );
 };
