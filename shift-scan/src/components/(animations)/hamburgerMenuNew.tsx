@@ -36,7 +36,7 @@ export default function HamburgerMenuNew() {
     >
       <Holds size={"20"} className="h-full">
         <Buttons
-          href="/hamburger/profile"
+          href="/hamburger/profile?returnUrl=/"
           background={"none"}
           shadow={"none"}
           className="relative w-16 h-5/6"
@@ -70,7 +70,7 @@ export default function HamburgerMenuNew() {
 
       <Holds size={"20"} className="h-full">
         <Buttons
-          href="/hamburger/inbox"
+          href="/hamburger/inbox?returnUrl=/"
           background={"none"}
           shadow={"none"}
           className="w-16 h-5/6"

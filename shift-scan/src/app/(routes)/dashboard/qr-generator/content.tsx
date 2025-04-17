@@ -11,7 +11,7 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Images } from "@/components/(reusable)/images";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { z } from "zod";
 import Spinner from "@/components/(animations)/spinner";
@@ -49,6 +49,8 @@ export default function QRGeneratorContent() {
   const [activeTab, setActiveTab] = useState(1);
   const t = useTranslations("Generator");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const url = searchParams.get("returnUrl") || "/dashboard";
   const [loading, setLoading] = useState(false);
   const [generatedJobsiteList, setGeneratedJobsiteList] = useState<Option[]>(
     []
@@ -119,7 +121,7 @@ export default function QRGeneratorContent() {
           loading ? "animate-pulse" : ""
         }`}
       >
-        <TitleBoxes position={"row"} onClick={() => router.back()}>
+        <TitleBoxes position={"row"} onClick={() => router.push(url)}>
           <Titles size={"h2"}>{t("QrGenerator")}</Titles>
           <Images
             src="/qr.svg"

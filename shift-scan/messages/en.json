@@ -297,6 +297,7 @@
     "Form3Submit": "Submit form"
   },
   "MyTeam": {
+    "ManageProjects": "Manage Projects",
     "ContactInfo": "Contact Info",
     "TimeCards": "Time Cards",
     "NoTimesheetsFound": "No Time Cards Found",
@@ -305,7 +306,7 @@
     "Teams-Logo-Title": "Team Icon",
     "MyTeams-Title": "My Teams",
     "Teams-Button-Name": "Team",
-    "Timesheets": "Time Cards",
+    "Timesheets": "Timesheets",
     "Duration": "Total hours worked:",
     "Duration-Comment": "The duration updates when editing changes are saved.",
     "ClockIn": "Recorded Clock In",
