@@ -32,9 +32,7 @@ export default function AddEquipmentForm() {
   const [jobsites, setJobsites] = useState<JobCode[]>([]);
   const [filteredJobsites, setFilteredJobsites] = useState<JobCode[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formValidation, setFormValidation] = useState<
-    string | false | undefined
-  >(undefined);
+  const [formValidation, setFormValidation] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
     equipmentTag: "",
@@ -50,27 +48,43 @@ export default function AddEquipmentForm() {
     jobsiteLocation: "",
   });
 
-  const isFormValidEq =
-    formData.equipmentTag.trim() !== "" &&
-    formData.temporaryEquipmentName.trim() !== "" &&
-    formData.creationReasoning.trim() !== "" &&
-    formData.jobsiteLocation.trim() !== "" &&
-    eqCode.trim() !== "" &&
-    userId;
+  // Replace your current validation constants with this function
+  const validateForm = () => {
+    if (formData.equipmentTag === "EQUIPMENT") {
+      return (
+        formData.equipmentTag.trim() !== "" &&
+        formData.temporaryEquipmentName.trim() !== "" &&
+        formData.creationReasoning.trim() !== "" &&
+        formData.jobsiteLocation.trim() !== "" &&
+        eqCode.trim() !== "" &&
+        userId !== undefined
+      );
+    } else if (
+      formData.equipmentTag === "TRUCK" ||
+      formData.equipmentTag === "VEHICLE"
+    ) {
+      return (
+        formData.equipmentTag.trim() !== "" &&
+        formData.make.trim() !== "" &&
+        formData.model.trim() !== "" &&
+        formData.year.trim() !== "" &&
+        formData.licensePlate.trim() !== "" &&
+        formData.registration.trim() !== "" &&
+        formData.mileage.trim() !== "" &&
+        formData.temporaryEquipmentName.trim() !== "" &&
+        formData.creationReasoning.trim() !== "" &&
+        formData.jobsiteLocation.trim() !== "" &&
+        eqCode.trim() !== "" &&
+        userId !== undefined
+      );
+    }
+    return false;
+  };
 
-  const isFormValidVehicle =
-    formData.equipmentTag.trim() !== "" &&
-    formData.make.trim() !== "" &&
-    formData.model.trim() !== "" &&
-    formData.year.trim() !== "" &&
-    formData.licensePlate.trim() !== "" &&
-    formData.registration.trim() !== "" &&
-    formData.mileage.trim() !== "" &&
-    formData.temporaryEquipmentName.trim() !== "" &&
-    formData.creationReasoning.trim() !== "" &&
-    formData.jobsiteLocation.trim() !== "" &&
-    eqCode.trim() !== "" &&
-    userId;
+  // Update validation whenever form data changes
+  useEffect(() => {
+    setFormValidation(validateForm());
+  }, [formData, eqCode, userId]);
 
   useEffect(() => {
     async function generateQrCode() {
@@ -128,13 +142,6 @@ export default function AddEquipmentForm() {
       ...prev,
       [name]: value,
     }));
-
-    // Update form validation
-    if (formData.equipmentTag !== "EQUIPMENT") {
-      setFormValidation(isFormValidVehicle);
-    } else {
-      setFormValidation(isFormValidEq);
-    }
   };
 
   const handleRegistrationClick = () => {
@@ -179,7 +186,8 @@ export default function AddEquipmentForm() {
                       <option value="EQUIPMENT">{t("Equipment")}</option>
                     </Selects>
                   </Holds>
-                  {formData.equipmentTag !== "EQUIPMENT" && (
+                  {(formData.equipmentTag === "TRUCK" ||
+                    formData.equipmentTag === "VEHICLE") && (
                     <>
                       <Holds position={"row"} className="pb-3 gap-x-2">
                         <Holds className="w-1/2">
@@ -253,25 +261,20 @@ export default function AddEquipmentForm() {
                             background={"white"}
                             position={"row"}
                             onClick={() => handleRegistrationClick()}
-                            className="w-full h-full px-3 border-black border-[3px] flex items-center justify-between relative"
+                            className="w-full h-full px-3 border-black border-[3px] flex items-center justify-between relative "
                           >
-                            <Holds className="w-full h-full justify-center">
-                              <Texts
-                                size={"p7"}
-                                className="text-app-dark-gray pr-2"
-                              >
-                                {formData.registration
-                                  ? new Date(
-                                      formData.registration
-                                    ).toLocaleDateString()
-                                  : t("Registration")}
-                              </Texts>
-                              <img
-                                className="absolute right-2 w-5 h-5"
-                                src={"/calendar.svg"}
-                                alt={"Calendar Icon"}
-                              />
-                            </Holds>
+                            <Texts size={"p7"} className="text-app-dark-gray ">
+                              {formData.registration
+                                ? new Date(
+                                    formData.registration
+                                  ).toLocaleDateString()
+                                : t("Registration")}
+                            </Texts>
+                            <img
+                              className="w-4 h-4"
+                              src={"/calendar.svg"}
+                              alt={"Calendar Icon"}
+                            />
                           </Holds>
                         </Holds>
                         <Holds className="w-1/2 h-full">
