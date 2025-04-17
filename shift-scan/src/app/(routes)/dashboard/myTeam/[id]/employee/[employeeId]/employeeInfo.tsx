@@ -34,79 +34,84 @@ export default function EmployeeInfo({
 }) {
   const t = useTranslations("MyTeam");
   return (
-    <Contents width={"section"} className="pt-2 pb-5">
-      {loading ? (
-        <Holds
-          background={"white"}
-          className="h-full justify-center items-center animate-pulse"
-        >
-          <Spinner size={70} />
-        </Holds>
-      ) : (
-        <Holds background={"white"} className="h-full w-full">
+    <Holds
+      background={"white"}
+      className={"row-start-2 row-end-11 h-full w-full rounded-t-none "}
+    >
+      <Contents width={"section"} className="pt-2 pb-5">
+        {loading ? (
           <Holds
-            size={"40"}
-            className="flex justify-center items-center relative "
+            background={"white"}
+            className="h-full justify-center items-center animate-pulse"
           >
-            <Images
-              titleImg={
-                employee?.image ? employee.image : "/profile-default.svg"
-              }
-              titleImgAlt="Team"
-              className="rounded-full border-[3px] border-black "
-            />
-            <Holds
-              background={employee?.id ? "green" : "red"}
-              className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
-            />
+            <Spinner size={70} />
           </Holds>
-          <Labels htmlFor={"phoneNumber"} size={"p4"}>
-            {t("PhoneNumber")}
-          </Labels>
-          <Inputs
-            name={"phoneNumber"}
-            className={"text-center text-base"}
-            data={contacts?.phoneNumber}
-            readOnly
-          />
-          <Labels htmlFor={"email"} size={"p4"}>
-            {t("Email")}
-          </Labels>
-          <Inputs
-            name={"email"}
-            className={"text-center text-base"}
-            data={employee?.email}
-            readOnly
-          />
-          <Labels htmlFor={"emergencyContact"} size={"p4"}>
-            {t("EmergencyContact")}
-          </Labels>
-          <Inputs
-            name={"emergencyContact"}
-            className={"text-center text-base"}
-            readOnly
-            data={contacts?.emergencyContact}
-          />
-          <Labels htmlFor={"emergencyContactNumber"} size={"p4"}>
-            {t("EmergencyContactNumber")}
-          </Labels>
-          <Inputs
-            name={"emergencyContactNumber"}
-            className={"text-center text-base"}
-            readOnly
-            data={contacts?.emergencyContactNumber}
-          />
-          <Labels htmlFor={"dob"} size={"p4"}>
-            {t("DOB")}
+        ) : (
+          <Holds background={"white"} className="h-full w-full">
+            <Holds
+              size={"40"}
+              className="flex justify-center items-center relative "
+            >
+              <Images
+                titleImg={
+                  employee?.image ? employee.image : "/profile-default.svg"
+                }
+                titleImgAlt="Team"
+                className="rounded-full border-[3px] border-black "
+              />
+              <Holds
+                background={employee?.id ? "green" : "red"}
+                className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
+              />
+            </Holds>
+            <Labels htmlFor={"phoneNumber"} size={"p4"}>
+              {t("PhoneNumber")}
+            </Labels>
             <Inputs
-              name={"dob"}
+              name={"phoneNumber"}
+              className={"text-center text-base"}
+              data={contacts?.phoneNumber}
+              readOnly
+            />
+            <Labels htmlFor={"email"} size={"p4"}>
+              {t("Email")}
+            </Labels>
+            <Inputs
+              name={"email"}
+              className={"text-center text-base"}
+              data={employee?.email}
+              readOnly
+            />
+            <Labels htmlFor={"emergencyContact"} size={"p4"}>
+              {t("EmergencyContact")}
+            </Labels>
+            <Inputs
+              name={"emergencyContact"}
               className={"text-center text-base"}
               readOnly
-              data={employee?.DOB}
+              data={contacts?.emergencyContact}
             />
-          </Labels>
-        </Holds>
-      )}
-    </Contents>
+            <Labels htmlFor={"emergencyContactNumber"} size={"p4"}>
+              {t("EmergencyContactNumber")}
+            </Labels>
+            <Inputs
+              name={"emergencyContactNumber"}
+              className={"text-center text-base"}
+              readOnly
+              data={contacts?.emergencyContactNumber}
+            />
+            <Labels htmlFor={"dob"} size={"p4"}>
+              {t("DOB")}
+              <Inputs
+                name={"dob"}
+                className={"text-center text-base"}
+                readOnly
+                data={employee?.DOB}
+              />
+            </Labels>
+          </Holds>
+        )}
+      </Contents>
+    </Holds>
   );
 }
