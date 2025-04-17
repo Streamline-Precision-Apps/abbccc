@@ -7,75 +7,32 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
-import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { EquipmentCodes } from "@/lib/types";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Titles } from "@/components/(reusable)/titles";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
-import { Texts } from "@/components/(reusable)/texts";
-
-// Zod schema for EquipmentCodes
-const EquipmentCodesSchema = z.object({
-  id: z.string(),
-  qrId: z.string(),
-  name: z.string(),
-});
 
 type Option = {
   label: string;
   code: string;
 };
-// Zod schema for equipment list response
-const EquipmentListSchema = z.array(EquipmentCodesSchema);
 
-export default function QrEquipmentContent() {
+type QrEquipmentContentProps = {
+  generatedList: Option[];
+};
+
+export default function QrEquipmentContent({
+  generatedList,
+}: QrEquipmentContentProps) {
   const router = useRouter();
-  const [generatedList, setGeneratedList] = useState<Option[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [loading, setLoading] = useState(true);
   const t = useTranslations("Generator");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const equipmentResponse = await fetch("/api/getEquipment");
-
-        if (!equipmentResponse.ok) {
-          throw new Error("Failed to fetch equipment");
-        }
-
-        const equipmentData = await equipmentResponse.json();
-
-        // Validate fetched equipment data with Zod
-        try {
-          EquipmentListSchema.parse(equipmentData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in equipment data:", error.errors);
-            return;
-          }
-        }
-        setGeneratedList(
-          equipmentData.map((item: EquipmentCodes) => ({
-            label: item.name.toUpperCase(),
-            code: item.qrId.toUpperCase(),
-          }))
-        );
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleGenerate = async () => {
     if (selectedEquipment) {
@@ -146,6 +103,7 @@ export default function QrEquipmentContent() {
 
       <NModals
         isOpen={isModalOpen}
+        background={"white"}
         handleClose={() => setIsModalOpen(false)}
         size={"xlWS"}
       >

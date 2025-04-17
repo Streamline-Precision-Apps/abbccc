@@ -51,20 +51,19 @@ export default function AddEquipmentForm() {
   // Replace your current validation constants with this function
   const validateForm = () => {
     if (formData.equipmentTag === "EQUIPMENT") {
-      return (
-        formData.equipmentTag.trim() !== "" &&
+      return formData.equipmentTag.trim() !== "" &&
         formData.temporaryEquipmentName.trim() !== "" &&
         formData.creationReasoning.trim() !== "" &&
         formData.jobsiteLocation.trim() !== "" &&
         eqCode.trim() !== "" &&
-        userId !== undefined
-      );
+        userId
+        ? true
+        : false;
     } else if (
       formData.equipmentTag === "TRUCK" ||
       formData.equipmentTag === "VEHICLE"
     ) {
-      return (
-        formData.equipmentTag.trim() !== "" &&
+      return formData.equipmentTag.trim() !== "" &&
         formData.make.trim() !== "" &&
         formData.model.trim() !== "" &&
         formData.year.trim() !== "" &&
@@ -75,8 +74,9 @@ export default function AddEquipmentForm() {
         formData.creationReasoning.trim() !== "" &&
         formData.jobsiteLocation.trim() !== "" &&
         eqCode.trim() !== "" &&
-        userId !== undefined
-      );
+        userId
+        ? true
+        : false;
     }
     return false;
   };
@@ -117,14 +117,26 @@ export default function AddEquipmentForm() {
     fetchJobsites();
   }, [t]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formValidation || !userId) return;
+
     setIsSubmitting(true);
     try {
-      const formData = new FormData(e.currentTarget);
-      await createEquipment(formData);
-      console.log(`${t("CreateSuccess")}`);
-      router.push("/equipment"); // Consider redirecting after success
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+      formDataToSend.append("eqCode", eqCode);
+      formDataToSend.append("createdById", userId || "");
+
+      const response = await createEquipment(formDataToSend);
+      if (!response.success) {
+        return;
+      }
+
+      router.push("/dashboard/qr-generator");
     } catch (error) {
       console.error(`${t("CreateError")}`, error);
     } finally {
@@ -326,7 +338,7 @@ export default function AddEquipmentForm() {
                       {t("SelectJobSite")}
                     </option>
                     {filteredJobsites.map((job) => (
-                      <option key={job.id} value={job.name}>
+                      <option key={job.id} value={job.id}>
                         {job.name}
                       </option>
                     ))}
