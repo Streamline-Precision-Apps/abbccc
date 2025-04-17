@@ -4,7 +4,6 @@ import "@/app/globals.css";
 import { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
-
 import { Contents } from "@/components/(reusable)/contents";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
