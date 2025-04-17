@@ -49,6 +49,8 @@ export default function EmployeeTabs() {
   const { employeeId } = useParams();
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
+  const { myTeam } = useParams();
+
   const router = useRouter();
   const t = useTranslations("MyTeam");
   const [employee, setEmployee] = useState<Employee | null>(null);
@@ -119,70 +121,31 @@ export default function EmployeeTabs() {
   }, [date]);
 
   return (
-    <Holds className="h-full ">
-      <Grids rows={"10"} gap={"5"} className="h-full ">
-        <Holds
-          background={"white"}
-          className="row-start-1 row-end-3 h-full p-3"
-        >
-          <Grids cols={"6"} rows={"2"} className="w-full h-full">
-            <Holds className="col-start-1 col-end-2 row-span-1">
-              <Buttons
-                onClick={() => {
-                  if (rPath) {
-                    router.push(rPath);
-                  } else {
-                    router.back();
-                  }
-                }}
-                background={"none"}
-                position={"left"}
-                shadow={"none"}
-              >
-                <Images titleImg="/turnBack.svg" titleImgAlt={"back"} />
-              </Buttons>
-            </Holds>
-            <Holds className="col-start-3 col-end-5 row-start-1 row-end-2 ">
-              <Holds size={"full"} position={"center"}>
-                <Holds className="rounded-full relative ">
-                  <Images
-                    titleImg={
-                      employee?.image ? employee.image : "/profile-default.svg"
-                    }
-                    titleImgAlt="Team"
-                    className="rounded-full border-[3px] border-black"
-                    size={"50"}
-                  />
-                </Holds>
-              </Holds>
-            </Holds>
-
-            <Holds className="col-start-1 col-end-7 row-start-2 row-end-3">
-              <Titles size={"h2"}>
-                {loading
-                  ? "loading..."
-                  : `${employee?.firstName} ${employee?.lastName}`}
-              </Titles>
-            </Holds>
-            <Holds className="col-start-4 col-end-7 row-start-1 row-end-2">
-              <Holds size={"90"} position={"center"}>
-                <Titles position={"right"} size={"h6"}>
-                  {loading ? "" : `${t("ID")}${employee?.id}`}
-                </Titles>
-              </Holds>
-            </Holds>
-          </Grids>
+    <Holds className="h-full">
+      <Grids rows={"7"} gap={"5"} className="h-full">
+        <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+          <TitleBoxes
+            onClick={() =>
+              router.push(rPath ? rPath : `/dashboard/myTeam/${myTeam}`)
+            }
+          >
+            <Titles size={"h2"}>
+              {loading
+                ? "loading..."
+                : `${employee?.firstName} ${employee?.lastName}`}
+            </Titles>
+          </TitleBoxes>
         </Holds>
 
         <Holds
           className={
             loading
-              ? "h-full row-start-3 row-end-11 animate-pulse"
-              : "row-start-3 row-end-11  h-full"
+              ? "h-full row-start-2 row-end-8  animate-pulse"
+              : "row-start-2 row-end-8 h-full"
           }
         >
           <Grids rows={"10"}>
-            <Holds position={"row"} className={"row-span-1 h-full gap-1"}>
+            <Holds position={"row"} className={"row-span-1  gap-1"}>
               <NewTab
                 onClick={() => setActiveTab(1)}
                 isActive={activeTab === 1}

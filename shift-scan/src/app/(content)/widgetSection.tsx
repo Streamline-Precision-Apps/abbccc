@@ -175,7 +175,7 @@ export default function WidgetSection({ session, locale }: Props) {
                       text={"QR"}
                       background={"lightBlue"}
                       translation={"Widgets"}
-                      href="/dashboard/qr-generator"
+                      href="/dashboard/qr-generator?returnUrl=/"
                     />
 
                     <WidgetContainer
@@ -184,7 +184,7 @@ export default function WidgetSection({ session, locale }: Props) {
                       text={"MyTeam"}
                       background={"lightBlue"}
                       translation={"Widgets"}
-                      href="/dashboard/myTeam"
+                      href="/dashboard/myTeam?returnUrl=/"
                     />
                   </Holds>
                 )}

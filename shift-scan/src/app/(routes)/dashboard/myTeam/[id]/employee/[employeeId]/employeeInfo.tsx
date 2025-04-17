@@ -1,10 +1,11 @@
 "use client";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 
 type Employee = {
@@ -33,7 +34,7 @@ export default function EmployeeInfo({
 }) {
   const t = useTranslations("MyTeam");
   return (
-    <Contents width={"section"} className="py-5">
+    <Contents width={"section"} className="pt-2 pb-5">
       {loading ? (
         <Holds
           background={"white"}
@@ -42,49 +43,65 @@ export default function EmployeeInfo({
           <Spinner size={70} />
         </Holds>
       ) : (
-        <Holds background={"white"} className="h-full my-auto">
-          <Labels htmlFor={"phoneNumber"} size={"p6"}>
+        <Holds background={"white"} className="h-full w-full">
+          <Holds
+            size={"40"}
+            className="flex justify-center items-center relative "
+          >
+            <Images
+              titleImg={
+                employee?.image ? employee.image : "/profile-default.svg"
+              }
+              titleImgAlt="Team"
+              className="rounded-full border-[3px] border-black "
+            />
+            <Holds
+              background={employee?.id ? "green" : "red"}
+              className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
+            />
+          </Holds>
+          <Labels htmlFor={"phoneNumber"} size={"p4"}>
             {t("PhoneNumber")}
           </Labels>
           <Inputs
             name={"phoneNumber"}
-            className={"pl-4"}
-            state="disabled"
+            className={"text-center text-base"}
             data={contacts?.phoneNumber}
+            readOnly
           />
-          <Labels htmlFor={"email"} size={"p6"}>
+          <Labels htmlFor={"email"} size={"p4"}>
             {t("Email")}
           </Labels>
           <Inputs
             name={"email"}
-            className={"pl-4"}
-            state="disabled"
+            className={"text-center text-base"}
             data={employee?.email}
+            readOnly
           />
-          <Labels htmlFor={"emergencyContact"} size={"p6"}>
+          <Labels htmlFor={"emergencyContact"} size={"p4"}>
             {t("EmergencyContact")}
           </Labels>
           <Inputs
             name={"emergencyContact"}
-            className={"pl-4"}
-            state="disabled"
+            className={"text-center text-base"}
+            readOnly
             data={contacts?.emergencyContact}
           />
-          <Labels htmlFor={"emergencyContactNumber"} size={"p6"}>
+          <Labels htmlFor={"emergencyContactNumber"} size={"p4"}>
             {t("EmergencyContactNumber")}
           </Labels>
           <Inputs
             name={"emergencyContactNumber"}
-            className={"pl-4"}
-            state="disabled"
+            className={"text-center text-base"}
+            readOnly
             data={contacts?.emergencyContactNumber}
           />
-          <Labels htmlFor={"dob"} size={"p6"}>
+          <Labels htmlFor={"dob"} size={"p4"}>
             {t("DOB")}
             <Inputs
               name={"dob"}
-              className={"pl-4"}
-              state="disabled"
+              className={"text-center text-base"}
+              readOnly
               data={employee?.DOB}
             />
           </Labels>
