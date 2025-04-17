@@ -15,29 +15,19 @@ import { Titles } from "@/components/(reusable)/titles";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 
-// Zod schema for JobCodes
-const JobCodesSchema = z.object({
-  id: z.string(),
-  qrId: z.string(),
-  name: z.string(),
-});
-
 type Option = {
   label: string;
   code: string;
 };
 
-// Zod schema for the jobsite list response
-const JobsiteListSchema = z.array(JobCodesSchema);
+type QrJobsiteProps = {
+  generatedList: Option[];
+};
 
-type JobCodes = z.infer<typeof JobCodesSchema>;
-
-export default function QrJobsiteContent() {
+export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
   const [selectedJobSite, setSelectedJobSite] = useState<Option | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [generatedList, setGeneratedList] = useState<Option[]>([]);
 
-  const [loading, setLoading] = useState(true);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   const router = useRouter();
@@ -56,43 +46,6 @@ export default function QrJobsiteContent() {
       console.log("No job site selected");
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const jobsiteResponse = await fetch("/api/getJobsites");
-
-        if (!jobsiteResponse.ok) {
-          throw new Error("Failed to fetch job sites");
-        }
-
-        const jobSitesData = await jobsiteResponse.json();
-
-        // Validate fetched job site data with Zod
-        try {
-          JobsiteListSchema.parse(jobSitesData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in job site data:", error.errors);
-            return;
-          }
-        }
-        setGeneratedList(
-          jobSitesData.map((item: JobCodes) => ({
-            label: item.name.toUpperCase(),
-            code: item.qrId.toUpperCase(),
-          }))
-        );
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleNew = () => {
     router.push("/dashboard/qr-generator/add-jobsite");
@@ -147,6 +100,7 @@ export default function QrJobsiteContent() {
       </Holds>
 
       <NModals
+        background={"white"}
         isOpen={isModalOpen}
         handleClose={() => setIsModalOpen(false)}
         size={"xlWS"}
