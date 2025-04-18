@@ -1,15 +1,25 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import EditWorkNew from "./editWork-new";
-
 import { Grids } from "@/components/(reusable)/grids";
 import { Labels } from "@/components/(reusable)/labels";
-import { TimeSheet } from "@/lib/types";
+import {
+  EquipmentLogs,
+  TascoHaulLogs,
+  TascoRefuelLog,
+  TimeSheet,
+  TimesheetHighlights,
+  TruckingEquipmentHaulLog,
+  TruckingMaterialHaulLog,
+  TruckingMileage,
+  TruckingRefuelLog,
+  TruckingStateLogs,
+} from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
 import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
@@ -18,33 +28,52 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { formatISO, parseISO } from "date-fns";
 import { updateTimeSheets } from "@/actions/timeSheetActions";
+import TimeCardHighlights from "./editWork-new";
+import TimeCardTruckingMileage from "./TimeCardTruckingMileage";
+import { Texts } from "@/components/(reusable)/texts";
+import TimeCardTruckingHaulLogs from "./TimeCardTruckingHaulLogs";
 
 export const EmployeeTimeSheets = ({
   date,
   setDate,
-  timeSheets,
+  highlightTimesheet,
   edit,
   setEdit,
   loading,
   manager,
+  timeSheetFilter,
+  setTimeSheetFilter,
+  truckingMileage,
+  truckingEquipmentHaulLogs,
+  truckingMaterialHaulLogs,
 }: {
   date: string;
   setDate: (date: string) => void;
-  timeSheets: TimeSheet[];
+  highlightTimesheet: TimesheetHighlights[];
+  truckingEquipmentHaulLogs: TruckingEquipmentHaulLog[];
+  truckingMaterialHaulLogs: TruckingMaterialHaulLog[];
+  truckingMileage: TruckingMileage[];
+  truckingRefuelLogs: TruckingRefuelLog[];
+  truckingStateLogs: TruckingStateLogs[];
+  tascoRefuelLog: TascoRefuelLog[];
+  tascoHaulLogs: TascoHaulLogs[];
+  equipmentLogs: EquipmentLogs[];
   edit: boolean;
   setEdit: (edit: boolean) => void;
   loading: boolean;
   manager: string;
+  timeSheetFilter: string;
+  setTimeSheetFilter: Dispatch<SetStateAction<string>>;
 }) => {
   const t = useTranslations("MyTeam");
-  const [timeSheetFilter, setTimeSheetFilter] = useState("");
-  const [editedTimesheet, setEditedTimesheet] =
-    useState<TimeSheet[]>(timeSheets);
+
+  const [editedHighlightTimesheet, setEditedHighlightTimesheet] =
+    useState<TimesheetHighlights[]>(highlightTimesheet);
 
   const getUpdatedSheets = (
-    original: TimeSheet[],
-    edited: TimeSheet[]
-  ): TimeSheet[] => {
+    original: TimesheetHighlights[],
+    edited: TimesheetHighlights[]
+  ): TimesheetHighlights[] => {
     return edited.filter((editedSheet) => {
       const originalSheet = original.find(
         (sheet) => sheet.id === editedSheet.id
@@ -56,15 +85,16 @@ export const EmployeeTimeSheets = ({
         editedSheet.date !== originalSheet.date ||
         editedSheet.startTime !== originalSheet.startTime ||
         editedSheet.endTime !== originalSheet.endTime ||
-        editedSheet.workType !== originalSheet.workType ||
-        editedSheet.comment !== originalSheet.comment ||
-        editedSheet.location !== originalSheet.location
+        editedSheet.workType !== originalSheet.workType
       );
     });
   };
 
   const onSaveChanges = async () => {
-    const updatedSheets = getUpdatedSheets(timeSheets, editedTimesheet);
+    const updatedSheets = getUpdatedSheets(
+      highlightTimesheet,
+      editedHighlightTimesheet
+    );
 
     if (updatedSheets.length > 0) {
       // Convert date and time to ISO format
@@ -100,7 +130,7 @@ export const EmployeeTimeSheets = ({
   };
 
   const onCancelEdits = () => {
-    setEditedTimesheet([...timeSheets]); // Reset editedTimesheet to the original timesheet
+    setEditedHighlightTimesheet([...highlightTimesheet]); // Reset editedTimesheet to the original timesheet
     setEdit(false);
   };
 
@@ -137,7 +167,12 @@ export const EmployeeTimeSheets = ({
                     Timesheet Highlights
                   </option>
                   <option value="truckingMileage">Trucking Mileage</option>
-                  <option value="truckingHaulLogs">Trucking Haul Logs</option>
+                  <option value="truckingEquipmentHaulLogs">
+                    Trucking Equipment Hauls
+                  </option>
+                  <option value="truckingMaterialHaulLogs">
+                    Trucking Material Hauls
+                  </option>
                   <option value="truckingRefuelLogs">
                     Trucking Refuel Logs
                   </option>
@@ -209,17 +244,60 @@ export const EmployeeTimeSheets = ({
               </Holds>
             ) : (
               <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
-                {timeSheets.length > 0 ? (
-                  <EditWorkNew
-                    timeSheet={timeSheets}
-                    edit={edit}
-                    setEdit={setEdit}
-                    manager={manager}
-                  />
-                ) : (
-                  <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
-                    <Titles>{t("NoTimesheetsFound")}</Titles>
-                  </Holds>
+                {timeSheetFilter === "timesheetHighlights" && (
+                  <>
+                    {highlightTimesheet.length > 0 ? (
+                      <TimeCardHighlights
+                        highlightTimesheet={highlightTimesheet}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No Timesheets data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+
+                {timeSheetFilter === "truckingMileage" && (
+                  <>
+                    {truckingMileage.length > 0 ? (
+                      <TimeCardTruckingMileage
+                        truckingMileage={truckingMileage}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No trucking mileage data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "truckingEquipmentHaulLogs" && (
+                  <>
+                    {truckingMileage.length > 0 ? (
+                      <TimeCardTruckingHaulLogs
+                        truckingEquipmentHaulLogs={truckingEquipmentHaulLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No trucking equipment haul data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
                 )}
               </Holds>
             )}

@@ -3,7 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
-import { TimeSheet } from "@/lib/types";
+import { TimeSheet, TimesheetHighlights } from "@/lib/types";
 import { useState } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -12,19 +12,19 @@ import { Titles } from "@/components/(reusable)/titles";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { useTranslations } from "next-intl";
 
-export default function EditWorkNew({
-  timeSheet,
+export default function TimeCardHighlights({
   edit,
   setEdit,
   manager,
+  highlightTimesheet,
 }: {
-  timeSheet: TimeSheet[];
+  highlightTimesheet: TimesheetHighlights[];
   edit: boolean;
   setEdit: (edit: boolean) => void;
   manager: string;
 }) {
-  const [editedTimesheet, setEditedTimesheet] =
-    useState<TimeSheet[]>(timeSheet);
+  const [editedHighlightTimesheet, setEditedHighlightTimesheet] =
+    useState<TimesheetHighlights[]>(highlightTimesheet);
   const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
   const [costCodeModalOpen, setCostCodeModalOpen] = useState(false);
 
@@ -45,7 +45,7 @@ export default function EditWorkNew({
               </Titles>
             </Holds>
           </Grids>
-          {editedTimesheet.map((sheet) => (
+          {editedHighlightTimesheet.map((sheet) => (
             <Holds
               key={sheet.id}
               className="border-black border-[3px] rounded-lg bg-white "
@@ -119,7 +119,9 @@ export default function EditWorkNew({
                     </Grids>
                   </>
                 ) : (
-                  <Texts size={"p7"}>Incomplete Sheet</Texts>
+                  <Texts size="p6" className="text-gray-500 italic">
+                    No Timesheets data available
+                  </Texts>
                 )}
               </Buttons>
             </Holds>
