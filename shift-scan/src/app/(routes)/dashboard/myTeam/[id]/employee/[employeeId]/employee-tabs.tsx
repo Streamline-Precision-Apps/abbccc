@@ -1,22 +1,28 @@
 "use client";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
-import { Contents } from "@/components/(reusable)/contents";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Tab } from "@/components/(reusable)/tab";
 import { EmployeeTimeSheets } from "./employee-timesheet";
 import EmployeeInfo from "./employeeInfo";
-import { format } from "date-fns";
-import { TimeSheet } from "@/lib/types";
+import { format, set } from "date-fns";
+import {
+  EquipmentLogs,
+  TascoHaulLogs,
+  TascoRefuelLog,
+  TimeSheet,
+  TimesheetHighlights,
+  TruckingHaulLog,
+  TruckingMileage,
+  TruckingRefuelLog,
+  TruckingStateLogs,
+} from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
-import { Images } from "@/components/(reusable)/images";
-import { Buttons } from "@/components/(reusable)/buttons";
 
 // Zod schema for employee data
 const EmployeeSchema = z.object({
@@ -35,6 +41,7 @@ type Employee = {
   image: string;
   email: string;
   DOB?: string;
+  clockedIn?: boolean;
 };
 
 type Contact = {
@@ -49,7 +56,8 @@ export default function EmployeeTabs() {
   const { employeeId } = useParams();
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
-  const { myTeam } = useParams();
+  const timeCard = urls.get("timeCard");
+  const { id } = useParams();
 
   const router = useRouter();
   const t = useTranslations("MyTeam");
@@ -68,6 +76,27 @@ export default function EmployeeTabs() {
   const [date, setDate] = useState<string>(today); // State for selected date
   const [edit, setEdit] = useState(false);
   const [timeSheets, setTimeSheets] = useState<TimeSheet[]>([]); // State for storing timesheets
+  const [highlightTimesheet, setHighlightTimesheet] = useState<
+    TimesheetHighlights[]
+  >([]);
+  const [truckingHaulLogs, setTruckingHaulLogs] = useState<TruckingHaulLog[]>(
+    []
+  );
+
+  const [truckingMileage, setTruckingMileage] = useState<TruckingMileage[]>([]);
+
+  const [truckingRefuelLogs, setTruckingRefuelLogs] = useState<
+    TruckingRefuelLog[]
+  >([]);
+  const [truckingStateLogs, setTruckingStateLogs] = useState<
+    TruckingStateLogs[]
+  >([]);
+
+  const [tascoRefuelLog, setTascoRefuelLog] = useState<TascoRefuelLog[]>([]);
+  const [tascoHaulLogs, setTascoHaulLogs] = useState<TascoHaulLogs[]>([]);
+
+  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLogs[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoadingUser(true);
@@ -110,6 +139,17 @@ export default function EmployeeTabs() {
           `/api/getTimesheetsByDate?employeeId=${employeeId}&date=${date}`
         );
         const data = await request.json();
+        setHighlightTimesheet(data as TimesheetHighlights[]);
+        // Truck Data
+        setTruckingMileage(data as TruckingMileage[]);
+        setTruckingHaulLogs(data as TruckingHaulLog[]);
+        setTruckingRefuelLogs(data as TruckingRefuelLog[]);
+        setTruckingStateLogs(data as TruckingStateLogs[]);
+        // TASCO Data
+        setTascoRefuelLog(data as TascoRefuelLog[]);
+        setTascoHaulLogs(data as TascoHaulLogs[]);
+        setEquipmentLogs(data as EquipmentLogs[]);
+
         setTimeSheets(data as TimeSheet[]);
       } catch (error) {
         console.log(error);
@@ -129,7 +169,9 @@ export default function EmployeeTabs() {
         >
           <TitleBoxes
             onClick={() =>
-              router.push(rPath ? rPath : `/dashboard/myTeam/${myTeam}`)
+              router.push(
+                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`
+              )
             }
           >
             <Titles size={"h2"}>
@@ -145,7 +187,7 @@ export default function EmployeeTabs() {
             loading ? "animate-pulse" : ""
           }`}
         >
-          <Grids rows={"10"} className="h-full w-full">
+          <Grids rows={"12"} className="h-full w-full">
             <Holds
               position={"row"}
               className={"row-start-1 row-end-2 h-full gap-1"}
@@ -169,7 +211,7 @@ export default function EmployeeTabs() {
                 {t("TimeCards")}
               </NewTab>
             </Holds>
-            <Holds className="h-full w-full row-span-9">
+            <Holds className="h-full w-full row-start-2 row-end-13">
               {activeTab === 1 && (
                 <EmployeeInfo
                   employee={employee}

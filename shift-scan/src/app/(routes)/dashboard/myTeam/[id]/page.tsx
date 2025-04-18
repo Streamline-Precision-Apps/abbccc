@@ -1,5 +1,5 @@
 "use client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -38,7 +38,8 @@ export default function Content() {
   const [titles, setTitles] = useState<string>("");
   const t = useTranslations("MyTeam");
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const url = searchParams.get("rPath");
   const params = useParams();
   const { id } = params;
 
@@ -90,7 +91,9 @@ export default function Content() {
       <Contents>
         <Grids rows={"7"} gap={"5"} className="h-full">
           <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-            <TitleBoxes onClick={() => router.push("/dashboard/myTeam")}>
+            <TitleBoxes
+              onClick={() => router.push(`/dashboard/myTeam?rPath=${url}`)}
+            >
               <Titles size={"h2"}>{titles}</Titles>
             </TitleBoxes>
           </Holds>
@@ -122,7 +125,7 @@ export default function Content() {
                       {crewMembers.map((member) => (
                         <Holds key={member.id} className="w-full pb-3.5 ">
                           <Buttons
-                            href={`/dashboard/myTeam/${id}/employee/${member.id}`}
+                            href={`/dashboard/myTeam/${id}/employee/${member.id}?rPath=${url}`}
                             background="lightBlue"
                             className="w-full h-full py-2 relative"
                           >
@@ -164,7 +167,7 @@ export default function Content() {
                         <Buttons
                           background={"green"}
                           className="w-full"
-                          href={`/dashboard/mechanic?rUrl=/dashboard/myTeam/${id}`}
+                          href={`/dashboard/mechanic?rUrl=/dashboard/myTeam/${id}?rPath=${url}`}
                         >
                           <Titles size={"h4"}>{t("ManageProjects")}</Titles>
                         </Buttons>

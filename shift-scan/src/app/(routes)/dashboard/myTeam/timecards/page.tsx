@@ -184,7 +184,7 @@ export default function TimeCards() {
 
     if (direction === "left") {
       router.push(
-        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?rPath=/dashboard/myTeam/${myTeamId}/timecards`
+        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/${myTeamId}/timecards`
       );
     } else {
       setDecisions((prev) => ({
@@ -243,13 +243,9 @@ export default function TimeCards() {
           }`}
         >
           <Holds className="row-span-1 h-full">
-            <TitleBoxes
-              title="Review Your Team"
-              titleImg="/team.svg"
-              titleImgAlt="team"
-              onClick={() => router.push("/dashboard")}
-              type="noIcon-NoHref"
-            />
+            <TitleBoxes onClick={() => router.push("/dashboard")}>
+              <Titles size={"h2"}>"Review Your Team"</Titles>
+            </TitleBoxes>
           </Holds>
 
           <Holds className="row-span-7 h-full w-full">

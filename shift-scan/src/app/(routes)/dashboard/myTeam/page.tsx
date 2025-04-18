@@ -37,7 +37,7 @@ type Team = z.infer<typeof TeamSchema>;
 export default function Content() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const url = searchParams.get("returnUrl") || "/dashboard";
+  const url = searchParams.get("rPath");
   const t = useTranslations("MyTeam");
   const [myTeams, setMyTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,7 +105,14 @@ export default function Content() {
       <Contents>
         <Grids rows={"7"} gap={"5"}>
           <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-            <TitleBoxes position={"row"} onClick={() => router.push(url)}>
+            <TitleBoxes
+              position={"row"}
+              onClick={() => {
+                if (url) {
+                  router.push(url);
+                }
+              }}
+            >
               <Titles size="h1">{t("Teams-Title")}</Titles>
               <Images
                 titleImg={"/team.svg"}
@@ -138,7 +145,7 @@ export default function Content() {
                       <Holds className="w-full" key={teams.id}>
                         <Buttons
                           background="lightBlue"
-                          href={`/dashboard/myTeam/${teams.id}`}
+                          href={`/dashboard/myTeam/${teams.id}?rPath=${url}`}
                           className="py-4 w-full relative"
                         >
                           <Titles size="h2">{teams.name}</Titles>
@@ -155,7 +162,7 @@ export default function Content() {
                   <Holds className="row-start-7 row-end-8 h-full w-full">
                     <Buttons
                       background="green"
-                      href={`/dashboard/myTeam/timecards`}
+                      href={`/dashboard/myTeam/timecards?rPath=${url}`}
                       className=" w-full"
                     >
                       <Titles size="h2">{t("Timesheets")}</Titles>

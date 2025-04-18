@@ -337,6 +337,92 @@ export type EquipmentCodes = {
   name: string;
 };
 
+export type TruckingHaulLog = {
+  id: string;
+  truckingLogId: string;
+  equipmentId: string | null;
+  Equipment: {
+    name: string;
+  };
+  jobSiteId: string | null;
+  Jobsite: {
+    name: string;
+  };
+};
+
+export type TruckingRefuelLog = {
+  truckingLogId: string;
+  gallonsRefueled: number;
+  milesAtFueling: number;
+};
+
+export type TruckingStateLogs = {
+  id: String;
+  truckingLogId: String;
+  state: String;
+  stateLineMileage: Number;
+};
+
+export type TruckingMileage = {
+  id: string;
+  timeSheetId: string | null;
+  equipmentId: string | null;
+  Equipment: {
+    name: string;
+  };
+  startingMileage: number;
+  endingMileage: number | null;
+};
+
+export type TimesheetHighlights = {
+  submitDate: string;
+  date: Date | string;
+  id: string;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: Date | string;
+  endTime: Date | string | null;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+  Jobsite: {
+    name: string;
+  };
+};
+
+export type TascoRefuelLog = {
+  tascoLogId: string;
+  gallonsRefueled: number;
+};
+
+export type TascoHaulLogs = {
+  id: String;
+  timeSheetId: String;
+  shiftType: String;
+  equipmentId: String;
+  laborType: String;
+  materialType: String;
+  LoadQuantity: Number;
+  TascoMaterialTypes: {
+    name: String;
+  };
+};
+
+export type EquipmentLogs = {
+  id: string;
+  employeeId: string;
+  equipmentId: string;
+  Equipment: {
+    name: string;
+  };
+  jobsiteId: string;
+  Jobsite: {
+    name: string;
+  };
+  startTime?: Date | null;
+  endTime?: Date | null;
+};
+
 export type TimeSheet = {
   submitDate: string;
   date: Date | string;
@@ -355,6 +441,9 @@ export type TimeSheet = {
   workType: WorkType; // Enum: Type of work
 
   // Relations
+  Jobsite: {
+    name: string;
+  };
   tascoLogs?: TascoLog[] | null;
   truckingLogs?: TruckingLog[] | null;
   maintenanceLogs?: MaintenanceLog[] | null;
@@ -421,8 +510,6 @@ export type TruckingLog = {
   taskName: string | null; // E.g., drive or operator
   startingMileage: number;
   endingMileage: number | null;
-  startTime: Date;
-  endTime: Date | null;
   netWeight: number | null;
   comment: string | null;
   createdAt: Date;

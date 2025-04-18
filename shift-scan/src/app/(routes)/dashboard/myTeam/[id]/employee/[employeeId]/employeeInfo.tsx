@@ -15,6 +15,7 @@ type Employee = {
   image: string;
   email: string;
   DOB?: string;
+  clockedIn?: boolean;
 };
 
 type Contact = {
@@ -60,7 +61,7 @@ export default function EmployeeInfo({
                 className="rounded-full border-[3px] border-black "
               />
               <Holds
-                background={employee?.id ? "green" : "red"}
+                background={employee?.clockedIn ? "green" : "red"}
                 className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
               />
             </Holds>
@@ -69,8 +70,8 @@ export default function EmployeeInfo({
             </Labels>
             <Inputs
               name={"phoneNumber"}
+              value={contacts?.phoneNumber}
               className={"text-center text-base"}
-              data={contacts?.phoneNumber}
               readOnly
             />
             <Labels htmlFor={"email"} size={"p4"}>
@@ -79,7 +80,7 @@ export default function EmployeeInfo({
             <Inputs
               name={"email"}
               className={"text-center text-base"}
-              data={employee?.email}
+              value={employee?.email}
               readOnly
             />
             <Labels htmlFor={"emergencyContact"} size={"p4"}>
@@ -89,7 +90,7 @@ export default function EmployeeInfo({
               name={"emergencyContact"}
               className={"text-center text-base"}
               readOnly
-              data={contacts?.emergencyContact}
+              value={contacts?.emergencyContact}
             />
             <Labels htmlFor={"emergencyContactNumber"} size={"p4"}>
               {t("EmergencyContactNumber")}
@@ -98,7 +99,7 @@ export default function EmployeeInfo({
               name={"emergencyContactNumber"}
               className={"text-center text-base"}
               readOnly
-              data={contacts?.emergencyContactNumber}
+              value={contacts?.emergencyContactNumber}
             />
             <Labels htmlFor={"dob"} size={"p4"}>
               {t("DOB")}
@@ -106,7 +107,7 @@ export default function EmployeeInfo({
                 name={"dob"}
                 className={"text-center text-base"}
                 readOnly
-                data={employee?.DOB}
+                value={employee?.DOB}
               />
             </Labels>
           </Holds>

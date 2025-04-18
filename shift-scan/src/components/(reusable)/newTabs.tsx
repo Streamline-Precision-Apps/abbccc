@@ -63,7 +63,7 @@ export const NewTab: FC<TabProps> = ({
           <img
             src={titleImage}
             alt={titleImageAlt}
-            className={isActive ? " w-10 h-10" : "w-10 h-10 mx-auto"}
+            className={isActive ? " w-8 h-8" : "w-8 h-8 mx-auto"}
           />
         </div>
         {!isComplete && !isLoading && (
