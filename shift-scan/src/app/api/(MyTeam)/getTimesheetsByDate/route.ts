@@ -56,6 +56,11 @@ export async function GET(request: Request) {
         startTime: "asc",
       },
       include: {
+        Jobsite: {
+          select: {
+            name: true,
+          },
+        },
         TascoLogs: true,
         TruckingLogs: true,
         MaintenanceLogs: true,

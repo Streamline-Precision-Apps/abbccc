@@ -106,14 +106,14 @@ export const EmployeeTimeSheets = ({
 
   return (
     <>
-      <Grids rows={"3"} gap={"5"} className="h-full w-full ">
+      <Grids rows={"3"} gap={"3"} className="h-full w-full ">
         <Holds
           background={"white"}
           className={"row-start-1 row-end-2 h-full w-full rounded-t-none "}
         >
-          <Contents width={"section"} className="h-full">
-            <Grids rows={"3"} gap={"3"} className="h-full w-full pt-1 pb-3">
-              <Holds className="row-start-1 row-end-2 ">
+          <Contents width={"section"} className="h-full pt-3 pb-5">
+            <Grids rows={"3"} className="h-full w-full">
+              <Holds className="row-start-1 row-end-1 ">
                 <label htmlFor="date" className="text-xs">
                   {t("SelectDate")}
                 </label>
@@ -122,13 +122,13 @@ export const EmployeeTimeSheets = ({
                   name="date"
                   id="date"
                   value={date} // Bind input value to state
-                  className="text-xs text-center border-[3px] border-black "
+                  className="text-xs text-center border-[3px] py-1 border-black "
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setDate(e.target.value)
                   }
                 />
               </Holds>
-              <Holds className="row-start-2 row-end-3 ">
+              <Holds className="row-start-2 row-end-3">
                 <Selects
                   onChange={(e) => setTimeSheetFilter(e.target.value)}
                   className="text-center text-xs"
@@ -149,44 +149,44 @@ export const EmployeeTimeSheets = ({
               </Holds>
               <Holds
                 position={"row"}
-                className="row-start-3 row-end-4 justify-between "
+                className="row-start-3 row-end-4  justify-between "
               >
                 {edit ? (
                   <>
                     {" "}
-                    <Holds
+                    <Buttons
                       background={"green"}
-                      className="w-1/4 ml-4 "
+                      className="w-1/4"
                       onClick={onSaveChanges}
                     >
                       <Images
                         titleImg={"/save-edit.svg"}
                         titleImgAlt={"Save"}
-                        size={"30"}
+                        className="w-6 h-6 mx-auto"
                       />
-                    </Holds>
-                    <Holds
+                    </Buttons>
+                    <Buttons
                       background={"red"}
-                      className="w-1/4  mr-4"
+                      className="w-1/4 "
                       onClick={onCancelEdits}
                     >
                       <Images
                         titleImg={"/undo-edit.svg"}
                         titleImgAlt={"Cancel"}
-                        size={"30"}
+                        className="w-6 h-6 mx-auto "
                       />
-                    </Holds>
+                    </Buttons>
                   </>
                 ) : (
                   <Buttons
                     background={"orange"}
-                    className="text-center text-base py-2 "
+                    className="text-center text-base "
                     onClick={() => setEdit(true)}
                   >
                     <Images
                       titleImg="/edit-form.svg"
                       titleImgAlt="Edit Icon"
-                      className="w-5 h-5 mx-auto"
+                      className="w-6 h-6 mx-auto"
                     />
                   </Buttons>
                 )}

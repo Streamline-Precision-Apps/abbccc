@@ -8,7 +8,10 @@ type Params = { id: string };
 export async function GET(req: NextRequest, { params }: { params: Params }) {
   try {
     if (!params?.id) {
-      return NextResponse.json({ error: "Missing or invalid user ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing or invalid user ID" },
+        { status: 400 }
+      );
     }
 
     const userId = params.id;
@@ -32,6 +35,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
         email: true,
         DOB: true,
         image: true,
+        clockedIn: true,
         Contact: {
           select: {
             phoneNumber: true,
@@ -43,7 +47,10 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     });
 
     if (!employee) {
-      return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Employee not found" },
+        { status: 404 }
+      );
     }
 
     const contact = employee.Contact;
@@ -59,7 +66,8 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
 
     return NextResponse.json(data, {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (error) {

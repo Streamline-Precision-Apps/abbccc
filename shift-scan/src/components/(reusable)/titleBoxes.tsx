@@ -6,6 +6,7 @@ import { Buttons } from "../(reusable)/buttons";
 import { Images } from "../(reusable)/images";
 
 import { Holds } from "./holds";
+import { useRouter } from "next/navigation";
 
 const TitleBoxVariants = cva(
   "relative flex items-center justify-center w-full mx-auto", //this applies to all variants
@@ -46,6 +47,7 @@ interface TitleBoxProps
     | undefined;
   children?: React.ReactNode;
   gap?: number;
+  href?: string;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({
@@ -54,14 +56,15 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   children,
   position,
   gap = 3,
-  onClick = () => {},
+  onClick = null,
   ...props
 }) => {
+  const router = useRouter();
   return (
     <div className={cn(TitleBoxVariants({ variant, className }))} {...props}>
       <Holds className="h-fit mx-auto w-[90%] flex items-center justify-center">
         <Buttons
-          onClick={onClick}
+          onClick={onClick ? onClick : () => router.back()}
           background={"none"}
           position={"left"}
           shadow={"none"}
