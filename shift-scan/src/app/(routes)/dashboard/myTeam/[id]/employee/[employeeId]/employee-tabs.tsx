@@ -8,14 +8,15 @@ import { z } from "zod";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { EmployeeTimeSheets } from "./employee-timesheet";
 import EmployeeInfo from "./employeeInfo";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import {
   EquipmentLogs,
   TascoHaulLogs,
   TascoRefuelLog,
   TimeSheet,
   TimesheetHighlights,
-  TruckingHaulLog,
+  TruckingEquipmentHaulLog,
+  TruckingMaterialHaulLog,
   TruckingMileage,
   TruckingRefuelLog,
   TruckingStateLogs,
@@ -23,6 +24,7 @@ import {
 import { useSession } from "next-auth/react";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
+import { time } from "console";
 
 // Zod schema for employee data
 const EmployeeSchema = z.object({
@@ -51,8 +53,6 @@ type Contact = {
 };
 
 export default function EmployeeTabs() {
-  // Changed to EmployeeInfo
-  // Validate params using Zod
   const { employeeId } = useParams();
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
@@ -75,26 +75,27 @@ export default function EmployeeTabs() {
   const today = format(new Date(), "yyyy-MM-dd");
   const [date, setDate] = useState<string>(today); // State for selected date
   const [edit, setEdit] = useState(false);
-  const [timeSheets, setTimeSheets] = useState<TimeSheet[]>([]); // State for storing timesheets
+  const [timeSheetFilter, setTimeSheetFilter] = useState("timesheetHighlights");
   const [highlightTimesheet, setHighlightTimesheet] = useState<
     TimesheetHighlights[]
   >([]);
-  const [truckingHaulLogs, setTruckingHaulLogs] = useState<TruckingHaulLog[]>(
-    []
-  );
+
+  const [truckingEquipmentHaulLogs, setTruckingEquipmentHaulLogs] = useState<
+    TruckingEquipmentHaulLog[]
+  >([]);
+  const [truckingMaterialHaulLogs, setTruckingMaterialHaulLogs] = useState<
+    TruckingMaterialHaulLog[]
+  >([]);
 
   const [truckingMileage, setTruckingMileage] = useState<TruckingMileage[]>([]);
-
   const [truckingRefuelLogs, setTruckingRefuelLogs] = useState<
     TruckingRefuelLog[]
   >([]);
   const [truckingStateLogs, setTruckingStateLogs] = useState<
     TruckingStateLogs[]
   >([]);
-
   const [tascoRefuelLog, setTascoRefuelLog] = useState<TascoRefuelLog[]>([]);
   const [tascoHaulLogs, setTascoHaulLogs] = useState<TascoHaulLogs[]>([]);
-
   const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLogs[]>([]);
 
   useEffect(() => {
@@ -136,21 +137,36 @@ export default function EmployeeTabs() {
     const fetchTimeSheets = async () => {
       try {
         const request = await fetch(
-          `/api/getTimesheetsByDate?employeeId=${employeeId}&date=${date}`
+          `/api/getTimesheetsByDate?employeeId=${employeeId}&date=${date}&type=${timeSheetFilter}`
         );
         const data = await request.json();
-        setHighlightTimesheet(data as TimesheetHighlights[]);
-        // Truck Data
-        setTruckingMileage(data as TruckingMileage[]);
-        setTruckingHaulLogs(data as TruckingHaulLog[]);
-        setTruckingRefuelLogs(data as TruckingRefuelLog[]);
-        setTruckingStateLogs(data as TruckingStateLogs[]);
-        // TASCO Data
-        setTascoRefuelLog(data as TascoRefuelLog[]);
-        setTascoHaulLogs(data as TascoHaulLogs[]);
-        setEquipmentLogs(data as EquipmentLogs[]);
-
-        setTimeSheets(data as TimeSheet[]);
+        if (timeSheetFilter === "timesheetHighlights") {
+          setHighlightTimesheet(data as TimesheetHighlights[]);
+        }
+        if (timeSheetFilter === "truckingMileage") {
+          setTruckingMileage(data as TruckingMileage[]);
+        }
+        if (timeSheetFilter === "truckingEquipmentHaulLogs") {
+          setTruckingEquipmentHaulLogs(data as TruckingEquipmentHaulLog[]);
+        }
+        if (timeSheetFilter === "truckingMaterialHaulLogs") {
+          setTruckingMaterialHaulLogs(data as TruckingMaterialHaulLog[]);
+        }
+        if (timeSheetFilter === "truckingRefuelLogs") {
+          setTruckingRefuelLogs(data as TruckingRefuelLog[]);
+        }
+        if (timeSheetFilter === "truckingStateLogs") {
+          setTruckingStateLogs(data as TruckingStateLogs[]);
+        }
+        if (timeSheetFilter === "tascoRefuelLogs") {
+          setTascoRefuelLog(data as TascoRefuelLog[]);
+        }
+        if (timeSheetFilter === "tascoHaulLogs") {
+          setTascoHaulLogs(data as TascoHaulLogs[]);
+        }
+        if (timeSheetFilter === "equipmentLogs") {
+          setEquipmentLogs(data as EquipmentLogs[]);
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -158,7 +174,7 @@ export default function EmployeeTabs() {
       }
     };
     fetchTimeSheets();
-  }, [date]);
+  }, [date, timeSheetFilter]);
 
   return (
     <Holds className="h-full w-full">
@@ -221,13 +237,23 @@ export default function EmployeeTabs() {
               )}
               {activeTab === 2 && (
                 <EmployeeTimeSheets
-                  timeSheets={timeSheets}
+                  highlightTimesheet={highlightTimesheet}
+                  truckingEquipmentHaulLogs={truckingEquipmentHaulLogs}
+                  truckingMaterialHaulLogs={truckingMaterialHaulLogs}
+                  truckingMileage={truckingMileage}
+                  truckingRefuelLogs={truckingRefuelLogs}
+                  truckingStateLogs={truckingStateLogs}
+                  tascoRefuelLog={tascoRefuelLog}
+                  tascoHaulLogs={tascoHaulLogs}
+                  equipmentLogs={equipmentLogs}
                   date={date}
                   setDate={setDate}
                   edit={edit}
                   setEdit={setEdit}
                   loading={loading}
                   manager={manager}
+                  timeSheetFilter={timeSheetFilter}
+                  setTimeSheetFilter={setTimeSheetFilter}
                 />
               )}
             </Holds>

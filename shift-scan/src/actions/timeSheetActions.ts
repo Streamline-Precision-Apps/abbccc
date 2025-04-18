@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimeSheet } from "@/lib/types";
+import { TimeSheet, TimesheetHighlights } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
@@ -706,7 +706,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
 //--------------------------
 //-- update TimeSheets - located in manager section
 export async function updateTimeSheets(
-  updatedSheets: TimeSheet[],
+  updatedSheets: TimesheetHighlights[],
   manager: string
 ) {
   try {
@@ -720,8 +720,6 @@ export async function updateTimeSheets(
           workType: timesheet.workType as WorkType,
           startTime: timesheet.startTime,
           endTime: timesheet?.endTime,
-          comment: timesheet.comment,
-          editedByUserId: manager,
         },
       });
     });

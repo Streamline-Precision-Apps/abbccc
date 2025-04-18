@@ -337,16 +337,32 @@ export type EquipmentCodes = {
   name: string;
 };
 
-export type TruckingHaulLog = {
+export type TruckingEquipmentHaulLog = {
   id: string;
-  truckingLogId: string;
-  equipmentId: string | null;
   Equipment: {
     name: string;
   };
-  jobSiteId: string | null;
-  Jobsite: {
+  EquipmentHauled: {
+    id: string;
+    Equipment: {
+      name: string;
+    };
+    Jobsite: {
+      name: string;
+    };
+  };
+};
+
+export type TruckingMaterialHaulLog = {
+  id: String;
+  Equipment: {
     name: string;
+  };
+  Material: {
+    id: string;
+    name: string;
+    LocationOfMaterial: string;
+    quantity: number;
   };
 };
 
