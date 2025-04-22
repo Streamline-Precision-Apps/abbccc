@@ -20,7 +20,7 @@ import {
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useOperator } from "@/app/context/operatorContext";
-import { intialEquipment } from "@/data/dataValues";
+// import { intialEquipment } from "@/data/dataValues";
 
 type Option = {
   code: string;
