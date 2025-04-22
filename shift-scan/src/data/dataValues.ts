@@ -700,23 +700,92 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 /* DOCUMENT TAGS (new) */
 export const initialDocumentTags: Prisma.DocumentTagCreateInput[] = [
   {
-    id: "dt1",
-    tagName: "Manuals",
+    id: "dt2",
+    tagName: "Policies",
+  },
+  {
+    id: "dt3",
+    tagName: "SPOs",
+  },
+  {
+    id: "dt4",
+    tagName: "Documents",
   },
 ];
+
+const validMinimalPdf = Buffer.from(
+  `%PDF-1.4
+  1 0 obj
+  << /Type /Catalog /Pages 2 0 R >>
+  endobj
+  2 0 obj
+  << /Type /Pages /Count 1 /Kids [3 0 R] >>
+  endobj
+  3 0 obj
+  << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>
+  endobj
+  4 0 obj
+  << /Length 44 >>
+  stream
+  BT /F1 24 Tf 100 700 Td (Hello World) Tj ET
+  endstream
+  endobj
+  xref
+  0 5
+  0000000000 65535 f 
+  0000000010 00000 n 
+  0000000061 00000 n 
+  0000000112 00000 n 
+  0000000217 00000 n 
+  trailer
+  << /Root 1 0 R /Size 5 >>
+  startxref
+  322
+  %%EOF`
+);
 
 /* PDF DOCUMENTS (new) */
 export const initialPdfDocuments: Prisma.PdfDocumentCreateInput[] = [
   {
-    qrId: "pdf1",
-    fileName: "manual.pdf",
-    description: "Equipment manual",
-    fileData: new Uint8Array(Buffer.from("sample pdf content")),
+    qrId: "pdf2",
+    fileName: "company_policy.pdf",
+    description: "Company policy PDF",
+    fileData: new Uint8Array(validMinimalPdf),
     contentType: "application/pdf",
-    size: 1024,
-    DocumentTags: { connect: [{ id: "dt1" }] },
+    size: validMinimalPdf.length,
+    DocumentTags: { connect: [{ id: "dt2" }] },
+  },
+  {
+    qrId: "pdf3",
+    fileName: "spo_guideline.pdf",
+    description: "Standard Procedure Operations guide",
+    fileData: new Uint8Array(validMinimalPdf),
+    contentType: "application/pdf",
+    size: validMinimalPdf.length,
+    DocumentTags: { connect: [{ id: "dt3" }] },
+  },
+  {
+    qrId: "pdf4",
+    fileName: "internal_doc.pdf",
+    description: "Internal documentation",
+    fileData: new Uint8Array(validMinimalPdf),
+    contentType: "application/pdf",
+    size: validMinimalPdf.length,
+    DocumentTags: { connect: [{ id: "dt4" }] },
+  },
+  {
+    qrId: "pdf5",
+    fileName: "inactive_doc.pdf",
+    description: "Archived or inactive PDF",
+    fileData: new Uint8Array(validMinimalPdf),
+    contentType: "application/pdf",
+    size: validMinimalPdf.length,
+    isActive: false,
+    DocumentTags: { connect: [{ id: "dt4" }] },
   },
 ];
+
+
 
 /* UPDATED EQUIPMENT */
 /* 

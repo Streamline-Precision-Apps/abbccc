@@ -11,6 +11,7 @@ import FormSelection from "./formSelection";
 import { Contents } from "@/components/(reusable)/contents";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
+import CompanyDocuments from "./companyDocuments";
 
 export default function InboxContent({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
@@ -54,7 +55,6 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
               >
                 <Titles size={"h4"}>Submitted Forms</Titles>
               </NewTab>
-              {isManager && (
                 <NewTab
                   onClick={() => setActiveTab(3)}
                   isActive={activeTab === 3}
@@ -63,9 +63,8 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
-                  <Titles size={"h4"}>Pending Forms</Titles>
+                  <Titles size={"h4"}>Company Documents</Titles>
                 </NewTab>
-              )}
             </Holds>
             {activeTab === 1 && (
               <FormSelection loading={loading} setLoading={setLoading} />
@@ -74,7 +73,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
               <>
                 {activeTab === 2 && <STab />}
 
-                {isManager && activeTab === 3 && <RTab isManager={isManager} />}
+                {activeTab === 3 && <CompanyDocuments />}
               </>
             )}
           </Grids>
