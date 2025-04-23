@@ -1,10 +1,11 @@
 "use client";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 
 type Employee = {
@@ -14,6 +15,7 @@ type Employee = {
   image: string;
   email: string;
   DOB?: string;
+  clockedIn?: boolean;
 };
 
 type Contact = {
@@ -33,63 +35,84 @@ export default function EmployeeInfo({
 }) {
   const t = useTranslations("MyTeam");
   return (
-    <Contents width={"section"} className="py-5">
-      {loading ? (
-        <Holds
-          background={"white"}
-          className="h-full justify-center items-center animate-pulse"
-        >
-          <Spinner size={70} />
-        </Holds>
-      ) : (
-        <Holds background={"white"} className="h-full my-auto">
-          <Labels htmlFor={"phoneNumber"} size={"p6"}>
-            {t("PhoneNumber")}
-          </Labels>
-          <Inputs
-            name={"phoneNumber"}
-            className={"pl-4"}
-            state="disabled"
-            data={contacts?.phoneNumber}
-          />
-          <Labels htmlFor={"email"} size={"p6"}>
-            {t("Email")}
-          </Labels>
-          <Inputs
-            name={"email"}
-            className={"pl-4"}
-            state="disabled"
-            data={employee?.email}
-          />
-          <Labels htmlFor={"emergencyContact"} size={"p6"}>
-            {t("EmergencyContact")}
-          </Labels>
-          <Inputs
-            name={"emergencyContact"}
-            className={"pl-4"}
-            state="disabled"
-            data={contacts?.emergencyContact}
-          />
-          <Labels htmlFor={"emergencyContactNumber"} size={"p6"}>
-            {t("EmergencyContactNumber")}
-          </Labels>
-          <Inputs
-            name={"emergencyContactNumber"}
-            className={"pl-4"}
-            state="disabled"
-            data={contacts?.emergencyContactNumber}
-          />
-          <Labels htmlFor={"dob"} size={"p6"}>
-            {t("DOB")}
+    <Holds
+      background={"white"}
+      className={"row-start-2 row-end-11 h-full w-full rounded-t-none "}
+    >
+      <Contents width={"section"} className="pt-2 pb-5">
+        {loading ? (
+          <Holds
+            background={"white"}
+            className="h-full justify-center items-center animate-pulse"
+          >
+            <Spinner size={70} />
+          </Holds>
+        ) : (
+          <Holds background={"white"} className="h-full w-full">
+            <Holds
+              size={"40"}
+              className="flex justify-center items-center relative "
+            >
+              <Images
+                titleImg={
+                  employee?.image ? employee.image : "/profile-default.svg"
+                }
+                titleImgAlt="Team"
+                className="rounded-full border-[3px] border-black "
+              />
+              <Holds
+                background={employee?.clockedIn ? "green" : "red"}
+                className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
+              />
+            </Holds>
+            <Labels htmlFor={"phoneNumber"} size={"p4"}>
+              {t("PhoneNumber")}
+            </Labels>
             <Inputs
-              name={"dob"}
-              className={"pl-4"}
-              state="disabled"
-              data={employee?.DOB}
+              name={"phoneNumber"}
+              value={contacts?.phoneNumber}
+              className={"text-center text-base"}
+              readOnly
             />
-          </Labels>
-        </Holds>
-      )}
-    </Contents>
+            <Labels htmlFor={"email"} size={"p4"}>
+              {t("Email")}
+            </Labels>
+            <Inputs
+              name={"email"}
+              className={"text-center text-base"}
+              value={employee?.email}
+              readOnly
+            />
+            <Labels htmlFor={"emergencyContact"} size={"p4"}>
+              {t("EmergencyContact")}
+            </Labels>
+            <Inputs
+              name={"emergencyContact"}
+              className={"text-center text-base"}
+              readOnly
+              value={contacts?.emergencyContact}
+            />
+            <Labels htmlFor={"emergencyContactNumber"} size={"p4"}>
+              {t("EmergencyContactNumber")}
+            </Labels>
+            <Inputs
+              name={"emergencyContactNumber"}
+              className={"text-center text-base"}
+              readOnly
+              value={contacts?.emergencyContactNumber}
+            />
+            <Labels htmlFor={"dob"} size={"p4"}>
+              {t("DOB")}
+              <Inputs
+                name={"dob"}
+                className={"text-center text-base"}
+                readOnly
+                value={employee?.DOB}
+              />
+            </Labels>
+          </Holds>
+        )}
+      </Contents>
+    </Holds>
   );
 }

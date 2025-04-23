@@ -19,8 +19,8 @@ enum Permission {
 enum EquipmentTags {
   TRUCK
   TRAILER
-  EQUIPMENT
   VEHICLE
+  EQUIPMENT
 }
 
 enum EquipmentStatus {
@@ -52,4 +52,10 @@ enum Priority {
 enum LoadType {
   UNSCREENED
   SCREENED
+}
+
+enum TimeSheetStatus {
+  PENDING
+  APPROVED
+  DENIED
 }

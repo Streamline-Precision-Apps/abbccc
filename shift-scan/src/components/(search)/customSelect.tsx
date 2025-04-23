@@ -6,6 +6,7 @@ import { Holds } from "../(reusable)/holds";
 import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
+import { Titles } from "../(reusable)/titles";
 
 type Option = {
   code: string;
@@ -36,8 +37,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             <Holds key={option.code} className="py-2">
               <Buttons
                 key={option.code}
+                shadow={"none"}
                 className={` p-2 cursor-pointer ${
-                  selectedOption?.code === option.code ? " bg-app-green" : ""
+                  selectedOption?.code === option.code
+                    ? " bg-app-green"
+                    : " bg-white"
                 }`}
                 onClick={
                   () =>
@@ -46,7 +50,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                       : onOptionSelect(option) // Select the option
                 }
               >
-                <Texts size={"p3"}>{option.label}</Texts>
+                <Titles size={"h4"}>{option.label}</Titles>
               </Buttons>
             </Holds>
           ))}

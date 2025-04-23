@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   try {
@@ -29,13 +30,6 @@ export async function GET() {
       },
     });
 
-    if (!teams || teams.length === 0) {
-      return NextResponse.json(
-        { message: "No teams found for the current user." },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(teams, {
       headers: {
         "Cache-Control":
@@ -50,9 +44,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

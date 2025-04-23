@@ -1,7 +1,7 @@
-"use server";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(
   request: Request,
@@ -32,9 +32,10 @@ export async function GET(
       },
     });
 
-    const { comment } = notes?.TimeSheet || {};
+    const comment = notes?.TimeSheet?.comment;
+
     if (comment === null || comment === undefined) {
-      return "";
+      return NextResponse.json(""); // Return an empty string
     }
 
     // Return the fetched notes (comment)

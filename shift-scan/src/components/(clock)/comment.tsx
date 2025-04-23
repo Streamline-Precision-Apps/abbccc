@@ -8,6 +8,9 @@ import { TextAreas } from "../(reusable)/textareas";
 import { Texts } from "../(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Titles } from "../(reusable)/titles";
+import { breakOutTimeSheet } from "@/actions/timeSheetActions";
+import { setCurrentPageView } from "@/actions/cookieActions";
+import { useRouter } from "next/navigation";
 
 export default function Comment({
   handleClick,
@@ -20,9 +23,26 @@ export default function Comment({
   setCommentsValue: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const c = useTranslations("Clock");
-
+  const router = useRouter();
   const returnRoute = () => {
     window.history.back();
+  };
+
+  const setBreakout = async () => {
+    try {
+      const formData2 = new FormData();
+
+      formData2.append("endTime", new Date().toISOString());
+      formData2.append("timesheetComments", commentsValue);
+
+      const isUpdated = await breakOutTimeSheet(formData2);
+      if (isUpdated) {
+        setCurrentPageView("break");
+        router.push("/");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -62,7 +82,7 @@ export default function Comment({
             <Texts
               size={"p2"}
               className={`${
-                commentsValue.length === 40
+                commentsValue.length >= 40
                   ? "text-red-500 absolute bottom-5 right-2"
                   : "absolute bottom-5 right-2"
               }`}

@@ -44,7 +44,7 @@ const ButtonVariants = cva(
       shadow: {
         none: "shadow-none",
         yes: "shadow-[8px_8px_0px_grey]",
-      }
+      },
     },
     defaultVariants: {
       background: "lightBlue",
@@ -83,7 +83,9 @@ const Buttons: FC<ButtonProps> = ({
       onClick={() => {
         pageAction();
       }}
-      className={cn(ButtonVariants({ background, size, position, shadow, className }))}
+      className={cn(
+        ButtonVariants({ background, size, position, shadow, className })
+      )}
       {...props}
     />
   );

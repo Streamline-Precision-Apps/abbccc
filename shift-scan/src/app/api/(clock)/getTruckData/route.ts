@@ -1,8 +1,8 @@
-"use server";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   let session;
@@ -12,7 +12,10 @@ export async function GET() {
     session = await auth();
   } catch (error) {
     console.error("Authentication failed:", error);
-    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 }
+    );
   }
 
   const userId = session?.user.id;

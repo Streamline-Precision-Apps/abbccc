@@ -82,7 +82,12 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
                     onClick={() => selectCostCode(costCode)}
                   >
                     <Texts position={"left"} className="pl-4" size="p6">
-                      {costCode.name} - {costCode.description.slice(0, 20)}
+                      {`
+                      ${costCode.name.split(" ")[0]} - ${costCode.name
+                        .split(" ")
+                        .slice(1)
+                        .join(" ")
+                        .slice(0, 20)}`}
                     </Texts>
                   </Holds>
                 ))
