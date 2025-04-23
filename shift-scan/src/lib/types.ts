@@ -354,7 +354,7 @@ export type TruckingEquipmentHaulLog = {
 };
 
 export type TruckingMaterialHaulLog = {
-  id: String;
+  id: string;
   Equipment: {
     name: string;
   };
@@ -367,15 +367,22 @@ export type TruckingMaterialHaulLog = {
 };
 
 export type TruckingRefuelLog = {
+  id: string;
   truckingLogId: string;
+  Equipment: {
+    name: string;
+  };
   gallonsRefueled: number;
   milesAtFueling: number;
 };
 
 export type TruckingStateLogs = {
-  id: String;
+  id: string;
+  Equipment: {
+    name: string;
+  };
   truckingLogId: String;
-  state: String;
+  state: string;
   stateLineMileage: Number;
 };
 
