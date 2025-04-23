@@ -99,36 +99,36 @@ export default function EquipmentLogContent() {
             }
           >
             <Holds className="h-full w-full ">
+              <Holds position={"row"} className="h-10 gap-1">
+                <NewTab
+                  onClick={() => setActive(1)}
+                  isActive={active === 1}
+                  titleImage="/OrangeOngoing.svg"
+                  titleImageAlt="Clock"
+                  isComplete={true}
+                >
+                  <Titles size={"h4"}>CurrentLogs</Titles>
+                </NewTab>
+                <NewTab
+                  onClick={() => setActive(2)}
+                  isActive={active === 2}
+                  titleImage="/complete.svg"
+                  titleImageAlt="Finished logs Icon"
+                  isComplete={true}
+                >
+                  <Titles size={"h4"}>Finished Logs</Titles>
+                </NewTab>
+              </Holds>
               <Grids rows={"8"} className="h-full w-full ">
-                <Holds position={"row"} className="h-full gap-1">
-                  <NewTab
-                    onClick={() => setActive(1)}
-                    isActive={active === 1}
-                    titleImage="/OrangeOngoing.svg"
-                    titleImageAlt="Clock"
-                    isComplete={true}
-                  >
-                    <Titles size={"h4"}>CurrentLogs</Titles>
-                  </NewTab>
-                  <NewTab
-                    onClick={() => setActive(2)}
-                    isActive={active === 2}
-                    titleImage="/complete.svg"
-                    titleImageAlt="Finished logs Icon"
-                    isComplete={true}
-                  >
-                    <Titles size={"h4"}>Finished Logs</Titles>
-                  </NewTab>
-                </Holds>
                 <Holds
                   background={"white"}
-                  className="h-full w-full row-span-7 rounded-t-none"
+                  className="h-full w-full row-start-1 row-end-9 rounded-t-none"
                 >
                   <Contents width={"section"}>
                     <Grids rows={"8"} gap={"5"} className="h-full w-full py-5">
                       {loading ? (
                         <>
-                          <Holds className="row-span-7">
+                          <Holds className="row-span-7 h-full justify-center items-center">
                             <Spinner />
                           </Holds>
                           <Holds className="row-span-1 h-full">
@@ -225,7 +225,7 @@ export default function EquipmentLogContent() {
                                   return (
                                     <Holds
                                       key={log.id}
-                                      className="pb-5 overflow-y-auto no-scrollbar"
+                                      className="pb-3 overflow-y-auto no-scrollbar"
                                     >
                                       <Contents width={"section"}>
                                         <SlidingDiv
@@ -241,7 +241,7 @@ export default function EquipmentLogContent() {
                                             }
                                             shadow={"none"}
                                             href={`/dashboard/equipment/${log.id}`}
-                                            className="py-1"
+                                            className="py-3"
                                           >
                                             <Titles size={"h4"}>
                                               {log.equipment?.name}

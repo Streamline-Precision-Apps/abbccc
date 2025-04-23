@@ -9,6 +9,14 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+type MaintenanceLog = {
+  id: string;
+  userId: string;
+  maintenanceId: string;
+  startTime?: string;
+  endTime?: string | null;
+  comment?: string;
+};
 
 export default function CommentsTab({
   activeUsers,
@@ -23,7 +31,7 @@ export default function CommentsTab({
   setMyComment: (comment: string) => void;
   loading: boolean;
   onFinishProject: () => void;
-  myMaintenanceLogs: any;
+  myMaintenanceLogs: MaintenanceLog | null;
 }) {
   const t = useTranslations("MechanicWidget");
   if (loading)

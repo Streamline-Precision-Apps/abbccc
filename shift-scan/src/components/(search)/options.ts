@@ -38,7 +38,7 @@ export const CostCodeOptions = (
         .filter((costcode) => costcode !== null)
         .map((costcode: CostCodes) => ({
           code: costcode.name,
-          label: `${costcode.name} - ${costcode.description}`,
+          label: costcode.name,
         }));
 
       // Append all cost codes while avoiding duplicates
@@ -46,7 +46,7 @@ export const CostCodeOptions = (
         .filter((costcode) => costcode !== null)
         .map((costcode: CostCodes) => ({
           code: costcode.name,
-          label: `${costcode.name} - ${costcode.description}`,
+          label: costcode.name,
         }))
         .filter(
           (costcode) =>

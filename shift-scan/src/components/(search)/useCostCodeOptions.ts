@@ -35,79 +35,45 @@ export const useCostCodeOptions = (
       case "costcode":
         if (!costcodeResults) throw new Error("costcodeResults is undefined");
 
-        // Get recently used cost codes first (filtering out any nulls)
-        const recentCostCodes = recentlyUsedCostCodes
-          .filter((costcode) => costcode !== null)
-          .map((costcode: CostCodes) => ({
-            code: costcode.name,
-            label: `${costcode.name} - ${costcode.description}`,
-          }));
-
-        // Append all cost codes, avoiding duplicates
-        const allCostCodes = costcodeResults
-          .filter((costcode) => costcode !== null)
-          .map((costcode: CostCodes) => ({
-            code: costcode.name,
-            label: `${costcode.name} - ${costcode.description}`,
-          }))
-          .filter(
-            (costcode) =>
-              !recentCostCodes.some((recent) => recent.code === costcode.code)
-          );
-
-        opts = [...recentCostCodes, ...allCostCodes];
+        opts = costcodeResults.map((costcode: CostCodes) => ({
+          code: costcode.name,
+          label: `${costcode.name}`,
+          isRecent: recentlyUsedCostCodes.some(
+            (recent) => recent?.name === costcode.name
+          ),
+        }));
         break;
 
       case "jobsite":
         if (!jobsiteResults) throw new Error("jobsiteResults is undefined");
 
-        // Get recently used jobsites first
-        const recentJobsites = recentlyUsedJobCodes.map(
-          (jobcode: JobCodes) => ({
-            code: jobcode.qrId,
-            label: jobcode.name,
-          })
-        );
-
-        // Append all jobsites, avoiding duplicates
-        const allJobsites = jobsiteResults
-          .filter((jobcode) => jobcode !== null)
-          .map((jobcode: JobCodes) => ({
-            code: jobcode.qrId,
-            label: jobcode.name,
-          }))
-          .filter(
-            (jobcode) =>
-              !recentJobsites.some((recent) => recent.code === jobcode.code)
-          );
-
-        opts = [...recentJobsites, ...allJobsites];
+        opts = jobsiteResults.map((jobcode: JobCodes) => ({
+          code: jobcode.qrId,
+          label: jobcode.name,
+          isRecent: recentlyUsedJobCodes.some(
+            (recent) => recent?.qrId === jobcode.qrId
+          ),
+        }));
         break;
 
       case "equipment-operator":
       case "equipment":
         if (!equipmentResults) throw new Error("equipmentResults is undefined");
 
-        // Get recently used equipment first
-        const recentEquipment = recentlyUsedEquipment.map(
-          (equipment: EquipmentCode) => ({
-            code: equipment.qrId,
-            label: equipment.name,
-          })
-        );
-
-        // Append all equipment, avoiding duplicates
-        const allEquipment = equipmentResults
-          .map((equipment: EquipmentCode) => ({
-            code: equipment.qrId,
-            label: equipment.name,
-          }))
-          .filter(
-            (equipment) =>
-              !recentEquipment.some((recent) => recent.code === equipment.code)
-          );
-
-        opts = [...recentEquipment, ...allEquipment];
+        opts = equipmentResults.map((equipment: EquipmentCode) => ({
+          code: equipment.qrId,
+          label: equipment.name,
+          isRecent: recentlyUsedEquipment.some(
+            (recent) => recent?.qrId === equipment.qrId
+          ),
+        }));
+        break;
+      case "truck":
+        if (!equipmentResults) throw new Error("equipmentResults is undefined");
+        opts = equipmentResults.map((equipment: EquipmentCode) => ({
+          code: equipment.qrId,
+          label: equipment.name,
+        }));
         break;
 
       default:

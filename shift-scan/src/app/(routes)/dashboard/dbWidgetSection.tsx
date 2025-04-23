@@ -86,30 +86,6 @@ export default function DbWidgetSection({
     []
   );
 
-  const handleCOButton2 = useCallback(async () => {
-    try {
-      if (logs.length === 0) {
-        const timeSheetId = await fetchRecentTimeSheetId();
-        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-
-        const formData2 = new FormData();
-        formData2.append("id", timeSheetId);
-        formData2.append("endTime", new Date().toISOString());
-        formData2.append("timesheetComments", comment);
-
-        const isUpdated = await breakOutTimeSheet(formData2);
-        setCurrentPageView("break");
-        if (isUpdated) {
-          router.push("/");
-        }
-      } else {
-        modalState.handleOpenModal();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [logs, comment, router, modalState]);
-
   const handleCOButton3 = useCallback(() => {
     if (logs.length === 0) {
       router.push("/dashboard/clock-out");
@@ -130,10 +106,8 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton2={handleCOButton2}
           handleCOButton3={handleCOButton3}
           handleShowManagerButtons={handleShowManagerButtons}
-          handleShowAdditionalButtons={handleShowAdditionalButtons}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
@@ -147,10 +121,8 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton2={handleCOButton2}
           handleCOButton3={handleCOButton3}
           handleShowManagerButtons={handleShowManagerButtons}
-          handleShowAdditionalButtons={handleShowAdditionalButtons}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
@@ -163,10 +135,8 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton2={handleCOButton2}
           handleCOButton3={handleCOButton3}
           handleShowManagerButtons={handleShowManagerButtons}
-          handleShowAdditionalButtons={handleShowAdditionalButtons}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
@@ -180,7 +150,6 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton2={handleCOButton2}
           handleCOButton3={handleCOButton3}
           handleShowManagerButtons={handleShowManagerButtons}
           handleShowAdditionalButtons={handleShowAdditionalButtons}

@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, ChangeEvent, SetStateAction, Dispatch, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  SetStateAction,
+  Dispatch,
+  useEffect,
+} from "react";
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
@@ -42,8 +48,10 @@ export default function SettingSelections({
   const t = useTranslations("Hamburger");
   const [language, setLanguage] = useState<string>();
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
-
-  // Fetch data on component mount
+  useEffect(() => {
+    if (!data?.language) return;
+    setLanguage(data.language);
+  }, [data]);
 
   if (!data) {
     return (
@@ -66,11 +74,6 @@ export default function SettingSelections({
       </>
     );
   }
-
-  useEffect(() => {
-    setLanguage(data.language);
-  }, [data]);
-
   return (
     <Grids>
       <Holds className="row-span-7 h-full p-4">

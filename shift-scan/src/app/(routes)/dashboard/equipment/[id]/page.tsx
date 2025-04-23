@@ -23,14 +23,13 @@ import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentStatus, FormStatus } from "@/lib/types";
-import { form } from "@nextui-org/theme";
 
 type Refueled = {
   id: string;
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -85,7 +84,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [tab, setTab] = useState(1);
 
   const deepCompareObjects = useCallback(
-    <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
+    <T extends Record<string, unknown>>(obj1: T, obj2: T): boolean => {
       if (obj1 === obj2) return true;
 
       const keys1 = Object.keys(obj1);
@@ -94,8 +93,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       if (keys1.length !== keys2.length) return false;
 
       for (const key of keys1) {
-        const val1 = obj1[key];
-        const val2 = obj2[key];
+        const val1 = obj1[key] as string;
+        const val2 = obj2[key] as string;
         const areObjects = isObject(val1) && isObject(val2);
 
         if (
@@ -111,7 +110,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     []
   );
 
-  const isObject = (object: any) => {
+  const isObject = (object: string) => {
     return object != null && typeof object === "object";
   };
 
@@ -137,25 +136,25 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             : new Date().toISOString(),
           comment: data.comment || "",
           isFinished: data.isFinished || false,
-          refueled: (data.refueled as Refueled[]) || [],
+          refuelLogs: (data.RefuelLogs as Refueled[]) || [],
           equipment: {
-            name: data.equipment?.name || "",
-            status: data.equipment?.status || "OPERATIONAL",
+            name: data.Equipment?.name || "",
+            status: data.Equipment?.status || "OPERATIONAL",
           },
-          maintenanceId: data.maintenanceId
+          maintenanceId: data.MaintenanceId
             ? {
-                id: data.maintenanceId.id || "",
-                equipmentIssue: data.maintenanceId.equipmentIssue || "",
-                additionalInfo: data.maintenanceId.additionalInfo || "",
+                id: data.MaintenanceId.id || "",
+                equipmentIssue: data.MaintenanceId.equipmentIssue || "",
+                additionalInfo: data.MaintenanceId.additionalInfo || "",
               }
             : null,
           fullyOperational:
-            data.isFinished && data.equipment.status === "OPERATIONAL"
+            data.isFinished && data.Equipment.status === "OPERATIONAL"
               ? true
               : false,
         } as EquipmentLog;
 
-        if (data.isFinished && data.equipment.status === "OPERATIONAL") {
+        if (data.isFinished && data.Equipment.status === "OPERATIONAL") {
         }
 
         const result = EquipmentLogSchema.safeParse(processedData);
@@ -242,7 +241,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             id: response.id,
             employeeEquipmentLogId: response.employeeEquipmentLogId,
             gallonsRefueled: response.gallonsRefueled,
-            milesAtfueling: null,
+            milesAtFueling: null,
             truckingLogId: null, // add this property
             tascoLogId: null, // add this property
           },
@@ -386,7 +385,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             <Grids rows={"10"} className="h-full w-full ">
               <Holds
                 position={"row"}
-                className={`row-start-1 row-end-2 h-full w-full gap-1 ${
+                className={`row-start-1 row-end-2  w-full gap-1 ${
                   isLoading ? "animate-pulse" : ""
                 }`}
               >

@@ -9,13 +9,11 @@ import ManagerFormEditApproval from "./_components/managerFormEdit";
 import { saveDraftToPending } from "@/actions/hamburgerActions";
 import { useSession } from "next-auth/react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import SubmittedFormsApproval from "./_components/submittedApprovedForms";
-import { Texts } from "@/components/(reusable)/texts";
 
 interface FormField {
   id: string;
@@ -254,7 +252,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
   };
 
   // Update form values
-  const updateFormValues = (newValues: Record<string, any>) => {
+  const updateFormValues = (newValues: Record<string, string>) => {
     setFormValues((prevValues) => ({
       ...prevValues,
       ...newValues,

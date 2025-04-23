@@ -4,6 +4,7 @@ import { Images } from "../(reusable)/images";
 import { Holds } from "../(reusable)/holds";
 import { Buttons } from "../(reusable)/buttons";
 import { Texts } from "../(reusable)/texts";
+import { useTranslations } from "next-intl";
 
 // defines the searchbar type for typescript
 type SearchBarProps = {
@@ -35,10 +36,11 @@ export default function SearchBar({
       clearSelection();
     }
   }, [searchTerm, setSelectedTerm, clearSelection, previousTermLength]);
+  const t = useTranslations("Clock");
   return (
     <Holds
       position={"row"}
-      className="px-4 border-[3px] border-black rounded-[10px] h-full"
+      className="px-4 border-[3px]  border-black rounded-[10px] rounded-b-none h-full"
     >
       <Holds className="rounded-[10px]">
         {selected ? (
@@ -61,15 +63,16 @@ export default function SearchBar({
                 size={"full"}
               />
             </Holds>
-            <Holds size={"90"} className="pl-4 text-xl">
+            <Holds size={"80"} className="pl-4 text-xl">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={onSearchChange}
-                placeholder={placeholder}
-                className="w-full h-full placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
+                placeholder={t("SearchBarPlaceholder")}
+                className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
               />
             </Holds>
+            <Holds size={"10"}></Holds>
           </Holds>
         )}
       </Holds>

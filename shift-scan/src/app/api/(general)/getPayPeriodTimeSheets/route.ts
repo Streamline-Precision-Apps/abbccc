@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 // Utility to calculate the start date of the current pay period
 const calculatePayPeriodStart = (): Date => {

@@ -19,19 +19,6 @@ export default function Signature({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  const { data: session } = useSession();
-  if (!session) {
-    return null;
-  }
-  const employee = session?.user?.id;
-
-  const saveSignature = async () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const signatureBase64String = canvas.toDataURL("image/png");
-    await uploadSignature(employee.toString(), signatureBase64String);
-  };
-
   useEffect(() => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
@@ -65,6 +52,20 @@ export default function Signature({
       document.removeEventListener("touchmove", preventTouchScroll);
     };
   }, []);
+
+  const { data: session } = useSession();
+  if (!session) {
+    return null;
+  }
+
+  const employee = session?.user?.id;
+
+  const saveSignature = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const signatureBase64String = canvas.toDataURL("image/png");
+    await uploadSignature(employee.toString(), signatureBase64String);
+  };
 
   // 🔹 Convert touch coordinates to match mouse event behavior
   const getTouchPos = (canvas: HTMLCanvasElement, touchEvent: TouchEvent) => {

@@ -102,7 +102,7 @@
     "Unit": "hrs",
     "DA-Time-Label": "Hrs",
     "DA-Today": "Hoy",
-    "TimeSheet-Label": "Ver mi hoja de tiempo",
+    "TimeSheet-Label": "Ver mis hojas de horas",
     "Clock-btn": "Fichar",
     "Clock-btn-break": "Regresar",
     "Title": "Ver hojas de tiempo",
@@ -299,6 +299,8 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SelectMaterialTypeAndEquipment": "Seleccione el tipo de material y equipo",
+    "StartDay": "Iniciar Día",
     "MaterialType": "Tipo de Material",
     "LaborType": "Tipo de Trabajo",
     "SubmitSelection": "Enviar selección",
@@ -380,10 +382,11 @@
     "CostCode-Label": "Código de Costo:",
     "ScanJobSiteOrTruck": "Escanear Sitio de Trabajo o Camiones",
     "ChangeJobsite": "Cambiar Sitio de Trabajo",
-    "Truck-label": "Camiones Encontrados",
-    "Mileage": "Mileage"
+    "Truck-label": "Camión",
+    "Mileage": "Kilometraje"
   },
   "ClockOut": {
+    "SearchBarPlaceholder": "Busca aquí...",
     "ClockOut": "Fichar al Salir",
     "Date-label": "Fecha",
     "JobSite-label": "Sitio de Trabajo",
@@ -648,7 +651,7 @@
     "DeleteEquipmentLog": "Borrar Registro de Herramientas",
     "TimesheetComment": "Comentarios de Hojas de Tiempo",
     "VehicleID": "ID de Vehículo",
-    "StartingMileage": "Kilometraje inicial",
+    "StartingMileage": "Ingrese el kilometraje inicial aquí",
     "EndingMileage": "Kilometraje final",
     "LeftIdaho": "Fuera de Idaho",
     "RefuelingGallons": "Gallones de Gasolina",

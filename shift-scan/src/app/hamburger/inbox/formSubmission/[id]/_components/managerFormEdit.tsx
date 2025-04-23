@@ -105,7 +105,7 @@ export default function ManagerFormEditApproval({
   submissionId: string | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
   setFormTitle: Dispatch<SetStateAction<string>>;
-  updateFormValues: (newValues: Record<string, any>) => void;
+  updateFormValues: (newValues: Record<string, string>) => void;
 }) {
   const router = useRouter();
   const [comment, setComment] = useState<string>(

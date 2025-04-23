@@ -19,6 +19,7 @@ import capitalizeAll from "@/utils/capitalizeAll";
 import Spinner from "@/components/(animations)/spinner";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
 import { usePayPeriodData } from "@/hooks/(home)/usePayPeriod";
+import WidgetContainer from "./widgetContainer";
 
 type Props = {
   session: Session;
@@ -28,7 +29,7 @@ type Props = {
 export default function WidgetSection({ session, locale }: Props) {
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
     weekday: "long",
   });
@@ -75,7 +76,7 @@ export default function WidgetSection({ session, locale }: Props) {
   if (loading) {
     return (
       <>
-        <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] my-2 rounded-[10px] animate-pulse"></Holds>
+        <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] rounded-[10px] animate-pulse"></Holds>
         <Holds
           background={"white"}
           className="row-span-5 h-full justify-center items-center animate-pulse"
@@ -87,7 +88,7 @@ export default function WidgetSection({ session, locale }: Props) {
   }
   return (
     <>
-      <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-4 my-2 rounded-[10px]">
+      <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
         {pageView === "" && (
           <Banners>
             <Titles text={"white"} size={"h2"}>
@@ -97,7 +98,7 @@ export default function WidgetSection({ session, locale }: Props) {
               })}
               !
             </Titles>
-            <Texts text={"white"} size={"p3"}>
+            <Texts text={"white"} size={"p5"}>
               {t("Date", { date: capitalizeAll(date) })}
             </Texts>
           </Banners>
@@ -113,7 +114,10 @@ export default function WidgetSection({ session, locale }: Props) {
           </Banners>
         )}
       </Holds>
-      <Holds background={"white"} className="row-span-5 h-full">
+      <Holds
+        background={toggle ? "white" : "darkBlue"}
+        className="row-start-4 row-end-9 h-full"
+      >
         <Contents width={"section"} className="py-5">
           <Grids rows={"11"} cols={"2"} gap={"5"}>
             {pageView === "break" ? (
@@ -165,51 +169,35 @@ export default function WidgetSection({ session, locale }: Props) {
                     position={"row"}
                     className="col-span-2 row-span-4 gap-5 h-full"
                   >
-                    <Buttons
+                    <WidgetContainer
+                      titleImg="/qr.svg"
+                      titleImgAlt="QR Code"
+                      text={"QR"}
                       background={"lightBlue"}
-                      href="/dashboard/qr-generator"
-                    >
-                      <Holds>
-                        <Images
-                          titleImg="/qr.svg"
-                          titleImgAlt="QR Code"
-                          size={"40"}
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{w("QR")}</Texts>
-                      </Holds>
-                    </Buttons>
-                    <Buttons background={"lightBlue"} href="/dashboard/myTeam">
-                      <Holds>
-                        <Images
-                          titleImg="/team.svg"
-                          titleImgAlt="my team"
-                          size={"40"}
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{w("MyTeam")}</Texts>
-                      </Holds>
-                    </Buttons>
+                      translation={"Widgets"}
+                      href="/dashboard/qr-generator?rPath=/"
+                    />
+
+                    <WidgetContainer
+                      titleImg="/team.svg"
+                      titleImgAlt="my team"
+                      text={"MyTeam"}
+                      background={"lightBlue"}
+                      translation={"Widgets"}
+                      href="/dashboard/myTeam?rPath=/"
+                    />
                   </Holds>
                 )}
                 {pageView === "break" ? (
                   <Holds className="col-span-2 row-span-8 gap-5 h-full">
-                    <Buttons background={"orange"} href="/break">
-                      <Holds className="my-auto">
-                        <Holds size={"50"}>
-                          <Images
-                            titleImg="/clock-in.svg"
-                            titleImgAlt="Clock In Icon"
-                            size={"70"}
-                          />
-                        </Holds>
-                        <Holds size={"50"}>
-                          <Texts size={"p1"}>{f("Clock-btn-break")}</Texts>
-                        </Holds>
-                      </Holds>
-                    </Buttons>
+                    <WidgetContainer
+                      titleImg="/clock-in.svg"
+                      titleImgAlt="Clock In Icon"
+                      text={"Clock-btn-break"}
+                      background={"orange"}
+                      translation={"Home"}
+                      href={"/break"}
+                    />
                   </Holds>
                 ) : (
                   <Holds
@@ -221,37 +209,29 @@ export default function WidgetSection({ session, locale }: Props) {
                         : `col-span-2 row-span-8 gap-5 h-full`
                     }
                   >
-                    <Buttons background={"green"} href="/clock">
-                      {permission === "ADMIN" ||
-                      permission === "SUPERADMIN" ||
-                      permission === "MANAGER" ? (
-                        <Holds position={"row"} className="my-auto">
-                          <Holds size={"60"}>
-                            <Texts size={"p1"}>{f("Clock-btn")}</Texts>
-                          </Holds>
-                          <Holds size={"40"}>
-                            <Images
-                              titleImg="/clock-in.svg"
-                              titleImgAlt="Clock In Icon"
-                              size={"70"}
-                            />
-                          </Holds>
-                        </Holds>
-                      ) : (
-                        <Holds className="my-auto">
-                          <Holds size={"50"}>
-                            <Images
-                              titleImg="/clock-in.svg"
-                              titleImgAlt="Clock In Icon"
-                              size={"70"}
-                            />
-                          </Holds>
-                          <Holds size={"50"}>
-                            <Texts size={"p1"}>{f("Clock-btn")}</Texts>
-                          </Holds>
-                        </Holds>
-                      )}
-                    </Buttons>
+                    {permission === "ADMIN" ||
+                    permission === "SUPERADMIN" ||
+                    permission === "MANAGER" ? (
+                      <WidgetContainer
+                        titleImg="/clock-in.svg"
+                        titleImgAlt="Clock In Icon"
+                        text={"Clock-btn"}
+                        textSize="h2"
+                        background={"green"}
+                        translation={"Home"}
+                        href={"/clock"}
+                      />
+                    ) : (
+                      <WidgetContainer
+                        titleImg="/clock-in.svg"
+                        titleImgAlt="Clock In Icon"
+                        text={"Clock-btn"}
+                        textSize="h1"
+                        background={"green"}
+                        translation={"Home"}
+                        href={"/clock"}
+                      />
+                    )}
                   </Holds>
                 )}
               </>
