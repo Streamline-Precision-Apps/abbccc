@@ -1,3 +1,4 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -32,23 +33,28 @@ export default function TimeCardTruckingMileage({
       prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     );
   };
+
   useEffect(() => {
-    console.log(truckingMileage);
+    setEditedTruckingMileage(truckingMileage);
   }, [truckingMileage]);
 
   const isEmptyData =
-    editedTruckingMileage.length === 0 ||
-    (editedTruckingMileage.length === 1 &&
-      !editedTruckingMileage[0].Equipment?.name &&
-      !editedTruckingMileage[0].startingMileage &&
-      !editedTruckingMileage[0].endingMileage);
+    editedTruckingMileage.length === 1 &&
+    !editedTruckingMileage[0].startingMileage &&
+    !editedTruckingMileage[0].endingMileage;
 
   return (
     <Holds className="w-full h-full">
       <Grids rows={"7"}>
         {/* Timesheet Editing Section */}
         <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
-          {!isEmptyData ? (
+          {isEmptyData ? (
+            <Holds className="w-full h-full flex items-center justify-center">
+              <Texts size="p6" className="text-gray-500 italic">
+                No trucking mileage data available
+              </Texts>
+            </Holds>
+          ) : (
             <>
               <Grids cols={"4"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-3 w-full h-full pl-1">
@@ -68,10 +74,10 @@ export default function TimeCardTruckingMileage({
                 </Holds>
               </Grids>
 
-              {editedTruckingMileage.map((sheet) => (
+              {editedTruckingMileage?.map((sheet) => (
                 <Holds
                   key={sheet.id}
-                  className="border-black border-[3px] rounded-lg bg-white"
+                  className="border-black border-[3px] rounded-lg bg-white mb-2"
                 >
                   <Buttons
                     shadow={"none"}
@@ -134,12 +140,6 @@ export default function TimeCardTruckingMileage({
                 </Holds>
               ))}
             </>
-          ) : (
-            <Holds className="w-full h-full flex items-center justify-center">
-              <Texts size="p6" className="text-gray-500 italic">
-                No trucking mileage data available
-              </Texts>
-            </Holds>
           )}
         </Holds>
       </Grids>

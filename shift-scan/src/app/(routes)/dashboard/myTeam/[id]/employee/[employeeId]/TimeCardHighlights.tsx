@@ -48,7 +48,7 @@ export default function TimeCardHighlights({
           {editedHighlightTimesheet.map((sheet) => (
             <Holds
               key={sheet.id}
-              className="border-black border-[3px] rounded-lg bg-white "
+              className="border-black border-[3px] rounded-lg bg-white mb-3 "
             >
               <Buttons
                 key={sheet.id}
