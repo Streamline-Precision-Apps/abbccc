@@ -12,6 +12,8 @@ import { Contents } from "@/components/(reusable)/contents";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import CompanyDocuments from "./companyDocuments";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Images } from "@/components/(reusable)/images";
 
 export default function InboxContent({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
