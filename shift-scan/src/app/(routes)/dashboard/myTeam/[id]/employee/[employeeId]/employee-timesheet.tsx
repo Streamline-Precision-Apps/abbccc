@@ -5,9 +5,8 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
-import EditWorkNew from "./editWork-new";
+import EditWorkNew from "./TimeCardHighlights";
 import { Grids } from "@/components/(reusable)/grids";
-import { Labels } from "@/components/(reusable)/labels";
 import {
   EquipmentLogs,
   TascoHaulLogs,
@@ -28,10 +27,13 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { formatISO, parseISO } from "date-fns";
 import { updateTimeSheets } from "@/actions/timeSheetActions";
-import TimeCardHighlights from "./editWork-new";
+import TimeCardHighlights from "./TimeCardHighlights";
 import TimeCardTruckingMileage from "./TimeCardTruckingMileage";
 import { Texts } from "@/components/(reusable)/texts";
 import TimeCardTruckingHaulLogs from "./TimeCardTruckingHaulLogs";
+import TimeCardTruckingMaterialLogs from "./TimeCardTruckingMaterialLogs";
+import TimeCardTruckingRefuelLogs from "./TimeCardTruckingRefuelLogs";
+import TimeCardTruckingStateMileageLogs from "./TimeCardTruckingStateMileage";
 
 export const EmployeeTimeSheets = ({
   date,
@@ -46,6 +48,8 @@ export const EmployeeTimeSheets = ({
   truckingMileage,
   truckingEquipmentHaulLogs,
   truckingMaterialHaulLogs,
+  truckingRefuelLogs,
+  truckingStateLogs,
 }: {
   date: string;
   setDate: (date: string) => void;
@@ -262,7 +266,6 @@ export const EmployeeTimeSheets = ({
                     )}
                   </>
                 )}
-
                 {timeSheetFilter === "truckingMileage" && (
                   <>
                     {truckingMileage.length > 0 ? (
@@ -283,7 +286,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "truckingEquipmentHaulLogs" && (
                   <>
-                    {truckingMileage.length > 0 ? (
+                    {truckingEquipmentHaulLogs.length > 0 ? (
                       <TimeCardTruckingHaulLogs
                         truckingEquipmentHaulLogs={truckingEquipmentHaulLogs}
                         edit={edit}
@@ -294,6 +297,60 @@ export const EmployeeTimeSheets = ({
                       <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
                         <Texts size="p6" className="text-gray-500 italic">
                           No trucking equipment haul data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "truckingMaterialHaulLogs" && (
+                  <>
+                    {truckingMaterialHaulLogs.length > 0 ? (
+                      <TimeCardTruckingMaterialLogs
+                        truckingMaterialHaulLogs={truckingMaterialHaulLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No trucking material haul data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "truckingRefuelLogs" && (
+                  <>
+                    {truckingRefuelLogs.length > 0 ? (
+                      <TimeCardTruckingRefuelLogs
+                        truckingRefuelLogs={truckingRefuelLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No Refuel data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "truckingStateLogs" && (
+                  <>
+                    {truckingStateLogs.length > 0 ? (
+                      <TimeCardTruckingStateMileageLogs
+                        truckingStateLogs={truckingStateLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No state mileage data available
                         </Texts>
                       </Holds>
                     )}

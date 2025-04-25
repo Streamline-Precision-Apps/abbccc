@@ -6,12 +6,11 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
-import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Comment from "@/components/(clock)/comment";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { Contents } from "../(reusable)/contents";
-import { select } from "@nextui-org/theme";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type Props = {
