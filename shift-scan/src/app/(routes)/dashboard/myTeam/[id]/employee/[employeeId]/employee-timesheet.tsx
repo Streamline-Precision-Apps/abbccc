@@ -11,8 +11,10 @@ import {
   TimeSheet,
   TimesheetHighlights,
   TruckingEquipmentHaulLog,
+  TruckingEquipmentHaulLogData,
   TruckingMaterialHaulLog,
   TruckingMileage,
+  TruckingMileageData,
   TruckingRefuelLog,
   TruckingStateLogs,
 } from "@/lib/types";
@@ -55,10 +57,10 @@ export const EmployeeTimeSheets = ({
 }: {
   date: string;
   setDate: (date: string) => void;
+  truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData | null;
   highlightTimesheet: TimesheetHighlights[];
-  truckingEquipmentHaulLogs: TruckingEquipmentHaulLog[];
   truckingMaterialHaulLogs: TruckingMaterialHaulLog[];
-  truckingMileage: TruckingMileage[];
+  truckingMileage: TruckingMileageData | null;
   truckingRefuelLogs: TruckingRefuelLog[];
   truckingStateLogs: TruckingStateLogs[];
   tascoRefuelLog: TascoRefuelLog[];
@@ -270,7 +272,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "truckingMileage" && (
                   <>
-                    {truckingMileage.length > 0 ? (
+                    {truckingMileage && truckingMileage.length > 0 ? (
                       <TimeCardTruckingMileage
                         truckingMileage={truckingMileage}
                         edit={edit}
@@ -288,7 +290,8 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "truckingEquipmentHaulLogs" && (
                   <>
-                    {truckingEquipmentHaulLogs.length > 0 ? (
+                    {truckingEquipmentHaulLogs &&
+                    truckingEquipmentHaulLogs.length > 0 ? (
                       <TimeCardTruckingHaulLogs
                         truckingEquipmentHaulLogs={truckingEquipmentHaulLogs}
                         edit={edit}
@@ -306,7 +309,8 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "truckingMaterialHaulLogs" && (
                   <>
-                    {truckingMaterialHaulLogs.length > 0 ? (
+                    {truckingMaterialHaulLogs &&
+                    truckingMaterialHaulLogs.length > 0 ? (
                       <TimeCardTruckingMaterialLogs
                         truckingMaterialHaulLogs={truckingMaterialHaulLogs}
                         edit={edit}

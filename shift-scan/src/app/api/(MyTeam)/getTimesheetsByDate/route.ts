@@ -127,13 +127,13 @@ export async function GET(request: Request) {
 
       result = timeSheets;
     }
-    if (type === "truckingHaulLogs") {
+    if (type === "truckingEquipmentHaulLogs") {
       const timeSheets = await prisma.timeSheet.findMany({
         where: {
           userId: employeeId,
           date: {
-            gte: startOfDay.toISOString(), // Start of the day in UTC
-            lte: endOfDay.toISOString(), // End of the day in UTC
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
           },
         },
         orderBy: {
@@ -143,19 +143,23 @@ export async function GET(request: Request) {
           TruckingLogs: {
             select: {
               id: true,
+              Equipment: {
+                select: {
+                  name: true,
+                },
+              },
               EquipmentHauled: {
                 select: {
                   id: true,
-                  truckingLogId: true,
-                  equipmentId: true,
                   Equipment: {
                     select: {
+                      id: true,
                       name: true,
                     },
                   },
-                  jobSiteId: true,
                   JobSite: {
                     select: {
+                      id: true,
                       name: true,
                     },
                   },
@@ -166,6 +170,42 @@ export async function GET(request: Request) {
         },
       });
 
+      // Filter out timesheets with empty TruckingLogs arrays
+      result = timeSheets;
+    }
+    if (type === "truckingMaterialHaulLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              id: true,
+              Materials: {
+                select: {
+                  id: true,
+                  name: true,
+                  LocationOfMaterial: true,
+                  LoadWeight: true,
+                  materialWeight: true,
+                  LightWeight: true,
+                  grossWeight: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Filter out timesheets with empty TruckingLogs arrays
       result = timeSheets;
     }
     if (type === "truckingRefuelLogs") {

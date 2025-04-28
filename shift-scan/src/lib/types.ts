@@ -337,22 +337,36 @@ export type EquipmentCodes = {
   name: string;
 };
 
+//--------------------------------------
+
+export type TruckingEquipmentHaulLogData = TruckingEquipmentHaulLogItem[];
+
+export type TruckingEquipmentHaulLogItem = {
+  TruckingLogs: TruckingEquipmentHaulLog[];
+};
+
 export type TruckingEquipmentHaulLog = {
   id: string;
   Equipment: {
     name: string;
   };
-  EquipmentHauled: {
+  EquipmentHauled: EquipmentHauledItem[]; // Changed from object to array
+};
+
+export type EquipmentHauledItem = {
+  id: string;
+  Equipment: {
     id: string;
-    Equipment: {
-      name: string;
-    };
-    Jobsite: {
-      name: string;
-    };
+    name: string;
+  };
+  JobSite: {
+    // Changed from JobSiteHauledName to JobSite
+    id: string;
+    name: string;
   };
 };
 
+//--------------------------------------
 export type TruckingMaterialHaulLog = {
   id: string;
   Equipment: {
@@ -386,6 +400,13 @@ export type TruckingStateLogs = {
   stateLineMileage: Number;
 };
 
+//--------------------------------------
+export type TruckingMileageData = TruckingMileageItem[];
+
+export type TruckingMileageItem = {
+  TruckingLogs: TruckingMileage[];
+};
+
 export type TruckingMileage = {
   id: string;
   timeSheetId: string | null;
@@ -396,6 +417,8 @@ export type TruckingMileage = {
   startingMileage: number;
   endingMileage: number | null;
 };
+
+//--------------------------------------
 
 export type TimesheetHighlights = {
   submitDate: string;
