@@ -13,6 +13,7 @@ import {
   TruckingEquipmentHaulLog,
   TruckingEquipmentHaulLogData,
   TruckingMaterialHaulLog,
+  TruckingMaterialHaulLogData,
   TruckingMileage,
   TruckingMileageData,
   TruckingRefuelLog,
@@ -59,7 +60,7 @@ export const EmployeeTimeSheets = ({
   setDate: (date: string) => void;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData | null;
   highlightTimesheet: TimesheetHighlights[];
-  truckingMaterialHaulLogs: TruckingMaterialHaulLog[];
+  truckingMaterialHaulLogs: TruckingMaterialHaulLogData | null;
   truckingMileage: TruckingMileageData | null;
   truckingRefuelLogs: TruckingRefuelLog[];
   truckingStateLogs: TruckingStateLogs[];
