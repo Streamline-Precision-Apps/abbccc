@@ -20,6 +20,7 @@ import {
   TruckingMaterialHaulLogData,
   TruckingMileageData,
   TruckingRefuelLog,
+  TruckingRefuelLogData,
   TruckingStateLogs,
 } from "@/lib/types";
 import { useSession } from "next-auth/react";
@@ -88,9 +89,8 @@ export default function EmployeeTabs() {
   const [truckingMileage, setTruckingMileage] =
     useState<TruckingMileageData | null>(null);
 
-  const [truckingRefuelLogs, setTruckingRefuelLogs] = useState<
-    TruckingRefuelLog[]
-  >([]);
+  const [truckingRefuelLogs, setTruckingRefuelLogs] =
+    useState<TruckingRefuelLogData | null>(null);
   const [truckingStateLogs, setTruckingStateLogs] = useState<
     TruckingStateLogs[]
   >([]);
@@ -153,7 +153,7 @@ export default function EmployeeTabs() {
           setTruckingMaterialHaulLogs(data as TruckingMaterialHaulLogData);
         }
         if (timeSheetFilter === "truckingRefuelLogs") {
-          setTruckingRefuelLogs(data as TruckingRefuelLog[]);
+          setTruckingRefuelLogs(data as TruckingRefuelLogData);
         }
         if (timeSheetFilter === "truckingStateLogs") {
           setTruckingStateLogs(data as TruckingStateLogs[]);
