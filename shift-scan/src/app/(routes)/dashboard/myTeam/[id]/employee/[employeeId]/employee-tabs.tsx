@@ -13,11 +13,11 @@ import {
   EquipmentLogs,
   TascoHaulLogs,
   TascoRefuelLog,
-  TimeSheet,
   TimesheetHighlights,
   TruckingEquipmentHaulLog,
+  TruckingEquipmentHaulLogData,
   TruckingMaterialHaulLog,
-  TruckingMileage,
+  TruckingMileageData,
   TruckingRefuelLog,
   TruckingStateLogs,
 } from "@/lib/types";
@@ -79,14 +79,15 @@ export default function EmployeeTabs() {
     TimesheetHighlights[]
   >([]);
 
-  const [truckingEquipmentHaulLogs, setTruckingEquipmentHaulLogs] = useState<
-    TruckingEquipmentHaulLog[]
-  >([]);
+  const [truckingEquipmentHaulLogs, setTruckingEquipmentHaulLogs] =
+    useState<TruckingEquipmentHaulLogData>([]);
   const [truckingMaterialHaulLogs, setTruckingMaterialHaulLogs] = useState<
     TruckingMaterialHaulLog[]
   >([]);
 
-  const [truckingMileage, setTruckingMileage] = useState<TruckingMileage[]>([]);
+  const [truckingMileage, setTruckingMileage] =
+    useState<TruckingMileageData | null>(null);
+
   const [truckingRefuelLogs, setTruckingRefuelLogs] = useState<
     TruckingRefuelLog[]
   >([]);
@@ -143,10 +144,10 @@ export default function EmployeeTabs() {
           setHighlightTimesheet(data as TimesheetHighlights[]);
         }
         if (timeSheetFilter === "truckingMileage") {
-          setTruckingMileage(data as TruckingMileage[]);
+          setTruckingMileage(data as TruckingMileageData);
         }
         if (timeSheetFilter === "truckingEquipmentHaulLogs") {
-          setTruckingEquipmentHaulLogs(data as TruckingEquipmentHaulLog[]);
+          setTruckingEquipmentHaulLogs(data as TruckingEquipmentHaulLogData);
         }
         if (timeSheetFilter === "truckingMaterialHaulLogs") {
           setTruckingMaterialHaulLogs(data as TruckingMaterialHaulLog[]);

@@ -3,7 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
-import { TimeSheet, TimesheetHighlights } from "@/lib/types";
+import { TimesheetHighlights } from "@/lib/types";
 import { useState } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -48,7 +48,8 @@ export default function TimeCardHighlights({
           {editedHighlightTimesheet.map((sheet) => (
             <Holds
               key={sheet.id}
-              className="border-black border-[3px] rounded-lg bg-white mb-3 "
+              background={"white"}
+              className="border-black border-[3px] rounded-[10px] mb-3  "
             >
               <Buttons
                 key={sheet.id}
@@ -58,7 +59,7 @@ export default function TimeCardHighlights({
               >
                 {sheet.startTime && sheet.endTime ? (
                   <>
-                    <Grids cols={"6"} className="w-full h-full ">
+                    <Grids cols={"6"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-2 p-2">
                         <Images
                           titleImg={
@@ -101,7 +102,7 @@ export default function TimeCardHighlights({
                           <Inputs
                             type={"text"}
                             value={sheet.Jobsite.name}
-                            className="text-xs border-none h-full rounded-none justify-center text-right"
+                            className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none  justify-center text-right"
                             onClick={() => setJobsiteModalOpen(true)}
                             disabled={!edit}
                           />
@@ -110,7 +111,7 @@ export default function TimeCardHighlights({
                           <Inputs
                             type={"text"}
                             value={sheet.costcode}
-                            className="text-xs border-none h-full rounded-none justify-center text-right"
+                            className="text-xs border-none h-full rounded-t-none rounded-bl-none  justify-center text-right"
                             onClick={() => setCostCodeModalOpen(true)}
                             disabled={!edit}
                           />
