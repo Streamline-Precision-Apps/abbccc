@@ -162,14 +162,14 @@ export default function Content() {
                     </Contents>
                   </Holds>
                   {crewType === "Mechanic" && (
-                    <Holds className="row-start-7 row-end-8 h-full">
+                    <Holds className="row-start-7 row-end-8 ">
                       <Contents width={"section"}>
                         <Buttons
                           background={"green"}
-                          className="w-full"
+                          className="w-full py-3"
                           href={`/dashboard/mechanic?rUrl=/dashboard/myTeam/${id}?rPath=${url}`}
                         >
-                          <Titles size={"h4"}>{t("ManageProjects")}</Titles>
+                          <Titles size={"h2"}>{t("ManageProjects")}</Titles>
                         </Buttons>
                       </Contents>
                     </Holds>

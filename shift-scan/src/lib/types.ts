@@ -414,20 +414,21 @@ export type TimesheetHighlights = {
 };
 
 export type TascoRefuelLog = {
+  id: string;
   tascoLogId: string;
   gallonsRefueled: number;
 };
 
 export type TascoHaulLogs = {
-  id: String;
-  timeSheetId: String;
-  shiftType: String;
-  equipmentId: String;
-  laborType: String;
-  materialType: String;
-  LoadQuantity: Number;
+  id: string;
+  timeSheetId: string;
+  shiftType: string;
+  equipmentId: string;
+  laborType: string;
+  materialType: string;
+  LoadQuantity: number;
   TascoMaterialTypes: {
-    name: String;
+    name: string;
   };
 };
 

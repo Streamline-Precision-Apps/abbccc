@@ -1,11 +1,8 @@
 "use client";
-
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
-import EditWorkNew from "./TimeCardHighlights";
 import { Grids } from "@/components/(reusable)/grids";
 import {
   EquipmentLogs,
@@ -20,7 +17,6 @@ import {
   TruckingStateLogs,
 } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
-import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -34,6 +30,9 @@ import TimeCardTruckingHaulLogs from "./TimeCardTruckingHaulLogs";
 import TimeCardTruckingMaterialLogs from "./TimeCardTruckingMaterialLogs";
 import TimeCardTruckingRefuelLogs from "./TimeCardTruckingRefuelLogs";
 import TimeCardTruckingStateMileageLogs from "./TimeCardTruckingStateMileage";
+import TimeCardTascoHaulLogs from "./TimeCardTascoHaulLogs";
+import TimeCardTascoRefuelLogs from "./TimeCardTascoRefuelLogs";
+import TimeCardEquipmentLogs from "./TimeCardEquipmentLogs";
 
 export const EmployeeTimeSheets = ({
   date,
@@ -50,6 +49,9 @@ export const EmployeeTimeSheets = ({
   truckingMaterialHaulLogs,
   truckingRefuelLogs,
   truckingStateLogs,
+  tascoRefuelLog,
+  tascoHaulLogs,
+  equipmentLogs,
 }: {
   date: string;
   setDate: (date: string) => void;
@@ -145,7 +147,7 @@ export const EmployeeTimeSheets = ({
           background={"white"}
           className={"row-start-1 row-end-2 h-full w-full rounded-t-none "}
         >
-          <Contents width={"section"} className="h-full pt-3 pb-5">
+          <Contents width={"section"} className="h-full pt-1 pb-5">
             <Grids rows={"3"} className="h-full w-full">
               <Holds className="row-start-1 row-end-1 ">
                 <label htmlFor="date" className="text-xs">
@@ -156,7 +158,7 @@ export const EmployeeTimeSheets = ({
                   name="date"
                   id="date"
                   value={date} // Bind input value to state
-                  className="text-xs text-center border-[3px] py-1 border-black "
+                  className="text-xs text-center border-[3px] py-2 border-black "
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setDate(e.target.value)
                   }
@@ -165,7 +167,7 @@ export const EmployeeTimeSheets = ({
               <Holds className="row-start-2 row-end-3">
                 <Selects
                   onChange={(e) => setTimeSheetFilter(e.target.value)}
-                  className="text-center text-xs"
+                  className="text-center text-xs py-2"
                 >
                   <option value="timesheetHighlights">
                     Timesheet Highlights
@@ -351,6 +353,60 @@ export const EmployeeTimeSheets = ({
                       <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
                         <Texts size="p6" className="text-gray-500 italic">
                           No state mileage data available
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "tascoHaulLogs" && (
+                  <>
+                    {truckingStateLogs.length > 0 ? (
+                      <TimeCardTascoHaulLogs
+                        tascoHaulLogs={tascoHaulLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No Tasco Hauling Logs
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "tascoRefuelLogs" && (
+                  <>
+                    {truckingStateLogs.length > 0 ? (
+                      <TimeCardTascoRefuelLogs
+                        tascoRefuelLog={tascoRefuelLog}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No Tasco Fueling Logs
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+                {timeSheetFilter === "equipmentLogs" && (
+                  <>
+                    {truckingStateLogs.length > 0 ? (
+                      <TimeCardEquipmentLogs
+                        equipmentLogs={equipmentLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No Equipment Logs
                         </Texts>
                       </Holds>
                     )}
