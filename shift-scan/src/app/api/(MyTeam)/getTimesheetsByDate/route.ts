@@ -222,10 +222,16 @@ export async function GET(request: Request) {
         select: {
           TruckingLogs: {
             select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               RefuelLogs: {
                 select: {
                   id: true,
-                  truckingLogId: true,
                   gallonsRefueled: true,
                   milesAtFueling: true,
                 },

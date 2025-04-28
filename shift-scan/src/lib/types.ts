@@ -393,16 +393,27 @@ export type TruckingMaterialHaulLogItem = {
 export type TruckingMaterialHaulLogData = TruckingMaterialHaulLogItem[];
 
 //--------------------------------------
+export type TruckingRefuelLogData = TruckingRefuelLogItem[];
+
+export type TruckingRefuelLogItem = {
+  TruckingLogs: TruckingRefuelLog[];
+};
 export type TruckingRefuelLog = {
   id: string;
-  truckingLogId: string;
   Equipment: {
+    id: string;
     name: string;
   };
+  RefuelLogs: TruckingRefuel[];
+};
+
+export type TruckingRefuel = {
+  id: string;
   gallonsRefueled: number;
   milesAtFueling: number;
 };
 
+//--------------------------------------
 export type TruckingStateLogs = {
   id: string;
   Equipment: {

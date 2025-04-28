@@ -17,6 +17,7 @@ import {
   TruckingMileage,
   TruckingMileageData,
   TruckingRefuelLog,
+  TruckingRefuelLogData,
   TruckingStateLogs,
 } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
@@ -62,7 +63,7 @@ export const EmployeeTimeSheets = ({
   highlightTimesheet: TimesheetHighlights[];
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData | null;
   truckingMileage: TruckingMileageData | null;
-  truckingRefuelLogs: TruckingRefuelLog[];
+  truckingRefuelLogs: TruckingRefuelLogData | null;
   truckingStateLogs: TruckingStateLogs[];
   tascoRefuelLog: TascoRefuelLog[];
   tascoHaulLogs: TascoHaulLogs[];
@@ -329,7 +330,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "truckingRefuelLogs" && (
                   <>
-                    {truckingRefuelLogs.length > 0 ? (
+                    {truckingRefuelLogs && truckingRefuelLogs.length > 0 ? (
                       <TimeCardTruckingRefuelLogs
                         truckingRefuelLogs={truckingRefuelLogs}
                         edit={edit}
