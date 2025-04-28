@@ -258,6 +258,12 @@ export async function GET(request: Request) {
         select: {
           TruckingLogs: {
             select: {
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               StateMileages: {
                 select: {
                   id: true,
