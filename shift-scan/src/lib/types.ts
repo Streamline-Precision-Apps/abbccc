@@ -414,15 +414,28 @@ export type TruckingRefuel = {
 };
 
 //--------------------------------------
-export type TruckingStateLogs = {
+
+// Updated types to match your API response
+export type StateMileageLog = {
   id: string;
+  truckingLogId: string;
+  state: string;
+  stateLineMileage: number;
+};
+
+export type TruckingStateLog = {
   Equipment: {
+    id: string;
     name: string;
   };
-  truckingLogId: String;
-  state: string;
-  stateLineMileage: Number;
+  StateMileages: StateMileageLog[];
 };
+
+export type TruckingStateLogItem = {
+  TruckingLogs: (TruckingStateLog | null)[];
+};
+
+export type TruckingStateLogData = TruckingStateLogItem[];
 
 //--------------------------------------
 export type TruckingMileageData = TruckingMileageItem[];

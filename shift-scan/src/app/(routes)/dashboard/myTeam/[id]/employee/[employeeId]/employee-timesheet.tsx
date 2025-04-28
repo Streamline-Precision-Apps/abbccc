@@ -18,7 +18,7 @@ import {
   TruckingMileageData,
   TruckingRefuelLog,
   TruckingRefuelLogData,
-  TruckingStateLogs,
+  TruckingStateLogData,
 } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
@@ -59,12 +59,12 @@ export const EmployeeTimeSheets = ({
 }: {
   date: string;
   setDate: (date: string) => void;
+  truckingStateLogs: TruckingStateLogData | null;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData | null;
   highlightTimesheet: TimesheetHighlights[];
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData | null;
   truckingMileage: TruckingMileageData | null;
   truckingRefuelLogs: TruckingRefuelLogData | null;
-  truckingStateLogs: TruckingStateLogs[];
   tascoRefuelLog: TascoRefuelLog[];
   tascoHaulLogs: TascoHaulLogs[];
   equipmentLogs: EquipmentLogs[];
@@ -348,7 +348,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "truckingStateLogs" && (
                   <>
-                    {truckingStateLogs.length > 0 ? (
+                    {truckingStateLogs && truckingStateLogs.length > 0 ? (
                       <TimeCardTruckingStateMileageLogs
                         truckingStateLogs={truckingStateLogs}
                         edit={edit}
@@ -366,7 +366,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "tascoHaulLogs" && (
                   <>
-                    {truckingStateLogs.length > 0 ? (
+                    {tascoHaulLogs && tascoHaulLogs.length > 0 ? (
                       <TimeCardTascoHaulLogs
                         tascoHaulLogs={tascoHaulLogs}
                         edit={edit}
@@ -384,7 +384,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "tascoRefuelLogs" && (
                   <>
-                    {truckingStateLogs.length > 0 ? (
+                    {tascoRefuelLog && tascoRefuelLog.length > 0 ? (
                       <TimeCardTascoRefuelLogs
                         tascoRefuelLog={tascoRefuelLog}
                         edit={edit}
@@ -402,7 +402,7 @@ export const EmployeeTimeSheets = ({
                 )}
                 {timeSheetFilter === "equipmentLogs" && (
                   <>
-                    {truckingStateLogs.length > 0 ? (
+                    {equipmentLogs && equipmentLogs.length > 0 ? (
                       <TimeCardEquipmentLogs
                         equipmentLogs={equipmentLogs}
                         edit={edit}
