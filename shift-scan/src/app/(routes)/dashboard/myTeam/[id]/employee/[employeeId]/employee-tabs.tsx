@@ -24,7 +24,6 @@ import {
 import { useSession } from "next-auth/react";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
-import { time } from "console";
 
 // Zod schema for employee data
 const EmployeeSchema = z.object({
