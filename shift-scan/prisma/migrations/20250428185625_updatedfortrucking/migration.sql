@@ -8,7 +8,7 @@ CREATE TYPE "FieldType" AS ENUM ('TEXT', 'TEXTAREA', 'NUMBER', 'DATE', 'FILE', '
 CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
-CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'VEHICLE', 'EQUIPMENT');
 
 -- CreateEnum
 CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
@@ -24,6 +24,9 @@ CREATE TYPE "Priority" AS ENUM ('PENDING', 'LOW', 'MEDIUM', 'HIGH', 'TODAY');
 
 -- CreateEnum
 CREATE TYPE "LoadType" AS ENUM ('UNSCREENED', 'SCREENED');
+
+-- CreateEnum
+CREATE TYPE "TimeSheetStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
 
 -- CreateTable
 CREATE TABLE "Company" (
@@ -100,7 +103,6 @@ CREATE TABLE "Equipment" (
     "qrId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "documentTagId" TEXT,
     "equipmentTag" "EquipmentTags" NOT NULL DEFAULT 'EQUIPMENT',
     "status" "EquipmentStatus" NOT NULL DEFAULT 'OPERATIONAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -297,7 +299,7 @@ CREATE TABLE "TimeSheet" (
     "comment" TEXT,
     "statusComment" TEXT,
     "location" TEXT,
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "TimeSheetStatus" NOT NULL DEFAULT 'PENDING',
     "workType" "WorkType" NOT NULL,
     "editedByUserId" TEXT,
     "newTimeSheetId" TEXT,
@@ -391,12 +393,14 @@ CREATE TABLE "StateMileage" (
 -- CreateTable
 CREATE TABLE "Material" (
     "id" TEXT NOT NULL,
-    "LocationOfMaterial" TEXT,
     "truckingLogId" TEXT NOT NULL,
+    "LocationOfMaterial" TEXT,
     "name" TEXT,
     "quantity" INTEGER,
+    "materialWeight" DOUBLE PRECISION,
+    "lightWeight" DOUBLE PRECISION,
+    "grossWeight" DOUBLE PRECISION,
     "loadType" "LoadType",
-    "LoadWeight" DOUBLE PRECISION,
 
     CONSTRAINT "Material_pkey" PRIMARY KEY ("id")
 );

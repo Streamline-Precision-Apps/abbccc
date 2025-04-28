@@ -93,7 +93,7 @@ export default function TimeCardTruckingHaulLogs({
                           <Inputs
                             type={"text"}
                             value={hauledItem.JobSite?.name || ""}
-                            className="text-xs border-none rounded-md h-full rounded-bl-none rounded-tl-none justify-center text-right"
+                            className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
                             disabled={!edit}
                           />
                         </Holds>

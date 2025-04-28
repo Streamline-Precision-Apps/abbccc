@@ -367,19 +367,32 @@ export type EquipmentHauledItem = {
 };
 
 //--------------------------------------
+export type TruckingMaterial = {
+  id: string;
+  name: string;
+  LocationOfMaterial: string;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+};
+
 export type TruckingMaterialHaulLog = {
   id: string;
   Equipment: {
-    name: string;
-  };
-  Material: {
     id: string;
     name: string;
-    LocationOfMaterial: string;
-    quantity: number;
   };
+  Materials: TruckingMaterial[];
 };
 
+export type TruckingMaterialHaulLogItem = {
+  id: string;
+  TruckingLogs: (TruckingMaterialHaulLog | null)[];
+};
+
+export type TruckingMaterialHaulLogData = TruckingMaterialHaulLogItem[];
+
+//--------------------------------------
 export type TruckingRefuelLog = {
   id: string;
   truckingLogId: string;

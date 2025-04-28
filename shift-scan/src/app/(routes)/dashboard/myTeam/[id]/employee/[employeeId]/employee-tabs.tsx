@@ -17,6 +17,7 @@ import {
   TruckingEquipmentHaulLog,
   TruckingEquipmentHaulLogData,
   TruckingMaterialHaulLog,
+  TruckingMaterialHaulLogData,
   TruckingMileageData,
   TruckingRefuelLog,
   TruckingStateLogs,
@@ -81,9 +82,8 @@ export default function EmployeeTabs() {
 
   const [truckingEquipmentHaulLogs, setTruckingEquipmentHaulLogs] =
     useState<TruckingEquipmentHaulLogData>([]);
-  const [truckingMaterialHaulLogs, setTruckingMaterialHaulLogs] = useState<
-    TruckingMaterialHaulLog[]
-  >([]);
+  const [truckingMaterialHaulLogs, setTruckingMaterialHaulLogs] =
+    useState<TruckingMaterialHaulLogData>([]);
 
   const [truckingMileage, setTruckingMileage] =
     useState<TruckingMileageData | null>(null);
@@ -150,7 +150,7 @@ export default function EmployeeTabs() {
           setTruckingEquipmentHaulLogs(data as TruckingEquipmentHaulLogData);
         }
         if (timeSheetFilter === "truckingMaterialHaulLogs") {
-          setTruckingMaterialHaulLogs(data as TruckingMaterialHaulLog[]);
+          setTruckingMaterialHaulLogs(data as TruckingMaterialHaulLogData);
         }
         if (timeSheetFilter === "truckingRefuelLogs") {
           setTruckingRefuelLogs(data as TruckingRefuelLog[]);
