@@ -13,7 +13,7 @@ export default async function Inbox() {
   return (
     <Bases>
       <Contents height={"page"}>
-        <Grids rows={"6"} gap={"5"}>
+        <Grids rows={"7"} gap={"4"}>
           <InboxContent isManager={isManager} />
         </Grids>
       </Contents>

@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import STab from "@/app/hamburger/inbox/_components/sent";
-import RTab from "@/app/hamburger/inbox/_components/recieved";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import { NewTab } from "@/components/(reusable)/newTabs";
@@ -39,9 +38,9 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
           </TitleBoxes>
         </Contents>
       </Holds>
-      <Holds className={`row-span-8 h-full `}>
+      <Holds className={`row-span-6 h-full `}>
         <Holds className="h-full">
-          <Grids className="grid-rows-10">
+          <Grids className="grid-rows-11">
             <Holds position={"row"} className="row-span-1 gap-1">
               <NewTab
                 onClick={() => setActiveTab(1)}

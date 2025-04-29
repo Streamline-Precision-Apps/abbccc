@@ -7,10 +7,11 @@ import { Holds } from "@/components/(reusable)/holds";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Selects } from "@/components/(reusable)/selects";
 import { Titles } from "@/components/(reusable)/titles";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Images } from "@/components/(reusable)/images";
 import EqScannerModal from "./eqScannerModal";
+import CodeFinder from "./(search)/codeFinder";
+import { useRouter } from "next/navigation";
 
 type documentType = {
   id: string;
@@ -42,7 +43,6 @@ export default function CompanyDocuments() {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [documents, setDocuments] = useState<documentType[]>([]);
   const [tags, setTags] = useState<tagType[]>([]);
-  const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [scanned, setScanned] = useState<string | null>(null);
   const [equipment, setEquipment] = useState<equipmentType[]>([]);
@@ -50,6 +50,7 @@ export default function CompanyDocuments() {
   const [selectedDocument, setSelectedDocument] = useState<documentType | null>(
     null
   );
+  const router = useRouter();
 
   const handleDownload = async () => {
     if (!selectedDocument) return;
@@ -250,65 +251,36 @@ export default function CompanyDocuments() {
               </Holds>
             ) : (
               <>
-                <Holds
-                  className="row-start-2 row-end-9 h-full w-full overflow-y-scroll no-scrollbar"
-                  background={"darkBlue"}
-                >
-                  {filteredDocuments.map((document) => (
-                    <Holds key={document.id} className="px-2 pb-5">
-                      <Buttons
-                        className={`py-0.5 relative w-full`}
-                        background={
-                          selectedDocument?.id === document.id
-                            ? "green"
-                            : "white"
-                        }
-                        onClick={() => handleDocumentClick(document)}
-                      >
-                        <div className="flex flex-col w-full p-1">
-                          <div className="flex justify-between items-center w-full">
-                            <Titles size={"h4"} text={"black"}>
-                              {document.fileName}
-                            </Titles>
-                            {document.DocumentTags.length > 0 && (
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                {document.DocumentTags[0].tagName}
-                              </span>
-                            )}
-                          </div>
-                          {selectedDocument?.id === document.id &&
-                            document.description && (
-                              <div className="text-left text-sm mt-2 text-black">
-                                {document.description}
-                              </div>
-                            )}
-                        </div>
-                      </Buttons>
-                    </Holds>
-                  ))}
+                <Holds className="row-start-2 row-end-9 h-full w-full">
+                  <CodeFinder
+                    documents={filteredDocuments}
+                    selectedDocument={selectedDocument}
+                    onSelect={(doc) => setSelectedDocument(doc)}
+                    placeholder="Search documents..."
+                  />
                 </Holds>
                 <Holds className="row-start-9 row-end-11 h-[75%] px-2 pb-2">
                   <Grids cols={"2"} gap={"4"}>
                     <Holds className="col-start-1 col-end-2 h-full px-2">
-                    <Buttons
-                      background={selectedDocument ? "orange" : "lightGray"}
-                      onClick={handleDownload}
-                      className="w-full"
-                      disabled={!selectedDocument}
+                      <Buttons
+                        background={selectedDocument ? "orange" : "lightGray"}
+                        onClick={handleDownload}
+                        className="w-full"
+                        disabled={!selectedDocument}
                       >
-                      Download
-                    </Buttons>
-                      </Holds>
+                        Download
+                      </Buttons>
+                    </Holds>
                     <Holds className="col-start-2 col-end-3 h-full px-2">
-                    <Buttons
-                      background={selectedDocument ? "orange" : "lightGray"}
-                      onClick={() => {}}
-                      className="w-full"
-                      disabled={!selectedDocument}
+                      <Buttons
+                        background={selectedDocument ? "orange" : "lightGray"}
+                        onClick={() => {}}
+                        className="w-full"
+                        disabled={!selectedDocument}
                       >
-                      View
-                    </Buttons>
-                      </Holds>
+                        View
+                      </Buttons>
+                    </Holds>
                   </Grids>
                 </Holds>
               </>

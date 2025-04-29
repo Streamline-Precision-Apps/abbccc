@@ -160,21 +160,7 @@ export const InjuryReportContent = ({
                 </Holds>
               </Holds>
 
-              <Holds className="row-start-5 row-end-7 h-full">
-                <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
-                  {base64String ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={base64String}
-                      alt="Loading signature"
-                      className="w-[40%] m-auto"
-                    />
-                  ) : (
-                    <p>No Signature </p>
-                  )}
-                </Holds>
-              </Holds>
-              <Holds position={"row"} className="row-start-7 row-end-8">
+              <Holds position={"row"} className="row-start-5 row-end-6">
                 <Holds size={"80"}>
                   <Titles position={"left"} size="h3">
                     {t("SignatureVerify")}
@@ -190,10 +176,24 @@ export const InjuryReportContent = ({
                   />
                 </Holds>
               </Holds>
+              <Holds className="row-start-6 row-end-8 h-full">
+                <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
+                  {base64String ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={base64String}
+                      alt="Loading signature"
+                      className="w-[40%] m-auto"
+                    />
+                  ) : (
+                    <p>No Signature </p>
+                  )}
+                </Holds>
+              </Holds>
               <Holds className="row-start-8 row-end-9 h-full">
                 <Buttons
                   background={
-                    textarea && signatureChecked
+                    textarea && base64String && signatureChecked
                       ? "lightBlue"
                       : "darkGray"
                   }

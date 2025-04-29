@@ -122,5 +122,14 @@
 - document viewing research. (1.5 hours)
 - conversion of Document section to match figma. (9 hours)
 
-# April 23, 2025 - Wednesday
+# April 23, 2025 - Wednesday and Thursday
 ### built/created
+- recreated search component for document section. Fixed some bugs in the API and selects for it and the documents. Played around with different way of doing document viewer. Worked on my teams and clockout section. Worked on clockout section as well. (20 hours)
+
+# April 24, 2025 - Friday
+### built/created
+- Worked on my teams and clockout section. Worked on clockout section as well. (4.5 hours)
+
+# April 28, 2025 - Monday
+### built/created
+

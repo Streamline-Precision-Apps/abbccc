@@ -40,7 +40,7 @@ export default function ReviewYourDay({
         setLoading(true);
         const response = await fetch("/api/getTodaysTimesheets");
         const data = await response.json();
-        setTimesheets(Array.isArray(data) ? data : []);
+        setTimesheets(data);
       } catch (error) {
         console.error("Error fetching timesheets:", error);
       }
