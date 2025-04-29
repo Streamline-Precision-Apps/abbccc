@@ -8,6 +8,7 @@ import {
   EquipmentLogs,
   TascoHaulLogs,
   TascoRefuelLog,
+  TascoRefuelLogData,
   TimeSheet,
   TimesheetHighlights,
   TruckingEquipmentHaulLog,
@@ -65,7 +66,7 @@ export const EmployeeTimeSheets = ({
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData | null;
   truckingMileage: TruckingMileageData | null;
   truckingRefuelLogs: TruckingRefuelLogData | null;
-  tascoRefuelLog: TascoRefuelLog[];
+  tascoRefuelLog: TascoRefuelLogData | null;
   tascoHaulLogs: TascoHaulLogs[];
   equipmentLogs: EquipmentLogs[];
   edit: boolean;

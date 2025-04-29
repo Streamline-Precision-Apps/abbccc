@@ -4,12 +4,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import {
-  TascoHaulLogs,
-  TruckingMaterialHaulLog,
-  TruckingRefuelLog,
-  TruckingStateLogs,
-} from "@/lib/types";
+import { TascoHaulLogs } from "@/lib/types";
 import { useState } from "react";
 
 type TimeCardTruckingStateMileageLogsProps = {
