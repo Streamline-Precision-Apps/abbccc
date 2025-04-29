@@ -328,6 +328,13 @@ export async function GET(request: Request) {
         select: {
           TascoLogs: {
             select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               RefuelLogs: {
                 select: {
                   id: true,

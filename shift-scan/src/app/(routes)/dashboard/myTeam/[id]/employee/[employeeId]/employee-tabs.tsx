@@ -13,6 +13,7 @@ import {
   EquipmentLogs,
   TascoHaulLogs,
   TascoRefuelLog,
+  TascoRefuelLogData,
   TimesheetHighlights,
   TruckingEquipmentHaulLogData,
   TruckingMaterialHaulLogData,
@@ -91,7 +92,8 @@ export default function EmployeeTabs() {
   const [truckingStateLogs, setTruckingStateLogs] =
     useState<TruckingStateLogData | null>(null);
 
-  const [tascoRefuelLog, setTascoRefuelLog] = useState<TascoRefuelLog[]>([]);
+  const [tascoRefuelLog, setTascoRefuelLog] =
+    useState<TascoRefuelLogData | null>(null);
   const [tascoHaulLogs, setTascoHaulLogs] = useState<TascoHaulLogs[]>([]);
   const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLogs[]>([]);
 
@@ -156,7 +158,7 @@ export default function EmployeeTabs() {
           setTruckingStateLogs(data as TruckingStateLogData);
         }
         if (timeSheetFilter === "tascoRefuelLogs") {
-          setTascoRefuelLog(data as TascoRefuelLog[]);
+          setTascoRefuelLog(data as TascoRefuelLogData);
         }
         if (timeSheetFilter === "tascoHaulLogs") {
           setTascoHaulLogs(data as TascoHaulLogs[]);

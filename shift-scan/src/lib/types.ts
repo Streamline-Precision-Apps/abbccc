@@ -422,7 +422,6 @@ export type StateMileageLog = {
   state: string;
   stateLineMileage: number;
 };
-
 export type TruckingStateLog = {
   Equipment: {
     id: string;
@@ -430,11 +429,9 @@ export type TruckingStateLog = {
   };
   StateMileages: StateMileageLog[];
 };
-
 export type TruckingStateLogItem = {
   TruckingLogs: (TruckingStateLog | null)[];
 };
-
 export type TruckingStateLogData = TruckingStateLogItem[];
 
 //--------------------------------------
@@ -443,7 +440,6 @@ export type TruckingMileageData = TruckingMileageItem[];
 export type TruckingMileageItem = {
   TruckingLogs: TruckingMileage[];
 };
-
 export type TruckingMileage = {
   id: string;
   timeSheetId: string | null;
@@ -472,12 +468,30 @@ export type TimesheetHighlights = {
     name: string;
   };
 };
+//--------------------------------------
 
-export type TascoRefuelLog = {
+export type TascoRefuelLogData = TascoRefuelLogItem[];
+
+export type TascoRefuelLogItem = {
+  TascoLogs: TascoRefuelLog[];
+};
+
+export type RefuelLog = {
   id: string;
   tascoLogId: string;
   gallonsRefueled: number;
 };
+
+export type TascoRefuelLog = {
+  id: string;
+  Equipment: {
+    id: string;
+    name: string;
+  } | null;
+  RefuelLogs: RefuelLog[];
+};
+
+//--------------------------------------
 
 export type TascoHaulLogs = {
   id: string;
@@ -491,6 +505,8 @@ export type TascoHaulLogs = {
     name: string;
   };
 };
+
+//--------------------------------------
 
 export type EquipmentLogs = {
   id: string;
