@@ -431,7 +431,10 @@
     "LeftIdaho": "Left Idaho?",
     "recentlyUsed": "Recently Used",
     "CostCode-Label": "Cost Code:",
+    "EndWorkDay": "End work for the day?",
+    "StartBreak": "Start Break",
     "Submit": "Submit"
+    
   },
   "ClockOut": {
     "Date-label": "Date",
