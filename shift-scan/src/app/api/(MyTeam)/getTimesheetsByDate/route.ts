@@ -127,13 +127,13 @@ export async function GET(request: Request) {
 
       result = timeSheets;
     }
-    if (type === "truckingHaulLogs") {
+    if (type === "truckingEquipmentHaulLogs") {
       const timeSheets = await prisma.timeSheet.findMany({
         where: {
           userId: employeeId,
           date: {
-            gte: startOfDay.toISOString(), // Start of the day in UTC
-            lte: endOfDay.toISOString(), // End of the day in UTC
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
           },
         },
         orderBy: {
@@ -143,19 +143,23 @@ export async function GET(request: Request) {
           TruckingLogs: {
             select: {
               id: true,
+              Equipment: {
+                select: {
+                  name: true,
+                },
+              },
               EquipmentHauled: {
                 select: {
                   id: true,
-                  truckingLogId: true,
-                  equipmentId: true,
                   Equipment: {
                     select: {
+                      id: true,
                       name: true,
                     },
                   },
-                  jobSiteId: true,
                   JobSite: {
                     select: {
+                      id: true,
                       name: true,
                     },
                   },
@@ -166,6 +170,41 @@ export async function GET(request: Request) {
         },
       });
 
+      // Filter out timesheets with empty TruckingLogs arrays
+      result = timeSheets;
+    }
+    if (type === "truckingMaterialHaulLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              id: true,
+              Materials: {
+                select: {
+                  id: true,
+                  name: true,
+                  LocationOfMaterial: true,
+                  materialWeight: true,
+                  lightWeight: true,
+                  grossWeight: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Filter out timesheets with empty TruckingLogs arrays
       result = timeSheets;
     }
     if (type === "truckingRefuelLogs") {
@@ -183,10 +222,16 @@ export async function GET(request: Request) {
         select: {
           TruckingLogs: {
             select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               RefuelLogs: {
                 select: {
                   id: true,
-                  truckingLogId: true,
                   gallonsRefueled: true,
                   milesAtFueling: true,
                 },
@@ -213,6 +258,12 @@ export async function GET(request: Request) {
         select: {
           TruckingLogs: {
             select: {
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               StateMileages: {
                 select: {
                   id: true,
@@ -243,17 +294,13 @@ export async function GET(request: Request) {
         select: {
           TascoLogs: {
             select: {
+              id: true,
               timeSheetId: true,
               shiftType: true,
               equipmentId: true,
               laborType: true,
               materialType: true,
               LoadQuantity: true,
-              TascoMaterialTypes: {
-                select: {
-                  name: true,
-                },
-              },
             },
           },
         },
@@ -277,6 +324,13 @@ export async function GET(request: Request) {
         select: {
           TascoLogs: {
             select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               RefuelLogs: {
                 select: {
                   id: true,
@@ -309,15 +363,15 @@ export async function GET(request: Request) {
             select: {
               id: true,
               employeeId: true,
-              equipmentId: true,
               Equipment: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
-              jobsiteId: true,
               Jobsite: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -328,7 +382,69 @@ export async function GET(request: Request) {
         },
       });
 
-      result = timeSheets;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      const adjustedTimeSheets = timeSheets.map((sheet) => {
+        const baseData = {
+          ...sheet,
+        };
+
+        // Process each equipment log's times
+        const adjustedLogs = sheet.EmployeeEquipmentLogs.map((log) => ({
+          ...log,
+          startTime: log.startTime
+            ? formatInTimeZone(log.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+            : "",
+          endTime: log.endTime
+            ? formatInTimeZone(log.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+            : "",
+        }));
+
+        return {
+          ...baseData,
+          EmployeeEquipmentLogs: adjustedLogs,
+        };
+      });
+
+      result = adjustedTimeSheets;
+    }
+
+    if (type === "equipmentRefuelLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              RefuelLogs: {
+                select: {
+                  id: true,
+                  gallonsRefueled: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      result = timeSheets
+        .flatMap((sheet) => sheet.EmployeeEquipmentLogs)
+        .filter((log) => log.RefuelLogs && log.RefuelLogs.length > 0); // or any other condition you need;
     }
 
     return NextResponse.json(result, {

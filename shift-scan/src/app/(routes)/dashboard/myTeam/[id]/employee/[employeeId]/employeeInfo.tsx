@@ -1,12 +1,4 @@
 "use client";
-import Spinner from "@/components/(animations)/spinner";
-import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
-import { Titles } from "@/components/(reusable)/titles";
-import { useTranslations } from "next-intl";
 
 type Employee = {
   id: string;
@@ -23,6 +15,14 @@ type Contact = {
   emergencyContact?: string;
   emergencyContactNumber?: string;
 };
+
+import Spinner from "@/components/(animations)/spinner";
+import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Labels } from "@/components/(reusable)/labels";
+import { useTranslations } from "next-intl";
 
 export default function EmployeeInfo({
   employee,

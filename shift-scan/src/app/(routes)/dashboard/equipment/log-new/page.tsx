@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { Grids } from "@/components/(reusable)/grids";
 import { redirect } from "next/navigation";
 import NewClockProcess from "@/components/(clock)/newclockProcess";
+import ScanEquipment from "./scanEquipmentSteps";
 
 export default async function SwitchJobs() {
   const session = await auth();
@@ -22,18 +23,8 @@ export default async function SwitchJobs() {
     <Bases>
       <Contents>
         <Grids rows={"1"}>
-          <Holds className="h-full row-span-1">
-            <NewClockProcess
-              mechanicView={false}
-              tascoView={false}
-              truckView={false}
-              laborView={false}
-              type={"equipment"}
-              returnpath="/dashboard/equipment"
-              scannerType={"equipment"}
-              option={"equipment"}
-              locale={locale}
-            />
+          <Holds background={"white"} className="h-full row-span-1">
+            <ScanEquipment />
           </Holds>
         </Grids>
       </Contents>

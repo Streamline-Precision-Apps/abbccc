@@ -358,7 +358,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"5"} className="h-full w-full ">
+        <Grids rows={"7"} gap={"5"} className="h-full w-full ">
           <Holds
             background="white"
             className={
@@ -367,25 +367,21 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 : "row-span-1 h-full justify-center"
             }
           >
-            <TitleBoxes
-              title={
-                isLoading
+            <TitleBoxes onClick={() => router.push("/dashboard/equipment")}>
+              <Titles size={"h2"}>
+                {isLoading
                   ? "Loading..."
                   : `${formState.equipment.name.slice(0, 16)}${
                       formState.equipment.name.length > 16 ? "..." : ""
-                    }`
-              }
-              type="row"
-              titleImg=""
-              titleImgAlt="No equipment image"
-              className="w-full h-full"
-            />
+                    }`}
+              </Titles>
+            </TitleBoxes>
           </Holds>
-          <Holds className="row-start-2 row-end-9 h-full w-full">
+          <Holds className="row-start-2 row-end-8 h-full w-full">
             <Grids rows={"10"} className="h-full w-full ">
               <Holds
                 position={"row"}
-                className={`row-start-1 row-end-2  w-full gap-1 ${
+                className={`row-start-1 row-end-2 h-full w-full gap-1 ${
                   isLoading ? "animate-pulse" : ""
                 }`}
               >

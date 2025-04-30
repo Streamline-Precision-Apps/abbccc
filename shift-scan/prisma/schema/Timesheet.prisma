@@ -109,12 +109,14 @@ model StateMileage {
 
 model Material {
   id                 String      @id @default(uuid())
-  LocationOfMaterial String?
   truckingLogId      String
+  LocationOfMaterial String?
   name               String?
   quantity           Int?
+  materialWeight     Float?
+  lightWeight        Float?
+  grossWeight        Float?
   loadType           LoadType?
-  LoadWeight         Float?
   TruckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id])
 }
 
