@@ -365,7 +365,7 @@ export default function AddEquipmentForm() {
                   disabled={!formValidation || isSubmitting}
                 >
                   <Titles size={"h2"}>
-                    {isSubmitting ? t("Submitting...") : t("CreateEquipment")}
+                    {isSubmitting ? t("Submitting") : t("CreateEquipment")}
                   </Titles>
                 </Buttons>
               </Holds>

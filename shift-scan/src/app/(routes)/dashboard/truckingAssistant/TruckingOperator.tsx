@@ -96,7 +96,7 @@ export default function TruckOperator() {
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
         const data = await Promise.all(responses.map((res) => res.json()));
 
-        setNotes(data[0].comment || "");
+        setNotes(data[0] || "");
         setRefuelLogs(data[1]);
         setMaterial(data[2]);
       } catch (error) {

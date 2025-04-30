@@ -28,7 +28,9 @@ model CreationLogs {
   id              String     @id @default(cuid())
   createdById     String? // User ID (employee or admin)
   equipmentId     String?    @unique
-  jobsiteId       String?    @unique
+  jobsiteId       String?    
+  // I removed @ unique to fix the qr generator section.
+  // jobsiteId       String?    @unique
   comment         String? // creating section
   createdByOffice Boolean    @default(false) // True if created by admin/office
   Equipment       Equipment? @relation(fields: [equipmentId], references: [id])

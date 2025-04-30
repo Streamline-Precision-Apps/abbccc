@@ -49,10 +49,7 @@ export default function FinishProjectModal({
           <Holds className="row-span-1 h-full justify-center">
             <TitleBoxes
               title={title.slice(0, 20) + "..."}
-              titleImg="/mechanic.svg"
-              titleImgAlt={t("Mechanic")}
               onClick={onClose}
-              type="noIcon-NoHref"
             />
           </Holds>
           <Holds className="row-start-2 row-end-8 h-full">

@@ -12,6 +12,8 @@ import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
+import { form } from "@nextui-org/theme";
+import { auth } from "@/auth";
 
 export default function Comment({
   handleClick,
@@ -35,20 +37,20 @@ export default function Comment({
     window.history.back();
   };
 
-  const awaitAllProcesses = async () => {
-    // Fetch data for a form submit and process them concurrently
-    setLoading(true);
-    await processOne();
-    // remove cookies from previous session and clear local storage
-    await processTwo();
-    setLoading(false);
-    return router.push("/dashboard");
-  };
-
   const processOne = async () => {
     try {
+      // Step 1: Get the recent timecard ID.
+      const response = await fetch("/api/getRecentTimecard");
+      const tsId = await response.json();
+      const timeSheetId = tsId.id;
+
+      if (!timeSheetId) {
+        alert("No valid TimeSheet ID was found. Please try again later.");
+        return;
+      }
       const formData2 = new FormData();
 
+      formData2.append("id", timeSheetId);
       formData2.append("endTime", new Date().toISOString());
       formData2.append("timesheetComments", commentsValue);
 
@@ -61,16 +63,6 @@ export default function Comment({
       console.error(err);
     }
   };
-
-  async function processTwo() {
-    try {
-      // Step 4: Delete cookies and clear localStorage.
-      await fetch("/api/cookies?method=deleteAll");
-      localStorage.clear();
-    } catch (error) {
-      console.error("Failed to process the time sheet:", error);
-    }
-  }
 
   return (
     <Holds background={"white"} className="h-full w-full">
@@ -129,7 +121,7 @@ export default function Comment({
         <Holds position={"row"} className="row-start-8 row-end-9 h-full ">
           <Buttons
             background={commentsValue.length < 3 ? "darkGray" : "orange"}
-            onClick={checked ? handleClick : awaitAllProcesses}
+            onClick={checked ? handleClick : processOne}
             disabled={commentsValue.length < 3}
             className="w-full h-full py-3"
           >

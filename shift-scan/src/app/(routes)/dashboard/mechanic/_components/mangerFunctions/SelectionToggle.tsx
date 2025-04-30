@@ -15,7 +15,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
+  User: {
     id: string;
     firstName: string;
     lastName: string;
@@ -23,15 +23,24 @@ type MaintenanceLog = {
   };
 };
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 type Project = {
   id: string;
   equipmentId: string;
-  equipment: { name: string };
+  equipmentIssue: string;
+  additionalInfo: string;
   selected: boolean;
   repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 export function SelectionToggle({
