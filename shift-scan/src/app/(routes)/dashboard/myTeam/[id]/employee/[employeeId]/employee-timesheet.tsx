@@ -5,7 +5,8 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import {
-  EquipmentLogs,
+  EquipmentLogsData,
+  TascoHaulLogData,
   TascoHaulLogs,
   TascoRefuelLog,
   TascoRefuelLogData,
@@ -67,8 +68,8 @@ export const EmployeeTimeSheets = ({
   truckingMileage: TruckingMileageData | null;
   truckingRefuelLogs: TruckingRefuelLogData | null;
   tascoRefuelLog: TascoRefuelLogData | null;
-  tascoHaulLogs: TascoHaulLogs[];
-  equipmentLogs: EquipmentLogs[];
+  tascoHaulLogs: TascoHaulLogData | null;
+  equipmentLogs: EquipmentLogsData | null;
   edit: boolean;
   setEdit: (edit: boolean) => void;
   loading: boolean;

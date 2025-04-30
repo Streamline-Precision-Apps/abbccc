@@ -10,9 +10,8 @@ import { EmployeeTimeSheets } from "./employee-timesheet";
 import EmployeeInfo from "./employeeInfo";
 import { format } from "date-fns";
 import {
-  EquipmentLogs,
   TascoHaulLogs,
-  TascoRefuelLog,
+  TascoHaulLogData,
   TascoRefuelLogData,
   TimesheetHighlights,
   TruckingEquipmentHaulLogData,
@@ -20,6 +19,7 @@ import {
   TruckingMileageData,
   TruckingRefuelLogData,
   TruckingStateLogData,
+  EquipmentLogsData,
 } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { NewTab } from "@/components/(reusable)/newTabs";
@@ -94,8 +94,12 @@ export default function EmployeeTabs() {
 
   const [tascoRefuelLog, setTascoRefuelLog] =
     useState<TascoRefuelLogData | null>(null);
-  const [tascoHaulLogs, setTascoHaulLogs] = useState<TascoHaulLogs[]>([]);
-  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLogs[]>([]);
+  const [tascoHaulLogs, setTascoHaulLogs] = useState<TascoHaulLogData | null>(
+    null
+  );
+  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLogsData | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,10 +165,10 @@ export default function EmployeeTabs() {
           setTascoRefuelLog(data as TascoRefuelLogData);
         }
         if (timeSheetFilter === "tascoHaulLogs") {
-          setTascoHaulLogs(data as TascoHaulLogs[]);
+          setTascoHaulLogs(data as TascoHaulLogData);
         }
         if (timeSheetFilter === "equipmentLogs") {
-          setEquipmentLogs(data as EquipmentLogs[]);
+          setEquipmentLogs(data as EquipmentLogsData);
         }
       } catch (error) {
         console.log(error);

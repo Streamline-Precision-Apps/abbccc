@@ -178,7 +178,7 @@ export type EmployeeEquipmentLogs = {
   isCompleted: boolean;
   isFinished: boolean;
   status: FormStatus;
-  equipment?: Equipment | null;
+  Equipment?: Equipment | null;
 };
 export type TimeSheetView = {
   submitDate?: string; // Changed to string since API returns string dates
@@ -492,6 +492,11 @@ export type TascoRefuelLog = {
 };
 
 //--------------------------------------
+export type TascoHaulLogData = TascoHaulLogItem[];
+
+export type TascoHaulLogItem = {
+  TascoLogs: TascoHaulLogs[];
+};
 
 export type TascoHaulLogs = {
   id: string;
@@ -501,27 +506,28 @@ export type TascoHaulLogs = {
   laborType: string;
   materialType: string;
   LoadQuantity: number;
-  TascoMaterialTypes: {
-    name: string;
-  };
 };
 
 //--------------------------------------
 
-export type EquipmentLogs = {
+export type EmployeeEquipmentLogData = {
   id: string;
-  employeeId: string;
-  equipmentId: string;
-  Equipment: {
-    name: string;
-  };
-  jobsiteId: string;
+  startTime: Date | null;
+  endTime: Date | null;
   Jobsite: {
+    id: string;
     name: string;
   };
-  startTime?: Date | null;
-  endTime?: Date | null;
+  employeeId: string;
+  Equipment: {
+    id: string;
+    name: string;
+  };
 };
+
+export type EquipmentLogsData = {
+  EmployeeEquipmentLogs: EmployeeEquipmentLogData[];
+}[];
 
 export type TimeSheet = {
   submitDate: string;

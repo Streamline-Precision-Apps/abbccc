@@ -4,14 +4,14 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { EquipmentLogs } from "@/lib/types";
-import { useState } from "react";
+import { EquipmentLogsData } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 type TimeCardTruckingStateMileageLogsProps = {
   edit: boolean;
   setEdit: (edit: boolean) => void;
   manager: string;
-  equipmentLogs: EquipmentLogs[];
+  equipmentLogs: EquipmentLogsData;
 };
 
 export default function TimeCardEquipmentLogs({
@@ -20,17 +20,18 @@ export default function TimeCardEquipmentLogs({
   manager,
   equipmentLogs,
 }: TimeCardTruckingStateMileageLogsProps) {
+  const allEquipmentLogs = equipmentLogs
+    .flatMap((log) => log.EmployeeEquipmentLogs)
+    .filter((log) => log.Equipment !== null)
+    .flatMap((log) => log.Equipment);
   const [editedEquipmentLogs, setEditedEquipmentLogs] =
-    useState<EquipmentLogs[]>(equipmentLogs);
+    useState(allEquipmentLogs);
 
-  const isEmptyData =
-    editedEquipmentLogs.length === 0 ||
-    (editedEquipmentLogs.length === 1 &&
-      !editedEquipmentLogs[0].startTime &&
-      !editedEquipmentLogs[0].endTime &&
-      !editedEquipmentLogs[0].equipmentId &&
-      !editedEquipmentLogs[0].jobsiteId &&
-      !editedEquipmentLogs[0].id);
+  useEffect(() => {
+    setEditedEquipmentLogs(allEquipmentLogs);
+  }, [equipmentLogs]);
+
+  const isEmptyData = editedEquipmentLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
@@ -38,15 +39,20 @@ export default function TimeCardEquipmentLogs({
         <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
           {!isEmptyData ? (
             <>
-              <Grids cols={"2"} className="w-full h-fit">
-                <Holds className="col-start-1 col-end-2 w-full h-full pr-1">
-                  <Titles position={"center"} size={"h6"}>
-                    Material & Location
+              <Grids cols={"5"} className="w-full h-fit">
+                <Holds className="col-start-1 col-end-3 w-full h-full pr-1">
+                  <Titles position={"left"} size={"h6"}>
+                    Equipment ID
                   </Titles>
                 </Holds>
-                <Holds className="col-start-2 col-end-3 w-full h-full pr-1">
+                <Holds className="col-start-3 col-end-5 w-full h-full pr-1">
+                  <Titles position={"center"} size={"h6"}>
+                    Usage Time
+                  </Titles>
+                </Holds>
+                <Holds className="col-start-5 col-end-6 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Weight
+                    Refuel
                   </Titles>
                 </Holds>
               </Grids>
@@ -61,7 +67,29 @@ export default function TimeCardEquipmentLogs({
                     background={"none"}
                     className="w-full h-full text-left"
                   >
-                    <Grids cols={"3"} className="w-full h-full"></Grids>
+                    <Grids cols={"5"} className="w-full h-full">
+                      <Holds className="col-start-1 col-end-3 w-full h-full pr-1">
+                        <Inputs
+                          value={""}
+                          disabled={true}
+                          className="w-full h-full"
+                        />
+                      </Holds>
+                      <Holds className="col-start-3 col-end-5 w-full h-full pr-1">
+                        <Inputs
+                          value={""}
+                          disabled={true}
+                          className="w-full h-full"
+                        />
+                      </Holds>
+                      <Holds className="col-start-5 col-end-6 w-full h-full pr-1">
+                        <Inputs
+                          value={""}
+                          disabled={true}
+                          className="w-full h-full"
+                        />
+                      </Holds>
+                    </Grids>
                   </Buttons>
                 </Holds>
               ))}
