@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import AccountInformation from "./accountInformation";
 import ProfileImageEditor from "@/app/hamburger/profile/ProfileImageEditor";
@@ -41,6 +41,8 @@ type Employee = {
 
 export default function ProfilePage({ userId }: { userId: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const url = searchParams.get("returnUrl") || "/dashboard";
   const t = useTranslations("Hamburger");
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
@@ -195,7 +197,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
               <Images
                 titleImg="/turnBack.svg"
                 titleImgAlt="Back"
-                onClick={() => router.back()}
+                onClick={() => router.push(url)}
                 className="max-w-[40px] max-h-[40px]"
               />
             </Holds>

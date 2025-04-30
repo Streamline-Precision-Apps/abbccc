@@ -20,6 +20,7 @@ export async function GET() {
         id: true,
         qrId: true,
         name: true,
+        equipmentTag: true,
       },
     });
 
