@@ -8,18 +8,11 @@ import {
   EmployeeEquipmentLogWithRefuel,
   EquipmentLogsData,
   TascoHaulLogData,
-  TascoHaulLogs,
-  TascoRefuelLog,
   TascoRefuelLogData,
-  TimeSheet,
   TimesheetHighlights,
-  TruckingEquipmentHaulLog,
   TruckingEquipmentHaulLogData,
-  TruckingMaterialHaulLog,
   TruckingMaterialHaulLogData,
-  TruckingMileage,
   TruckingMileageData,
-  TruckingRefuelLog,
   TruckingRefuelLogData,
   TruckingStateLogData,
 } from "@/lib/types";
@@ -28,8 +21,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
-import { formatISO, parseISO } from "date-fns";
-import { updateTimeSheets } from "@/actions/timeSheetActions";
 import TimeCardHighlights from "./TimeCardHighlights";
 import TimeCardTruckingMileage from "./TimeCardTruckingMileage";
 import { Texts } from "@/components/(reusable)/texts";
@@ -61,12 +52,14 @@ export const EmployeeTimeSheets = ({
   tascoHaulLogs,
   equipmentLogs,
   equipmentRefuelLogs,
+  onSaveChanges,
+  onCancelEdits,
 }: {
   date: string;
   setDate: (date: string) => void;
   truckingStateLogs: TruckingStateLogData | null;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData | null;
-  highlightTimesheet: TimesheetHighlights[];
+  highlightTimesheet: TimesheetHighlights[] | null;
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData | null;
   truckingMileage: TruckingMileageData | null;
   truckingRefuelLogs: TruckingRefuelLogData | null;
@@ -80,76 +73,10 @@ export const EmployeeTimeSheets = ({
   timeSheetFilter: string;
   setTimeSheetFilter: Dispatch<SetStateAction<string>>;
   equipmentRefuelLogs: EmployeeEquipmentLogWithRefuel[] | null;
+  onSaveChanges: () => void;
+  onCancelEdits: () => void;
 }) => {
   const t = useTranslations("MyTeam");
-
-  const [editedHighlightTimesheet, setEditedHighlightTimesheet] =
-    useState<TimesheetHighlights[]>(highlightTimesheet);
-
-  const getUpdatedSheets = (
-    original: TimesheetHighlights[],
-    edited: TimesheetHighlights[]
-  ): TimesheetHighlights[] => {
-    return edited.filter((editedSheet) => {
-      const originalSheet = original.find(
-        (sheet) => sheet.id === editedSheet.id
-      );
-
-      if (!originalSheet) return false;
-
-      return (
-        editedSheet.date !== originalSheet.date ||
-        editedSheet.startTime !== originalSheet.startTime ||
-        editedSheet.endTime !== originalSheet.endTime ||
-        editedSheet.workType !== originalSheet.workType
-      );
-    });
-  };
-
-  const onSaveChanges = async () => {
-    const updatedSheets = getUpdatedSheets(
-      highlightTimesheet,
-      editedHighlightTimesheet
-    );
-
-    if (updatedSheets.length > 0) {
-      // Convert date and time to ISO format
-      const isoFormattedSheets = updatedSheets.map((sheet) => {
-        const startTime = sheet.startTime;
-        const endTime = sheet.endTime;
-
-        // Convert startTime to ISO
-        if (startTime) {
-          sheet.startTime = parseISO(formatISO(startTime)).toISOString();
-        }
-
-        // Convert endTime to ISO
-        if (endTime) {
-          sheet.endTime = parseISO(formatISO(endTime)).toISOString();
-        }
-
-        console.log(
-          "Updated Timesheets (ISO):",
-          sheet.startTime,
-          sheet.endTime
-        );
-        return sheet;
-      });
-
-      // Persist changes to the backend
-      await updateTimeSheets(isoFormattedSheets, manager);
-    } else {
-      console.log("No changes were made.");
-    }
-
-    setEdit(false);
-  };
-
-  const onCancelEdits = () => {
-    setEditedHighlightTimesheet([...highlightTimesheet]); // Reset editedTimesheet to the original timesheet
-
-    setEdit(false);
-  };
 
   return (
     <>
@@ -266,7 +193,7 @@ export const EmployeeTimeSheets = ({
               <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
                 {timeSheetFilter === "timesheetHighlights" && (
                   <>
-                    {highlightTimesheet.length > 0 ? (
+                    {highlightTimesheet && highlightTimesheet.length > 0 ? (
                       <TimeCardHighlights
                         highlightTimesheet={highlightTimesheet}
                         edit={edit}
@@ -428,7 +355,6 @@ export const EmployeeTimeSheets = ({
                     )}
                   </>
                 )}
-
                 {timeSheetFilter === "equipmentRefuelLogs" && (
                   <>
                     {equipmentRefuelLogs && equipmentRefuelLogs.length > 0 ? (

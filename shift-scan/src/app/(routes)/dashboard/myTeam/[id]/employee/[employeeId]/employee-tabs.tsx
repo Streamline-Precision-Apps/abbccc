@@ -2,190 +2,161 @@
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
-import { z } from "zod";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { EmployeeTimeSheets } from "./employee-timesheet";
 import EmployeeInfo from "./employeeInfo";
 import { format } from "date-fns";
-import {
-  TascoHaulLogs,
-  TascoHaulLogData,
-  TascoRefuelLogData,
-  TimesheetHighlights,
-  TruckingEquipmentHaulLogData,
-  TruckingMaterialHaulLogData,
-  TruckingMileageData,
-  TruckingRefuelLogData,
-  TruckingStateLogData,
-  EquipmentLogsData,
-  EmployeeEquipmentLogWithRefuel,
-} from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
-
-// Zod schema for employee data
-const EmployeeSchema = z.object({
-  id: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  DOB: z.string().optional(),
-  email: z.string(),
-  image: z.string().nullable().optional(),
-});
-
-type Employee = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  image: string;
-  email: string;
-  DOB?: string;
-  clockedIn?: boolean;
-};
-
-type Contact = {
-  phoneNumber: string;
-  emergencyContact?: string;
-  emergencyContactNumber?: string;
-};
+import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
+import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
+import {
+  TimesheetHighlights,
+  TruckingEquipmentHaulLogData,
+  TruckingMileageData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoRefuelLogData,
+  TascoHaulLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
+  TruckingMaterialHaulLogData,
+} from "@/lib/types";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();
+  const { id } = useParams();
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
   const timeCard = urls.get("timeCard");
-  const { id } = useParams();
-
   const router = useRouter();
   const t = useTranslations("MyTeam");
-  const [employee, setEmployee] = useState<Employee | null>(null);
-  const [contacts, setContacts] = useState<Contact | null>(null);
-  // Loading States
-  const [loadingUser, setLoadingUser] = useState(false);
-  const [loadingTimesheets, setLoadingTimesheets] = useState(false);
-
-  // Combined Loading State
-  const loading = loadingUser || loadingTimesheets;
   const { data: session } = useSession();
   const manager = `${session?.user?.firstName} ${session?.user?.lastName}`;
   const [activeTab, setActiveTab] = useState(1);
   const today = format(new Date(), "yyyy-MM-dd");
-  const [date, setDate] = useState<string>(today); // State for selected date
+  const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
   const [timeSheetFilter, setTimeSheetFilter] = useState("timesheetHighlights");
-  const [highlightTimesheet, setHighlightTimesheet] = useState<
-    TimesheetHighlights[]
-  >([]);
 
-  const [truckingEquipmentHaulLogs, setTruckingEquipmentHaulLogs] =
-    useState<TruckingEquipmentHaulLogData>([]);
-  const [truckingMaterialHaulLogs, setTruckingMaterialHaulLogs] =
-    useState<TruckingMaterialHaulLogData>([]);
-
-  const [truckingMileage, setTruckingMileage] =
-    useState<TruckingMileageData | null>(null);
-
-  const [truckingRefuelLogs, setTruckingRefuelLogs] =
-    useState<TruckingRefuelLogData | null>(null);
-  const [truckingStateLogs, setTruckingStateLogs] =
-    useState<TruckingStateLogData | null>(null);
-
-  const [tascoRefuelLog, setTascoRefuelLog] =
-    useState<TascoRefuelLogData | null>(null);
-  const [tascoHaulLogs, setTascoHaulLogs] = useState<TascoHaulLogData | null>(
-    null
-  );
-  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLogsData | null>(
-    null
-  );
-
-  const [equipmentRefuelLogs, setEquipmentRefuelLogs] = useState<
-    EmployeeEquipmentLogWithRefuel[] | null
+  // State to store the original timesheet data
+  const [originalHighlightTimesheet, setOriginalHighlightTimesheet] = useState<
+    TimesheetHighlights[] | null
   >(null);
+  const [
+    originalTruckingEquipmentHaulLogs,
+    setOriginalTruckingEquipmentHaulLogs,
+  ] = useState<TruckingEquipmentHaulLogData | null>(null);
+  const [
+    originalTruckingMaterialHaulLogs,
+    setOriginalTruckingMaterialHaulLogs,
+  ] = useState<TruckingMaterialHaulLogData | null>(null);
+  const [originalTruckingMileage, setOriginalTruckingMileage] =
+    useState<TruckingMileageData | null>(null);
+  const [originalTruckingRefuelLogs, setOriginalTruckingRefuelLogs] =
+    useState<TruckingRefuelLogData | null>(null);
+  const [originalTruckingStateLogs, setOriginalTruckingStateLogs] =
+    useState<TruckingStateLogData | null>(null);
+  const [originalTascoRefuelLog, setOriginalTascoRefuelLog] =
+    useState<TascoRefuelLogData | null>(null);
+  const [originalTascoHaulLogs, setOriginalTascoHaulLogs] =
+    useState<TascoHaulLogData | null>(null);
+  const [originalEquipmentLogs, setOriginalEquipmentLogs] =
+    useState<EquipmentLogsData | null>(null);
+  const [originalEquipmentRefuelLogs, setOriginalEquipmentRefuelLogs] =
+    useState<EmployeeEquipmentLogWithRefuel[] | null>(null);
+
+  // Timesheet data useHook /(ManagerHooks)/useEmployeeData
+  const {
+    employee,
+    contacts,
+    loading: loadingEmployee,
+    error: errorEmployee,
+  } = useEmployeeData(employeeId as string | undefined);
+
+  // Timesheet data useHook /(ManagerHooks)/useTimesheetData
+  const {
+    highlightTimesheet,
+    truckingEquipmentHaulLogs,
+    truckingMaterialHaulLogs,
+    truckingMileage,
+    truckingRefuelLogs,
+    truckingStateLogs,
+    tascoRefuelLog,
+    tascoHaulLogs,
+    equipmentLogs,
+    equipmentRefuelLogs,
+    loading: loadingTimesheets,
+    error: errorTimesheets,
+    updateDate: fetchTimesheetsForDate,
+    updateFilter: fetchTimesheetsForFilter,
+  } = useTimesheetData(
+    employeeId as string | undefined,
+    date,
+    timeSheetFilter,
+    (initialData) => {
+      // Callback to store the initial data
+      setOriginalHighlightTimesheet(initialData.highlightTimesheet);
+      setOriginalTruckingEquipmentHaulLogs(
+        initialData.truckingEquipmentHaulLogs
+      );
+      setOriginalTruckingMaterialHaulLogs(initialData.truckingMaterialHaulLogs);
+      setOriginalTruckingMileage(initialData.truckingMileage);
+      setOriginalTruckingRefuelLogs(initialData.truckingRefuelLogs);
+      setOriginalTruckingStateLogs(initialData.truckingStateLogs);
+      setOriginalTascoRefuelLog(initialData.tascoRefuelLog);
+      setOriginalTascoHaulLogs(initialData.tascoHaulLogs);
+      setOriginalEquipmentLogs(initialData.equipmentLogs);
+      setOriginalEquipmentRefuelLogs(initialData.equipmentRefuelLogs);
+    }
+  );
+
+  const loading = loadingEmployee || loadingTimesheets;
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoadingUser(true);
-      try {
-        const data = await fetch(`/api/getUserInfo/${employeeId}`);
-        const res = await data.json();
-        console.log(res);
+    fetchTimesheetsForDate(date);
+  }, [date, fetchTimesheetsForDate]);
 
-        // Validate fetched data using Zod
-        try {
-          EmployeeSchema.parse(res.employeeData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in employee data:", error.errors);
-          }
-        }
-
-        if (res.error) {
-          console.error(res.error);
-        } else {
-          setEmployee(res.employeeData);
-          setContacts(res.contact);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    fetchData();
-  }, [employeeId]);
-
-  // Handle date selection and fetch timesheets
   useEffect(() => {
-    setLoadingTimesheets(true);
-    const fetchTimeSheets = async () => {
-      try {
-        const request = await fetch(
-          `/api/getTimesheetsByDate?employeeId=${employeeId}&date=${date}&type=${timeSheetFilter}`
-        );
-        const data = await request.json();
-        if (timeSheetFilter === "timesheetHighlights") {
-          setHighlightTimesheet(data as TimesheetHighlights[]);
-        }
-        if (timeSheetFilter === "truckingMileage") {
-          setTruckingMileage(data as TruckingMileageData);
-        }
-        if (timeSheetFilter === "truckingEquipmentHaulLogs") {
-          setTruckingEquipmentHaulLogs(data as TruckingEquipmentHaulLogData);
-        }
-        if (timeSheetFilter === "truckingMaterialHaulLogs") {
-          setTruckingMaterialHaulLogs(data as TruckingMaterialHaulLogData);
-        }
-        if (timeSheetFilter === "truckingRefuelLogs") {
-          setTruckingRefuelLogs(data as TruckingRefuelLogData);
-        }
-        if (timeSheetFilter === "truckingStateLogs") {
-          setTruckingStateLogs(data as TruckingStateLogData);
-        }
-        if (timeSheetFilter === "tascoRefuelLogs") {
-          setTascoRefuelLog(data as TascoRefuelLogData);
-        }
-        if (timeSheetFilter === "tascoHaulLogs") {
-          setTascoHaulLogs(data as TascoHaulLogData);
-        }
-        if (timeSheetFilter === "equipmentLogs") {
-          setEquipmentLogs(data as EquipmentLogsData);
-        }
-        if (timeSheetFilter === "equipmentRefuelLogs") {
-          setEquipmentRefuelLogs(data as EmployeeEquipmentLogWithRefuel[]);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoadingTimesheets(false);
-      }
-    };
-    fetchTimeSheets();
-  }, [date, timeSheetFilter]);
+    fetchTimesheetsForFilter(timeSheetFilter);
+  }, [timeSheetFilter, fetchTimesheetsForFilter]);
+
+  // Function to revert the timesheet data
+  const revertTimesheetData = useCallback(() => {
+    // Reset the state variables to the original data
+    // Ensure you only reset the data that corresponds to the currently active filter
+    if (timeSheetFilter === "timesheetHighlights") {
+      // Assuming your useTimesheetData hook updates these states
+      // You might need to adjust based on how your hook manages state
+      // One approach is to have the hook return setters as well, or refetch.
+      // For simplicity here, we'll assume the hook updates the states directly.
+      // A cleaner approach might involve the hook managing all the state.
+      // Refetching is another valid strategy.
+      fetchTimesheetsForDate(date); // Simplest way if your hook refetches on date change
+      fetchTimesheetsForFilter(timeSheetFilter); // Ensure the filter is also applied
+    } else if (timeSheetFilter === "truckingMileage") {
+      fetchTimesheetsForDate(date);
+      fetchTimesheetsForFilter(timeSheetFilter);
+    }
+    // ... repeat for other timeSheetFilter values
+    setEdit(false);
+  }, [date, timeSheetFilter, fetchTimesheetsForDate, fetchTimesheetsForFilter]);
+
+  // Placeholder for save changes functionality (will be moved or passed down)
+  const onSaveChanges = () => {
+    console.log("Save changes clicked");
+    setEdit(false);
+  };
+
+  // Placeholder for cancel edits functionality (will be moved or passed down)
+  const onCancelEdits = () => {
+    revertTimesheetData();
+    setEdit(false);
+  };
 
   return (
     <Holds className="h-full w-full">
@@ -266,6 +237,8 @@ export default function EmployeeTabs() {
                   timeSheetFilter={timeSheetFilter}
                   setTimeSheetFilter={setTimeSheetFilter}
                   equipmentRefuelLogs={equipmentRefuelLogs}
+                  onSaveChanges={onSaveChanges}
+                  onCancelEdits={onCancelEdits}
                 />
               )}
             </Holds>
