@@ -294,17 +294,13 @@ export async function GET(request: Request) {
         select: {
           TascoLogs: {
             select: {
+              id: true,
               timeSheetId: true,
               shiftType: true,
               equipmentId: true,
               laborType: true,
               materialType: true,
               LoadQuantity: true,
-              TascoMaterialTypes: {
-                select: {
-                  name: true,
-                },
-              },
             },
           },
         },
@@ -367,15 +363,15 @@ export async function GET(request: Request) {
             select: {
               id: true,
               employeeId: true,
-              equipmentId: true,
               Equipment: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
-              jobsiteId: true,
               Jobsite: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },

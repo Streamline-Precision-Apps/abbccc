@@ -39,13 +39,7 @@ export default function CodeStep({
     <Grids rows={"8"} gap={"5"} className="h-full w-full">
       {backArrow && (
         <Holds className="h-full row-start-1 row-end-2">
-          <TitleBoxes
-            title={t(`Title-${datatype}`)}
-            titleImg="/mechanic.svg"
-            titleImgAlt="Mechanic"
-            onClick={handleBack}
-            type="noIcon-NoHref"
-          />
+          <TitleBoxes title={t(`Title-${datatype}`)} onClick={handleBack} />
         </Holds>
       )}
       <Holds
