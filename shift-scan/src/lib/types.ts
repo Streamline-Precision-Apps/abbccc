@@ -510,24 +510,61 @@ export type TascoHaulLogs = {
 
 //--------------------------------------
 
+export type EquipmentData = {
+  id: string;
+  name: string;
+};
+
+export type JobsiteData = {
+  id: string;
+  name: string;
+};
+
 export type EmployeeEquipmentLogData = {
   id: string;
-  startTime: Date | null;
-  endTime: Date | null;
-  Jobsite: {
-    id: string;
-    name: string;
-  };
+  startTime: string | null; // JSON provides strings, not Date objects
+  endTime: string | null; // JSON provides strings, not Date objects
+  Jobsite: JobsiteData;
   employeeId: string;
-  Equipment: {
-    id: string;
-    name: string;
-  };
+  Equipment: EquipmentData | null; // Make Equipment nullable to match your filter
 };
 
 export type EquipmentLogsData = {
   EmployeeEquipmentLogs: EmployeeEquipmentLogData[];
 }[];
+
+export type FlattenedRefuelLog = {
+  equipmentId: string;
+  equipmentName: string;
+  refuelLog: {
+    id: string;
+    gallonsRefueled: number;
+  };
+};
+
+export type EquipmentRefuelLogItem = {
+  id: string;
+  gallonsRefueled: number;
+};
+
+export type EmployeeEquipmentLogWithRefuel = {
+  id: string;
+  Equipment: EquipmentData;
+  RefuelLogs: EquipmentRefuelLogItem[];
+};
+
+// Processed type for your component's state
+export type ProcessedEquipmentLog = {
+  id: string;
+  equipmentId: string;
+  equipmentName: string;
+  usageTime: string;
+  startTime: string;
+  endTime: string;
+  jobsite: string;
+  fullStartTime: string;
+  fullEndTime: string;
+};
 
 export type TimeSheet = {
   submitDate: string;
