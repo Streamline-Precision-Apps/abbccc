@@ -4,6 +4,11 @@ import { useTranslations } from "next-intl";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ProjectItem } from "./ProjectItem";
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 enum Priority {
   LOW = "LOW",
   MEDIUM = "MEDIUM",
@@ -18,7 +23,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
+  User: {
     id: string;
     firstName: string;
     lastName: string;
@@ -29,12 +34,16 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
-  equipment: { name: string };
+  equipmentIssue: string;
+  additionalInfo: string;
   selected: boolean;
   repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 export function ProjectList({

@@ -75,7 +75,7 @@ export default function TruckManualLabor() {
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
         const data = await Promise.all(responses.map((res) => res.json()));
 
-        setNotes(data[0].comment || "");
+        setNotes(data[0] || "");
         setMaterial(data[1]);
       } catch (error) {
         console.error(t("FetchingError"), error);

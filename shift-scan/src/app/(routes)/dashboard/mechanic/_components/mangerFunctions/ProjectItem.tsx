@@ -10,13 +10,14 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
+  User: {
     id: string;
     firstName: string;
     lastName: string;
     image: string;
   };
 };
+
 
 enum Priority {
   LOW = "LOW",
@@ -27,15 +28,24 @@ enum Priority {
   TODAY = "TODAY",
 }
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 type Project = {
   id: string;
   equipmentId: string;
-  equipment: { name: string };
+  equipmentIssue: string;
+  additionalInfo: string;
   selected: boolean;
   repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 export function ProjectItem({
@@ -82,8 +92,8 @@ export function ProjectItem({
         </Holds>
         <Holds>
           <Texts className="text-center" size="p6">
-            {project.equipment.name.slice(0, 16)}
-            {project.equipment.name.length > 16 ? "..." : ""}
+            {project.Equipment.name.slice(0, 16)}
+            {project.Equipment.name.length > 16 ? "..." : ""}
           </Texts>
         </Holds>
       </Holds>

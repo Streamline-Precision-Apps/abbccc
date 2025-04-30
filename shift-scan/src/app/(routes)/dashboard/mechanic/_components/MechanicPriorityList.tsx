@@ -31,7 +31,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
+  User: {
     id: string;
     firstName: string;
     lastName: string;
@@ -50,8 +50,8 @@ type Projects = {
   createdAt: string | undefined;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-  equipment: Equipment;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {
@@ -100,12 +100,12 @@ export default function MechanicPriority({
       setPreviewedProjectData(project);
 
       if (project) {
-        const activeUsersList = project.maintenanceLogs
+        const activeUsersList = project.MaintenanceLogs
           .filter((log) => log.startTime && !log.endTime) // Only logs with an active session
           .map((log) => ({
-            id: log.user.id,
-            name: `${log.user.firstName} ${log.user.lastName}`,
-            image: log.user.image,
+            id: log.User.id,
+            name: `${log.User.firstName} ${log.User.lastName}`,
+            image: log.User.image,
             startTime: new Date(log.startTime).toISOString(),
           }));
         setActiveUsers(activeUsersList);
@@ -217,7 +217,7 @@ export default function MechanicPriority({
                 />
               );
             }
-            const isActive = project.maintenanceLogs.some(
+            const isActive = project.MaintenanceLogs.some(
               (log) => log.startTime && !log.endTime
             );
 
@@ -255,9 +255,9 @@ export default function MechanicPriority({
                   className="w-full h-full py-3 rounded-[10px]"
                 >
                   <Titles size="h5">
-                    {project.equipment?.name.length > 45
-                      ? project?.equipment?.name.slice(0, 45) + "..."
-                      : project?.equipment?.name}
+                    {project.Equipment?.name.length > 45
+                      ? project?.Equipment?.name.slice(0, 45) + "..."
+                      : project?.Equipment?.name}
                   </Titles>
                 </Buttons>
               </Holds>
@@ -280,19 +280,16 @@ export default function MechanicPriority({
               <Holds className="row-span-1 h-full w-full justify-center">
                 <TitleBoxes
                   title={
-                    previewedProjectData?.equipment?.name
-                      ? `${previewedProjectData?.equipment?.name.slice(
+                    previewedProjectData?.Equipment?.name
+                      ? `${previewedProjectData?.Equipment?.name.slice(
                           0,
                           20
                         )}...`
                       : t("ProjectPreview")
                   }
-                  titleImg="/mechanic.svg"
-                  titleImgAlt={t("Mechanic")}
                   onClick={() => {
                     setIsOpenProjectPreview(false);
                   }}
-                  type="noIcon-NoHref"
                 />
               </Holds>
 

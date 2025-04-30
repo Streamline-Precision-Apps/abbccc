@@ -18,10 +18,10 @@ type EquipmentHauled = {
   equipmentId: string | null;
   createdAt: Date;
   jobSiteId: string | null;
-  equipment: {
+  Equipment: {
     name: string | null;
   };
-  jobSite: {
+  JobSite: {
     name: string | null;
   };
 };
@@ -67,10 +67,10 @@ export default function HaulingLogs({
           equipmentId: tempEquipment.equipmentId ?? null,
           jobSiteId: tempEquipment.jobSiteId ?? null,
           createdAt: new Date(),
-          equipment: {
+          Equipment: {
             name: "",
           },
-          jobSite: {
+          JobSite: {
             name: "",
           },
         },

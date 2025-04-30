@@ -21,7 +21,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
+  User: {
     id: string;
     firstName: string;
     lastName: string;
@@ -40,8 +40,8 @@ type Project = {
   createdAt: string | undefined;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-  equipment: Equipment;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {

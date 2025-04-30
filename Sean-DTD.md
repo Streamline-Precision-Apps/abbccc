@@ -124,12 +124,22 @@
 
 # April 23, 2025 - Wednesday and Thursday
 ### built/created
-- recreated search component for document section. Fixed some bugs in the API and selects for it and the documents. Played around with different way of doing document viewer. Worked on my teams and clockout section. Worked on clockout section as well. (20 hours)
+- recreated search component for document section. Fixed some bugs in the API and selects for it and the documents. Played around with different way of doing document viewer. Worked on my teams section. Worked on clockout section as well. (20 hours)
 
 # April 24, 2025 - Friday
 ### built/created
-- Worked on my teams and clockout section. Worked on clockout section as well. (4.5 hours)
+- Clockout section. (4.5 hours)
 
 # April 28, 2025 - Monday
 ### built/created
+- Looked at figma and started setting up laptop to work on. (1.5 hours)
 
+# April 29, 2025 - Tuesday
+### built/created
+- Fixed bugs in clockout and break section. (3 hours)
+- fixed log errors in trucking logs. (4 hour)
+- testing different sections for clocking out managers. (2 hours)
+
+# April 30, 2025 - Wednesday
+### built/created
+- Worked on clockout section. (3 hours)

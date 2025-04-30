@@ -32,8 +32,6 @@ export default async function Inbox() {
                   ? t("ManualLabor")
                   : t("TruckingAssistant")
               }
-              titleImg="/trucking.svg"
-              titleImgAlt="Truck"
             />
           </Holds>
           <Holds className="row-span-5 h-full">

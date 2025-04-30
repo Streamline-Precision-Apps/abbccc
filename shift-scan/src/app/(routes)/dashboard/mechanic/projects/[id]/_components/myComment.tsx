@@ -9,12 +9,12 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+
 type MaintenanceLog = {
   id: string;
-  userId: string;
-  maintenanceId: string;
   startTime?: string;
   endTime?: string | null;
+  userId: string;
   comment?: string;
 };
 
