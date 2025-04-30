@@ -1,51 +1,70 @@
 "use client";
-import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { v4 as uuidv4 } from "uuid";
+import React, { useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { createJobsite, jobExists } from "@/actions/jobsiteActions";
 import { useTranslations } from "next-intl";
-import { Forms } from "@/components/(reusable)/forms";
-import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
-import { CCTags } from "@/lib/types";
 import { Selects } from "@/components/(reusable)/selects";
+import { Grids } from "@/components/(reusable)/grids";
+import { StateOptions } from "@/data/stateValues";
+import { useSession } from "next-auth/react";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
-type Props = {
-  handler: () => void;
-  setBanner: Dispatch<SetStateAction<boolean>>;
-  setBannerText: Dispatch<SetStateAction<string>>;
-};
-export default function AddJobsiteForm({
-  handler,
-  setBanner,
-  setBannerText,
-}: Props) {
+export default function AddJobsiteForm() {
   const t = useTranslations("Generator");
-  const [qrCode, setQrCode] = useState("");
+  const { data: session } = useSession();
   const router = useRouter();
-  const [tags, setTags] = useState<CCTags[]>([]);
-  const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
+  const userId = session?.user.id;
+  const [qrCode, setQrCode] = useState("");
 
-  const randomQrCode = () => {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "J-TEMP-";
-    for (let i = 0; i < 6; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    return result;
+  // Form state
+  const [formData, setFormData] = useState({
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    temporaryJobsiteName: "",
+    creationComment: "",
+    creationReasoning: "",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form validation
+  const isFormValid =
+    formData.address.trim() !== "" &&
+    formData.city.trim() !== "" &&
+    formData.state.trim() !== "" &&
+    formData.zipCode.trim() !== "" &&
+    formData.temporaryJobsiteName.trim() !== "" &&
+    formData.creationComment.trim() !== "" &&
+    formData.creationReasoning.trim() !== "" &&
+    qrCode.trim() !== "" &&
+    userId;
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-  // this checks if the qr code already exists in the database
+
+  // Generate QR code on mount
   useEffect(() => {
     async function generateQrCode() {
       try {
-        const result = randomQrCode();
+        const result = uuidv4();
         setQrCode(result);
         const response = await jobExists(result);
         if (response) {
@@ -59,229 +78,171 @@ export default function AddJobsiteForm({
     generateQrCode();
   }, []);
 
-  function handleRoute() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeout(() => {
-      setBanner(false);
-      setBannerText("");
-      router.replace("/dashboard/qr-generator/");
-    }, 2300);
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const allTagsRes = await fetch(`/api/getAllTags`);
-        const allTags = await allTagsRes.json();
-        setTags(allTags as CCTags[]);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
+    if (!isFormValid || !userId) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const formDataToSend = new FormData();
+      // Append all form data
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+      formDataToSend.append("qrCode", qrCode);
+      formDataToSend.append("createdById", userId);
+
+      const response = await createJobsite(formDataToSend);
+
+      if (response) {
+        router.push("/dashboard/qr-generator");
       }
-    };
-
-    fetchTags();
-  }, []);
-
-  const addTag = (tagId: string) => {
-    const tag = tags.find((t) => t.id === tagId);
-    if (tag && !selectedTags.some((t) => t.id === tagId)) {
-      setSelectedTags((prev) => [...prev, tag]);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const removeTag = (tagId: string) => {
-    setSelectedTags((prev) => prev.filter((tag) => tag.id !== tagId));
-  };
-
   return (
-    <Forms
-      action={createJobsite}
-      onSubmit={(e) => {
-        e.preventDefault();
-
-        const form = e.target as HTMLFormElement;
-        const formData = new FormData(form);
-
-        // Add selectedTags to the FormData
-        selectedTags.forEach((tag) => formData.append("tags", tag.id));
-
-        setBanner(true);
-        setBannerText("Created Jobsite Successfully");
-        handler();
-
-        // Call server action
-        createJobsite(formData)
-          .then(() => handleRoute())
-          .catch((error) => {
-            console.error("Error creating jobsite:", error);
-            setBannerText("Error: Failed to create jobsite");
-          });
-      }}
-    >
-      <Holds background={"white"} className="my-5">
-        <Contents width={"section"} className="mt-2 mb-5">
-          <Labels size={"p4"}>
-            {t("Temporary")}
-            <Inputs id="qrId" name="qrId" type="text" value={qrCode} readOnly />
-          </Labels>
-          <Labels size={"p4"}>
-            {t("Name")}
-            <Inputs
-              id="name"
-              name="name"
-              type="text"
-              placeholder={t("NameExample")}
-            />
-          </Labels>
-        </Contents>
+    <>
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+        <TitleBoxes position={"row"} onClick={() => router.back()}>
+          <Titles size={"h2"}>{t("NewJobsiteForm")}</Titles>
+        </TitleBoxes>
       </Holds>
-      <Holds background={"white"} className="my-5">
-        <Contents width={"section"} className="mt-2 mb-5">
-          <Titles size={"h3"} className="my-2">
-            {t("AddressInformation")}
-          </Titles>
-          <Labels size={"p4"}>
-            {t("Address")}
-            <Inputs
-              variant={"default"}
-              id="address"
-              name="address"
-              placeholder={`${t("Address")} `}
-            />
-          </Labels>
-          <Labels size={"p4"}>
-            {t("City")}
-            <Inputs
-              variant={"default"}
-              id="city"
-              name="city"
-              placeholder={t("CityTitle")}
-            />
-          </Labels>
-          <Holds position={"row"} className="gap-3">
-            <Holds>
-              <Labels size={"p4"}>
-                {t("ZipCode")}
-                <Inputs
-                  variant={"default"}
-                  id="zipCode"
-                  name="zipCode"
-                  placeholder={t("ZipCodeTitle")}
-                />
-              </Labels>
-            </Holds>
-            <Holds>
-              <Labels size={"p4"}>
-                {t("State")}
-                <Inputs
-                  variant={"default"}
-                  id="state"
-                  name="state"
-                  placeholder={t("StateTitle")}
-                />
-              </Labels>
-            </Holds>
-          </Holds>
-        </Contents>
-      </Holds>
-
-      <Holds background={"white"} className="my-5">
-        <Contents width={"section"} className="mt-2 mb-5">
-          <Titles size={"h3"} className="my-2">
-            {t("SelectCostCodeTags")}
-          </Titles>
-          <Holds position={"row"} className="flex items-center gap-2">
-            <Holds className="w-3/4">
-              <Selects
-                id="tags"
-                name="tags"
-                className="p-2 border rounded"
-                onChange={(e) => addTag(e.target.value)}
-              >
-                <option value="">{t("SelectTag")}</option>
-                {tags.map((tag) => (
-                  <option key={tag.id} value={tag.id}>
-                    {tag.name}
-                  </option>
-                ))}
-              </Selects>
-            </Holds>
-            <Holds className="w-1/4">
-              <Buttons
-                type="button"
-                background={"green"}
-                className="p-2"
-                onClick={() => {
-                  const select = document.getElementById(
-                    "tags"
-                  ) as HTMLSelectElement;
-                  if (select?.value) addTag(select.value);
-                }}
-              >
-                {t("AddTag")}
-              </Buttons>
-            </Holds>
-          </Holds>
-
-          <Holds className="mt-4">
-            <Holds className="flex flex-wrap gap-2 mt-2">
-              {selectedTags.map((tag) => (
-                <Holds
-                  position={"row"}
-                  key={tag.id}
-                  className=" gap-2 p-2 border rounded bg-app-gray w-1/3"
-                >
-                  <Holds className="w-full">
-                    <span>{tag.name}</span>
-                  </Holds>
-                  <Buttons
-                    type="button"
-                    onClick={() => removeTag(tag.id)}
-                    background={"none"}
-                    className="text-red-500 "
-                  >
-                    X
-                  </Buttons>
+      <Holds background={"white"} className="row-start-2 row-end-8 h-full">
+        <form onSubmit={handleSubmit} className="h-full w-full">
+          <Contents width={"section"}>
+            <Grids rows={"9"} gap={"5"} className="h-full w-full pb-5">
+              {/* Address Section */}
+              <Holds className="row-start-1 row-end-4 h-full">
+                <Holds className="py-3">
+                  <Titles position={"left"} size={"h3"}>
+                    {t("Address")}
+                  </Titles>
                 </Holds>
-              ))}
-            </Holds>
-          </Holds>
-        </Contents>
-      </Holds>
-      <Holds background={"white"} className="my-5">
-        <Contents width={"section"} className="mt-2 mb-5">
-          <Titles size={"h3"} className="my-2">
-            {t("Description")}
-          </Titles>
-          <Labels size={"p4"}>
-            {t("DescriptionTitle")}
-            <TextAreas
-              variant={"default"}
-              id="description"
-              rows={4}
-              name="description"
-              placeholder={t("purpose")}
-            />
-          </Labels>
 
-          <Labels size={"p4"}>
-            {t("Comments")}
-            <TextAreas
-              id="comment"
-              name="comment"
-              rows={4}
-              placeholder={t("CommentsPurpose")}
-            />
-          </Labels>
-        </Contents>
+                <Holds className="h-full pb-3">
+                  <Inputs
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    placeholder={t("AddressInformation")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+
+                <Holds className="h-full pb-3">
+                  <Inputs
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    placeholder={t("City")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+
+                <Holds position={"row"} className="w-full pb-3 gap-x-3">
+                  <Holds className="w-1/2">
+                    <Selects
+                      name="state"
+                      value={formData.state}
+                      className="text-xs py-2 text-center"
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {StateOptions.map((state) => (
+                        <option key={state.value} value={state.value}>
+                          {state.label}
+                        </option>
+                      ))}
+                    </Selects>
+                  </Holds>
+
+                  <Holds className="w-1/2">
+                    <Inputs
+                      type="text" // Changed from number to allow for international formats
+                      name="zipCode"
+                      value={formData.zipCode}
+                      placeholder={t("ZipCode")}
+                      className="text-xs py-2 text-center"
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </Holds>
+                </Holds>
+              </Holds>
+
+              {/* Creation Details Section */}
+              <Holds
+                background={"white"}
+                className="row-start-4 row-end-9 h-full"
+              >
+                <Holds className="pb-5">
+                  <Titles position={"left"} size={"h3"}>
+                    {t("CreationDetails")}
+                  </Titles>
+                </Holds>
+
+                <Holds className="pb-3">
+                  <Inputs
+                    type="text"
+                    name="temporaryJobsiteName"
+                    value={formData.temporaryJobsiteName}
+                    placeholder={t("TemporaryJobsiteName")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+
+                <Holds className="h-full pb-3">
+                  <TextAreas
+                    name="creationComment"
+                    value={formData.creationComment}
+                    placeholder={t("TemporaryJobsiteDescription")}
+                    className="text-xs pl-3 h-full"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+
+                <Holds className="h-full pb-3">
+                  <TextAreas
+                    name="creationReasoning"
+                    value={formData.creationReasoning}
+                    placeholder={t("CreationReasoning")}
+                    className="text-xs pl-3 h-full"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+              </Holds>
+
+              {/* Submit Button */}
+              <Holds className="row-start-9 row-end-10 h-full">
+                <Buttons
+                  background={isFormValid ? "green" : "darkGray"}
+                  type="submit"
+                  disabled={!isFormValid || isSubmitting}
+                >
+                  <Titles size={"h2"}>
+                    {isSubmitting ? t("Submitting...") : t("SubmitJobsite")}
+                  </Titles>
+                </Buttons>
+              </Holds>
+            </Grids>
+          </Contents>
+        </form>
       </Holds>
-      <Holds>
-        <Contents width={"section"} className="my-5">
-          <Buttons background={"green"} type="submit" className="p-2">
-            <Titles size={"h3"}>{t("CreateNew")}</Titles>
-          </Buttons>
-        </Contents>
-      </Holds>
-    </Forms>
+    </>
   );
 }

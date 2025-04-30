@@ -5,7 +5,6 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
-import { Clock } from "../clock";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
@@ -25,7 +24,12 @@ import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
 import Spinner from "../(animations)/spinner";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
+import { Texts } from "../(reusable)/texts";
 
+type Options = {
+  label: string;
+  code: string;
+};
 type VerifyProcessProps = {
   type: string;
   role: string;
@@ -36,6 +40,8 @@ type VerifyProcessProps = {
   clockInRoleTypes: string | undefined;
   returnPathUsed: boolean;
   setStep: Dispatch<SetStateAction<number>>;
+  jobsite: Options | null;
+  cc: Options | null;
 };
 
 export default function VerificationStep({
@@ -47,6 +53,8 @@ export default function VerificationStep({
   clockInRoleTypes,
   returnPathUsed,
   setStep,
+  jobsite,
+  cc,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -72,8 +80,7 @@ export default function VerificationStep({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!id) {
       console.error("User ID does not exist");
       return;
@@ -85,8 +92,8 @@ export default function VerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", scanResult?.data || "");
-      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
 
@@ -132,127 +139,94 @@ export default function VerificationStep({
       )}
       <Holds
         background={"white"}
-        className={
-          loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
-        }
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `}
       >
-        <Contents width={"section"}>
-          <Grids rows={"7"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2 ">
-              <Holds className="h-full w-full px-3">
-                <TitleBoxes
-                  title={t("VerifyJobSite")}
-                  titleImg="/mechanic.svg"
-                  titleImgAlt="Mechanic"
-                  onClick={handlePreviousStep}
-                  type="noIcon-NoHref"
-                />
-
-                <Holds>
-                  <Images
-                    titleImg="/clock-in.svg"
-                    titleImgAlt="Verify"
-                    className="w-8 h-8"
-                  />
-                </Holds>
-              </Holds>
-            </Holds>
-            <Forms
-              onSubmit={handleSubmit}
-              className="h-full w-full row-start-2 row-end-8"
-            >
-              <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                <Holds className="row-start-3 row-end-8 col-start-1 col-end-6 h-full pt-1">
-                  <Holds
-                    background={"lightBlue"}
-                    className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
-                  >
-                    <Contents width={"section"} className="h-full">
-                      <Labels
-                        htmlFor="date"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("Date-label")}
-                      </Labels>
-                      <Inputs
-                        name="date"
-                        state="disabled"
-                        variant={"white"}
-                        data={date.toLocaleDateString("en-US", {
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Holds className="row-start-1 row-end-2 h-full w-full">
+            <TitleBoxes position={"row"} onClick={handlePreviousStep}>
+              <Titles position={"right"} size={"h1"}>
+                {t("VerifyJobSite")}
+              </Titles>
+              <Images
+                titleImg="/clock-in.svg"
+                titleImgAlt="Verify"
+                className="w-10 h-10"
+              />
+            </TitleBoxes>
+          </Holds>
+          <Holds className="row-start-2 row-end-8 h-full w-full">
+            <Contents width={"section"}>
+              <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                <Holds
+                  background={"timeCardYellow"}
+                  className="row-start-1 row-end-7 h-full border-[3px] rounded-[10px] border-black"
+                >
+                  <Contents width={"section"} className="h-full py-2">
+                    <Holds className="flex flex-row justify-between pb-3">
+                      <Texts size={"p7"} position={"left"}>
+                        {date.toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "numeric",
                           day: "numeric",
                         })}
-                      />
-                      <Labels
-                        htmlFor="jobsiteId"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("JobSite-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="jobsiteId"
-                        variant={"white"}
-                        data={scanResult?.data || ""}
-                      />
-                      <Labels
-                        htmlFor="costcode"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("CostCode-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="costcode"
-                        variant={"white"}
-                        data={savedCostCode?.toString() || ""}
-                      />
-                    </Contents>
-                  </Holds>
+                      </Texts>
+                      <Texts size={"p7"} position={"right"}>
+                        {date.toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
+                        })}
+                      </Texts>
+                    </Holds>
+
+                    <Labels htmlFor="jobsiteId" size={"p3"} position={"left"}>
+                      {t("LaborType")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="jobsiteId"
+                      variant={"white"}
+                      data={"General Labor"}
+                      className="text-center"
+                    />
+
+                    <Labels htmlFor="jobsiteId" size={"p3"} position={"left"}>
+                      {t("JobSite-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="jobsiteId"
+                      variant={"white"}
+                      data={jobsite?.label || ""}
+                      className="text-center"
+                    />
+                    <Labels htmlFor="costcode" size={"p3"} position={"left"}>
+                      {t("CostCode-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="costcode"
+                      variant={"white"}
+                      data={cc?.label || ""}
+                      className="text-center"
+                    />
+                  </Contents>
                 </Holds>
 
-                <Holds className="row-start-8 row-end-11 col-start-1 col-end-6 h-full  ">
-                  <Holds
-                    background={"darkBlue"}
-                    className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
+                <Holds className="row-start-7 row-end-8   ">
+                  <Buttons
+                    onClick={() => handleSubmit()}
+                    background={"green"}
+                    className=" w-full h-full py-2"
                   >
-                    <Buttons
-                      type="submit"
-                      background={"none"}
-                      shadow={"none"}
-                      className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
-                    >
-                      <Clock time={date.getTime()} />
-                    </Buttons>
-                  </Holds>
+                    <Titles size={"h2"}>{t("StartDay")}</Titles>
+                  </Buttons>
                 </Holds>
-                <Inputs
-                  type="hidden"
-                  name="submitDate"
-                  value={new Date().toString()}
-                />
-                <Inputs type="hidden" name="userId" value={id} />
-                <Inputs
-                  type="hidden"
-                  name="date"
-                  value={new Date().toString()}
-                />
-                <Inputs
-                  type="hidden"
-                  name="startTime"
-                  value={new Date().toString()}
-                />
               </Grids>
-            </Forms>
-          </Grids>
-        </Contents>
+            </Contents>
+          </Holds>
+        </Grids>
       </Holds>
     </Holds>
   );

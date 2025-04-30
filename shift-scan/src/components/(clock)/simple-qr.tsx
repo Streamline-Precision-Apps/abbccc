@@ -1,5 +1,4 @@
 "use client";
-
 import React, {
   Dispatch,
   SetStateAction,
@@ -14,27 +13,37 @@ import { Holds } from "../(reusable)/holds";
 export default function SimpleQr({
   setScannedId,
   setScanned,
+  onScanComplete,
 }: {
   setScanned: Dispatch<SetStateAction<boolean>>;
   setScannedId: Dispatch<SetStateAction<string | null>>;
+  onScanComplete?: (scannedId: string) => Promise<void>;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
+  const hasScanned = useRef(false);
 
   const handleScanSuccess = useCallback(
-    (result: QrScanner.ScanResult) => {
+    async (result: QrScanner.ScanResult) => {
       try {
         const { data } = result;
 
-        if (data) {
+        if (data && !hasScanned.current) {
+          hasScanned.current = true;
           setScannedId(data);
           setScanned(true);
         }
+        // Only call if provided
+        if (onScanComplete) {
+          await onScanComplete(data);
+        }
+        qrScannerRef.current?.stop();
       } catch (error) {
         console.error("Error processing scanned data:", error);
+        hasScanned.current = false; // Reset on error
       }
     },
-    [setScanned, setScannedId]
+    [setScanned, setScannedId, onScanComplete]
   );
 
   useEffect(() => {

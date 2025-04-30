@@ -11,9 +11,15 @@ import FormSelection from "./formSelection";
 import { Contents } from "@/components/(reusable)/contents";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
+import CompanyDocuments from "./companyDocuments";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Images } from "@/components/(reusable)/images";
 
 export default function InboxContent({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const url = searchParams.get("returnUrl") || "/dashboard";
   const t = useTranslations("Hamburger");
   const [loading, setLoading] = useState<boolean>(false);
   return (
@@ -23,11 +29,14 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
         className={`row-span-1 h-full ${loading && "animate-pulse"} `}
       >
         <Contents width={"section"}>
-          <TitleBoxes
-            title={t("Inbox")}
-            titleImg="/Inbox.svg"
-            titleImgAlt="Inbox"
-          />
+          <TitleBoxes position={"row"} onClick={() => router.push(url)}>
+            <Titles size={"h3"}>{t("Inbox")}</Titles>
+            <Images
+              titleImg="/Inbox.svg"
+              titleImgAlt="Inbox"
+              className="h-8 w-8"
+            />
+          </TitleBoxes>
         </Contents>
       </Holds>
       <Holds className={`row-span-8 h-full `}>
@@ -54,7 +63,6 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
               >
                 <Titles size={"h4"}>Submitted Forms</Titles>
               </NewTab>
-              {isManager && (
                 <NewTab
                   onClick={() => setActiveTab(3)}
                   isActive={activeTab === 3}
@@ -63,9 +71,8 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
-                  <Titles size={"h4"}>Pending Forms</Titles>
+                  <Titles size={"h4"}>Company Documents</Titles>
                 </NewTab>
-              )}
             </Holds>
             {activeTab === 1 && (
               <FormSelection loading={loading} setLoading={setLoading} />
@@ -74,7 +81,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
               <>
                 {activeTab === 2 && <STab />}
 
-                {isManager && activeTab === 3 && <RTab isManager={isManager} />}
+                {activeTab === 3 && <CompanyDocuments />}
               </>
             )}
           </Grids>

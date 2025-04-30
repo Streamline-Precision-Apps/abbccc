@@ -3,6 +3,11 @@ import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+type Options = {
+  label: string;
+  code: string;
+};
+
 export async function getCookie(cookieName: string) {
   const session = await auth();
   // Check if the user is authenticated
@@ -172,11 +177,11 @@ export async function setProfilePicture(profilePicture: string) {
 }
 
 // cookie for setting job site access
-export async function setJobSite(jobSite: string) {
+export async function setJobSite(jobSite: Options | null) {
   try {
     cookies().set({
       name: "jobSite",
-      value: jobSite,
+      value: `${jobSite?.code}|${jobSite?.label}`,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",

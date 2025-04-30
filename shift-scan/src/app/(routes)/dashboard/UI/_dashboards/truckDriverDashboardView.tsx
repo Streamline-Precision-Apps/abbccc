@@ -20,12 +20,10 @@ export default function TruckDriverDashboardView({
   setIsModal2Open,
   comment,
   setComment,
-  handleCOButton2,
   handleCOButton3,
   handleCloseModal,
   handleShowManagerButtons,
   permission,
-  handleShowAdditionalButtons,
   logs,
   laborType,
 }: {
@@ -35,12 +33,10 @@ export default function TruckDriverDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton2: () => void;
   handleCOButton3: () => void;
   handleCloseModal: () => void;
   handleShowManagerButtons: () => void;
   permission: string;
-  handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
   laborType: string;
 }) {
@@ -49,63 +45,42 @@ export default function TruckDriverDashboardView({
     <>
       <Contents width={"section"} className="py-5">
         <Grids cols={"2"} rows={"3"} gap={"5"}>
-          {/* Render buttons based on state */}
-          {additionalButtonsType === "clockOut" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <ClockOutWidget
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                logs={logs}
-              />
-            </Holds>
-          ) : (
-            <>
-              <TruckingBtn
-                permission={permission}
-                view={"truck"}
-                laborType={laborType}
-              />
-              {permission === "USER" && laborType === "truckLabor" && (
-                <EquipmentBtn permission={permission} />
-              )}
+          <>
+            <TruckingBtn
+              permission={permission}
+              view={"truck"}
+              laborType={laborType}
+            />
+            {permission === "USER" && laborType === "truckLabor" && (
+              <EquipmentBtn permission={permission} />
+            )}
 
-              <SwitchJobsBtn
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                permission={permission}
-                logs={logs}
-                laborType={laborType}
-                view={"truck"}
-              />
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
+            <SwitchJobsBtn
+              {...modalState}
+              handleShowManagerButtons={handleShowManagerButtons}
+              permission={permission}
+              logs={logs}
+              laborType={laborType}
+              view={"truck"}
+            />
+            {permission !== "USER" && !additionalButtonsType && (
+              <GeneratorBtn />
+            )}
 
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
-              {permission !== "USER" && laborType === "truckLabor" && (
-                <EquipmentBtn permission={permission} />
-              )}
+            {permission !== "USER" && !additionalButtonsType && (
+              <MyTeamWidget />
+            )}
+            {permission !== "USER" && laborType === "truckLabor" && (
+              <EquipmentBtn permission={permission} />
+            )}
 
-              <ClockOutBtn
-                handleShowAdditionalButtons={handleShowAdditionalButtons}
-                permission={permission}
-                View={"truck"}
-                laborType={laborType}
-              />
-            </>
-          )}
+            <ClockOutBtn
+              handleShowAdditionalButtons={handleCOButton3}
+              permission={permission}
+              View={"truck"}
+              laborType={laborType}
+            />
+          </>
         </Grids>
       </Contents>
     </>

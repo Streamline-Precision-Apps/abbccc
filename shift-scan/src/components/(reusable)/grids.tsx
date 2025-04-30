@@ -36,9 +36,6 @@ const GridVariants = cva(
         "10": "grid-rows-10",
         "11": "grid-rows-11",
         "12": "grid-rows-12",
-        "13": "grid-rows-13",
-        "14": "grid-rows-14",
-        "15": "grid-rows-15",
       },
       gap: {
         "0": "gap-0",

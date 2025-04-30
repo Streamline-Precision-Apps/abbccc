@@ -23,7 +23,7 @@ export default async function Home() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"2"}>
+        <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
           <WidgetSection locale={locale} session={session} />
         </Grids>

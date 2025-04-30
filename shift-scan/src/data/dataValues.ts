@@ -480,104 +480,104 @@ export const initialUsers: Prisma.UserCreateInput[] = [
 /* CONTACTS */
 /* Assuming you have defined a Contacts model in your Prisma schema,
    this array will seed one contact record per user. */
-   export const initialContacts: Prisma.ContactsCreateInput[] = [
-    {
-      User: { connect: { id: "1" } },
-      phoneNumber: "123-456-7890",
-      emergencyContact: "Roger Rabbit",
-      emergencyContactNumber: "098-765-4321",
-      createdAt: new Date("2022-01-01T00:00:00.000Z"),
-      updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "2" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "Jane Doe",
-      emergencyContactNumber: "123-456-7890",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "3" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "John Doe",
-      emergencyContactNumber: "123-456-7890",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "4" } },
-      phoneNumber: "183-416-7890",
-      emergencyContact: "Lola Bunny",
-      emergencyContactNumber: "218-765-4021",
-      createdAt: new Date("2022-01-01T00:00:00.000Z"),
-      updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "5" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "Buggs Bunny",
-      emergencyContactNumber: "098-745-4121",
-      createdAt: new Date("2022-01-01T00:00:00.000Z"),
-      updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "6" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "Jessica Rabbit",
-      emergencyContactNumber: "098-765-4321",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "7" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "your wife",
-      emergencyContactNumber: "218-765-4311",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "8" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "your wife",
-      emergencyContactNumber: "218-765-4311",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "9" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "your wife",
-      emergencyContactNumber: "218-765-4311",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "10" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "your wife",
-      emergencyContactNumber: "218-765-4311",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "11" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "your wife",
-      emergencyContactNumber: "218-765-4311",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-    {
-      User: { connect: { id: "12" } },
-      phoneNumber: "987-654-3210",
-      emergencyContact: "your wife",
-      emergencyContactNumber: "218-765-4311",
-      createdAt: new Date("2021-06-01T00:00:00.000Z"),
-      updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-    },
-  ];
+export const initialContacts: Prisma.ContactsCreateInput[] = [
+  {
+    User: { connect: { id: "1" } },
+    phoneNumber: "123-456-7890",
+    emergencyContact: "Roger Rabbit",
+    emergencyContactNumber: "098-765-4321",
+    createdAt: new Date("2022-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "2" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "Jane Doe",
+    emergencyContactNumber: "123-456-7890",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "3" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "John Doe",
+    emergencyContactNumber: "123-456-7890",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "4" } },
+    phoneNumber: "183-416-7890",
+    emergencyContact: "Lola Bunny",
+    emergencyContactNumber: "218-765-4021",
+    createdAt: new Date("2022-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "5" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "Buggs Bunny",
+    emergencyContactNumber: "098-745-4121",
+    createdAt: new Date("2022-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "6" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "Jessica Rabbit",
+    emergencyContactNumber: "098-765-4321",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "7" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "8" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "9" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "10" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "11" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+  {
+    User: { connect: { id: "12" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: new Date("2021-06-01T00:00:00.000Z"),
+    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+  },
+];
 
 /* COST CODES */
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
@@ -692,7 +692,9 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
       ],
     },
     CostCodes: {
-      connect: Array.from({ length: 19 }, (_, i) => ({ id: (i + 1).toString() })),
+      connect: Array.from({ length: 19 }, (_, i) => ({
+        id: (i + 1).toString(),
+      })),
     },
   },
 ];
@@ -700,21 +702,88 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 /* DOCUMENT TAGS (new) */
 export const initialDocumentTags: Prisma.DocumentTagCreateInput[] = [
   {
-    id: "dt1",
-    tagName: "Manuals",
+    id: "dt2",
+    tagName: "Policies",
+  },
+  {
+    id: "dt3",
+    tagName: "SPOs",
+  },
+  {
+    id: "dt4",
+    tagName: "Documents",
   },
 ];
+
+const validMinimalPdf = Buffer.from(
+  `%PDF-1.4
+  1 0 obj
+  << /Type /Catalog /Pages 2 0 R >>
+  endobj
+  2 0 obj
+  << /Type /Pages /Count 1 /Kids [3 0 R] >>
+  endobj
+  3 0 obj
+  << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>
+  endobj
+  4 0 obj
+  << /Length 44 >>
+  stream
+  BT /F1 24 Tf 100 700 Td (Hello World) Tj ET
+  endstream
+  endobj
+  xref
+  0 5
+  0000000000 65535 f 
+  0000000010 00000 n 
+  0000000061 00000 n 
+  0000000112 00000 n 
+  0000000217 00000 n 
+  trailer
+  << /Root 1 0 R /Size 5 >>
+  startxref
+  322
+  %%EOF`
+);
 
 /* PDF DOCUMENTS (new) */
 export const initialPdfDocuments: Prisma.PdfDocumentCreateInput[] = [
   {
-    qrId: "pdf1",
-    fileName: "manual.pdf",
-    description: "Equipment manual",
-    fileData: new Uint8Array(Buffer.from("sample pdf content")),
+    qrId: "pdf2",
+    fileName: "company_policy.pdf",
+    description: "Company policy PDF",
+    fileData: new Uint8Array(validMinimalPdf),
     contentType: "application/pdf",
-    size: 1024,
-    DocumentTags: { connect: [{ id: "dt1" }] },
+    size: validMinimalPdf.length,
+    DocumentTags: { connect: [{ id: "dt2" }] },
+  },
+  {
+    qrId: "pdf3",
+    fileName: "spo_guideline.pdf",
+    description: "Standard Procedure Operations guide",
+    fileData: new Uint8Array(validMinimalPdf),
+    contentType: "application/pdf",
+    size: validMinimalPdf.length,
+    DocumentTags: { connect: [{ id: "dt3" }] },
+  },
+  {
+    qrId: "pdf4",
+    fileName: "internal_doc.pdf",
+    description: "Internal documentation",
+    fileData: new Uint8Array(validMinimalPdf),
+    contentType: "application/pdf",
+    size: validMinimalPdf.length,
+    DocumentTags: { connect: [{ id: "dt4" }] },
+  },
+  {
+    qrId: "pdf5",
+    fileName: "inactive_doc.pdf",
+    description: "Archived or inactive PDF",
+    fileData: new Uint8Array(validMinimalPdf),
+    contentType: "application/pdf",
+    size: validMinimalPdf.length,
+    isActive: false,
+    DocumentTags: { connect: [{ id: "dt4" }] },
   },
 ];
 
@@ -1450,18 +1519,19 @@ export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
 ];
 
 /* EMPLOYEE EQUIPMENT LOGS */
-export const initialEmployeeEquipmentLogs: Prisma.EmployeeEquipmentLogCreateInput[] = [
-  {
-    Equipment: { connect: { id: "eq1" } },
-    Jobsite: { connect: { qrId: "j123" } },
-    User: { connect: { id: "1" } },
-    startTime: new Date(now.getTime() - 3600000),
-    endTime: new Date(),
-    comment: "Equipment log test entry",
-    isFinished: true,
-    status: FormStatus.APPROVED,
-  },
-];
+export const initialEmployeeEquipmentLogs: Prisma.EmployeeEquipmentLogCreateInput[] =
+  [
+    {
+      Equipment: { connect: { id: "eq1" } },
+      Jobsite: { connect: { qrId: "j123" } },
+      User: { connect: { id: "1" } },
+      startTime: new Date(now.getTime() - 3600000),
+      endTime: new Date(),
+      comment: "Equipment log test entry",
+      isFinished: true,
+      status: FormStatus.APPROVED,
+    },
+  ];
 
 /* EQUIPMENT HAULED */
 export const initialEquipmentHauled: Prisma.EquipmentHauledCreateInput[] = [
@@ -1579,15 +1649,16 @@ export const initialMaintenances: Prisma.MaintenanceCreateInput[] = [
 ];
 
 /* TASCO MATERIAL TYPES */
-export const initialTascoMaterialTypes: Prisma.TascoMaterialTypesCreateInput[] = [
-  { name: "Rock" },
-  { name: "Elimco" },
-  { name: "Coal" },
-  { name: "Lime Kiln" },
-  { name: "Ag Waste" },
-  { name: "Belt Mud" },
-  { name: "End Of Campaign Clean Up" },
-];
+export const initialTascoMaterialTypes: Prisma.TascoMaterialTypesCreateInput[] =
+  [
+    { name: "Rock" },
+    { name: "Elimco" },
+    { name: "Coal" },
+    { name: "Lime Kiln" },
+    { name: "Ag Waste" },
+    { name: "Belt Mud" },
+    { name: "End Of Campaign Clean Up" },
+  ];
 
 /* TRUCKING LOGS */
 export const initialTruckingLogs: Prisma.TruckingLogCreateInput[] = [
@@ -1610,7 +1681,9 @@ export const initialMaterials: Prisma.MaterialCreateInput[] = [
     name: "Concrete",
     quantity: 5,
     loadType: LoadType.SCREENED,
-    LoadWeight: 15.5,
+    materialWeight: 2.0,
+    lightWeight: 15.5,
+    grossWeight: 17.5,
   },
   {
     LocationOfMaterial: "Supplier B",
@@ -1618,7 +1691,9 @@ export const initialMaterials: Prisma.MaterialCreateInput[] = [
     name: "Gravel",
     quantity: 3,
     loadType: LoadType.UNSCREENED,
-    LoadWeight: 12.0,
+    materialWeight: 5.4,
+    lightWeight: 12.5,
+    grossWeight: 17.9,
   },
 ];
 

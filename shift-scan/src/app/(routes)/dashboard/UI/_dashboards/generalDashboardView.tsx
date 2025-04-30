@@ -21,12 +21,10 @@ export default function GeneralDashboardView({
   setIsModal2Open,
   comment,
   setComment,
-  handleCOButton2,
   handleCOButton3,
   handleCloseModal,
   handleShowManagerButtons,
   permission,
-  handleShowAdditionalButtons,
   logs,
 }: {
   additionalButtonsType: string | null;
@@ -35,7 +33,6 @@ export default function GeneralDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton2: () => void;
   handleCOButton3: () => void;
   handleCloseModal: () => void;
   handleShowManagerButtons: () => void;
@@ -58,56 +55,35 @@ export default function GeneralDashboardView({
           }
           gap={"5"}
         >
-          {/* Render buttons based on state */}
-          {additionalButtonsType === "clockOut" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <ClockOutWidget
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                logs={logs}
-              />
-            </Holds>
-          ) : (
-            <>
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
+          <>
+            {permission !== "USER" && !additionalButtonsType && (
+              <GeneratorBtn />
+            )}
 
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
+            {permission !== "USER" && !additionalButtonsType && (
+              <MyTeamWidget />
+            )}
 
-              <EquipmentBtn permission={permission} />
+            <EquipmentBtn permission={permission} />
 
-              <FormsBtn permission={permission} view={"general"} />
+            <FormsBtn permission={permission} view={"general"} />
 
-              <SwitchJobsBtn
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                permission={permission}
-                logs={logs}
-                laborType={"general"}
-                view={"general"}
-              />
+            <SwitchJobsBtn
+              {...modalState}
+              handleShowManagerButtons={handleShowManagerButtons}
+              permission={permission}
+              logs={logs}
+              laborType={"general"}
+              view={"general"}
+            />
 
-              <ClockOutBtn
-                handleShowAdditionalButtons={handleShowAdditionalButtons}
-                permission={permission}
-                View={"general"}
-                laborType="general"
-              />
-            </>
-          )}
+            <ClockOutBtn
+              handleShowAdditionalButtons={handleCOButton3}
+              permission={permission}
+              View={"general"}
+              laborType="general"
+            />
+          </>
         </Grids>
       </Contents>
     </>
