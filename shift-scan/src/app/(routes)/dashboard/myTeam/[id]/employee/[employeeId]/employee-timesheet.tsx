@@ -5,6 +5,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import {
+  EmployeeEquipmentLogWithRefuel,
   EquipmentLogsData,
   TascoHaulLogData,
   TascoHaulLogs,
@@ -39,6 +40,7 @@ import TimeCardTruckingStateMileageLogs from "./TimeCardTruckingStateMileage";
 import TimeCardTascoHaulLogs from "./TimeCardTascoHaulLogs";
 import TimeCardTascoRefuelLogs from "./TimeCardTascoRefuelLogs";
 import TimeCardEquipmentLogs from "./TimeCardEquipmentLogs";
+import TimeCardEquipmentRefuelLogs from "./TimeCardEquipmentRefuelLogs";
 
 export const EmployeeTimeSheets = ({
   date,
@@ -58,6 +60,7 @@ export const EmployeeTimeSheets = ({
   tascoRefuelLog,
   tascoHaulLogs,
   equipmentLogs,
+  equipmentRefuelLogs,
 }: {
   date: string;
   setDate: (date: string) => void;
@@ -76,6 +79,7 @@ export const EmployeeTimeSheets = ({
   manager: string;
   timeSheetFilter: string;
   setTimeSheetFilter: Dispatch<SetStateAction<string>>;
+  equipmentRefuelLogs: EmployeeEquipmentLogWithRefuel[] | null;
 }) => {
   const t = useTranslations("MyTeam");
 
@@ -143,6 +147,7 @@ export const EmployeeTimeSheets = ({
 
   const onCancelEdits = () => {
     setEditedHighlightTimesheet([...highlightTimesheet]); // Reset editedTimesheet to the original timesheet
+
     setEdit(false);
   };
 
@@ -192,6 +197,9 @@ export const EmployeeTimeSheets = ({
                   <option value="tascoHaulLogs">TASCO Haul Logs</option>
                   <option value="tascoRefuelLogs">TASCO Refuel Logs</option>
                   <option value="equipmentLogs">Equipment Logs</option>
+                  <option value="equipmentRefuelLogs">
+                    Equipment Refuel Logs
+                  </option>
                 </Selects>
               </Holds>
               <Holds
@@ -415,6 +423,25 @@ export const EmployeeTimeSheets = ({
                       <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
                         <Texts size="p6" className="text-gray-500 italic">
                           No Equipment Logs
+                        </Texts>
+                      </Holds>
+                    )}
+                  </>
+                )}
+
+                {timeSheetFilter === "equipmentRefuelLogs" && (
+                  <>
+                    {equipmentRefuelLogs && equipmentRefuelLogs.length > 0 ? (
+                      <TimeCardEquipmentRefuelLogs
+                        equipmentRefuelLogs={equipmentRefuelLogs}
+                        edit={edit}
+                        setEdit={setEdit}
+                        manager={manager}
+                      />
+                    ) : (
+                      <Holds className="row-start-2 row-end-7 h-full justify-center items-center">
+                        <Texts size="p6" className="text-gray-500 italic">
+                          No Equipment Refuel Logs Today
                         </Texts>
                       </Holds>
                     )}

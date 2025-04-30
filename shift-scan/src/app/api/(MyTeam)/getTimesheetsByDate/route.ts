@@ -382,7 +382,69 @@ export async function GET(request: Request) {
         },
       });
 
-      result = timeSheets;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      const adjustedTimeSheets = timeSheets.map((sheet) => {
+        const baseData = {
+          ...sheet,
+        };
+
+        // Process each equipment log's times
+        const adjustedLogs = sheet.EmployeeEquipmentLogs.map((log) => ({
+          ...log,
+          startTime: log.startTime
+            ? formatInTimeZone(log.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+            : "",
+          endTime: log.endTime
+            ? formatInTimeZone(log.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+            : "",
+        }));
+
+        return {
+          ...baseData,
+          EmployeeEquipmentLogs: adjustedLogs,
+        };
+      });
+
+      result = adjustedTimeSheets;
+    }
+
+    if (type === "equipmentRefuelLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              RefuelLogs: {
+                select: {
+                  id: true,
+                  gallonsRefueled: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      result = timeSheets
+        .flatMap((sheet) => sheet.EmployeeEquipmentLogs)
+        .filter((log) => log.RefuelLogs && log.RefuelLogs.length > 0); // or any other condition you need;
     }
 
     return NextResponse.json(result, {

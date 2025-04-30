@@ -20,6 +20,7 @@ import {
   TruckingRefuelLogData,
   TruckingStateLogData,
   EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { NewTab } from "@/components/(reusable)/newTabs";
@@ -101,6 +102,10 @@ export default function EmployeeTabs() {
     null
   );
 
+  const [equipmentRefuelLogs, setEquipmentRefuelLogs] = useState<
+    EmployeeEquipmentLogWithRefuel[] | null
+  >(null);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoadingUser(true);
@@ -169,6 +174,9 @@ export default function EmployeeTabs() {
         }
         if (timeSheetFilter === "equipmentLogs") {
           setEquipmentLogs(data as EquipmentLogsData);
+        }
+        if (timeSheetFilter === "equipmentRefuelLogs") {
+          setEquipmentRefuelLogs(data as EmployeeEquipmentLogWithRefuel[]);
         }
       } catch (error) {
         console.log(error);
@@ -257,6 +265,7 @@ export default function EmployeeTabs() {
                   manager={manager}
                   timeSheetFilter={timeSheetFilter}
                   setTimeSheetFilter={setTimeSheetFilter}
+                  equipmentRefuelLogs={equipmentRefuelLogs}
                 />
               )}
             </Holds>
