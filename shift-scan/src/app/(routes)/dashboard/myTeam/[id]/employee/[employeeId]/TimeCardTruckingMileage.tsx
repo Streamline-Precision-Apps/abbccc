@@ -5,43 +5,43 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingMileage } from "@/lib/types";
+import { TruckingMileage, TruckingMileageData } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 type TimeCardTruckingMileageProps = {
   edit: boolean;
   setEdit: (edit: boolean) => void;
   manager: string;
-  truckingMileage: TruckingMileage[];
+  truckingMileage: TruckingMileageData; // Changed to the new type
 };
-
 export default function TimeCardTruckingMileage({
   edit,
   setEdit,
   manager,
   truckingMileage,
 }: TimeCardTruckingMileageProps) {
-  const [editedTruckingMileage, setEditedTruckingMileage] =
-    useState<TruckingMileage[]>(truckingMileage);
+  const allTruckingLogs = truckingMileage
+    .flatMap((item) => item.TruckingLogs)
+    .filter((log) => log !== null && log.id);
+
+  const [editedTruckingLogs, setEditedTruckingLogs] =
+    useState<TruckingMileage[]>(allTruckingLogs);
 
   const handleMileageChange = (
     id: string,
     field: keyof TruckingMileage,
     value: string | number
   ) => {
-    setEditedTruckingMileage((prev) =>
+    setEditedTruckingLogs((prev) =>
       prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     );
   };
 
   useEffect(() => {
-    setEditedTruckingMileage(truckingMileage);
+    setEditedTruckingLogs(allTruckingLogs);
   }, [truckingMileage]);
 
-  const isEmptyData =
-    editedTruckingMileage.length === 1 &&
-    !editedTruckingMileage[0].startingMileage &&
-    !editedTruckingMileage[0].endingMileage;
+  const isEmptyData = allTruckingLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
@@ -63,7 +63,7 @@ export default function TimeCardTruckingMileage({
                   </Titles>
                 </Holds>
                 <Holds className="col-start-3 col-end-4 w-full h-full pr-1">
-                  <Titles position={"right"} size={"h6"}>
+                  <Titles position={"center"} size={"h6"}>
                     Start
                   </Titles>
                 </Holds>
@@ -74,7 +74,7 @@ export default function TimeCardTruckingMileage({
                 </Holds>
               </Grids>
 
-              {editedTruckingMileage?.map((sheet) => (
+              {editedTruckingLogs.map((sheet) => (
                 <Holds
                   key={sheet.id}
                   className="border-black border-[3px] rounded-lg bg-white mb-2"
@@ -85,11 +85,11 @@ export default function TimeCardTruckingMileage({
                     className="w-full h-full text-left"
                   >
                     <Grids cols={"4"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-3 p-2">
+                      <Holds className="col-start-1 col-end-3 h-full w-full ">
                         <Inputs
                           type={"text"}
                           value={sheet.Equipment?.name || ""}
-                          className="text-xs border-none h-full rounded-none justify-center"
+                          className="text-xs border-none h-full w-full p-2.5 rounded-md rounded-tr-none rounded-br-none justify-center"
                           disabled={!edit}
                           onChange={(e) =>
                             handleMileageChange(
@@ -105,7 +105,7 @@ export default function TimeCardTruckingMileage({
                           <Inputs
                             type={"number"}
                             value={sheet.startingMileage}
-                            className="text-xs border-none h-full rounded-none justify-center"
+                            className="text-xs border-none h-full rounded-none justify-center  p-2.5 "
                             disabled={!edit}
                             onChange={(e) =>
                               handleMileageChange(
@@ -123,7 +123,7 @@ export default function TimeCardTruckingMileage({
                           <Inputs
                             type={"number"}
                             value={sheet.endingMileage || ""}
-                            className="text-xs border-none h-full rounded-none justify-center text-right"
+                            className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right  p-2.5 "
                             disabled={!edit}
                             onChange={(e) =>
                               handleMileageChange(

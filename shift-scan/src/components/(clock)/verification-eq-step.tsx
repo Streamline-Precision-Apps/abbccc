@@ -12,7 +12,6 @@ import CodeStep from "./code-step";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
-import { form } from "@nextui-org/theme";
 
 type VerifyProcessProps = {
   handleNextStep: () => void;

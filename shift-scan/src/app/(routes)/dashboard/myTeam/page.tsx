@@ -159,13 +159,13 @@ export default function Content() {
                       </Holds>
                     ))}
                   </Holds>
-                  <Holds className="row-start-7 row-end-8 h-full w-full">
+                  <Holds className="row-start-7 row-end-8 w-full">
                     <Buttons
                       background="green"
                       href={`/dashboard/myTeam/timecards?rPath=${url}`}
-                      className=" w-full"
+                      className=" w-full py-3"
                     >
-                      <Titles size="h2">{t("Timesheets")}</Titles>
+                      <Titles size="h2">{t("TimeCards")}</Titles>
                     </Buttons>
                   </Holds>
                 </Grids>
