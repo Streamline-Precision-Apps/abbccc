@@ -146,86 +146,86 @@ export default function ChangePassword({ userId }: { userId: string }) {
         )}
 
         {/* Start of grid container */}
-        <Grids rows={"5"} gap={"5"} className="h-full">
-          {/* New password section */}
+        <Holds background={"white"} className="w-full h-full">
+          <Contents width={"section"}>
+            <Grids rows={"7"} gap={"5"} className="h-full py-5">
+              {/* New password section */}
 
-          <Holds background={"darkBlue"} className="row-span-1 h-full">
-            <Texts position="left" text={"white"} size="p4">
-              Password Strength:
-            </Texts>
-            <Holds background="white" className="rounded-xl h-full ">
-              <Contents width={"section"}>
-                <Holds position="row" className="my-auto">
-                  <PasswordCriteria passed={oneNumber} label="123" />
-                  <PasswordCriteria passed={oneSymbol} label="Symbol" />
-                  <PasswordCriteria passed={eightChar} label="(8) Length" />
+              <Holds background={"darkBlue"} className="row-span-1 h-full">
+                <Texts position="left" text={"white"} size="p6">
+                  Password Strength Criteria:
+                </Texts>
+                <Holds background="white" className="rounded-xl h-full mt-2 ">
+                  <Contents width={"section"}>
+                    <Holds position="row" className="my-auto">
+                      <PasswordCriteria passed={oneNumber} label="123" />
+                      <PasswordCriteria passed={oneSymbol} label="Symbol" />
+                      <PasswordCriteria passed={eightChar} label="(8) Length" />
+                    </Holds>
+                  </Contents>
                 </Holds>
-              </Contents>
-            </Holds>
-          </Holds>
-          <Holds background="white" className="row-span-2 h-full">
-            <Contents width="section">
-              <Holds className="my-auto w-full">
-                <Holds position="row" className="">
-                  <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
-                  <Images
-                    titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
-                    titleImgAlt="eye"
-                    background="none"
-                    size="10"
-                    onClick={viewPasscode1}
+              </Holds>
+              <Holds
+                background="white"
+                className="row-start-2 row-end-7 h-full"
+              >
+                <Holds className=" w-full pb-4">
+                  <Holds position="row" className="w-full">
+                    <Labels size={"p4"} htmlFor="new-password">
+                      {t("NewPassword")}
+                    </Labels>
+                    <Images
+                      titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
+                      titleImgAlt="eye"
+                      background="none"
+                      size="10"
+                      position="right"
+                      onClick={viewPasscode1}
+                    />
+                  </Holds>
+                  <Inputs
+                    type={viewSecret1 ? "text" : "password"}
+                    id="new-password"
+                    value={newPassword}
+                    onChange={(e) => {
+                      handlePasswordChange(e.target.value);
+                      setNewPassword(e.target.value);
+                    }}
                   />
                 </Holds>
-                <Inputs
-                  type={viewSecret1 ? "text" : "password"}
-                  id="new-password"
-                  value={newPassword}
-                  onChange={(e) => {
-                    handlePasswordChange(e.target.value);
-                    setNewPassword(e.target.value);
-                  }}
-                />
-              </Holds>
-            </Contents>
-          </Holds>
-
-          {/* Confirm password section */}
-          <Holds className="row-span-4 h-full" background="white">
-            <Contents width="section">
-              <Holds className="my-auto w-full">
-                <Holds position="row" className="h-full">
-                  <Labels htmlFor="confirm-password">
-                    {t("ConfirmPassword")}
-                  </Labels>
-                  <Images
-                    titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
-                    titleImgAlt="eye"
-                    background="none"
-                    size="10"
-                    onClick={viewPasscode2}
+                <Holds className="w-full">
+                  <Holds position="row" className="h-full">
+                    <Labels size={"p4"} htmlFor="confirm-password">
+                      {t("ConfirmPassword")}
+                    </Labels>
+                    <Images
+                      titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
+                      titleImgAlt="eye"
+                      background="none"
+                      size="10"
+                      onClick={viewPasscode2}
+                    />
+                  </Holds>
+                  <Inputs
+                    type={viewSecret2 ? "text" : "password"}
+                    id="confirm-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                 </Holds>
-                <Inputs
-                  type={viewSecret2 ? "text" : "password"}
-                  id="confirm-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
               </Holds>
-            </Contents>
-          </Holds>
 
-          {/* Submit button section */}
-          <Holds className="row-span-2 h-full">
-            <Holds className="my-auto">
-              <Contents width="section">
+              {/* Confirm password section */}
+
+              {/* Submit button section */}
+              <Holds className="row-start-7 row-end-8">
                 <Buttons background="orange" type="submit" className="py-2">
                   <Titles size="h4">{t("ChangePassword")}</Titles>
                 </Buttons>
-              </Contents>
-            </Holds>
-          </Holds>
-        </Grids>
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
       </Forms>
     </Holds>
   );
