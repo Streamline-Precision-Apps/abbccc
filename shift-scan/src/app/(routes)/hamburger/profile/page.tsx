@@ -3,6 +3,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import ProfilePage from "./accountSettings";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default async function EmployeeProfile() {
   const session = await auth();
@@ -13,7 +14,9 @@ export default async function EmployeeProfile() {
   const userId = session.user.id;
   return (
     <Bases>
-      <ProfilePage userId={userId} />
+      <Contents>
+        <ProfilePage userId={userId} />
+      </Contents>
     </Bases>
   );
 }

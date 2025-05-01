@@ -185,83 +185,81 @@ export default function ProfilePage({ userId }: { userId: string }) {
   };
 
   return (
-    <Contents width={"section"}>
-      <Grids rows={"6"} gap={"5"}>
-        <Holds
-          background={"white"}
-          className={`row-start-1 row-end-2 h-full ${
-            loading ? "animate-pulse" : ""
-          }`}
-        >
-          <TitleBoxes onClick={() => router.push(`/${url}`)}>
-            {/* Profile Image Editor (Pass fetchEmployee as Prop) */}
+    <Grids rows={"6"} gap={"5"}>
+      <Holds
+        background={"white"}
+        className={`row-start-1 row-end-2 h-full ${
+          loading ? "animate-pulse" : ""
+        }`}
+      >
+        <TitleBoxes onClick={() => router.push(`/${url}`)}>
+          {/* Profile Image Editor (Pass fetchEmployee as Prop) */}
 
-            <ProfileImageEditor
-              employee={employee}
-              reloadEmployee={fetchEmployee}
-              loading={loading}
-              employeeName={employee?.firstName + " " + employee?.lastName}
-            />
-          </TitleBoxes>
+          <ProfileImageEditor
+            employee={employee}
+            reloadEmployee={fetchEmployee}
+            loading={loading}
+            employeeName={employee?.firstName + " " + employee?.lastName}
+          />
+        </TitleBoxes>
+      </Holds>
+
+      {/* Account Information Section */}
+      <Holds
+        className={`row-start-2 row-end-7 h-full ${
+          loading ? "animate-pulse" : ""
+        }`}
+      >
+        {/* Tabs */}
+        <Holds position={"row"} className="h-fit flex gap-x-1">
+          <NewTab
+            titleImage={"/accountInfo.svg"}
+            titleImageAlt={""}
+            onClick={() => setActiveTab(1)}
+            isActive={activeTab === 1}
+            isComplete={true}
+          >
+            <Titles size={"h4"}>{t("AccountInformation")}</Titles>
+          </NewTab>
+          <NewTab
+            titleImage={"/settings-sm.svg"}
+            titleImageAlt={""}
+            onClick={() => setActiveTab(2)}
+            isActive={activeTab === 2}
+            isComplete={true}
+          >
+            <Titles size={"h4"}>{t("AccountSettings")}</Titles>
+          </NewTab>
         </Holds>
 
-        {/* Account Information Section */}
-        <Holds
-          className={`row-start-2 row-end-7 h-full ${
-            loading ? "animate-pulse" : ""
-          }`}
-        >
-          {/* Tabs */}
-          <Holds position={"row"} className="h-fit flex gap-x-1">
-            <NewTab
-              titleImage={"/accountInfo.svg"}
-              titleImageAlt={""}
-              onClick={() => setActiveTab(1)}
-              isActive={activeTab === 1}
-              isComplete={true}
-            >
-              <Titles size={"h4"}>{t("AccountInformation")}</Titles>
-            </NewTab>
-            <NewTab
-              titleImage={"/settings-sm.svg"}
-              titleImageAlt={""}
-              onClick={() => setActiveTab(2)}
-              isActive={activeTab === 2}
-              isComplete={true}
-            >
-              <Titles size={"h4"}>{t("AccountSettings")}</Titles>
-            </NewTab>
-          </Holds>
-
-          {/* Content */}
-          <Holds background={"white"} className="rounded-t-none h-full w-full">
-            {loading ? null : (
-              <>
-                {activeTab === 1 && (
-                  <AccountInformation
-                    employee={employee}
-                    signatureBase64String={signatureBase64String}
-                    setSignatureBase64String={setSignatureBase64String}
-                  />
-                )}
-                {activeTab === 2 && (
-                  <SettingSelections
-                    id={userId}
-                    handleLanguageChange={handleLanguageChange}
-                    data={data}
-                    updatedData={updatedData}
-                    handleChange={handleChange}
-                    handleCameraAccessChange={handleCameraAccessChange}
-                    handleLocationAccessChange={handleLocationAccessChange}
-                    setData={setData}
-                    setUpdatedData={setUpdatedData}
-                  />
-                )}
-              </>
-            )}
-          </Holds>
+        {/* Content */}
+        <Holds background={"white"} className="rounded-t-none h-full w-full">
+          {loading ? null : (
+            <>
+              {activeTab === 1 && (
+                <AccountInformation
+                  employee={employee}
+                  signatureBase64String={signatureBase64String}
+                  setSignatureBase64String={setSignatureBase64String}
+                />
+              )}
+              {activeTab === 2 && (
+                <SettingSelections
+                  id={userId}
+                  handleLanguageChange={handleLanguageChange}
+                  data={data}
+                  updatedData={updatedData}
+                  handleChange={handleChange}
+                  handleCameraAccessChange={handleCameraAccessChange}
+                  handleLocationAccessChange={handleLocationAccessChange}
+                  setData={setData}
+                  setUpdatedData={setUpdatedData}
+                />
+              )}
+            </>
+          )}
         </Holds>
-      </Grids>
-    </Contents>
+      </Holds>
+    </Grids>
   );
 }
