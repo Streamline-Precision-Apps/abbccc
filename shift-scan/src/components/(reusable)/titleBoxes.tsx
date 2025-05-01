@@ -67,7 +67,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         background={"none"}
         position={"left"}
         shadow={"none"}
-        className="w-12 h-12 absolute top-0 left-3"
+        className="w-12 h-12 absolute top-0 left-3 z-50"
       >
         <Images
           titleImg="/turnBack.svg"

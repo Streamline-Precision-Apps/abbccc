@@ -86,7 +86,7 @@ export default function CodeFinder({
     }
 
     if (datatype === "jobsite") {
-      setScanResult({ qrCode: option.code, name: option.label });
+      setScanResult({ data: option.code });
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
@@ -98,7 +98,7 @@ export default function CodeFinder({
       datatype === "jobsite-tasco" ||
       datatype === "jobsite-truck"
     ) {
-      setScanResult({ qrCode: option.code, name: option.label });
+      setScanResult({ data: option.code });
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
@@ -139,7 +139,7 @@ export default function CodeFinder({
       await setEquipment("");
     }
     if (datatype === "jobsite") {
-      await setJobSite({ code: "", label: "" });
+      await setJobSite("");
     }
     if (datatype === "costcode") {
       await setCostCodeCookie("");

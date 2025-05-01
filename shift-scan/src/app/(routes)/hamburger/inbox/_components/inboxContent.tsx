@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import STab from "@/app/hamburger/inbox/_components/sent";
+import STab from "@/app/(routes)/hamburger/inbox/_components/sent";
 
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
