@@ -480,6 +480,7 @@
     "Logs-Fetch": "Error fetching logs:"
   },
   "Hamburger": {
+    "FormsDocuments": "Forms & Documents",
     "PersonalReminders": "Personal Reminders",
     "AccountInformation": "Account Information",
     "AccountSettings": "Account Settings",
