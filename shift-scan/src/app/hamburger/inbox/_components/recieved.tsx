@@ -172,22 +172,33 @@ export default function RTab({
                 <Titles size={"h5"}>Company Documents</Titles>
               </NewTab>
             </Holds>
-            <Selects
-              value={selectedFilter}
-              onChange={(e) => setSelectedFilter(e.target.value)}
-              className="text-center justify-center h-full"
+            <Holds
+              background={"white"}
+              className="h-full w-full rounded-t-none animate-pulse"
             >
-              <option value="all">Select A Filter</option>
-              <option value="approved">Recently Approved</option>
-              {employeeRequests.map((employee) => (
-                <option key={employee.id} value={employee.id}>
-                  {employee.user.firstName} {employee.user.lastName}
-                </option>
-              ))}
-            </Selects>
-          </Holds>
-          <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center  ">
-            <Spinner size={50} />
+              <Contents width={"section"}>
+                <Grids rows={"9"} className="h-full w-full pt-3 pb-5">
+                  <Holds className="row-start-1 row-end-2 w-full">
+                    <Selects
+                      value={selectedFilter}
+                      onChange={(e) => setSelectedFilter(e.target.value)}
+                      className="text-center justify-center h-full"
+                    >
+                      <option value="all">Select A Filter</option>
+                      <option value="approved">Recently Approved</option>
+                      {employeeRequests.map((employee) => (
+                        <option key={employee.id} value={employee.id}>
+                          {employee.user.firstName} {employee.user.lastName}
+                        </option>
+                      ))}
+                    </Selects>
+                  </Holds>
+                  <Holds className="row-start-2 row-end-8 w-full">
+                    <Spinner size={50} />
+                  </Holds>
+                </Grids>
+              </Contents>
+            </Holds>
           </Holds>
         </Grids>
       </Holds>
@@ -245,7 +256,7 @@ export default function RTab({
           </Holds>
           <Holds background={"white"} className={`h-full rounded-t-none`}>
             <Contents width={"section"}>
-              <Grids rows={"9"} className="h-full w-full pt-3 pb-5">
+              <Grids rows={"9"} className="h-full w-full pb-5">
                 <Holds className="row-start-1 row-end-2 w-full">
                   <Selects
                     value={selectedFilter}

@@ -144,7 +144,7 @@ export default function STab({
             </Holds>
             <Holds
               background={"white"}
-              className="h-full w-full rounded-t-none"
+              className="h-full w-full rounded-t-none animate-pulse"
             >
               <Grids rows={"9"} className="h-full w-full">
                 <Holds className="row-start-1 row-end-2  w-full">

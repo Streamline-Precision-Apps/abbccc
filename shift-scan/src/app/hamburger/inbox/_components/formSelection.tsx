@@ -156,7 +156,9 @@ export default function FormSelection({
           </Holds>
           <Holds
             background={"white"}
-            className="h-full row-start-2 row-end-4 rounded-t-none py-3"
+            className={`h-full row-start-2 row-end-4 rounded-t-none py-3 ${
+              loading && "animate-pulse"
+            } `}
           >
             <Contents width={"section"}>
               {loading ? (
