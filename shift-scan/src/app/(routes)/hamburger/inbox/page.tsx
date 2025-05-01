@@ -1,5 +1,5 @@
 "use server";
-import InboxContent from "@/app/hamburger/inbox/_components/inboxContent";
+import InboxContent from "@/app/(routes)/hamburger/inbox/_components/inboxContent";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";

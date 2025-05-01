@@ -1,7 +1,6 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Texts } from "@/components/(reusable)/texts";
 import Base64Encoder from "@/components/(camera)/Base64Encoder";
 import { useState } from "react";
 import { Employee } from "@/lib/types";

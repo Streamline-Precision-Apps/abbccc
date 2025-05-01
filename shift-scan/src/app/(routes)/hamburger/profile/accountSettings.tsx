@@ -2,18 +2,18 @@
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import AccountInformation from "./accountInformation";
-import ProfileImageEditor from "@/app/hamburger/profile/ProfileImageEditor";
+import ProfileImageEditor from "@/app/(routes)/hamburger/profile/ProfileImageEditor";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import SettingSelections from "./SettingSelections";
 import { UserSettings } from "@/lib/types";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { z } from "zod";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 // Define Zod schema for UserSettings
 const userSettingsSchema = z.object({
@@ -186,107 +186,80 @@ export default function ProfilePage({ userId }: { userId: string }) {
 
   return (
     <Contents width={"section"}>
-      <Grids rows={"10"} gap={"5"}>
+      <Grids rows={"6"} gap={"5"}>
         <Holds
           background={"white"}
-          className={`row-span-2 h-full ${loading ? "animate-pulse" : ""}`}
+          className={`row-start-1 row-end-2 h-full ${
+            loading ? "animate-pulse" : ""
+          }`}
         >
-          <Grids cols={"5"} className="h-full w-full pt-3">
-            {/* Back Button */}
-            <Holds className="col-span-1 h-full w-full">
-              <Images
-                titleImg="/turnBack.svg"
-                titleImgAlt="Back"
-                onClick={() => router.push(url)}
-                className="max-w-[40px] max-h-[40px]"
-              />
-            </Holds>
-
+          <TitleBoxes onClick={() => router.push(`/${url}`)}>
             {/* Profile Image Editor (Pass fetchEmployee as Prop) */}
-            <Holds className="col-start-2 col-end-5 h-full w-full flex justify-center items-center  ">
-              <ProfileImageEditor
-                employee={employee}
-                reloadEmployee={fetchEmployee}
-                loading={loading}
-              />
-            </Holds>
 
-            {/* Employee ID */}
-            {loading ? null : (
-              <Holds className="col-span-1 h-full">
-                <Titles size={"h6"}>{`#ID: ${employee?.id}`}</Titles>
-              </Holds>
-            )}
-
-            {/* Employee Name */}
-            {loading ? null : (
-              <Holds className="col-span-5 mt-3">
-                <Titles
-                  size={"h3"}
-                >{`${employee?.firstName} ${employee?.lastName}`}</Titles>
-              </Holds>
-            )}
-          </Grids>
+            <ProfileImageEditor
+              employee={employee}
+              reloadEmployee={fetchEmployee}
+              loading={loading}
+              employeeName={employee?.firstName + " " + employee?.lastName}
+            />
+          </TitleBoxes>
         </Holds>
 
         {/* Account Information Section */}
         <Holds
-          className={`row-span-8 h-full ${loading ? "animate-pulse" : ""}`}
+          className={`row-start-2 row-end-7 h-full ${
+            loading ? "animate-pulse" : ""
+          }`}
         >
-          <Grids rows={"10"} className="h-full w-full">
-            {/* Tabs */}
-            <Holds position={"row"} className="row-span-1 flex gap-1">
-              <NewTab
-                titleImage={"/accountInfo.svg"}
-                titleImageAlt={""}
-                onClick={() => setActiveTab(1)}
-                isActive={activeTab === 1}
-                isComplete={true}
-              >
-                <Titles size={"h4"}>{t("AccountInformation")}</Titles>
-              </NewTab>
-              <NewTab
-                titleImage={"/settings-sm.svg"}
-                titleImageAlt={""}
-                onClick={() => setActiveTab(2)}
-                isActive={activeTab === 2}
-                isComplete={true}
-              >
-                <Titles size={"h4"}>{t("AccountSettings")}</Titles>
-              </NewTab>
-            </Holds>
-
-            {/* Content */}
-            <Holds
-              background={"white"}
-              className="row-span-9 rounded-t-none h-full w-full"
+          {/* Tabs */}
+          <Holds position={"row"} className="h-fit flex gap-x-1">
+            <NewTab
+              titleImage={"/accountInfo.svg"}
+              titleImageAlt={""}
+              onClick={() => setActiveTab(1)}
+              isActive={activeTab === 1}
+              isComplete={true}
             >
-              {loading ? null : (
-                <>
-                  {activeTab === 1 && (
-                    <AccountInformation
-                      employee={employee}
-                      signatureBase64String={signatureBase64String}
-                      setSignatureBase64String={setSignatureBase64String}
-                    />
-                  )}
-                  {activeTab === 2 && (
-                    <SettingSelections
-                      id={userId}
-                      handleLanguageChange={handleLanguageChange}
-                      data={data}
-                      updatedData={updatedData}
-                      handleChange={handleChange}
-                      handleCameraAccessChange={handleCameraAccessChange}
-                      handleLocationAccessChange={handleLocationAccessChange}
-                      setData={setData}
-                      setUpdatedData={setUpdatedData}
-                    />
-                  )}
-                </>
-              )}
-            </Holds>
-          </Grids>
+              <Titles size={"h4"}>{t("AccountInformation")}</Titles>
+            </NewTab>
+            <NewTab
+              titleImage={"/settings-sm.svg"}
+              titleImageAlt={""}
+              onClick={() => setActiveTab(2)}
+              isActive={activeTab === 2}
+              isComplete={true}
+            >
+              <Titles size={"h4"}>{t("AccountSettings")}</Titles>
+            </NewTab>
+          </Holds>
+
+          {/* Content */}
+          <Holds background={"white"} className="rounded-t-none h-full w-full">
+            {loading ? null : (
+              <>
+                {activeTab === 1 && (
+                  <AccountInformation
+                    employee={employee}
+                    signatureBase64String={signatureBase64String}
+                    setSignatureBase64String={setSignatureBase64String}
+                  />
+                )}
+                {activeTab === 2 && (
+                  <SettingSelections
+                    id={userId}
+                    handleLanguageChange={handleLanguageChange}
+                    data={data}
+                    updatedData={updatedData}
+                    handleChange={handleChange}
+                    handleCameraAccessChange={handleCameraAccessChange}
+                    handleLocationAccessChange={handleLocationAccessChange}
+                    setData={setData}
+                    setUpdatedData={setUpdatedData}
+                  />
+                )}
+              </>
+            )}
+          </Holds>
         </Holds>
       </Grids>
     </Contents>

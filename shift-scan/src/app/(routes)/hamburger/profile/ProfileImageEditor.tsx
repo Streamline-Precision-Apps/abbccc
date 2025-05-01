@@ -18,7 +18,9 @@ export default function ProfileImageEditor({
   employee,
   reloadEmployee,
   loading,
+  employeeName,
 }: {
+  employeeName: string;
   employee?: Employee;
   reloadEmployee: () => Promise<void>;
   loading: boolean;
@@ -118,7 +120,7 @@ export default function ProfileImageEditor({
       formData.append("id", employee?.id || "");
       formData.append("image", cropImageSrc);
       await uploadImage(formData);
-
+      localStorage.removeItem("userProfileImage");
       // Close and refresh
       setIsOpen(false);
       await reloadEmployee();
@@ -139,21 +141,25 @@ export default function ProfileImageEditor({
   return (
     <>
       {/* Profile Image with Camera Button */}
-      <Holds className="w-[90px] h-[90px] relative">
-        <Images
-          titleImg={loading ? "/person.svg" : employee?.image || "/profile.svg"}
-          titleImgAlt="profile"
-          onClick={() => setIsOpen(true)}
-          className={`w-full h-full rounded-full object-cover ${
-            employee?.image ? "border-[3px] border-black" : ""
-          }`}
-        />
-        <Holds className="absolute bottom-3 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-9 w-9 border-[3px] p-1 justify-center items-center border-black bg-app-gray">
+      <Holds className="w-full  relative">
+        <Holds className="w-[90px] h-[90px] relative">
           <Images
-            titleImg="/camera.svg"
-            titleImgAlt="camera"
+            titleImg={
+              loading ? "/person.svg" : employee?.image || "/profile.svg"
+            }
+            titleImgAlt="profile"
             onClick={() => setIsOpen(true)}
+            className={`w-full h-full rounded-full object-cover ${
+              employee?.image ? "border-[3px] border-black" : ""
+            }`}
           />
+          <Holds className="absolute bottom-2 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-9 w-9 border-[3px] p-1 justify-center items-center border-black bg-app-gray">
+            <Images
+              titleImg="/camera.svg"
+              titleImgAlt="camera"
+              onClick={() => setIsOpen(true)}
+            />
+          </Holds>
         </Holds>
       </Holds>
 
@@ -293,8 +299,8 @@ export default function ProfileImageEditor({
                     <Titles size={"h4"}>Cancel</Titles>
                   </Buttons>
                 </Holds>
-              ) : mode === "preview" ? (
-                <Holds className="row-start-9 row-end-11 w-full space-y-5">
+              ) : mode === "crop" ? (
+                <Holds className="row-start-9 row-end-10 w-full space-y-5">
                   <Buttons
                     background="green"
                     className="w-full py-2"
@@ -305,19 +311,9 @@ export default function ProfileImageEditor({
                   <Buttons
                     background="red"
                     className="w-full py-2"
-                    onClick={() => setMode("select")}
+                    onClick={() => setMode("camera")}
                   >
-                    <Titles size={"h4"}>Cancel</Titles>
-                  </Buttons>
-                </Holds>
-              ) : mode === "crop" ? (
-                <Holds className="row-start-9 row-end-11 w-full">
-                  <Buttons
-                    background="green"
-                    className="w-full py-2"
-                    onClick={() => setMode("preview")}
-                  >
-                    <Titles size={"h4"}>Preview</Titles>
+                    <Titles size={"h4"}>Retake</Titles>
                   </Buttons>
                 </Holds>
               ) : null}

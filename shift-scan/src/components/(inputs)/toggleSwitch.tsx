@@ -28,7 +28,7 @@ const LocaleToggleSwitch = ({
     >
       <span
         className={classNames(
-          "w-9 h-9 rounded-[10px] border-black border-[3px] transition-all duration-500 ",
+          "w-8 h-8 rounded-[10px] border-black border-[3px] transition-all duration-500 ",
           {
             "ml-10": isSelected,
             "bg-app-green": isSelected,
