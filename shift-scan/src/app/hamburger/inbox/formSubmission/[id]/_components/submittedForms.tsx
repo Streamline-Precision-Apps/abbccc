@@ -13,6 +13,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { format } from "date-fns";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { NModals } from "@/components/(reusable)/newmodals";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 interface FormField {
   id: string;
@@ -68,6 +69,7 @@ export default function SubmittedForms({
 }) {
   const router = useRouter();
   const [deleteRequestModal, setDeleteRequestModal] = useState(false);
+  console.log(signature);
 
   type FormValues = Record<string, string>;
 
@@ -116,33 +118,29 @@ export default function SubmittedForms({
   };
   return (
     <>
-      <Holds
-        background={"white"}
-        className="row-span-1 h-full justify-center px-3 "
-      >
-        <Grids cols={"5"} rows={"2"} className="w-full h-full py-2">
-          <Holds className="col-span-1 row-span-2 flex items-center justify-center">
-            <Buttons
-              onClick={() => router.back()}
-              background={"none"}
-              position={"left"}
-            >
-              <Images
-                titleImg="/turnBack.svg"
-                titleImgAlt={"Turn Back"}
-                className="max-w-8 h-auto object-contain"
-              />
-            </Buttons>
-          </Holds>
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full  ">
+        <TitleBoxes
+          onClick={() => {
+            router.back();
+          }}
+        >
+          <>
+            <Holds className="w-full h-full justify-center items-center">
+              <Titles size={"h4"}>
+                {formTitle === ""
+                  ? formData.name
+                  : formTitle.charAt(0).toUpperCase() +
+                    formTitle.slice(1).slice(0, 24)}
+              </Titles>
 
-          <Holds className="col-start-2 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-            <Titles size={"h4"}>
-              {formTitle === "" ? formData.name : formTitle}
-            </Titles>
-            <Titles size={"h6"}>{formData.name}</Titles>
-          </Holds>
-          <Holds className="col-start-5 col-end-6 row-start-1 row-end-3">
+              {formTitle === "" ? (
+                <Titles size={"h7"}>{formData.name}</Titles>
+              ) : null}
+
+              <Titles size={"h6"}>{formData.name}</Titles>
+            </Holds>
             <Holds
+              className="flex items-center justify-center w-10 h-auto rounded-full absolute top-2 right-3 "
               background={
                 submissionStatus === "PENDING"
                   ? "orange"
@@ -150,7 +148,6 @@ export default function SubmittedForms({
                   ? "green"
                   : "red"
               }
-              className="flex items-center justify-center w-10 h-auto rounded-full"
             >
               <Images
                 titleImgAlt={"form Status"}
@@ -164,11 +161,14 @@ export default function SubmittedForms({
                 className=" w-10 h-auto object-contain"
               />
             </Holds>
-          </Holds>
-        </Grids>
+          </>
+        </TitleBoxes>
       </Holds>
 
-      <Holds background={"white"} className="w-full h-full row-span-7 px-2 ">
+      <Holds
+        background={"white"}
+        className="w-full h-full row-start-2 row-end-8 px-2 "
+      >
         <Contents width={"section"}>
           <form
             onSubmit={() => {
@@ -179,8 +179,10 @@ export default function SubmittedForms({
             <Grids rows={"6"} gap={"3"} className="h-full w-full">
               <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-hidden no-scrollbar">
                 {formData?.groupings?.map((group) => (
-                  <Holds key={group.id} className="">
-                    {group.title && <h3>{group.title || ""}</h3>}
+                  <Holds key={group.id} className="pb-2">
+                    {group.title && (
+                      <Texts size={"p6"}>{group.title || ""}</Texts>
+                    )}
                     {group.fields.map((field) => {
                       return (
                         <Holds key={field.id} className="pt-2">

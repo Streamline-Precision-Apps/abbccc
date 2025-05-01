@@ -22,8 +22,7 @@ export default function EqScannerModal({
 }: EqScannerModalProps) {
   const [step, setStep] = useState<number>(0);
 
-
-// useEffect to reset step and role on mount/unmount
+  // useEffect to reset step and role on mount/unmount
   useEffect(() => {
     setStep(0);
     return () => {
@@ -41,41 +40,39 @@ export default function EqScannerModal({
   const handleCloseModal = () => {
     setModalOpen(false);
   };
-if (step === 0) {
-  return (
-    <Holds background="white" className="h-full py-5">
-    <Grids rows="7" gap="3">
-
-      {/* Modal Content */}
-      <Holds className="flex justify-center items-center h-full w-full row-start-1 row-end-8">
-        <Contents width="section">
-          <QrHandler
+  if (step === 0) {
+    return (
+      <Holds background="white" className="h-full ">
+        <Grids rows="7">
+          {/* Modal Content */}
+          <Holds className="flex justify-center items-center h-full w-full row-start-1 row-end-8">
+            <QrHandler
               handleReturnPath={() => {
                 handleCloseModal();
               }}
-              handleNextStep = {handleNextStep}
-              scanned= {scanned}
-              setScanned = {setScanned}
-              equipment = {equipment || []}
-              />
+              handleNextStep={handleNextStep}
+              scanned={scanned}
+              setScanned={setScanned}
+              equipment={equipment || []}
+            />
+          </Holds>
+        </Grids>
+      </Holds>
+    );
+  }
+  if (step === 1) {
+    return (
+      <Holds background={"white"} className="h-full w-full py-5">
+        <Contents width="section">
+          <CodeStep
+            handleNextStep={handleCloseModal}
+            handlePrevStep={handlePrevStep}
+            setScanned={setScanned}
+          />
         </Contents>
       </Holds>
-    </Grids>
-  </Holds>
-  );
-} if (step === 1) {
-  return (
-        <Holds background={"white"} className="h-full w-full py-5">
-          <Contents width="section">
-            <CodeStep
-              handleNextStep={handleCloseModal}
-              handlePrevStep={handlePrevStep}
-              setScanned={setScanned}
-            />
-          </Contents>
-        </Holds>
-  )
-} else {
-  return null;
-}
+    );
+  } else {
+    return null;
+  }
 }

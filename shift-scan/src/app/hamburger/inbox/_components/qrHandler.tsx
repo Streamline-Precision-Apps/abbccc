@@ -29,7 +29,9 @@ export default function EquipmentQRScanner({
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
   const [failedToScan, setFailedToScan] = useState<boolean>(false);
-  const [scanErrorType, setScanErrorType] = useState<"camera" | "permission" | "invalid" | null>(null);
+  const [scanErrorType, setScanErrorType] = useState<
+    "camera" | "permission" | "invalid" | null
+  >(null);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -115,19 +117,24 @@ export default function EquipmentQRScanner({
                 </Holds>
 
                 <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
-                  <Buttons background="none" onClick={handleNextStep}>
+                  <Buttons
+                    shadow={"none"}
+                    background="none"
+                    onClick={handleNextStep}
+                  >
                     <Texts size="p4">{t("TroubleScanning")}</Texts>
                   </Buttons>
                 </Holds>
               </Grids>
             </Holds>
           )}
-          
+
           {!startCamera && (
-            <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+            <Holds className="row-start-7 row-end-8  w-full justify-center">
               <Buttons
                 onClick={() => setStartCamera(true)}
                 background="green"
+                className="w-full py-3"
               >
                 <Titles size="h2">{t("StartCamera")}</Titles>
               </Buttons>

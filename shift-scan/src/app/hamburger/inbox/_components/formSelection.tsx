@@ -7,6 +7,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { NewTab } from "@/components/(reusable)/newTabs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Titles } from "@/components/(reusable)/titles";
 import { format } from "date-fns";
@@ -20,11 +21,12 @@ type Form = {
 };
 type DraftForm = {
   id: string;
+  title: string;
   formTemplateId: string;
   status: FormStatus;
   createdAt: string;
   data: Record<string, string>;
-  formTemplate: {
+  FormTemplate: {
     name: string;
   };
 };
@@ -38,9 +40,15 @@ enum FormStatus {
 export default function FormSelection({
   loading,
   setLoading,
+  setActiveTab,
+  activeTab,
+  isManager,
 }: {
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setActiveTab: React.Dispatch<React.SetStateAction<number>>;
+  activeTab: number;
+  isManager: boolean;
 }) {
   const [forms, setForms] = useState<Form[]>([]);
   const [selectedForm, setSelectedForm] = useState<string>("");
@@ -94,21 +102,68 @@ export default function FormSelection({
     );
   };
   return (
-    <Holds className="h-full row-span-9">
-      <Grids rows={"9"} gap={"5"}>
+    <Holds className="h-full w-full">
+      <Grids rows={"7"} gap={"5"}>
         <Holds
-          background={"white"}
-          className={`rounded-t-none row-span-3 h-full ${
+          className={` row-start-1 row-end-3 h-full ${
             loading && "animate-pulse"
           } `}
         >
-          <Contents width={"section"} className="py-5">
-            <Grids rows={"2"} gap={"3"}>
+          <Holds position={"row"} className="gap-x-1 h-10">
+            <NewTab
+              onClick={() => setActiveTab(1)}
+              isActive={activeTab === 1}
+              isComplete={true}
+              titleImage={"/formSelection.svg"}
+              titleImageAlt={""}
+              animatePulse={loading}
+            >
+              <Titles size={"h5"}>Form Selection</Titles>
+            </NewTab>
+            <NewTab
+              onClick={() => setActiveTab(2)}
+              isActive={activeTab === 2}
+              isComplete={true}
+              titleImage={"/submittedForms.svg"}
+              titleImageAlt={""}
+              animatePulse={loading}
+            >
+              <Titles size={"h5"}>Submitted Forms</Titles>
+            </NewTab>
+            {isManager && (
+              <NewTab
+                onClick={() => setActiveTab(3)}
+                isActive={activeTab === 3}
+                isComplete={true}
+                titleImage={"/pendingForms.svg"}
+                titleImageAlt={""}
+                animatePulse={loading}
+              >
+                <Titles size={"h5"}>Pending Forms</Titles>
+              </NewTab>
+            )}
+
+            <NewTab
+              onClick={() => setActiveTab(4)}
+              isActive={activeTab === 4}
+              isComplete={true}
+              titleImage={"/pendingForms.svg"}
+              titleImageAlt={""}
+              animatePulse={loading}
+            >
+              <Titles size={"h5"}>Company Documents</Titles>
+            </NewTab>
+          </Holds>
+          <Holds
+            background={"white"}
+            className="h-full row-start-2 row-end-4 rounded-t-none py-3"
+          >
+            <Contents width={"section"}>
               {loading ? (
                 <Selects
                   value={""}
                   disabled
-                  className="text-center disabled:bg-white"
+                  className="text-center text-xs disabled:bg-white"
                 >
                   <option value={""}>Loading...</option>
                 </Selects>
@@ -116,7 +171,7 @@ export default function FormSelection({
                 <Selects
                   value={selectedForm}
                   onChange={(e) => setSelectedForm(e.target.value)}
-                  className="text-center"
+                  className="text-center text-xs"
                 >
                   <option value={""}>Select A Form</option>
                   {forms.map((form) => (
@@ -126,20 +181,20 @@ export default function FormSelection({
                   ))}
                 </Selects>
               )}
-              <Holds className="flex justify-center items-center">
+              <Holds>
                 <Buttons
                   onClick={() => {
                     setFormPage();
                   }}
                   background={"green"}
-                  className="p-3"
                   disabled={!selectedForm}
+                  className="py-1"
                 >
-                  <Titles size={"h4"}>Start Form</Titles>
+                  <Titles size={"h5"}>Start Form</Titles>
                 </Buttons>
               </Holds>
-            </Grids>
-          </Contents>
+            </Contents>
+          </Holds>
         </Holds>
         <Holds
           background={"white"}
@@ -152,7 +207,7 @@ export default function FormSelection({
             <Holds className="h-full overflow-y-scroll no-scrollbar ">
               {formDrafts &&
                 formDrafts.map((form) => {
-                  const title = form.formTemplate.name;
+                  const title = form.title || form.FormTemplate.name;
                   return (
                     <Holds key={form.id} className="pt-2">
                       <SlidingDiv

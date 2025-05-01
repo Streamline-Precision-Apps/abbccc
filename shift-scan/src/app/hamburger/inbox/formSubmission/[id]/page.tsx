@@ -14,6 +14,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import SubmittedFormsApproval from "./_components/submittedApprovedForms";
+import { Titles } from "@/components/(reusable)/titles";
 
 interface FormField {
   id: string;
@@ -126,11 +127,15 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         let submissionData, managerFormApprovalData;
 
         if (submissionStatus === "DRAFT") {
+          console.log("DRAFT");
           submissionData = await fetchDraftData(submissionId);
         } else if (submissionStatus === "PENDING") {
+          console.log("PENDING");
           if (submissionApprovingStatus === null) {
+            console.log("no approval");
             submissionData = await fetchSubmissionData(submissionId);
           } else if (submissionApprovingStatus === "true") {
+            console.log("has approval");
             submissionData = await fetchTeamSubmissionData(submissionId);
             managerFormApprovalData = await fetchManagerApprovalData(
               submissionId
@@ -140,6 +145,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           submissionStatus === "APPROVED" ||
           submissionStatus === "DENIED"
         ) {
+          console.log("APPROVED or DENIED");
           if (submissionApprovingStatus === null) {
             submissionData = await fetchSubmissionData(submissionId);
             managerFormApprovalData = await fetchManagerApprovalData(
@@ -156,11 +162,13 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           submissionStatus !== "DRAFT" &&
           submissionApprovingStatus === "true"
         ) {
+          console.log("Not PENDING or DRAFT and has approval");
           submissionData = await fetchTeamSubmissionData(submissionId);
           managerFormApprovalData = await fetchManagerApprovalData(
             submissionId
           );
         }
+        console.log(submissionData);
 
         // Set the fetched data
         if (submissionData) {
@@ -172,7 +180,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                 : "") ||
               ""
           );
-          setSignature(submissionData.user?.signature || null);
+          setSignature(submissionData.User?.signature || null);
           setSubmittedForm(submissionData.submittedAt || "");
         }
 
@@ -268,17 +276,18 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     return (
       <Bases>
         <Contents>
-          <Grids className="grid-rows-8 gap-5">
+          <Grids rows={"7"} gap={"5"} className="h-full">
             <Holds
               background={"white"}
-              className="row-span-1 h-full justify-center animate-pulse px-2"
+              className="row-span-1 h-full justify-center animate-pulse"
             >
               <TitleBoxes
-                title={"loading..."}
-                type="noIcon"
-                titleImg={""}
-                titleImgAlt={""}
-              />
+                onClick={() => {
+                  router.back();
+                }}
+              >
+                <Titles size={"h2"}>loading...</Titles>
+              </TitleBoxes>
             </Holds>
             <Holds
               background={"white"}
@@ -304,7 +313,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"5"} className="w-full h-full">
+        <Grids rows={"7"} gap={"5"} className="w-full h-full">
           {submissionStatus === "DRAFT" && (
             <FormDraft
               formData={formData}
