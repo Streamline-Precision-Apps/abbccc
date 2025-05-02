@@ -9,6 +9,8 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { redirect } from "next/navigation";
 import TascoClientPage from "./components/tascoClientPage";
 import { cookies } from "next/headers";
+import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "@/components/(reusable)/images";
 
 export default async function TascoPage() {
   const session = await auth();
@@ -22,15 +24,18 @@ export default async function TascoPage() {
     return (
       <Bases>
         <Contents>
-          <Grids rows={"6"} gap={"5"} className="h-full">
+          <Grids rows={"7"} gap={"5"} className="h-full">
             <Holds background={"white"} className="row-span-1 h-full">
-              <TitleBoxes
-                title="Tasco"
-                titleImg="/tasco.svg"
-                titleImgAlt="Tasco"
-              />
+              <TitleBoxes>
+                <Titles>Tasco</Titles>
+                <Images
+                  className="w-8 h-8"
+                  titleImg={"/tasco.svg"}
+                  titleImgAlt={"Tasco"}
+                />
+              </TitleBoxes>
             </Holds>
-            <Holds background={"none"} className="row-span-5 h-full">
+            <Holds background={"none"} className="row-span-6 h-full">
               <TascoClientPage />
             </Holds>
           </Grids>
@@ -41,18 +46,26 @@ export default async function TascoPage() {
     return (
       <Bases>
         <Contents>
-          <Grids rows={"6"} gap={"5"}>
+          <Grids rows={"7"} gap={"5"}>
             <Holds
               background={"white"}
               className="row-span-1 h-full justify-center"
             >
-              <TitleBoxes
-                title="Tasco"
-                titleImg="/tasco.svg"
-                titleImgAlt="Tasco"
-              />
+              <TitleBoxes>
+                <Holds
+                  position={"row"}
+                  className="w-full justify-center space-x-2"
+                >
+                  <Titles>Tasco</Titles>
+                  <Images
+                    className="w-8 h-8"
+                    titleImg={"/tasco.svg"}
+                    titleImgAlt={"Tasco"}
+                  />
+                </Holds>
+              </TitleBoxes>
             </Holds>
-            <Holds className="row-span-5 h-full">
+            <Holds className="row-span-6 h-full">
               <TascoClientPage />
             </Holds>
           </Grids>
