@@ -6,7 +6,6 @@ import { Spinner } from "@nextui-org/react";
 import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
-import FormsBtn from "../_buttons/formsBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
@@ -65,8 +64,6 @@ export default function GeneralDashboardView({
             )}
 
             <EquipmentBtn permission={permission} />
-
-            <FormsBtn permission={permission} view={"general"} />
 
             <SwitchJobsBtn
               {...modalState}

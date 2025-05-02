@@ -1,8 +1,6 @@
 "use client";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
