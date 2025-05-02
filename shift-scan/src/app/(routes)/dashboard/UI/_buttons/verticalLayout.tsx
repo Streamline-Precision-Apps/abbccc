@@ -1,10 +1,10 @@
 import { Buttons } from "@/components/(reusable)/buttons";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
-import { Button } from "@nextui-org/react";
+import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
-import { ReactNode } from "react";
 
 export default function VerticalLayout({
   color,
@@ -12,7 +12,7 @@ export default function VerticalLayout({
   text,
   titleImg,
   titleImgAlt,
-  href,
+  textSize = "h3",
 }: {
   color?:
     | "none"
@@ -26,25 +26,28 @@ export default function VerticalLayout({
     | "lightGray"
     | null
     | undefined;
-  handleEvent?: () => void;
+
   titleImg: string;
   titleImgAlt: string;
   text: string;
-  href?: string;
+  handleEvent?: () => void;
+  textSize?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 }) {
   const t = useTranslations("Widgets");
   return (
-    <Holds position={"row"} className={"row-span-1 col-span-1"}>
-      <Buttons //----------------------This is the Clock Out Widget
-        background={color}
-        href={href}
-        onClick={handleEvent}
-      >
-        <Holds className="w-full h-full justify-center">
-          <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"40"} />
-          <Texts size={"p3"}>{t(text)}</Texts>
+    <Buttons background={color} onClick={handleEvent} className="h-full w-full">
+      <Grids rows={"3"} gap={"4"} className="h-full w-full p-5">
+        <Holds className="row-span-2 h-full p-1 ">
+          <Images
+            titleImg={titleImg}
+            titleImgAlt={titleImgAlt}
+            className="m-auto h-full w-full"
+          />
         </Holds>
-      </Buttons>
-    </Holds>
+        <Holds className="row-span-1 h-full justify-center">
+          <Titles size={textSize}>{t(text)}</Titles>
+        </Holds>
+      </Grids>
+    </Buttons>
   );
 }

@@ -4,15 +4,24 @@ import { Providers } from "./providers";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-export const metadata: Metadata = {
-  manifest: "/manifest.json",
-  title: "Shift Scan",
-  description: "TimeCards made easy",
-};
-
 export const viewport: Viewport = {
   themeColor: "#57BDE9",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  minimumScale: 1,
 };
+
+export const metadata: Metadata = {
+  title: { default: "Shift Scan", template: "%s | Shift Scan" },
+  description: "Time Cards made easier",
+  manifest: "/manifest.json",
+  themeColor: "#57BDE9",
+  viewport,
+};
+
 export default async function RootLayout({
   children,
 }: {
