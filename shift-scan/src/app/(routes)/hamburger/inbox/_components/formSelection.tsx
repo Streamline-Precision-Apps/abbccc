@@ -109,7 +109,7 @@ export default function FormSelection({
             loading && "animate-pulse"
           } `}
         >
-          <Holds position={"row"} className="gap-x-1 h-10">
+          <Holds position={"row"} className="gap-x-1 h-fit">
             <NewTab
               onClick={() => setActiveTab(1)}
               isActive={activeTab === 1}
