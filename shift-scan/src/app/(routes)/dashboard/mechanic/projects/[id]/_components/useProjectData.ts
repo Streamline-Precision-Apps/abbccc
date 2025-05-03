@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  findUniqueUser,
   LeaveEngineerProject,
   SubmitEngineerProject,
 } from "@/actions/mechanicActions";
@@ -15,7 +14,6 @@ type MaintenanceLog = {
   endTime?: string | null;
   userId: string;
   comment?: string;
-  maintenanceId: string;
 };
 
 type ProjectData = {
@@ -27,13 +25,16 @@ type ProjectData = {
 };
 
 type ApiResponse = {
-  equipment: {
-    name: string;
-  };
+  id: string;
   equipmentIssue: string;
   additionalInfo: string;
+  delay: Date | null;
   hasBeenDelayed: boolean;
-  maintenanceLogs: MaintenanceLog[];
+  delayReasoning: string | null;
+  Equipment: {
+    name: string;
+  };
+  MaintenanceLogs: MaintenanceLog[];
 };
 
 export default function useProjectData(projectId: string) {
@@ -62,16 +63,16 @@ export default function useProjectData(projectId: string) {
 
         // Process and set project data
         const processedData: ProjectData = {
-          title: data.equipment.name,
+          title: data.Equipment.name,
           problemReceived: data.equipmentIssue,
           additionalNotes: data.additionalInfo,
           hasBeenDelayed: data.hasBeenDelayed,
-          maintenanceLogs: data.maintenanceLogs,
+          maintenanceLogs: data.MaintenanceLogs,
         };
         setProjectData(processedData);
 
         // Find and set user's maintenance log
-        const userMaintenanceLog = data.maintenanceLogs.find(
+        const userMaintenanceLog = data.MaintenanceLogs.find(
           (log) => log.userId === userId && log.endTime === null
         );
 
@@ -81,15 +82,15 @@ export default function useProjectData(projectId: string) {
         }
 
         // Calculate total labor hours
-        const totalMilliseconds = data.maintenanceLogs
-          .filter((log) => log.startTime)
-          .reduce((sum, log) => {
-            const start = new Date(log.startTime!).getTime();
-            const end = log.endTime
-              ? new Date(log.endTime).getTime()
-              : new Date().getTime();
-            return sum + (end - start);
-          }, 0);
+        const totalMilliseconds = data.MaintenanceLogs.filter(
+          (log) => log.startTime
+        ).reduce((sum, log) => {
+          const start = new Date(log.startTime!).getTime();
+          const end = log.endTime
+            ? new Date(log.endTime).getTime()
+            : new Date().getTime();
+          return sum + (end - start);
+        }, 0);
 
         const totalHours = parseFloat(
           (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
@@ -99,7 +100,7 @@ export default function useProjectData(projectId: string) {
         setLaborHours(`${hours} hrs ${minutes} min`);
 
         // Count active users
-        const uniqueUserCount = data.maintenanceLogs.filter(
+        const uniqueUserCount = data.MaintenanceLogs.filter(
           (log) => log.userId && log.endTime === null
         ).length;
         setActiveUsers(uniqueUserCount || 0);

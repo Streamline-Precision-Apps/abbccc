@@ -53,10 +53,12 @@ export function NonManagerView({
   projects,
   loading,
   timeSheetId,
+  handleRefresh,
 }: {
   projects: Project[];
   loading: boolean;
   timeSheetId: string | null;
+  handleRefresh: () => Promise<void>;
 }) {
   const t = useTranslations("MechanicWidget");
   return (
@@ -74,6 +76,7 @@ export function NonManagerView({
         loading={loading}
         projects={projects}
         timeSheetId={timeSheetId}
+        handleRefresh={handleRefresh}
       />
     </Grids>
   );

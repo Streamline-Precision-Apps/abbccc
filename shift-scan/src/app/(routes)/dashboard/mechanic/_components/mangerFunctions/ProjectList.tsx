@@ -3,6 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ProjectItem } from "./ProjectItem";
+import { Texts } from "@/components/(reusable)/texts";
 
 type Equipment = {
   id: string;
@@ -61,8 +62,10 @@ export function ProjectList({
 
   if (projects.length === 0) {
     return (
-      <Holds className="h-full w-full row-start-2 row-end-9 rounded-none">
-        <EmptyView />
+      <Holds className="h-full w-full row-start-2 row-end-9 rounded-none justify-center px-6">
+        <Texts size={"p5"} className="text-center text-gray-500 italic">
+          {t("NoProjectsFound")}
+        </Texts>
       </Holds>
     );
   }

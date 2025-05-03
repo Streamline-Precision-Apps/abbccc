@@ -11,10 +11,9 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 type MaintenanceLog = {
   id: string;
-  userId: string;
-  maintenanceId: string;
   startTime?: string;
   endTime?: string | null;
+  userId: string;
   comment?: string;
 };
 
@@ -36,7 +35,10 @@ export default function CommentsTab({
   const t = useTranslations("MechanicWidget");
   if (loading)
     return (
-      <Holds className="h-full py-2 justify-center items-center">
+      <Holds
+        background={"white"}
+        className="h-full py-5 justify-center items-center rounded-t-none"
+      >
         <Spinner />
       </Holds>
     );
@@ -51,11 +53,11 @@ export default function CommentsTab({
   };
 
   return (
-    <Holds background={"white"} className="h-full rounded-t-none py-2">
-      <Contents width="section" className="h-full flex flex-col">
-        <Grids rows="8" gap="5" className="h-full grid grid-rows-8">
+    <Holds background={"white"} className="h-full rounded-t-none py-5">
+      <Contents width="section" className="h-full ">
+        <Grids rows="7" gap="5" className="h-full">
           {/* Ensure TextArea Expands Fully */}
-          <Holds className="row-start-1 row-end-8 h-full relative">
+          <Holds className="row-start-1 row-end-7 h-full relative">
             <Labels size="p4" htmlFor="MyComments">
               {t("AdditionalNotes")}
             </Labels>
@@ -72,13 +74,14 @@ export default function CommentsTab({
             </Texts>
           </Holds>
           {/* Ensure Button Stays at the Bottom */}
-          <Holds className="row-start-8 row-end-9 h-full self-end">
+          <Holds className="row-start-7 row-end-8">
             <Buttons
               background={activeUsers > 1 ? "lightGray" : "orange"}
               disabled={activeUsers > 1}
               onClick={() => {
                 onFinishProject();
               }}
+              className="py-2"
             >
               <Titles size="h2">{t("FinishProject")}</Titles>
             </Buttons>
