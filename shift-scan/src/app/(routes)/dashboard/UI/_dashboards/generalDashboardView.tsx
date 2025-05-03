@@ -25,6 +25,7 @@ export default function GeneralDashboardView({
   handleShowManagerButtons,
   permission,
   logs,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -38,6 +39,7 @@ export default function GeneralDashboardView({
   permission: string;
   handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
+  mechanicProjectID: string;
 }) {
   const modalState = useModalState();
   return (
@@ -78,6 +80,7 @@ export default function GeneralDashboardView({
               handleShowAdditionalButtons={handleCOButton3}
               permission={permission}
               logs={logs}
+              mechanicProjectID={mechanicProjectID}
               View={"general"}
               laborType="general"
             />

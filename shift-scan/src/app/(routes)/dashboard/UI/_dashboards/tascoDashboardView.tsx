@@ -23,6 +23,7 @@ export default function TascoDashboardView({
   permission,
   logs,
   laborType,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -37,6 +38,7 @@ export default function TascoDashboardView({
   currentView: string | null;
   logs: LogItem[];
   laborType: string;
+  mechanicProjectID: string;
 }) {
   useEffect(() => {
     console.log("laborType: ", laborType);
@@ -73,6 +75,7 @@ export default function TascoDashboardView({
                 handleShowAdditionalButtons={handleCOButton3}
                 permission={permission}
                 logs={logs}
+                mechanicProjectID={mechanicProjectID}
                 laborType={laborType}
                 View={"tasco"}
               />
@@ -111,6 +114,7 @@ export default function TascoDashboardView({
                 handleShowAdditionalButtons={handleCOButton3}
                 permission={permission}
                 laborType={laborType}
+                mechanicProjectID={mechanicProjectID}
                 logs={logs}
                 View={"tasco"}
               />
