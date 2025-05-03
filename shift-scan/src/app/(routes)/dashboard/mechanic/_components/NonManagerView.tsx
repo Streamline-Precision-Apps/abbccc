@@ -1,11 +1,12 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import MechanicPriority from "./MechanicPriorityList";
-import { Header } from "./Header";
+
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type Equipment = {
   id: string;
@@ -61,11 +62,12 @@ export function NonManagerView({
   handleRefresh: () => Promise<void>;
 }) {
   const t = useTranslations("MechanicWidget");
+  const router = useRouter();
   return (
     <Grids rows="7" gap="5">
       {/* Header */}
       <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-        <TitleBoxes>
+        <TitleBoxes onClick={() => router.push("/dashboard")}>
           <Titles size="h2">{t("Projects")}</Titles>
         </TitleBoxes>
       </Holds>

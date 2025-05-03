@@ -4,12 +4,10 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import MechanicPriority from "./MechanicPriorityList";
-
-import { Header } from "./Header";
 import MechanicSelectList from "./mangerFunctions/MechanicSelectList";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { PullToRefresh } from "@/components/(animations)/pullToRefresh";
+import { useRouter } from "next/navigation";
 
 type Equipment = {
   id: string;
@@ -73,11 +71,12 @@ export function ManagerView({
   handleRefresh: () => Promise<void>;
 }) {
   const t = useTranslations("MechanicWidget");
+  const router = useRouter();
   return (
     <Grids rows="7" gap="5">
       {/* Header */}
       <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-        <TitleBoxes>
+        <TitleBoxes onClick={() => router.push("/dashboard")}>
           <Titles size="h2">
             {activeTab === 1 ? t("PriorityList") : t("Projects")}{" "}
           </Titles>

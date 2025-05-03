@@ -1,9 +1,8 @@
 "use client";
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { setProjectSelected } from "@/actions/mechanicActions";
 import { NonManagerView } from "./NonManagerView";
 import { ManagerView } from "./ManagerView";
-// Import your UI components (Holds, Grids, etc.)
 
 type Equipment = {
   id: string;
