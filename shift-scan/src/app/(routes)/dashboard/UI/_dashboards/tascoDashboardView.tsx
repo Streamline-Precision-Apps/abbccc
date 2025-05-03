@@ -72,6 +72,7 @@ export default function TascoDashboardView({
               <ClockOutBtn
                 handleShowAdditionalButtons={handleCOButton3}
                 permission={permission}
+                logs={logs}
                 laborType={laborType}
                 View={"tasco"}
               />
@@ -110,6 +111,7 @@ export default function TascoDashboardView({
                 handleShowAdditionalButtons={handleCOButton3}
                 permission={permission}
                 laborType={laborType}
+                logs={logs}
                 View={"tasco"}
               />
             </>

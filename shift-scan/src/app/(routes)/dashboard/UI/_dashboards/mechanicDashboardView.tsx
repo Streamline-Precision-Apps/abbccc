@@ -65,6 +65,8 @@ export default function MechanicDashboardView({
             <ClockOutBtn
               handleShowAdditionalButtons={handleCOButton3}
               permission={permission}
+              mechanicProjectID={mechanicProjectID}
+              logs={logs}
               View={"mechanic"}
               laborType={laborType}
             />
