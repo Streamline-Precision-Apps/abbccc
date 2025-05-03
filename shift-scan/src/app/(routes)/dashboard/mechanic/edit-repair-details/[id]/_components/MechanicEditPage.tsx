@@ -161,7 +161,11 @@ export default function MechanicEditPage({
 
   return (
     <Grids rows={"7"} gap={"5"} className="h-full w-full ">
-      <Holds className="row-start-1 row-end-7 h-full w-full overflow-y-auto no-scrollbar">
+      <Holds
+        className={` h-full w-full overflow-y-auto no-scrollbar ${
+          totalLogs > 0 ? "row-start-1 row-end-8" : "row-start-1 row-end-7"
+        } `}
+      >
         <Contents width={"section"} className="">
           <Holds>
             <Labels size="p6" htmlFor="equipmentIssue">
@@ -197,38 +201,40 @@ export default function MechanicEditPage({
           {repairDetails?.repaired && (
             <>
               {/* Problem Diagnosis */}
-
-              <Labels size="p6" htmlFor="problemDiagnosis">
-                {t("ProblemDiagnosis")}
-              </Labels>
-              <TextAreas
-                name="problemDiagnosis"
-                value={repairDetails.problemDiagnosis || ""}
-                onChange={(e) =>
-                  updateField("problemDiagnosis", e.target.value)
-                }
-                placeholder={t("ProblemDiagnosisPlaceholder")}
-                rows={2}
-                style={{ resize: "none" }}
-                className="text-sm"
-                disabled={repairDetails?.repaired}
-              />
+              <Holds>
+                <Labels size="p6" htmlFor="problemDiagnosis">
+                  {t("ProblemDiagnosis")}
+                </Labels>
+                <TextAreas
+                  name="problemDiagnosis"
+                  value={repairDetails.problemDiagnosis || ""}
+                  onChange={(e) =>
+                    updateField("problemDiagnosis", e.target.value)
+                  }
+                  placeholder={t("ProblemDiagnosisPlaceholder")}
+                  rows={2}
+                  style={{ resize: "none" }}
+                  className="text-sm"
+                  disabled={repairDetails?.repaired}
+                />
+              </Holds>
 
               {/* solution */}
-
-              <Labels size="p6" htmlFor="solution">
-                {t("Solution")}
-              </Labels>
-              <TextAreas
-                name="solution"
-                value={repairDetails.solution || ""}
-                onChange={(e) => updateField("solution", e.target.value)}
-                placeholder={t("SolutionPlaceholder")}
-                rows={2}
-                style={{ resize: "none" }}
-                className="text-sm"
-                disabled={repairDetails?.repaired}
-              />
+              <Holds>
+                <Labels size="p6" htmlFor="solution">
+                  {t("Solution")}
+                </Labels>
+                <TextAreas
+                  name="solution"
+                  value={repairDetails.solution || ""}
+                  onChange={(e) => updateField("solution", e.target.value)}
+                  placeholder={t("SolutionPlaceholder")}
+                  rows={2}
+                  style={{ resize: "none" }}
+                  className="text-sm"
+                  disabled={repairDetails?.repaired}
+                />
+              </Holds>
             </>
           )}
           {/* Location */}
@@ -388,8 +394,8 @@ export default function MechanicEditPage({
         </Contents>
       </Holds>
 
-      <Holds className="row-start-7 row-end-8 h-full ">
-        {totalLogs === 0 && (
+      {totalLogs === 0 && (
+        <Holds className="row-start-7 row-end-8 h-full ">
           <Contents width={"section"}>
             <Buttons
               background={"red"}
@@ -399,8 +405,8 @@ export default function MechanicEditPage({
               <Titles size={"h4"}>{t("Delete")}</Titles>
             </Buttons>
           </Contents>
-        )}
-      </Holds>
+        </Holds>
+      )}
       <NModals
         size={"medWW"}
         isOpen={openDeleteModal}

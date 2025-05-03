@@ -114,6 +114,7 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
           projects={priorityProjects}
           loading={loading}
           timeSheetId={timeSheetId}
+          handleRefresh={handleRefresh}
         />
       ) : (
         <ManagerView

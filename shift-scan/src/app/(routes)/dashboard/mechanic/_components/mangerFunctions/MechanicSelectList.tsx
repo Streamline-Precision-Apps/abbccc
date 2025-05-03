@@ -112,7 +112,7 @@ export default function MechanicSelectList({
         {/* Filter Dropdown */}
         <Holds className="col-start-2 col-end-6 row-start-1 row-end-2 h-full">
           <Selects
-            className="w-full h-full justify-center items-center"
+            className="w-full h-full text-center justify-center items-center"
             onChange={(e) => setSelectedFilter(e.target.value)}
             value={selectedFilter}
           >

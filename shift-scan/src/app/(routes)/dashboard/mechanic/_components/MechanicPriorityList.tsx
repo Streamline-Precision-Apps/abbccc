@@ -219,10 +219,10 @@ export default function MechanicPriority({
       <Holds className="h-full w-full no-scrollbar overflow-y-auto ">
         <PullToRefresh onRefresh={handleRefresh}>
           <Contents width="section" className="pt-3 pb-5 ">
-            {projects.length === 0 ? (
-              <Holds className="h-3/4 w-full flex items-center justify-center">
+            {FilteredProject.length === 0 ? (
+              <Holds className="h-3/4 w-full flex items-center justify-center px-6">
                 <Texts size="p5" className="text-center italic text-gray-500">
-                  No Current Projects Assigned
+                  {t("NoProjectsFound")}
                 </Texts>
               </Holds>
             ) : (
