@@ -101,8 +101,10 @@ export async function setEditForProjectInfo(formData: FormData) {
     console.log(formData);
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
-    const delay = new Date(formData.get("delay") as string);
+    const delay = formData.get("delay") as string;
     const delayReasoning = formData.get("delayReasoning") as string;
+    const equipmentIssue = formData.get("equipmentIssue") as string;
+    const additionalInfo = formData.get("additionalInfo") as string;
 
     let priority = Priority.PENDING;
 
@@ -126,17 +128,35 @@ export async function setEditForProjectInfo(formData: FormData) {
         priority = Priority.PENDING;
     }
 
-    await prisma.maintenance.update({
-      where: {
-        id: formData.get("id") as string,
-      },
-      data: {
-        location,
-        priority: priority,
-        delay: delay.toISOString(),
-        delayReasoning,
-      },
-    });
+    if (delay === "") {
+      await prisma.maintenance.update({
+        where: {
+          id: formData.get("id") as string,
+        },
+        data: {
+          location,
+          priority,
+          delay: null,
+          delayReasoning: null,
+          equipmentIssue,
+          additionalInfo,
+        },
+      });
+    } else {
+      await prisma.maintenance.update({
+        where: {
+          id: formData.get("id") as string,
+        },
+        data: {
+          location,
+          priority,
+          delay,
+          delayReasoning,
+          equipmentIssue,
+          additionalInfo,
+        },
+      });
+    }
   } catch (error) {
     console.error("Error updating project:", error);
   }
