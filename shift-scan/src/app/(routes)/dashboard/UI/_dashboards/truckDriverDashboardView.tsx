@@ -24,6 +24,7 @@ export default function TruckDriverDashboardView({
   permission,
   logs,
   laborType,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -37,6 +38,7 @@ export default function TruckDriverDashboardView({
   permission: string;
   logs: LogItem[];
   laborType: string;
+  mechanicProjectID: string;
 }) {
   const modalState = useModalState();
   return (
@@ -75,6 +77,7 @@ export default function TruckDriverDashboardView({
             <ClockOutBtn
               handleShowAdditionalButtons={handleCOButton3}
               permission={permission}
+              mechanicProjectID={mechanicProjectID}
               logs={logs}
               View={"truck"}
               laborType={laborType}
