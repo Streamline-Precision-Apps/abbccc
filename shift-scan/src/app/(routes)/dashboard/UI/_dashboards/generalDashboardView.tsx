@@ -77,6 +77,7 @@ export default function GeneralDashboardView({
             <ClockOutBtn
               handleShowAdditionalButtons={handleCOButton3}
               permission={permission}
+              logs={logs}
               View={"general"}
               laborType="general"
             />

@@ -75,6 +75,7 @@ export default function TruckDriverDashboardView({
             <ClockOutBtn
               handleShowAdditionalButtons={handleCOButton3}
               permission={permission}
+              logs={logs}
               View={"truck"}
               laborType={laborType}
             />
