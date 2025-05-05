@@ -11,6 +11,9 @@ import StateLog from "./components/StateLog";
 import RefuelLayout from "./components/RefuelLayout";
 import { EndingMileage } from "./components/EndingMileage";
 import TruckDriverNotes from "./components/TruckDriverNotes";
+import Sliders from "@/components/(reusable)/sliders";
+import { Buttons } from "@/components/(reusable)/buttons";
+import WorkDetails from "./components/workDetails";
 
 type StateMileage = {
   id: string;
@@ -44,13 +47,22 @@ type EquipmentHauled = {
 };
 
 type Material = {
-  name: string;
   id: string;
-  LocationOfMaterial: string | null;
   truckingLogId: string;
+  LocationOfMaterial: string | null;
+  name: string;
   quantity: number | null;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+  loadType: LoadType | null;
   createdAt: Date;
 };
+
+enum LoadType {
+  UNSCREENED,
+  SCREENED,
+}
 
 export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
@@ -80,7 +92,12 @@ export default function TruckDriver() {
           material &&
           material.length >= 0 &&
           material.every(
-            (item) => item.LocationOfMaterial && item.quantity && item.name
+            (item) =>
+              item.LocationOfMaterial &&
+              item.grossWeight &&
+              item.name &&
+              item.materialWeight &&
+              item.lightWeight
           )
       ),
       notesTab: endMileage !== null,
@@ -159,7 +176,7 @@ export default function TruckDriver() {
         rows={"10"}
         className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
       >
-        <Holds position={"row"} className="row-span-1 w-full gap-1">
+        <Holds position={"row"} className="row-start-1 row-end-2 w-full gap-1">
           <NewTab
             titleImage="/Hauling-logs.svg"
             titleImageAlt="Truck"
@@ -172,13 +189,13 @@ export default function TruckDriver() {
           </NewTab>
           <NewTab
             titleImage="/comment.svg"
-            titleImageAlt="Comment"
+            titleImageAlt={t("WorkDetails")}
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
             isComplete={isComplete.notesTab}
             isLoading={isLoading}
           >
-            <Titles size={"h4"}>{t("MyComments")}</Titles>
+            <Titles size={"h4"}>{t("WorkDetails")}</Titles>
           </NewTab>
           <NewTab
             titleImage="/state-mileage.svg"
@@ -211,7 +228,18 @@ export default function TruckDriver() {
             isLoading={isLoading}
           />
         )}
-        {activeTab !== 1 && (
+        {activeTab === 2 && (
+          <WorkDetails
+            timeSheetId={timeSheetId}
+            notes={notes}
+            setNotes={setNotes}
+            endMileage={endMileage}
+            setEndMileage={setEndMileage}
+            isLoading={isLoading}
+          />
+        )}
+
+        {activeTab !== 1 && activeTab !== 2 && (
           <Holds
             background={"white"}
             className={
@@ -219,26 +247,6 @@ export default function TruckDriver() {
             }
           >
             <Contents width={"section"} className="py-5">
-              {activeTab === 2 && (
-                <Holds className="h-full w-full">
-                  <Grids rows={"8"} gap={"5"} className="h-full">
-                    <Holds className="h-full w-full row-start-1 row-end-2 ">
-                      <EndingMileage
-                        truckingLog={timeSheetId}
-                        endMileage={endMileage ?? null}
-                        setEndMileage={setEndMileage}
-                      />
-                    </Holds>
-                    <Holds className="h-full w-full row-start-2 row-end-9 relative">
-                      <TruckDriverNotes
-                        truckingLog={timeSheetId}
-                        notes={notes}
-                        setNotes={setNotes}
-                      />
-                    </Holds>
-                  </Grids>
-                </Holds>
-              )}
               {activeTab === 3 && (
                 <StateLog
                   StateMileage={StateMileage}

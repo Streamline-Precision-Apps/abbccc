@@ -1,6 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
+
 import { revalidatePath, revalidateTag } from "next/cache";
+export type LoadType = "UNSCREENED" | "SCREENED";
 
 /* EQUIPMENT Hauled */
 //------------------------------------------------------------------
@@ -101,11 +103,33 @@ export async function createHaulingLogs(formData: FormData) {
 }
 
 export async function updateHaulingLogs(formData: FormData) {
+  console.log("Updating Material hauling logs...");
+  const LoadType: {
+    UNSCREENED: "UNSCREENED";
+    SCREENED: "SCREENED";
+  } = {
+    UNSCREENED: "UNSCREENED",
+    SCREENED: "SCREENED",
+  };
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
   const LocationOfMaterial = formData.get("LocationOfMaterial") as string;
   const quantity = parseInt(formData.get("quantity") as string);
   const truckingLogId = formData.get("truckingLogId") as string;
+
+  const materialWeight = parseFloat(formData.get("materialWeight") as string);
+  const lightWeight = parseFloat(formData.get("lightWeight") as string);
+  const grossWeight = parseFloat(formData.get("grossWeight") as string);
+  const loadTypeString = formData.get("loadType") as string;
+
+  let loadType = null;
+  if (!loadTypeString) {
+    loadType = null;
+  } else if (loadTypeString === "UNSCREENED") {
+    loadType = LoadType.UNSCREENED;
+  } else if (loadTypeString === "SCREENED") {
+    loadType = LoadType.SCREENED;
+  }
 
   // If ID is provided, update the existing log
   if (id) {
@@ -115,6 +139,10 @@ export async function updateHaulingLogs(formData: FormData) {
         name,
         LocationOfMaterial,
         quantity,
+        materialWeight,
+        lightWeight,
+        grossWeight,
+        loadType,
       },
     });
 
@@ -137,6 +165,17 @@ export async function updateHaulingLogs(formData: FormData) {
 }
 
 export async function deleteHaulingLogs(id: string) {
+  console.log("Deleting hauling logs...");
+  console.log(id);
+  await prisma.material.delete({
+    where: { id },
+  });
+
+  revalidateTag("material");
+  return true;
+}
+
+export async function deleteLaborTypeLogs(id: string) {
   console.log("Deleting hauling logs...");
   console.log(id);
   await prisma.material.delete({

@@ -11,6 +11,7 @@ import {
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
 import { useTranslations } from "next-intl";
+import MaterialItem from "./MaterialItem";
 
 type EquipmentHauled = {
   id: string;
@@ -27,13 +28,22 @@ type EquipmentHauled = {
 };
 
 type Material = {
-  name: string;
   id: string;
-  LocationOfMaterial: string | null;
   truckingLogId: string;
+  LocationOfMaterial: string | null;
+  name: string;
   quantity: number | null;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+  loadType: LoadType | null;
   createdAt: Date;
 };
+
+enum LoadType {
+  UNSCREENED,
+  SCREENED,
+}
 
 export default function HaulingLogs({
   truckingLog,
@@ -52,6 +62,8 @@ export default function HaulingLogs({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState<number>(1);
+  const [contentView, setContentView] = useState<"Item" | "List">("List");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   // Add Temporary Equipment
   const addTempEquipmentList = async () => {
@@ -91,10 +103,14 @@ export default function HaulingLogs({
       setMaterial((prev) => [
         {
           id: tempMaterial.id,
-          name: "",
+          name: "Material",
           LocationOfMaterial: "",
           truckingLogId: tempMaterial.truckingLogId,
-          quantity: null,
+          quantity: 1,
+          materialWeight: null,
+          lightWeight: null,
+          grossWeight: null,
+          loadType: null,
           createdAt: new Date(),
         },
         ...(prev ?? []),
@@ -150,10 +166,27 @@ export default function HaulingLogs({
         }`}
       >
         <Holds background={"white"} className="w-full h-full">
-          <Grids rows={"10"} className="h-full py-2 px-4 ">
+          <Grids rows={"10"} className="h-full pt-3 pb-5  relative">
             {activeTab === 1 && (
               <Holds className="h-full w-full row-start-1 row-end-11 overflow-y-auto no-scrollbar">
-                <MaterialList material={material} setMaterial={setMaterial} />
+                {contentView === "Item" ? (
+                  <MaterialItem
+                    material={material}
+                    setMaterial={setMaterial}
+                    setContentView={setContentView}
+                    selectedItemId={selectedItemId}
+                    setSelectedItemId={setSelectedItemId}
+                  />
+                ) : (
+                  contentView === "List" && (
+                    <MaterialList
+                      material={material}
+                      setMaterial={setMaterial}
+                      setContentView={setContentView}
+                      setSelectedItemId={setSelectedItemId}
+                    />
+                  )
+                )}
               </Holds>
             )}
             {activeTab === 2 && (
