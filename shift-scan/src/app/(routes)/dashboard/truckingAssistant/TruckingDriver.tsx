@@ -15,6 +15,7 @@ import Sliders from "@/components/(reusable)/sliders";
 import { Buttons } from "@/components/(reusable)/buttons";
 import WorkDetails from "./components/workDetails";
 import { setLaborType } from "@/actions/cookieActions";
+import TruckTabOptions from "./TruckTabOptions";
 
 type StateMileage = {
   id: string;
@@ -182,102 +183,58 @@ export default function TruckDriver() {
   }, [timeSheetId]);
 
   return (
-    <Holds className="h-full w-full ">
-      <Grids
-        rows={"10"}
-        className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
-      >
-        <Holds position={"row"} className="row-start-1 row-end-2 w-full gap-1">
-          <NewTab
-            titleImage="/Hauling-logs.svg"
-            titleImageAlt="Truck"
-            onClick={() => setActiveTab(1)}
-            isActive={activeTab === 1}
-            isComplete={isComplete.haulingLogsTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("HaulingLogs")}</Titles>
-          </NewTab>
-          <NewTab
-            titleImage="/comment.svg"
-            titleImageAlt={t("WorkDetails")}
-            onClick={() => setActiveTab(2)}
-            isActive={activeTab === 2}
-            isComplete={isComplete.notesTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("WorkDetails")}</Titles>
-          </NewTab>
-          <NewTab
-            titleImage="/state-mileage.svg"
-            titleImageAlt="State Mileage"
-            onClick={() => setActiveTab(3)}
-            isActive={activeTab === 3}
-            isComplete={isComplete.stateMileageTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("StateMileage")}</Titles>
-          </NewTab>
-          <NewTab
-            titleImage="/refuel-Icon.svg"
-            titleImageAlt="Refuel"
-            onClick={() => setActiveTab(4)}
-            isActive={activeTab === 4}
-            isComplete={isComplete.refuelLogsTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
-          </NewTab>
-        </Holds>
-        {activeTab === 1 && (
-          <HaulingLogs
-            truckingLog={timeSheetId}
-            material={material}
-            equipmentHauled={equipmentHauled}
-            setEquipmentHauled={setEquipmentHauled}
-            setMaterial={setMaterial}
-            isLoading={isLoading}
-          />
-        )}
-        {activeTab === 2 && (
-          <WorkDetails
-            timeSheetId={timeSheetId}
-            notes={notes}
-            setNotes={setNotes}
-            endMileage={endMileage}
-            setEndMileage={setEndMileage}
-            isLoading={isLoading}
-            laborType={laborType}
-            setLaborType={setLaborType}
-          />
-        )}
+    <Holds className="row-start-2 row-end-8 h-full">
+      {activeTab === 1 && (
+        <HaulingLogs
+          isLoading={isLoading}
+          isComplete={isComplete}
+          activeTab2={activeTab}
+          setActiveTab2={setActiveTab}
+          truckingLog={timeSheetId}
+          material={material}
+          equipmentHauled={equipmentHauled}
+          setEquipmentHauled={setEquipmentHauled}
+          setMaterial={setMaterial}
+        />
+      )}
+      {activeTab === 2 && (
+        <WorkDetails
+          isLoading={isLoading}
+          isComplete={isComplete}
+          activeTab2={activeTab}
+          setActiveTab2={setActiveTab}
+          timeSheetId={timeSheetId}
+          notes={notes}
+          setNotes={setNotes}
+          endMileage={endMileage}
+          setEndMileage={setEndMileage}
+          laborType={laborType}
+          setLaborType={setLaborType}
+        />
+      )}
 
-        {activeTab !== 1 && activeTab !== 2 && (
-          <Holds
-            background={"white"}
-            className={
-              "rounded-t-none row-span-9 h-full overflow-y-hidden no-scrollbar"
-            }
-          >
-            <Contents width={"section"} className="py-5">
-              {activeTab === 3 && (
-                <StateLog
-                  StateMileage={StateMileage}
-                  setStateMileage={setStateMileage}
-                  truckingLog={timeSheetId}
-                />
-              )}
-              {activeTab === 4 && (
-                <RefuelLayout
-                  truckingLog={timeSheetId}
-                  refuelLogs={refuelLogs}
-                  setRefuelLogs={setRefuelLogs}
-                />
-              )}
-            </Contents>
-          </Holds>
-        )}
-      </Grids>
+      {activeTab === 3 && (
+        <StateLog
+          isLoading={isLoading}
+          isComplete={isComplete}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          StateMileage={StateMileage}
+          setStateMileage={setStateMileage}
+          truckingLog={timeSheetId}
+        />
+      )}
+      {activeTab === 4 && (
+        <RefuelLayout
+          isLoading={isLoading}
+          isComplete={isComplete}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          truckingLog={timeSheetId}
+          refuelLogs={refuelLogs}
+          setRefuelLogs={setRefuelLogs}
+        />
+      )}
     </Holds>
   );
 }

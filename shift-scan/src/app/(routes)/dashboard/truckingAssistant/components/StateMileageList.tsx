@@ -5,6 +5,7 @@ import {
 } from "@/actions/truckingActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
@@ -81,23 +82,26 @@ export default function StateMileageList({
   }, [StateMileage]);
 
   return (
-    <>
-      <Contents className="overflow-y-auto no-scrollbar">
+    <Grids rows={"1"} className="h-full overflow-y-auto">
+      <div className=" row-span-1 h-full ">
         {editedStateMileage.map((sm, index) => (
           <SlidingDiv key={sm.id} onSwipeLeft={() => handleDelete(sm.id)}>
             <Holds
               position={"row"}
               background={"white"}
-              className={`w-full h-full  border-[3px] rounded-[10px] mb-3 border-black
+              className={`w-full h-full  border-[3px] rounded-[10px]  border-black
             `}
             >
-              <Holds background={"white"} className="w-1/2 px-2">
+              <Holds
+                background={"white"}
+                className="h-full w-1/2 justify-center px-2"
+              >
                 <Selects
                   name="state"
                   value={sm.state || ""}
                   onChange={(e) => handleStateChange(index, e.target.value)}
                   className={`
-                      border-none text-xs py-2 focus:outline-none ${
+                      border-none  text-xs py-2 focus:outline-none ${
                         sm.state ? "text-app-black" : "text-app-red"
                       }
                   `}
@@ -139,7 +143,7 @@ export default function StateMileageList({
             </Holds>
           </SlidingDiv>
         ))}
-      </Contents>
-    </>
+      </div>
+    </Grids>
   );
 }

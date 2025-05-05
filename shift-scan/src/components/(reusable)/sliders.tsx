@@ -26,8 +26,8 @@ export default function Sliders({
             ${activeTab === 1 ? "translate-x-0" : "translate-x-full"}
             ${
               activeTab === 1
-                ? "rounded-r-[4px] border-t-[0.1px] border-b-[0.1px] border-l-[0.1px] border-r-[2.5px]  border-black"
-                : "rounded-l-[4px] border-t-[0.1px] border-b-[0.1px] border-l-[2.5px] border-r-[0.1px]  border-black"
+                ? "rounded-l-md border-t-[0.1px] border-b-[0.1px] border-l-[0.1px] border-r-[2.5px]  border-black"
+                : "rounded-r-md border-t-[0.1px] border-b-[0.1px] border-l-[2.5px] border-r-[0.1px]  border-black"
             }
             
           `}
