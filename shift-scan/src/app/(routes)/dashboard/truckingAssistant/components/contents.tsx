@@ -22,7 +22,7 @@ export default function TruckingContexts({
 
   return (
     <>
-      <Holds background={"white"} className="row-span-1 h-full ">
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full ">
         <TitleBoxes onClick={() => router.push("/dashboard")}>
           <Holds
             position={"row"}
@@ -45,7 +45,7 @@ export default function TruckingContexts({
           </Holds>
         </TitleBoxes>
       </Holds>
-      <Holds className="row-span-6 h-full">
+      <>
         {laborType === "truckDriver" ? (
           <TruckDriver />
         ) : laborType === "truckLabor" ? (
@@ -53,7 +53,7 @@ export default function TruckingContexts({
         ) : laborType === "truckEquipmentOperator" ? (
           <TruckOperator />
         ) : null}
-      </Holds>
+      </>
     </>
   );
 }

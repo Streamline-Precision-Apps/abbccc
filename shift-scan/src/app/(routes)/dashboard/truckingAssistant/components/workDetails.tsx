@@ -11,6 +11,7 @@ import LaborType from "./laborType";
 import { createTruckLaborLogs } from "@/actions/truckingActions";
 import { useTranslations } from "next-intl";
 import { format, formatDate } from "date-fns";
+import TruckTabOptions from "../TruckTabOptions";
 
 type LaborType = {
   id: string;
@@ -28,6 +29,9 @@ export default function WorkDetails({
   timeSheetId,
   laborType,
   setLaborType,
+  activeTab2,
+  setActiveTab2,
+  isComplete,
 }: {
   notes: string;
   setNotes: React.Dispatch<React.SetStateAction<string>>;
@@ -37,6 +41,14 @@ export default function WorkDetails({
   timeSheetId: string | undefined;
   laborType: LaborType[] | undefined;
   setLaborType: React.Dispatch<React.SetStateAction<LaborType[]>>;
+  activeTab2: 2;
+  setActiveTab2: React.Dispatch<React.SetStateAction<number>>;
+  isComplete: {
+    haulingLogsTab: boolean;
+    notesTab: boolean;
+    stateMileageTab: boolean;
+    refuelLogsTab: boolean;
+  };
 }) {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState(1);
@@ -66,9 +78,20 @@ export default function WorkDetails({
 
   return (
     <>
+      <TruckTabOptions
+        activeTab={2}
+        setActiveTab={setActiveTab2}
+        isLoading={isLoading}
+        isComplete={{
+          haulingLogsTab: isComplete.haulingLogsTab,
+          notesTab: isComplete.notesTab,
+          stateMileageTab: isComplete.stateMileageTab,
+          refuelLogsTab: isComplete.refuelLogsTab,
+        }}
+      />
       <Holds
         background={"white"}
-        className={"w-full h-full rounded-t-none row-start-2 row-end-3  "}
+        className={"w-full h-full rounded-t-none row-start-1 row-end-2  "}
       >
         <Contents width={"section"} className="h-full">
           <Holds position={"row"} className="h-full gap-2">
@@ -104,8 +127,8 @@ export default function WorkDetails({
           </Holds>
         </Contents>
       </Holds>
-      <Holds className="h-full w-full row-start-3 row-end-11 ">
-        <Holds background={"white"} className="h-full w-full mt-3">
+      <Holds className="h-full w-full row-start-2 row-end-8 ">
+        <Holds background={"white"} className="h-full w-full ">
           <Contents width={"section"} className="h-full">
             <Grids rows={"8"} gap={"5"} className="h-full py-3">
               {activeTab === 1 ? (

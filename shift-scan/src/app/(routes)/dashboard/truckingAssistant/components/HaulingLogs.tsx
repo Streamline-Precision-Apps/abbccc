@@ -12,6 +12,7 @@ import {
 import EquipmentList from "./EquipmentList";
 import { useTranslations } from "next-intl";
 import MaterialItem from "./MaterialItem";
+import TruckTabOptions from "../TruckTabOptions";
 
 type EquipmentHauled = {
   id: string;
@@ -52,6 +53,9 @@ export default function HaulingLogs({
   equipmentHauled,
   setEquipmentHauled,
   isLoading,
+  setActiveTab2,
+  activeTab2,
+  isComplete,
 }: {
   setMaterial: React.Dispatch<React.SetStateAction<Material[] | undefined>>;
   setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
@@ -59,6 +63,14 @@ export default function HaulingLogs({
   material: Material[] | undefined;
   equipmentHauled: EquipmentHauled[] | undefined;
   isLoading: boolean;
+  activeTab2: 1;
+  setActiveTab2: React.Dispatch<React.SetStateAction<number>>;
+  isComplete: {
+    haulingLogsTab: boolean;
+    notesTab: boolean;
+    stateMileageTab: boolean;
+    refuelLogsTab: boolean;
+  };
 }) {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState<number>(1);
@@ -122,9 +134,20 @@ export default function HaulingLogs({
 
   return (
     <>
+      <TruckTabOptions
+        activeTab={1}
+        setActiveTab={setActiveTab2}
+        isLoading={isLoading}
+        isComplete={{
+          haulingLogsTab: isComplete.haulingLogsTab,
+          notesTab: isComplete.notesTab,
+          stateMileageTab: isComplete.stateMileageTab,
+          refuelLogsTab: isComplete.refuelLogsTab,
+        }}
+      />
       <Holds
         background={"white"}
-        className={"w-full h-full rounded-t-none row-start-2 row-end-3 "}
+        className={"w-full h-full rounded-t-none row-start-1 row-end-2 "}
       >
         <Contents width={"section"} className="h-full">
           <Holds position={"row"} className="h-full gap-2">
@@ -161,8 +184,8 @@ export default function HaulingLogs({
       <Holds
         className={`${
           isLoading
-            ? "w-full h-full row-start-3 row-end-11 pt-5 animate-pulse"
-            : "w-full h-full row-start-3 row-end-11 pt-5"
+            ? "w-full h-full row-start-2 row-end-8  animate-pulse"
+            : "w-full h-full row-start-2 row-end-8 "
         }`}
       >
         <Holds background={"white"} className="w-full h-full">
