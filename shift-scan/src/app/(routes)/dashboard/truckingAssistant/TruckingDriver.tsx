@@ -14,6 +14,7 @@ import TruckDriverNotes from "./components/TruckDriverNotes";
 import Sliders from "@/components/(reusable)/sliders";
 import { Buttons } from "@/components/(reusable)/buttons";
 import WorkDetails from "./components/workDetails";
+import { setLaborType } from "@/actions/cookieActions";
 
 type StateMileage = {
   id: string;
@@ -64,6 +65,13 @@ enum LoadType {
   SCREENED,
 }
 
+type LaborType = {
+  id: string;
+  type: string | null;
+  startTime: string;
+  endTime: string | null;
+};
+
 export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
   const [isLoading, setIsLoading] = useState(true);
@@ -75,6 +83,7 @@ export default function TruckDriver() {
   const [notes, setNotes] = useState<string>("");
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [material, setMaterial] = useState<Material[]>();
+  const [laborType, setLaborType] = useState<LaborType[]>([]);
 
   const [isComplete, setIsComplete] = useState({
     haulingLogsTab: true,
@@ -148,6 +157,7 @@ export default function TruckDriver() {
           `/api/getTruckingLogs/stateMileage/${timeSheetId}`,
           `/api/getTruckingLogs/material/${timeSheetId}`,
           `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
+          `/api/getTruckingLogs/laborType/${timeSheetId}`,
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
@@ -160,6 +170,7 @@ export default function TruckDriver() {
         setStateMileage(data[3]);
         setMaterial(data[4]);
         setEquipmentHauled(data[5]);
+        setLaborType(data[6]);
       } catch (error) {
         console.error(t("FetchingError"), error);
       } finally {
@@ -236,6 +247,8 @@ export default function TruckDriver() {
             endMileage={endMileage}
             setEndMileage={setEndMileage}
             isLoading={isLoading}
+            laborType={laborType}
+            setLaborType={setLaborType}
           />
         )}
 
