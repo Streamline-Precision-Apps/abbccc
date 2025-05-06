@@ -85,28 +85,30 @@ export default function MaterialList({
   return (
     <>
       <Contents width={"section"} className="overflow-y-auto no-scrollbar">
-        {editedMaterials.map((mat, index) => (
-          <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
-            <Holds
-              position={"row"}
-              background={"lightBlue"}
-              className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 justify-center items-center "
-              onClick={() => {
-                setContentView("Item");
-                setSelectedItemId(mat.id);
-              }}
-            >
-              <Texts
-                text={isMaterialComplete(mat) ? "black" : "red"}
-                size={"p4"}
+        <Holds>
+          {editedMaterials.map((mat, index) => (
+            <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
+              <Holds
+                position={"row"}
+                background={"lightBlue"}
+                className="w-full h-full border-black border-[3px] rounded-[10px]  justify-center items-center py-1 "
+                onClick={() => {
+                  setContentView("Item");
+                  setSelectedItemId(mat.id);
+                }}
               >
-                {mat.name === "Material"
-                  ? `${mat.name} ${index + 1}`
-                  : mat.name}
-              </Texts>
-            </Holds>
-          </SlidingDiv>
-        ))}
+                <Texts
+                  text={isMaterialComplete(mat) ? "black" : "red"}
+                  size={"p4"}
+                >
+                  {mat.name === "Material"
+                    ? `${mat.name} ${index + 1}`
+                    : mat.name}
+                </Texts>
+              </Holds>
+            </SlidingDiv>
+          ))}
+        </Holds>
       </Contents>
       {/* <SelectableModal
         isOpen={isLocationOpen}

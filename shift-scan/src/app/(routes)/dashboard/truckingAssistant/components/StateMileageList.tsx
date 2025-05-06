@@ -82,8 +82,8 @@ export default function StateMileageList({
   }, [StateMileage]);
 
   return (
-    <Grids rows={"1"} className="h-full overflow-y-auto">
-      <div className=" row-span-1 h-full ">
+    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
+      <div className=" row-start-1 row-end-2 h-full ">
         {editedStateMileage.map((sm, index) => (
           <SlidingDiv key={sm.id} onSwipeLeft={() => handleDelete(sm.id)}>
             <Holds
@@ -94,14 +94,15 @@ export default function StateMileageList({
             >
               <Holds
                 background={"white"}
-                className="h-full w-1/2 justify-center px-2"
+                size={"50"}
+                className="h-full justify-center px-2"
               >
                 <Selects
                   name="state"
                   value={sm.state || ""}
                   onChange={(e) => handleStateChange(index, e.target.value)}
                   className={`
-                      border-none  text-xs py-2 focus:outline-none ${
+                      border-none h-full text-xs text-center  focus:outline-none ${
                         sm.state ? "text-app-black" : "text-app-red"
                       }
                   `}
@@ -115,8 +116,9 @@ export default function StateMileageList({
                 </Selects>
               </Holds>
               <Holds
+                size={"50"}
                 background={"white"}
-                className={`w-1/2 px-2 h-full justify-center border-l-[3px] rounded-l-none border-black
+                className={`h-full justify-center border-l-[3px] py-1 rounded-l-none border-black
                 } `}
               >
                 <Inputs
@@ -136,7 +138,7 @@ export default function StateMileageList({
                     updateStateMileage(formData);
                   }}
                   className={
-                    "border-none text-xs py-2 focus:outline-none focus:ring-0 empty: placeholder:text-app-red"
+                    "h-full border-none text-xs text-center focus:outline-none focus:ring-0 empty: placeholder:text-app-red"
                   }
                 />
               </Holds>

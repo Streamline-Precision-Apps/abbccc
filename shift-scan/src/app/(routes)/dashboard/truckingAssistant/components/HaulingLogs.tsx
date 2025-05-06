@@ -12,7 +12,6 @@ import {
 import EquipmentList from "./EquipmentList";
 import { useTranslations } from "next-intl";
 import MaterialItem from "./MaterialItem";
-import TruckTabOptions from "../TruckTabOptions";
 
 type EquipmentHauled = {
   id: string;
@@ -53,8 +52,6 @@ export default function HaulingLogs({
   equipmentHauled,
   setEquipmentHauled,
   isLoading,
-  setActiveTab2,
-  activeTab2,
   isComplete,
 }: {
   setMaterial: React.Dispatch<React.SetStateAction<Material[] | undefined>>;
@@ -63,8 +60,6 @@ export default function HaulingLogs({
   material: Material[] | undefined;
   equipmentHauled: EquipmentHauled[] | undefined;
   isLoading: boolean;
-  activeTab2: 1;
-  setActiveTab2: React.Dispatch<React.SetStateAction<number>>;
   isComplete: {
     haulingLogsTab: boolean;
     notesTab: boolean;
@@ -109,21 +104,23 @@ export default function HaulingLogs({
   const addTempMaterial = async () => {
     const formData = new FormData();
     formData.append("truckingLogId", truckingLog ?? "");
+    formData.append("name", "Material");
+    formData.append("quantity", "1");
 
     try {
       const tempMaterial = await createHaulingLogs(formData);
       setMaterial((prev) => [
         {
           id: tempMaterial.id,
-          name: "Material",
+          name: tempMaterial.name ?? "Material",
           LocationOfMaterial: "",
           truckingLogId: tempMaterial.truckingLogId,
-          quantity: 1,
+          quantity: tempMaterial.quantity,
           materialWeight: null,
           lightWeight: null,
           grossWeight: null,
           loadType: null,
-          createdAt: new Date(),
+          createdAt: tempMaterial.createdAt ?? new Date(),
         },
         ...(prev ?? []),
       ]);
@@ -133,21 +130,10 @@ export default function HaulingLogs({
   };
 
   return (
-    <>
-      <TruckTabOptions
-        activeTab={1}
-        setActiveTab={setActiveTab2}
-        isLoading={isLoading}
-        isComplete={{
-          haulingLogsTab: isComplete.haulingLogsTab,
-          notesTab: isComplete.notesTab,
-          stateMileageTab: isComplete.stateMileageTab,
-          refuelLogsTab: isComplete.refuelLogsTab,
-        }}
-      />
+    <Grids rows={"7"} gap={"5"} className="h-full">
       <Holds
         background={"white"}
-        className={"w-full h-full rounded-t-none row-start-1 row-end-2 "}
+        className={"w-full h-full rounded-t-none row-start-1 row-end-2"}
       >
         <Contents width={"section"} className="h-full">
           <Holds position={"row"} className="h-full gap-2">
@@ -185,13 +171,16 @@ export default function HaulingLogs({
         className={`${
           isLoading
             ? "w-full h-full row-start-2 row-end-8  animate-pulse"
-            : "w-full h-full row-start-2 row-end-8 "
+            : "w-full h-full row-start-2 row-end-8 overflow-y-auto no-scrollbar "
         }`}
       >
         <Holds background={"white"} className="w-full h-full">
           <Grids rows={"10"} className="h-full pt-3 pb-5  relative">
             {activeTab === 1 && (
-              <Holds className="h-full w-full row-start-1 row-end-11 overflow-y-auto no-scrollbar">
+              <Holds
+                background={"white"}
+                className="h-full w-full row-start-1 row-end-11"
+              >
                 {contentView === "Item" ? (
                   <MaterialItem
                     material={material}
@@ -224,6 +213,6 @@ export default function HaulingLogs({
           </Grids>
         </Holds>
       </Holds>
-    </>
+    </Grids>
   );
 }

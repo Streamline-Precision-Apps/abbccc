@@ -10,8 +10,6 @@ import { useState } from "react";
 import LaborType from "./laborType";
 import { createTruckLaborLogs } from "@/actions/truckingActions";
 import { useTranslations } from "next-intl";
-import { format, formatDate } from "date-fns";
-import TruckTabOptions from "../TruckTabOptions";
 
 type LaborType = {
   id: string;
@@ -29,9 +27,6 @@ export default function WorkDetails({
   timeSheetId,
   laborType,
   setLaborType,
-  activeTab2,
-  setActiveTab2,
-  isComplete,
 }: {
   notes: string;
   setNotes: React.Dispatch<React.SetStateAction<string>>;
@@ -41,14 +36,6 @@ export default function WorkDetails({
   timeSheetId: string | undefined;
   laborType: LaborType[] | undefined;
   setLaborType: React.Dispatch<React.SetStateAction<LaborType[]>>;
-  activeTab2: 2;
-  setActiveTab2: React.Dispatch<React.SetStateAction<number>>;
-  isComplete: {
-    haulingLogsTab: boolean;
-    notesTab: boolean;
-    stateMileageTab: boolean;
-    refuelLogsTab: boolean;
-  };
 }) {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState(1);
@@ -77,18 +64,7 @@ export default function WorkDetails({
   };
 
   return (
-    <>
-      <TruckTabOptions
-        activeTab={2}
-        setActiveTab={setActiveTab2}
-        isLoading={isLoading}
-        isComplete={{
-          haulingLogsTab: isComplete.haulingLogsTab,
-          notesTab: isComplete.notesTab,
-          stateMileageTab: isComplete.stateMileageTab,
-          refuelLogsTab: isComplete.refuelLogsTab,
-        }}
-      />
+    <Grids rows={"7"} gap={"5"} className="h-full">
       <Holds
         background={"white"}
         className={"w-full h-full rounded-t-none row-start-1 row-end-2  "}
@@ -160,6 +136,6 @@ export default function WorkDetails({
           </Contents>
         </Holds>
       </Holds>
-    </>
+    </Grids>
   );
 }

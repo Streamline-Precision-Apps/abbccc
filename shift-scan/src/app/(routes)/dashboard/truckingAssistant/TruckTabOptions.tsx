@@ -21,7 +21,7 @@ export default function TruckTabOptions({
 }) {
   const t = useTranslations("TruckingAssistant");
   return (
-    <Holds position={"row"} className=" h-fit w-full gap-1">
+    <Holds position={"row"} className=" h-full w-full gap-1">
       <NewTab
         titleImage="/Hauling-logs.svg"
         titleImageAlt="Truck"
