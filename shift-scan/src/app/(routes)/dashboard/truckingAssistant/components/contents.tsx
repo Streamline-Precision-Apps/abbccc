@@ -2,13 +2,9 @@
 
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { getTranslations } from "next-intl/server";
-
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import TruckDriver from "../TruckingDriver";
-import TruckManualLabor from "../TruckManualLabor";
-import TruckOperator from "../TruckingOperator";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
@@ -46,13 +42,7 @@ export default function TruckingContexts({
         </TitleBoxes>
       </Holds>
       <Holds className="row-start-2 row-end-8 h-full">
-        {laborType === "truckDriver" ? (
-          <TruckDriver />
-        ) : laborType === "truckLabor" ? (
-          <TruckManualLabor />
-        ) : laborType === "truckEquipmentOperator" ? (
-          <TruckOperator />
-        ) : null}
+        <TruckDriver />
       </Holds>
     </>
   );

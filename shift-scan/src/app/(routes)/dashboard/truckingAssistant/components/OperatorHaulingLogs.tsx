@@ -2,20 +2,30 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import MaterialList from "./MaterialList";
 import { createHaulingLogs } from "@/actions/truckingActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
+import MaterialItem from "./MaterialItem";
 
 type Material = {
-  name: string;
   id: string;
-  LocationOfMaterial: string | null;
   truckingLogId: string;
+  LocationOfMaterial: string | null;
+  name: string;
   quantity: number | null;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+  loadType: LoadType | null;
   createdAt: Date;
 };
+
+enum LoadType {
+  UNSCREENED,
+  SCREENED,
+}
 
 export default function OperatorHaulingLogs({
   truckingLog,
@@ -29,21 +39,29 @@ export default function OperatorHaulingLogs({
   isLoading: boolean;
 }) {
   const t = useTranslations("TruckingAssistant");
+  const [contentView, setContentView] = useState<"Item" | "List">("List");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   // Add Temporary Material
   const addTempMaterial = async () => {
     const formData = new FormData();
     formData.append("truckingLogId", truckingLog ?? "");
+    formData.append("name", "Material");
+    formData.append("quantity", "1");
 
     try {
       const tempMaterial = await createHaulingLogs(formData);
       setMaterial((prev) => [
         {
           id: tempMaterial.id,
-          name: "",
+          name: tempMaterial.name ?? "Material",
           LocationOfMaterial: "",
           truckingLogId: tempMaterial.truckingLogId,
-          quantity: null,
-          createdAt: new Date(),
+          quantity: tempMaterial.quantity,
+          materialWeight: null,
+          lightWeight: null,
+          grossWeight: null,
+          loadType: null,
+          createdAt: tempMaterial.createdAt ?? new Date(),
         },
         ...(prev ?? []),
       ]);
@@ -92,7 +110,24 @@ export default function OperatorHaulingLogs({
           background={"white"}
           className="w-full h-full  overflow-y-auto no-scrollbar"
         >
-          <MaterialList material={material} setMaterial={setMaterial} />
+          {contentView === "Item" ? (
+            <MaterialItem
+              material={material}
+              setMaterial={setMaterial}
+              setContentView={setContentView}
+              selectedItemId={selectedItemId}
+              setSelectedItemId={setSelectedItemId}
+            />
+          ) : (
+            contentView === "List" && (
+              <MaterialList
+                material={material}
+                setMaterial={setMaterial}
+                setContentView={setContentView}
+                setSelectedItemId={setSelectedItemId}
+              />
+            )
+          )}
         </Holds>
       </Holds>
     </Grids>

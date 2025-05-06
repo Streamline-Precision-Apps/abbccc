@@ -2,7 +2,7 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { useCalculateBarHeight } from "./calculateBarHeight";
+import { useCalculateBarHeight } from "./useCalculateBarHeight";
 
 type Props = {
   currentData: {
@@ -16,6 +16,7 @@ type Props = {
  */
 export default function CenterBar({ currentData }: Props) {
   const t = useTranslations("Home");
+  const barHeight = useCalculateBarHeight(currentData.hours);
   return (
     <Holds className="mx-auto h-full w-full pt-4">
       <Holds
@@ -31,7 +32,7 @@ export default function CenterBar({ currentData }: Props) {
             currentData.hours !== 0 ? "bg-app-green" : ""
           }`}
           style={{
-            height: `${useCalculateBarHeight(currentData.hours)}%`,
+            height: `${barHeight}%`,
             border: currentData.hours ? "3px solid black" : "none",
           }}
         ></Holds>

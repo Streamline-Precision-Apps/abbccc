@@ -14,6 +14,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import Signature from "@/components/(reusable)/signature";
 import { Titles } from "@/components/(reusable)/titles";
+import { useRouter } from "next/navigation";
 
 interface FormField {
   id: string;
@@ -67,6 +68,7 @@ export default function FormDraft({
   type FormValues = Record<string, string>;
   const [signature, setSignature] = useState<string | null>(null);
   const [showSignature, setShowSignature] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSignature = async () => {
@@ -133,12 +135,11 @@ export default function FormDraft({
         background={"white"}
         className="row-span-1 h-full justify-center px-3 "
       >
-        <TitleBoxes
-          title={formData.name}
-          type="noIcon"
-          titleImg={""}
-          titleImgAlt={""}
-        />
+        <TitleBoxes onClick={() => router.push("/dashboard")}>
+          <Holds position={"row"}>
+            <Titles size={"h1"}>{formData.name}</Titles>
+          </Holds>
+        </TitleBoxes>
       </Holds>
 
       <Holds background={"white"} className="w-full h-full row-span-7  ">

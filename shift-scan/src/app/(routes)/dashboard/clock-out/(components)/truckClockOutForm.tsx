@@ -18,6 +18,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { useTimeSheetComments } from "@/app/context/TimeSheetCommentsContext";
+import { Images } from "@/components/(reusable)/images";
 
 // Props type for the form component
 type TruckClockOutFormProps = {
@@ -124,11 +125,16 @@ export default function TruckClockOutForm({
     <>
       <Holds background="white" className="row-span-1 h-full">
         <Contents width="section">
-          <TitleBoxes
-            title="Clock Out"
-            titleImg="/end-day.svg"
-            titleImgAlt="Clock Out"
-          />
+          <TitleBoxes onClick={() => {}}>
+            <Holds position={"row"}>
+              <Texts>Clock Out</Texts>
+              <Images
+                titleImg="/end-day.svg"
+                titleImgAlt="Clock Out"
+                className="w-8 h-8"
+              />
+            </Holds>
+          </TitleBoxes>
         </Contents>
       </Holds>
       <Forms onSubmit={handleValidationAndSubmit}>

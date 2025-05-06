@@ -8,6 +8,8 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Grids } from "@/components/(reusable)/grids";
+import { Images } from "@/components/(reusable)/images";
+import { Titles } from "@/components/(reusable)/titles";
 
 export default async function Timesheets() {
   const session = await auth();
@@ -19,22 +21,8 @@ export default async function Timesheets() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"3"}>
-          <Holds
-            position={"row"}
-            background={"white"}
-            className="row-span-1 h-full"
-          >
-            <TitleBoxes
-              title={`${t("Title")}`}
-              titleImg={"/form.svg"}
-              titleImgAlt={`${t("Title")}`}
-              size={"default"}
-            />
-          </Holds>
-          <Holds className="row-span-7 h-full">
-            <ViewTimeSheets user={id} />
-          </Holds>
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <ViewTimeSheets user={id} />
         </Grids>
       </Contents>
     </Bases>
