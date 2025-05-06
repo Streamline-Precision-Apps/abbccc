@@ -98,6 +98,7 @@ export default function DbWidgetSection({
           logs={logs}
           permission={permission}
           currentView={currentView}
+          mechanicProjectID={mechanicProjectID}
           laborType={laborType}
         />
       );
@@ -112,6 +113,7 @@ export default function DbWidgetSection({
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
+          mechanicProjectID={mechanicProjectID}
           laborType={laborType}
         />
       );
@@ -141,6 +143,7 @@ export default function DbWidgetSection({
           handleShowAdditionalButtons={handleShowAdditionalButtons}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
+          mechanicProjectID={mechanicProjectID}
           permission={permission}
         />
       );

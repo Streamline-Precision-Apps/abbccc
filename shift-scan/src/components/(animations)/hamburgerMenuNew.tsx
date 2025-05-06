@@ -76,7 +76,7 @@ export default function HamburgerMenuNew() {
           className="w-16 h-5/6"
         >
           <img
-            src={"/List-icon.svg"}
+            src={"/List-Icon.svg"}
             alt={"inbox"}
             className="relative  w-full mx-auto"
           />

@@ -2,19 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
-import { Contents } from "@/components/(reusable)/contents";
 import { useTranslations } from "next-intl";
-import { NewTab } from "@/components/(reusable)/newTabs";
-import { Titles } from "@/components/(reusable)/titles";
 import HaulingLogs from "./components/HaulingLogs";
 import StateLog from "./components/StateLog";
 import RefuelLayout from "./components/RefuelLayout";
-import { EndingMileage } from "./components/EndingMileage";
-import TruckDriverNotes from "./components/TruckDriverNotes";
-import Sliders from "@/components/(reusable)/sliders";
-import { Buttons } from "@/components/(reusable)/buttons";
 import WorkDetails from "./components/workDetails";
-import { setLaborType } from "@/actions/cookieActions";
 import TruckTabOptions from "./TruckTabOptions";
 
 type StateMileage = {

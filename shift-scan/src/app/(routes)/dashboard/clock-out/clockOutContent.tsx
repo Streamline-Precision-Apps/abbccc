@@ -135,7 +135,7 @@ export default function ClockOutContent() {
   } else if (step === 3 && path === "clockOut") {
     return (
       <LaborClockOut
-        scanResult={scanResult?.data}
+        scanResult={scanResult?.qrCode}
         savedCostCode={savedCostCode}
         prevStep={prevStep}
         commentsValue={commentsValue}

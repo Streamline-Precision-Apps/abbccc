@@ -25,7 +25,7 @@ interface TimesheetData {
   equipmentLogs: EquipmentLogsData | null;
   equipmentRefuelLogs: EmployeeEquipmentLogWithRefuel[] | null;
   loading: boolean;
-  error: any; // Consider a more specific error type
+  error: string | null; // Consider a more specific error type
   updateDate: (newDate: string) => void;
   updateFilter: (newFilter: string) => void;
 }
@@ -66,7 +66,7 @@ export const useTimesheetData = (
     EmployeeEquipmentLogWithRefuel[] | null
   >(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [currentFilter, setCurrentFilter] = useState(initialFilter);
 
@@ -138,7 +138,7 @@ export const useTimesheetData = (
           });
         }
       } catch (err) {
-        setError(err);
+        setError(err as string);
       } finally {
         setLoading(false);
       }

@@ -18,6 +18,11 @@ interface MediaTrackCapabilitiesWithTorch extends MediaTrackCapabilities {
   torch?: boolean;
 }
 
+// Extended type for MediaTrackConstraintSet with torch
+interface MediaTrackConstraintSetWithTorch extends MediaTrackConstraintSet {
+  advanced?: { torch?: boolean }[];
+}
+
 export default function Qr({
   handleNextStep,
   setScanned,
@@ -77,12 +82,12 @@ export default function Qr({
     (result: QrScanner.ScanResult) => {
       try {
         const { data } = result;
-        
+
         if (!validateEquipment(data)) {
           setScanErrorType("invalid");
           throw new Error("Invalid equipment QR code");
         }
-        
+
         setScanned(data);
         console.log("Scanned Equipment ID:", data);
         qrScannerRef.current?.stop();
@@ -95,7 +100,13 @@ export default function Qr({
         setStartCamera(false);
       }
     },
-    [validateEquipment, setScanned, setScanError, setScanErrorType, handleNextStep]
+    [
+      validateEquipment,
+      setScanned,
+      setScanError,
+      setScanErrorType,
+      handleNextStep,
+    ]
   );
 
   const handleScanFail = useCallback(
@@ -116,19 +127,20 @@ export default function Qr({
 
   const toggleFlash = async () => {
     if (!qrScannerRef.current) return;
-    
+
     try {
       const videoElement = qrScannerRef.current.$video;
       if (!videoElement.srcObject) return;
-      
+
       const stream = videoElement.srcObject as MediaStream;
       const [track] = stream.getVideoTracks();
-      
+
       if (track) {
-        const capabilities = track.getCapabilities() as MediaTrackCapabilitiesWithTorch;
+        const capabilities =
+          track.getCapabilities() as MediaTrackCapabilitiesWithTorch;
         if (capabilities.torch) {
           await track.applyConstraints({
-            advanced: [{ torch: !flashOn } as any]
+            advanced: [{ torch: !flashOn } as MediaTrackConstraintSetWithTorch],
           });
           setFlashOn(!flashOn);
         }
@@ -149,26 +161,22 @@ export default function Qr({
         const hasPermission = await checkCameraPermissions();
         if (!hasPermission) return;
 
-        scanner = new QrScanner(
-          videoRef.current,
-          handleScanSuccess,
-          {
-            onDecodeError: handleScanFail,
-            highlightScanRegion: true,
-            highlightCodeOutline: true,
-            returnDetailedScanResult: true,
-            preferredCamera: "environment",
-            maxScansPerSecond: 3,
-            calculateScanRegion: (video) => ({
-              x: video.videoWidth * 0.35,
-              y: video.videoHeight * 0.25,
-              width: video.videoWidth * 0.3,
-              height: video.videoHeight * 0.5,
-              downScaledWidth: 300,
-              downScaledHeight: 300,
-            }),
-          }
-        );
+        scanner = new QrScanner(videoRef.current, handleScanSuccess, {
+          onDecodeError: handleScanFail,
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+          returnDetailedScanResult: true,
+          preferredCamera: "environment",
+          maxScansPerSecond: 3,
+          calculateScanRegion: (video) => ({
+            x: video.videoWidth * 0.35,
+            y: video.videoHeight * 0.25,
+            width: video.videoWidth * 0.3,
+            height: video.videoHeight * 0.5,
+            downScaledWidth: 300,
+            downScaledHeight: 300,
+          }),
+        });
 
         const hasCamera = await QrScanner.hasCamera();
         if (!hasCamera) {
@@ -185,9 +193,10 @@ export default function Qr({
         if (videoElement.srcObject) {
           const stream = videoElement.srcObject as MediaStream;
           const [track] = stream.getVideoTracks();
-          
+
           if (track) {
-            const capabilities = track.getCapabilities() as MediaTrackCapabilitiesWithTorch;
+            const capabilities =
+              track.getCapabilities() as MediaTrackCapabilitiesWithTorch;
             if (capabilities.torch) {
               setHasFlash(true);
             }
@@ -212,7 +221,14 @@ export default function Qr({
       scanner?.destroy();
       qrScannerRef.current = null;
     };
-  }, [startCamera, handleScanSuccess, handleScanFail, checkCameraPermissions, setScanError, setScanErrorType]);
+  }, [
+    startCamera,
+    handleScanSuccess,
+    handleScanFail,
+    checkCameraPermissions,
+    setScanError,
+    setScanErrorType,
+  ]);
 
   return (
     <div className="relative w-full h-full">

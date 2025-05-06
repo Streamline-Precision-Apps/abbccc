@@ -255,7 +255,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                 <Holds className="row-span-1 h-full my-auto">
                   <Texts>
                     {t("Jobsite")}{" "}
-                    {scanResult?.data || localStorageData?.jobsite}
+                    {scanResult?.qrCode || localStorageData?.jobsite}
                   </Texts>
                 </Holds>
                 <Holds className="row-span-1 h-full my-auto">
@@ -307,11 +307,16 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
         <Grids rows={"4"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
-              <TitleBoxes
-                title={t("Bye")}
-                titleImg={"/end-day.svg"}
-                titleImgAlt={"End of Day Icon"}
-              />
+              <TitleBoxes onClick={() => incrementStep(2)}>
+                <Holds>
+                  <Texts>{t("Bye")}</Texts>{" "}
+                  <Images
+                    titleImg={"/end-day.svg"}
+                    titleImgAlt={"End of Day Icon"}
+                    className="w-8 h-8"
+                  />
+                </Holds>
+              </TitleBoxes>
             </Contents>
           </Holds>
           <Holds background={"white"} className="row-span-3 h-full">
@@ -338,7 +343,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
-                      {scanResult?.data || localStorageData?.jobsite}
+                      {scanResult?.qrCode || localStorageData?.jobsite}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
