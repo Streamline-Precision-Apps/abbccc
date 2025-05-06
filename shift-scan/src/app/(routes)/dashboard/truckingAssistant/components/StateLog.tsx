@@ -63,20 +63,9 @@ export default function StateLog({
 
   return (
     <>
-      <TruckTabOptions
-        activeTab={3}
-        setActiveTab={setActiveTab}
-        isLoading={isLoading}
-        isComplete={{
-          haulingLogsTab: isComplete.haulingLogsTab,
-          notesTab: isComplete.notesTab,
-          stateMileageTab: isComplete.stateMileageTab,
-          refuelLogsTab: isComplete.refuelLogsTab,
-        }}
-      />
       <Holds background={"white"} className="w-full h-full rounded-t-none ">
         <Grids rows={"7"} className="h-full">
-          <Holds className="h-full row-start-1 row-end-2 ">
+          <Holds className="row-start-1 row-end-2 pb-4">
             <Contents width={"section"} className="h-full">
               <Holds position={"row"} className="h-full gap-2">
                 <Holds size={"80"}>
@@ -96,8 +85,8 @@ export default function StateLog({
               </Holds>
             </Contents>
           </Holds>
-          <Holds className="w-full h-full row-start-2 row-end-7 ">
-            <Contents width={"section"} className="h-full">
+          <Holds className="w-full h-full row-start-2 row-end-8 ">
+            <Contents width={"section"}>
               <StateMileageList
                 StateOptions={StateOptions}
                 StateMileage={StateMileage}

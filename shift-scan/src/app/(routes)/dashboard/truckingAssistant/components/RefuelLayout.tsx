@@ -62,20 +62,9 @@ export default function RefuelLayout({
   };
 
   return (
-    <Holds className="w-full h-full">
-      <TruckTabOptions
-        activeTab={4}
-        setActiveTab={setActiveTab}
-        isLoading={isLoading}
-        isComplete={{
-          haulingLogsTab: isComplete.haulingLogsTab,
-          notesTab: isComplete.notesTab,
-          stateMileageTab: isComplete.stateMileageTab,
-          refuelLogsTab: isComplete.refuelLogsTab,
-        }}
-      />
-      <Grids rows={"7"} gap={"5"}>
-        <Holds position={"row"} className="h-full row-start-1 row-end-2">
+    <Holds background={"white"} className="w-full h-full rounded-t-none">
+      <Grids rows={"7"} className="w-full h-full">
+        <Holds position={"row"} className="row-start-1 row-end-2 pb-4">
           <Contents width={"section"} className="h-full">
             <Holds position={"row"} className="h-full gap-2">
               <Holds size={"80"}>
@@ -96,10 +85,12 @@ export default function RefuelLayout({
           </Contents>
         </Holds>
         <Holds className="w-full h-full row-start-2 row-end-8">
-          <RefuelLogsList
-            refuelLogs={refuelLogs}
-            setRefuelLogs={setRefuelLogs}
-          />
+          <Contents width={"section"}>
+            <RefuelLogsList
+              refuelLogs={refuelLogs}
+              setRefuelLogs={setRefuelLogs}
+            />
+          </Contents>
         </Holds>
       </Grids>
     </Holds>

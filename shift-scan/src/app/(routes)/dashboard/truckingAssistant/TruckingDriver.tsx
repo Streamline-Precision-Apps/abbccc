@@ -183,58 +183,68 @@ export default function TruckDriver() {
   }, [timeSheetId]);
 
   return (
-    <Holds className="row-start-2 row-end-8 h-full">
-      {activeTab === 1 && (
-        <HaulingLogs
+    <Grids rows={"10"} className="h-full w-full">
+      <Holds className={"w-full h-full rounded-t-none row-start-1 row-end-2 "}>
+        <TruckTabOptions
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
           isLoading={isLoading}
-          isComplete={isComplete}
-          activeTab2={activeTab}
-          setActiveTab2={setActiveTab}
-          truckingLog={timeSheetId}
-          material={material}
-          equipmentHauled={equipmentHauled}
-          setEquipmentHauled={setEquipmentHauled}
-          setMaterial={setMaterial}
+          isComplete={{
+            haulingLogsTab: isComplete.haulingLogsTab,
+            notesTab: isComplete.notesTab,
+            stateMileageTab: isComplete.stateMileageTab,
+            refuelLogsTab: isComplete.refuelLogsTab,
+          }}
         />
-      )}
-      {activeTab === 2 && (
-        <WorkDetails
-          isLoading={isLoading}
-          isComplete={isComplete}
-          activeTab2={activeTab}
-          setActiveTab2={setActiveTab}
-          timeSheetId={timeSheetId}
-          notes={notes}
-          setNotes={setNotes}
-          endMileage={endMileage}
-          setEndMileage={setEndMileage}
-          laborType={laborType}
-          setLaborType={setLaborType}
-        />
-      )}
+      </Holds>
+      <Holds className={"w-full h-full rounded-t-none row-start-2 row-end-11"}>
+        {activeTab === 1 && (
+          <HaulingLogs
+            isComplete={isComplete}
+            isLoading={isLoading}
+            truckingLog={timeSheetId}
+            material={material}
+            equipmentHauled={equipmentHauled}
+            setEquipmentHauled={setEquipmentHauled}
+            setMaterial={setMaterial}
+          />
+        )}
+        {activeTab === 2 && (
+          <WorkDetails
+            isLoading={isLoading}
+            timeSheetId={timeSheetId}
+            notes={notes}
+            setNotes={setNotes}
+            endMileage={endMileage}
+            setEndMileage={setEndMileage}
+            laborType={laborType}
+            setLaborType={setLaborType}
+          />
+        )}
 
-      {activeTab === 3 && (
-        <StateLog
-          isLoading={isLoading}
-          isComplete={isComplete}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          StateMileage={StateMileage}
-          setStateMileage={setStateMileage}
-          truckingLog={timeSheetId}
-        />
-      )}
-      {activeTab === 4 && (
-        <RefuelLayout
-          isLoading={isLoading}
-          isComplete={isComplete}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          truckingLog={timeSheetId}
-          refuelLogs={refuelLogs}
-          setRefuelLogs={setRefuelLogs}
-        />
-      )}
-    </Holds>
+        {activeTab === 3 && (
+          <StateLog
+            isLoading={isLoading}
+            isComplete={isComplete}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            StateMileage={StateMileage}
+            setStateMileage={setStateMileage}
+            truckingLog={timeSheetId}
+          />
+        )}
+        {activeTab === 4 && (
+          <RefuelLayout
+            isLoading={isLoading}
+            isComplete={isComplete}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            truckingLog={timeSheetId}
+            refuelLogs={refuelLogs}
+            setRefuelLogs={setRefuelLogs}
+          />
+        )}
+      </Holds>
+    </Grids>
   );
 }

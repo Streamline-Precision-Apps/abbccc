@@ -14,7 +14,7 @@ export default async function Inbox() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"} gap={"5"} className="h-full pb-5">
+        <Grids rows={"7"} gap={"5"} className="h-full">
           <TruckingContexts laborType={laborType} />
         </Grids>
       </Contents>

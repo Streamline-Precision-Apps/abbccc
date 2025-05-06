@@ -27,7 +27,6 @@ export default function LaborType({
   setLaborType: Dispatch<SetStateAction<LaborType[]>>;
 }) {
   const t = useTranslations("TruckingAssistant");
-  const [StartTime, setStartTime] = useState();
 
   const handleDelete = async (laborTypeId: string) => {
     try {
@@ -92,75 +91,77 @@ export default function LaborType({
 
   return (
     <>
+      <Texts className="text-sm text-gray-500 pb-2">
+        Set Time Frame For Labor throughout the day.
+      </Texts>
       <Contents className="overflow-y-auto no-scrollbar">
-        <Texts className="text-sm text-gray-500 pb-2">
-          Set Time Frame For Labor throughout the day.
-        </Texts>
-        {laborType.map((lt) => (
-          <SlidingDiv key={lt.id} onSwipeLeft={() => handleDelete(lt.id)}>
-            <Holds
-              background={"white"}
-              position={"row"}
-              className="w-full h-full border-[3px] border-black rounded-[10px]"
-            >
-              <Holds className=" h-full w-1/3 justify-center items-center py-1 ">
-                <Selects
-                  value={lt.type || ""}
-                  className={`border-none text-xs focus:outline-none ${
-                    lt.type === "" && "text-app-red"
-                  } `}
-                  onChange={(e) => {
-                    handleChange("type", lt.id, e.target.value);
-                  }}
-                >
-                  <option value="">Labor Type</option>
-                  <option value="Truck Driver">Truck Driver</option>
-                  <option value="Operator">Operator</option>
-                  <option value="Manual Labor">Manual Labor</option>
-                </Selects>
+        <div className=" row-start-1 row-end-2 h-full ">
+          {laborType.map((lt) => (
+            <SlidingDiv key={lt.id} onSwipeLeft={() => handleDelete(lt.id)}>
+              <Holds
+                background={"white"}
+                position={"row"}
+                className="w-full h-full border-[3px] border-black rounded-[10px]"
+              >
+                <Holds className=" h-full w-1/3 justify-center items-center ">
+                  <Selects
+                    value={lt.type || ""}
+                    className={`border-none text-xs focus:outline-none ${
+                      lt.type === "" && "text-app-red"
+                    } `}
+                    onChange={(e) => {
+                      handleChange("type", lt.id, e.target.value);
+                    }}
+                  >
+                    <option value="">Labor Type</option>
+                    <option value="Truck Driver">Truck Driver</option>
+                    <option value="Operator">Operator</option>
+                    <option value="Manual Labor">Manual Labor</option>
+                  </Selects>
+                </Holds>
+                <Holds className="h-full border-x-[3px] border-black w-1/3 justify-center items-center px-2 ">
+                  <Inputs
+                    type="time"
+                    value={format(lt.startTime, "HH:mm")} // Now directly using the stored time
+                    placeholder="Start Time"
+                    onChange={(e) => {
+                      const change = e.target.value;
+                      const string = lt.startTime;
+                      const date = new Date(string);
+                      date.setHours(parseInt(change.split(":")[0]));
+                      date.setMinutes(parseInt(change.split(":")[1]));
+                      handleChange("startTime", lt.id, date.toISOString());
+                    }}
+                    className={`py-2 border-none text-xs focus:outline-none ${
+                      lt.startTime === "" && "text-app-red"
+                    }`}
+                  />
+                </Holds>
+                <Holds className="h-full justify-center items-center w-1/3  ">
+                  <Inputs
+                    type="time"
+                    min={lt.startTime}
+                    value={lt.endTime ? format(lt.endTime, "HH:mm") : ""}
+                    onChange={(e) => {
+                      const change = e.target.value;
+                      const string = lt.endTime || lt.startTime;
+                      const date = new Date(string);
+                      date.setHours(parseInt(change.split(":")[0]));
+                      date.setMinutes(parseInt(change.split(":")[1]));
+                      handleChange("endTime", lt.id, date.toISOString());
+                    }}
+                    placeholder="End Time"
+                    className={`text-xs focus:outline-none ${
+                      !lt.endTime
+                        ? "h-full border-app-red rounded-none rounded-tr-md rounded-br-md "
+                        : "border-none"
+                    }`}
+                  />
+                </Holds>
               </Holds>
-              <Holds className="h-full border-x-[3px] border-black w-1/3 justify-center items-center px-2 ">
-                <Inputs
-                  type="time"
-                  value={format(lt.startTime, "HH:mm")} // Now directly using the stored time
-                  placeholder="Start Time"
-                  onChange={(e) => {
-                    const change = e.target.value;
-                    const string = lt.startTime;
-                    const date = new Date(string);
-                    date.setHours(parseInt(change.split(":")[0]));
-                    date.setMinutes(parseInt(change.split(":")[1]));
-                    handleChange("startTime", lt.id, date.toISOString());
-                  }}
-                  className={`border-none text-xs focus:outline-none ${
-                    lt.startTime === "" && "text-app-red"
-                  }`}
-                />
-              </Holds>
-              <Holds className="h-full justify-center items-center w-1/3  ">
-                <Inputs
-                  type="time"
-                  min={lt.startTime}
-                  value={lt.endTime ? format(lt.endTime, "HH:mm") : ""}
-                  onChange={(e) => {
-                    const change = e.target.value;
-                    const string = lt.endTime || lt.startTime;
-                    const date = new Date(string);
-                    date.setHours(parseInt(change.split(":")[0]));
-                    date.setMinutes(parseInt(change.split(":")[1]));
-                    handleChange("endTime", lt.id, date.toISOString());
-                  }}
-                  placeholder="End Time"
-                  className={`text-xs focus:outline-none ${
-                    !lt.endTime
-                      ? "h-full border-app-red rounded-none rounded-tr-md rounded-br-md "
-                      : "border-none"
-                  }`}
-                />
-              </Holds>
-            </Holds>
-          </SlidingDiv>
-        ))}
+            </SlidingDiv>
+          ))}
+        </div>
       </Contents>
     </>
   );

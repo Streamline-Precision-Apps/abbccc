@@ -156,10 +156,16 @@ export async function createHaulingLogs(formData: FormData) {
   console.log("Creating hauling logs...");
   console.log(formData);
   const truckingLogId = formData.get("truckingLogId") as string;
+  const name = formData.get("name") as string;
+  const quantity = parseInt(formData.get("quantity") as string);
+  const createdAt = new Date().toISOString();
 
   const haulingLog = await prisma.material.create({
     data: {
       truckingLogId,
+      name,
+      quantity,
+      createdAt,
     },
   });
 

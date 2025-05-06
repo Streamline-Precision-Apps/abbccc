@@ -45,7 +45,7 @@ export default function TruckingContexts({
           </Holds>
         </TitleBoxes>
       </Holds>
-      <>
+      <Holds className="row-start-2 row-end-8 h-full">
         {laborType === "truckDriver" ? (
           <TruckDriver />
         ) : laborType === "truckLabor" ? (
@@ -53,7 +53,7 @@ export default function TruckingContexts({
         ) : laborType === "truckEquipmentOperator" ? (
           <TruckOperator />
         ) : null}
-      </>
+      </Holds>
     </>
   );
 }

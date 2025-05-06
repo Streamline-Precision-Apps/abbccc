@@ -131,6 +131,7 @@ model Material {
   grossWeight        Float?
   loadType           LoadType?
   TruckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id])
+  createdAt          DateTime?   @default(now())
 }
 
 model RefuelLog {

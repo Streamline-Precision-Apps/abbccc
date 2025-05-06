@@ -143,7 +143,7 @@ export default function MaterialItem({
       </Buttons>
 
       {/* Material details */}
-      <Holds className="pt-10">
+      <Holds background={"white"} className="pt-10">
         <Contents width={"section"}>
           <Holds className="mb-2">
             <label className="text-sm font-medium">
