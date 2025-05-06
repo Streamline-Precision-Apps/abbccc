@@ -25,7 +25,6 @@ import {
   EmployeeEquipmentLogWithRefuel,
   TruckingMaterialHaulLogData,
 } from "@/lib/types";
-import { init } from "next/dist/compiled/webpack/webpack";
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();

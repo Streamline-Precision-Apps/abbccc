@@ -8,14 +8,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { SearchBar } from "./SearchBar";
 import { ProjectList } from "./ProjectList";
 
-enum Priority {
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  DELAYED = "DELAYED",
-  PENDING = "PENDING",
-  TODAY = "TODAY",
-}
+type Equipment = {
+  id: string;
+  name: string;
+};
 
 type MaintenanceLog = {
   id: string;
@@ -23,8 +19,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
-    id: string;
+  User: {
     firstName: string;
     lastName: string;
     image: string;
@@ -34,14 +29,26 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
-  equipment: { name: string };
   selected: boolean;
-  repaired: boolean;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
+  equipmentIssue: string;
+  additionalInfo: string;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
+enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  DELAYED = "DELAYED",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+}
 export const SearchAndCheck = ({
   projects,
   loading,
@@ -73,7 +80,7 @@ export const SearchAndCheck = ({
         return indexA - indexB;
       })
       .filter((project) =>
-        project.equipment.name.toLowerCase().includes(searchTerm.toLowerCase())
+        project.Equipment?.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
   }, [projects, searchTerm]);
 

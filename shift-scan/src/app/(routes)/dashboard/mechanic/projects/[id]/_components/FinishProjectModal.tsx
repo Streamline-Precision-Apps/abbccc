@@ -3,6 +3,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { NModals } from "@/components/(reusable)/newmodals";
@@ -47,13 +48,16 @@ export default function FinishProjectModal({
         <Grids rows="8" gap="5">
           {/* Modal Header */}
           <Holds className="row-span-1 h-full justify-center">
-            <TitleBoxes
-              title={title.slice(0, 20) + "..."}
-              titleImg="/mechanic.svg"
-              titleImgAlt={t("Mechanic")}
-              onClick={onClose}
-              type="noIcon-NoHref"
-            />
+            <TitleBoxes onClick={onClose}>
+              <Holds position={"row"}>
+                <Titles size="h3">{title.slice(0, 20) + "..."}</Titles>
+                <Images
+                  titleImg="/mechanic.svg"
+                  titleImgAlt={t("Mechanic")}
+                  className="w-8 h-8"
+                />
+              </Holds>
+            </TitleBoxes>
           </Holds>
           <Holds className="row-start-2 row-end-8 h-full">
             <Contents width="section">

@@ -5,6 +5,7 @@ import SlidingDiv from "@/components/(animations)/slideDelete";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
+import { Grids } from "@/components/(reusable)/grids";
 
 type Refueled = {
   id: string;
@@ -57,77 +58,80 @@ export default function RefuelLogsList({
   }, [refuelLogs]);
 
   return (
-    <Contents className="overflow-y-auto no-scrollbar">
-      {editedRefuel.map((rL, index) => (
-        <SlidingDiv key={rL.id} onSwipeLeft={() => handleDelete(rL.id)}>
-          <Holds
-            position={"row"}
-            background={"white"}
-            className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 "
-          >
+    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
+      <div className=" row-span-1 h-full ">
+        {editedRefuel.map((rL, index) => (
+          <SlidingDiv key={rL.id} onSwipeLeft={() => handleDelete(rL.id)}>
             <Holds
+              position={"row"}
               background={"white"}
-              className="w-1/2 px-2 h-full justify-center"
+              className={`w-full h-full  border-[3px] rounded-[10px]  border-black
+            `}
             >
-              <Inputs
-                type="number"
-                name="gallons"
-                placeholder={t("TotalGallons")}
-                value={rL.gallonsRefueled || ""}
-                onChange={(e) => handleGallonsChange(index, e.target.value)}
-                onBlur={() => {
-                  const formData = new FormData();
-                  formData.append("id", rL.id);
-                  formData.append(
-                    "gallonsRefueled",
-                    rL.gallonsRefueled?.toString() || ""
-                  );
-                  formData.append(
-                    "milesAtfueling",
-                    rL.milesAtFueling?.toString() || ""
-                  );
-                  updateRefuelLog(formData);
-                }}
-                className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
-                  rL.gallonsRefueled
-                    ? "text-black"
-                    : "text-app-red placeholder:text-app-red"
-                } `}
-              />
+              <Holds
+                background={"white"}
+                className="w-1/2 px-2 h-full justify-center"
+              >
+                <Inputs
+                  type="number"
+                  name="gallons"
+                  placeholder={t("TotalGallons")}
+                  value={rL.gallonsRefueled || ""}
+                  onChange={(e) => handleGallonsChange(index, e.target.value)}
+                  onBlur={() => {
+                    const formData = new FormData();
+                    formData.append("id", rL.id);
+                    formData.append(
+                      "gallonsRefueled",
+                      rL.gallonsRefueled?.toString() || ""
+                    );
+                    formData.append(
+                      "milesAtfueling",
+                      rL.milesAtFueling?.toString() || ""
+                    );
+                    updateRefuelLog(formData);
+                  }}
+                  className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
+                    rL.gallonsRefueled
+                      ? "text-black"
+                      : "text-app-red placeholder:text-app-red"
+                  } `}
+                />
+              </Holds>
+              <Holds
+                background={"white"}
+                className="w-1/2 px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
+              >
+                <Inputs
+                  type="number"
+                  name="currentMileage"
+                  placeholder={t("CurrentMileage")}
+                  value={rL.milesAtFueling || ""}
+                  onChange={(e) => handleMileageChange(index, e.target.value)}
+                  onBlur={() => {
+                    const formData = new FormData();
+                    formData.append("id", rL.id);
+                    formData.append(
+                      "gallonsRefueled",
+                      rL.gallonsRefueled?.toString() || ""
+                    );
+                    formData.append(
+                      "milesAtfueling",
+                      rL.milesAtFueling?.toString() || ""
+                    );
+                    updateRefuelLog(formData);
+                  }}
+                  className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
+                    rL.milesAtFueling
+                      ? "text-black"
+                      : "text-app-red placeholder:text-app-red"
+                  } `}
+                />
+              </Holds>
             </Holds>
-            <Holds
-              background={"white"}
-              className="w-1/2 px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
-            >
-              <Inputs
-                type="number"
-                name="currentMileage"
-                placeholder={t("CurrentMileage")}
-                value={rL.milesAtFueling || ""}
-                onChange={(e) => handleMileageChange(index, e.target.value)}
-                onBlur={() => {
-                  const formData = new FormData();
-                  formData.append("id", rL.id);
-                  formData.append(
-                    "gallonsRefueled",
-                    rL.gallonsRefueled?.toString() || ""
-                  );
-                  formData.append(
-                    "milesAtfueling",
-                    rL.milesAtFueling?.toString() || ""
-                  );
-                  updateRefuelLog(formData);
-                }}
-                className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
-                  rL.milesAtFueling
-                    ? "text-black"
-                    : "text-app-red placeholder:text-app-red"
-                } `}
-              />
-            </Holds>
-          </Holds>
-        </SlidingDiv>
-      ))}
-    </Contents>
+          </SlidingDiv>
+        ))}
+      </div>
+    </Grids>
   );
 }

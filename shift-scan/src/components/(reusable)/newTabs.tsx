@@ -10,7 +10,7 @@ const tabStyles = cva(
     variants: {
       isActive: {
         true: "bg-white w-full px-1.5",
-        false: "bg-app-gray border-transparent border-b-4 px-1.5",
+        false: "bg-app-gray border-transparent border-b-4 px-3",
       },
       animatePulse: {
         true: "animate-pulse",
@@ -55,7 +55,7 @@ export const NewTab: FC<TabProps> = ({
         className={`${
           isActive
             ? "w-full flex flex-row justify-between items-center"
-            : "w-full px-3"
+            : "w-full"
         } `}
       >
         <div className="w-3/4 h-full">{isActive && children}</div>
@@ -63,7 +63,7 @@ export const NewTab: FC<TabProps> = ({
           <img
             src={titleImage}
             alt={titleImageAlt}
-            className={isActive ? " w-8 h-8" : "w-8 h-8 mx-auto"}
+            className={isActive ? " w-8 h-8" : "w-12 h-12 "}
           />
         </div>
         {!isComplete && !isLoading && (

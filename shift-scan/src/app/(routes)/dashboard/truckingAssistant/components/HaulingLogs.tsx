@@ -11,6 +11,7 @@ import {
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
 import { useTranslations } from "next-intl";
+import MaterialItem from "./MaterialItem";
 
 type EquipmentHauled = {
   id: string;
@@ -27,13 +28,22 @@ type EquipmentHauled = {
 };
 
 type Material = {
-  name: string;
   id: string;
-  LocationOfMaterial: string | null;
   truckingLogId: string;
+  LocationOfMaterial: string | null;
+  name: string;
   quantity: number | null;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+  loadType: LoadType | null;
   createdAt: Date;
 };
+
+enum LoadType {
+  UNSCREENED,
+  SCREENED,
+}
 
 export default function HaulingLogs({
   truckingLog,
@@ -42,6 +52,7 @@ export default function HaulingLogs({
   equipmentHauled,
   setEquipmentHauled,
   isLoading,
+  isComplete,
 }: {
   setMaterial: React.Dispatch<React.SetStateAction<Material[] | undefined>>;
   setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
@@ -49,9 +60,17 @@ export default function HaulingLogs({
   material: Material[] | undefined;
   equipmentHauled: EquipmentHauled[] | undefined;
   isLoading: boolean;
+  isComplete: {
+    haulingLogsTab: boolean;
+    notesTab: boolean;
+    stateMileageTab: boolean;
+    refuelLogsTab: boolean;
+  };
 }) {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState<number>(1);
+  const [contentView, setContentView] = useState<"Item" | "List">("List");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   // Add Temporary Equipment
   const addTempEquipmentList = async () => {
@@ -85,17 +104,23 @@ export default function HaulingLogs({
   const addTempMaterial = async () => {
     const formData = new FormData();
     formData.append("truckingLogId", truckingLog ?? "");
+    formData.append("name", "Material");
+    formData.append("quantity", "1");
 
     try {
       const tempMaterial = await createHaulingLogs(formData);
       setMaterial((prev) => [
         {
           id: tempMaterial.id,
-          name: "",
+          name: tempMaterial.name ?? "Material",
           LocationOfMaterial: "",
           truckingLogId: tempMaterial.truckingLogId,
-          quantity: null,
-          createdAt: new Date(),
+          quantity: tempMaterial.quantity,
+          materialWeight: null,
+          lightWeight: null,
+          grossWeight: null,
+          loadType: null,
+          createdAt: tempMaterial.createdAt ?? new Date(),
         },
         ...(prev ?? []),
       ]);
@@ -105,10 +130,10 @@ export default function HaulingLogs({
   };
 
   return (
-    <>
+    <Grids rows={"7"} gap={"5"} className="h-full">
       <Holds
         background={"white"}
-        className={"w-full h-full rounded-t-none row-start-2 row-end-3 "}
+        className={"w-full h-full rounded-t-none row-start-1 row-end-2"}
       >
         <Contents width={"section"} className="h-full">
           <Holds position={"row"} className="h-full gap-2">
@@ -145,15 +170,35 @@ export default function HaulingLogs({
       <Holds
         className={`${
           isLoading
-            ? "w-full h-full row-start-3 row-end-11 pt-5 animate-pulse"
-            : "w-full h-full row-start-3 row-end-11 pt-5"
+            ? "w-full h-full row-start-2 row-end-8  animate-pulse"
+            : "w-full h-full row-start-2 row-end-8 overflow-y-auto no-scrollbar "
         }`}
       >
         <Holds background={"white"} className="w-full h-full">
-          <Grids rows={"10"} className="h-full py-2 px-4 ">
+          <Grids rows={"10"} className="h-full pt-3 pb-5  relative">
             {activeTab === 1 && (
-              <Holds className="h-full w-full row-start-1 row-end-11 overflow-y-auto no-scrollbar">
-                <MaterialList material={material} setMaterial={setMaterial} />
+              <Holds
+                background={"white"}
+                className="h-full w-full row-start-1 row-end-11"
+              >
+                {contentView === "Item" ? (
+                  <MaterialItem
+                    material={material}
+                    setMaterial={setMaterial}
+                    setContentView={setContentView}
+                    selectedItemId={selectedItemId}
+                    setSelectedItemId={setSelectedItemId}
+                  />
+                ) : (
+                  contentView === "List" && (
+                    <MaterialList
+                      material={material}
+                      setMaterial={setMaterial}
+                      setContentView={setContentView}
+                      setSelectedItemId={setSelectedItemId}
+                    />
+                  )
+                )}
               </Holds>
             )}
             {activeTab === 2 && (
@@ -168,6 +213,6 @@ export default function HaulingLogs({
           </Grids>
         </Holds>
       </Holds>
-    </>
+    </Grids>
   );
 }

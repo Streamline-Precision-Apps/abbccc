@@ -1,8 +1,6 @@
 "use client";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
@@ -26,6 +24,7 @@ export default function TruckDriverDashboardView({
   permission,
   logs,
   laborType,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -39,6 +38,7 @@ export default function TruckDriverDashboardView({
   permission: string;
   logs: LogItem[];
   laborType: string;
+  mechanicProjectID: string;
 }) {
   const modalState = useModalState();
   return (
@@ -77,6 +77,8 @@ export default function TruckDriverDashboardView({
             <ClockOutBtn
               handleShowAdditionalButtons={handleCOButton3}
               permission={permission}
+              mechanicProjectID={mechanicProjectID}
+              logs={logs}
               View={"truck"}
               laborType={laborType}
             />

@@ -7,7 +7,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { formatTimeHHMM } from "@/utils/formatDateAmPm";
 import { Titles } from "@/components/(reusable)/titles";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { EmptyViews } from "@/components/(reusable)/emptyViews";
 import { useTranslations } from "next-intl";
 import { Images } from "@/components/(reusable)/images";
 import Spinner from "@/components/(animations)/spinner";
@@ -22,12 +21,12 @@ type MaintenanceLog = {
   startTime: string;
   endTime: string;
   comment: string;
-  user: User;
+  User: User;
 };
 
 type LogItem = {
   id: string;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
 };
 
 export default function MechanicEmployeeLogs({
@@ -111,12 +110,12 @@ export default function MechanicEmployeeLogs({
         <Holds className="no-scrollbar overflow-y-auto h-full pt-2 ">
           {logs &&
             logs.map((log) => {
-              const actualCount = log.maintenanceLogs.length;
+              const actualCount = log.MaintenanceLogs.length;
               const placeholders = Math.max(5 - actualCount, 0);
               return (
                 <Holds key={log.id} className="w-full h-full">
                   {/* Render actual maintenance logs */}
-                  {log.maintenanceLogs.map((mLog) => (
+                  {log.MaintenanceLogs.map((mLog) => (
                     <Grids
                       key={mLog.id}
                       onClick={
@@ -136,7 +135,7 @@ export default function MechanicEmployeeLogs({
                         }`}
                       >
                         <Titles size={"h5"} position={"left"}>
-                          {`${mLog.user.firstName} ${mLog.user.lastName}`}
+                          {`${mLog.User.firstName} ${mLog.User.lastName}`}
                         </Titles>
 
                         <Texts size={"p6"}>
@@ -188,14 +187,12 @@ export default function MechanicEmployeeLogs({
 
                   {/* If no Logs, render a placeholder */}
                   {actualCount === 0 && (
-                    <Holds background="lightGray" className="h-full">
-                      <EmptyViews
-                        TopChild={
-                          <Holds className="h-full justify-center">
-                            <Titles size={"h3"}>{t("NoLogsFound")}</Titles>
-                          </Holds>
-                        }
-                      />
+                    <Holds className="h-3/4">
+                      <Holds className="h-full justify-center">
+                        <Texts size={"p4"} className="italic text-gray-500">
+                          {t("NoLogsFound")}
+                        </Texts>
+                      </Holds>
                     </Holds>
                   )}
 

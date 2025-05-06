@@ -33,6 +33,7 @@ export default function WidgetContainer({
   textSize = "h3",
   background,
   translation,
+
   href,
 }: Props) {
   const t = useTranslations(translation);
