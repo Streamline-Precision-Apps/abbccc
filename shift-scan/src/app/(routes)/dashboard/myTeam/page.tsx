@@ -56,8 +56,6 @@ export default function Content() {
           try {
             TeamsResponseSchema.parse(myTeamsData);
             setMyTeams(myTeamsData);
-
-            localStorage.setItem("myTeams", JSON.stringify(myTeamsData));
           } catch (error) {
             if (error instanceof z.ZodError) {
               console.error("Validation error in team data:", error.errors);
@@ -75,28 +73,7 @@ export default function Content() {
     };
 
     if (sessionStatus === "authenticated") {
-      // Check if data is already in local storage
-      const storedTeams = localStorage.getItem("myTeams");
-      if (storedTeams) {
-        const parsedTeams = JSON.parse(storedTeams);
-
-        // Validate stored data using Zod
-        try {
-          TeamsResponseSchema.parse(parsedTeams);
-          setMyTeams(parsedTeams);
-          setIsLoading(false);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error(
-              "Validation error in stored team data:",
-              error.errors
-            );
-            fetchCrew(); // Fetch fresh data if stored data is invalid
-          }
-        }
-      } else {
-        fetchCrew(); // Fetch from server if no data in local storage
-      }
+        fetchCrew();
     }
   }, [sessionStatus]);
 

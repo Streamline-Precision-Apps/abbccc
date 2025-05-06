@@ -2,7 +2,7 @@
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { EmployeeTimeSheets } from "./employee-timesheet";
@@ -13,19 +13,16 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
-import {
-  TimesheetHighlights,
-  TruckingEquipmentHaulLogData,
-  TruckingMileageData,
-  TruckingRefuelLogData,
-  TruckingStateLogData,
-  TascoRefuelLogData,
-  TascoHaulLogData,
-  EquipmentLogsData,
-  EmployeeEquipmentLogWithRefuel,
-  TruckingMaterialHaulLogData,
-} from "@/lib/types";
-import { init } from "next/dist/compiled/webpack/webpack";
+import { TimesheetFilter, TimesheetHighlights } from "@/lib/types";
+import { updateTimesheetHighlights } from "@/actions/timeSheetActions";
+
+export type TimesheetUpdate = {
+  id: string;
+  startTime?: string | null;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();
@@ -36,41 +33,20 @@ export default function EmployeeTabs() {
   const router = useRouter();
   const t = useTranslations("MyTeam");
   const { data: session } = useSession();
-  const manager = `${session?.user?.firstName} ${session?.user?.lastName}`;
+
+  const manager = useMemo(
+    () => `${session?.user?.firstName} ${session?.user?.lastName}`,
+    [session]
+  );
   const [activeTab, setActiveTab] = useState(1);
-  const today = format(new Date(), "yyyy-MM-dd");
+  const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
-  const [timeSheetFilter, setTimeSheetFilter] = useState("timesheetHighlights");
+  const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
+    "timesheetHighlights"
+  );
 
-  // State to store the original timesheet data
-  const [originalHighlightTimesheet, setOriginalHighlightTimesheet] = useState<
-    TimesheetHighlights[] | null
-  >(null);
-  const [
-    originalTruckingEquipmentHaulLogs,
-    setOriginalTruckingEquipmentHaulLogs,
-  ] = useState<TruckingEquipmentHaulLogData | null>(null);
-  const [
-    originalTruckingMaterialHaulLogs,
-    setOriginalTruckingMaterialHaulLogs,
-  ] = useState<TruckingMaterialHaulLogData | null>(null);
-  const [originalTruckingMileage, setOriginalTruckingMileage] =
-    useState<TruckingMileageData | null>(null);
-  const [originalTruckingRefuelLogs, setOriginalTruckingRefuelLogs] =
-    useState<TruckingRefuelLogData | null>(null);
-  const [originalTruckingStateLogs, setOriginalTruckingStateLogs] =
-    useState<TruckingStateLogData | null>(null);
-  const [originalTascoRefuelLog, setOriginalTascoRefuelLog] =
-    useState<TascoRefuelLogData | null>(null);
-  const [originalTascoHaulLogs, setOriginalTascoHaulLogs] =
-    useState<TascoHaulLogData | null>(null);
-  const [originalEquipmentLogs, setOriginalEquipmentLogs] =
-    useState<EquipmentLogsData | null>(null);
-  const [originalEquipmentRefuelLogs, setOriginalEquipmentRefuelLogs] =
-    useState<EmployeeEquipmentLogWithRefuel[] | null>(null);
-
-  // Timesheet data useHook /(ManagerHooks)/useEmployeeData
+  // Employee data
   const {
     employee,
     contacts,
@@ -78,85 +54,71 @@ export default function EmployeeTabs() {
     error: errorEmployee,
   } = useEmployeeData(employeeId as string | undefined);
 
-  // Timesheet data useHook /(ManagerHooks)/useTimesheetData
+  // Timesheet data
   const {
-    highlightTimesheet,
-    truckingEquipmentHaulLogs,
-    truckingMaterialHaulLogs,
-    truckingMileage,
-    truckingRefuelLogs,
-    truckingStateLogs,
-    tascoRefuelLog,
-    tascoHaulLogs,
-    equipmentLogs,
-    equipmentRefuelLogs,
+    data: timesheetData,
     loading: loadingTimesheets,
     error: errorTimesheets,
     updateDate: fetchTimesheetsForDate,
     updateFilter: fetchTimesheetsForFilter,
-  } = useTimesheetData(
-    employeeId as string | undefined,
-    date,
-    timeSheetFilter,
-    (initialData) => {
-      // Callback to store the initial data
-      setOriginalHighlightTimesheet(initialData.highlightTimesheet);
-      setOriginalTruckingEquipmentHaulLogs(
-        initialData.truckingEquipmentHaulLogs
-      );
-      setOriginalTruckingMaterialHaulLogs(initialData.truckingMaterialHaulLogs);
-      setOriginalTruckingMileage(initialData.truckingMileage);
-      setOriginalTruckingRefuelLogs(initialData.truckingRefuelLogs);
-      setOriginalTruckingStateLogs(initialData.truckingStateLogs);
-      setOriginalTascoRefuelLog(initialData.tascoRefuelLog);
-      setOriginalTascoHaulLogs(initialData.tascoHaulLogs);
-      setOriginalEquipmentLogs(initialData.equipmentLogs);
-      setOriginalEquipmentRefuelLogs(initialData.equipmentRefuelLogs);
-    }
-  );
+  } = useTimesheetData(employeeId as string | undefined, date, timeSheetFilter);
 
   const loading = loadingEmployee || loadingTimesheets;
 
+  // Handle date changes
   useEffect(() => {
-    fetchTimesheetsForDate(date);
-  }, [date, fetchTimesheetsForDate]);
+    if (date && date !== today) {
+      fetchTimesheetsForDate(date);
+    }
+  }, [date, fetchTimesheetsForDate, today]);
 
+  // Handle filter changes
   useEffect(() => {
     fetchTimesheetsForFilter(timeSheetFilter);
-  }, [timeSheetFilter, fetchTimesheetsForFilter]);
+  }, [timeSheetFilter]);
 
-  // Function to revert the timesheet data
-  const revertTimesheetData = useCallback(() => {
-    // Reset the state variables to the original data
-    // Ensure you only reset the data that corresponds to the currently active filter
-    if (timeSheetFilter === "timesheetHighlights") {
-      // Assuming your useTimesheetData hook updates these states
-      // You might need to adjust based on how your hook manages state
-      // One approach is to have the hook return setters as well, or refetch.
-      // For simplicity here, we'll assume the hook updates the states directly.
-      // A cleaner approach might involve the hook managing all the state.
-      // Refetching is another valid strategy.
-      fetchTimesheetsForDate(date); // Simplest way if your hook refetches on date change
-      fetchTimesheetsForFilter(timeSheetFilter); // Ensure the filter is also applied
-    } else if (timeSheetFilter === "truckingMileage") {
-      fetchTimesheetsForDate(date);
-      fetchTimesheetsForFilter(timeSheetFilter);
+   // Handle save changes
+  const onSaveChanges = useCallback(async (changes: TimesheetHighlights[] | TimesheetHighlights) => {
+    try {
+      const changesArray = Array.isArray(changes) ? changes : [changes];
+      
+      const serializedChanges = changesArray.map(timesheet => ({
+        id: timesheet.id,
+        startTime: timesheet.startTime ? new Date(timesheet.startTime).toISOString() : undefined,
+        endTime: timesheet.endTime ? new Date(timesheet.endTime).toISOString() : undefined,
+        jobsiteId: timesheet.jobsiteId,
+        costcode: timesheet.costcode
+      }));
+
+      const validChanges = serializedChanges.filter(timesheet => 
+        timesheet.id && timesheet.startTime !== undefined
+      );
+
+      if (validChanges.length === 0) return;
+
+      const result = await updateTimesheetHighlights(validChanges);
+      
+      if (result.success) {
+        // Force a complete refresh of the data
+        await Promise.all([
+          fetchTimesheetsForDate(date),
+          fetchTimesheetsForFilter(timeSheetFilter)
+        ]);
+        setEdit(false);
+      }
+    } catch (error) {
+      console.error("Failed to save changes:", error);
+      throw error;
     }
-    // ... repeat for other timeSheetFilter values
-    setEdit(false);
-  }, [date, timeSheetFilter, fetchTimesheetsForDate, fetchTimesheetsForFilter]);
+  }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
 
-  // Placeholder for save changes functionality (will be moved or passed down)
-  const onSaveChanges = () => {
-    console.log("Save changes clicked");
+  // Handle cancel edits remains the same
+  const onCancelEdits = useCallback(() => {
+    // Force a complete refresh of the data from the database
+    fetchTimesheetsForDate(date);
+    fetchTimesheetsForFilter(timeSheetFilter);
     setEdit(false);
-  };
-
-  // Placeholder for cancel edits functionality (will be moved or passed down)
-  const onCancelEdits = () => {
-    revertTimesheetData();
-    setEdit(false);
-  };
+  }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
 
   return (
     <Holds className="h-full w-full">
@@ -174,7 +136,7 @@ export default function EmployeeTabs() {
           >
             <Titles size={"h2"}>
               {loading
-                ? "loading..."
+                ? "Loading..."
                 : `${employee?.firstName} ${employee?.lastName}`}
             </Titles>
           </TitleBoxes>
@@ -219,15 +181,7 @@ export default function EmployeeTabs() {
               )}
               {activeTab === 2 && (
                 <EmployeeTimeSheets
-                  highlightTimesheet={highlightTimesheet}
-                  truckingEquipmentHaulLogs={truckingEquipmentHaulLogs}
-                  truckingMaterialHaulLogs={truckingMaterialHaulLogs}
-                  truckingMileage={truckingMileage}
-                  truckingRefuelLogs={truckingRefuelLogs}
-                  truckingStateLogs={truckingStateLogs}
-                  tascoRefuelLog={tascoRefuelLog}
-                  tascoHaulLogs={tascoHaulLogs}
-                  equipmentLogs={equipmentLogs}
+                  data={timesheetData}
                   date={date}
                   setDate={setDate}
                   edit={edit}
@@ -236,9 +190,9 @@ export default function EmployeeTabs() {
                   manager={manager}
                   timeSheetFilter={timeSheetFilter}
                   setTimeSheetFilter={setTimeSheetFilter}
-                  equipmentRefuelLogs={equipmentRefuelLogs}
                   onSaveChanges={onSaveChanges}
                   onCancelEdits={onCancelEdits}
+                  error={errorTimesheets} // Added error prop
                 />
               )}
             </Holds>

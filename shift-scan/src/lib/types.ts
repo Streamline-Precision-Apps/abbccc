@@ -912,3 +912,15 @@ export interface DeleteRefuelLogParams {
   type: RefuelLogType;
   id: string;
 }
+
+export type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs";

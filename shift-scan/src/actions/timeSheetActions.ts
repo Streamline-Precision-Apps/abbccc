@@ -7,6 +7,7 @@ import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
+import { TimesheetUpdate } from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/employee-tabs";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -861,4 +862,38 @@ export async function deleteTimeSheet(id: string) {
   await prisma.timeSheet.delete({
     where: { id },
   });
+}
+
+export async function updateTimesheetHighlights(
+  updatedTimesheets: TimesheetUpdate[]
+) {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("Unauthorized");
+
+    const updatePromises = updatedTimesheets.map(timesheet => 
+      prisma.timeSheet.update({
+        where: { id: timesheet.id },
+        data: {
+          startTime: timesheet.startTime ? new Date(timesheet.startTime) : undefined,
+          endTime: timesheet.endTime ? new Date(timesheet.endTime) : null,
+          jobsiteId: timesheet.jobsiteId,
+          costcode: timesheet.costcode,
+          editedByUserId: session.user.id,
+          updatedAt: new Date(),
+        },
+      })
+    );
+
+    await Promise.all(updatePromises);
+    
+    // Aggressive revalidation
+    revalidatePath("/dashboard/myTeam");
+    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating timesheets:", error);
+    throw error;
+  }
 }
