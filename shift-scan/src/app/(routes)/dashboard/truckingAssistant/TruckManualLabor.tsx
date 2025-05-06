@@ -95,7 +95,7 @@ export default function TruckManualLabor() {
       >
         <Holds position={"row"} className="row-span-1 w-full gap-1">
           <NewTab
-            titleImage="/Hauling-logs.svg"
+            titleImage="/hauling.svg"
             titleImageAlt="Truck"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}

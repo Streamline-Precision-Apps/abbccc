@@ -91,7 +91,7 @@ export function EquipmentLeft({
               >
                 <Holds>
                   <Images
-                    titleImg={"/turnBack.svg"}
+                    titleImg={"/arrowBack.svg"}
                     titleImgAlt={"revert"}
                     size={"70"}
                   />
@@ -128,7 +128,7 @@ export function EquipmentLeft({
               >
                 <Holds>
                   <Images
-                    titleImg={"/turnBack.svg"}
+                    titleImg={"/arrowBack.svg"}
                     titleImgAlt={"revert"}
                     size={"70"}
                   />
@@ -166,7 +166,7 @@ export function EquipmentLeft({
               >
                 <Holds>
                   <Images
-                    titleImg={"/turnBack.svg"}
+                    titleImg={"/arrowBack.svg"}
                     titleImgAlt={"revert"}
                     size={"70"}
                   />

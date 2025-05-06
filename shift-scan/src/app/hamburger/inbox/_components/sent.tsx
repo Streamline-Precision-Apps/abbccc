@@ -190,9 +190,9 @@ export default function STab() {
                         titleImgAlt={"form Status"}
                         titleImg={
                           form.status === "PENDING"
-                            ? "/Ongoing.svg"
+                            ? "/statusOngoing.svg"
                             : form.status === "APPROVED"
-                            ? "/Checkmark.svg"
+                            ? "/statusApproved.svg"
                             : "/statusReject.svg"
                         }
                         className="absolute w-7 h-7 top-[50%] translate-y-[-50%] right-5"

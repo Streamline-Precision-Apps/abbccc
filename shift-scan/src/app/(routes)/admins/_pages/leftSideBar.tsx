@@ -107,7 +107,7 @@ return (
                     }}
                 >
                 <Images
-                    titleImg="/end-day.svg"
+                    titleImg="/endDay.svg"
                     titleImgAlt="Assets Icon"
                     className="m-auto h-[30px]"
                 />
