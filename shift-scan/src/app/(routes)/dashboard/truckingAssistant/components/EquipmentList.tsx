@@ -19,10 +19,10 @@ type EquipmentHauled = {
   equipmentId: string | null;
   createdAt: Date;
   jobSiteId: string | null;
-  equipment: {
+  Equipment: {
     name: string | null;
   };
-  jobSite: {
+  JobSite: {
     name: string | null;
   };
 };
@@ -70,7 +70,7 @@ export default function EquipmentList({
         updatedHauled[index] = {
           ...updatedHauled[index],
           equipmentId: option.id,
-          equipment: {
+          Equipment: {
             name: option.name, // Update the name here
           },
         };
@@ -94,7 +94,7 @@ export default function EquipmentList({
         updatedHauled[index] = {
           ...updatedHauled[index],
           jobSiteId: option.id,
-          jobSite: {
+          JobSite: {
             name: option.name, // Update the name here
           },
         };
@@ -191,7 +191,7 @@ export default function EquipmentList({
                   value={
                     selectedIndex === mat.id && selectedEquipment
                       ? selectedEquipment.name
-                      : mat.equipment?.name || ""
+                      : mat.Equipment?.name || ""
                   }
                   onClick={() => {
                     setIsEquipmentOpen(true);
@@ -215,7 +215,7 @@ export default function EquipmentList({
                   value={
                     selectedIndex === mat.id && selectedLocation
                       ? selectedLocation.name
-                      : mat.jobSite?.name || ""
+                      : mat.JobSite?.name || ""
                   }
                   onClick={() => {
                     setIsLocationOpen(true);

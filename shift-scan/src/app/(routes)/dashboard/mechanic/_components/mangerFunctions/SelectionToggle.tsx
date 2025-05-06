@@ -19,6 +19,11 @@ type MaintenanceLog = {
   };
 };
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 type Project = {
   id: string;
   equipmentId: string;

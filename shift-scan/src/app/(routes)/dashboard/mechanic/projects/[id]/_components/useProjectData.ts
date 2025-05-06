@@ -21,7 +21,7 @@ type ProjectData = {
   problemReceived: string;
   additionalNotes: string;
   hasBeenDelayed: boolean;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
 };
 
 type ApiResponse = {
@@ -60,7 +60,7 @@ export default function useProjectData(projectId: string) {
       try {
         const response = await fetch(`/api/getReceivedInfo/${projectId}`);
         const data: ApiResponse = await response.json();
-
+        
         // Process and set project data
         const processedData: ProjectData = {
           title: data.Equipment.name,
@@ -138,18 +138,35 @@ export default function useProjectData(projectId: string) {
   };
 
   const handleFinishProject = async () => {
-    if (!session.data || !myMaintenanceLogs) return;
+    console.log("Starting handleFinishProject");
+    if (!session.data) {
+      console.log("No session data");
+      return;
+    }
+    if (!myMaintenanceLogs) {
+      console.log("No maintenance logs found for user");
+      return;
+    }
+  
     setLoading(true);
-
+    console.log("Attempting to finish project...");
+  
     try {
       // First leave the project (save comment)
       const leaveFormData = new FormData();
       leaveFormData.append("comment", myComment);
       leaveFormData.append("maintenanceId", myMaintenanceLogs.id);
       leaveFormData.append("userId", myMaintenanceLogs.userId);
-
+  
+      console.log("Leaving project with data:", {
+        comment: myComment,
+        maintenanceId: myMaintenanceLogs.id,
+        userId: myMaintenanceLogs.userId
+      });
+  
       const clockOut = await LeaveEngineerProject(leaveFormData);
-
+      console.log("Clock out result:", clockOut);
+  
       if (clockOut) {
         // Then submit the project solution
         const submitFormData = new FormData();
@@ -157,16 +174,27 @@ export default function useProjectData(projectId: string) {
         submitFormData.append("solution", solution);
         submitFormData.append("diagnosedProblem", diagnosedProblem);
         submitFormData.append("totalHoursLaboured", laborHours);
-
+  
+        console.log("Submitting project with data:", {
+          id: projectId,
+          solution,
+          diagnosedProblem,
+          laborHours
+        });
+  
         const res = await SubmitEngineerProject(submitFormData);
+        console.log("Submission result:", res);
+        
         await setMechanicProjectID("");
-
+        
         if (res) {
+          console.log("Successfully submitted, redirecting...");
           router.push("/dashboard/mechanic");
         }
       }
     } catch (error) {
       console.error("Error finishing project:", error);
+      // Consider adding user feedback here
     } finally {
       setLoading(false);
     }

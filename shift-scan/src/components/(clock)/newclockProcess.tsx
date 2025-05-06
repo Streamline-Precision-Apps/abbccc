@@ -99,6 +99,8 @@ export default function NewClockProcess({
   const [shiftType, setShiftType] = useState<string>("");
   const [returnPathUsed, setReturnPathUsed] = useState(false);
 
+
+
   useEffect(() => {
     setStep(0);
     return () => {
@@ -173,7 +175,7 @@ export default function NewClockProcess({
 
       if (response) {
         // Set basic information from previous timesheet
-        setJobsite({ label: response.Jobsite.name, code: response.Jobsite.id });
+        setJobsite({ label: response.Jobsite.name, code: response.Jobsite.qrId });
         setCC({ label: response.CostCode.name, code: response.CostCode.name });
 
         // Determine the role from previous work type

@@ -122,5 +122,40 @@
 - document viewing research. (1.5 hours)
 - conversion of Document section to match figma. (9 hours)
 
-# April 23, 2025 - Wednesday
+# April 23, 2025 - Wednesday and Thursday
 ### built/created
+- recreated search component for document section. Fixed some bugs in the API and selects for it and the documents. Played around with different way of doing document viewer. Worked on my teams section. Worked on clockout section as well. (20 hours)
+
+# April 24, 2025 - Friday
+### built/created
+- Clockout section. (4.5 hours)
+
+# April 28, 2025 - Monday
+### built/created
+- Looked at figma and started setting up laptop to work on. (1.5 hours)
+
+# April 29, 2025 - Tuesday
+### built/created
+- Fixed bugs in clockout and break section. (3 hours)
+- fixed log errors in trucking logs. (4 hour)
+- testing different sections for clocking out managers. (2 hours)
+
+# April 30, 2025 - Wednesday
+### built/created
+- Worked on clockout section. (3 hours)
+- Deconsturcted and reconstructed API calls for the my teams timesheet edit section. (6 hours)
+
+# May 1, 2025 - Thursday
+### built/created
+- Worked more on API calls for my teams timesheet edit section. (3 hours)
+- building functions and server actions for my teams timesheet edit section. (6 hours)
+
+# May 2, 2025 - Friday
+### built/created
+- Building more functions for different filters in the my teams timesheet edit section. (9 hours)
+
+# May 5, 2025 - Monday
+### built/created
+- Destroy and reconstruct my teams timesheet edit section. (4 hours)
+- merge Meeting (1 hours)
+- Destroy and reconstruct my teams timesheet edit section. (4 hours)
