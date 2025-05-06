@@ -195,7 +195,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
             {/* Back Button */}
             <Holds className="col-span-1 h-full w-full">
               <Images
-                titleImg="/turnBack.svg"
+                titleImg="/arrowBack.svg"
                 titleImgAlt="Back"
                 onClick={() => router.push(url)}
                 className="max-w-[40px] max-h-[40px]"
@@ -237,7 +237,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
             {/* Tabs */}
             <Holds position={"row"} className="row-span-1 flex gap-1">
               <NewTab
-                titleImage={"/accountInfo.svg"}
+                titleImage={"/information.svg"}
                 titleImageAlt={""}
                 onClick={() => setActiveTab(1)}
                 isActive={activeTab === 1}
@@ -246,7 +246,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                 <Titles size={"h4"}>{t("AccountInformation")}</Titles>
               </NewTab>
               <NewTab
-                titleImage={"/settings-sm.svg"}
+                titleImage={"/settings.svg"}
                 titleImageAlt={""}
                 onClick={() => setActiveTab(2)}
                 isActive={activeTab === 2}

@@ -129,7 +129,7 @@ export default function SubmittedFormsApproval({
               position={"left"}
             >
               <Images
-                titleImg="/turnBack.svg"
+                titleImg="/arrowBack.svg"
                 titleImgAlt={"Turn Back"}
                 className="max-w-8 h-auto object-contain"
               />
@@ -157,9 +157,9 @@ export default function SubmittedFormsApproval({
                 titleImgAlt={"form Status"}
                 titleImg={
                   submissionStatus === "PENDING"
-                    ? "/OrangeOngoing.svg"
+                    ? "/OrangestatusOngoing.svg"
                     : submissionStatus === "APPROVED"
-                    ? "/Checkmark.svg"
+                    ? "/statusApproved.svg"
                     : "/statusReject.svg"
                 }
                 className=" w-10 h-auto object-contain"

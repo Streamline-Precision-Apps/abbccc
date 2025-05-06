@@ -63,7 +63,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
   minLength,
   maxLength,
   pattern,
-  iconSrc = "/turnBack.svg",
+  iconSrc = "/arrowBack.svg",
   iconAlt = "revert",
 
   ...props

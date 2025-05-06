@@ -57,7 +57,7 @@ export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
         <>
           <Holds position={"row"} className="py-2 border-b-[3px] border-black">
             <Holds className="h-full w-[20%]">
-              <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" />
+              <Images titleImg="/searchLeft.svg" titleImgAlt="search" />
             </Holds>
             <Holds className="w-[80%]">
               <Inputs
