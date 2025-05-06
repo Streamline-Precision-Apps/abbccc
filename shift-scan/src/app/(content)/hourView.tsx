@@ -56,7 +56,7 @@ export default function ViewComponent({
     <Holds background={"white"} position={"row"} className="h-full w-full p-2">
       <Buttons onClick={scrollLeft} className="shadow-none w-[60px]">
         <Images
-          titleImg={"/arrowLeft.svg"}
+          titleImg={"/less-than.svg"}
           titleImgAlt="left"
           className="mx-auto h-5 w-5"
         />

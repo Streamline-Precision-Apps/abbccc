@@ -17,9 +17,9 @@ export default function TopControlPanel({ returnToMain }: Props) {
       <Holds size={"20"} className="h-full mr-5">
         <Buttons background={"red"} onClick={returnToMain}>
           <Images
-            titleImg={"/turnBack.svg"}
+            titleImg={"/arrowBack.svg"}
             titleImgAlt="return"
-            className="mx-auto p-2"
+            className="mx-auto w-8 h-auto object-contain"
           />
         </Buttons>
       </Holds>
