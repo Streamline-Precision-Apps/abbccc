@@ -79,7 +79,7 @@ export default function EquipmentLogContent() {
             background={"white"}
             className={
               loading
-                ? "row-start-1 row-end-2 animate-pulse"
+                ? "row-start-1 row-end-2 h-full animate-pulse"
                 : "row-start-1 row-end-2 h-full "
             }
           >

@@ -4,9 +4,10 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import MechanicPriority from "./MechanicPriorityList";
-
-import { Header } from "./Header";
 import MechanicSelectList from "./mangerFunctions/MechanicSelectList";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Titles } from "@/components/(reusable)/titles";
+import { useRouter } from "next/navigation";
 
 type Equipment = {
   id: string;
@@ -19,8 +20,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
-    id: string;
+  User: {
     firstName: string;
     lastName: string;
     image: string;
@@ -30,16 +30,16 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
   equipmentIssue: string;
   additionalInfo: string;
-  selected: boolean;
   repaired: boolean;
   createdBy: string;
   createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-  equipment: Equipment;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {
@@ -59,6 +59,7 @@ export function ManagerView({
   loading,
   timeSheetId,
   onProjectSelect,
+  handleRefresh,
 }: {
   activeTab: number;
   setActiveTab: Dispatch<SetStateAction<number>>;
@@ -67,50 +68,56 @@ export function ManagerView({
   loading: boolean;
   timeSheetId: string | null;
   onProjectSelect: (projectId: string, selected: boolean) => Promise<void>;
+  handleRefresh: () => Promise<void>;
 }) {
   const t = useTranslations("MechanicWidget");
+  const router = useRouter();
   return (
-    <Grids rows="8" gap="5">
+    <Grids rows="7" gap="5">
       {/* Header */}
-      <Header title={activeTab === 1 ? t("PriorityList") : t("Projects")} />
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+        <TitleBoxes onClick={() => router.push("/dashboard")}>
+          <Titles size="h2">
+            {activeTab === 1 ? t("PriorityList") : t("Projects")}{" "}
+          </Titles>
+        </TitleBoxes>
+      </Holds>
 
       {/* Tab Content */}
-      <Holds className="row-span-7 h-full">
-        <Grids rows="10" className="h-full">
-          {/* Tabs */}
-          <Holds position="row" className="row-span-1 gap-1">
-            <NewTab
-              isActive={activeTab === 1}
-              onClick={() => setActiveTab(1)}
-              titleImage="/OrangestatusOngoing.svg"
-              titleImageAlt="List Tab"
-              isComplete={true}
-            >
-              {t("Todays")}
-            </NewTab>
-            <NewTab
-              isActive={activeTab === 2}
-              onClick={() => setActiveTab(2)}
-              titleImage="/form.svg"
-              titleImageAlt="Manager Tab"
-              isComplete={true}
-            >
-              {t("All")}
-            </NewTab>
-          </Holds>
-
-          {/* Content */}
-          <Holds
-            background="white"
-            className="rounded-t-none row-span-9 h-full"
+      <Holds className="row-start-2 row-end-8 h-full">
+        {/* Tabs */}
+        <Holds position="row" className="h-fit gap-1.5">
+          <NewTab
+            isActive={activeTab === 1}
+            onClick={() => setActiveTab(1)}
+            titleImage="/OrangestatusOngoing.svg"
+            titleImageAlt="List Tab"
+            isComplete={true}
+            isLoading={loading}
           >
+            {t("Todays")}
+          </NewTab>
+          <NewTab
+            isActive={activeTab === 2}
+            onClick={() => setActiveTab(2)}
+            titleImage="/form.svg"
+            titleImageAlt="Manager Tab"
+            isComplete={true}
+            animatePulse={loading}
+          >
+            {t("All")}
+          </NewTab>
+        </Holds>
+
+        <Grids rows="1" className="h-full ">
+          {/* Content */}
+          <Holds className={`rounded-t-none row-span-1 h-full `}>
             {activeTab === 1 ? (
               <MechanicPriority
-                projects={selectableProjects.filter(
-                  (project) => project.selected && !project.repaired
-                )}
+                projects={selectableProjects}
                 loading={loading}
                 timeSheetId={timeSheetId}
+                handleRefresh={handleRefresh}
               />
             ) : (
               <MechanicSelectList

@@ -19,6 +19,9 @@ import { useSession } from "next-auth/react";
 import { setMechanicProjectID } from "@/actions/cookieActions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
+import { Images } from "@/components/(reusable)/images";
+import Spinner from "@/components/(animations)/spinner";
+import { PullToRefresh } from "@/components/(animations)/pullToRefresh";
 
 type Equipment = {
   id: string;
@@ -31,27 +34,26 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
-    id: string;
+  User: {
     firstName: string;
     lastName: string;
     image: string;
   };
 };
 
-type Projects = {
+type Project = {
   id: string;
   equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
   equipmentIssue: string;
   additionalInfo: string;
-  selected: boolean;
   repaired: boolean;
   createdBy: string;
   createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-  equipment: Equipment;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {
@@ -67,10 +69,12 @@ export default function MechanicPriority({
   loading,
   projects,
   timeSheetId,
+  handleRefresh,
 }: {
   loading: boolean;
-  projects: Projects[];
+  projects: Project[];
   timeSheetId: string | null;
+  handleRefresh: () => Promise<void>;
 }) {
   const router = useRouter();
   const [activeUsers, setActiveUsers] = useState<
@@ -81,9 +85,13 @@ export default function MechanicPriority({
       startTime: string;
     }[]
   >([]);
+  const FilteredProject = projects.filter(
+    (project) => project.selected && !project.repaired
+  );
+
   const [projectPreviewId, setProjectPreviewId] = useState<string | null>(null);
   const [previewedProjectData, setPreviewedProjectData] = useState<
-    Projects | undefined
+    Project | undefined
   >(undefined);
   const t = useTranslations("MechanicWidget");
   const { data: session } = useSession();
@@ -100,12 +108,13 @@ export default function MechanicPriority({
       setPreviewedProjectData(project);
 
       if (project) {
-        const activeUsersList = project.maintenanceLogs
-          .filter((log) => log.startTime && !log.endTime) // Only logs with an active session
+        const activeUsersList = project.MaintenanceLogs.filter(
+          (log) => log.startTime && !log.endTime
+        ) // Only logs with an active session
           .map((log) => ({
-            id: log.user.id,
-            name: `${log.user.firstName} ${log.user.lastName}`,
-            image: log.user.image,
+            id: log.userId,
+            name: `${log.User.firstName} ${log.User.lastName}`,
+            image: log.User.image,
             startTime: new Date(log.startTime).toISOString(),
           }));
         setActiveUsers(activeUsersList);
@@ -113,10 +122,10 @@ export default function MechanicPriority({
     }
   }, [projectPreviewId, projects]);
 
-  // Ensure there are at least 7 projects for layout purposes
-  while (projects.length < 7) {
-    projects.push({ id: "" } as Projects);
-  }
+  // // Ensure there are at least 7 projects for layout purposes
+  // while (projects.length < 7) {
+  //   projects.push({ id: "" } as Projects);
+  // }
 
   // Pagination constants
   const startIndex = (currentPage - 1) * workersPerPage;
@@ -187,16 +196,15 @@ export default function MechanicPriority({
   // Render loading state if still fetching projects
   if (loading) {
     return (
-      <Holds background="white" className="row-span-7 h-full animate-pulse">
+      <Holds
+        background="white"
+        className="row-start-2 row-end-8 rounded-t-none h-full "
+      >
         <Holds className="h-full no-scrollbar overflow-y-auto">
           <Contents width="section" className="mb-5">
-            {projects.map((_, index) => (
-              <Holds
-                key={`placeholder-${index}`}
-                background="lightGray"
-                className="h-1/6 my-2 py-2"
-              />
-            ))}
+            <Holds className="h-3/4 justify-center items-center">
+              <Spinner size={50} />
+            </Holds>
           </Contents>
         </Holds>
       </Holds>
@@ -204,66 +212,72 @@ export default function MechanicPriority({
   }
 
   return (
-    <Holds background="white" className="row-span-7 h-full ">
+    <Holds
+      background="white"
+      className="row-start-2 row-end-8 rounded-t-none h-full "
+    >
       <Holds className="h-full w-full no-scrollbar overflow-y-auto ">
-        <Contents width="section" className="mb-5">
-          {projects.map((project: Projects, index) => {
-            if (project.id === "") {
-              return (
-                <Holds
-                  key={`placeholder-${index}`}
-                  background="lightGray"
-                  className="h-1/6 my-2 py-2"
-                />
-              );
-            }
-            const isActive = project.maintenanceLogs.some(
-              (log) => log.startTime && !log.endTime
-            );
-
-            return (
-              <Holds
-                key={`placeholder-${index}`}
-                className="h-1/6 relative py-3"
-              >
-                {isActive && !project.delay && (
-                  <Holds
-                    background="green"
-                    className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
-                  >
-                    <Texts size="p7" className="text-center">
-                      {t("Active")}
-                    </Texts>
-                  </Holds>
-                )}
-                {project.delay && isActive && (
-                  <Holds
-                    background="orange"
-                    className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
-                  >
-                    <Texts size="p7" className="text-center">
-                      {t("Delayed")}
-                    </Texts>
-                  </Holds>
-                )}
-                <Buttons
-                  background="lightBlue"
-                  onClick={() => {
-                    setProjectPreviewId(project.id);
-                    setIsOpenProjectPreview(true);
-                  }}
-                  className="w-full h-full py-3 rounded-[10px]"
-                >
-                  <Titles size="h5">
-                    {project.equipment?.name.length > 45
-                      ? project?.equipment?.name.slice(0, 45) + "..."
-                      : project?.equipment?.name}
-                  </Titles>
-                </Buttons>
+        <PullToRefresh onRefresh={handleRefresh}>
+          <Contents width="section" className="pt-3 pb-5 ">
+            {FilteredProject.length === 0 ? (
+              <Holds className="h-3/4 w-full flex items-center justify-center px-6">
+                <Texts size="p5" className="text-center italic text-gray-500">
+                  {t("NoProjectsFound")}
+                </Texts>
               </Holds>
-            );
-          })}
-        </Contents>
+            ) : (
+              FilteredProject.map((project: Project, index) => {
+                const isActive = project.MaintenanceLogs.some(
+                  (log) => log.startTime && !log.endTime
+                );
+                return (
+                  <Holds
+                    key={`placeholder-${index}`}
+                    className="h-fit relative pt-2"
+                  >
+                    {isActive && !project.delay && (
+                      <Holds
+                        background="green"
+                        className="absolute top-0 left-4 w-1/4 rounded-[10px] border-[3px] border-black flex items-center justify-center"
+                      >
+                        <Texts size="p7" className="text-center">
+                          {t("Active")}
+                        </Texts>
+                      </Holds>
+                    )}
+                    {project.delay !== null && (
+                      <Holds
+                        background="orange"
+                        className="absolute top-0 left-4 w-1/4  rounded-[10px] border-[3px] border-black flex items-center justify-center"
+                      >
+                        <Texts size="p6" className="text-center">
+                          {t("Delayed")}
+                        </Texts>
+                      </Holds>
+                    )}
+                    <Buttons
+                      background={
+                        project.delay === null ? "lightBlue" : "darkGray"
+                      }
+                      onClick={() => {
+                        setProjectPreviewId(project.id);
+                        setIsOpenProjectPreview(true);
+                      }}
+                      className="w-full py-3 rounded-[10px]"
+                      disabled={project.delay !== null}
+                    >
+                      <Titles size="h5">
+                        {project.Equipment?.name.length > 45
+                          ? project?.Equipment?.name.slice(0, 45) + "..."
+                          : project?.Equipment?.name}
+                      </Titles>
+                    </Buttons>
+                  </Holds>
+                );
+              })
+            )}
+          </Contents>
+        </PullToRefresh>
 
         {/* Project Preview Modal */}
         <NModals
@@ -274,26 +288,26 @@ export default function MechanicPriority({
             setIsOpenProjectPreview(false);
           }}
         >
-          <Holds background="white" className="h-full py-5">
-            <Grids rows="7" gap="3">
+          <Holds background="white" className="h-full pb-5">
+            <Grids rows="7" gap="5">
               {/* Modal Header */}
               <Holds className="row-span-1 h-full w-full justify-center">
                 <TitleBoxes
-                  title={
-                    previewedProjectData?.equipment?.name
-                      ? `${previewedProjectData?.equipment?.name.slice(
-                          0,
-                          20
-                        )}...`
-                      : t("ProjectPreview")
-                  }
-                  titleImg="/mechanic.svg"
-                  titleImgAlt={t("Mechanic")}
                   onClick={() => {
                     setIsOpenProjectPreview(false);
                   }}
-                  type="noIcon-NoHref"
-                />
+                >
+                  <Holds>
+                    <Titles size="h2">
+                      {previewedProjectData?.Equipment?.name
+                        ? `${previewedProjectData?.Equipment?.name.slice(
+                            0,
+                            20
+                          )}...`
+                        : t("ProjectPreview")}
+                    </Titles>
+                  </Holds>
+                </TitleBoxes>
               </Holds>
 
               {/* Modal Content */}
@@ -418,6 +432,13 @@ export default function MechanicPriority({
                       rows={3}
                       className="text-sm"
                     />
+                    {previewedProjectData?.delay && (
+                      <span className="absolute top-4 right-2 text-[8px]">
+                        {`
+                      was previously delayed by ${previewedProjectData?.delay}
+                      `}
+                      </span>
+                    )}
                   </Holds>
                 </Contents>
               </Holds>

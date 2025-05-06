@@ -45,7 +45,7 @@ type RepairDetails = {
   delay: Date | null;
   delayReasoning?: string;
   totalHoursLaboured: number;
-  equipment: Equipment;
+  Equipment: Equipment;
 };
 
 type MechanicEditPageProps = {
@@ -102,7 +102,7 @@ export default function MechanicEditPage({
         formData.append(key, value as string);
       });
       await setEditForProjectInfo(formData);
-    }, 2000);
+    }, 500);
   }, []);
 
   useEffect(() => {
@@ -160,249 +160,253 @@ export default function MechanicEditPage({
   };
 
   return (
-    <>
-      <Holds className=" h-full overflow-y-auto no-scrollbar px-4  ">
-        <Grids rows={"8"} className="h-full w-full">
-          <Holds className="row-start-1 row-end-8 h-full">
-            <Holds>
-              <Labels size="p6" htmlFor="equipmentIssue">
-                {t("EquipmentIssue")} <span className="text-red-500">*</span>
-              </Labels>
-              <TextAreas
-                name="equipmentIssue"
-                value={repairDetails?.equipmentIssue || ""}
-                onChange={(e) => updateField("equipmentIssue", e.target.value)}
-                placeholder={t("EnterAProblemDescription")}
-                rows={2}
-                className="text-sm"
-                style={{ resize: "none" }}
-                disabled={repairDetails?.repaired}
-              />
-            </Holds>
-            <Holds>
-              <Labels size="p6" htmlFor="additionalInfo">
-                {t("AdditionalInfo")}
-              </Labels>
-              <TextAreas
-                name="additionalInfo"
-                value={repairDetails.additionalInfo}
-                onChange={(e) => updateField("additionalInfo", e.target.value)}
-                placeholder={t("AdditionalInfoPlaceholder")}
-                rows={2}
-                style={{ resize: "none" }}
-                className="text-sm"
-                disabled={repairDetails?.repaired}
-              />
-            </Holds>
-            {/* Only show these fields if the repair has been completed */}
-            {repairDetails?.repaired && (
-              <>
-                {/* Problem Diagnosis */}
-                <Holds>
-                  <Labels size="p6" htmlFor="problemDiagnosis">
-                    {t("ProblemDiagnosis")}
-                  </Labels>
-                  <TextAreas
-                    name="problemDiagnosis"
-                    value={repairDetails.problemDiagnosis || ""}
-                    onChange={(e) =>
-                      updateField("problemDiagnosis", e.target.value)
-                    }
-                    placeholder={t("ProblemDiagnosisPlaceholder")}
-                    rows={2}
-                    style={{ resize: "none" }}
-                    className="text-sm"
-                    disabled={repairDetails?.repaired}
-                  />
-                </Holds>
+    <Grids rows={"7"} gap={"5"} className="h-full w-full ">
+      <Holds
+        className={` h-full w-full overflow-y-auto no-scrollbar ${
+          totalLogs > 0 ? "row-start-1 row-end-8" : "row-start-1 row-end-7"
+        } `}
+      >
+        <Contents width={"section"} className="">
+          <Holds>
+            <Labels size="p6" htmlFor="equipmentIssue">
+              {t("EquipmentIssue")} <span className="text-red-500">*</span>
+            </Labels>
+            <TextAreas
+              name="equipmentIssue"
+              value={repairDetails?.equipmentIssue || ""}
+              onChange={(e) => updateField("equipmentIssue", e.target.value)}
+              placeholder={t("EnterAProblemDescription")}
+              rows={3}
+              className="text-xs"
+              style={{ resize: "none" }}
+              disabled={repairDetails?.repaired}
+            />
+          </Holds>
+          <Holds>
+            <Labels size="p6" htmlFor="additionalInfo">
+              {t("AdditionalInfo")}
+            </Labels>
+            <TextAreas
+              name="additionalInfo"
+              value={repairDetails.additionalInfo}
+              onChange={(e) => updateField("additionalInfo", e.target.value)}
+              placeholder={t("AdditionalInfoPlaceholder")}
+              rows={3}
+              style={{ resize: "none" }}
+              className="text-xs"
+              disabled={repairDetails?.repaired}
+            />
+          </Holds>
+          {/* Only show these fields if the repair has been completed */}
+          {repairDetails?.repaired && (
+            <>
+              {/* Problem Diagnosis */}
+              <Holds>
+                <Labels size="p6" htmlFor="problemDiagnosis">
+                  {t("ProblemDiagnosis")}
+                </Labels>
+                <TextAreas
+                  name="problemDiagnosis"
+                  value={repairDetails.problemDiagnosis || ""}
+                  onChange={(e) =>
+                    updateField("problemDiagnosis", e.target.value)
+                  }
+                  placeholder={t("ProblemDiagnosisPlaceholder")}
+                  rows={2}
+                  style={{ resize: "none" }}
+                  className="text-sm"
+                  disabled={repairDetails?.repaired}
+                />
+              </Holds>
 
-                {/* solution */}
-                <Holds>
-                  <Labels size="p6" htmlFor="solution">
-                    {t("Solution")}
-                  </Labels>
-                  <TextAreas
-                    name="solution"
-                    value={repairDetails.solution || ""}
-                    onChange={(e) => updateField("solution", e.target.value)}
-                    placeholder={t("SolutionPlaceholder")}
-                    rows={2}
-                    style={{ resize: "none" }}
-                    className="text-sm"
-                    disabled={repairDetails?.repaired}
-                  />
-                </Holds>
-              </>
-            )}
-            {/* Location */}
-            <Holds>
-              <Labels size="p6" htmlFor="location">
-                {t("Location")}
-              </Labels>
-              <Inputs
-                name="location"
-                value={repairDetails.location}
-                onChange={(e) => updateField("location", e.target.value)}
-                placeholder={t("LocationPlaceholder")}
-                className="text-sm pl-4"
-                disabled={repairDetails?.repaired}
-              />
-            </Holds>
-            {/* Priority Status */}
-            <Holds className="relative">
-              <Labels size="p6" htmlFor="priority">
-                {t("Status")} <span className="text-red-500">*</span>
-              </Labels>
+              {/* solution */}
+              <Holds>
+                <Labels size="p6" htmlFor="solution">
+                  {t("Solution")}
+                </Labels>
+                <TextAreas
+                  name="solution"
+                  value={repairDetails.solution || ""}
+                  onChange={(e) => updateField("solution", e.target.value)}
+                  placeholder={t("SolutionPlaceholder")}
+                  rows={2}
+                  style={{ resize: "none" }}
+                  className="text-sm"
+                  disabled={repairDetails?.repaired}
+                />
+              </Holds>
+            </>
+          )}
+          {/* Location */}
+          <Holds>
+            <Labels size="p6" htmlFor="location">
+              {t("Location")}
+            </Labels>
+            <Inputs
+              name="location"
+              value={repairDetails.location}
+              onChange={(e) => updateField("location", e.target.value)}
+              placeholder={t("LocationPlaceholder")}
+              className="text-xs text-center"
+              disabled={repairDetails?.repaired}
+            />
+          </Holds>
+          {/* Priority Status */}
+          <Holds className="relative h-full ">
+            <Labels size="p6" htmlFor="priority">
+              {t("Status")} <span className="text-red-500">*</span>
+            </Labels>
 
-              <div className="relative w-full">
-                {repairDetails?.repaired ? (
-                  <Inputs
-                    name="priority"
-                    value={repairDetails.priority}
-                    className="w-full text-center"
-                    disabled
-                  />
-                ) : (
-                  <Selects
-                    name="priority"
-                    value={repairDetails.priority}
-                    onChange={(e) => {
-                      const newPriority = e.target.value as Priority;
-                      updateField("priority", newPriority);
-                    }}
-                    className={`text-center ${
-                      repairDetails.priority === "" ? "text-app-gray" : ""
-                    }`}
-                    disabled={repairDetails?.repaired}
-                  >
-                    {PriorityOptions.map((option) => (
-                      <option
-                        key={option.value}
-                        value={option.value}
-                        className={`text-center `}
-                      >
-                        {option.label}
-                      </option>
-                    ))}
-                  </Selects>
-                )}
-
-                {/* Adjust Image to Overlay Select Box */}
-                {repairDetails?.priority !== "" && (
-                  <Images
-                    titleImg={
-                      repairDetails.delay
-                        ? "/priorityDelay.svg"
-                        : repairDetails.priority === "TODAY"
-                        ? "/todayPriority.svg"
-                        : repairDetails.priority === "HIGH"
-                        ? "/priorityHigh.svg"
-                        : repairDetails.priority === "MEDIUM"
-                        ? "/priorityMedium.svg"
-                        : repairDetails.priority === "LOW"
-                        ? "/priorityLow.svg"
-                        : repairDetails.priority === "PENDING"
-                        ? "/priorityPending.svg"
-                        : ""
-                    }
-                    className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
-                    titleImgAlt={t("Status")}
-                  />
-                )}
-              </div>
-
-              {repairDetails?.delay ? (
-                <>
-                  <Holds>
-                    <Texts position={"right"} size={"p6"}>
-                      {t("RemoveDelay")}
-                    </Texts>
-                    <Buttons
-                      background={"red"}
-                      className="w-[15%]"
-                      position={"right"}
-                      shadow={"none"}
-                      onClick={RemoveDelay}
-                    >
-                      <Images
-                        titleImg={"/trash.svg"}
-                        titleImgAlt={"trash"}
-                        className="mx-auto w-9 h-9 p-1"
-                      />
-                    </Buttons>
-                  </Holds>
-                  <Holds>
-                    <Labels size="p6" htmlFor="delayReasoning">
-                      {t("DelayReasoning")}
-                    </Labels>
-                    <Selects
-                      name="delayReasoning"
-                      value={repairDetails.delayReasoning}
-                      onChange={(e) => {
-                        updateField("delayReasoning", e.target.value);
-                      }}
-                    >
-                      <option value="">{t("NoDelay")}</option>
-                      <option value="Delay">{t("Delay")}</option>
-                    </Selects>
-                  </Holds>
-                  <Holds>
-                    <Labels size="p6" htmlFor="delay">
-                      {t("ExpectedArrival")}
-                    </Labels>
-                    <Inputs
-                      type="date"
-                      name="delay"
-                      value={repairDetails.delay?.toString().split("T")[0]}
-                      onChange={(e) => {
-                        const newDelay = new Date(e.target.value).toISOString();
-                        updateField("delay", newDelay);
-                      }}
-                      className="text-center text-sm"
-                    />
-                  </Holds>
-                </>
+            <Holds className="relative w-full">
+              {repairDetails?.repaired ? (
+                <Inputs
+                  name="priority"
+                  value={repairDetails.priority}
+                  className="w-full text-center"
+                  disabled
+                />
               ) : (
+                <Selects
+                  name="priority"
+                  value={repairDetails.priority}
+                  onChange={(e) => {
+                    const newPriority = e.target.value as Priority;
+                    updateField("priority", newPriority);
+                  }}
+                  className={`text-center ${
+                    repairDetails.priority === "" ? "text-app-gray" : ""
+                  }`}
+                  disabled={repairDetails?.repaired}
+                >
+                  {PriorityOptions.map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      className={`text-center `}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </Selects>
+              )}
+
+              {/* Adjust Image to Overlay Select Box */}
+              {repairDetails?.priority !== "" && (
+                <Images
+                  titleImg={
+                    repairDetails.delay
+                      ? "/priorityDelay.svg"
+                      : repairDetails.priority === "TODAY"
+                      ? "/todayPriority.svg"
+                      : repairDetails.priority === "HIGH"
+                      ? "/priorityHigh.svg"
+                      : repairDetails.priority === "MEDIUM"
+                      ? "/priorityMedium.svg"
+                      : repairDetails.priority === "LOW"
+                      ? "/priorityLow.svg"
+                      : repairDetails.priority === "PENDING"
+                      ? "/priorityPending.svg"
+                      : ""
+                  }
+                  className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
+                  titleImgAlt={t("Status")}
+                />
+              )}
+            </Holds>
+
+            {repairDetails?.delay ? (
+              <>
                 <Holds>
                   <Texts position={"right"} size={"p6"}>
-                    {t("AddDelay")}
+                    {t("RemoveDelay")}
                   </Texts>
                   <Buttons
-                    background={"lightBlue"}
+                    background={"red"}
                     className="w-[15%]"
                     position={"right"}
                     shadow={"none"}
-                    onClick={() => {
-                      const tomorrow = new Date();
-                      tomorrow.setDate(tomorrow.getDate() + 1);
-                      updateField("delay", tomorrow.toISOString());
-                    }}
+                    onClick={RemoveDelay}
                   >
                     <Images
-                      titleImg={"/plus.svg"}
-                      titleImgAlt={"add"}
+                      titleImg={"/trash.svg"}
+                      titleImgAlt={"trash"}
                       className="mx-auto w-9 h-9 p-1"
                     />
                   </Buttons>
                 </Holds>
-              )}
-            </Holds>
+                <Holds>
+                  <Labels size="p6" htmlFor="delayReasoning">
+                    {t("DelayReasoning")}
+                  </Labels>
+                  <Selects
+                    name="delayReasoning"
+                    value={repairDetails.delayReasoning}
+                    onChange={(e) => {
+                      updateField("delayReasoning", e.target.value);
+                    }}
+                    className="text-center"
+                  >
+                    <option value="">{t("NoDelay")}</option>
+                    <option value="Delay">{t("Delay")}</option>
+                  </Selects>
+                </Holds>
+                <Holds className="pb-5">
+                  <Labels size="p6" htmlFor="delay">
+                    {t("ExpectedArrival")}
+                  </Labels>
+                  <Inputs
+                    type="date"
+                    name="delay"
+                    value={repairDetails.delay?.toString().split("T")[0]}
+                    onChange={(e) => {
+                      const newDelay = new Date(e.target.value).toISOString();
+                      updateField("delay", newDelay);
+                    }}
+                    className="text-center text-sm"
+                  />
+                </Holds>
+              </>
+            ) : (
+              <Holds>
+                <Texts position={"right"} size={"p6"}>
+                  {t("AddDelay")}
+                </Texts>
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-[15%]"
+                  position={"right"}
+                  shadow={"none"}
+                  onClick={() => {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    updateField("delay", tomorrow.toISOString());
+                  }}
+                >
+                  <Images
+                    titleImg={"/plus.svg"}
+                    titleImgAlt={"add"}
+                    className="mx-auto w-9 h-9 p-1"
+                  />
+                </Buttons>
+              </Holds>
+            )}
           </Holds>
-          {/* Only Show this button if there are no logs */}
-          {totalLogs === 0 && (
-            <Holds className="mt-5 justify-end row-start-8 row-end-9">
-              <Buttons
-                background={"red"}
-                onClick={() => setOpenDeleteModal(true)}
-                className="py-3 mb-4"
-              >
-                <Titles size={"h4"}>{t("Delete")}</Titles>
-              </Buttons>
-            </Holds>
-          )}
-        </Grids>
+        </Contents>
       </Holds>
 
+      {totalLogs === 0 && (
+        <Holds className="row-start-7 row-end-8 h-full ">
+          <Contents width={"section"}>
+            <Buttons
+              background={"red"}
+              onClick={() => setOpenDeleteModal(true)}
+              className=""
+            >
+              <Titles size={"h4"}>{t("Delete")}</Titles>
+            </Buttons>
+          </Contents>
+        </Holds>
+      )}
       <NModals
         size={"medWW"}
         isOpen={openDeleteModal}
@@ -429,6 +433,6 @@ export default function MechanicEditPage({
           </Grids>
         </Holds>
       </NModals>
-    </>
+    </Grids>
   );
 }

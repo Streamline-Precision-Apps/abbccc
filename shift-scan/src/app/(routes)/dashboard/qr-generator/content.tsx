@@ -134,7 +134,7 @@ export default function QRGeneratorContent() {
       </Holds>
       <Holds className="row-start-2 row-end-8 h-full">
         <Grids rows={"10"}>
-          <Holds position={"row"} className="row-span-1 h-full gap-1.5">
+          <Holds position={"row"} className="gap-x-1 h-fu">
             <NewTab
               onClick={() => setActiveTab(1)}
               isActive={activeTab === 1}

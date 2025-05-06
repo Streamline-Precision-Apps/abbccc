@@ -1,6 +1,9 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { format } from "date-fns";
+
 import { revalidatePath, revalidateTag } from "next/cache";
+export type LoadType = "UNSCREENED" | "SCREENED";
 
 /* EQUIPMENT Hauled */
 //------------------------------------------------------------------
@@ -23,6 +26,71 @@ export async function createEquipmentHauled(formData: FormData) {
   revalidatePath("/dashboard/truckingAssistant");
   revalidateTag("equipmentHauled");
   return equipmentHauled;
+}
+
+export async function createTruckLaborLogs(formData: FormData) {
+  console.log("Creating Truck Labor Logs...");
+  console.log(formData);
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  const truckLaborLogs = await prisma.truckLaborLogs.create({
+    data: {
+      truckingLogId: truckingLogId,
+      type: "",
+      startTime: new Date(),
+      endTime: null,
+    },
+  });
+
+  console.log(truckLaborLogs);
+  revalidatePath("/dashboard/truckingAssistant");
+  revalidateTag("equipmentHauled");
+  return {
+    ...truckLaborLogs,
+    startTime: format(truckLaborLogs.startTime, "HH:mm"), // Return just time
+  };
+}
+
+export async function updateLaborType(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    const type = formData.get("type") as string;
+    const startTime = formData.get("startTime") as string;
+    const endTime = formData.get("endTime") as string | null;
+
+    // Validate required fields
+    if (!id) {
+      throw new Error("Missing labor log ID");
+    }
+
+    // Prepare update data
+    const updateData: {
+      type?: string;
+      startTime?: string;
+      endTime?: string | null;
+    } = {};
+
+    if (type !== null) updateData.type = type;
+    if (startTime) updateData.startTime = new Date(startTime).toISOString();
+    if (endTime !== null) {
+      updateData.endTime = endTime ? new Date(endTime).toISOString() : null;
+    }
+
+    // Perform the update
+    const updatedLog = await prisma.truckLaborLogs.update({
+      where: { id },
+      data: updateData,
+    });
+
+    // Revalidate
+    revalidatePath("/dashboard/truckingAssistant");
+    revalidateTag("truckLaborLogs");
+
+    return updatedLog;
+  } catch (error) {
+    console.error("Error updating labor type:", error);
+    throw error; // Rethrow to handle in the UI component
+  }
 }
 
 export async function updateEquipmentLogsLocation(formData: FormData) {
@@ -88,10 +156,16 @@ export async function createHaulingLogs(formData: FormData) {
   console.log("Creating hauling logs...");
   console.log(formData);
   const truckingLogId = formData.get("truckingLogId") as string;
+  const name = formData.get("name") as string;
+  const quantity = parseInt(formData.get("quantity") as string);
+  const createdAt = new Date().toISOString();
 
   const haulingLog = await prisma.material.create({
     data: {
       truckingLogId,
+      name,
+      quantity,
+      createdAt,
     },
   });
 
@@ -101,11 +175,33 @@ export async function createHaulingLogs(formData: FormData) {
 }
 
 export async function updateHaulingLogs(formData: FormData) {
+  console.log("Updating Material hauling logs...");
+  const LoadType: {
+    UNSCREENED: "UNSCREENED";
+    SCREENED: "SCREENED";
+  } = {
+    UNSCREENED: "UNSCREENED",
+    SCREENED: "SCREENED",
+  };
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
   const LocationOfMaterial = formData.get("LocationOfMaterial") as string;
   const quantity = parseInt(formData.get("quantity") as string);
   const truckingLogId = formData.get("truckingLogId") as string;
+
+  const materialWeight = parseFloat(formData.get("materialWeight") as string);
+  const lightWeight = parseFloat(formData.get("lightWeight") as string);
+  const grossWeight = parseFloat(formData.get("grossWeight") as string);
+  const loadTypeString = formData.get("loadType") as string;
+
+  let loadType = null;
+  if (!loadTypeString) {
+    loadType = null;
+  } else if (loadTypeString === "UNSCREENED") {
+    loadType = LoadType.UNSCREENED;
+  } else if (loadTypeString === "SCREENED") {
+    loadType = LoadType.SCREENED;
+  }
 
   // If ID is provided, update the existing log
   if (id) {
@@ -115,6 +211,10 @@ export async function updateHaulingLogs(formData: FormData) {
         name,
         LocationOfMaterial,
         quantity,
+        materialWeight,
+        lightWeight,
+        grossWeight,
+        loadType,
       },
     });
 
@@ -140,6 +240,17 @@ export async function deleteHaulingLogs(id: string) {
   console.log("Deleting hauling logs...");
   console.log(id);
   await prisma.material.delete({
+    where: { id },
+  });
+
+  revalidateTag("material");
+  return true;
+}
+
+export async function deleteLaborTypeLogs(id: string) {
+  console.log("Deleting hauling logs...");
+  console.log(id);
+  await prisma.truckLaborLogs.delete({
     where: { id },
   });
 

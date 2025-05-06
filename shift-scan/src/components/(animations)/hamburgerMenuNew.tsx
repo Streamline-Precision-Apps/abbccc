@@ -73,10 +73,10 @@ export default function HamburgerMenuNew() {
           href="/hamburger/inbox?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="w-16 h-5/6"
+          className="w-16 h-full justify-center"
         >
           <img
-            src={"/List-icon.svg"}
+            src={"/List-Icon.svg"}
             alt={"inbox"}
             className="relative  w-full mx-auto"
           />

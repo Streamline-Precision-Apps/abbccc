@@ -1,11 +1,7 @@
 "use client";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import { Spinner } from "@nextui-org/react";
-import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
-import FormsBtn from "../_buttons/formsBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
@@ -27,6 +23,7 @@ export default function TascoDashboardView({
   permission,
   logs,
   laborType,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -41,6 +38,7 @@ export default function TascoDashboardView({
   currentView: string | null;
   logs: LogItem[];
   laborType: string;
+  mechanicProjectID: string;
 }) {
   useEffect(() => {
     console.log("laborType: ", laborType);
@@ -76,6 +74,8 @@ export default function TascoDashboardView({
               <ClockOutBtn
                 handleShowAdditionalButtons={handleCOButton3}
                 permission={permission}
+                logs={logs}
+                mechanicProjectID={mechanicProjectID}
                 laborType={laborType}
                 View={"tasco"}
               />
@@ -110,12 +110,12 @@ export default function TascoDashboardView({
                 <MyTeamWidget />
               )}
 
-              <FormsBtn permission={permission} view={"general"} />
-
               <ClockOutBtn
                 handleShowAdditionalButtons={handleCOButton3}
                 permission={permission}
                 laborType={laborType}
+                mechanicProjectID={mechanicProjectID}
+                logs={logs}
                 View={"tasco"}
               />
             </>
