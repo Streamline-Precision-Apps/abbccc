@@ -295,17 +295,17 @@ export default function MechanicEditPage({
                 <Images
                   titleImg={
                     repairDetails.delay
-                      ? "/delayPriority.svg"
+                      ? "/priorityDelay.svg"
                       : repairDetails.priority === "TODAY"
                       ? "/todayPriority.svg"
                       : repairDetails.priority === "HIGH"
-                      ? "/highPriority.svg"
+                      ? "/priorityHigh.svg"
                       : repairDetails.priority === "MEDIUM"
-                      ? "/mediumPriority.svg"
+                      ? "/priorityMedium.svg"
                       : repairDetails.priority === "LOW"
-                      ? "/lowPriority.svg"
+                      ? "/priorityLow.svg"
                       : repairDetails.priority === "PENDING"
-                      ? "/pending.svg"
+                      ? "/priorityPending.svg"
                       : ""
                   }
                   className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"

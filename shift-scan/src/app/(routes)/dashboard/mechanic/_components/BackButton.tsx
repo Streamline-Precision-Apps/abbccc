@@ -23,7 +23,7 @@ export function BackButton() {
         shadow="none"
       >
         <Images
-          titleImg="/turnBack.svg"
+          titleImg="/arrowBack.svg"
           titleImgAlt={t("Mechanic")}
           className="max-w-8 h-auto object-contain"
         />

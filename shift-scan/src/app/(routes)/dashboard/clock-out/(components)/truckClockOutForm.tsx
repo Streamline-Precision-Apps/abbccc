@@ -129,7 +129,7 @@ export default function TruckClockOutForm({
             <Holds position={"row"}>
               <Texts>Clock Out</Texts>
               <Images
-                titleImg="/end-day.svg"
+                titleImg="/endDay.svg"
                 titleImgAlt="Clock Out"
                 className="w-8 h-8"
               />

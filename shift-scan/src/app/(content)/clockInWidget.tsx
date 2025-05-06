@@ -17,7 +17,7 @@ export default function ClockInWidget() {
           </Holds>
           <Holds>
             <Images
-              titleImg="/clock-in.svg"
+              titleImg="/clockIn.svg"
               titleImgAlt="QR Code"
               size={"30"}
             />

@@ -239,7 +239,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                   <Holds position={"right"} size={"20"}>
                     <Buttons type="button" onClick={handleButtonClick}>
                       <Images
-                        titleImg={"/downArrow.svg"}
+                        titleImg={"/arrowDown.svg"}
                         titleImgAlt={"downArrow"}
                         size={"80"}
                         className="mx-auto p-2"
@@ -311,7 +311,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                 <Holds>
                   <Texts>{t("Bye")}</Texts>{" "}
                   <Images
-                    titleImg={"/end-day.svg"}
+                    titleImg={"/endDay.svg"}
                     titleImgAlt={"End of Day Icon"}
                     className="w-8 h-8"
                   />
@@ -327,7 +327,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                     <Holds position={"right"} size={"20"}>
                       <Buttons type="button" onClick={handleButtonClick}>
                         <Images
-                          titleImg={"/downArrow.svg"}
+                          titleImg={"/arrowDown.svg"}
                           titleImgAlt={"downArrow"}
                           size={"80"}
                           className="mx-auto p-2"

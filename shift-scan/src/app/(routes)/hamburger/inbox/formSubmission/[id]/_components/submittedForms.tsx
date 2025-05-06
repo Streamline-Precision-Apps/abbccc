@@ -153,9 +153,9 @@ export default function SubmittedForms({
                 titleImgAlt={"form Status"}
                 titleImg={
                   submissionStatus === "PENDING"
-                    ? "/OrangeOngoing.svg"
+                    ? "/OrangestatusOngoing.svg"
                     : submissionStatus === "APPROVED"
-                    ? "/Checkmark.svg"
+                    ? "/statusApproved.svg"
                     : "/statusReject.svg"
                 }
                 className=" w-10 h-auto object-contain"
