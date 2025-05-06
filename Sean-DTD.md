@@ -143,3 +143,19 @@
 # April 30, 2025 - Wednesday
 ### built/created
 - Worked on clockout section. (3 hours)
+- Deconsturcted and reconstructed API calls for the my teams timesheet edit section. (6 hours)
+
+# May 1, 2025 - Thursday
+### built/created
+- Worked more on API calls for my teams timesheet edit section. (3 hours)
+- building functions and server actions for my teams timesheet edit section. (6 hours)
+
+# May 2, 2025 - Friday
+### built/created
+- Building more functions for different filters in the my teams timesheet edit section. (9 hours)
+
+# May 5, 2025 - Monday
+### built/created
+- Destroy and reconstruct my teams timesheet edit section. ( hours)
+- merge Meeting (1 hours)
+- 
