@@ -156,6 +156,6 @@
 
 # May 5, 2025 - Monday
 ### built/created
-- Destroy and reconstruct my teams timesheet edit section. ( hours)
+- Destroy and reconstruct my teams timesheet edit section. (4 hours)
 - merge Meeting (1 hours)
-- 
+- Destroy and reconstruct my teams timesheet edit section. (4 hours)
