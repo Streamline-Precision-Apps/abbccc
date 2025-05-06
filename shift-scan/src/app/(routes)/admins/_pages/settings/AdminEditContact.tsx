@@ -117,7 +117,7 @@ export const AdminEditContact = ({
         </Holds>
         <Holds className="w-[3%] h-[6%] p-1 rounded-full absolute top-1 right-1 cursor-pointer ">
           <Images
-            titleImg="/turnBack.svg"
+            titleImg="/arrowBack.svg"
             titleImgAlt="settings"
             className="h-10 w-10 my-auto"
             width={"10"}
@@ -165,7 +165,7 @@ export const AdminEditContact = ({
       </Holds>
       <Holds className="w-[3%] h-[6%] p-1 rounded-full absolute top-1 right-1 cursor-pointer ">
         <Images
-          titleImg="/turnBack.svg"
+          titleImg="/arrowBack.svg"
           titleImgAlt="settings"
           className="h-10 w-10 my-auto"
           width={"10"}
@@ -178,7 +178,7 @@ export const AdminEditContact = ({
           <Holds className="w-full h-1/2 my-5 ">
             <Holds className="relative ">
               <Images
-                titleImg={employee?.image ?? "/profile.svg"}
+                titleImg={employee?.image ?? "/profileEmpty.svg"}
                 titleImgAlt={"profile"}
                 className="rounded-full border-[3px] border-black cursor-pointer"
                 size={"50"}

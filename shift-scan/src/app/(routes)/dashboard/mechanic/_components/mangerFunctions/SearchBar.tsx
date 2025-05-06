@@ -23,7 +23,7 @@ export function SearchBar({
         onClick={() => inputRef.current?.focus()}
       >
         <Images
-          titleImg="/magnifyingGlass.svg"
+          titleImg="/searchLeft.svg"
           titleImgAlt="search"
           size="50"
         />

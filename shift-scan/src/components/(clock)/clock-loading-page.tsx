@@ -23,7 +23,7 @@ export default function ClockLoadingPage({
                 onClick={handleReturnPath}
               >
                 <Images
-                  titleImg="/turnBack.svg"
+                  titleImg="/arrowBack.svg"
                   titleImgAlt="back"
                   position={"left"}
                 />

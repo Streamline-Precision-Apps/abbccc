@@ -161,7 +161,7 @@ export default function TruckDriver() {
       >
         <Holds position={"row"} className="row-span-1 w-full gap-1">
           <NewTab
-            titleImage="/Hauling-logs.svg"
+            titleImage="/hauling.svg"
             titleImageAlt="Truck"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
@@ -181,7 +181,7 @@ export default function TruckDriver() {
             <Titles size={"h4"}>{t("MyComments")}</Titles>
           </NewTab>
           <NewTab
-            titleImage="/state-mileage.svg"
+            titleImage="/state.svg"
             titleImageAlt="State Mileage"
             onClick={() => setActiveTab(3)}
             isActive={activeTab === 3}
@@ -191,7 +191,7 @@ export default function TruckDriver() {
             <Titles size={"h4"}>{t("StateMileage")}</Titles>
           </NewTab>
           <NewTab
-            titleImage="/refuel-Icon.svg"
+            titleImage="/refuel.svg"
             titleImageAlt="Refuel"
             onClick={() => setActiveTab(4)}
             isActive={activeTab === 4}

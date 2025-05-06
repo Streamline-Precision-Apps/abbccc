@@ -126,7 +126,7 @@ export default function TruckClockOutForm({
         <Contents width="section">
           <TitleBoxes
             title="Clock Out"
-            titleImg="/end-day.svg"
+            titleImg="/endDay.svg"
             titleImgAlt="Clock Out"
           />
         </Contents>

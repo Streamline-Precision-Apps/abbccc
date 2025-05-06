@@ -68,7 +68,7 @@ export default function ViewComponent({
           className="shadow-none"
           >
             <Images
-            titleImg={"/backArrow.svg"}
+            titleImg={"/arrowLeft.svg"}
             titleImgAlt="left"
             className="mx-auto"
             />
@@ -88,7 +88,7 @@ export default function ViewComponent({
           className="shadow-none"
           >
             <Images
-            titleImg={"/forwardArrow.svg"}
+            titleImg={"/arrowRight.svg"}
             titleImgAlt="right"
             className="mx-auto"
             />

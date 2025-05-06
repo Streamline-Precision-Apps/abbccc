@@ -150,7 +150,7 @@ export default function EditWorkNew({
                 onClick={onSaveChanges}
               >
                 <Images
-                  titleImg={"/save-edit.svg"}
+                  titleImg={"/formSave.svg"}
                   titleImgAlt={"Save"}
                   size={"30"}
                 />
@@ -161,7 +161,7 @@ export default function EditWorkNew({
                 onClick={onCancelEdits}
               >
                 <Images
-                  titleImg={"/undo-edit.svg"}
+                  titleImg={"/formUndo.svg"}
                   titleImgAlt={"Cancel"}
                   size={"30"}
                 />
@@ -174,7 +174,7 @@ export default function EditWorkNew({
               onClick={() => setEdit(true)}
             >
               <Images
-                titleImg={"/edit-form.svg"}
+                titleImg={"/formEdit.svg"}
                 titleImgAlt={"Edit"}
                 size={"30"}
               />

@@ -19,7 +19,7 @@ export default async function QrGeneratorDashboard() {
             <Contents width={"section"}>
               <TitleBoxes
                 title={q("QrGenerator")}
-                titleImg="/qr.svg"
+                titleImg="/qrCode.svg"
                 titleImgAlt="Team"
                 className="my-auto"
               />

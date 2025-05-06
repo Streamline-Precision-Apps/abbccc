@@ -168,7 +168,7 @@ const Modals: FC<ModalProps> = ({
             background={"red"}
             size={"full"}
           >
-            {step === 5 ? <></> : <Images titleImg="/x.svg" titleImgAlt="x" />}
+            {step === 5 ? <></> : <Images titleImg="/statusDenied.svg" titleImgAlt="x" />}
           </Buttons>
           <Contents className="modal-content">{props.children}</Contents>
         </div>
@@ -183,7 +183,7 @@ const Modals: FC<ModalProps> = ({
           background={"red"}
           size={"full"}
         >
-          <Images titleImg="/x.svg" titleImgAlt="x" />
+          <Images titleImg="/statusDenied.svg" titleImgAlt="x" />
         </Buttons>
         <Contents>{props.children}</Contents>
       </>
@@ -204,7 +204,7 @@ const Modals: FC<ModalProps> = ({
             className="close-btn"
             size={"20"}
           >
-            <Images titleImg="/x.svg" titleImgAlt="x" className="mx-auto p-2" />
+            <Images titleImg="/statusDenied.svg" titleImgAlt="x" className="mx-auto p-2" />
           </Buttons>
           <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
             {props.children}
@@ -224,7 +224,7 @@ const Modals: FC<ModalProps> = ({
             size={"10"}
           >
             <Images
-              titleImg="/backArrow.svg"
+              titleImg="/arrowLeft.svg"
               titleImgAlt="x"
               className="mx-auto"
             />
@@ -260,7 +260,7 @@ const Modals: FC<ModalProps> = ({
               >
                 <Holds>
                   <Images
-                    titleImg="/x.svg"
+                    titleImg="/statusDenied.svg"
                     titleImgAlt="x"
                     size={"50"}
                     className="m-auto "
@@ -297,7 +297,7 @@ const Modals: FC<ModalProps> = ({
               >
                 <Holds>
                   <Images
-                    titleImg="/x.svg"
+                    titleImg="/statusDenied.svg"
                     titleImgAlt="x"
                     size={"10"}
                     className="my-auto"

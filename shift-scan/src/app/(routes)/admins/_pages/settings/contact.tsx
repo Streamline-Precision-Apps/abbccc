@@ -126,7 +126,7 @@ export const AdminContact = () => {
         <Grids className="grid-rows-5 ">
           <Holds background={"white"} className=" row-span-2 h-full relative ">
             <Images
-              titleImg="/edit-form.svg"
+              titleImg="/formEdit.svg"
               titleImgAlt="settings"
               className="absolute top-3 right-1 cursor-pointer"
               size={"10"}
@@ -138,7 +138,7 @@ export const AdminContact = () => {
 
             <Holds className="rounded-full h-full ">
               <Images
-                titleImg={employee?.image ?? "/profile.svg"}
+                titleImg={employee?.image ?? "/profileEmpty.svg"}
                 titleImgAlt={"profile"}
                 className="rounded-full my-auto border-[3px] border-black"
                 size={"50"}

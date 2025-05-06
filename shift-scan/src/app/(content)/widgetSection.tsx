@@ -171,7 +171,7 @@ export default function WidgetSection({ session, locale }: Props) {
                     >
                       <Holds>
                         <Images
-                          titleImg="/qr.svg"
+                          titleImg="/qrCode.svg"
                           titleImgAlt="QR Code"
                           size={"40"}
                         />
@@ -200,7 +200,7 @@ export default function WidgetSection({ session, locale }: Props) {
                       <Holds className="my-auto">
                         <Holds size={"50"}>
                           <Images
-                            titleImg="/clock-in.svg"
+                            titleImg="/clockIn.svg"
                             titleImgAlt="Clock In Icon"
                             size={"70"}
                           />
@@ -231,7 +231,7 @@ export default function WidgetSection({ session, locale }: Props) {
                           </Holds>
                           <Holds size={"40"}>
                             <Images
-                              titleImg="/clock-in.svg"
+                              titleImg="/clockIn.svg"
                               titleImgAlt="Clock In Icon"
                               size={"70"}
                             />
@@ -241,7 +241,7 @@ export default function WidgetSection({ session, locale }: Props) {
                         <Holds className="my-auto">
                           <Holds size={"50"}>
                             <Images
-                              titleImg="/clock-in.svg"
+                              titleImg="/clockIn.svg"
                               titleImgAlt="Clock In Icon"
                               size={"70"}
                             />

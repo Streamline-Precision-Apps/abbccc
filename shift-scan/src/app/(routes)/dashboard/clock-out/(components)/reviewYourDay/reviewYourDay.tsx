@@ -67,7 +67,7 @@ export default function ReviewYourDay({
                       onClick={prevStep}
                     >
                       <Images
-                        titleImg="/turnBack.svg"
+                        titleImg="/arrowBack.svg"
                         titleImgAlt="back"
                         position={"left"}
                       />

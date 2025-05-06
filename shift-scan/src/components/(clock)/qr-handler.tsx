@@ -81,7 +81,7 @@ export default function QRStep({
                     onClick={handleReturnPath}
                   >
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position={"left"}
                     />

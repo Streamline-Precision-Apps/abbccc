@@ -102,7 +102,7 @@ export const InjuryReportContent = ({
                     onClick={prevStep}
                   >
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position={"left"}
                     />
@@ -118,7 +118,7 @@ export const InjuryReportContent = ({
                       </Holds>
                       <Holds className="col-start-4 col-end-5 h-full w-full justify-center absolute">
                         <Images
-                          titleImg="/clock-out.svg"
+                          titleImg="/clockOut.svg"
                           titleImgAlt="Verify"
                           size={"full"}
                           className="w-10 h-10"
