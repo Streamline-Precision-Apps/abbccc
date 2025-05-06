@@ -23,7 +23,7 @@ type SentContent = {
   id: string;
   title: string;
   formTemplateId: string;
-  data: Record<string, any>;
+  data: Record<string, string>;
   formTemplate: {
     name: string;
     formType: string;

@@ -5,10 +5,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import AccountInformation from "./accountInformation";
-import ProfileImageEditor from "./ProfileImageEditor";
+import ProfileImageEditor from "@/app/hamburger/profile/ProfileImageEditor";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import SettingSelections from "./SettingSelections";
 import { UserSettings } from "@/lib/types";
@@ -32,7 +32,7 @@ type Employee = {
   signature?: string | null;
   image: string | null;
   imageUrl?: string | null;
-  contact: {
+  Contact: {
     phoneNumber: string;
     emergencyContact: string;
     emergencyContactNumber: string;
@@ -41,6 +41,8 @@ type Employee = {
 
 export default function ProfilePage({ userId }: { userId: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const url = searchParams.get("returnUrl") || "/dashboard";
   const t = useTranslations("Hamburger");
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
@@ -132,40 +134,53 @@ export default function ProfilePage({ userId }: { userId: string }) {
   // --- Updated toggles with permission requests ---
 
   // CameraAccess toggle: request permission when turned on
-  const handleCameraAccessChange = (value: boolean) => {
+  const handleCameraAccessChange = async (value: boolean) => {
     if (value) {
-      // Request camera permission
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then(() => {
-          handleChange("cameraAccess", true);
-        })
-        .catch(() => {
-          handleChange("cameraAccess", false);
+      // Request camera permission when turning on
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
         });
+        // Immediately stop the stream (we just wanted permission)
+        stream.getTracks().forEach((track) => track.stop());
+        handleChange("cameraAccess", true);
+      } catch (err) {
+        console.error("Camera access denied:", err);
+        handleChange("cameraAccess", false);
+      }
     } else {
-      // When turning off, simply update the state.
+      // When turning off, stop all camera tracks
+      if (navigator.mediaDevices) {
+        const streams = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        streams.getTracks().forEach((track) => track.stop());
+      }
       handleChange("cameraAccess", false);
     }
   };
 
   // LocationAccess toggle: request permission when turned on
-  const handleLocationAccessChange = (value: boolean) => {
+  const handleLocationAccessChange = async (value: boolean) => {
     if (value) {
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          () => {
-            handleChange("locationAccess", true);
-          },
-          () => {
-            handleChange("locationAccess", false);
+      // Request location permission when turning on
+      try {
+        const position = await new Promise<GeolocationPosition>(
+          (resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
           }
         );
-      } else {
+        handleChange("locationAccess", true);
+      } catch (err) {
+        console.error("Location access denied:", err);
         handleChange("locationAccess", false);
       }
     } else {
-      handleChange("locationAccess", false);
+      if ("geolocation" in navigator) {
+        // Note: There's no direct way to "disable" geolocation,
+        // but we can ensure our app stops using it
+        handleChange("locationAccess", false);
+      }
     }
   };
 
@@ -182,7 +197,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
               <Images
                 titleImg="/arrowBack.svg"
                 titleImgAlt="Back"
-                onClick={() => router.back()}
+                onClick={() => router.push(url)}
                 className="max-w-[40px] max-h-[40px]"
               />
             </Holds>
@@ -228,7 +243,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                 isActive={activeTab === 1}
                 isComplete={true}
               >
-                <Titles size={"h4"}>Account Information</Titles>
+                <Titles size={"h4"}>{t("AccountInformation")}</Titles>
               </NewTab>
               <NewTab
                 titleImage={"/settings.svg"}
@@ -237,7 +252,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                 isActive={activeTab === 2}
                 isComplete={true}
               >
-                <Titles size={"h4"}>Account Settings</Titles>
+                <Titles size={"h4"}>{t("AccountSettings")}</Titles>
               </NewTab>
             </Holds>
 

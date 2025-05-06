@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   try {
@@ -17,7 +18,7 @@ export async function GET() {
     const jobsiteDetails = await prisma.timeSheet.findMany({
       where: { userId },
       select: {
-        jobsite: {
+        Jobsite: {
           select: {
             id: true,
             qrId: true,
@@ -26,7 +27,7 @@ export async function GET() {
         },
       },
       orderBy: {
-        submitDate: "desc",
+        createdAt: "desc",
       },
       take: 5,
     });
@@ -34,8 +35,8 @@ export async function GET() {
     // Extract unique jobsites (filter out duplicates)
     const uniqueJobsites = new Map();
     jobsiteDetails.forEach((log) => {
-      if (log.jobsite) {
-        uniqueJobsites.set(log.jobsite.id, log.jobsite);
+      if (log.Jobsite) {
+        uniqueJobsites.set(log.Jobsite.id, log.Jobsite);
       }
     });
 
@@ -57,9 +58,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

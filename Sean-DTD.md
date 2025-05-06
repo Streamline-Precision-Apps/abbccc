@@ -106,3 +106,21 @@
 # March 19, 2025 - Wednesday
 ### built/created
 - Standup Meeting. (1 hours)
+
+# April 4, 2025 - Friday
+### built/created
+- Standup Meeting and DB changes. (2.5 hours)
+- Fixing data for seeding. (4 hours)
+
+# April 21, 2025 - Monday
+### built/created
+- Worked on fixing API bugs in Document section. (3 hours)
+- conversion of Document section to match figma. (.5 hours)
+
+# April 22, 2025 - Tuesday
+### built/created
+- document viewing research. (1.5 hours)
+- conversion of Document section to match figma. (9 hours)
+
+# April 23, 2025 - Wednesday
+### built/created

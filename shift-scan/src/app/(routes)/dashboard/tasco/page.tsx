@@ -52,10 +52,8 @@ export default async function TascoPage() {
                 titleImgAlt="Tasco"
               />
             </Holds>
-            <Holds background={"white"} className="row-span-5 h-full">
-              <Contents width={"section"}>
-                <TascoClientPage />
-              </Contents>
+            <Holds className="row-span-5 h-full">
+              <TascoClientPage />
             </Holds>
           </Grids>
         </Contents>

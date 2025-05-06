@@ -11,14 +11,14 @@ const BannerVariants = cva(
         green: "bg-green-500",
         red: "bg-red-500",
       },
-      position: {//only position attributes
+      position: {
+        //only position attributes
         flex: "flex flex-col",
         absolute: "absolute left-0 right-0",
       },
       size: {
         full: "w-full",
-      }
-
+      },
     },
     defaultVariants: {
       background: "default",
@@ -26,15 +26,25 @@ const BannerVariants = cva(
       size: "full",
     },
   }
-)
+);
 
-interface BannerProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof BannerVariants> {
-}
+interface BannerProps
+  extends HTMLAttributes<HTMLElement>,
+    VariantProps<typeof BannerVariants> {}
 
-const Banners: FC<BannerProps> = ({className, background, position, size, ...props}) => {
-    return (
-      <div className={cn(BannerVariants({background, position, size, className}))} {...props}/>
-    )
-}
+const Banners: FC<BannerProps> = ({
+  className,
+  background,
+  position,
+  size,
+  ...props
+}) => {
+  return (
+    <div
+      className={cn(BannerVariants({ background, position, size, className }))}
+      {...props}
+    />
+  );
+};
 
-export {Banners, BannerVariants}
+export { Banners, BannerVariants };

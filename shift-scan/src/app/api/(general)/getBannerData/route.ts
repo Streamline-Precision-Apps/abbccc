@@ -26,11 +26,11 @@ export async function GET(req: Request) {
       where: { userId, id },
       select: {
         id: true,
-        jobsite: {
+        Jobsite: {
           select: { id: true, qrId: true, name: true },
         },
-        costCode: {
-          select: { id: true, name: true, description: true },
+        CostCode: {
+          select: { id: true, name: true },
         },
       },
     });
@@ -50,14 +50,14 @@ export async function GET(req: Request) {
         where: { timeSheetId: id },
         select: {
           laborType: true,
-          equipment: { select: { qrId: true, name: true } },
+          Equipment: { select: { qrId: true, name: true } },
         },
       }),
       prisma.truckingLog.findMany({
         where: { timeSheetId: id },
         select: {
           laborType: true,
-          equipment: { select: { qrId: true, name: true } },
+          Equipment: { select: { qrId: true, name: true } },
         },
       }),
       prisma.employeeEquipmentLog.findMany({
@@ -66,7 +66,7 @@ export async function GET(req: Request) {
           id: true,
           startTime: true,
           endTime: true,
-          equipment: { select: { id: true, name: true } },
+          Equipment: { select: { id: true, name: true } },
         },
       }),
     ]);
@@ -75,37 +75,36 @@ export async function GET(req: Request) {
 
     const formattedTascoLogs = tascoLogs.map((log) => ({
       laborType: log.laborType,
-      equipment: log.equipment || { qrId: null, name: "Unknown" },
+      equipment: log.Equipment || { qrId: null, name: "Unknown" },
     }));
 
     const formattedTruckingLogs = truckingLogs.map((log) => ({
       laborType: log.laborType,
-      equipment: log.equipment || { qrId: null, name: "Unknown" },
+      equipment: log.Equipment || { qrId: null, name: "Unknown" },
     }));
 
     const formattedEmployeeEquipmentLogs = eqLogs.map((log) => ({
       id: log.id,
       startTime: log.startTime,
       endTime: log.endTime,
-      equipment: log.equipment || { id: null, name: "Unknown" },
+      equipment: log.Equipment || { id: null, name: "Unknown" },
     }));
 
     // ------------------------- Structure the response -------------------------
 
     const responseData = {
       id: jobCode.id,
-      jobsite: jobCode.jobsite
+      jobsite: jobCode.Jobsite
         ? {
-            id: jobCode.jobsite.id,
-            qrId: jobCode.jobsite.qrId,
-            name: jobCode.jobsite.name,
+            id: jobCode.Jobsite.id,
+            qrId: jobCode.Jobsite.qrId,
+            name: jobCode.Jobsite.name,
           }
         : null,
-      costCode: jobCode.costCode
+      costCode: jobCode.CostCode
         ? {
-            id: jobCode.costCode.id,
-            name: jobCode.costCode.name,
-            description: jobCode.costCode.description,
+            id: jobCode.CostCode.id,
+            name: jobCode.CostCode.name,
           }
         : null,
       tascoLogs: formattedTascoLogs,

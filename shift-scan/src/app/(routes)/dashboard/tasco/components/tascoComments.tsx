@@ -1,6 +1,7 @@
 import { updateTascoComments } from "@/actions/tascoActions";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 
 export default function TascoComments({
   tascoLog,
@@ -11,6 +12,7 @@ export default function TascoComments({
   comments: string;
   setComments: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const t = useTranslations("Tasco");
   const UpdateComments = async () => {
     const formData = new FormData();
     formData.append("comment", comments ?? "");
@@ -23,7 +25,7 @@ export default function TascoComments({
         name="comments"
         maxLength={40}
         value={comments}
-        placeholder="Write your Comments here..."
+        placeholder={t("CommentPlaceholder")}
         className="h-full w-full text-base focus:outline-none focus:ring-transparent focus:border-current "
         onChange={(e) => setComments(e.target.value)}
         onBlur={(e) => UpdateComments()}

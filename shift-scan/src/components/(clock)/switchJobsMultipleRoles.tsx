@@ -194,7 +194,7 @@ export default function SwitchJobsMultiRoles({
               <Titles size={"h1"} className=" ">
                 {t("ChangeIfNecessary")}
               </Titles>
-              <Holds className=" w-full py-3 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+              <Holds className=" w-full py-3 justify-center ">
                 <Holds className="h-full w-11/12 justify-center">
                   <Selects
                     className="bg-app-blue text-center"

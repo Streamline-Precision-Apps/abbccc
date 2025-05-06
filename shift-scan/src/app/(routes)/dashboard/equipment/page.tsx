@@ -1,9 +1,7 @@
 "use client";
-
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
@@ -14,8 +12,10 @@ import { EmployeeEquipmentLogs } from "@/lib/types";
 import { Bases } from "@/components/(reusable)/bases";
 import { Titles } from "@/components/(reusable)/titles";
 import { differenceInSeconds, parseISO } from "date-fns";
-import { EmptyViews } from "@/components/(reusable)/emptyViews";
 import { NewTab } from "@/components/(reusable)/newTabs";
+import SlidingDiv from "@/components/(animations)/slideDelete";
+import { deleteEmployeeEquipmentLog } from "@/actions/equipmentActions";
+import { Texts } from "@/components/(reusable)/texts";
 
 export default function EquipmentLogContent() {
   const [loading, setLoading] = useState(true);
@@ -62,69 +62,76 @@ export default function EquipmentLogContent() {
       ? logs.filter((log) => !log.isFinished)
       : logs.filter((log) => log.isFinished);
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEmployeeEquipmentLog(id);
+      setLogs((prevLogs) => prevLogs.filter((log) => log.id !== id));
+    } catch (error) {
+      console.error("Error deleting equipment log:", error);
+    }
+  };
+
   return (
     <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"5"} className="relative">
+        <Grids rows={"7"} gap={"5"} className="relative size-full">
           <Holds
             background={"white"}
             className={
-              loading ? "row-span-2 h-full animate-pulse" : "row-span-2 h-full"
+              loading
+                ? "row-start-1 row-end-2 animate-pulse"
+                : "row-start-1 row-end-2 h-full "
             }
           >
-            <TitleBoxes
-              title={t("Current")}
-              titleImg="/equipment.svg"
-              titleImgAlt="Current"
-              variant={"default"}
-              size={"default"}
-              className="my-auto"
-              href="/dashboard"
-            />
+            <TitleBoxes onClick={() => router.push("/dashboard")}>
+              <Titles size={"h2"}>{t("Current")}</Titles>
+            </TitleBoxes>
           </Holds>
 
           <Holds
             className={
-              loading ? "row-span-8 h-full animate-pulse" : "row-span-8 h-full"
+              loading
+                ? "row-start-2 row-end-8 h-full animate-pulse"
+                : "row-start-2 row-end-8 h-full"
             }
           >
             <Holds className="h-full w-full ">
+              <Holds position={"row"} className=" gap-1">
+                <NewTab
+                  onClick={() => setActive(1)}
+                  isActive={active === 1}
+                  titleImage="/OrangeOngoing.svg"
+                  titleImageAlt="Clock"
+                  isComplete={true}
+                >
+                  <Titles size={"h4"}>Current Logs</Titles>
+                </NewTab>
+                <NewTab
+                  onClick={() => setActive(2)}
+                  isActive={active === 2}
+                  titleImage="/complete.svg"
+                  titleImageAlt="Finished logs Icon"
+                  isComplete={true}
+                >
+                  <Titles size={"h4"}>Finished Logs</Titles>
+                </NewTab>
+              </Holds>
               <Grids rows={"8"} className="h-full w-full ">
-                <Holds position={"row"} className="h-full gap-1">
-                  <NewTab
-                    onClick={() => setActive(1)}
-                    isActive={active === 1}
-                    titleImage="/OrangestatusOngoing.svg"
-                    titleImageAlt="Clock"
-                    isComplete={true}
-                  >
-                    <Titles size={"h4"}>CurrentLogs</Titles>
-                  </NewTab>
-                  <NewTab
-                    onClick={() => setActive(2)}
-                    isActive={active === 2}
-                    titleImage="/statusApprovedFilled.svg"
-                    titleImageAlt="Finished logs Icon"
-                    isComplete={true}
-                  >
-                    <Titles size={"h4"}>Finished Logs</Titles>
-                  </NewTab>
-                </Holds>
                 <Holds
                   background={"white"}
-                  className="h-full w-full row-span-7 rounded-t-none"
+                  className="h-full w-full row-start-1 row-end-9 rounded-t-none"
                 >
                   <Contents width={"section"}>
-                    <Grids rows={"8"} gap={"5"} className="h-full w-full py-5">
+                    <Grids rows={"7"} gap={"5"} className="h-full w-full py-5">
                       {loading ? (
                         <>
-                          <Holds className="row-span-7">
+                          <Holds className="row-span-6 h-full justify-center items-center">
                             <Spinner />
                           </Holds>
-                          <Holds className="row-span-1 w-full h-full">
+                          <Holds className="row-span-1 ">
                             <Buttons
-                              background={"lightGray"}
-                              className="w-full"
+                              background={"darkGray"}
+                              className="w-full py-2"
                             >
                               <Titles size={"h4"}>{t("LogNew")}</Titles>
                             </Buttons>
@@ -134,39 +141,29 @@ export default function EquipmentLogContent() {
                         <>
                           {filteredLogs.length === 0 ? (
                             <>
-                              <Holds className="row-span-7 h-full">
-                                <EmptyViews
-                                  logoPosition={"top"}
-                                  logoSize={"lg"}
-                                  background={"white"}
-                                  TopChild={
-                                    <Holds className="h-full w-full">
-                                      <Titles size={"h3"}>
-                                        {t("NoCurrent")}
-                                      </Titles>
-                                    </Holds>
-                                  }
-                                />
+                              <Holds className="row-span-6 h-full justify-center">
+                                <Texts
+                                  size="p6"
+                                  className="text-gray-500 italic"
+                                >
+                                  {t("NoCurrent")}
+                                </Texts>
                               </Holds>
-                              <Holds className="row-span-1 w-full h-full">
-                                <Contents width={"section"}>
-                                  <Buttons
-                                    background={"green"}
-                                    className="w-full"
-                                    onClick={() =>
-                                      router.push(
-                                        "/dashboard/equipment/log-new"
-                                      )
-                                    }
-                                  >
-                                    <Titles size={"h4"}>{t("LogNew")}</Titles>
-                                  </Buttons>
-                                </Contents>
+                              <Holds className="row-span-1 w-full">
+                                <Buttons
+                                  background={"green"}
+                                  className="w-full py-2"
+                                  onClick={() =>
+                                    router.push("/dashboard/equipment/log-new")
+                                  }
+                                >
+                                  <Titles size={"h4"}>{t("LogNew")}</Titles>
+                                </Buttons>
                               </Holds>
                             </>
                           ) : (
                             <>
-                              <Holds className="row-span-7 h-full">
+                              <Holds className="row-span-6 h-full overflow-y-auto no-scrollbar">
                                 {filteredLogs.map((log) => {
                                   // Calculate elapsed time as shown above
                                   const start = parseISO(
@@ -214,45 +211,42 @@ export default function EquipmentLogContent() {
                                   }`;
 
                                   return (
-                                    <Holds
-                                      key={log.id}
-                                      className="pb-5 overflow-y-auto no-scrollbar"
-                                    >
-                                      <Contents width={"section"}>
+                                    <Holds key={log.id}>
+                                      <SlidingDiv
+                                        onSwipeLeft={() => handleDelete(log.id)}
+                                      >
                                         <Buttons
                                           background={
                                             log.endTime !== null
                                               ? "lightBlue"
                                               : "orange"
                                           }
+                                          shadow={"none"}
                                           href={`/dashboard/equipment/${log.id}`}
-                                          className="py-3"
+                                          className="py-0.5"
                                         >
-                                          <Titles size={"h5"}>
-                                            {log.equipment?.name}
+                                          <Titles size={"h4"}>
+                                            {log.Equipment?.name}
                                           </Titles>
-                                          <Titles size={"h6"}>
+                                          <Titles className="text-xs">
                                             {formattedTime}
                                           </Titles>
                                         </Buttons>
-                                      </Contents>
+                                      </SlidingDiv>
                                     </Holds>
                                   );
                                 })}
                               </Holds>
-                              <Holds className="row-span-1  h-full">
-                                <Contents width={"section"}>
-                                  <Buttons
-                                    background={"green"}
-                                    onClick={() =>
-                                      router.push(
-                                        "/dashboard/equipment/log-new"
-                                      )
-                                    }
-                                  >
-                                    <Titles size={"h4"}>{t("LogNew")}</Titles>
-                                  </Buttons>
-                                </Contents>
+                              <Holds className="row-span-1 h-full w-full">
+                                <Buttons
+                                  background={"green"}
+                                  onClick={() =>
+                                    router.push("/dashboard/equipment/log-new")
+                                  }
+                                  className="w-full py-2"
+                                >
+                                  <Titles size={"h4"}>{t("LogNew")}</Titles>
+                                </Buttons>
                               </Holds>
                             </>
                           )}

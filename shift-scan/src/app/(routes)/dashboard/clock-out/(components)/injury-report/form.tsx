@@ -1,6 +1,5 @@
 // Form.tsx
 "use client";
-import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
@@ -16,7 +15,7 @@ export const Form = ({ userId, checked, signature }: FormProps) => {
   const t = useTranslations("clock-out");
 
   return (
-    <form action={CreateInjuryForm}>
+    <form>
       {/* Hidden inputs */}
       <Inputs type="hidden" name="date" value={new Date().toString()} />
       <Inputs

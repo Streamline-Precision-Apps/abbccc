@@ -13,10 +13,13 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Reset } from "@/actions/reset";
 import { useState } from "react";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { useRouter } from "next/navigation";
+import { Images } from "@/components/(reusable)/images";
 
 export default function ForgotPassword() {
   const [message, setMessage] = useState<string>("");
   const [color, SetColor] = useState<string>("");
+  const router = useRouter();
   const handlePasswordReset = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -43,12 +46,14 @@ export default function ForgotPassword() {
         <Grids rows={"5"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 ">
             <Contents width={"section"}>
-              <TitleBoxes
-                title={"Return to sign in"}
-                titleImg={"/key.svg"}
-                titleImgAlt={"key"}
-                href="/signin"
-              />
+              <TitleBoxes href="/signin">
+                <Titles size={"h2"}>Return to sign in</Titles>
+                <Images
+                  titleImg="/key.svg"
+                  titleImgAlt={"key"}
+                  className="max-w-8 h-auto object-contain"
+                />
+              </TitleBoxes>
             </Contents>
           </Holds>
 

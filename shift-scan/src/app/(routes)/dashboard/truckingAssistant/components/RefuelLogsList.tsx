@@ -11,7 +11,7 @@ type Refueled = {
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -47,7 +47,7 @@ export default function RefuelLogsList({
 
   const handleMileageChange = (index: number, value: string | number) => {
     const newRefuel = [...editedRefuel];
-    newRefuel[index].milesAtfueling = Number(value);
+    newRefuel[index].milesAtFueling = Number(value);
     setEditedRefuel(newRefuel);
     setRefuelLogs(newRefuel);
   };
@@ -84,7 +84,7 @@ export default function RefuelLogsList({
                   );
                   formData.append(
                     "milesAtfueling",
-                    rL.milesAtfueling?.toString() || ""
+                    rL.milesAtFueling?.toString() || ""
                   );
                   updateRefuelLog(formData);
                 }}
@@ -103,7 +103,7 @@ export default function RefuelLogsList({
                 type="number"
                 name="currentMileage"
                 placeholder={t("CurrentMileage")}
-                value={rL.milesAtfueling || ""}
+                value={rL.milesAtFueling || ""}
                 onChange={(e) => handleMileageChange(index, e.target.value)}
                 onBlur={() => {
                   const formData = new FormData();
@@ -114,12 +114,12 @@ export default function RefuelLogsList({
                   );
                   formData.append(
                     "milesAtfueling",
-                    rL.milesAtfueling?.toString() || ""
+                    rL.milesAtFueling?.toString() || ""
                   );
                   updateRefuelLog(formData);
                 }}
                 className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
-                  rL.milesAtfueling
+                  rL.milesAtFueling
                     ? "text-black"
                     : "text-app-red placeholder:text-app-red"
                 } `}

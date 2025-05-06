@@ -102,7 +102,7 @@
     "Unit": "hrs",
     "DA-Time-Label": "Hrs",
     "DA-Today": "Hoy",
-    "TimeSheet-Label": "Ver mi hoja de tiempo",
+    "TimeSheet-Label": "Ver mis hojas de horas",
     "Clock-btn": "Fichar",
     "Clock-btn-break": "Regresar",
     "Title": "Ver hojas de tiempo",
@@ -275,7 +275,6 @@
     "Teams-Logo-Title": "Icono del Equipo",
     "MyTeams-Title": "",
     "Teams-Button-Name": "Equipo",
-    "Timesheets": "Hojas de Tiempo",
     "Duration": "Total de horas trabajadas:",
     "Duration-Comment": "La duración se actualiza cuando se guardan los cambios de edición.",
     "ClockIn": "Registro de Entrada",
@@ -299,6 +298,8 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SelectMaterialTypeAndEquipment": "Seleccione el tipo de material y equipo",
+    "StartDay": "Iniciar Día",
     "MaterialType": "Tipo de Material",
     "LaborType": "Tipo de Trabajo",
     "SubmitSelection": "Enviar selección",
@@ -380,10 +381,11 @@
     "CostCode-Label": "Código de Costo:",
     "ScanJobSiteOrTruck": "Escanear Sitio de Trabajo o Camiones",
     "ChangeJobsite": "Cambiar Sitio de Trabajo",
-    "Truck-label": "Camiones Encontrados",
-    "Mileage": "Mileage"
+    "Truck-label": "Camión",
+    "Mileage": "Kilometraje"
   },
   "ClockOut": {
+    "SearchBarPlaceholder": "Busca aquí...",
     "ClockOut": "Fichar al Salir",
     "Date-label": "Fecha",
     "JobSite-label": "Sitio de Trabajo",
@@ -434,6 +436,8 @@
   },
   "Hamburger": {
     "PersonalReminders": "Recordatorios Personales",
+    "AccountInformation": "Información de Cuenta",
+    "AccountSettings": "Configuración de Cuenta",
     "Saving": "Guardando Cambios",
     "loading": "Cargando...",
     "NewPassword": "Nueva Contraseña",
@@ -451,6 +455,7 @@
     "Inbox": "Bandeja de Entrada",
     "EmployeeID": "ID de Empleado",
     "PersonalEmail": "Correo Personal",
+    "EmergencyContactName": "Contacto de Emergencia",
     "EmergencyContact": "Contacto de Emergencia",
     "SafetyTraining": "Entrenamiento de Seguridad",
     "SignOut": "Cerrar Sesión",
@@ -645,7 +650,7 @@
     "DeleteEquipmentLog": "Borrar Registro de Herramientas",
     "TimesheetComment": "Comentarios de Hojas de Tiempo",
     "VehicleID": "ID de Vehículo",
-    "StartingMileage": "Kilometraje inicial",
+    "StartingMileage": "Ingrese el kilometraje inicial aquí",
     "EndingMileage": "Kilometraje final",
     "LeftIdaho": "Fuera de Idaho",
     "RefuelingGallons": "Gallones de Gasolina",
@@ -844,6 +849,17 @@
     "NoDrives": "No hay unidades actualmente",
     "FetchingError": "Se produjo un error mientras obtenía contenido recibido"
   },
+
+  "Tasco": {
+    "LoadCounter": "Contador de carga",
+    "Comments": "Comentario",
+    "RefuelIcon": "reabastecimiento de reabastecimiento",
+    "RefuelLogs": "Galones adicionales",
+    "CommentPlaceholder": "Escribe tus comentarios aquí ...",
+    "DidYouRefuel?": "¿Reabasteciste?",
+    "TotalGallons": "Total de galones"
+  },
+
   "MechanicWidget": {
     "AddDelay": "Add Delay",
     "RemoveDelay": "Remove Delay",

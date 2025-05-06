@@ -8,12 +8,7 @@ import React, {
   use,
   useEffect,
 } from "react";
-import {
-  JobCodes,
-  CostCodes,
-  EquipmentCodes,
-  EquipmentCode,
-} from "@/lib/types";
+import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
@@ -22,8 +17,6 @@ const CostCodesRecentSchema = z
     z.object({
       id: z.string(),
       name: z.string(),
-      description: z.string(),
-      type: z.string().default("DEFAULT_TYPE"),
     })
   )
   .nullable();
