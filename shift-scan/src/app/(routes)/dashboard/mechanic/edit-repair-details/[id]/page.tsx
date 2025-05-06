@@ -7,11 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import MechanicEditPage from "./_components/MechanicEditPage";
 import MechanicEmployeeLogs from "./_components/MechanicEmployeeLogs";
 import { useTranslations } from "next-intl";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
 import { NewTab } from "@/components/(reusable)/newTabs";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type Equipment = {
   id: string;
@@ -33,7 +32,7 @@ type RepairDetails = {
   delay: Date | null;
   delayReasoning?: string;
   totalHoursLaboured: number;
-  equipment: Equipment;
+  Equipment: Equipment;
 };
 type User = {
   firstName: string;
@@ -44,11 +43,11 @@ type MaintenanceLog = {
   startTime: string;
   endTime: string;
   comment: string;
-  user: User;
+  User: User;
 };
 type LogItem = {
   id: string;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
 };
 
 export default function EditRepairDetails({
@@ -84,7 +83,7 @@ export default function EditRepairDetails({
         const totalHours = logsRes.reduce((total: number, log: LogItem) => {
           return (
             total +
-            log.maintenanceLogs.reduce(
+            log.MaintenanceLogs.reduce(
               (
                 subTotal: number,
                 log: { startTime: string; endTime: string | null }
@@ -129,78 +128,65 @@ export default function EditRepairDetails({
           <Holds
             background={"white"}
             className={
-              repairDetails?.equipment
+              repairDetails?.Equipment
                 ? "row-start-1 row-end-2 h-full justify-center p-3  "
                 : "row-start-1 row-end-2 h-full justify-center p-3 animate-pulse"
             }
           >
-            <Grids
-              cols={"3"}
-              rows={"2"}
-              className="w-full h-full p-3 relative "
-            >
-              <Holds className="col-span-1 row-span-1 absolute">
-                <Buttons
-                  onClick={() => router.push("/dashboard/mechanic")}
-                  background={"none"}
-                  position={"left"}
-                  size={"50"}
-                  shadow={"none"}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt={t("Mechanic")}
-                    className="max-w-8 h-auto object-contain"
-                  />
-                </Buttons>
-              </Holds>
-
-              <Holds className="col-start-1 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-                <Titles size={"h1"}>
-                  {repairDetails?.equipment
-                    ? `${repairDetails.equipment.name.slice(0, 12)}...`
-                    : ""}
-                </Titles>
-              </Holds>
-            </Grids>
+            <TitleBoxes onClick={() => router.push("/dashboard/mechanic")}>
+              <Titles size={"h4"}>
+                {repairDetails?.Equipment
+                  ? `${
+                      repairDetails.Equipment.name.length > 20
+                        ? repairDetails.Equipment.name.slice(0, 20) + "..."
+                        : repairDetails.Equipment.name
+                    }`
+                  : ""}
+              </Titles>
+            </TitleBoxes>
           </Holds>
           <Holds
             className={
-              repairDetails?.equipment
-                ? "row-span-6 h-full "
-                : "row-span-6 h-full animate-pulse"
+              repairDetails?.Equipment
+                ? "row-start-2 row-end-8 h-full "
+                : "row-start-2 row-end-8 h-full animate-pulse"
             }
           >
-            <Grids rows={"10"} className="h-full">
-              <Holds position={"row"} className="row-span-1 h-full gap-1">
+            <Holds className="h-full">
+              <Holds position={"row"} className="h-fit gap-1.5">
                 <NewTab
                   onClick={() => setActiveTab(1)}
                   isActive={activeTab === 1}
                   titleImage="/information.svg"
                   titleImageAlt={""}
                   isComplete={true}
+                  animatePulse={loading}
                 >
                   {t("ProjectInfo")}
                 </NewTab>
                 <NewTab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
-                  titleImage="/Ongoing.svg"
+                  titleImage="/statusOngoing.svg"
                   titleImageAlt={""}
                   isComplete={true}
+                  animatePulse={loading}
                 >
                   {t("Logs")}
                 </NewTab>
               </Holds>
+
               <Holds
                 background={"white"}
-                className="rounded-t-none row-span-9 h-full "
+                className={`rounded-t-none h-full pt-3 pb-5 overflow-y-scroll ${
+                  loading ? "animate-pulse" : ""
+                }`}
               >
                 {activeTab === 1 && (
                   <MechanicEditPage
                     repairDetails={repairDetails}
                     setRepairDetails={setRepairDetails}
-                    totalLogs={logs ? logs[0].maintenanceLogs.length : 0}
+                    totalLogs={logs ? logs[0].MaintenanceLogs.length : 0}
                   />
                 )}
                 {activeTab === 2 && (
@@ -211,7 +197,7 @@ export default function EditRepairDetails({
                   />
                 )}
               </Holds>
-            </Grids>
+            </Holds>
           </Holds>
         </Grids>
       </Contents>

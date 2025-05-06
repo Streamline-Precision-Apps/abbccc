@@ -28,3 +28,18 @@
     stroke: black;
   }
 }
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  position: fixed;
+  width: 100%;
+  max-width: 100%;
+  /* Prevent landscape */
+  overflow-x: hidden;
+  touch-action: pan-x pan-y;
+}

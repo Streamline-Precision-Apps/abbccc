@@ -13,15 +13,6 @@ type Equipment = {
   name: string;
 };
 
-enum Priority {
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  DELAYED = "DELAYED",
-  PENDING = "PENDING",
-  TODAY = "TODAY",
-}
-
 type MaintenanceLog = {
   id: string;
   startTime: string;
@@ -29,7 +20,6 @@ type MaintenanceLog = {
   userId: string;
   timeSheetId: string;
   User: {
-    id: string;
     firstName: string;
     lastName: string;
     image: string;
@@ -39,18 +29,26 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
   equipmentIssue: string;
   additionalInfo: string;
-  selected: boolean;
   repaired: boolean;
   createdBy: string;
   createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
   MaintenanceLogs: MaintenanceLog[];
   Equipment: Equipment;
 };
 
+enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  DELAYED = "DELAYED",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+}
 export const SearchAndCheck = ({
   projects,
   loading,

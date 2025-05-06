@@ -91,7 +91,9 @@ export async function GET(
                     name: true,
                     quantity: true,
                     loadType: true,
-                    LoadWeight: true,
+                    grossWeight: true,
+                    lightWeight: true,
+                    materialWeight: true,
                   },
                 },
                 EquipmentHauled: {

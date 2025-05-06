@@ -123,12 +123,17 @@ export default function CreateMechanicProjectProcess() {
               <Grids rows="10" className="w-full h-full">
                 <Holds className="row-start-1 row-end-2 h-full">
                   <TitleBoxes
-                    title={t("SelectEquipment")}
-                    titleImg="/mechanic.svg"
-                    titleImgAlt={t("Mechanic")}
                     onClick={() => router.push("/dashboard/mechanic")}
-                    type="noIcon-NoHref"
-                  />
+                  >
+                    <Holds position={"row"}>
+                      <Titles size="h3">{t("SelectEquipment")}</Titles>
+                      <Images
+                        titleImg="/mechanic.svg"
+                        titleImgAlt={t("Mechanic")}
+                        className="w-8 h-8"
+                      />
+                    </Holds>
+                  </TitleBoxes>
                 </Holds>
 
                 <Holds className="row-start-3 row-end-8 h-full justify-center">
@@ -172,13 +177,16 @@ export default function CreateMechanicProjectProcess() {
             <Holds background="white" className="w-full h-full py-4">
               <Grids rows="10" gap="5" className="w-full h-full">
                 <Holds className="row-start-1 row-end-2 h-full">
-                  <TitleBoxes
-                    title={t("SelectEquipment")}
-                    titleImg="/mechanic.svg"
-                    titleImgAlt={t("Mechanic")}
-                    onClick={prevStep}
-                    type="noIcon-NoHref"
-                  />
+                  <TitleBoxes onClick={prevStep}>
+                    <Holds position={"row"}>
+                      <Titles size="h3">{t("SelectEquipment")}</Titles>
+                      <Images
+                        titleImg="/mechanic.svg"
+                        titleImgAlt={t("Mechanic")}
+                        className="w-8 h-8"
+                      />
+                    </Holds>
+                  </TitleBoxes>
                 </Holds>
                 <Holds className="row-start-3 row-end-9 h-full">
                   <Contents width={"section"} className="h-full py-5">
@@ -206,13 +214,16 @@ export default function CreateMechanicProjectProcess() {
             <Holds background="white" className="w-full h-full">
               <Grids rows={"7"} gap={"5"} className="w-full h-full">
                 <Holds className="h-full row-start-1 row-end-2">
-                  <TitleBoxes
-                    title={"Select Equipment"}
-                    titleImg="/mechanic.svg"
-                    titleImgAlt="Mechanic"
-                    onClick={prevStep}
-                    type="noIcon-NoHref"
-                  />
+                  <TitleBoxes onClick={prevStep}>
+                    <Holds position={"row"}>
+                      <Titles size="h3">{"Select Equipment"}</Titles>
+                      <Images
+                        titleImg="/mechanic.svg"
+                        titleImgAlt="Mechanic"
+                        className="w-8 h-8"
+                      />
+                    </Holds>
+                  </TitleBoxes>
                 </Holds>
                 <Contents
                   width={"section"}
@@ -254,15 +265,15 @@ export default function CreateMechanicProjectProcess() {
                 <Holds background="white" className="w-full h-full py-4">
                   <Grids rows="7" gap="5" className="w-full h-full">
                     <Holds className="row-start-1 row-end-2">
-                      <TitleBoxes
-                        title={
-                          equipment ? equipment.name.slice(0, 18) + "..." : ""
-                        }
-                        titleImg=""
-                        titleImgAlt=""
-                        onClick={() => setStep(1)}
-                        type="noIcon-NoHref"
-                      />
+                      <TitleBoxes onClick={() => setStep(1)}>
+                        <Holds position={"row"}>
+                          <Titles size="h3">
+                            {equipment
+                              ? equipment.name.slice(0, 18) + "..."
+                              : ""}
+                          </Titles>
+                        </Holds>
+                      </TitleBoxes>
                     </Holds>
                     <Holds className="row-start-2 row-end-6 h-full">
                       <Contents width={"section"} className="h-full">
@@ -344,12 +355,12 @@ export default function CreateMechanicProjectProcess() {
                                   status === "TODAY"
                                     ? "/todayPriority.svg"
                                     : status === "HIGH"
-                                    ? "/highPriority.svg"
+                                    ? "/priorityHigh.svg"
                                     : status === "MEDIUM"
-                                    ? "/mediumPriority.svg"
+                                    ? "/priorityMedium.svg"
                                     : status === "LOW"
-                                    ? "/lowPriority.svg"
-                                    : "/pending.svg"
+                                    ? "/priorityLow.svg"
+                                    : "/priorityPending.svg"
                                 }
                                 className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
                                 titleImgAlt="status"

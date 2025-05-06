@@ -32,7 +32,7 @@ interface EmployeeDataResult {
   employee: Employee | null;
   contacts: Contact | null;
   loading: boolean;
-  error: any; // Consider a more specific error type
+  error: string | null; // Consider a more specific error type
 }
 
 export const useEmployeeData = (
@@ -41,7 +41,7 @@ export const useEmployeeData = (
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contacts, setContacts] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +68,7 @@ export const useEmployeeData = (
               "Validation error in employee data:",
               validationError.errors
             );
-            setError(validationError.errors); // Set validation error
+            setError(validationError.errors[0].message); // Set validation error
             return; // Stop processing if validation fails
           }
         }
@@ -82,7 +82,7 @@ export const useEmployeeData = (
         }
       } catch (err) {
         console.error(err);
-        setError(err);
+        setError(err as string);
       } finally {
         setLoading(false);
       }

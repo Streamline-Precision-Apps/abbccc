@@ -3,10 +3,39 @@ import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ProjectItem } from "./ProjectItem";
+import { Texts } from "@/components/(reusable)/texts";
 
 type Equipment = {
   id: string;
   name: string;
+};
+
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+  timeSheetId: string;
+  User: {
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
+
+type Project = {
+  id: string;
+  equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
+  equipmentIssue: string;
+  additionalInfo: string;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {
@@ -17,34 +46,6 @@ enum Priority {
   PENDING = "PENDING",
   TODAY = "TODAY",
 }
-type MaintenanceLog = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  userId: string;
-  timeSheetId: string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    image: string;
-  };
-};
-
-type Project = {
-  id: string;
-  equipmentId: string;
-  equipmentIssue: string;
-  additionalInfo: string;
-  selected: boolean;
-  repaired: boolean;
-  createdBy: string;
-  createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
-  MaintenanceLogs: MaintenanceLog[];
-  Equipment: Equipment;
-};
 
 export function ProjectList({
   projects,
@@ -61,8 +62,10 @@ export function ProjectList({
 
   if (projects.length === 0) {
     return (
-      <Holds className="h-full w-full row-start-2 row-end-9 rounded-none">
-        <EmptyView />
+      <Holds className="h-full w-full row-start-2 row-end-9 rounded-none justify-center px-6">
+        <Texts size={"p5"} className="text-center text-gray-500 italic">
+          {t("NoProjectsFound")}
+        </Texts>
       </Holds>
     );
   }

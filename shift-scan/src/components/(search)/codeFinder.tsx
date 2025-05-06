@@ -86,7 +86,10 @@ export default function CodeFinder({
     }
 
     if (datatype === "jobsite") {
-      setScanResult({ qrCode: option.code, name: option.label });
+      setScanResult({
+        qrCode: option.code,
+        name: option.label, // You might want to provide a default name or get it from somewhere
+      });
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
@@ -98,7 +101,10 @@ export default function CodeFinder({
       datatype === "jobsite-tasco" ||
       datatype === "jobsite-truck"
     ) {
-      setScanResult({ qrCode: option.code, name: option.label });
+      setScanResult({
+        qrCode: option.code,
+        name: option.label, // You might want to provide a default name or get it from somewhere
+      });
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );

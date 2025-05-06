@@ -4,7 +4,7 @@ import { TimesheetFilter } from "@/lib/types";
 interface TimesheetDataResponse {
   data: any;
   loading: boolean;
-  error: Error | null;
+  error: string | null; // Consider a more specific error type
   updateDate: (newDate: string) => void;
   updateFilter: (newFilter: TimesheetFilter) => void;
 }
@@ -16,7 +16,7 @@ export const useTimesheetData = (
 ): TimesheetDataResponse => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [currentFilter, setCurrentFilter] = useState<TimesheetFilter>(initialFilter);
 

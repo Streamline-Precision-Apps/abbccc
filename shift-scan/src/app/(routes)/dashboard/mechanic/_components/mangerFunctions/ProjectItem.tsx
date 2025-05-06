@@ -4,6 +4,11 @@ import { Texts } from "@/components/(reusable)/texts";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { SelectionToggle } from "./SelectionToggle";
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 type MaintenanceLog = {
   id: string;
   startTime: string;
@@ -11,13 +16,26 @@ type MaintenanceLog = {
   userId: string;
   timeSheetId: string;
   User: {
-    id: string;
     firstName: string;
     lastName: string;
     image: string;
   };
 };
 
+type Project = {
+  id: string;
+  equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
+  equipmentIssue: string;
+  additionalInfo: string;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
+};
 
 enum Priority {
   LOW = "LOW",
@@ -27,26 +45,6 @@ enum Priority {
   PENDING = "PENDING",
   TODAY = "TODAY",
 }
-
-type Equipment = {
-  id: string;
-  name: string;
-};
-
-type Project = {
-  id: string;
-  equipmentId: string;
-  equipmentIssue: string;
-  additionalInfo: string;
-  selected: boolean;
-  repaired: boolean;
-  createdBy: string;
-  createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
-  MaintenanceLogs: MaintenanceLog[];
-  Equipment: Equipment;
-};
 
 export function ProjectItem({
   project,
@@ -60,11 +58,11 @@ export function ProjectItem({
   router: AppRouterInstance;
 }) {
   const priorityIcons = {
-    DELAYED: "/delayPriority.svg",
-    PENDING: "/pending.svg",
-    LOW: "/lowPriority.svg",
-    MEDIUM: "/mediumPriority.svg",
-    HIGH: "/highPriority.svg",
+    DELAYED: "/priorityDelay.svg",
+    PENDING: "/priorityPending.svg",
+    LOW: "/priorityLow.svg",
+    MEDIUM: "/priorityMedium.svg",
+    HIGH: "/priorityHigh.svg",
     TODAY: "/todayPriority.svg",
   };
 
@@ -85,7 +83,7 @@ export function ProjectItem({
       >
         <Holds size="20">
           <Images
-            titleImg={priorityIcons[project.priority] || "/pending.svg"}
+            titleImg={priorityIcons[project.priority] || "/priorityPending.svg"}
             titleImgAlt="priority"
             size="80"
           />

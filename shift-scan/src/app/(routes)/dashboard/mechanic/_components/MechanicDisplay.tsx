@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { setProjectSelected } from "@/actions/mechanicActions";
 import { NonManagerView } from "./NonManagerView";
 import { ManagerView } from "./ManagerView";
-// Import your UI components (Holds, Grids, etc.)
 
 type Equipment = {
   id: string;
@@ -17,7 +16,6 @@ type MaintenanceLog = {
   userId: string;
   timeSheetId: string;
   User: {
-    id: string;
     firstName: string;
     lastName: string;
     image: string;
@@ -27,14 +25,14 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
   equipmentIssue: string;
   additionalInfo: string;
-  selected: boolean;
   repaired: boolean;
   createdBy: string;
   createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
   MaintenanceLogs: MaintenanceLog[];
   Equipment: Equipment;
 };
@@ -55,33 +53,35 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
 
   // Fetch all projects
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [projectsRes, timecardRes] = await Promise.all([
+        fetch("/api/getMaintenanceProjects", {
+          next: { tags: ["maintenance-projects"] },
+        }),
+        fetch("/api/getRecentTimecard", {
+          next: { tags: ["timesheets"] },
+        }),
+      ]);
+
+      const projectsData = await projectsRes.json();
+      const timecardData = await timecardRes.json();
+
+      setProjects(projectsData);
+      setTimeSheetId(timecardData.id);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  // separate function to have a useEffect and a callback
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [projectsRes, timecardRes] = await Promise.all([
-          fetch("/api/getMaintenanceProjects", {
-            next: { tags: ["maintenance-projects"] },
-          }),
-          fetch("/api/getRecentTimecard", {
-            next: { tags: ["timesheets"] },
-          }),
-        ]);
-
-        const projectsData = await projectsRes.json();
-        const timecardData = await timecardRes.json();
-
-        setProjects(projectsData);
-        setTimeSheetId(timecardData.id);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
+
+  const handleRefresh = fetchData;
 
   // Handle project selection/deselection
   const handleProjectSelect = async (projectId: string, selected: boolean) => {
@@ -113,6 +113,7 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
           projects={priorityProjects}
           loading={loading}
           timeSheetId={timeSheetId}
+          handleRefresh={handleRefresh}
         />
       ) : (
         <ManagerView
@@ -123,6 +124,7 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
           loading={loading}
           timeSheetId={timeSheetId}
           onProjectSelect={handleProjectSelect}
+          handleRefresh={handleRefresh}
         />
       )}
     </>

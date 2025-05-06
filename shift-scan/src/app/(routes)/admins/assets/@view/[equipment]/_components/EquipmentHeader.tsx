@@ -96,7 +96,7 @@ export function EquipmentHeader({
                   <Holds className="w-1/6 h-full">
                     {isFieldChanged("equipmentName") && (
                       <Images
-                        titleImg="/turnBack.svg"
+                        titleImg="/arrowBack.svg"
                         titleImgAlt="revert"
                         size={"30"}
                         onClick={() => revertField("equipmentName")}
@@ -167,7 +167,7 @@ export function EquipmentHeader({
                   <Holds className="w-1/6 h-full">
                     {isFieldChanged("equipmentName") && (
                       <Images
-                        titleImg="/turnBack.svg"
+                        titleImg="/arrowBack.svg"
                         titleImgAlt="revert"
                         size={"40"}
                         onClick={() => revertField("equipmentName")}

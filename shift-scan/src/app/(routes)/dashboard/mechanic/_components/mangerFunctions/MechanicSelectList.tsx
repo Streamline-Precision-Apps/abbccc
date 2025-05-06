@@ -8,6 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { SearchAndCheck } from "./SearchAndCheck";
+
 // Import your UI components
 
 type Equipment = {
@@ -22,7 +23,6 @@ type MaintenanceLog = {
   userId: string;
   timeSheetId: string;
   User: {
-    id: string;
     firstName: string;
     lastName: string;
     image: string;
@@ -32,14 +32,14 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
   equipmentIssue: string;
   additionalInfo: string;
-  selected: boolean;
   repaired: boolean;
   createdBy: string;
   createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
   MaintenanceLogs: MaintenanceLog[];
   Equipment: Equipment;
 };
@@ -92,45 +92,47 @@ export default function MechanicSelectList({
   }, [projects, selectedFilter]);
 
   return (
-    <Grids rows="9" cols="5" gap="4" className="h-full p-3">
-      {/* Add New Repair Button */}
-      <Holds className="col-start-1 col-end-2 row-start-1 row-end-2 h-full">
-        <Buttons
-          href="/dashboard/mechanic/new-repair"
-          background="green"
-          className="h-full justify-center items-center"
-        >
-          <Images
-            titleImg="/plus.svg"
-            titleImgAlt={t("AddNewRepair")}
-            className="mx-auto p-1"
+    <Holds background="white" className="h-full rounded-t-none">
+      <Grids rows="9" cols="5" gap="4" className="h-full p-3">
+        {/* Add New Repair Button */}
+        <Holds className="col-start-1 col-end-2 row-start-1 row-end-2 h-full">
+          <Buttons
+            href="/dashboard/mechanic/new-repair"
+            background="green"
+            className="h-full justify-center items-center"
+          >
+            <Images
+              titleImg="/plus.svg"
+              titleImgAlt={t("AddNewRepair")}
+              className="mx-auto p-1"
+            />
+          </Buttons>
+        </Holds>
+
+        {/* Filter Dropdown */}
+        <Holds className="col-start-2 col-end-6 row-start-1 row-end-2 h-full">
+          <Selects
+            className="w-full h-full text-center justify-center items-center"
+            onChange={(e) => setSelectedFilter(e.target.value)}
+            value={selectedFilter}
+          >
+            {PriorityOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Selects>
+        </Holds>
+
+        {/* Project List */}
+        <Holds className="col-start-1 col-end-6 row-start-2 row-end-10 h-full w-full border-[3px] border-black rounded-[10px]">
+          <SearchAndCheck
+            projects={filteredProjects}
+            loading={loading}
+            onProjectSelect={onProjectSelect}
           />
-        </Buttons>
-      </Holds>
-
-      {/* Filter Dropdown */}
-      <Holds className="col-start-2 col-end-6 row-start-1 row-end-2 h-full">
-        <Selects
-          className="w-full h-full justify-center items-center"
-          onChange={(e) => setSelectedFilter(e.target.value)}
-          value={selectedFilter}
-        >
-          {PriorityOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Selects>
-      </Holds>
-
-      {/* Project List */}
-      <Holds className="col-start-1 col-end-6 row-start-2 row-end-10 h-full w-full border-[3px] border-black rounded-[10px]">
-        <SearchAndCheck
-          projects={filteredProjects}
-          loading={loading}
-          onProjectSelect={onProjectSelect}
-        />
-      </Holds>
-    </Grids>
+        </Holds>
+      </Grids>
+    </Holds>
   );
 }

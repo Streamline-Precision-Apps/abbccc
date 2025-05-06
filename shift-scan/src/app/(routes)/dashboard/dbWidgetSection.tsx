@@ -4,13 +4,11 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Session } from "next-auth";
-import { breakOutTimeSheet } from "@/actions/timeSheetActions";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
 import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
 import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
 import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
-import { setCurrentPageView } from "@/actions/cookieActions";
 import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 import { LogItem } from "@/lib/types";
 import { useModalState } from "@/hooks/(dashboard)/useModalState";
@@ -44,18 +42,6 @@ const useFetchLogs = (
     };
     fetchLogs();
   }, [e, setLoading, setLogs]);
-};
-
-// Reusable fetch for timesheet ID
-const fetchRecentTimeSheetId = async (): Promise<string | null> => {
-  try {
-    const res = await fetch("/api/getRecentTimecard");
-    const data = await res.json();
-    return data?.id || null;
-  } catch (error) {
-    console.error("Error fetching recent timesheet ID:", error);
-    return null;
-  }
 };
 
 export default function DbWidgetSection({
@@ -112,6 +98,7 @@ export default function DbWidgetSection({
           logs={logs}
           permission={permission}
           currentView={currentView}
+          mechanicProjectID={mechanicProjectID}
           laborType={laborType}
         />
       );
@@ -126,6 +113,7 @@ export default function DbWidgetSection({
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
+          mechanicProjectID={mechanicProjectID}
           laborType={laborType}
         />
       );
@@ -155,6 +143,7 @@ export default function DbWidgetSection({
           handleShowAdditionalButtons={handleShowAdditionalButtons}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
+          mechanicProjectID={mechanicProjectID}
           permission={permission}
         />
       );

@@ -85,7 +85,7 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
               >
                 <Holds className="h-full w-[20%]">
                   <Images
-                    titleImg="/magnifyingGlass.svg"
+                    titleImg="/searchLeft.svg"
                     titleImgAlt="search"
                   />
                 </Holds>

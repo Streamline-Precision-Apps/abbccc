@@ -484,6 +484,7 @@
     "Logs-Fetch": "Error fetching logs:"
   },
   "Hamburger": {
+    "FormsDocuments": "Forms & Documents",
     "PersonalReminders": "Personal Reminders",
     "AccountInformation": "Account Information",
     "AccountSettings": "Account Settings",
@@ -882,6 +883,7 @@
   },
 
   "TruckingAssistant": {
+    "WorkDetails": "Work Details",
     "WriteYourNotesHere": "Write your Notes here...",
     "Mileage": "Mileage",
     "State": "State",
@@ -891,6 +893,12 @@
     "DidYouRefuel": "Did you Refuel?",
     "TypeHere": "Type here",
     "Material": "Material",
+    "MaterialName": "Material Name",
+    "OriginOfMaterial": "Origin of Material",
+    "MaterialWeight": "Material Weight",
+    "LightWeight": "Light Weight",
+    "GrossWeight": "Gross Weight",
+    "LoadType": "Load Type",
     "ErrorAddingMaterial": "Error adding Material:",
     "ErrorAddingEquipment": "Error adding Equipment:",
     "ErrorAddingStateMileage": "Error adding State Mileage:",
@@ -1003,8 +1011,9 @@
     "AdditionalNotes": "Additional Notes",
     "FinishProject": "Finish Project",
     "LeaveProject": "Leave Project",
-    "RecordToLeaveProject": "Record a comment to leave the project",
-    "ProjectHasAlreadyBeenDelayed": "Project has already been delayed",
+    "RecordToLeaveProject": "Record a comment to leave the project.",
+    "ProjectHasAlreadyBeenDelayed": "Project has already been delayed.",
+    "ExpectedArrivalRequired": "Record an expected arrival.",
     "Delay": "Delay",
     "NoDelay": "No Delay",
     "DelayStatus": "Delay Status",
