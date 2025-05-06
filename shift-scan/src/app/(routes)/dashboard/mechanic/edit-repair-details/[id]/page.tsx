@@ -167,7 +167,7 @@ export default function EditRepairDetails({
                 <NewTab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
-                  titleImage="/Ongoing.svg"
+                  titleImage="/statusOngoing.svg"
                   titleImageAlt={""}
                   isComplete={true}
                   animatePulse={loading}

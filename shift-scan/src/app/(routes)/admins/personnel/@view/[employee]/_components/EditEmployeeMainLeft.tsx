@@ -142,7 +142,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />
@@ -174,7 +174,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />
@@ -207,7 +207,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />
@@ -243,7 +243,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />
@@ -275,7 +275,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />
@@ -308,7 +308,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />
@@ -340,7 +340,7 @@ export function EditEmployeeMainLeft({
                 >
                   <Holds>
                     <Images
-                      titleImg={"/turnBack.svg"}
+                      titleImg={"/arrowBack.svg"}
                       titleImgAlt={"revert"}
                       size={"70"}
                     />

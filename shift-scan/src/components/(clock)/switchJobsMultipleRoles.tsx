@@ -89,7 +89,7 @@ export default function SwitchJobsMultiRoles({
                 onClick={handleReturnPath}
               >
                 <Images
-                  titleImg="/turnBack.svg"
+                  titleImg="/arrowBack.svg"
                   titleImgAlt="back"
                   position={"left"}
                 />
@@ -153,7 +153,7 @@ export default function SwitchJobsMultiRoles({
               onClick={handleReturnPath}
             >
               <Images
-                titleImg="/turnBack.svg"
+                titleImg="/arrowBack.svg"
                 titleImgAlt="back"
                 position={"left"}
               />

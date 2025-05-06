@@ -20,7 +20,7 @@ export default async function ClockOutDashboardContent() {
             <Holds>
               <Texts>{t("Title")}</Texts>{" "}
               <Images
-                titleImg="/profile.svg"
+                titleImg="/profileEmpty.svg"
                 titleImgAlt="Team"
                 className="w-8 h-8"
               />

@@ -90,7 +90,7 @@ export function ManagerView({
           <NewTab
             isActive={activeTab === 1}
             onClick={() => setActiveTab(1)}
-            titleImage="/OrangeOngoing.svg"
+            titleImage="/OrangestatusOngoing.svg"
             titleImageAlt="List Tab"
             isComplete={true}
             isLoading={loading}

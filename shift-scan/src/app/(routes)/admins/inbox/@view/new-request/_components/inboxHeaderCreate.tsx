@@ -133,7 +133,7 @@ export function RequestHeaderCreate({
             <Holds className="w-full h-full col-span-1">
               <Images
                 className="w-full h-full rounded-full bg-cover bg-center"
-                titleImg={"/magnifyingGlass.svg"}
+                titleImg={"/searchLeft.svg"}
                 titleImgAlt={"Employee Image"}
                 size={"50"}
               />
@@ -209,7 +209,7 @@ export function RequestHeaderCreate({
               >
                 <Holds className="h-full w-[20%]">
                   <Images
-                    titleImg="/magnifyingGlass.svg"
+                    titleImg="/searchLeft.svg"
                     titleImgAlt="search"
                   />
                 </Holds>

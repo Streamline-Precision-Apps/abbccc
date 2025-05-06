@@ -187,7 +187,7 @@ export function EquipmentRight({
                   >
                     <Holds>
                       <Images
-                        titleImg={"/turnBack.svg"}
+                        titleImg={"/arrowBack.svg"}
                         titleImgAlt={"revert"}
                         size={"70"}
                       />

@@ -58,11 +58,11 @@ export function ProjectItem({
   router: AppRouterInstance;
 }) {
   const priorityIcons = {
-    DELAYED: "/delayPriority.svg",
-    PENDING: "/pending.svg",
-    LOW: "/lowPriority.svg",
-    MEDIUM: "/mediumPriority.svg",
-    HIGH: "/highPriority.svg",
+    DELAYED: "/priorityDelay.svg",
+    PENDING: "/priorityPending.svg",
+    LOW: "/priorityLow.svg",
+    MEDIUM: "/priorityMedium.svg",
+    HIGH: "/priorityHigh.svg",
     TODAY: "/todayPriority.svg",
   };
 
@@ -83,7 +83,7 @@ export function ProjectItem({
       >
         <Holds size="20">
           <Images
-            titleImg={priorityIcons[project.priority] || "/pending.svg"}
+            titleImg={priorityIcons[project.priority] || "/priorityPending.svg"}
             titleImgAlt="priority"
             size="80"
           />

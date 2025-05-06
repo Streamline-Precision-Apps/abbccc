@@ -282,7 +282,7 @@ const Sidebar = () => {
                 className=""
               >
                 <Images
-                  titleImg="/end-day.svg"
+                  titleImg="/endDay.svg"
                   titleImgAlt="Sign Out Icon"
                   className="m-auto p-2"
                 />

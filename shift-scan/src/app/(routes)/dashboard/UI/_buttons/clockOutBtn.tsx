@@ -42,7 +42,7 @@ export default function ClockOutBtn({
               {laborType === "truckDriver" && (
                 <HorizontalLayout
                   text={"ClockOut"}
-                  titleImg={"/clock-out.svg"}
+                  titleImg={"/clockOut.svg"}
                   titleImgAlt={"clock Out Icon"}
                   color={"red"}
                   handleEvent={() => {
@@ -57,7 +57,7 @@ export default function ClockOutBtn({
               {laborType === "truckEquipmentOperator" && (
                 <HorizontalLayout
                   text={"ClockOut"}
-                  titleImg={"/clock-out.svg"}
+                  titleImg={"/clockOut.svg"}
                   titleImgAlt={"clock Out Icon"}
                   color={"red"}
                   handleEvent={() => {
@@ -74,7 +74,7 @@ export default function ClockOutBtn({
                 <VerticalLayout
                   color={"red"}
                   text={"ClockOut"}
-                  titleImg={"/clock-out.svg"}
+                  titleImg={"/clockOut.svg"}
                   titleImgAlt={"clock Out Icon"}
                   handleEvent={() => {
                     if (logs.length === 0) {
@@ -94,7 +94,7 @@ export default function ClockOutBtn({
               <HorizontalLayout
                 color={"red"}
                 text={"ClockOut"}
-                titleImg={"/clock-out.svg"}
+                titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
                 // handleEvent={() => handleShowAdditionalButtons("clockOut")}
                 handleEvent={() => {
@@ -114,7 +114,7 @@ export default function ClockOutBtn({
               <HorizontalLayout
                 color={"red"}
                 text={"ClockOut"}
-                titleImg={"/clock-out.svg"}
+                titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
                 handleEvent={() => {
                   if (logs.length === 0) {
@@ -131,7 +131,7 @@ export default function ClockOutBtn({
               <HorizontalLayout
                 color={"red"}
                 text={"ClockOut"}
-                titleImg={"/clock-out.svg"}
+                titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
                 handleEvent={() => {
                   if (logs.length === 0) {
@@ -150,7 +150,7 @@ export default function ClockOutBtn({
           {View === "truck" && (
             <HorizontalLayout
               text={"ClockOut"}
-              titleImg={"/clock-out.svg"}
+              titleImg={"/clockOut.svg"}
               titleImgAlt={"clock Out Icon"}
               color={"red"}
               handleEvent={() => {
@@ -165,7 +165,7 @@ export default function ClockOutBtn({
           {View === "mechanic" && (
             <HorizontalLayout
               text={"ClockOut"}
-              titleImg={"/clock-out.svg"}
+              titleImg={"/clockOut.svg"}
               titleImgAlt={"clock Out Icon"}
               color={"red"}
               handleEvent={() => {
@@ -182,7 +182,7 @@ export default function ClockOutBtn({
               <HorizontalLayout
                 color={"red"}
                 text={"ClockOut"}
-                titleImg={"/clock-out.svg"}
+                titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
                 handleEvent={() => {
                   if (logs.length === 0) {
@@ -199,7 +199,7 @@ export default function ClockOutBtn({
               <HorizontalLayout
                 color={"red"}
                 text={"ClockOut"}
-                titleImg={"/clock-out.svg"}
+                titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
                 handleEvent={() => {
                   if (logs.length === 0) {
