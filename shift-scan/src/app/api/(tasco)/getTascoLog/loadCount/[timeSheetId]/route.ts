@@ -9,13 +9,8 @@ export async function GET(
 ) {
   const { timeSheetId } = params;
 
-  // Ensure timeSheetId is provided and is a valid string
-  if (!timeSheetId || typeof timeSheetId !== "string") {
-    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
-  }
-
   try {
-    const notes = await prisma.tascoLog.findFirst({
+    const count = await prisma.tascoLog.findFirst({
       where: {
         id: timeSheetId,
       },
@@ -25,11 +20,11 @@ export async function GET(
     });
 
     // If no notes are found, return a 404
-    if (!notes) {
+    if (!count) {
       return NextResponse.json({ error: "No matching record found" }, { status: 404 });
     }
 
-    return NextResponse.json(notes);
+    return NextResponse.json(count);
   } catch (error) {
     // Log the error for debugging purposes
     console.error("Error fetching tascoLog:", error);

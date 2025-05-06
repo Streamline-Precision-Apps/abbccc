@@ -177,6 +177,8 @@ export default function ClockOutWidget({
                                 }`
                               : type === "Trucking Assistant"
                               ? "/dashboard/truckingAssistant"
+                              : type === "tasco"
+                              ? "/dashboard/tasco"
                               : undefined
                           }
                           className="w-full py-3"

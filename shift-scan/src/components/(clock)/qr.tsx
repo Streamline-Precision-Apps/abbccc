@@ -6,6 +6,11 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 
+type Option = {
+  label: string;
+  code: string;
+};
+
 type QrReaderProps = {
   handleScanJobsite?: (type: string) => void;
   url: string;
@@ -16,6 +21,7 @@ type QrReaderProps = {
   setStartCamera: React.Dispatch<React.SetStateAction<boolean>>;
   setFailedToScan: React.Dispatch<React.SetStateAction<boolean>>;
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
+  setJobsite: React.Dispatch<React.SetStateAction<Option>>;
 };
 
 export default function QR({
@@ -28,6 +34,7 @@ export default function QR({
   setStartCamera,
   setFailedToScan,
   setScanned,
+  setJobsite,
 }: QrReaderProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
@@ -70,16 +77,27 @@ export default function QR({
     [setscanEQResult, handleNextStep]
   );
 
+  // In your QR component (qr-handler.tsx), update the processGeneralScan function:
   const processGeneralScan = useCallback(
     (data: string) => {
-      setScanResult({ data });
-      qrScannerRef.current?.stop();
-      if (handleScanJobsite) {
-        handleScanJobsite(clockInRole || "");
+      // Find the matching jobsite from the jobsiteResults
+      const matchedJobsite = jobsiteResults?.find((j) => j.qrId === data);
+      if (matchedJobsite) {
+        setJobsite({
+          label: matchedJobsite.name, // Add the label
+          code: matchedJobsite.qrId, // Add the code (id)
+        });
+        qrScannerRef.current?.stop();
+        if (handleScanJobsite) {
+          handleScanJobsite(clockInRole || "");
+        }
+      } else {
+        throw new Error("Invalid QR code Scanned!");
       }
     },
-    [setScanResult, handleScanJobsite, clockInRole]
+    [jobsiteResults, setScanResult, handleScanJobsite, clockInRole]
   );
+
   // ----------------------- End of scan processes -------------------------------
 
   const handleScanSuccess = useCallback(

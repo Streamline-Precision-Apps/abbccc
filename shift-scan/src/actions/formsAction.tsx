@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+
 export async function generalFromSubmission(formData: FormData) {
   try {
     const formTemplateId = formData.get("formTemplateId") as string;

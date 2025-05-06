@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   try {
@@ -25,14 +26,14 @@ export async function GET() {
         repaired: true,
         createdAt: true,
         createdBy: true,
-        maintenanceLogs: {
+        MaintenanceLogs: {
           select: {
             id: true,
             startTime: true,
             endTime: true,
             userId: true,
             timeSheetId: true,
-            user: {
+            User: {
               select: {
                 firstName: true,
                 lastName: true,
@@ -41,7 +42,7 @@ export async function GET() {
             },
           },
         },
-        equipment: {
+        Equipment: {
           select: {
             id: true,
             name: true,

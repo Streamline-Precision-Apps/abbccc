@@ -46,7 +46,7 @@ export async function GET(
     const forms = await prisma.formSubmission.findMany({
       where: whereClause,
       include: {
-        formTemplate: {
+        FormTemplate: {
           select: {
             name: true,
             formType: true,

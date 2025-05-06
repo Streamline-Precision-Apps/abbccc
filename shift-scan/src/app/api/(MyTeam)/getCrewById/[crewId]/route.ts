@@ -29,33 +29,34 @@ export async function GET(
         id: crewId,
       },
       select: {
-        users: {
+        crewType: true,
+        Users: {
           select: {
             id: true,
             firstName: true,
             lastName: true,
             image: true,
-            // clockedIn: true,
+            clockedIn: true,
           },
         },
       },
     });
 
     if (!crew) {
-      return NextResponse.json(
-        { error: "Crew not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Crew not found" }, { status: 404 });
     }
 
     // Sort crew members alphabetically by first name
-    const crewMembers = crew.users
-      .map((member) => member)
-      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+    const crewMembers = crew.Users.map((member) => member).sort((a, b) =>
+      a.firstName.localeCompare(b.firstName)
+    );
 
-    return NextResponse.json(crewMembers, {
+    const crewType = crew.crewType;
+
+    return NextResponse.json([crewMembers, crewType], {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (error) {
@@ -66,9 +67,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

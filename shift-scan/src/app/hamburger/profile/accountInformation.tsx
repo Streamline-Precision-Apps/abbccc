@@ -9,7 +9,6 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
-import { uploadSignature } from "@/actions/userActions";
 import { Grids } from "@/components/(reusable)/grids";
 
 type Employee = {
@@ -20,7 +19,7 @@ type Employee = {
   signature?: string | null;
   image: string | null;
   imageUrl?: string | null;
-  contact: {
+  Contact: {
     phoneNumber: string;
     emergencyContact: string;
     emergencyContactNumber: string;
@@ -43,30 +42,30 @@ export default function AccountInformation({
   return (
     <Grids rows={"7"} className="w-full h-full">
       <Holds className="w-full h-full p-4 row-start-1 row-end-6">
-        <Labels size={"p6"}>Phone Number</Labels>
+        <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
         <EditableFields
-          value={employee?.contact?.phoneNumber || ""}
+          value={employee?.Contact?.phoneNumber || ""}
           isChanged={false}
           onChange={() => {}}
         />
 
-        <Labels size={"p6"}>Email</Labels>
+        <Labels size={"p6"}>{t("Email")}</Labels>
         <EditableFields
           value={employee?.email || ""}
           isChanged={false}
           onChange={() => {}}
         />
 
-        <Labels size={"p6"}>Emergency Contact</Labels>
+        <Labels size={"p6"}>{t("EmergencyContactName")}</Labels>
         <EditableFields
-          value={employee?.contact?.emergencyContact || ""}
+          value={employee?.Contact?.emergencyContact || ""}
           isChanged={false}
           onChange={() => {}}
         />
 
-        <Labels size={"p6"}>Emergency Contact Number</Labels>
+        <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
         <EditableFields
-          value={employee?.contact?.emergencyContactNumber || ""}
+          value={employee?.Contact?.emergencyContactNumber || ""}
           isChanged={false}
           onChange={() => {}}
         />
@@ -93,7 +92,7 @@ export default function AccountInformation({
           size={"full"}
           className="py-2"
         >
-          <Titles size={"h4"}>Sign Out</Titles>
+          <Titles size={"h4"}>{t("SignOut")}</Titles>
         </Buttons>
       </Holds>
 

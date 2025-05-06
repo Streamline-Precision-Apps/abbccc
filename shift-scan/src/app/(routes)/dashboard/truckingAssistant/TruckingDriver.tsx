@@ -25,7 +25,7 @@ type Refueled = {
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -93,7 +93,7 @@ export default function TruckDriver() {
         refuelLogs &&
           refuelLogs.length >= 0 &&
           refuelLogs.every(
-            (item) => item.gallonsRefueled && item.milesAtfueling
+            (item) => item.gallonsRefueled && item.milesAtFueling
           )
       ),
     });

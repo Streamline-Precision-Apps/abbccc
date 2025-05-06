@@ -2,13 +2,13 @@ import { useCallback, useEffect } from "react";
 import { debounce } from "lodash";
 
 export const useAutoSave = <T>(
-  saveFunction: (data: T) => Promise<void>, // Use a generic type T for the data parameter
+  saveFunction: (data: T) => Promise<void>,
   delay: number
 ) => {
-  const debouncedSave = useCallback(debounce(saveFunction, delay), [
-    saveFunction,
-    delay,
-  ]);
+  const debouncedSave = useCallback(
+    debounce((data: T) => saveFunction(data), delay),
+    [saveFunction, delay]
+  );
 
   useEffect(() => {
     return () => {

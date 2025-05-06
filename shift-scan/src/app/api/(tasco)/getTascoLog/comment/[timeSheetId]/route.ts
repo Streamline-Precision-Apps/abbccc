@@ -11,7 +11,10 @@ export async function GET(
 
   // Ensure timeSheetId is provided and is a valid string
   if (!timeSheetId || typeof timeSheetId !== "string") {
-    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid or missing timeSheetId" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -20,16 +23,29 @@ export async function GET(
         id: timeSheetId,
       },
       select: {
-        comment: true,
+        TimeSheet: {
+          select: {
+            comment: true,
+          },
+        },
       },
     });
 
     // If no notes are found, return a 404
     if (!notes) {
-      return NextResponse.json({ error: "No matching record found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No matching record found" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(notes);
+    const comment = notes?.TimeSheet.comment;
+
+    if (comment === null) {
+      return NextResponse.json("");
+    }
+
+    return NextResponse.json(comment);
   } catch (error) {
     // Log the error for debugging purposes
     console.error("Error fetching tascoLog:", error);

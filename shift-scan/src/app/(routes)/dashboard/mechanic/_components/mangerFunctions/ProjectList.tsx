@@ -3,7 +3,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ProjectItem } from "./ProjectItem";
-import { Texts } from "@/components/(reusable)/texts";
 
 enum Priority {
   LOW = "LOW",
@@ -13,6 +12,19 @@ enum Priority {
   PENDING = "PENDING",
   TODAY = "TODAY",
 }
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+  timeSheetId: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
 
 type Project = {
   id: string;
@@ -22,7 +34,7 @@ type Project = {
   repaired: boolean;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: any[];
+  maintenanceLogs: MaintenanceLog[];
 };
 
 export function ProjectList({

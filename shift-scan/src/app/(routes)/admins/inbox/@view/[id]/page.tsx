@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
 import { RequestHeader } from "./_components/inboxHeader";
-import { UpdateLeaveRequest } from "@/actions/adminActions";
 import { useSession } from "next-auth/react";
 import { RequestFooter } from "./_components/inboxFooter";
 import { RequestMain } from "./_components/inboxMainPending";
@@ -153,8 +152,8 @@ export default function Page({ params }: { params: { id: string } }) {
       formData.append("managerComment", leaveRequest.managerComment);
       formData.append("decidedBy", user);
       formData.append("signature", signature);
-      const updateLeaveRequest = await UpdateLeaveRequest(formData);
-      console.log(updateLeaveRequest);
+      // const updateLeaveRequest = await UpdateLeaveRequest(formData);
+      // console.log(updateLeaveRequest);
     } catch (error) {
       console.log(error);
     }

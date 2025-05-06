@@ -51,13 +51,21 @@ export const NewTab: FC<TabProps> = ({
       onClick={onClick}
       className={classNames(tabStyles({ isActive, animatePulse }))}
     >
-      <div className="flex justify-center items-center ">
-        {isActive && children}
-        <img
-          src={titleImage}
-          alt={titleImageAlt}
-          className={isActive ? " w-16 h-full p-4" : "w-12 h-full p-1 "}
-        />
+      <div
+        className={`${
+          isActive
+            ? "w-full flex flex-row justify-between items-center"
+            : "w-full px-3"
+        } `}
+      >
+        <div className="w-3/4 h-full">{isActive && children}</div>
+        <div className={`${isActive ? "w-1/4 h-full" : "w-full "} `}>
+          <img
+            src={titleImage}
+            alt={titleImageAlt}
+            className={isActive ? " w-8 h-8" : "w-8 h-8 mx-auto"}
+          />
+        </div>
         {!isComplete && !isLoading && (
           <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
         )}

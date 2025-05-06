@@ -24,15 +24,15 @@ export async function GET() {
     const requests = await prisma.formSubmission.findMany({
       where: {
         status: "PENDING",
-        approvals: {
+        Approvals: {
           none: {},
         },
-        user: {
+        User: {
           NOT: {
             // Exclude the current user from the query
             id: userId,
           },
-          crews: {
+          Crews: {
             some: {
               leadId: userId,
             },
@@ -42,15 +42,15 @@ export async function GET() {
       select: {
         id: true,
         formTemplateId: true,
-        user: {
+        User: {
           select: {
             firstName: true,
             lastName: true,
           },
         },
-        approvals: {
+        Approvals: {
           select: {
-            approver: {
+            Approver: {
               select: {
                 firstName: true,
                 lastName: true,

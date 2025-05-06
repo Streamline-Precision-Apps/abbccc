@@ -20,7 +20,13 @@ import {
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useOperator } from "@/app/context/operatorContext";
-import { intialEquipment } from "@/data/dataValues";
+import { Titles } from "../(reusable)/titles";
+import {
+  setJobSite,
+  setCostCode as setCostCodeCookie,
+  setEquipment,
+  setTruck,
+} from "@/actions/cookieActions";
 
 type Option = {
   code: string;
@@ -80,7 +86,7 @@ export default function CodeFinder({
     }
 
     if (datatype === "jobsite") {
-      setScanResult({ data: option.code });
+      setScanResult({ qrCode: option.code, name: option.label });
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
@@ -92,7 +98,7 @@ export default function CodeFinder({
       datatype === "jobsite-tasco" ||
       datatype === "jobsite-truck"
     ) {
-      setScanResult({ data: option.code });
+      setScanResult({ qrCode: option.code, name: option.label });
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
@@ -123,28 +129,63 @@ export default function CodeFinder({
     setSearchTerm(e.target.value);
   };
 
-  const clearSelection = () => {
+  const clearSelection = async () => {
     setSelectedOption(null);
     setSearchTerm("");
     setSelectTerm("");
     setSelectedTerm(false);
+    setSelectedOpt(false);
+    if (datatype === "equipment") {
+      await setEquipment("");
+    }
+    if (datatype === "jobsite") {
+      await setJobSite({ code: "", label: "" });
+    }
+    if (datatype === "costcode") {
+      await setCostCodeCookie("");
+    }
+    if (
+      datatype === "jobsite-mechanic" ||
+      datatype === "jobsite-tasco" ||
+      datatype === "jobsite-truck"
+    ) {
+      await setTruck("");
+      await setEquipment("");
+    }
   };
 
   return (
-    <Grids rows={"5"} gap={"5"} className="h-full w-full">
+    <Grids rows={"8"} className="h-full w-full">
       <Holds className="row-span-1 h-full">
-        <SearchBar
-          selected={selectedTerm}
-          placeholder={t(`search-${datatype}`)}
-          searchTerm={searchTerm}
-          selectTerm={selectTerm}
-          onSearchChange={handleSearchChange}
-          setSearchTerm={setSearchTerm}
-          setSelectedTerm={setSelectedTerm}
-          clearSelection={clearSelection}
-        />
+        {selectedOption ? (
+          <Holds
+            background={"green"}
+            className="h-full w-full border-[3px] border-b-none border-black rounded-b-none justify-center items-center"
+            onClick={clearSelection}
+          >
+            <Titles size={"h4"} className="text-center text-black">
+              {selectTerm.length > 21
+                ? selectTerm.slice(0, 21) + "..."
+                : selectTerm}
+            </Titles>
+          </Holds>
+        ) : (
+          <SearchBar
+            selected={selectedTerm}
+            placeholder={t(`search-${datatype}`)}
+            searchTerm={searchTerm}
+            selectTerm={selectTerm}
+            onSearchChange={handleSearchChange}
+            setSearchTerm={setSearchTerm}
+            setSelectedTerm={setSelectedTerm}
+            clearSelection={clearSelection}
+          />
+        )}
       </Holds>
-      <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] overflow-y-auto no-scrollbar">
+      <Holds
+        background={"darkBlue"}
+        className="row-span-7 h-full border-[3px]  border-black rounded-[10px] rounded-t-none overflow-y-auto no-scrollbar"
+      >
         <CustomSelect
           options={options}
           onOptionSelect={handleOptionSelect}

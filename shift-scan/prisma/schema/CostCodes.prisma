@@ -1,21 +1,15 @@
 model CostCode {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  description String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now()) @updatedAt
-  Timesheet   TimeSheet[]
-  CCTags      CCTag[]     @relation("CCTagToCostCode")
-
-  @@unique([name, description])
+  id         String      @id @default(cuid())
+  name       String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+  Timesheets TimeSheet[]
+  CCTags     CCTag[]     @relation("CCTagToCostCode")
 }
 
 model CCTag {
-  id          String     @id @default(cuid())
-  name        String     @unique
-  description String?
-  costCodes   CostCode[] @relation("CCTagToCostCode")
-  jobsites    Jobsite[]  @relation("CCTagToJobsite")
-
-  @@unique([name, description])
+  id        String     @id @default(cuid())
+  name      String     @unique
+  CostCodes CostCode[] @relation("CCTagToCostCode")
+  Jobsites  Jobsite[]  @relation("CCTagToJobsite")
 }
