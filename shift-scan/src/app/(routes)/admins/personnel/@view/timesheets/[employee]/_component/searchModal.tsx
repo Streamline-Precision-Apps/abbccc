@@ -46,7 +46,7 @@ export const SearchModal = <T extends { id: string; name: string }>({
               >
                 <Holds className="h-full w-[20%]">
                   <Images
-                    titleImg="/magnifyingGlass.svg"
+                    titleImg="/searchLeft.svg"
                     titleImgAlt="search"
                   />
                 </Holds>

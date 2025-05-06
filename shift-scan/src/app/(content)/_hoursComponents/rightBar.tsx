@@ -1,7 +1,7 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { useCalculateBarHeight } from "./calculateBarHeight";
+import { useCalculateBarHeight } from "./useCalculateBarHeight";
 type Props = {
   nextData: {
     date: string;
@@ -14,6 +14,7 @@ type Props = {
 
 export default function RightBar({ nextData }: Props) {
   const t = useTranslations("Home");
+  const barHeight = useCalculateBarHeight(nextData.hours);
   return (
     <>
       {nextData.date !== "" ? (
@@ -32,7 +33,7 @@ export default function RightBar({ nextData }: Props) {
                 nextData.hours !== 0 ? "bg-app-blue" : ""
               }`}
               style={{
-                height: `${useCalculateBarHeight(nextData.hours)}%`,
+                height: `${barHeight}%`,
                 border: nextData.hours ? "3px solid black" : "none",
               }}
             ></Holds>

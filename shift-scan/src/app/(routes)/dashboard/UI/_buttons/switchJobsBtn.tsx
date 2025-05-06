@@ -31,8 +31,6 @@ export default function SwitchJobsBtn({
   const modalState = useModalState();
   const router = useRouter();
 
-  console.log("logs", logs);
-
   return (
     <>
       {permission === "USER" && (
@@ -109,7 +107,7 @@ export default function SwitchJobsBtn({
                     }}
                   >
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position="left"
                     />

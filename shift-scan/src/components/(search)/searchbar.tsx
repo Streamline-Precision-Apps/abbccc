@@ -58,7 +58,7 @@ export default function SearchBar({
           <Holds position={"row"} className="h-full w-full">
             <Holds size={"10"}>
               <Images
-                titleImg="/magnifyingGlass.svg"
+                titleImg="/searchLeft.svg"
                 titleImgAlt="search"
                 size={"full"}
               />

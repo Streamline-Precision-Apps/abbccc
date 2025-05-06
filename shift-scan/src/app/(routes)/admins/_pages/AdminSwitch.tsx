@@ -59,7 +59,7 @@ export default function AdminSwitch({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", scanResult?.data || j || "");
+      formData.append("jobsiteId", scanResult?.qrCode || j || "");
       formData.append("costcode", savedCostCode?.toString() || cc || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("endTime", "");

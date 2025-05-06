@@ -42,7 +42,7 @@ export default function AdminClock({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    formData.append("jobsiteId", scanResult?.data || J || "");
+    formData.append("jobsiteId", scanResult?.qrCode || J || "");
     formData.append("costcode", savedCostCode?.toString() || CC || "");
     formData.append("workType", "general");
 

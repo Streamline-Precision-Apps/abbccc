@@ -13,16 +13,18 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
-import { TimesheetFilter, TimesheetHighlights } from "@/lib/types";
-import { updateTimesheetHighlights } from "@/actions/timeSheetActions";
-
-export type TimesheetUpdate = {
-  id: string;
-  startTime?: string | null;
-  endTime?: string | null;
-  jobsiteId?: string;
-  costcode?: string;
-};
+import {
+  TimesheetHighlights,
+  TruckingEquipmentHaulLogData,
+  TruckingMileageData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoRefuelLogData,
+  TascoHaulLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
+  TruckingMaterialHaulLogData,
+} from "@/lib/types";
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();

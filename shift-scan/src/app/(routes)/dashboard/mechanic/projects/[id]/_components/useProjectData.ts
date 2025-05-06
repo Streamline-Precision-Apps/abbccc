@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  findUniqueUser,
   LeaveEngineerProject,
   SubmitEngineerProject,
 } from "@/actions/mechanicActions";
@@ -29,9 +28,9 @@ type ApiResponse = {
   id: string;
   equipmentIssue: string;
   additionalInfo: string;
-  dalay: string | null;
+  delay: Date | null;
   hasBeenDelayed: boolean;
-  delayReasoning?: string | null;
+  delayReasoning: string | null;
   Equipment: {
     name: string;
   };
@@ -68,7 +67,7 @@ export default function useProjectData(projectId: string) {
           problemReceived: data.equipmentIssue,
           additionalNotes: data.additionalInfo,
           hasBeenDelayed: data.hasBeenDelayed,
-          MaintenanceLogs: data.MaintenanceLogs,
+          maintenanceLogs: data.MaintenanceLogs,
         };
         setProjectData(processedData);
 
@@ -83,15 +82,15 @@ export default function useProjectData(projectId: string) {
         }
 
         // Calculate total labor hours
-        const totalMilliseconds = data.MaintenanceLogs
-          .filter((log) => log.startTime)
-          .reduce((sum, log) => {
-            const start = new Date(log.startTime!).getTime();
-            const end = log.endTime
-              ? new Date(log.endTime).getTime()
-              : new Date().getTime();
-            return sum + (end - start);
-          }, 0);
+        const totalMilliseconds = data.MaintenanceLogs.filter(
+          (log) => log.startTime
+        ).reduce((sum, log) => {
+          const start = new Date(log.startTime!).getTime();
+          const end = log.endTime
+            ? new Date(log.endTime).getTime()
+            : new Date().getTime();
+          return sum + (end - start);
+        }, 0);
 
         const totalHours = parseFloat(
           (totalMilliseconds / 1000 / 60 / 60).toFixed(2)

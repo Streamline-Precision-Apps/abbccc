@@ -84,19 +84,32 @@ model TascoMaterialTypes {
 }
 
 model TruckingLog {
-  id              String            @id @default(uuid())
-  timeSheetId     String
-  laborType       String
-  taskName        String?
-  equipmentId     String?
-  startingMileage Int?
-  endingMileage   Int?
-  EquipmentHauled EquipmentHauled[]
-  Materials       Material[]
-  RefuelLogs      RefuelLog[]
-  StateMileages   StateMileage[]
-  Equipment       Equipment?        @relation(fields: [equipmentId], references: [qrId])
-  TimeSheet       TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  id                String            @id @default(uuid())
+  timeSheetId       String
+  laborType         String
+  truckLaborLogId   String?
+  taskName          String?
+  equipmentId       String?
+  startingMileage   Int?
+  endingMileage     Int?
+  EquipmentHauled   EquipmentHauled[]
+  Materials         Material[]
+  RefuelLogs        RefuelLog[]
+  StateMileages     StateMileage[]
+  Equipment         Equipment?        @relation(fields: [equipmentId], references: [qrId])
+  TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  TruckingLaborLogs TruckLaborLogs[]
+}
+
+// specifies the type of labor for trucking log
+model TruckLaborLogs {
+  id            String    @id @default(uuid())
+  truckingLogId String?
+  type          String
+  startTime     DateTime
+  endTime       DateTime?
+
+  TruckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
 }
 
 model StateMileage {
@@ -118,6 +131,7 @@ model Material {
   grossWeight        Float?
   loadType           LoadType?
   TruckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id])
+  createdAt          DateTime?   @default(now())
 }
 
 model RefuelLog {

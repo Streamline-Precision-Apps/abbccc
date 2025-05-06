@@ -11,6 +11,7 @@ import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
+import { Images } from "../(reusable)/images";
 
 interface SignatureSetupProps {
   id: string;
@@ -79,13 +80,16 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
       )}
       <Grids rows="10" gap="5" className="mb-5">
         <Holds background="white" className="row-span-1 h-full justify-center">
-          <TitleBoxes
-            title={t("AddASignature")}
-            titleImg="/signature.svg"
-            titleImgAlt="Signature Setup"
-            type="titleOnly"
-            className="my-auto"
-          />
+          <TitleBoxes onClick={() => {}}>
+            <Holds position={"row"}>
+              <Titles size={"h1"}>{t("AddASignature")}</Titles>
+              <Images
+                titleImg="/signature.svg"
+                titleImgAlt="Signature Setup"
+                className="w-8 h-8"
+              />
+            </Holds>
+          </TitleBoxes>
         </Holds>
         <Holds background="white" className="row-span-8 h-full py-5">
           <Contents width="section">

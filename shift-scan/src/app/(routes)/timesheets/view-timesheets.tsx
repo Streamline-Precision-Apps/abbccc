@@ -15,6 +15,9 @@ import { TimeSheet } from "@/lib/types";
 import EmptyView from "@/components/(reusable)/emptyView";
 import { Images } from "@/components/(reusable)/images";
 import { formatTimeHHMM } from "@/utils/formatDateAmPm";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { useRouter } from "next/navigation";
+import TimesheetList from "./timesheetList";
 
 type Props = {
   user: string;
@@ -24,7 +27,7 @@ export default function ViewTimesheets({ user }: Props) {
   const [showTimesheets, setShowTimesheets] = useState(false);
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   const t = useTranslations("Home");
 
   // Function to calculate duration
@@ -82,164 +85,116 @@ export default function ViewTimesheets({ user }: Props) {
   const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
 
   return (
-    <Grids rows={"7"} gap={"3"} className="h-full">
+    <>
       <Holds
+        position={"row"}
         background={"white"}
-        className={`py-2 px-4 h-full row-start-1 row-end-3`}
+        className="row-span-1 w-full h-full"
       >
-        <Contents width={"section"} className="h-full">
-          <Forms onSubmit={handleSubmit} className="row-span-2 h-full">
-            <Grids rows={"2"} className="h-full">
-              <Holds className="row-start-1 row-end-2">
-                <Inputs type="hidden" name="id" value={user} readOnly />
-                <Labels size={"p4"}>{t("EnterDate")}</Labels>
-                <Inputs type="date" name="date" defaultValue={currentDate} />
-              </Holds>
-              <Holds>
-                <Buttons
-                  type="submit"
-                  background={"lightBlue"}
-                  className="py-1"
-                >
-                  <Titles size={"h5"}>{t("SearchTimesheets")}</Titles>
-                </Buttons>
-              </Holds>
-            </Grids>
-          </Forms>
-        </Contents>
-      </Holds>
-      {!showTimesheets && !loading && (
-        <Holds
-          background={"white"}
-          size={"full"}
-          className="h-full row-start-3 row-end-8"
+        <TitleBoxes
+          onClick={() => {
+            router.push("/");
+          }}
         >
-          <Holds position={"center"} className="h-full p-1">
-            <EmptyView
-              TopChild={
-                <Titles size={"h3"} className="mt-4">
-                  Search to view you old timesheets
-                </Titles>
-              }
-              color={"bg-white"}
+          <Holds
+            position={"row"}
+            className="w-full justify-center items-center gap-x-2"
+          >
+            <Titles size={"h2"}>My Timecards</Titles>
+            <Images
+              titleImg={"/form.svg"}
+              titleImgAlt={`${t("Title")}`}
+              className="w-8 h-8"
             />
           </Holds>
-        </Holds>
-      )}
-
-      {loading ? (
-        <Holds
-          background={"white"}
-          size={"full"}
-          className="h-full row-start-3 row-end-8 animate-pulse"
-        >
-          <Holds
-            position={"center"}
-            size={"50"}
-            className="h-full flex flex-col justify-center items-center "
-          >
-            <Spinner />
-            <Titles size={"h3"} className="mt-4">
-              {t("Loading")}
-            </Titles>
-          </Holds>
-        </Holds>
-      ) : (
-        showTimesheets && (
+        </TitleBoxes>
+      </Holds>
+      <Holds className="row-start-2 row-end-8 h-full">
+        <Grids rows={"7"} gap={"5"} className="h-full">
           <Holds
             background={"white"}
-            size={"full"}
-            className="h-full row-start-3 row-end-8 overflow-auto no-scrollbar p-2"
+            className={`py-2 px-4 h-full row-start-1 row-end-3`}
           >
-            {timesheetData.length > 0 ? (
-              timesheetData.map((timesheet) => (
-                <Holds
-                  key={timesheet.id}
-                  size={"full"}
-                  className="px-5 py-3 border-[3px] border-black rounded-[10px] mb-5"
-                >
-                  <Grids cols={"8"} className="pb-4">
-                    <Holds className="col-start-8 col-end-9">
-                      <Images
-                        titleImg={"/document-duplicate.svg"}
-                        titleImgAlt={"Copy And Paste"}
-                        onClick={() => copyToClipboard(timesheet.id)}
-                      />
-                    </Holds>
-                  </Grids>
-                  <Grids rows={"4"} cols={"2"} gap={"2"}>
-                    <Holds className="col-start-1 col-end-3  h-full">
-                      <Titles size={"h3"} className="underline">
-                        {t("TotalHoursWorked")}
-                      </Titles>
-                      <Texts size={"p4"}>
-                        {calculateDuration(
-                          timesheet.startTime,
-                          timesheet.endTime
-                        )}{" "}
-                        {"Hrs"}
-                      </Texts>
-                    </Holds>
-
-                    <Labels size={"p4"}>
-                      {t("StartTime")}
-                      <Inputs
-                        value={
-                          timesheet.startTime
-                            ? formatTimeHHMM(timesheet.startTime.toString())
-                            : "N/A"
-                        }
-                        readOnly
-                        className="text-center"
-                      />
-                    </Labels>
-                    <Labels size={"p4"}>
-                      {t("EndTime")}
-                      <Inputs
-                        value={
-                          timesheet.endTime
-                            ? formatTimeHHMM(timesheet.endTime.toString())
-                            : "N/A"
-                        }
-                        readOnly
-                        className="text-center"
-                      />
-                    </Labels>
-
-                    <Labels size={"p4"}>
-                      {t("Jobsite")}
-                      <Inputs
-                        value={timesheet.jobsiteId}
-                        readOnly
-                        className="pl-2"
-                      />
-                    </Labels>
-                    <Labels size={"p4"}>
-                      {t("CostCode")}
-                      <Inputs
-                        value={timesheet.costcode}
-                        readOnly
-                        className="pl-2"
-                      />
-                    </Labels>
-                  </Grids>
+            <Forms onSubmit={handleSubmit} className=" h-full">
+              <Grids rows={"2"} className="h-full">
+                <Holds className="row-start-1 row-end-2">
+                  <Inputs type="hidden" name="id" value={user} readOnly />
+                  <Labels size={"p4"}>{t("EnterDate")}</Labels>
+                  <Inputs
+                    type="date"
+                    name="date"
+                    defaultValue={currentDate}
+                    className="text-center"
+                  />
                 </Holds>
-              ))
-            ) : (
-              <Holds
-                size={"full"}
-                className="h-full justify-center items-center"
-              >
-                {" "}
-                <EmptyView
-                  TopChild={<Titles size={"h2"}>{t("NoData")}</Titles>}
-                  color={"bg-white"}
-                />
-              </Holds>
-            )}
+                <Holds>
+                  <Buttons
+                    type="submit"
+                    background={"lightBlue"}
+                    className="py-2"
+                  >
+                    <Titles size={"h5"}>View Time Cards</Titles>
+                  </Buttons>
+                </Holds>
+              </Grids>
+            </Forms>
           </Holds>
-        )
-      )}
-    </Grids>
+          {!showTimesheets && !loading && (
+            <Holds
+              background={"lightGray"}
+              size={"full"}
+              className="h-full row-start-3 row-end-8"
+            />
+          )}
+
+          {loading ? (
+            <Holds
+              background={"white"}
+              size={"full"}
+              className="h-full row-start-3 row-end-8 animate-pulse"
+            >
+              <Holds
+                position={"center"}
+                size={"50"}
+                className="h-full flex flex-col justify-center items-center "
+              >
+                <Spinner />
+                <Texts size={"p3"} className="mt-4">
+                  {t("Loading")}
+                </Texts>
+              </Holds>
+            </Holds>
+          ) : (
+            showTimesheets && (
+              <Holds
+                background={"white"}
+                size={"full"}
+                className="h-full row-start-3 row-end-8 overflow-auto no-scrollbar p-2"
+              >
+                {timesheetData.length > 0 ? (
+                  timesheetData.map((timesheet) => (
+                    <TimesheetList
+                      key={timesheet.id}
+                      timesheet={timesheet}
+                      calculateDuration={calculateDuration}
+                      copyToClipboard={copyToClipboard}
+                    />
+                  ))
+                ) : (
+                  <Holds
+                    size={"full"}
+                    className="h-full justify-center items-center"
+                  >
+                    <Texts size={"p3"} className="text-gray-500 italic">
+                      No time cards found for this date
+                    </Texts>
+                  </Holds>
+                )}
+              </Holds>
+            )
+          )}
+        </Grids>
+      </Holds>
+    </>
   );
 }

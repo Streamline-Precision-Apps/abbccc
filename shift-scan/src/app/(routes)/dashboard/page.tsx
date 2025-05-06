@@ -36,12 +36,12 @@ export default async function Dashboard() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"} gap={"2"}>
+        <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
-          <Holds className="row-span-1 bg-app-blue bg-opacity-20 w-full pt-2 pb-6 my-2 rounded-[10px]">
+          <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full  justify-center items-center rounded-[10px]">
             <BannerRotating />
           </Holds>
-          <Holds background={"white"} className="row-span-5 h-full">
+          <Holds background={"white"} className="row-start-4 row-end-9 h-full">
             <DbWidgetSection
               session={session}
               view={view}

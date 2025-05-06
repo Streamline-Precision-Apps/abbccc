@@ -75,7 +75,7 @@ const Expands: FC<ExpandProps> = ({
             <Buttons className="py-2" onClick={expandFunction}>
               <Holds>
                 <Images
-                  titleImg="/ongoing.svg"
+                  titleImg="/statusOngoing.svg"
                   titleImgAlt="expand"
                   size={"20"}
                 />
