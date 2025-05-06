@@ -34,7 +34,7 @@ export default function ProfileImageEditor({
         />
       ) : (
         <Images
-          titleImg={employee?.image || "/profile.svg"}
+          titleImg={employee?.image || "/profileEmpty.svg"}
           titleImgAlt="image"
           onClick={() => setIsOpen(true)}
           className="w-full h-full rounded-full object-cover border-black border-[3px]"
@@ -66,7 +66,7 @@ export default function ProfileImageEditor({
                   >
                     <Holds className="col-start-1 col-end-2 row-span-1 h-full w-full">
                       <Images
-                        titleImg="/turnBack.svg"
+                        titleImg="/arrowBack.svg"
                         titleImgAlt="back"
                         onClick={() => setIsOpen(false)}
                       />
@@ -79,7 +79,7 @@ export default function ProfileImageEditor({
 
                 <Holds className="row-start-3 row-end-9 h-full w-full justify-center items-center">
                   <img
-                    src={employee?.image || "/profile.svg"}
+                    src={employee?.image || "/profileEmpty.svg"}
                     alt="Profile"
                     className="w-full  object-cover rounded-full border-[3px] border-black"
                   />

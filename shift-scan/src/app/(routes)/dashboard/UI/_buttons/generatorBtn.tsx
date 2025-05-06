@@ -15,7 +15,7 @@ export default function GeneratorBtn() {
           href="/dashboard/qr-generator"
         >
           <Holds>
-            <Images titleImg="/qr.svg" titleImgAlt="QR Code" size={"40"} />
+            <Images titleImg="/qrCode.svg" titleImgAlt="QR Code" size={"40"} />
           </Holds>
           <Holds>
             <Texts size={"p3"}>{t("QR")}</Texts>

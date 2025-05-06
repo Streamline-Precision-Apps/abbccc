@@ -36,7 +36,7 @@ export default function HamburgerMenuNew() {
           />
           <div className="absolute right-0 bottom-0 w-7 h-7">
             <Images
-              titleImg={"/gray-settings-sm.svg"}
+              titleImg={"/gray-settings.svg"}
               titleImgAlt={"settings"}
               className="w-full h-full p-0.5" // White icon
             />

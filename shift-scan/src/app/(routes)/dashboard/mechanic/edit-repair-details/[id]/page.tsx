@@ -148,7 +148,7 @@ export default function EditRepairDetails({
                   shadow={"none"}
                 >
                   <Images
-                    titleImg="/turnBack.svg"
+                    titleImg="/arrowBack.svg"
                     titleImgAlt={t("Mechanic")}
                     className="max-w-8 h-auto object-contain"
                   />
@@ -185,7 +185,7 @@ export default function EditRepairDetails({
                 <NewTab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
-                  titleImage="/Ongoing.svg"
+                  titleImage="/statusOngoing.svg"
                   titleImageAlt={""}
                   isComplete={true}
                 >

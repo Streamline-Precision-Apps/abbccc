@@ -162,7 +162,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
         <Holds size={"20"} className="h-full mr-5">
           <Buttons background={"red"} onClick={returnToMain}>
             <Images
-              titleImg={"/turnBack.svg"}
+              titleImg={"/arrowBack.svg"}
               titleImgAlt="return"
               className="mx-auto p-2"
             />

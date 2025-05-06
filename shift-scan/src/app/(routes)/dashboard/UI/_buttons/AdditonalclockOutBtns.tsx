@@ -53,7 +53,7 @@ export default function ClockOutWidget({
               </Holds>
               <Holds size="40">
                 <Images
-                  titleImg="/break.svg"
+                  titleImg="/clockBreak.svg"
                   titleImgAlt="Break Icon"
                   size="50"
                 />
@@ -79,7 +79,7 @@ export default function ClockOutWidget({
                       onClick={modalState.handleCloseModal2}
                     >
                       <Images
-                        titleImg="/turnBack.svg"
+                        titleImg="/arrowBack.svg"
                         titleImgAlt="back"
                         position="left"
                       />
@@ -147,7 +147,7 @@ export default function ClockOutWidget({
                       }}
                     >
                       <Images
-                        titleImg="/turnBack.svg"
+                        titleImg="/arrowBack.svg"
                         titleImgAlt="back"
                         position="left"
                       />
@@ -199,7 +199,7 @@ export default function ClockOutWidget({
               </Holds>
               <Holds size={"30"}>
                 <Images
-                  titleImg="/end-day.svg"
+                  titleImg="/endDay.svg"
                   titleImgAlt="End Icon"
                   size={"50"}
                 />

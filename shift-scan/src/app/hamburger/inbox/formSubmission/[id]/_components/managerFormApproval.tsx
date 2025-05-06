@@ -184,7 +184,7 @@ export default function ManagerFormApproval({
               position={"left"}
             >
               <Images
-                titleImg="/turnBack.svg"
+                titleImg="/arrowBack.svg"
                 titleImgAlt={"Turn Back"}
                 className="max-w-8 h-auto object-contain"
               />

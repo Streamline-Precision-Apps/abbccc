@@ -125,7 +125,7 @@ export default function EmployeeTabs() {
                 ? "loading..."
                 : `${employee?.firstName} ${employee?.lastName}`
             }
-            titleImg={employee?.image ? employee.image : "/profile-default.svg"}
+            titleImg={employee?.image ? employee.image : "/profileFilled.svg"}
             titleImgAlt="Team"
             type="myTeamProfile"
             title2={loading ? "" : `${t("ID")}${employee?.id}`}
