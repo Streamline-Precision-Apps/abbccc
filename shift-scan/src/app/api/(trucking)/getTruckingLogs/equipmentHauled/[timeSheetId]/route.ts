@@ -18,10 +18,18 @@ export async function GET(
   }
 
   try {
+    const truckingLog = await prisma.truckingLog.findFirst({
+      where: {
+        timeSheetId: timeSheetId,
+      },
+      select: {
+        id: true,
+      },
+    });
     // Fetch state mileage based on truckingLogId (timeSheetId)
     const stateMileage = await prisma.equipmentHauled.findMany({
       where: {
-        truckingLogId: timeSheetId,
+        truckingLogId: truckingLog?.id,
       },
       include: {
         Equipment: {

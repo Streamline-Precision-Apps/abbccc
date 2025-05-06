@@ -267,10 +267,10 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
 /* CREWS */
 export const initialCrews: Prisma.CrewCreateInput[] = [
   {
-    name: "Jessica's Crew",
-    leadId: "1",
+    name: "Sean's Crew",
+    leadId: "9",
     crewType: "LABOR",
-    Users: { connect: [{ id: "1" }, { id: "2" }, { id: "3" }] },
+    Users: { connect: [{ id: "9" }, { id: "2" }, { id: "3" }, { id: "7" }] },
   },
   {
     name: "Devun's Crew",

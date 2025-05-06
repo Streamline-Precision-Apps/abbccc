@@ -60,7 +60,7 @@
 
   "SignUpProfilePicture": {
     "AddProfilePicture": "Add A Profile Picture",
-    "LetsPickAPicture": "Let’s pick a picture for your profile! Please choose a picture of your face!",
+    "LetsPickAPicture": "Let's pick a picture for your profile! Please choose a picture of your face!",
     "UseCamera": "Use Camera",
     "CameraRoll": "Camera Roll",
     "Next": "Next",
@@ -71,7 +71,7 @@
 
   "SignUpVirtualSignature": {
     "AddASignature": "Add A Signature",
-    "LetsAddASignature": "Let’s add an e-signature! make sure you like it, it will be imprinted on every form.",
+    "LetsAddASignature": "Let's add an e-signature! make sure you like it, it will be imprinted on every form.",
     "SignHere": "Sign Here",
     "Clear": "Clear",
     "Save": "Save",
@@ -81,8 +81,8 @@
   },
 
   "SignUpOutro": {
-    "LooksLikeYoureAllSetUp": "Looks like you’re all set up! Time to experience working made easier!",
-    "HeresWhatWeDid": "Here’s what we did...",
+    "LooksLikeYoureAllSetUp": "Looks like you're all set up! Time to experience working made easier!",
+    "HeresWhatWeDid": "Here's what we did...",
     "ChooseNewPassword": "Choose New Password",
     "GivePermissions": "Give Permissions",
     "ChooseProfilePicture": "Choose Profile Picture",
@@ -272,6 +272,7 @@
     "SearchForAJobSite": "Search for a Job Site",
     "QrGenerator": "QR Generator",
     "EquipmentDatatype": "Search for an Equipment",
+    "Submitting": "Submitting...",
     "TypeHere": "Type here..."
   },
   "Forms": {
@@ -430,7 +431,10 @@
     "LeftIdaho": "Left Idaho?",
     "recentlyUsed": "Recently Used",
     "CostCode-Label": "Cost Code:",
+    "EndWorkDay": "End work for the day?",
+    "StartBreak": "Start Break",
     "Submit": "Submit"
+    
   },
   "ClockOut": {
     "Date-label": "Date",

@@ -6,11 +6,11 @@ import { InjuryReportContent } from "./(components)/injury-report/injuryReportCo
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
+import Comment from "@/components/(clock)/comment";
 import ReviewYourDay from "./(components)/reviewYourDay/reviewYourDay";
 import { Bases } from "@/components/(reusable)/bases";
 import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockOut";
 import { PreInjuryReport } from "./(components)/no-injury";
-import Comment from "./(components)/comment";
 
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
@@ -86,10 +86,6 @@ export default function ClockOutContent() {
     incrementStep();
   };
 
-  const handleBreak = async () => {
-    
-  };
-
   const handleSubmitInjury = async () => {
     setPath("clockOut");
   };
@@ -99,19 +95,14 @@ export default function ClockOutContent() {
     return (
       <Bases>
         <Contents>
-          <Holds background={"white"} className="row-span-2 h-full">
+          <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"} className="py-4">
-              <Holds className="row-span-2">
-                <Comment
-                  handleClick={handleNextStep}
-                  clockInRole={""}
-                  setCommentsValue={setCommentsValue}
-                  commentsValue={commentsValue}
-                  checked={checked}
-                  handleCheckboxChange={handleCheckboxChange}
-                  setLoading={setLoading}
-                />
-              </Holds>
+              <Comment
+                handleClick={handleNextStep}
+                clockInRole={""}
+                setCommentsValue={setCommentsValue}
+                commentsValue={commentsValue}
+              />
             </Contents>
           </Holds>
         </Contents>
@@ -144,7 +135,7 @@ export default function ClockOutContent() {
   } else if (step === 3 && path === "clockOut") {
     return (
       <LaborClockOut
-        scanResult={scanResult?.qrCode}
+        scanResult={scanResult?.data}
         savedCostCode={savedCostCode}
         prevStep={prevStep}
         commentsValue={commentsValue}

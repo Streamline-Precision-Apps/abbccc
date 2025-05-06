@@ -32,10 +32,10 @@ type EquipmentHauled = {
   equipmentId: string | null;
   createdAt: Date;
   jobSiteId: string | null;
-  equipment: {
+  Equipment: {
     name: string | null;
   };
-  jobSite: {
+  JobSite: {
     name: string | null;
   };
 };
@@ -158,7 +158,7 @@ export default function TruckDriver() {
 
         setEndMileage(data[0].endingMileage || null);
 
-        setNotes(data[1].comment || "");
+        setNotes(data[1] || "");
         setRefuelLogs(data[2]);
         setStateMileage(data[3]);
         setMaterial(data[4]);
