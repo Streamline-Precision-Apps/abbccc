@@ -33,7 +33,7 @@ export default function OldsProfileImageEditor({
         />
       ) : (
         <Images
-          titleImg={employee?.image || "/profile.svg"}
+          titleImg={employee?.image || "/profileEmpty.svg"}
           titleImgAlt="image"
           onClick={() => setIsOpen(true)}
           className="w-full h-full rounded-full object-cover border-black border-[3px]"
@@ -64,7 +64,7 @@ export default function OldsProfileImageEditor({
                 setIsOpen(false);
                 setEditImg(false);
               }}
-              titleImg="/turnBack.svg"
+              titleImg="/arrowBack.svg"
               titleImgAlt="backArrow"
               className=" w-10 h-10"
             />

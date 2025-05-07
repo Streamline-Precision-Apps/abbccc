@@ -79,7 +79,7 @@ export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
           className="w-full h-full justify-center items-center"
         >
           <Images
-            src="/qr.svg"
+            src="/qrCode.svg"
             alt="Team"
             className="w-8 h-8 mx-auto"
             titleImg={""}

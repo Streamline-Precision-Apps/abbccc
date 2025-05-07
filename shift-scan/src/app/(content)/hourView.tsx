@@ -56,7 +56,7 @@ export default function ViewComponent({
     <Holds background={"white"} position={"row"} className="h-full w-full p-2">
       <Buttons onClick={scrollLeft} className="shadow-none w-[60px]">
         <Images
-          titleImg={"/less-than.svg"}
+          titleImg={"/arrowLeftSymbol.svg"}
           titleImgAlt="left"
           className="mx-auto h-5 w-5"
         />
@@ -77,7 +77,7 @@ export default function ViewComponent({
 
       <Buttons onClick={scrollRight} className="shadow-none w-[60px]">
         <Images
-          titleImg={"/greater-than.svg"}
+          titleImg={"/arrowRightSymbol.svg"}
           titleImgAlt="right"
           className="mx-auto h-5 w-5"
         />

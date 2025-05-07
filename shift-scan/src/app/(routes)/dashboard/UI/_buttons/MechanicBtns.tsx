@@ -37,7 +37,7 @@ export default function MechanicBtn({
       {permission !== "USER" && view === "mechanic" ? (
         <VerticalLayout
           text={"Mechanic"}
-          titleImg={"/mechanic-icon.svg"}
+          titleImg={"/mechanic.svg"}
           titleImgAlt={"Mechanic Icon"}
           color={"green"}
           handleEvent={() => {
@@ -51,7 +51,7 @@ export default function MechanicBtn({
       ) : (
         <HorizontalLayout
           text={"Mechanic"}
-          titleImg={"/mechanic-icon.svg"}
+          titleImg={"/mechanic.svg"}
           titleImgAlt={"Mechanic Icon"}
           color={"green"}
           handleEvent={() => {

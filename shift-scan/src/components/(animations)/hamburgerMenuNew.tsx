@@ -42,7 +42,7 @@ export default function HamburgerMenuNew() {
           className="relative w-16 h-5/6"
         >
           <img
-            src={image ? image : "/profile-sm.svg"}
+            src={image ? image : "/profileEmpty.svg"}
             alt="profile"
             className={
               image
@@ -52,7 +52,7 @@ export default function HamburgerMenuNew() {
           />
 
           <img
-            src={"/gray-settings-sm.svg"}
+            src={"/settingsFilled.svg"}
             alt={"settings"}
             className="w-7 h-7 absolute right-[-10px] bottom-0 " // White icon
           />
@@ -76,7 +76,7 @@ export default function HamburgerMenuNew() {
           className="w-16 h-full justify-center"
         >
           <img
-            src={"/List-Icon.svg"}
+            src={"/form.svg"}
             alt={"inbox"}
             className="relative  w-full mx-auto"
           />

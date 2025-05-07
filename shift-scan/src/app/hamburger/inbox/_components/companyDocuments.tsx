@@ -202,7 +202,7 @@ export default function CompanyDocuments() {
                   >
                     <Holds className="p-2">
                       <Images
-                        titleImg={"/qr.svg"}
+                        titleImg={"/qrCode.svg"}
                         titleImgAlt={"QR"}
                         className="w-7 h-7 items-center"
                       />

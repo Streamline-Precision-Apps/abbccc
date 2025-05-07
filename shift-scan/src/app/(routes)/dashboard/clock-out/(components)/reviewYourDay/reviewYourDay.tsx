@@ -142,7 +142,7 @@ export default function ReviewYourDay({
                               />
                             ) : timesheet.workType === "MECHANIC" ? (
                               <Images
-                                titleImg="/mechanic-icon.svg"
+                                titleImg="/mechanic.svg"
                                 titleImgAlt="Mechanic Icon"
                                 className="w-7 h-7 "
                               />
