@@ -8,13 +8,13 @@ model TimeSheet {
   Fp                    String                 @default("fp")
   startTime             DateTime
   endTime               DateTime?
-  comment               String? // employee comment
-  statusComment         String? // manager comment 
+  comment               String?
+  statusComment         String?
   location              String?
   status                TimeSheetStatus        @default(PENDING)
   workType              WorkType
-  editedByUserId        String? // who changed the timesheet
-  newTimeSheetId        String? // new timesheet if it has this it will be tagged its not included in the form status
+  editedByUserId        String?
+  newTimeSheetId        String?
   createdByAdmin        Boolean                @default(false)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
@@ -44,7 +44,7 @@ model Maintenance {
   id                     String                @id @default(uuid())
   equipmentId            String
   equipmentIssue         String?
-  employeeEquipmentLogId String?               @unique //one to one relation 
+  employeeEquipmentLogId String?               @unique
   additionalInfo         String?
   location               String?
   problemDiagnosis       String?
@@ -58,8 +58,8 @@ model Maintenance {
   selected               Boolean               @default(false)
   hasBeenDelayed         Boolean               @default(false)
   createdBy              String?
-  Equipment              Equipment             @relation(fields: [equipmentId], references: [id])
   EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+  Equipment              Equipment             @relation(fields: [equipmentId], references: [id])
   MaintenanceLogs        MaintenanceLog[]
 }
 
@@ -87,29 +87,27 @@ model TruckingLog {
   id                String            @id @default(uuid())
   timeSheetId       String
   laborType         String
-  truckLaborLogId   String?
   taskName          String?
   equipmentId       String?
   startingMileage   Int?
   endingMileage     Int?
+  truckLaborLogId   String?
   EquipmentHauled   EquipmentHauled[]
   Materials         Material[]
   RefuelLogs        RefuelLog[]
   StateMileages     StateMileage[]
+  TruckingLaborLogs TruckLaborLogs[]
   Equipment         Equipment?        @relation(fields: [equipmentId], references: [qrId])
   TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  TruckingLaborLogs TruckLaborLogs[]
 }
 
-// specifies the type of labor for trucking log
 model TruckLaborLogs {
-  id            String    @id @default(uuid())
+  id            String       @id @default(uuid())
   truckingLogId String?
   type          String
   startTime     DateTime
   endTime       DateTime?
-
-  TruckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
+  TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id])
 }
 
 model StateMileage {
@@ -130,8 +128,8 @@ model Material {
   lightWeight        Float?
   grossWeight        Float?
   loadType           LoadType?
-  TruckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id])
   createdAt          DateTime?   @default(now())
+  TruckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id])
 }
 
 model RefuelLog {

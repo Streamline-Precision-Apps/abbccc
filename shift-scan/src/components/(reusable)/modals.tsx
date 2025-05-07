@@ -224,7 +224,7 @@ const Modals: FC<ModalProps> = ({
             size={"10"}
           >
             <Images
-              titleImg="/arrowLeft.svg"
+              titleImg="/arrowLeftSymbol.svg"
               titleImgAlt="x"
               className="mx-auto"
             />

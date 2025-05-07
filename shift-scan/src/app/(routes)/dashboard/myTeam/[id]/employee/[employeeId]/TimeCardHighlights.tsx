@@ -186,7 +186,7 @@ export default function TimeCardHighlights({
                                 : sheet.workType === "TRUCK_DRIVER"
                                 ? "/trucking.svg"
                                 : sheet.workType === "MECHANIC"
-                                ? "/mechanic-icon.svg"
+                                ? "/mechanic.svg"
                                 : sheet.workType === "LABOR"
                                 ? "/equipment.svg"
                                 : "null"

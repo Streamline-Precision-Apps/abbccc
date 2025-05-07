@@ -145,7 +145,7 @@ export default function ProfileImageEditor({
         <Holds className="w-[90px] h-[90px] relative">
           <Images
             titleImg={
-              loading ? "/person.svg" : employee?.image || "/profile.svg"
+              loading ? "/person.svg" : employee?.image || "/profileEmpty.svg"
             }
             titleImgAlt="profile"
             onClick={() => setIsOpen(true)}
@@ -181,7 +181,7 @@ export default function ProfileImageEditor({
               onClick={() =>
                 mode === "select" ? setIsOpen(false) : setMode("select")
               }
-              titleImg="/turnBack.svg"
+              titleImg="/arrowBack.svg"
               titleImgAlt="backArrow"
               className="w-10 h-10"
             />

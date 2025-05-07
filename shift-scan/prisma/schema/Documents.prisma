@@ -3,9 +3,9 @@ model PdfDocument {
   qrId         String        @unique
   fileName     String
   description  String?
-  fileData     Bytes // This stores the actual PDF binary data
+  fileData     Bytes
   contentType  String        @default("application/pdf")
-  size         Int // File size in bytes
+  size         Int
   isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
   uploadDate   DateTime      @default(now())
@@ -18,6 +18,6 @@ model PdfDocument {
 model DocumentTag {
   id        String        @id @default(cuid())
   tagName   String
-  Documents PdfDocument[] @relation("DocumentTagToPdfDocument")
   Equipment Equipment[]   @relation("DocumentTagToEquipment")
+  Documents PdfDocument[] @relation("DocumentTagToPdfDocument")
 }
