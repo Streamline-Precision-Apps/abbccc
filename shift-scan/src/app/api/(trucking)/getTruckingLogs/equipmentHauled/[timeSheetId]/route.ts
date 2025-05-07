@@ -34,6 +34,7 @@ export async function GET(
       include: {
         Equipment: {
           select: {
+            id: true,
             name: true,
           },
         },

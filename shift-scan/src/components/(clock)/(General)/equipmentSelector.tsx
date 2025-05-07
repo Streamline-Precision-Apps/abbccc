@@ -27,7 +27,7 @@ export const EquipmentSelector = ({
 
   useEffect(() => {
     const options = equipmentResults.map((costcode) => ({
-      code: costcode.name,
+      code: costcode.id,
       label: costcode.name,
     }));
     setEquipmentOptions(options);
@@ -35,12 +35,17 @@ export const EquipmentSelector = ({
 
   // Initialize with the passed initialValue
   useEffect(() => {
-    if (initialValue && equipmentOptions.length > 0) {
-      const foundOption = equipmentOptions.find(
-        (opt) => opt.code === initialValue.code
-      );
-      if (foundOption) {
-        setSelectedEquipment(foundOption);
+    if (initialValue) {
+      // If options are available, find the matching one
+      if (equipmentOptions.length > 0) {
+        const foundOption = equipmentOptions.find(
+          (opt) => opt.code === initialValue.code
+        );
+        setSelectedEquipment(foundOption || null);
+      }
+      // If options aren't loaded yet, set the initial value directly
+      else if (initialValue.code && initialValue.label) {
+        setSelectedEquipment(initialValue);
       }
     }
   }, [initialValue, equipmentOptions]);

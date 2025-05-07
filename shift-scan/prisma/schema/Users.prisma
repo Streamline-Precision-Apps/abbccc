@@ -22,6 +22,7 @@ model User {
   passwordResetTokenId String?
   workTypeId           String?
   Contact              Contacts?
+  CreationLogs         CreationLogs[]
   EquipmentLogs        EmployeeEquipmentLog[]
   FormApprovals        FormApproval[]
   FormSubmissions      FormSubmission[]
@@ -31,7 +32,6 @@ model User {
   Company              Company                @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]                 @relation("CrewToUser")
-  CreationLogs         CreationLogs[]
 
   @@unique([firstName, lastName, DOB])
   @@index([email])
@@ -51,7 +51,7 @@ model UserSettings {
 
 model Contacts {
   id                     String   @id @default(cuid())
-  userId             String   @unique @map("employeeId")
+  userId                 String   @unique @map("employeeId")
   phoneNumber            String
   emergencyContact       String?
   emergencyContactNumber String?
