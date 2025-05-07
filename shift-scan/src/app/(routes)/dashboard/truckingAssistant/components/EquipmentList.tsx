@@ -89,6 +89,7 @@ export default function EquipmentList({
               item.id === selectedIndex
                 ? {
                     ...item,
+                    equipmentId: equipment.code,
                     Equipment: {
                       ...item.Equipment,
                       id: equipment.code,
@@ -133,6 +134,7 @@ export default function EquipmentList({
               item.id === selectedIndex
                 ? {
                     ...item,
+                    jobSiteId: location.code,
                     JobSite: {
                       ...item.JobSite,
                       id: location.code,

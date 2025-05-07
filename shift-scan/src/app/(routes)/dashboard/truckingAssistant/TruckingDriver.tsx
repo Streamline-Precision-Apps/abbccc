@@ -118,6 +118,7 @@ export default function TruckDriver() {
           )
       ),
     });
+    console.log("Hauling Logs", isComplete.haulingLogsTab);
   };
 
   useEffect(() => {
@@ -183,12 +184,7 @@ export default function TruckDriver() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isLoading={isLoading}
-          isComplete={{
-            haulingLogsTab: isComplete.haulingLogsTab,
-            notesTab: isComplete.notesTab,
-            stateMileageTab: isComplete.stateMileageTab,
-            refuelLogsTab: isComplete.refuelLogsTab,
-          }}
+          isComplete={isComplete}
         />
       </Holds>
       <Holds className={"w-full h-full rounded-t-none row-start-2 row-end-11"}>

@@ -22,9 +22,9 @@ export default function TruckingContexts({
         <TitleBoxes onClick={() => router.push("/dashboard")}>
           <Holds
             position={"row"}
-            className=" w-full justify-center items-center"
+            className=" w-full justify-center items-center space-x-2"
           >
-            <Titles size={"h2"}>
+            <Titles size={"h2"} className="">
               {laborType === "truckDriver"
                 ? t("TruckDriver")
                 : laborType === "operator"
@@ -34,7 +34,7 @@ export default function TruckingContexts({
                 : t("TruckingAssistant")}
             </Titles>
             <Images
-              className="w-8 h-8 ml-2"
+              className="max-w-8 h-auto object-contain"
               titleImg={"/trucking.svg"}
               titleImgAlt={"Truck"}
             />
