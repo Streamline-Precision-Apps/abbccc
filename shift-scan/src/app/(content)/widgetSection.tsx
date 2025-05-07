@@ -170,7 +170,7 @@ export default function WidgetSection({ session, locale }: Props) {
                     className="col-span-2 row-span-4 gap-5 h-full"
                   >
                     <WidgetContainer
-                      titleImg="/qr.svg"
+                      titleImg="/qrCode.svg"
                       titleImgAlt="QR Code"
                       text={"QR"}
                       background={"lightBlue"}
@@ -191,7 +191,7 @@ export default function WidgetSection({ session, locale }: Props) {
                 {pageView === "break" ? (
                   <Holds className="col-span-2 row-span-8 gap-5 h-full">
                     <WidgetContainer
-                      titleImg="/clock-in.svg"
+                      titleImg="/clockBreak.svg"
                       titleImgAlt="Clock In Icon"
                       text={"Clock-btn-break"}
                       background={"orange"}
@@ -213,7 +213,7 @@ export default function WidgetSection({ session, locale }: Props) {
                     permission === "SUPERADMIN" ||
                     permission === "MANAGER" ? (
                       <WidgetContainer
-                        titleImg="/clock-in.svg"
+                        titleImg="/clockIn.svg"
                         titleImgAlt="Clock In Icon"
                         text={"Clock-btn"}
                         textSize="h2"
@@ -223,7 +223,7 @@ export default function WidgetSection({ session, locale }: Props) {
                       />
                     ) : (
                       <WidgetContainer
-                        titleImg="/clock-in.svg"
+                        titleImg="/clockIn.svg"
                         titleImgAlt="Clock In Icon"
                         text={"Clock-btn"}
                         textSize="h1"

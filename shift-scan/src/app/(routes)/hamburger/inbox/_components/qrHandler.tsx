@@ -68,7 +68,7 @@ export default function EquipmentQRScanner({
                 onClick={handleReturnPath}
               >
                 <Images
-                  titleImg="/turnBack.svg"
+                  titleImg="/arrowBack.svg"
                   titleImgAlt="back"
                   position="left"
                 />

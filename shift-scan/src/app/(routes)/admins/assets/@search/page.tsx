@@ -138,7 +138,7 @@ export default function Search() {
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
             isComplete={true}
-            titleImage="/equipment.svg"
+            titleImage="/broken.svg"
             titleImageAlt=""
           >
             {t("Equipment")}

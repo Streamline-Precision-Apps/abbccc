@@ -41,7 +41,7 @@ export const PreInjuryReport = ({
                 >
                   <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position={"left"}
                       onClick={prevStep}
