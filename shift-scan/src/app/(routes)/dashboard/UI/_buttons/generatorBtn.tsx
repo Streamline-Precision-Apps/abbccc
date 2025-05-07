@@ -6,7 +6,7 @@ export default function GeneratorBtn() {
   const t = useTranslations("Widgets");
   return (
     <WidgetContainer
-      titleImg="/qr.svg"
+      titleImg="/qrCode.svg"
       titleImgAlt="QR Code"
       text={"QR"}
       background={"lightBlue"}

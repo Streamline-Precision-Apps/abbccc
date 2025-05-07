@@ -136,7 +136,7 @@ export default function MaterialItem({
         }}
       >
         <Images
-          titleImg="/turnBack.svg"
+          titleImg="/arrowBack.svg"
           titleImgAlt="Back Icon"
           className="h-8 w-8 object-contain"
         />

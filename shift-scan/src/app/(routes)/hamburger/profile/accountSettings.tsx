@@ -213,7 +213,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
         {/* Tabs */}
         <Holds position={"row"} className="h-fit flex gap-x-1">
           <NewTab
-            titleImage={"/accountInfo.svg"}
+            titleImage={"/information.svg"}
             titleImageAlt={""}
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
@@ -222,7 +222,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
             <Titles size={"h4"}>{t("AccountInformation")}</Titles>
           </NewTab>
           <NewTab
-            titleImage={"/settings-sm.svg"}
+            titleImage={"/settings.svg"}
             titleImageAlt={""}
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}

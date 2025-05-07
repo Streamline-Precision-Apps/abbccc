@@ -85,7 +85,7 @@ export default function EquipmentQRStep({
                     }
                   >
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position={"left"}
                     />

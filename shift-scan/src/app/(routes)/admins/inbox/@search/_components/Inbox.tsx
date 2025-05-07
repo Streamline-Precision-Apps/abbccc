@@ -125,7 +125,7 @@ export const InboxContent = ({ employees, setFilter }: Props) => {
                       <Holds className="col-span-1 row-span-3">
                         <Images
                           titleImg={
-                            employee.employee.image || "/profile-sm.svg"
+                            employee.employee.image || "/profileEmpty.svg"
                           }
                           titleImgAlt="employee"
                           className={`w-12 h-12 rounded-full ${

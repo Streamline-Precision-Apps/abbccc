@@ -124,7 +124,7 @@ export default function QRGeneratorContent() {
         <TitleBoxes position={"row"} onClick={() => router.push(url)}>
           <Titles size={"h2"}>{t("QrGenerator")}</Titles>
           <Images
-            src="/qr.svg"
+            src="/qrCode.svg"
             alt="Team"
             className="w-8 h-8"
             titleImg={""}
@@ -178,7 +178,7 @@ export default function QRGeneratorContent() {
                       className="w-full h-full justify-center items-center"
                     >
                       <Images
-                        src="/qr.svg"
+                        src="/qrCode.svg"
                         alt="Team"
                         className="w-8 h-8 mx-auto"
                         titleImg={""}

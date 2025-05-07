@@ -152,7 +152,7 @@ export default function MechanicVerificationStep({
                 {t("VerifyJobSite")}
               </Titles>
               <Images
-                titleImg="/clock-in.svg"
+                titleImg="/clockIn.svg"
                 titleImgAlt="Verify"
                 className="w-10 h-10"
               />

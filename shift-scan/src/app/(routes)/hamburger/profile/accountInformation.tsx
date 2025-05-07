@@ -90,7 +90,7 @@ export default function AccountInformation({
                 onClick={() => setEditSignatureModalOpen(true)}
               >
                 <Images
-                  titleImg="/edit-form.svg"
+                  titleImg="/formEdit.svg"
                   titleImgAlt={"Edit"}
                   className="max-w-5 h-auto object-contain"
                 />

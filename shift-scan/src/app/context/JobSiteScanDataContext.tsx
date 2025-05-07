@@ -39,9 +39,9 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         ).then((res) => res.json());
 
         // If you need to fetch the name separately, you might need another endpoint
-        const jobSiteDetails = await fetch(`/api/jobsites/${cookieData}`).then(
-          (res) => res.json()
-        );
+        // const jobSiteDetails = await fetch(`/api/jobsites/${cookieData}`).then(
+        //   (res) => res.json()
+        // );
 
         if (cookieData && cookieData !== "") {
           setScanResult({
