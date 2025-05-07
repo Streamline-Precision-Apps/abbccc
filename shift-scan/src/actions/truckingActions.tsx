@@ -99,13 +99,24 @@ export async function updateEquipmentLogsLocation(formData: FormData) {
   const id = formData.get("id") as string;
   const jobSiteId = formData.get("jobSiteId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
+  const name = formData.get("jobSiteName") as string;
+
+  // First check if jobSite exists
+  const jobSiteExists = await prisma.jobsite.findUnique({
+    where: { qrId: jobSiteId, name },
+    select: { id: true },
+  });
+
+  if (!jobSiteExists) {
+    throw new Error(`Jobsite with ID ${jobSiteId} not found`);
+  }
 
   // Use a nested update to update the related Equipment's jobsiteId in one call.
   const updatedLog = await prisma.equipmentHauled.update({
     where: { id },
     data: {
       truckingLogId,
-      jobSiteId,
+      jobSiteId: jobSiteExists.id,
     },
   });
   // Create EquipmentLocationLog for the updated jobSiteId
@@ -120,6 +131,7 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   console.log("Updating hauling logs...");
   console.log(formData);
   const id = formData.get("id") as string;
+  const equipmentName = formData.get("equipmentName") as string;
   const equipmentId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
@@ -135,7 +147,10 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   // Then proceed with update
   const updatedLog = await prisma.equipmentHauled.update({
     where: { id },
-    data: { truckingLogId, equipmentId },
+    data: {
+      truckingLogId,
+      equipmentId: equipmentName,
+    },
   });
 
   revalidateTag("equipmentHauled");

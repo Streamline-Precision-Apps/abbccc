@@ -20,6 +20,7 @@ export default function TruckTabOptions({
   };
 }) {
   const t = useTranslations("TruckingAssistant");
+
   return (
     <Holds position={"row"} className=" h-full w-full gap-x-1">
       <NewTab

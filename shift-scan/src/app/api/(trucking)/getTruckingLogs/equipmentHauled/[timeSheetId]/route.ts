@@ -40,6 +40,7 @@ export async function GET(
         },
         JobSite: {
           select: {
+            id: true,
             name: true,
           },
         },
