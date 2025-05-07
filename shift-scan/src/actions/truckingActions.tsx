@@ -123,15 +123,21 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   const equipmentId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
-  // Use a nested update to update the related Equipment's jobsiteId in one call.
+  // First check if equipment exists
+  const equipmentExists = await prisma.equipment.findUnique({
+    where: { id: equipmentId },
+  });
+
+  if (!equipmentExists) {
+    throw new Error(`Equipment with ID ${equipmentId} not found`);
+  }
+
+  // Then proceed with update
   const updatedLog = await prisma.equipmentHauled.update({
     where: { id },
-    data: {
-      truckingLogId,
-      equipmentId,
-    },
+    data: { truckingLogId, equipmentId },
   });
-  console.log(updatedLog);
+
   revalidateTag("equipmentHauled");
   revalidatePath("/dashboard/truckingAssistant");
   return updatedLog;
