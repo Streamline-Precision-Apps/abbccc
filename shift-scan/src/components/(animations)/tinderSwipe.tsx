@@ -106,7 +106,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
       >
         <Images
           titleImg={
-            bgColor === "bg-app-orange" ? "/edit-form.svg" : "/complete.svg"
+            bgColor === "bg-app-orange" ? "/formEdit.svg" : "/statusApprovedFilled.svg"
           }
           titleImgAlt="verification icon"
           className="absolute top-0 h-full w-32 p-3 "

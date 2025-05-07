@@ -100,7 +100,7 @@ export default function EquipmentLogContent() {
                 <NewTab
                   onClick={() => setActive(1)}
                   isActive={active === 1}
-                  titleImage="/OrangeOngoing.svg"
+                  titleImage="/statusOngoingFilled.svg"
                   titleImageAlt="Clock"
                   isComplete={true}
                 >
@@ -109,7 +109,7 @@ export default function EquipmentLogContent() {
                 <NewTab
                   onClick={() => setActive(2)}
                   isActive={active === 2}
-                  titleImage="/complete.svg"
+                  titleImage="/statusApprovedFilled.svg"
                   titleImageAlt="Finished logs Icon"
                   isComplete={true}
                 >

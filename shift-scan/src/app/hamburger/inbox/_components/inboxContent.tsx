@@ -31,7 +31,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
           <TitleBoxes position={"row"} onClick={() => router.push(url)}>
             <Titles size={"h3"}>{t("Inbox")}</Titles>
             <Images
-              titleImg="/Inbox.svg"
+              titleImg="/form.svg"
               titleImgAlt="Inbox"
               className="h-8 w-8"
             />
@@ -46,7 +46,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                 onClick={() => setActiveTab(1)}
                 isActive={activeTab === 1}
                 isComplete={true}
-                titleImage={"/formSelection.svg"}
+                titleImage={"/formInspect.svg"}
                 titleImageAlt={""}
                 animatePulse={loading}
               >
@@ -56,7 +56,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                 onClick={() => setActiveTab(2)}
                 isActive={activeTab === 2}
                 isComplete={true}
-                titleImage={"/submittedForms.svg"}
+                titleImage={"/formApproval.svg"}
                 titleImageAlt={""}
                 animatePulse={loading}
               >
@@ -66,7 +66,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   onClick={() => setActiveTab(3)}
                   isActive={activeTab === 3}
                   isComplete={true}
-                  titleImage={"/pendingForms.svg"}
+                  titleImage={"/formSent.svg"}
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
