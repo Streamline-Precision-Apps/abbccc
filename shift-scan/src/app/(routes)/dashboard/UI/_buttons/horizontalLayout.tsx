@@ -41,15 +41,15 @@ export default function HorizontalLayout({
         onClick={handleEvent}
         className="h-full w-full"
       >
-        <Grids rows={"3"} gap={"4"} className="h-full w-full p-5">
-          <Holds className="row-span-2 h-full p-1 ">
+        <Grids rows={"2"} gap={"0"} className="h-full w-full p-5">
+          <Holds className="row-span-2 h-full pb-0.5 ">
             <Images
               titleImg={titleImg}
               titleImgAlt={titleImgAlt}
               className="m-auto h-full w-full"
             />
           </Holds>
-          <Holds className="row-span-1 h-full justify-center">
+          <Holds className="row-span-1 h-full  justify-center">
             <Titles size={textSize}>{t(text)}</Titles>
           </Holds>
         </Grids>
