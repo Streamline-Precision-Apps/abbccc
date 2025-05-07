@@ -30,7 +30,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
         <TitleBoxes position={"row"} onClick={() => router.push(url)}>
           <Titles size={"h3"}>{t("FormsDocuments")}</Titles>
           <Images
-            titleImg="/Inbox.svg"
+            titleImg="/form.svg"
             titleImgAlt="Inbox"
             className="h-8 w-8"
           />

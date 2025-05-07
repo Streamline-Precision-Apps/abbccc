@@ -231,7 +231,7 @@ export default function ClockOutBtn({
                     }}
                   >
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position="left"
                     />

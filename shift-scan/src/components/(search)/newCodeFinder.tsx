@@ -131,7 +131,7 @@ const SearchBar = ({
       <Holds position={"row"} className="h-full w-full">
         <Holds size={"10"}>
           <Images
-            titleImg="/searchRight.svg"
+            titleImg="/searchLeft.svg"
             titleImgAlt="search"
             size={"full"}
           />

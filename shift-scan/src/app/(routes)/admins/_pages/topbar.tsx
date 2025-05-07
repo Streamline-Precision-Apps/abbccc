@@ -102,7 +102,7 @@ const Topbar = () => {
                           : settingsPage
                           ? "/person.svg"
                           : inboxPage
-                          ? "/inbox.svg"
+                          ? "/form.svg"
                           : ""
                       }
                       size={"30"}
@@ -127,7 +127,7 @@ const Topbar = () => {
 
                 <Holds className="w-10 absolute right-5">
                   <Images
-                    titleImg="/x.svg"
+                    titleImg="/statusDeniedFilled.svg"
                     titleImgAlt="Home Icon"
                     className="my-auto cursor-pointer"
                     size={"90"}
@@ -151,7 +151,7 @@ const Topbar = () => {
                 </Holds>
                 <Holds size={"50"}>
                   <Images
-                    titleImg="/expandLeft.svg"
+                    titleImg="/arrowRightSymbol.svg"
                     titleImgAlt="Home Icon"
                     className="my-auto rotate-90 cursor-pointer"
                     size={"50"}
@@ -254,7 +254,7 @@ const Topbar = () => {
                   </Buttons>
                   <Holds>
                     <Images
-                      titleImg="/expandLeft.svg"
+                      titleImg="/arrowRightSymbol.svg"
                       titleImgAlt="Home Icon"
                       className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
                       onClick={handleClockClick}
@@ -278,7 +278,7 @@ const Topbar = () => {
                   </Holds>
                   <Holds>
                     <Images
-                      titleImg="/expandLeft.svg"
+                      titleImg="/arrowRightSymbol.svg"
                       titleImgAlt="Home Icon"
                       className="my-auto rotate-[270deg] cursor-pointer h-16 w-16"
                       onClick={handleClockClick}

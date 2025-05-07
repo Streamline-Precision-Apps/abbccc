@@ -177,7 +177,7 @@ export default function CompanyDocuments({
                   onClick={() => setActiveTab(1)}
                   isActive={activeTab === 1}
                   isComplete={true}
-                  titleImage={"/formSelection.svg"}
+                  titleImage={"/formInspect.svg"}
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
@@ -187,7 +187,7 @@ export default function CompanyDocuments({
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
                   isComplete={true}
-                  titleImage={"/submittedForms.svg"}
+                  titleImage={"/formApproval.svg"}
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
@@ -198,7 +198,7 @@ export default function CompanyDocuments({
                     onClick={() => setActiveTab(3)}
                     isActive={activeTab === 3}
                     isComplete={true}
-                    titleImage={"/pendingForms.svg"}
+                    titleImage={"/formSent.svg"}
                     titleImageAlt={""}
                     animatePulse={loading}
                   >
@@ -210,7 +210,7 @@ export default function CompanyDocuments({
                   onClick={() => setActiveTab(4)}
                   isActive={activeTab === 4}
                   isComplete={true}
-                  titleImage={"/pendingForms.svg"}
+                  titleImage={"/formSent.svg"}
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
@@ -233,7 +233,7 @@ export default function CompanyDocuments({
                           >
                             <Holds className="p-2">
                               <Images
-                                titleImg={"/qr.svg"}
+                                titleImg={"/qrCode.svg"}
                                 titleImgAlt={"QR"}
                                 className="w-6 h-6 items-center"
                               />
@@ -274,7 +274,7 @@ export default function CompanyDocuments({
               onClick={() => setActiveTab(1)}
               isActive={activeTab === 1}
               isComplete={true}
-              titleImage={"/formSelection.svg"}
+              titleImage={"/formInspect.svg"}
               titleImageAlt={""}
               animatePulse={loading}
             >
@@ -284,7 +284,7 @@ export default function CompanyDocuments({
               onClick={() => setActiveTab(2)}
               isActive={activeTab === 2}
               isComplete={true}
-              titleImage={"/submittedForms.svg"}
+              titleImage={"/formApproval.svg"}
               titleImageAlt={""}
               animatePulse={loading}
             >
@@ -295,7 +295,7 @@ export default function CompanyDocuments({
                 onClick={() => setActiveTab(3)}
                 isActive={activeTab === 3}
                 isComplete={true}
-                titleImage={"/pendingForms.svg"}
+                titleImage={"/formSent.svg"}
                 titleImageAlt={""}
                 animatePulse={loading}
               >
@@ -307,7 +307,7 @@ export default function CompanyDocuments({
               onClick={() => setActiveTab(4)}
               isActive={activeTab === 4}
               isComplete={true}
-              titleImage={"/pendingForms.svg"}
+              titleImage={"/formSent.svg"}
               titleImageAlt={""}
               animatePulse={loading}
             >
@@ -327,7 +327,7 @@ export default function CompanyDocuments({
                       >
                         <Holds className="p-2">
                           <Images
-                            titleImg={"/qr.svg"}
+                            titleImg={"/qrCode.svg"}
                             titleImgAlt={"QR"}
                             className="w-6 h-6 items-center"
                           />

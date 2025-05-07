@@ -157,7 +157,7 @@ export default function SubmittedFormsApproval({
                 titleImgAlt={"form Status"}
                 titleImg={
                   submissionStatus === "PENDING"
-                    ? "/OrangestatusOngoing.svg"
+                    ? "/statusOngoingFilled.svg"
                     : submissionStatus === "APPROVED"
                     ? "/statusApproved.svg"
                     : "/statusReject.svg"
