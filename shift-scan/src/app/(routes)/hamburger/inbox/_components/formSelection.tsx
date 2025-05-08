@@ -189,12 +189,12 @@ export default function FormSelection({
                 }}
                 background={selectedForm === "" ? "darkGray" : "green"}
                 disabled={selectedForm === ""}
-                className="w-fit h-full p-2"
+                className="w-12 h-full p-2"
               >
                 <Images
                   titleImgAlt="plus"
                   titleImg="/plus.svg"
-                  className="max-w-10 h-auto object-contain m-auto"
+                  className="max-w-6  h-auto object-contain m-auto"
                 />
               </Buttons>
             </Holds>

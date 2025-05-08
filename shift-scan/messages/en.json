@@ -914,8 +914,16 @@
     "NoRecentlyApprovedRequests": "No Recently Approved Requests",
     "NoRequestsFromSelectedEmployee": "No Requests From Selected Employee",
     "PleaseCheckBackLaterForNewRequests": "(Please Check Back Later For New Requests)",
-    "NewForm": "Select a Form & Tap + to Create a Form.",
-    "Submissions": "Submissions"
+    "NewForm": "Select a Form & Tap + to Create a Form",
+    "Submissions": "Submissions",
+    "LoadingTags": "Loading tags...",
+    "AllDocuments": "All Documents",
+    "NoDocumentsFound": "No documents found",
+    "NoDocumentsFoundForEquipment": "No documents found for equipment",
+    "NoDocumentsFoundFor": "No documents found for",
+    "TryScanningAnotherEquipmentOrChangingTheFilter": "(Try scanning another equipment or changing the filter)",
+    "Download": "Download",
+    "View": "View"
   },
 
   "Components": {
