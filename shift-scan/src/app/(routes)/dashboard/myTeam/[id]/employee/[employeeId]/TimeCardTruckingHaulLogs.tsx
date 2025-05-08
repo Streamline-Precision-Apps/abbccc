@@ -1,27 +1,25 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import {
-  TruckingEquipmentHaulLog,
-  TruckingEquipmentHaulLogData,
-} from "@/lib/types";
-import { useEffect, useState } from "react";
+import { TruckingEquipmentHaulLog, TruckingEquipmentHaulLogData } from "@/lib/types";
+import { useEffect, useState, useCallback } from "react";
 
 type TimeCardTruckingHaulLogsProps = {
   edit: boolean;
-  setEdit: (edit: boolean) => void;
   manager: string;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData;
+  onDataChange: (data: TruckingEquipmentHaulLog[]) => void;
 };
 
 export default function TimeCardTruckingHaulLogs({
   edit,
-  setEdit,
   manager,
   truckingEquipmentHaulLogs,
+  onDataChange,
 }: TimeCardTruckingHaulLogsProps) {
   // Extract all TruckingLogs with their EquipmentHauled items
   const allTruckingLogs = truckingEquipmentHaulLogs
@@ -30,10 +28,39 @@ export default function TimeCardTruckingHaulLogs({
 
   const [editedTruckingHaulLogs, setEditedTruckingHaulLogs] =
     useState<TruckingEquipmentHaulLog[]>(allTruckingLogs);
+  const [changesWereMade, setChangesWereMade] = useState(false);
 
+  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    setEditedTruckingHaulLogs(allTruckingLogs);
-  }, [truckingEquipmentHaulLogs]);
+    if (!edit) {
+      setEditedTruckingHaulLogs(allTruckingLogs);
+      setChangesWereMade(false);
+    }
+  }, [edit, truckingEquipmentHaulLogs]);
+
+  const handleHaulLogChange = useCallback(
+    (logId: string, equipmentIndex: number, field: keyof TruckingEquipmentHaulLog['EquipmentHauled'][0], value: string) => {
+      const updatedLogs = editedTruckingHaulLogs.map(log => {
+        if (log.id === logId) {
+          const updatedEquipment = [...log.EquipmentHauled];
+          updatedEquipment[equipmentIndex] = {
+            ...updatedEquipment[equipmentIndex],
+            [field]: value
+          };
+          return {
+            ...log,
+            EquipmentHauled: updatedEquipment
+          };
+        }
+        return log;
+      });
+
+      setChangesWereMade(true);
+      setEditedTruckingHaulLogs(updatedLogs);
+      onDataChange(updatedLogs);
+    },
+    [editedTruckingHaulLogs, onDataChange]
+  );
 
   const isEmptyData = editedTruckingHaulLogs.length === 0;
 
@@ -73,12 +100,13 @@ export default function TimeCardTruckingHaulLogs({
                       className="w-full h-full text-left"
                     >
                       <Grids cols={"3"} className="w-full h-full">
-                        <Holds className="col-start-1 col-end-2 ">
+                        <Holds className="col-start-1 col-end-2">
                           <Inputs
                             type={"text"}
                             value={log.Equipment?.name || ""}
                             className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
-                            disabled={!edit}
+                            disabled={true} // Truck name should not be editable
+                            readOnly
                           />
                         </Holds>
                         <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
@@ -87,6 +115,14 @@ export default function TimeCardTruckingHaulLogs({
                             value={hauledItem.Equipment?.name || ""}
                             className="text-xs border-none h-full rounded-none justify-center text-center"
                             disabled={!edit}
+                            onChange={(e) => 
+                              handleHaulLogChange(
+                                log.id,
+                                index,
+                                'Equipment',
+                                e.target.value
+                              )
+                            }
                           />
                         </Holds>
                         <Holds className="col-start-3 col-end-4 h-full">
@@ -95,6 +131,14 @@ export default function TimeCardTruckingHaulLogs({
                             value={hauledItem.JobSite?.name || ""}
                             className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
                             disabled={!edit}
+                            onChange={(e) => 
+                              handleHaulLogChange(
+                                log.id,
+                                index,
+                                'JobSite',
+                                e.target.value
+                              )
+                            }
                           />
                         </Holds>
                       </Grids>
