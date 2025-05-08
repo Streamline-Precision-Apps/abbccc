@@ -434,7 +434,6 @@
     "EndWorkDay": "End work for the day?",
     "StartBreak": "Start Break",
     "Submit": "Submit"
-    
   },
   "ClockOut": {
     "Date-label": "Date",
@@ -860,6 +859,65 @@
     "TagDeletedSuccessfully": "Tag deleted successfully.",
     "TagUpdatedSuccessfully": "Tag updated successfully."
   },
+  "Hamburger-Profile": {
+    "AccountInformation": "Account Information",
+    "PhoneNumber": "Phone Number",
+    "Email": "Email",
+    "EmergencyContact": "Emergency Contact",
+    "EmergencyContactNumber": "Emergency Contact Number",
+    "SignOut": "Sign Out",
+    "AccountSettings": "Account Settings",
+    "GeneralReminders": "General Reminders",
+    "PersonalReminders": "Personal Reminders",
+    "Camera": "Camera",
+    "Location": "Location",
+    "ChangePassword": "Change Password",
+    "MyProfilePhoto": "My Profile Photo",
+    "ChangeProfilePhoto": "Change Profile Photo",
+    "CropPhoto": "Crop Photo",
+    "CaptureImage": "Capture Image",
+    "Save": "Save",
+    "Retake": "Retake",
+    "Cancel": "Cancel"
+  },
+  "Hamburger-ChangePassword": {
+    "ChangePassword": "Change Password",
+    "PasswordRequirements": "Password Requirements",
+    "NumberCriteriaLabel": "123",
+    "SpecialCharacterCriteriaLabel": "symbol",
+    "LengthCriteriaLabel": "8+ Length",
+    "NewPassword": "New Password",
+    "ConfirmPassword": "Confirm Password"
+  },
+  "Hamburger-Inbox": {
+    "FormsDocuments": "Forms & Documents",
+    "Forms": "My Forms",
+    "MySubmissions": "My Submissions",
+    "TeamSubmissions": "Team Submissions",
+    "Documents": "Documents",
+    "Loading": "Loading...",
+    "SelectAForm": "Select A Form",
+    "StartForm": "Start Form",
+    "MyDrafts": "My Drafts",
+    "Created": "Created",
+    "SelectAFilter": "Select A Filter",
+    "Drafts": "Drafts",
+    "Pending": "Pending",
+    "Approved": "Approved",
+    "Denied": "Denied",
+    "NoDeniedFormsSubmitted": "No Denied Forms Submitted",
+    "NoApprovedFormsSubmitted": "No Approved Forms Submitted",
+    "NoPendingFormsSubmitted": "No Pending Forms Submitted",
+    "NoFormsSubmitted": "No Forms Submitted",
+    "GoToFormsSectionToCreateForms": "(Go to Forms section to create forms.)",
+    "NoTeamRequestsSubmittedOrFound": "No Team Requests Submitted Or Found",
+    "NoRecentlyApprovedRequests": "No Recently Approved Requests",
+    "NoRequestsFromSelectedEmployee": "No Requests From Selected Employee",
+    "PleaseCheckBackLaterForNewRequests": "(Please Check Back Later For New Requests)",
+    "NewForm": "Select a Form & Tap + to Create a Form.",
+    "Submissions": "Submissions"
+  },
+
   "Components": {
     "CropImage": "Crop Image"
   },

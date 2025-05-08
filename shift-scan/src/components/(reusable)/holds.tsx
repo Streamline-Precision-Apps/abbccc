@@ -30,7 +30,7 @@ const HoldVariants = cva(
         center: "flex flex-col self-center content-center",
         left: "flex flex-col self-start",
         right: "flex flex-col self-end ",
-        absolute: "absolute top-1 left-0",
+        absolute: "absolute top-0 left-0",
         test: "",
       },
       size: {
