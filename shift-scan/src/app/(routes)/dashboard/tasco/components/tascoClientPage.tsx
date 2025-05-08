@@ -119,7 +119,7 @@ export default function TascoEQClientPage() {
               <Titles size={"h4"}>{t("Comments")}</Titles>
             </NewTab>
             <NewTab
-              titleImage="/refuel-Icon.svg"
+              titleImage="/refuel.svg"
               titleImageAlt={t("RefuelIcon")}
               onClick={() => setActiveTab(2)}
               isActive={activeTab === 2}

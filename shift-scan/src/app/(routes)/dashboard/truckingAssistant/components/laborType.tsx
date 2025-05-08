@@ -76,25 +76,19 @@ export default function LaborType({
     }
   };
 
-  if (!laborType || laborType.length === 0) {
-    return (
-      <Holds className="space-y-2">
-        <Texts className="text-sm text-gray-500">
-          Set Time Frame For Labor throughout the day.
-        </Texts>
-        <Texts className="text-xs text-gray-500">
-          Ex. Truck Driver, Operator, Manual Labor
-        </Texts>
-      </Holds>
-    );
-  }
-
   return (
     <>
-      <Texts className="text-sm text-gray-500 pb-2">
-        Set Time Frame For Labor throughout the day.
-      </Texts>
       <Contents className="overflow-y-auto no-scrollbar">
+        {laborType.length === 0 && (
+          <Holds className="px-10 mt-4">
+            <Texts size={"p5"} text={"gray"} className="italic">
+              No Labor Types Logs Recorded
+            </Texts>
+            <Texts size={"p7"} text={"gray"}>
+              {`(Tap the plus icon to add a log.)`}
+            </Texts>
+          </Holds>
+        )}
         <div className=" row-start-1 row-end-2 h-full ">
           {laborType.map((lt) => (
             <SlidingDiv key={lt.id} onSwipeLeft={() => handleDelete(lt.id)}>

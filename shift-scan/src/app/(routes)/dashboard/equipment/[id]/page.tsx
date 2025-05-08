@@ -398,7 +398,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 <NewTab
                   isActive={tab === 2}
                   onClick={() => setTab(2)}
-                  titleImage="/equipment.svg"
+                  titleImage="/broken.svg"
                   titleImageAlt=""
                   isComplete={true}
                   isLoading={isLoading}

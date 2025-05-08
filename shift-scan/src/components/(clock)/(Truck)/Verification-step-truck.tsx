@@ -161,7 +161,7 @@ export default function TruckVerificationStep({
                   {t("VerifyJobSite")}
                 </Titles>
                 <Images
-                  titleImg="/clock-in.svg"
+                  titleImg="/clockIn.svg"
                   titleImgAlt="Verify"
                   className="w-8 h-8"
                 />

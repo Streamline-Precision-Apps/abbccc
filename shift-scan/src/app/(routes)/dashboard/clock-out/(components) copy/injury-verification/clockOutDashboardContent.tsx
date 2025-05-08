@@ -16,7 +16,7 @@ export default async function ClockOutDashboardContent() {
         <Contents width={"section"}>
           <TitleBoxes
             title={t("Title")}
-            titleImg="/profile.svg"
+            titleImg="/profileEmpty.svg"
             titleImgAlt="Team"
             variant={"default"}
             size={"default"}

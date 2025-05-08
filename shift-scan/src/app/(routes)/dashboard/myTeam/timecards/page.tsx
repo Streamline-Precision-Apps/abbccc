@@ -322,7 +322,7 @@ export default function TimeCards() {
                   <Holds className="h-full flex items-center justify-center">
                     <Titles size={"h5"}>Complete!</Titles>
                     <Images
-                      titleImg="/complete.svg"
+                      titleImg="/statusApprovedFilled.svg"
                       titleImgAlt="approved"
                       className="w-16 h-16 border-[3px] border-black rounded-full"
                     />

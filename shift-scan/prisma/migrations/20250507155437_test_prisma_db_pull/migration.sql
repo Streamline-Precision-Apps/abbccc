@@ -376,8 +376,20 @@ CREATE TABLE "TruckingLog" (
     "equipmentId" TEXT,
     "startingMileage" INTEGER,
     "endingMileage" INTEGER,
+    "truckLaborLogId" TEXT,
 
     CONSTRAINT "TruckingLog_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TruckLaborLogs" (
+    "id" TEXT NOT NULL,
+    "truckingLogId" TEXT,
+    "type" TEXT NOT NULL,
+    "startTime" TIMESTAMP(3) NOT NULL,
+    "endTime" TIMESTAMP(3),
+
+    CONSTRAINT "TruckLaborLogs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -401,6 +413,7 @@ CREATE TABLE "Material" (
     "lightWeight" DOUBLE PRECISION,
     "grossWeight" DOUBLE PRECISION,
     "loadType" "LoadType",
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Material_pkey" PRIMARY KEY ("id")
 );
@@ -507,19 +520,19 @@ CREATE TABLE "_CrewToUser" (
 );
 
 -- CreateTable
-CREATE TABLE "_DocumentTagToPdfDocument" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-
-    CONSTRAINT "_DocumentTagToPdfDocument_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
 CREATE TABLE "_DocumentTagToEquipment" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
     CONSTRAINT "_DocumentTagToEquipment_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_DocumentTagToPdfDocument" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_DocumentTagToPdfDocument_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
@@ -553,9 +566,6 @@ CREATE INDEX "Equipment_qrId_idx" ON "Equipment"("qrId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CreationLogs_equipmentId_key" ON "CreationLogs"("equipmentId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CreationLogs_jobsiteId_key" ON "CreationLogs"("jobsiteId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
@@ -606,22 +616,22 @@ CREATE INDEX "_CCTagToJobsite_B_index" ON "_CCTagToJobsite"("B");
 CREATE INDEX "_CrewToUser_B_index" ON "_CrewToUser"("B");
 
 -- CreateIndex
-CREATE INDEX "_DocumentTagToPdfDocument_B_index" ON "_DocumentTagToPdfDocument"("B");
-
--- CreateIndex
 CREATE INDEX "_DocumentTagToEquipment_B_index" ON "_DocumentTagToEquipment"("B");
 
 -- CreateIndex
+CREATE INDEX "_DocumentTagToPdfDocument_B_index" ON "_DocumentTagToPdfDocument"("B");
+
+-- CreateIndex
 CREATE INDEX "_FormGroupingToFormTemplate_B_index" ON "_FormGroupingToFormTemplate"("B");
+
+-- AddForeignKey
+ALTER TABLE "CreationLogs" ADD CONSTRAINT "CreationLogs_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CreationLogs" ADD CONSTRAINT "CreationLogs_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CreationLogs" ADD CONSTRAINT "CreationLogs_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CreationLogs" ADD CONSTRAINT "CreationLogs_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EquipmentVehicleInfo" ADD CONSTRAINT "EquipmentVehicleInfo_id_fkey" FOREIGN KEY ("id") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -639,7 +649,7 @@ ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_jobsiteI
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_jobSiteId_fkey" FOREIGN KEY ("jobSiteId") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -690,10 +700,10 @@ ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_timeSheetId_fkey" FO
 ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -709,6 +719,9 @@ ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_equipmentId_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TruckLaborLogs" ADD CONSTRAINT "TruckLaborLogs_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -756,16 +769,16 @@ ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_A_fkey" FOREIGN KEY ("A") 
 ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_DocumentTagToPdfDocument" ADD CONSTRAINT "_DocumentTagToPdfDocument_A_fkey" FOREIGN KEY ("A") REFERENCES "DocumentTag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_DocumentTagToPdfDocument" ADD CONSTRAINT "_DocumentTagToPdfDocument_B_fkey" FOREIGN KEY ("B") REFERENCES "PdfDocument"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "_DocumentTagToEquipment" ADD CONSTRAINT "_DocumentTagToEquipment_A_fkey" FOREIGN KEY ("A") REFERENCES "DocumentTag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_DocumentTagToEquipment" ADD CONSTRAINT "_DocumentTagToEquipment_B_fkey" FOREIGN KEY ("B") REFERENCES "Equipment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_DocumentTagToPdfDocument" ADD CONSTRAINT "_DocumentTagToPdfDocument_A_fkey" FOREIGN KEY ("A") REFERENCES "DocumentTag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_DocumentTagToPdfDocument" ADD CONSTRAINT "_DocumentTagToPdfDocument_B_fkey" FOREIGN KEY ("B") REFERENCES "PdfDocument"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_FormGroupingToFormTemplate" ADD CONSTRAINT "_FormGroupingToFormTemplate_A_fkey" FOREIGN KEY ("A") REFERENCES "FormGrouping"("id") ON DELETE CASCADE ON UPDATE CASCADE;

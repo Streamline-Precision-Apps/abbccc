@@ -90,7 +90,7 @@ export function ManagerView({
           <NewTab
             isActive={activeTab === 1}
             onClick={() => setActiveTab(1)}
-            titleImage="/OrangestatusOngoing.svg"
+            titleImage="/statusOngoingFilled.svg"
             titleImageAlt="List Tab"
             isComplete={true}
             isLoading={loading}
@@ -100,7 +100,7 @@ export function ManagerView({
           <NewTab
             isActive={activeTab === 2}
             onClick={() => setActiveTab(2)}
-            titleImage="/form.svg"
+            titleImage="/formList.svg"
             titleImageAlt="Manager Tab"
             isComplete={true}
             animatePulse={loading}
