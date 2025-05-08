@@ -135,7 +135,7 @@ export default function STab({
                 onClick={() => setActiveTab(4)}
                 isActive={activeTab === 4}
                 isComplete={true}
-                titleImage={"/formSent.svg"}
+                titleImage={"/policies.svg"}
                 titleImageAlt={""}
                 animatePulse={loading}
               >
@@ -146,8 +146,8 @@ export default function STab({
               background={"white"}
               className="h-full w-full rounded-t-none animate-pulse"
             >
-              <Grids rows={"9"} className="h-full w-full">
-                <Holds className="row-start-1 row-end-2  w-full">
+              <Grids rows={"9"} className="h-full w-full py-5">
+                <Holds className="row-start-1 row-end-2 h-full w-full">
                   <Contents width={"section"}>
                     <Selects
                       value={selectedFilter}
@@ -219,21 +219,21 @@ export default function STab({
                 onClick={() => setActiveTab(4)}
                 isActive={activeTab === 4}
                 isComplete={true}
-                titleImage={"/formSent.svg"}
+                titleImage={"/policies.svg"}
                 titleImageAlt={""}
                 animatePulse={loading}
               >
-                <Titles size={"h5"}>Company Documents</Titles>
+                <Titles size={"h5"}>Documents</Titles>
               </NewTab>
             </Holds>
             <Holds background={"white"} className={`h-full rounded-t-none`}>
-              <Grids rows={"9"} className="h-full w-full">
-                <Holds className="row-start-1 row-end-2  w-full">
+              <Grids rows={"9"} className="h-full w-full py-5">
+                <Holds className="row-start-1 row-end-2 h-full  w-full">
                   <Contents width={"section"}>
                     <Selects
                       value={selectedFilter}
                       onChange={(e) => setSelectedFilter(e.target.value)}
-                      className="text-center justify-center h-full"
+                      className="text-center justify-center "
                     >
                       <option value="all">Select A Filter</option>
                       <option value="pending">Pending</option>
@@ -307,21 +307,21 @@ export default function STab({
               onClick={() => setActiveTab(4)}
               isActive={activeTab === 4}
               isComplete={true}
-              titleImage={"/formSent.svg"}
+              titleImage={"/policies.svg"}
               titleImageAlt={""}
               animatePulse={loading}
             >
-              <Titles size={"h5"}>Company Documents</Titles>
+              <Titles size={"h5"}>Documents</Titles>
             </NewTab>
           </Holds>
           <Holds background={"white"} className={`h-full rounded-t-none `}>
-            <Grids rows={"9"} className="h-full w-full">
-              <Holds className="row-start-1 row-end-2  w-full">
+            <Grids rows={"9"} className="h-full w-full py-5">
+              <Holds className="row-start-1 row-end-2 h-full  w-full">
                 <Contents width={"section"}>
                   <Selects
                     value={selectedFilter}
                     onChange={(e) => setSelectedFilter(e.target.value)}
-                    className="text-center justify-center h-full"
+                    className="text-center justify-center "
                   >
                     <option value="all">Select A Filter</option>
                     <option value="pending">Pending</option>
@@ -359,10 +359,10 @@ export default function STab({
                             titleImgAlt={"form Status"}
                             titleImg={
                               form.status === "PENDING"
-                                ? "/Ongoing.svg"
+                                ? "/statusOngoingFilled.svg"
                                 : form.status === "APPROVED"
-                                ? "/Checkmark.svg"
-                                : "/statusReject.svg"
+                                ? "/statusApprovedFilled.svg"
+                                : "/statusDeniedFilled.svg"
                             }
                             className="absolute w-7 h-7 top-[50%] translate-y-[-50%] right-5"
                           />

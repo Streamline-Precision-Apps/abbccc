@@ -32,7 +32,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
           <Images
             titleImg="/form.svg"
             titleImgAlt="Inbox"
-            className="h-8 w-8"
+            className="max-w-8 h-auto object-contain"
           />
         </TitleBoxes>
       </Holds>

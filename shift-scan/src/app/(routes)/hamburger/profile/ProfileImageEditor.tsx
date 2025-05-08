@@ -145,12 +145,14 @@ export default function ProfileImageEditor({
         <Holds className="w-[90px] h-[90px] relative">
           <Images
             titleImg={
-              loading ? "/person.svg" : employee?.image || "/profileEmpty.svg"
+              loading
+                ? "/profileEmpty.svg"
+                : employee?.image || "/profileEmpty.svg"
             }
             titleImgAlt="profile"
             onClick={() => setIsOpen(true)}
             className={`w-full h-full rounded-full object-cover ${
-              employee?.image ? "border-[3px] border-black" : ""
+              employee?.image && !loading ? "border-[3px] border-black" : ""
             }`}
           />
           <Holds className="absolute bottom-2 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-9 w-9 border-[3px] p-1 justify-center items-center border-black bg-app-gray">

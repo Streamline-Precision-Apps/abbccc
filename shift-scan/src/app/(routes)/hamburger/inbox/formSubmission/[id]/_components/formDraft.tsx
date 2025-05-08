@@ -135,10 +135,8 @@ export default function FormDraft({
         background={"white"}
         className="row-span-1 h-full justify-center px-3 "
       >
-        <TitleBoxes onClick={() => router.push("/dashboard")}>
-          <Holds position={"row"}>
-            <Titles size={"h1"}>{formData.name}</Titles>
-          </Holds>
+        <TitleBoxes onClick={() => router.push("/hamburger/inbox")}>
+          <Titles size={"h2"}>{formData.name}</Titles>
         </TitleBoxes>
       </Holds>
 

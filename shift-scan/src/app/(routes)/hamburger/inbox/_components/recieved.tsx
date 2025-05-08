@@ -165,11 +165,11 @@ export default function RTab({
                 onClick={() => setActiveTab(4)}
                 isActive={activeTab === 4}
                 isComplete={true}
-                titleImage={"/formSent.svg"}
+                titleImage={"/policies.svg"}
                 titleImageAlt={""}
                 animatePulse={loading}
               >
-                <Titles size={"h5"}>Company Documents</Titles>
+                <Titles size={"h5"}>Documents</Titles>
               </NewTab>
             </Holds>
             <Holds
@@ -177,12 +177,12 @@ export default function RTab({
               className="h-full w-full rounded-t-none animate-pulse"
             >
               <Contents width={"section"}>
-                <Grids rows={"9"} className="h-full w-full pt-3 pb-5">
-                  <Holds className="row-start-1 row-end-2 w-full">
+                <Grids rows={"9"} className="h-full w-full py-5">
+                  <Holds className="row-start-1 row-end-2 h-full  w-full">
                     <Selects
                       value={selectedFilter}
                       onChange={(e) => setSelectedFilter(e.target.value)}
-                      className="text-center justify-center h-full"
+                      className="text-center justify-center "
                     >
                       <option value="all">Select A Filter</option>
                       <option value="approved">Recently Approved</option>
@@ -247,21 +247,21 @@ export default function RTab({
               onClick={() => setActiveTab(4)}
               isActive={activeTab === 4}
               isComplete={true}
-              titleImage={"/formSent.svg"}
+              titleImage={"/policies.svg"}
               titleImageAlt={""}
               animatePulse={loading}
             >
-              <Titles size={"h5"}>Company Documents</Titles>
+              <Titles size={"h5"}>Documents</Titles>
             </NewTab>
           </Holds>
           <Holds background={"white"} className={`h-full rounded-t-none`}>
             <Contents width={"section"}>
-              <Grids rows={"9"} className="h-full w-full pb-5">
-                <Holds className="row-start-1 row-end-2 w-full">
+              <Grids rows={"9"} className="h-full w-full py-5">
+                <Holds className="row-start-1 row-end-2 h-full  w-full">
                   <Selects
                     value={selectedFilter}
                     onChange={(e) => setSelectedFilter(e.target.value)}
-                    className="text-center justify-center h-full"
+                    className="text-center justify-center"
                   >
                     <option value="all">Select A Filter</option>
                     <option value="approved">Approved</option>
