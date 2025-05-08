@@ -1,5 +1,4 @@
 "use client";
-import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
@@ -43,7 +42,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("returnUrl") || "/dashboard";
-  const t = useTranslations("Hamburger");
+  const t = useTranslations("Hamburger-Profile");
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
   const [activeTab, setActiveTab] = useState(1);

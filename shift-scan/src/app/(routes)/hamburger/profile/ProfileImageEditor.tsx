@@ -13,6 +13,7 @@ import { uploadImage } from "@/actions/userActions";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { set } from "date-fns";
+import { useTranslations } from "next-intl";
 
 export default function ProfileImageEditor({
   employee,
@@ -29,6 +30,7 @@ export default function ProfileImageEditor({
   const [mode, setMode] = useState<"select" | "camera" | "preview" | "crop">(
     "select"
   );
+  const t = useTranslations("Hamburger-Profile");
   const [imageSrc, setImageSrc] = useState<string>("");
   const [cropImageSrc, setCropImageSrc] = useState<string>("");
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
@@ -193,13 +195,11 @@ export default function ProfileImageEditor({
             <Grids rows={"10"} className="h-full w-full">
               <Holds className="row-start-1 row-end-2">
                 <Titles size={"h4"}>
-                  {mode === "select"
-                    ? "Change Profile Picture"
+                  {mode === "crop"
+                    ? t("CropPhoto")
                     : mode === "camera"
-                    ? "Take Photo"
-                    : mode === "crop"
-                    ? "Crop Photo"
-                    : "Preview Photo"}
+                    ? t("ChangeProfilePhoto")
+                    : t("MyProfilePhoto")}
                 </Titles>
               </Holds>
 
@@ -281,7 +281,7 @@ export default function ProfileImageEditor({
                     className="w-full py-2"
                     onClick={() => setMode("camera")}
                   >
-                    <Titles size={"h4"}>Change Profile Picture</Titles>
+                    <Titles size={"h4"}>{t("ChangeProfilePhoto")}</Titles>
                   </Buttons>
                 </Holds>
               ) : mode === "camera" ? (
@@ -291,14 +291,14 @@ export default function ProfileImageEditor({
                     className="w-full py-2"
                     onClick={takePicture}
                   >
-                    <Titles size={"h4"}>Capture Image</Titles>
+                    <Titles size={"h4"}>{t("CaptureImage")}</Titles>
                   </Buttons>
                   <Buttons
                     background="red"
                     className="w-full py-2"
                     onClick={() => setMode("select")}
                   >
-                    <Titles size={"h4"}>Cancel</Titles>
+                    <Titles size={"h4"}>{t("Cancel")}</Titles>
                   </Buttons>
                 </Holds>
               ) : mode === "crop" ? (
@@ -308,14 +308,14 @@ export default function ProfileImageEditor({
                     className="w-full py-2"
                     onClick={saveImage}
                   >
-                    <Titles size={"h4"}>Save Photo</Titles>
+                    <Titles size={"h4"}>{t("Save")}</Titles>
                   </Buttons>
                   <Buttons
                     background="red"
                     className="w-full py-2"
                     onClick={() => setMode("camera")}
                   >
-                    <Titles size={"h4"}>Retake</Titles>
+                    <Titles size={"h4"}>{t("Retake")}</Titles>
                   </Buttons>
                 </Holds>
               ) : null}
