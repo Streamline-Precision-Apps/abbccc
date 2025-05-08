@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import STab from "@/app/(routes)/hamburger/inbox/_components/sent";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import { Titles } from "@/components/(reusable)/titles";
@@ -132,16 +131,13 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   <Titles size={"h5"}>{t("Documents")}</Titles>
                 </NewTab>
               </Holds>
-              <Holds className="row-start-2 row-end-13 h-full ">
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-13 h-full rounded-t-none "
+              >
                 {activeTab === 3 && <RTab isManager={isManager} />}
 
-                {activeTab === 4 && (
-                  <CompanyDocuments
-                    setActiveTab={setActiveTab}
-                    activeTab={activeTab}
-                    isManager={isManager}
-                  />
-                )}
+                {activeTab === 4 && <CompanyDocuments />}
               </Holds>
             </Grids>
           </Holds>
