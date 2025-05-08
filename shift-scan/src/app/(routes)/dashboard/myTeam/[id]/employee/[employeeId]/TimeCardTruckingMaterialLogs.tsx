@@ -5,24 +5,21 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import {
-  TruckingMaterialHaulLog,
-  TruckingMaterialHaulLogData,
-} from "@/lib/types";
-import { useEffect, useState } from "react";
+import { TruckingMaterialHaulLog, TruckingMaterialHaulLogData } from "@/lib/types";
+import { useEffect, useState, useCallback } from "react";
 
 type TimeCardTruckingMaterialHaulLogsProps = {
   edit: boolean;
-  setEdit: (edit: boolean) => void;
   manager: string;
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData;
+  onDataChange: (data: typeof allMaterials) => void;
 };
 
 export default function TimeCardTruckingMaterialLogs({
   edit,
-  setEdit,
   manager,
   truckingMaterialHaulLogs,
+  onDataChange,
 }: TimeCardTruckingMaterialHaulLogsProps) {
   const allMaterials = truckingMaterialHaulLogs
     .flatMap((item) => item.TruckingLogs)
@@ -38,10 +35,31 @@ export default function TimeCardTruckingMaterialLogs({
     );
 
   const [editedMaterials, setEditedMaterials] = useState(allMaterials);
+  const [changesWereMade, setChangesWereMade] = useState(false);
 
+  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    setEditedMaterials(allMaterials);
-  }, [truckingMaterialHaulLogs]);
+    if (!edit) {
+      setEditedMaterials(allMaterials);
+      setChangesWereMade(false);
+    }
+  }, [edit, truckingMaterialHaulLogs]);
+
+  const handleMaterialChange = useCallback(
+    (id: string, logId: string, field: keyof TruckingMaterialHaulLog['Materials'][0], value: string | number | null) => {
+      const updated = editedMaterials.map(m => {
+        if (m.id === id && m.logId === logId) {
+          return { ...m, [field]: value };
+        }
+        return m;
+      });
+      
+      setChangesWereMade(true);
+      setEditedMaterials(updated);
+      onDataChange(updated);
+    },
+    [editedMaterials, onDataChange]
+  );
 
   const isEmptyData = editedMaterials.length === 0;
 
@@ -66,9 +84,9 @@ export default function TimeCardTruckingMaterialLogs({
 
               {editedMaterials.map((material) => (
                 <Holds
-                  key={material.id}
+                  key={`${material.logId}-${material.id}`}
                   background={"white"}
-                  className="border-black border-[3px] rounded-lg  mb-2"
+                  className="border-black border-[3px] rounded-lg mb-2"
                 >
                   <Buttons
                     shadow={"none"}
@@ -77,27 +95,18 @@ export default function TimeCardTruckingMaterialLogs({
                   >
                     <Grids cols={"2"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
-                        <Grids
-                          rows={"2"}
-                          className="w-full h-full rounded-none"
-                        >
+                        <Grids rows={"2"} className="w-full h-full rounded-none">
                           <Holds className="row-start-1 row-end-2 h-full rounded-none border-b-[1.5px] border-black">
                             <Inputs
                               value={material.name}
-                              onChange={(e) => {
-                                const newMaterials = editedMaterials.map(
-                                  (m) => {
-                                    if (
-                                      m.id === material.id &&
-                                      m.logId === material.logId
-                                    ) {
-                                      return { ...m, name: e.target.value };
-                                    }
-                                    return m;
-                                  }
-                                );
-                                setEditedMaterials(newMaterials);
-                              }}
+                              onChange={(e) => 
+                                handleMaterialChange(
+                                  material.id, 
+                                  material.logId, 
+                                  'name', 
+                                  e.target.value
+                                )
+                              }
                               disabled={!edit}
                               placeholder="Material"
                               className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
@@ -106,23 +115,14 @@ export default function TimeCardTruckingMaterialLogs({
                           <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
                             <Inputs
                               value={material.LocationOfMaterial}
-                              onChange={(e) => {
-                                const newMaterials = editedMaterials.map(
-                                  (m) => {
-                                    if (
-                                      m.id === material.id &&
-                                      m.logId === material.logId
-                                    ) {
-                                      return {
-                                        ...m,
-                                        LocationOfMaterial: e.target.value,
-                                      };
-                                    }
-                                    return m;
-                                  }
-                                );
-                                setEditedMaterials(newMaterials);
-                              }}
+                              onChange={(e) => 
+                                handleMaterialChange(
+                                  material.id, 
+                                  material.logId, 
+                                  'LocationOfMaterial', 
+                                  e.target.value
+                                )
+                              }
                               disabled={!edit}
                               placeholder="Location"
                               className="w-full h-full border-none rounded-none rounded-bl-md text-xs"
@@ -138,34 +138,19 @@ export default function TimeCardTruckingMaterialLogs({
                               edit ? "bg-white" : "bg-app-gray"
                             }`}
                           >
-                            <Titles
-                              position={"left"}
-                              size={"h7"}
-                              className="px-1"
-                            >
+                            <Titles position={"left"} size={"h7"} className="px-1">
                               Material
                             </Titles>
                             <Inputs
                               value={material.materialWeight?.toString() || ""}
-                              onChange={(e) => {
-                                const newMaterials = editedMaterials.map(
-                                  (m) => {
-                                    if (
-                                      m.id === material.id &&
-                                      m.logId === material.logId
-                                    ) {
-                                      return {
-                                        ...m,
-                                        materialWeight: e.target.value
-                                          ? Number(e.target.value)
-                                          : null,
-                                      };
-                                    }
-                                    return m;
-                                  }
-                                );
-                                setEditedMaterials(newMaterials);
-                              }}
+                              onChange={(e) => 
+                                handleMaterialChange(
+                                  material.id, 
+                                  material.logId, 
+                                  'materialWeight', 
+                                  e.target.value ? Number(e.target.value) : null
+                                )
+                              }
                               disabled={!edit}
                               placeholder="Material"
                               className="w-full h-full border-none rounded-none rounded-tr-md text-right text-xs"
@@ -177,34 +162,19 @@ export default function TimeCardTruckingMaterialLogs({
                               edit ? "bg-white" : "bg-app-gray"
                             }`}
                           >
-                            <Titles
-                              position={"left"}
-                              size={"h7"}
-                              className="px-1"
-                            >
+                            <Titles position={"left"} size={"h7"} className="px-1">
                               Light
                             </Titles>
                             <Inputs
                               value={material.lightWeight?.toString() || ""}
-                              onChange={(e) => {
-                                const newMaterials = editedMaterials.map(
-                                  (m) => {
-                                    if (
-                                      m.id === material.id &&
-                                      m.logId === material.logId
-                                    ) {
-                                      return {
-                                        ...m,
-                                        lightWeight: e.target.value
-                                          ? Number(e.target.value)
-                                          : null,
-                                      };
-                                    }
-                                    return m;
-                                  }
-                                );
-                                setEditedMaterials(newMaterials);
-                              }}
+                              onChange={(e) => 
+                                handleMaterialChange(
+                                  material.id, 
+                                  material.logId, 
+                                  'lightWeight', 
+                                  e.target.value ? Number(e.target.value) : null
+                                )
+                              }
                               disabled={!edit}
                               placeholder="Light"
                               className="w-full h-full border-none rounded-none text-right text-xs"
@@ -216,34 +186,19 @@ export default function TimeCardTruckingMaterialLogs({
                               edit ? "bg-white" : "bg-app-gray"
                             }`}
                           >
-                            <Titles
-                              position={"left"}
-                              size={"h7"}
-                              className="px-1"
-                            >
+                            <Titles position={"left"} size={"h7"} className="px-1">
                               Gross
                             </Titles>
                             <Inputs
                               value={material.grossWeight?.toString() || ""}
-                              onChange={(e) => {
-                                const newMaterials = editedMaterials.map(
-                                  (m) => {
-                                    if (
-                                      m.id === material.id &&
-                                      m.logId === material.logId
-                                    ) {
-                                      return {
-                                        ...m,
-                                        grossWeight: e.target.value
-                                          ? Number(e.target.value)
-                                          : null,
-                                      };
-                                    }
-                                    return m;
-                                  }
-                                );
-                                setEditedMaterials(newMaterials);
-                              }}
+                              onChange={(e) => 
+                                handleMaterialChange(
+                                  material.id, 
+                                  material.logId, 
+                                  'grossWeight', 
+                                  e.target.value ? Number(e.target.value) : null
+                                )
+                              }
                               disabled={!edit}
                               placeholder="Gross"
                               className="w-full h-full border-none text-xs text-right rounded-none rounded-br-md"

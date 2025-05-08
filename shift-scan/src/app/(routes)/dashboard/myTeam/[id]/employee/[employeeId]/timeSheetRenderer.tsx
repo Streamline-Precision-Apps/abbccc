@@ -1,5 +1,4 @@
 "use client";
-
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { TimesheetFilter } from "@/lib/types";
@@ -48,102 +47,120 @@ export default function TimeSheetRenderer({
       case "timesheetHighlights":
         return (
           <TimeCardHighlights
-          highlightTimesheet={data}
-          edit={edit}
-          manager={manager}
-          onDataChange={onDataChange}
-          date={date} // Pass the date prop
-        />
+            highlightTimesheet={data}
+            edit={edit}
+            manager={manager}
+            onDataChange={onDataChange}
+            date={date}
+          />
         );
       case "truckingMileage":
         return (
           <TimeCardTruckingMileage
             truckingMileage={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "truckingEquipmentHaulLogs":
         return (
           <TimeCardTruckingHaulLogs
             truckingEquipmentHaulLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "truckingMaterialHaulLogs":
         return (
           <TimeCardTruckingMaterialLogs
             truckingMaterialHaulLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "truckingRefuelLogs":
         return (
           <TimeCardTruckingRefuelLogs
             truckingRefuelLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "truckingStateLogs":
         return (
           <TimeCardTruckingStateMileageLogs
             truckingStateLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "tascoHaulLogs":
         return (
           <TimeCardTascoHaulLogs
             tascoHaulLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "tascoRefuelLogs":
         return (
           <TimeCardTascoRefuelLogs
             tascoRefuelLog={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "equipmentLogs":
         return (
           <TimeCardEquipmentLogs
             equipmentLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
       case "equipmentRefuelLogs":
         return (
           <TimeCardEquipmentRefuelLogs
             equipmentRefuelLogs={data}
             edit={edit}
-            manager={manager} setEdit={function (edit: boolean): void {
+            manager={manager}
+            setEdit={function (edit: boolean): void {
               throw new Error("Function not implemented.");
-            } }          />
+            }}
+          />
         );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
-      {renderContent()}
-    </Holds>
-  );
-}
+        default:
+          return null;
+      }
+    };
+  
+    return (
+      <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
+        {renderContent()}
+      </Holds>
+    );
+  }

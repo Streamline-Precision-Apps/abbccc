@@ -13,18 +13,8 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
-import {
-  TimesheetHighlights,
-  TruckingEquipmentHaulLogData,
-  TruckingMileageData,
-  TruckingRefuelLogData,
-  TruckingStateLogData,
-  TascoRefuelLogData,
-  TascoHaulLogData,
-  EquipmentLogsData,
-  EmployeeEquipmentLogWithRefuel,
-  TruckingMaterialHaulLogData,
-} from "@/lib/types";
+import { TimesheetHighlights, TimesheetFilter } from "@/lib/types";
+import { updateTimesheetHighlights } from "@/actions/timeSheetActions";
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();
@@ -48,7 +38,6 @@ export default function EmployeeTabs() {
     "timesheetHighlights"
   );
 
-  // Employee data
   const {
     employee,
     contacts,
@@ -56,7 +45,6 @@ export default function EmployeeTabs() {
     error: errorEmployee,
   } = useEmployeeData(employeeId as string | undefined);
 
-  // Timesheet data
   const {
     data: timesheetData,
     loading: loadingTimesheets,
@@ -67,19 +55,16 @@ export default function EmployeeTabs() {
 
   const loading = loadingEmployee || loadingTimesheets;
 
-  // Handle date changes
   useEffect(() => {
     if (date && date !== today) {
       fetchTimesheetsForDate(date);
     }
   }, [date, fetchTimesheetsForDate, today]);
 
-  // Handle filter changes
   useEffect(() => {
     fetchTimesheetsForFilter(timeSheetFilter);
   }, [timeSheetFilter]);
 
-   // Handle save changes
   const onSaveChanges = useCallback(async (changes: TimesheetHighlights[] | TimesheetHighlights) => {
     try {
       const changesArray = Array.isArray(changes) ? changes : [changes];
@@ -98,10 +83,11 @@ export default function EmployeeTabs() {
 
       if (validChanges.length === 0) return;
 
+      setEdit(true); // Keep edit mode during save
+      
       const result = await updateTimesheetHighlights(validChanges);
       
       if (result.success) {
-        // Force a complete refresh of the data
         await Promise.all([
           fetchTimesheetsForDate(date),
           fetchTimesheetsForFilter(timeSheetFilter)
@@ -110,13 +96,12 @@ export default function EmployeeTabs() {
       }
     } catch (error) {
       console.error("Failed to save changes:", error);
+      setEdit(false);
       throw error;
     }
   }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
 
-  // Handle cancel edits remains the same
   const onCancelEdits = useCallback(() => {
-    // Force a complete refresh of the data from the database
     fetchTimesheetsForDate(date);
     fetchTimesheetsForFilter(timeSheetFilter);
     setEdit(false);
@@ -125,62 +110,26 @@ export default function EmployeeTabs() {
   return (
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="h-full w-full">
-        <Holds
-          background={"white"}
-          className="row-start-1 row-end-2 h-full w-full"
-        >
-          <TitleBoxes
-            onClick={() =>
-              router.push(
-                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`
-              )
-            }
-          >
+        <Holds className="row-start-1 row-end-2 h-full w-full">
+          <TitleBoxes onClick={() => router.push(timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`)}>
             <Titles size={"h2"}>
-              {loading
-                ? "Loading..."
-                : `${employee?.firstName} ${employee?.lastName}`}
+              {loading ? "Loading..." : `${employee?.firstName} ${employee?.lastName}`}
             </Titles>
           </TitleBoxes>
         </Holds>
 
-        <Holds
-          className={`w-full h-full row-start-2 row-end-8 ${
-            loading ? "animate-pulse" : ""
-          }`}
-        >
+        <Holds className={`w-full h-full row-start-2 row-end-8 ${loading ? "animate-pulse" : ""}`}>
           <Grids rows={"12"} className="h-full w-full">
-            <Holds
-              position={"row"}
-              className={"row-start-1 row-end-2 h-full gap-1"}
-            >
-              <NewTab
-                onClick={() => setActiveTab(1)}
-                isActive={activeTab === 1}
-                isComplete={true}
-                titleImage="/information.svg"
-                titleImageAlt={""}
-              >
+            <Holds position={"row"} className={"row-start-1 row-end-2 h-full gap-1"}>
+              <NewTab onClick={() => setActiveTab(1)} isActive={activeTab === 1} isComplete={true} titleImage="/information.svg" titleImageAlt={""}>
                 {t("ContactInfo")}
               </NewTab>
-              <NewTab
-                onClick={() => setActiveTab(2)}
-                isActive={activeTab === 2}
-                isComplete={true}
-                titleImage="/form.svg"
-                titleImageAlt={""}
-              >
+              <NewTab onClick={() => setActiveTab(2)} isActive={activeTab === 2} isComplete={true} titleImage="/form.svg" titleImageAlt={""}>
                 {t("TimeCards")}
               </NewTab>
             </Holds>
             <Holds className="h-full w-full row-start-2 row-end-13">
-              {activeTab === 1 && (
-                <EmployeeInfo
-                  employee={employee}
-                  contacts={contacts}
-                  loading={loading}
-                />
-              )}
+              {activeTab === 1 && <EmployeeInfo employee={employee} contacts={contacts} loading={loading} />}
               {activeTab === 2 && (
                 <EmployeeTimeSheets
                   data={timesheetData}
@@ -194,7 +143,6 @@ export default function EmployeeTabs() {
                   setTimeSheetFilter={setTimeSheetFilter}
                   onSaveChanges={onSaveChanges}
                   onCancelEdits={onCancelEdits}
-                  error={errorTimesheets} // Added error prop
                 />
               )}
             </Holds>

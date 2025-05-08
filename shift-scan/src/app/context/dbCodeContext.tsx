@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { CostCodes, JobCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { equipmentTagExists } from "@/actions/equipmentActions";
 
 const JobsitesSchema = z.array(
@@ -58,8 +58,11 @@ const JobSiteContext = createContext<JobSiteContextType>({
 export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
   const [jobsiteResults, setJobsiteResults] = useState<JobCodes[]>([]);
   const url = usePathname();
+  const { id, employeeId } = useParams();
+  const queryParams = useSearchParams();
 
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
         if (
@@ -68,7 +71,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
           url === "/dashboard/truckingAssistant" ||
-          url.startsWith("/dashboard/myteam/")
+          url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getJobsites");
           const jobSites = await response.json();
@@ -121,7 +124,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
-          url.startsWith("/dashboard/myteam/")
+          url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getCostCodes");
           const costCodes = await response.json();

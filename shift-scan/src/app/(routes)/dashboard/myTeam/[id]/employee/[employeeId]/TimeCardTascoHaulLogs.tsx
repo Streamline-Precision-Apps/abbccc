@@ -1,3 +1,4 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -5,33 +6,58 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { TascoHaulLogData, TascoHaulLogs } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-type TimeCardTruckingStateMileageLogsProps = {
+type TimeCardTascoHaulLogsProps = {
   edit: boolean;
-  setEdit: (edit: boolean) => void;
   manager: string;
   tascoHaulLogs: TascoHaulLogData;
+  onDataChange: (data: typeof allTascoHaulLogs) => void;
 };
 
 export default function TimeCardTascoHaulLogs({
   edit,
-  setEdit,
   manager,
   tascoHaulLogs,
-}: TimeCardTruckingStateMileageLogsProps) {
+  onDataChange,
+}: TimeCardTascoHaulLogsProps) {
   const allTascoHaulLogs = tascoHaulLogs
     .flatMap((log) => log.TascoLogs)
     .filter(
       (log): log is TascoHaulLogs => log !== null && log?.id !== undefined
     );
 
-  const [editedTascoHaulLogs, setEditedTascoHaulLogs] =
-    useState(allTascoHaulLogs);
+  const [editedTascoHaulLogs, setEditedTascoHaulLogs] = useState(allTascoHaulLogs);
+  const [changesWereMade, setChangesWereMade] = useState(false);
 
+  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    setEditedTascoHaulLogs(allTascoHaulLogs);
-  }, [tascoHaulLogs]);
+    if (!edit) {
+      setEditedTascoHaulLogs(allTascoHaulLogs);
+      setChangesWereMade(false);
+    }
+  }, [edit, tascoHaulLogs]);
+
+  const handleTascoHaulChange = useCallback(
+    (id: string, field: keyof TascoHaulLogs, value: string | number) => {
+      const updatedLogs = editedTascoHaulLogs.map(log => {
+        if (log.id === id) {
+          return { 
+            ...log, 
+            [field]: field === 'LoadQuantity' ? 
+              (value ? Number(value) : null) : 
+              value 
+          };
+        }
+        return log;
+      });
+
+      setChangesWereMade(true);
+      setEditedTascoHaulLogs(updatedLogs);
+      onDataChange(updatedLogs);
+    },
+    [editedTascoHaulLogs, onDataChange]
+  );
 
   const isEmptyData = editedTascoHaulLogs.length === 0;
 
@@ -54,43 +80,71 @@ export default function TimeCardTascoHaulLogs({
                 </Holds>
               </Grids>
 
-              {editedTascoHaulLogs.map((sheet) => (
+              {editedTascoHaulLogs.map((log) => (
                 <Holds
-                  key={sheet.id}
+                  key={log.id}
                   className="border-black border-[3px] rounded-lg bg-white mb-2"
                 >
                   <Buttons
                     shadow={"none"}
                     background={"none"}
-                    className="size-full "
+                    className="size-full"
                   >
                     <Grids cols={"2"} rows={"2"} className="w-full h-full">
-                      <Holds className="size-full col-start-1 col-end-2 row-start-1 row-end-2 border-b-[3px] border-r-[3px] border-black ">
+                      <Holds className="size-full col-start-1 col-end-2 row-start-1 row-end-2 border-b-[3px] border-r-[3px] border-black">
                         <Inputs
+                          value={log.shiftType}
+                          onChange={(e) => 
+                            handleTascoHaulChange(
+                              log.id,
+                              'shiftType',
+                              e.target.value
+                            )
+                          }
                           disabled={!edit}
-                          defaultValue={sheet.shiftType}
                           className="size-full text-xs text-center border-none rounded-none rounded-tl-md py-2"
                         />
                       </Holds>
-                      <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black   ">
+                      <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
                         <Inputs
+                          value={log.equipmentId || "N/A"}
+                          onChange={(e) => 
+                            handleTascoHaulChange(
+                              log.id,
+                              'equipmentId',
+                              e.target.value
+                            )
+                          }
                           disabled={!edit}
-                          defaultValue={sheet.equipmentId || "N/A"}
                           className="size-full text-xs text-center border-none rounded-none rounded-bl-md py-2"
                         />
                       </Holds>
-                      <Holds className="size-full col-start-2 col-end-3 row-start-1 row-end-2 border-b-[3px]  border-black  ">
+                      <Holds className="size-full col-start-2 col-end-3 row-start-1 row-end-2 border-b-[3px] border-black">
                         <Inputs
+                          value={log.materialType}
+                          onChange={(e) => 
+                            handleTascoHaulChange(
+                              log.id,
+                              'materialType',
+                              e.target.value
+                            )
+                          }
                           disabled={!edit}
-                          defaultValue={sheet.materialType}
                           className="size-full text-xs text-center border-none rounded-none rounded-tr-md py-2"
                         />
                       </Holds>
-
-                      <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3 ">
+                      <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3">
                         <Inputs
+                          type="number"
+                          value={log.LoadQuantity?.toString() || ""}
+                          onChange={(e) => 
+                            handleTascoHaulChange(
+                              log.id,
+                              'LoadQuantity',
+                              e.target.value
+                            )
+                          }
                           disabled={!edit}
-                          defaultValue={sheet.LoadQuantity}
                           className="size-full text-xs text-center border-none rounded-none rounded-br-md py-2"
                         />
                       </Holds>

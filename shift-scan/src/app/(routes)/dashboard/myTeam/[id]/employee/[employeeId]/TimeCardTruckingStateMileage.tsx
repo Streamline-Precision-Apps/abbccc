@@ -1,3 +1,4 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -5,20 +6,20 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { TruckingStateLog, TruckingStateLogData } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 type TimeCardTruckingStateMileageLogsProps = {
   edit: boolean;
-  setEdit: (edit: boolean) => void;
   manager: string;
   truckingStateLogs: TruckingStateLogData;
+  onDataChange: (data: typeof allStateMileages) => void;
 };
 
 export default function TimeCardTruckingStateMileageLogs({
   edit,
-  setEdit,
   manager,
   truckingStateLogs,
+  onDataChange,
 }: TimeCardTruckingStateMileageLogsProps) {
   // Process the data to combine state mileages with their truck info
   const allStateMileages = truckingStateLogs
@@ -34,17 +35,43 @@ export default function TimeCardTruckingStateMileageLogs({
         ...mileage,
         truckName: log.Equipment.name,
         equipmentId: log.Equipment.id,
+        truckingLogId: log.id, // Add reference to parent log
       }))
     );
 
-  const [displayedStateMileages, setDisplayedStateMileages] =
-    useState(allStateMileages);
+  const [editedStateMileages, setEditedStateMileages] = useState(allStateMileages);
+  const [changesWereMade, setChangesWereMade] = useState(false);
 
+  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    setDisplayedStateMileages(allStateMileages);
-  }, [truckingStateLogs]);
+    if (!edit) {
+      setEditedStateMileages(allStateMileages);
+      setChangesWereMade(false);
+    }
+  }, [edit, truckingStateLogs]);
 
-  const isEmptyData = displayedStateMileages.length === 0;
+  const handleStateMileageChange = useCallback(
+    (id: string, truckingLogId: string, field: keyof typeof allStateMileages[0], value: string | number) => {
+      const updated = editedStateMileages.map(item => {
+        if (item.id === id && item.truckingLogId === truckingLogId) {
+          return { 
+            ...item, 
+            [field]: field === 'stateLineMileage' ? 
+              (value ? Number(value) : null) : 
+              value 
+          };
+        }
+        return item;
+      });
+
+      setChangesWereMade(true);
+      setEditedStateMileages(updated);
+      onDataChange(updated);
+    },
+    [editedStateMileages, onDataChange]
+  );
+
+  const isEmptyData = editedStateMileages.length === 0;
 
   return (
     <Holds className="w-full h-full">
@@ -70,9 +97,9 @@ export default function TimeCardTruckingStateMileageLogs({
                 </Holds>
               </Grids>
 
-              {displayedStateMileages.map((sheet) => (
+              {editedStateMileages.map((mileage) => (
                 <Holds
-                  key={sheet.id}
+                  key={`${mileage.truckingLogId}-${mileage.id}`}
                   className="border-black border-[3px] rounded-lg bg-white mb-2"
                 >
                   <Buttons
@@ -83,21 +110,39 @@ export default function TimeCardTruckingStateMileageLogs({
                     <Grids cols={"4"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-3 w-full h-full border-r-[3px] border-black">
                         <Inputs
-                          value={sheet.truckName}
-                          disabled={!edit}
-                          className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md  text-left text-xs"
+                          value={mileage.truckName}
+                          disabled={true} // Truck name should not be editable
+                          className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md text-left text-xs"
+                          readOnly
                         />
                       </Holds>
-                      <Holds className="col-start-3 col-end-4 w-full h-full ">
+                      <Holds className="col-start-3 col-end-4 w-full h-full">
                         <Inputs
-                          value={sheet.state}
+                          value={mileage.state}
+                          onChange={(e) => 
+                            handleStateMileageChange(
+                              mileage.id,
+                              mileage.truckingLogId,
+                              'state',
+                              e.target.value
+                            )
+                          }
                           disabled={!edit}
                           className="w-full h-full border-none rounded-none text-center text-xs"
                         />
                       </Holds>
                       <Holds className="col-start-4 col-end-5 w-full h-full border-l-[3px] border-black">
                         <Inputs
-                          value={sheet.stateLineMileage?.toString() || ""}
+                          type="number"
+                          value={mileage.stateLineMileage?.toString() || ""}
+                          onChange={(e) => 
+                            handleStateMileageChange(
+                              mileage.id,
+                              mileage.truckingLogId,
+                              'stateLineMileage',
+                              e.target.value
+                            )
+                          }
                           disabled={!edit}
                           className="w-full h-full py-2 border-none rounded-none rounded-tr-md rounded-br-md text-right text-xs"
                         />
