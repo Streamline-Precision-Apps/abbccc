@@ -154,7 +154,7 @@ export function RequestHeaderCreate({
             <Holds className="w-full h-full col-span-1">
               <Images
                 className="w-full h-full rounded-full bg-cover bg-center"
-                titleImg={"/x.svg"}
+                titleImg={"/statusDeniedFilled.svg"}
                 titleImgAlt={"Employee Image"}
                 size={"40"}
                 onClick={() => {

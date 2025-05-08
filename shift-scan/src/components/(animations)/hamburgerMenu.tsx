@@ -168,7 +168,7 @@ export function AnimatedHamburgerButton() {
             <Buttons href="/hamburger/profile" background={"none"}>
               <Holds>
                 <Images
-                  titleImg={"/profile-sm.svg"}
+                  titleImg={"/profileEmpty.svg"}
                   titleImgAlt={"profile"}
                   position={"right"}
                   size={"70"}

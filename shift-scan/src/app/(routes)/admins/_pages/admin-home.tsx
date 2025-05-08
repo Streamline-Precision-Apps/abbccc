@@ -120,7 +120,7 @@ export default function AdminHome() {
             <Holds className="w-full h-full pt-2">
               <Holds className="w-full px-2">
                 <Images
-                  titleImg="/x.svg"
+                  titleImg="/statusDeniedFilled.svg"
                   titleImgAlt="adminHome"
                   className="w-[6%] sm:w-[3%] md:w-[3%] lg:w-[3%] p-[1px] bg-app-red rounded"
                   position={"right"}

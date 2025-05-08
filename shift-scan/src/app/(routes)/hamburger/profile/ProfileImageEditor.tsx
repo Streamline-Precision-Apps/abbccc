@@ -13,6 +13,7 @@ import { uploadImage } from "@/actions/userActions";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { set } from "date-fns";
+import { useTranslations } from "next-intl";
 
 export default function ProfileImageEditor({
   employee,
@@ -29,6 +30,7 @@ export default function ProfileImageEditor({
   const [mode, setMode] = useState<"select" | "camera" | "preview" | "crop">(
     "select"
   );
+  const t = useTranslations("Hamburger-Profile");
   const [imageSrc, setImageSrc] = useState<string>("");
   const [cropImageSrc, setCropImageSrc] = useState<string>("");
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
@@ -145,12 +147,14 @@ export default function ProfileImageEditor({
         <Holds className="w-[90px] h-[90px] relative">
           <Images
             titleImg={
-              loading ? "/person.svg" : employee?.image || "/profile.svg"
+              loading
+                ? "/profileEmpty.svg"
+                : employee?.image || "/profileEmpty.svg"
             }
             titleImgAlt="profile"
             onClick={() => setIsOpen(true)}
             className={`w-full h-full rounded-full object-cover ${
-              employee?.image ? "border-[3px] border-black" : ""
+              employee?.image && !loading ? "border-[3px] border-black" : ""
             }`}
           />
           <Holds className="absolute bottom-2 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-9 w-9 border-[3px] p-1 justify-center items-center border-black bg-app-gray">
@@ -181,7 +185,7 @@ export default function ProfileImageEditor({
               onClick={() =>
                 mode === "select" ? setIsOpen(false) : setMode("select")
               }
-              titleImg="/turnBack.svg"
+              titleImg="/arrowBack.svg"
               titleImgAlt="backArrow"
               className="w-10 h-10"
             />
@@ -191,13 +195,11 @@ export default function ProfileImageEditor({
             <Grids rows={"10"} className="h-full w-full">
               <Holds className="row-start-1 row-end-2">
                 <Titles size={"h4"}>
-                  {mode === "select"
-                    ? "Change Profile Picture"
+                  {mode === "crop"
+                    ? t("CropPhoto")
                     : mode === "camera"
-                    ? "Take Photo"
-                    : mode === "crop"
-                    ? "Crop Photo"
-                    : "Preview Photo"}
+                    ? t("ChangeProfilePhoto")
+                    : t("MyProfilePhoto")}
                 </Titles>
               </Holds>
 
@@ -279,7 +281,7 @@ export default function ProfileImageEditor({
                     className="w-full py-2"
                     onClick={() => setMode("camera")}
                   >
-                    <Titles size={"h4"}>Change Profile Picture</Titles>
+                    <Titles size={"h4"}>{t("ChangeProfilePhoto")}</Titles>
                   </Buttons>
                 </Holds>
               ) : mode === "camera" ? (
@@ -289,14 +291,14 @@ export default function ProfileImageEditor({
                     className="w-full py-2"
                     onClick={takePicture}
                   >
-                    <Titles size={"h4"}>Capture Image</Titles>
+                    <Titles size={"h4"}>{t("CaptureImage")}</Titles>
                   </Buttons>
                   <Buttons
                     background="red"
                     className="w-full py-2"
                     onClick={() => setMode("select")}
                   >
-                    <Titles size={"h4"}>Cancel</Titles>
+                    <Titles size={"h4"}>{t("Cancel")}</Titles>
                   </Buttons>
                 </Holds>
               ) : mode === "crop" ? (
@@ -306,14 +308,14 @@ export default function ProfileImageEditor({
                     className="w-full py-2"
                     onClick={saveImage}
                   >
-                    <Titles size={"h4"}>Save Photo</Titles>
+                    <Titles size={"h4"}>{t("Save")}</Titles>
                   </Buttons>
                   <Buttons
                     background="red"
                     className="w-full py-2"
                     onClick={() => setMode("camera")}
                   >
-                    <Titles size={"h4"}>Retake</Titles>
+                    <Titles size={"h4"}>{t("Retake")}</Titles>
                   </Buttons>
                 </Holds>
               ) : null}

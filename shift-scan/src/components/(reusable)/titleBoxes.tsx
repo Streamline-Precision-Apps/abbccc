@@ -70,7 +70,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className="w-12 h-12 absolute top-0 left-3 z-50"
       >
         <Images
-          titleImg="/turnBack.svg"
+          titleImg="/arrowBack.svg"
           titleImgAlt={"Turn Back"}
           className="max-w-8 h-auto object-contain"
         />

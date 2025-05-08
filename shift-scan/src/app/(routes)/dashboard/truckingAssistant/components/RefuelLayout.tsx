@@ -62,37 +62,45 @@ export default function RefuelLayout({
   };
 
   return (
-    <Holds background={"white"} className="w-full h-full rounded-t-none">
-      <Grids rows={"7"} className="w-full h-full">
-        <Holds position={"row"} className="row-start-1 row-end-2 pb-4">
-          <Contents width={"section"} className="h-full">
-            <Holds position={"row"} className="h-full gap-2">
-              <Holds size={"80"}>
-                <Texts size={"p3"}>{t("DidYouRefuel")}</Texts>
-              </Holds>
-              <Holds size={"20"}>
-                <Buttons
-                  background={"green"}
-                  className="py-1.5"
-                  onClick={() => {
-                    AddRefuelLog();
-                  }}
-                >
-                  +
-                </Buttons>
-              </Holds>
+    <Grids rows={"7"} gap={"5"} className="h-full">
+      <Holds
+        background={"white"}
+        className={"w-full h-full rounded-t-none row-start-1 row-end-2"}
+      >
+        <Contents width={"section"} className="h-full">
+          <Holds position={"row"} className="h-full gap-2">
+            <Holds size={"80"}>
+              <Texts size={"p3"}>{t("DidYouRefuel")}</Texts>
             </Holds>
-          </Contents>
-        </Holds>
-        <Holds className="w-full h-full row-start-2 row-end-8">
-          <Contents width={"section"}>
-            <RefuelLogsList
-              refuelLogs={refuelLogs}
-              setRefuelLogs={setRefuelLogs}
-            />
-          </Contents>
-        </Holds>
-      </Grids>
-    </Holds>
+            <Holds size={"20"}>
+              <Buttons
+                background={"green"}
+                className="py-1.5"
+                onClick={() => {
+                  AddRefuelLog();
+                }}
+              >
+                +
+              </Buttons>
+            </Holds>
+          </Holds>
+        </Contents>
+      </Holds>
+      <Holds
+        background={"white"}
+        className={`${
+          isLoading
+            ? "w-full h-full row-start-2 row-end-8  animate-pulse"
+            : "w-full h-full row-start-2 row-end-8 overflow-y-auto no-scrollbar pt-5 "
+        }`}
+      >
+        <Contents width={"section"}>
+          <RefuelLogsList
+            refuelLogs={refuelLogs}
+            setRefuelLogs={setRefuelLogs}
+          />
+        </Contents>
+      </Holds>
+    </Grids>
   );
 }

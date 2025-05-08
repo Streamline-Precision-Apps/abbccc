@@ -34,7 +34,7 @@ export default function HamburgerMenuNew() {
       background={"white"}
       className="row-start-1 row-end-2 h-full p-2"
     >
-      <Holds size={"20"} className="h-full">
+      <Holds size={"20"} className="h-full justify-center">
         <Buttons
           href="/hamburger/profile?returnUrl=/"
           background={"none"}
@@ -42,7 +42,7 @@ export default function HamburgerMenuNew() {
           className="relative w-16 h-5/6"
         >
           <img
-            src={image ? image : "/profile-sm.svg"}
+            src={image ? image : "/profileEmpty.svg"}
             alt="profile"
             className={
               image
@@ -52,14 +52,14 @@ export default function HamburgerMenuNew() {
           />
 
           <img
-            src={"/gray-settings-sm.svg"}
+            src={"/settingsFilled.svg"}
             alt={"settings"}
             className="w-7 h-7 absolute right-[-10px] bottom-0 " // White icon
           />
         </Buttons>
       </Holds>
 
-      <Holds size={"60"} className="h-full">
+      <Holds size={"60"} className="h-full justify-center">
         <Images
           titleImg="/logo.svg"
           titleImgAlt="logo"
@@ -68,17 +68,17 @@ export default function HamburgerMenuNew() {
         />
       </Holds>
 
-      <Holds size={"20"} className="h-full">
+      <Holds size={"20"} className="h-full justify-center">
         <Buttons
           href="/hamburger/inbox?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="w-16 h-full justify-center"
+          className=" w-16 h-5/6 justify-center"
         >
           <img
-            src={"/List-Icon.svg"}
+            src={"/form.svg"}
             alt={"inbox"}
-            className="relative  w-full mx-auto"
+            className="relative h-full w-full mx-auto"
           />
         </Buttons>
       </Holds>

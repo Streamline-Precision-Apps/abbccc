@@ -152,7 +152,7 @@ export const EmployeeTimeSheets = ({
                   disabled={loading}
                 >
                   <Images
-                    titleImg="/edit-form.svg"
+                    titleImg="/formEdit.svg"
                     titleImgAlt="Edit Icon"
                     className="w-6 h-6 mx-auto"
                   />

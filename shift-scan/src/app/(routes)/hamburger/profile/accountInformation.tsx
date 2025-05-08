@@ -36,7 +36,7 @@ export default function AccountInformation({
   signatureBase64String: string;
   setSignatureBase64String: Dispatch<SetStateAction<string>>;
 }) {
-  const t = useTranslations("Hamburger");
+  const t = useTranslations("Hamburger-Profile");
   const [isOpen2, setIsOpen2] = useState(false);
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
 
@@ -61,7 +61,7 @@ export default function AccountInformation({
             />
           </Holds>
           <Holds>
-            <Labels size={"p6"}>{t("EmergencyContactName")}</Labels>
+            <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
             <EditableFields
               value={employee?.Contact?.emergencyContact || ""}
               isChanged={false}
@@ -69,7 +69,7 @@ export default function AccountInformation({
             />
           </Holds>
           <Holds>
-            <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
+            <Labels size={"p6"}>{t("EmergencyContactNumber")}</Labels>
             <EditableFields
               value={employee?.Contact?.emergencyContactNumber || ""}
               isChanged={false}
@@ -90,7 +90,7 @@ export default function AccountInformation({
                 onClick={() => setEditSignatureModalOpen(true)}
               >
                 <Images
-                  titleImg="/edit-form.svg"
+                  titleImg="/formEdit.svg"
                   titleImgAlt={"Edit"}
                   className="max-w-5 h-auto object-contain"
                 />

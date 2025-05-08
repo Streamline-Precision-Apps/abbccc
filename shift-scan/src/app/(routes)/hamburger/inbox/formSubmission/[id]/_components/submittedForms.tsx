@@ -4,10 +4,10 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { FormInput } from "./formInput";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { deleteFormSubmission, savePending } from "@/actions/hamburgerActions";
 import { Titles } from "@/components/(reusable)/titles";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { format } from "date-fns";
@@ -153,7 +153,7 @@ export default function SubmittedForms({
                 titleImgAlt={"form Status"}
                 titleImg={
                   submissionStatus === "PENDING"
-                    ? "/OrangestatusOngoing.svg"
+                    ? "/statusOngoingFilled.svg"
                     : submissionStatus === "APPROVED"
                     ? "/statusApproved.svg"
                     : "/statusReject.svg"
