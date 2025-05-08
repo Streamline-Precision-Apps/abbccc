@@ -9,6 +9,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Selects } from "@/components/(reusable)/selects";
+import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
@@ -147,54 +148,58 @@ export default function FormSelection({
               onClick={() => setActiveTab(4)}
               isActive={activeTab === 4}
               isComplete={true}
-              titleImage={"/formSent.svg"}
+              titleImage={"/policies.svg"}
               titleImageAlt={""}
               animatePulse={loading}
             >
-              <Titles size={"h5"}>Company Documents</Titles>
+              <Titles size={"h5"}>Documents</Titles>
             </NewTab>
           </Holds>
           <Holds
             background={"white"}
-            className={`h-full row-start-2 row-end-4 rounded-t-none py-3 ${
+            className={`h-full row-start-2 row-end-4 rounded-t-none pt-3 pb-5 ${
               loading && "animate-pulse"
             } `}
           >
             <Contents width={"section"}>
-              {loading ? (
-                <Selects
-                  value={""}
-                  disabled
-                  className="text-center text-xs disabled:bg-white"
-                >
-                  <option value={""}>Loading...</option>
-                </Selects>
-              ) : (
-                <Selects
-                  value={selectedForm}
-                  onChange={(e) => setSelectedForm(e.target.value)}
-                  className="text-center text-xs"
-                >
-                  <option value={""}>Select A Form</option>
-                  {forms.map((form) => (
-                    <option key={form.id} value={form.id}>
-                      {form.name}
-                    </option>
-                  ))}
-                </Selects>
-              )}
-              <Holds>
-                <Buttons
-                  onClick={() => {
-                    setFormPage();
-                  }}
-                  background={"green"}
-                  disabled={!selectedForm}
-                  className="py-1"
-                >
-                  <Titles size={"h5"}>Start Form</Titles>
-                </Buttons>
-              </Holds>
+              <Grids rows={"2"} gap={"2"}>
+                <Holds className="h-full">
+                  {loading ? (
+                    <Selects
+                      value={""}
+                      disabled
+                      className="text-center text-xs disabled:bg-white h-full"
+                    >
+                      <option value={""}>Loading...</option>
+                    </Selects>
+                  ) : (
+                    <Selects
+                      value={selectedForm}
+                      onChange={(e) => setSelectedForm(e.target.value)}
+                      className="text-center text-xs h-full"
+                    >
+                      <option value={""}>Select A Form</option>
+                      {forms.map((form) => (
+                        <option key={form.id} value={form.id}>
+                          {form.name}
+                        </option>
+                      ))}
+                    </Selects>
+                  )}
+                </Holds>
+                <Holds className="h-full">
+                  <Buttons
+                    onClick={() => {
+                      setFormPage();
+                    }}
+                    background={selectedForm === "" ? "darkGray" : "green"}
+                    disabled={selectedForm === ""}
+                    className="py-1"
+                  >
+                    <Titles size={"h5"}>Start Form</Titles>
+                  </Buttons>
+                </Holds>
+              </Grids>
             </Contents>
           </Holds>
         </Holds>
@@ -202,9 +207,9 @@ export default function FormSelection({
           background={"white"}
           className={`row-span-6 h-full ${loading && "animate-pulse"} `}
         >
-          <Contents width={"section"} className="py-5">
-            <Titles position={"left"} size={"h3"}>
-              Drafts
+          <Contents width={"section"} className=" pt-1 pb-5">
+            <Titles position={"left"} size={"h5"}>
+              My Drafts
             </Titles>
             <Holds className="h-full overflow-y-scroll no-scrollbar ">
               {formDrafts &&

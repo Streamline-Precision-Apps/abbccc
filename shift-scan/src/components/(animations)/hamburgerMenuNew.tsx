@@ -34,7 +34,7 @@ export default function HamburgerMenuNew() {
       background={"white"}
       className="row-start-1 row-end-2 h-full p-2"
     >
-      <Holds size={"20"} className="h-full">
+      <Holds size={"20"} className="h-full justify-center">
         <Buttons
           href="/hamburger/profile?returnUrl=/"
           background={"none"}
@@ -59,7 +59,7 @@ export default function HamburgerMenuNew() {
         </Buttons>
       </Holds>
 
-      <Holds size={"60"} className="h-full">
+      <Holds size={"60"} className="h-full justify-center">
         <Images
           titleImg="/logo.svg"
           titleImgAlt="logo"
@@ -68,17 +68,17 @@ export default function HamburgerMenuNew() {
         />
       </Holds>
 
-      <Holds size={"20"} className="h-full">
+      <Holds size={"20"} className="h-full justify-center">
         <Buttons
           href="/hamburger/inbox?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="w-16 h-full justify-center"
+          className=" w-16 h-5/6 justify-center"
         >
           <img
             src={"/form.svg"}
             alt={"inbox"}
-            className="relative  w-full mx-auto"
+            className="relative h-full w-full mx-auto"
           />
         </Buttons>
       </Holds>
