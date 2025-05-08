@@ -105,6 +105,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
               className="text-center justify-center"
+              disabled={isLoading}
             >
               <option value="all">{t("SelectAFilter")}</option>
               <option value="approved">{t("Approved")}</option>

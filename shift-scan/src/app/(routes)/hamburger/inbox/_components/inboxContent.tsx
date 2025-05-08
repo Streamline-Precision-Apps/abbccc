@@ -102,7 +102,6 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   isComplete={true}
                   titleImage={"/formInspect.svg"}
                   titleImageAlt={""}
-                  animatePulse={loading}
                 >
                   <Titles size={"h5"}>{t("Forms")}</Titles>
                 </NewTab>
@@ -114,7 +113,6 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                     isComplete={true}
                     titleImage={"/formApproval.svg"}
                     titleImageAlt={""}
-                    animatePulse={loading}
                   >
                     <Titles size={"h5"}>{t("TeamSubmissions")}</Titles>
                   </NewTab>
@@ -126,7 +124,6 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   isComplete={true}
                   titleImage={"/policies.svg"}
                   titleImageAlt={""}
-                  animatePulse={loading}
                 >
                   <Titles size={"h5"}>{t("Documents")}</Titles>
                 </NewTab>

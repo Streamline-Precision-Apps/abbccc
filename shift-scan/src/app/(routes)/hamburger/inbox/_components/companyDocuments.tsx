@@ -159,52 +159,6 @@ export default function CompanyDocuments() {
           )
         );
 
-  // if (loading) {
-  //   return (
-  //     <Holds
-  //       background={"white"}
-  //       className="row-start-2 row-end-13 h-full w-full rounded-t-none animate-pulse"
-  //     >
-  //       <Contents width={"section"}>
-  //         <Grids rows={"9"} gap={"5"} className="h-full w-full pt-2 pb-5">
-  //           <Holds position={"row"} className="row-start-1 row-end-2 gap-x-3">
-  //             <Holds className="w-fit ">
-  //               <Buttons
-  //                 shadow={"none"}
-  //                 background={"green"}
-  //                 onClick={() => setModalOpen(true)}
-  //                 className="w-12 h-full"
-  //               >
-  //                 <Holds className="p-2">
-  //                   <Images
-  //                     titleImg={"/qrCode.svg"}
-  //                     titleImgAlt={"QR"}
-  //                     className="w-6 h-6 items-center"
-  //                   />
-  //                 </Holds>
-  //               </Buttons>
-  //             </Holds>
-  //             <Holds className="w-full h-full ">
-  //               <Selects
-  //                 value={selectedFilter}
-  //                 onChange={(e) => setSelectedFilter(e.target.value)}
-  //                 className="text-center justify-center h-full"
-  //                 disabled
-  //               >
-  //                 <option value="all">Loading tags...</option>
-  //               </Selects>
-  //             </Holds>
-  //           </Holds>
-
-  //           <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center">
-  //             <Spinner size={50} />
-  //           </Holds>
-  //         </Grids>
-  //       </Contents>
-  //     </Holds>
-  //   );
-  // }
-
   return (
     <Contents width={"section"}>
       <Grids rows={"9"} gap={"5"} className="h-full w-full pt-3 pb-5">
@@ -235,7 +189,7 @@ export default function CompanyDocuments() {
               className="text-center justify-center h-full"
               disabled
             >
-              <option value="all">{t('"LoadingTags"')}</option>
+              <option value="all">{t("LoadingTags")}</option>
             </Selects>
           ) : (
             <Selects
