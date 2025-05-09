@@ -7,7 +7,7 @@ import { revalidateTag } from "next/cache";
 
 export async function GET(
   req: Request,
-  { params }: { params: { employeeId: string } }
+  { params }: { params: { filter: string } }
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -23,21 +23,21 @@ export async function GET(
     );
   }
 
-  const { employeeId } = params;
+  const { filter } = params;
   const { searchParams } = new URL(req.url);
   const skip = parseInt(searchParams.get("skip") || "0");
   const take = parseInt(searchParams.get("take") || "10");
 
   try {
-    if (employeeId === "all") {
+    if (filter === "all") {
       const requests = await prisma.formSubmission.findMany({
         where: {
           status: "PENDING",
           User: {
-            NOT: {
-              // Exclude the current user from the query
-              id: userId,
-            },
+            // NOT: {
+            //   // Exclude the current user from the query
+            //   id: userId,
+            // },
             Crews: {
               some: {
                 leadId: userId,
@@ -77,15 +77,15 @@ export async function GET(
 
       revalidateTag("requests");
       return NextResponse.json(requests);
-    } else if (employeeId === "approved") {
+    } else if (filter === "approved") {
       const requests = await prisma.formSubmission.findMany({
         where: {
           status: { not: { in: ["PENDING", "DRAFT"] } },
           User: {
-            NOT: {
-              // Exclude the current user from the query
-              id: userId,
-            },
+            // NOT: {
+            //   // Exclude the current user from the query
+            //   id: userId,
+            // },
             Crews: {
               some: {
                 leadId: userId,
@@ -132,7 +132,7 @@ export async function GET(
       const requests = await prisma.formSubmission.findMany({
         where: {
           status: "PENDING",
-          userId: employeeId,
+          userId: filter,
           User: {
             NOT: {
               // Exclude the current user from the query
