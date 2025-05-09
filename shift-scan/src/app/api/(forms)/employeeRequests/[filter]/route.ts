@@ -34,10 +34,10 @@ export async function GET(
         where: {
           status: "PENDING",
           User: {
-            // NOT: {
-            //   // Exclude the current user from the query
-            //   id: userId,
-            // },
+            NOT: {
+              // Exclude the current user from the query
+              id: userId,
+            },
             Crews: {
               some: {
                 leadId: userId,
@@ -82,10 +82,10 @@ export async function GET(
         where: {
           status: { not: { in: ["PENDING", "DRAFT"] } },
           User: {
-            // NOT: {
-            //   // Exclude the current user from the query
-            //   id: userId,
-            // },
+            NOT: {
+              // Exclude the current user from the query
+              id: userId,
+            },
             Crews: {
               some: {
                 leadId: userId,
