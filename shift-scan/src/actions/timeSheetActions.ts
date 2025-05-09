@@ -532,7 +532,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const jobsiteId = formData.get("jobsiteId") as string;
       const userId = formData.get("userId") as string;
       const equipmentId = formData.get("equipment") as string;
-      const previoustimeSheetComments = formData.get(
+      const previousTimeSheetComments = formData.get(
         "timeSheetComments"
       ) as string;
       const costCode = formData.get("costcode") as string;
@@ -544,7 +544,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       if (shiftType === "ABCD Shift") {
         materialType = formData.get("materialType") as string;
       } else {
-        materialType = null;
+        materialType = undefined;
       }
 
       // Create a new TimeSheet
@@ -559,9 +559,9 @@ export async function handleTascoTimeSheet(formData: FormData) {
           TascoLogs: {
             create: {
               shiftType,
-              equipmentId: equipmentId || null,
+              Equipment: { connect: { id: equipmentId } },
               laborType: laborType,
-              materialType: materialType,
+              TascoMaterialTypes: { connect: { name: materialType } },
             },
           },
         },
@@ -583,7 +583,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           data: {
             endTime: formatISO(formData.get("endTime") as string),
-            comment: previoustimeSheetComments,
+            comment: previousTimeSheetComments,
           },
         });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Slider from "react-slick";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Titles } from "./titles";
 import { Holds } from "./holds";
 
@@ -10,6 +10,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { Texts } from "./texts";
 import Spinner from "../(animations)/spinner";
 import { useTranslations } from "next-intl";
+import { formatDuration } from "@/utils/formatDuration";
+import { Images } from "./images";
 // Type for Equipment
 interface Equipment {
   id: string;
@@ -54,6 +56,7 @@ interface CostCode {
 // Type for API Response
 interface BannerData {
   id: string;
+  startTime: string;
   jobsite: Jobsite;
   costCode: CostCode;
   employeeEquipmentLog: EmployeeEquipmentLog[];
@@ -65,6 +68,7 @@ export default function BannerRotating() {
   const t = useTranslations("BannerRotating");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true); // Track loading state
+  const [newDate, setNewDate] = useState(new Date());
 
   const settings = {
     dots: true,
@@ -75,9 +79,21 @@ export default function BannerRotating() {
     slidesToScroll: 1,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 6000,
     pauseOnHover: true,
     pauseOnFocus: true,
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNewDate(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const calculateDuration = () => {
+    if (!bannerData?.startTime) return "";
+    return formatDuration(bannerData?.startTime, newDate);
   };
 
   // Fetch timeSheetId and banner data together
@@ -138,11 +154,11 @@ export default function BannerRotating() {
         {/* Jobsite Information */}
         {bannerData.jobsite && (
           <Holds position={"row"}>
-            <Titles text={"white"} size={"h2"}>
-              {bannerData.jobsite.name}
+            <Titles text={"white"} size={"h3"}>
+              {t("CurrentlyWorkingAt")}
             </Titles>
-            <Texts className="text-white" size={"p5"}>
-              {bannerData.jobsite.qrId}
+            <Texts text={"white"} size={"p4"}>
+              {bannerData.jobsite.name}
             </Texts>
           </Holds>
         )}
@@ -150,14 +166,37 @@ export default function BannerRotating() {
         {/* Cost Code Information */}
         {bannerData.costCode && (
           <Holds>
-            <Titles text={"white"}>
-              {bannerData.costCode.name.split(" ").slice(1).join(" ") || ""}
+            <Titles size={"h3"} text={"white"}>
+              {t("ActiveCostCodeOf")}
             </Titles>
-            <Texts className="text-white" size={"p5"}>
-              {bannerData.costCode.name.split(" ")[0] || ""}
+            <Texts text={"white"} size={"p4"}>
+              {bannerData.costCode.name || ""}
             </Texts>
           </Holds>
         )}
+
+        <Holds className="w-full flex items-center">
+          <Titles text={"white"} size={"h3"}>
+            {t("ActiveTime")}
+          </Titles>
+          <Holds position={"row"} className="w-full justify-center gap-1">
+            <Texts size={"p5"} text={"white"}>
+              {calculateDuration()}
+            </Texts>
+
+            <Holds
+              background={"white"}
+              position={"left"}
+              className="max-w-6 h-auto rounded-full  "
+            >
+              <Images
+                titleImg="/clock.svg"
+                titleImgAlt="Clock Icon"
+                className="size-full object-contain mx-auto "
+              />
+            </Holds>
+          </Holds>
+        </Holds>
 
         {/* Employee Equipment Logs */}
         {bannerData.employeeEquipmentLog &&

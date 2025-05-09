@@ -99,7 +99,10 @@
     "TascoEShift": "Tasco - E Shift",
     "ABCDShiftLabor": "ABCD Shift - Labor",
     "Manual Labor": "Manual Labor",
-    "TruckDriver": "Truck Driver"
+    "TruckDriver": "Truck Driver",
+    "ActiveCostCodeOf": "Active Cost Code of ",
+    "ActiveTime": "Active Time",
+    "CurrentlyWorkingAt": "Currently Working At"
   },
 
   "Home": {
