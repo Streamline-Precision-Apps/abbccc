@@ -8,11 +8,17 @@ import { Titles } from "@/components/(reusable)/titles";
 import { TruckingRefuel, TruckingRefuelLog, TruckingRefuelLogData } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
+// Define a type that extends TruckingRefuel with our additional properties
+type ExtendedTruckingRefuel = TruckingRefuel & {
+  truckName: string;
+  truckingLogId: string;
+};
+
 type TimeCardTruckingRefuelLogsProps = {
   edit: boolean;
   manager: string;
   truckingRefuelLogs: TruckingRefuelLogData;
-  onDataChange: (data: typeof allTruckingLogs) => void;
+  onDataChange: (data: ExtendedTruckingRefuel[]) => void;
 };
 
 export default function TimeCardTruckingRefuelLogs({
@@ -22,7 +28,7 @@ export default function TimeCardTruckingRefuelLogs({
   onDataChange,
 }: TimeCardTruckingRefuelLogsProps) {
   // Get all trucking logs with their refuel logs
-  const allTruckingLogs = truckingRefuelLogs
+  const allTruckingLogs: ExtendedTruckingRefuel[] = truckingRefuelLogs
     .flatMap((item) => item.TruckingLogs)
     .filter(
       (log): log is TruckingRefuelLog =>
@@ -31,12 +37,12 @@ export default function TimeCardTruckingRefuelLogs({
     .flatMap((log) =>
       log.RefuelLogs.map((refuel) => ({
         ...refuel,
-        truckName: log.Equipment?.name,
-        truckingLogId: log.id, // Add reference to parent log
+        truckName: log.Equipment?.name || "Unknown",
+        truckingLogId: log.id,
       }))
     );
 
-  const [editedRefuelLogs, setEditedRefuelLogs] = useState(allTruckingLogs);
+  const [editedRefuelLogs, setEditedRefuelLogs] = useState<ExtendedTruckingRefuel[]>(allTruckingLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
@@ -48,14 +54,14 @@ export default function TimeCardTruckingRefuelLogs({
   }, [edit, truckingRefuelLogs]);
 
   const handleRefuelChange = useCallback(
-    (id: string, truckingLogId: string, field: keyof TruckingRefuel, value: string | number | null) => {
+    (id: string, truckingLogId: string, field: keyof ExtendedTruckingRefuel, value: string | number | null) => {
       const updatedLogs = editedRefuelLogs.map(log => {
         if (log.id === id && log.truckingLogId === truckingLogId) {
           return { 
             ...log, 
-            [field]: typeof value === 'string' && field !== 'truckName' ? 
-              (value ? Number(value) : null) : 
-              value 
+            [field]: field === 'gallonsRefueled' || field === 'milesAtFueling' 
+              ? (value ? Number(value) : null) 
+              : value 
           };
         }
         return log;
@@ -107,8 +113,8 @@ export default function TimeCardTruckingRefuelLogs({
                     <Grids cols={"4"} className="w-full h-full">
                       <Holds className="w-full h-full col-start-1 col-end-3 border-r-[3px] border-black">
                         <Inputs
-                          value={rl.truckName || ""}
-                          disabled={true} // Truck name should not be editable
+                          value={rl.truckName}
+                          disabled={true}
                           placeholder="Truck ID"
                           className="pl-1 py-2 w-full h-full text-xs border-none rounded-none rounded-tl-md rounded-bl-md"
                           readOnly

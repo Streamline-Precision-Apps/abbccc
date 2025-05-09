@@ -8,11 +8,22 @@ import { Titles } from "@/components/(reusable)/titles";
 import { TruckingMaterialHaulLog, TruckingMaterialHaulLogData } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
+// Define the type for processed material data
+type ProcessedMaterialLog = {
+  id: string;
+  name: string;
+  LocationOfMaterial: string;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+  logId: string;
+};
+
 type TimeCardTruckingMaterialHaulLogsProps = {
   edit: boolean;
   manager: string;
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData;
-  onDataChange: (data: typeof allMaterials) => void;
+  onDataChange: (data: ProcessedMaterialLog[]) => void;
 };
 
 export default function TimeCardTruckingMaterialLogs({
@@ -21,7 +32,8 @@ export default function TimeCardTruckingMaterialLogs({
   truckingMaterialHaulLogs,
   onDataChange,
 }: TimeCardTruckingMaterialHaulLogsProps) {
-  const allMaterials = truckingMaterialHaulLogs
+  // Process the material haul logs
+  const allMaterials: ProcessedMaterialLog[] = truckingMaterialHaulLogs
     .flatMap((item) => item.TruckingLogs)
     .filter(
       (log): log is TruckingMaterialHaulLog =>
@@ -34,7 +46,7 @@ export default function TimeCardTruckingMaterialLogs({
       }))
     );
 
-  const [editedMaterials, setEditedMaterials] = useState(allMaterials);
+  const [editedMaterials, setEditedMaterials] = useState<ProcessedMaterialLog[]>(allMaterials);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
@@ -46,10 +58,15 @@ export default function TimeCardTruckingMaterialLogs({
   }, [edit, truckingMaterialHaulLogs]);
 
   const handleMaterialChange = useCallback(
-    (id: string, logId: string, field: keyof TruckingMaterialHaulLog['Materials'][0], value: string | number | null) => {
+    (id: string, logId: string, field: keyof ProcessedMaterialLog, value: string | number | null) => {
       const updated = editedMaterials.map(m => {
         if (m.id === id && m.logId === logId) {
-          return { ...m, [field]: value };
+          return { 
+            ...m, 
+            [field]: ['materialWeight', 'lightWeight', 'grossWeight'].includes(field) 
+              ? (value ? Number(value) : null) 
+              : value 
+          };
         }
         return m;
       });

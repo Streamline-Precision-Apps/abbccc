@@ -8,22 +8,20 @@ import { Titles } from "@/components/(reusable)/titles";
 import { EmployeeEquipmentLogWithRefuel } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
+// Define the type for flattened refuel logs with equipment info
+type EquipmentRefuelLog = {
+  id: string;
+  equipmentId: string;
+  equipmentName: string;
+  gallonsRefueled: number | null;
+  employeeEquipmentLogId: string;
+};
+
 type TimeCardEquipmentRefuelLogsProps = {
   edit: boolean;
   manager: string;
   equipmentRefuelLogs: EmployeeEquipmentLogWithRefuel[] | null;
-  onDataChange: (data: FlattenedRefuelLog[]) => void;
-};
-
-// Define a new type for flattened refuel logs
-type FlattenedRefuelLog = {
-  equipmentId: string;
-  equipmentName: string;
-  refuelLog: {
-    id: string;
-    gallonsRefueled: number | null;
-    employeeEquipmentLogId: string; // Add reference to parent log
-  };
+  onDataChange: (data: EquipmentRefuelLog[]) => void;
 };
 
 export default function TimeCardEquipmentRefuelLogs({
@@ -34,22 +32,21 @@ export default function TimeCardEquipmentRefuelLogs({
 }: TimeCardEquipmentRefuelLogsProps) {
   // Flatten the logs to pair each RefuelLog with its Equipment
   const flattenRefuelLogs = useCallback(
-    (logs: EmployeeEquipmentLogWithRefuel[]): FlattenedRefuelLog[] => {
+    (logs: EmployeeEquipmentLogWithRefuel[]): EquipmentRefuelLog[] => {
       return logs.flatMap((log) =>
         log.RefuelLogs.map((refuel) => ({
+          id: refuel.id,
           equipmentId: log.Equipment?.id || "",
           equipmentName: log.Equipment?.name || "",
-          refuelLog: {
-            ...refuel,
-            employeeEquipmentLogId: log.id, // Add reference to parent log
-          },
+          gallonsRefueled: refuel.gallonsRefueled,
+          employeeEquipmentLogId: log.id,
         }))
       );
     },
     []
   );
 
-  const [flattenedLogs, setFlattenedLogs] = useState<FlattenedRefuelLog[]>([]);
+  const [flattenedLogs, setFlattenedLogs] = useState<EquipmentRefuelLog[]>([]);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
@@ -74,13 +71,10 @@ export default function TimeCardEquipmentRefuelLogs({
   const handleRefuelChange = useCallback(
     (id: string, employeeEquipmentLogId: string, value: string) => {
       const updatedLogs = flattenedLogs.map(log => {
-        if (log.refuelLog.id === id && log.refuelLog.employeeEquipmentLogId === employeeEquipmentLogId) {
+        if (log.id === id && log.employeeEquipmentLogId === employeeEquipmentLogId) {
           return {
             ...log,
-            refuelLog: {
-              ...log.refuelLog,
-              gallonsRefueled: value ? Number(value) : null
-            }
+            gallonsRefueled: value ? Number(value) : null
           };
         }
         return log;
@@ -115,9 +109,9 @@ export default function TimeCardEquipmentRefuelLogs({
                 </Holds>
               </Grids>
 
-              {flattenedLogs.map(({ equipmentName, refuelLog }) => (
+              {flattenedLogs.map((log) => (
                 <Holds
-                  key={`${refuelLog.employeeEquipmentLogId}-${refuelLog.id}`}
+                  key={`${log.employeeEquipmentLogId}-${log.id}`}
                   className="border-black border-[3px] rounded-lg bg-white mb-2"
                 >
                   <Buttons
@@ -128,8 +122,8 @@ export default function TimeCardEquipmentRefuelLogs({
                     <Grids cols={"4"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-3 w-full h-full">
                         <Inputs
-                          value={equipmentName}
-                          disabled={true} // Equipment name should not be editable
+                          value={log.equipmentName}
+                          disabled={true}
                           className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
                           readOnly
                         />
@@ -138,11 +132,11 @@ export default function TimeCardEquipmentRefuelLogs({
                       <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
                         <Inputs
                           type="number"
-                          value={refuelLog.gallonsRefueled?.toString() || ""}
+                          value={log.gallonsRefueled?.toString() || ""}
                           onChange={(e) => 
                             handleRefuelChange(
-                              refuelLog.id,
-                              refuelLog.employeeEquipmentLogId,
+                              log.id,
+                              log.employeeEquipmentLogId,
                               e.target.value
                             )
                           }
