@@ -1,7 +1,7 @@
 "use client";
 
 import Slider from "react-slick";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Titles } from "./titles";
 import { Holds } from "./holds";
 
@@ -9,6 +9,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Texts } from "./texts";
 import Spinner from "../(animations)/spinner";
+import { useTranslations } from "next-intl";
 // Type for Equipment
 interface Equipment {
   id: string;
@@ -61,6 +62,7 @@ interface BannerData {
 }
 
 export default function BannerRotating() {
+  const t = useTranslations("BannerRotating");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true); // Track loading state
 
@@ -125,7 +127,7 @@ export default function BannerRotating() {
   if (!bannerData || !bannerData.jobsite) {
     return (
       <Holds className="w-[80%] ">
-        <Titles text={"white"}>No available timesheet data.</Titles>
+        <Titles text={"white"}>{t("ErrorFetchingClockInDetails")}</Titles>
       </Holds>
     );
   }
@@ -162,12 +164,12 @@ export default function BannerRotating() {
           bannerData.employeeEquipmentLog.map((equipment, index) => (
             <Holds key={index}>
               <Titles text={"white"}>
-                {equipment.equipment?.name || "Unknown Equipment"}
+                {equipment.equipment?.name || t("UnknownEquipment")}
               </Titles>
               <Texts className="text-white" size={"p5"}>
                 {equipment.startTime
-                  ? `Start Time: ${equipment.startTime}`
-                  : "No Start Time"}
+                  ? `${t("StartTime")} ${equipment.startTime}`
+                  : t("NoStartTime")}
               </Texts>
             </Holds>
           ))}
@@ -179,7 +181,7 @@ export default function BannerRotating() {
               {equipment.laborType === "tascoAbcdEquipment" ? (
                 <>
                   <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>ABCD Shift - Equipment</Titles>
+                    <Titles text={"white"}>{t("AbcdShiftEquipment")}</Titles>
 
                     <Texts className="text-white" size={"p5"}>
                       {equipment.equipment?.name}
@@ -188,7 +190,7 @@ export default function BannerRotating() {
                 </>
               ) : equipment.laborType === "tascoEEquipment" ? (
                 <>
-                  <Titles text={"white"}>TASCO - E Shift</Titles>
+                  <Titles text={"white"}>{t("TascoEShift")}</Titles>
 
                   <Texts className="text-white" size={"p5"}>
                     {`EQ - ${equipment.equipment?.name}`}
@@ -197,9 +199,9 @@ export default function BannerRotating() {
               ) : equipment.laborType === "tascoAbcdLabor" ? (
                 <>
                   <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>ABCD Shift - Labor</Titles>
+                    <Titles text={"white"}>{t("ABCDShiftLabor")}</Titles>
                     <Texts className="text-white" size={"p5"}>
-                      Manual Labor
+                      {t("ManualLabor")}
                     </Texts>
                   </Holds>
                 </>
@@ -211,22 +213,10 @@ export default function BannerRotating() {
         {bannerData.truckingLogs &&
           bannerData.truckingLogs.map((equipment, index) => (
             <Holds key={index}>
-              {equipment.laborType !== "truckLabor" ? (
-                <Titles text={"white"}>{equipment.equipment?.name}</Titles>
-              ) : (
-                <Titles text={"white"}>
-                  {equipment.laborType === "truckLabor" && "Manual Labor"}
-                </Titles>
-              )}
-              {equipment.laborType !== "truckLabor" && (
-                <Texts className="text-white" size={"p5"}>
-                  {equipment.laborType === "truckEquipmentOperator"
-                    ? "Truck Equipment Operator"
-                    : equipment.laborType === "truckDriver"
-                    ? "Truck Driver"
-                    : ""}
-                </Texts>
-              )}
+              <Titles text={"white"}>{equipment.equipment?.name}</Titles>
+              <Texts className="text-white" size={"p5"}>
+                {t("TruckDriver")}
+              </Texts>
             </Holds>
           ))}
       </Slider>

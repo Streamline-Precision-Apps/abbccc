@@ -90,6 +90,17 @@
     "StartScanning": "Start Scanning!",
     "LogoAlt": "Shift Scan Logo"
   },
+  "BannerRotating": {
+    "ErrorFetchingClockInDetails": "Error fetching Clock In details",
+    "StartTime": "Start Time: ",
+    "NoStartTime": "No Start Time",
+    "UnknownEquipment": "Unknown Equipment",
+    "AbcdShiftEquipment": "Abcd Shift - Equipment",
+    "TascoEShift": "Tasco - E Shift",
+    "ABCDShiftLabor": "ABCD Shift - Labor",
+    "Manual Labor": "Manual Labor",
+    "TruckDriver": "Truck Driver"
+  },
 
   "Home": {
     "TotalHoursWorked": "Hours Worked",

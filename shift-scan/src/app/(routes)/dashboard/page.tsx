@@ -3,8 +3,6 @@ import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
 import { redirect } from "next/navigation";
 import DbWidgetSection from "./dbWidgetSection";
 import { Grids } from "@/components/(reusable)/grids";
