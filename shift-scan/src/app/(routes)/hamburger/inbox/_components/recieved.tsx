@@ -26,15 +26,15 @@ type SentContent = {
   formTemplateId: string;
   status: FormStatus;
   data: Record<string, string>;
-  formTemplate: {
+  FormTemplate: {
     name: string;
     formType: string;
   };
-  user: {
+  User: {
     firstName: string;
     lastName: string;
   };
-  approvals: {
+  Approvals: {
     approver: {
       firstName: string;
       lastName: string;
@@ -45,7 +45,7 @@ type SentContent = {
 type EmployeeRequests = {
   id: string;
   formTemplateId: string;
-  user: {
+  User: {
     id: string;
     firstName: string;
     lastName: string;
@@ -58,6 +58,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
   const [employeeRequests, setEmployeeRequests] = useState<EmployeeRequests[]>(
     []
   );
+
   const router = useRouter();
 
   const fetchRequests = async (skip: number, reset: boolean = false) => {
@@ -96,6 +97,15 @@ export default function RTab({ isManager }: { isManager: boolean }) {
     fetchEmployeeRequests();
   }, []);
 
+  const uniqueEmployees = employeeRequests.reduce((acc, current) => {
+    const x = acc.find((item) => item.User.id === current.User.id);
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, [] as EmployeeRequests[]);
+
   return (
     <Holds background={"white"} className={`h-full rounded-t-none`}>
       <Grids rows={"10"} className="h-full w-full">
@@ -109,9 +119,9 @@ export default function RTab({ isManager }: { isManager: boolean }) {
             >
               <option value="all">{t("SelectAFilter")}</option>
               <option value="approved">{t("Approved")}</option>
-              {employeeRequests.map((employee) => (
-                <option key={employee.id} value={employee.id}>
-                  {employee.user.firstName} {employee.user.lastName}
+              {uniqueEmployees.map((emp) => (
+                <option key={emp?.User.id} value={emp?.User.id}>
+                  {emp?.User.firstName} {emp?.User.lastName}
                 </option>
               ))}
             </Selects>
@@ -147,7 +157,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                 <Holds className="gap-y-4 pt-3 pb-5">
                   {sentContent.map((form, index) => {
                     const title =
-                      form.formTemplate?.formType || form.formTemplate?.name; // Fallback if formTemplate is undefined
+                      form.FormTemplate?.formType || form.FormTemplate?.name; // Fallback if formTemplate is undefined
                     const isLastItem = index === sentContent.length - 1;
                     return (
                       <Buttons
@@ -165,7 +175,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                         <Holds className="w-full h-full relative">
                           <Titles size={"h3"}>{title}</Titles>
                           <Titles size={"h7"}>
-                            {form.user.firstName + " " + form.user.lastName}
+                            {form.User.firstName + " " + form.User.lastName}
                           </Titles>
                         </Holds>
                       </Buttons>

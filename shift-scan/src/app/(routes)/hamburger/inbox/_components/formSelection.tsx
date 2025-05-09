@@ -14,7 +14,6 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -53,6 +52,7 @@ type SentContent = {
   };
   status: FormStatus;
 };
+// todo you need to fetch the draft forms as well as the other forms adjust api and server actions
 
 export default function FormSelection({
   loading,
@@ -68,7 +68,7 @@ export default function FormSelection({
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [forms, setForms] = useState<Form[]>([]);
   const [selectedForm, setSelectedForm] = useState<string>("");
-  const [formDrafts, setFormDrafts] = useState<DraftForm[]>([]);
+  // const [formDrafts, setFormDrafts] = useState<DraftForm[]>([]);
   const { data: session } = useSession();
   const userId = session?.user.id;
   const router = useRouter();
@@ -82,6 +82,7 @@ export default function FormSelection({
 
   const {
     data: sentContent,
+    setData: setSentContent,
     isLoading,
     isInitialLoading,
     lastItemRef,
@@ -108,15 +109,6 @@ export default function FormSelection({
     fetchForms();
   }, []);
 
-  useEffect(() => {
-    const fetchFormDrafts = async () => {
-      const drafts = await fetch("/api/formDrafts");
-      const res = await drafts.json();
-      setFormDrafts(res);
-    };
-    fetchFormDrafts();
-  }, []);
-
   const setFormPage = async () => {
     // create a form that isn't submitted
     const formData = new FormData();
@@ -134,16 +126,17 @@ export default function FormSelection({
         `
     );
   };
+
   return (
-    <Grids rows={"10"} gap={"5"} className="h-full">
+    <Grids rows={"7"} gap={"5"} className="h-full">
       <Holds
         background={"white"}
-        className={`w-full h-full row-start-1 row-end-3 rounded-t-none  ${
+        className={`w-full h-full row-start-1 row-end-2 rounded-t-none  ${
           loading && "animate-pulse"
         } `}
       >
         <Contents width={"section"} className="">
-          <Holds position={"left"} className=" pt-3 pb-1  w-full">
+          {/* <Holds position={"left"} className=" pt-3 pb-1  w-full">
             <Texts
               text={"gray"}
               position={"left"}
@@ -152,10 +145,10 @@ export default function FormSelection({
             >
               {t("NewForm")}
             </Texts>
-          </Holds>
+          </Holds> */}
           <Holds
             position={"row"}
-            className="w-full h-full justify-center items-center gap-x-2 pb-3 "
+            className="w-full h-full justify-center items-center gap-x-2 "
           >
             <Holds>
               {loading ? (
@@ -204,7 +197,7 @@ export default function FormSelection({
 
       <Holds
         background={"white"}
-        className={`row-start-3 row-end-11 h-full  ${
+        className={`row-start-2 row-end-8 h-full  ${
           loading && "animate-pulse"
         } `}
       >
@@ -213,7 +206,7 @@ export default function FormSelection({
             <Contents width={"section"}>
               <Holds className="pb-1">
                 <Titles position={"left"} size={"h5"}>
-                  {t("Submissions")}
+                  {t("DraftsSubmissions")}
                 </Titles>
               </Holds>
               <Selects
@@ -257,7 +250,8 @@ export default function FormSelection({
                       </Texts>
                     </Holds>
                   ))}
-                <Holds className="gap-y-4 pt-3 pb-5">
+
+                <div className="pt-3 pb-5 h-full w-full overflow-y-auto no-scrollbar ">
                   {sentContent.map((form, index) => {
                     const title =
                       form.title.charAt(0).toUpperCase() +
@@ -266,43 +260,50 @@ export default function FormSelection({
                     const isLastItem = index === sentContent.length - 1;
 
                     return (
-                      <Buttons
-                        key={form.id}
-                        ref={isLastItem ? lastItemRef : null}
-                        shadow={"none"}
-                        className="py-1 relative"
-                        background={
-                          form.status === "PENDING"
-                            ? "orange"
-                            : form.status === "APPROVED"
-                            ? "green"
-                            : "red"
-                        }
-                        onClick={() => {
-                          router.push(
-                            `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
-                          );
-                        }}
-                        disabled={isLoading}
-                      >
-                        <Holds className="w-full h-full relative">
-                          <Titles size={"h3"}>{title}</Titles>
-                          <Titles size={"h7"}>
-                            {form.FormTemplate?.formType}
-                          </Titles>
-                          <Images
-                            titleImgAlt={"form Status"}
-                            titleImg={
-                              form.status === "PENDING"
-                                ? "/statusOngoingFilled.svg"
-                                : form.status === "APPROVED"
-                                ? "/statusApprovedFilled.svg"
-                                : "/statusDeniedFilled.svg"
-                            }
-                            className="absolute max-w-10 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
-                          />
-                        </Holds>
-                      </Buttons>
+                      <Holds className="pb-3">
+                        <Buttons
+                          key={form.id}
+                          ref={isLastItem ? lastItemRef : null}
+                          shadow={"none"}
+                          className="py-1 relative"
+                          background={
+                            form.status === "PENDING"
+                              ? "orange"
+                              : form.status === "APPROVED"
+                              ? "green"
+                              : form.status === "DENIED"
+                              ? "red"
+                              : "lightBlue"
+                          }
+                          onClick={() => {
+                            router.push(
+                              `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
+                            );
+                          }}
+                          disabled={isLoading}
+                        >
+                          <Holds className="w-full h-full relative">
+                            <Titles size={"h3"}>{title}</Titles>
+                            <Titles size={"h7"}>
+                              {form.FormTemplate?.formType}
+                            </Titles>
+
+                            <Images
+                              titleImgAlt={"form Status"}
+                              titleImg={
+                                form.status === "PENDING"
+                                  ? "/statusOngoingFilled.svg"
+                                  : form.status === "APPROVED"
+                                  ? "/statusApprovedFilled.svg"
+                                  : form.status === "DENIED"
+                                  ? "/statusDeniedFilled.svg"
+                                  : "/formSent.svg"
+                              }
+                              className="absolute max-w-10 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
+                            />
+                          </Holds>
+                        </Buttons>
+                      </Holds>
                     );
                   })}
                   {isLoading && (
@@ -310,7 +311,7 @@ export default function FormSelection({
                       <Spinner />
                     </Holds>
                   )}
-                </Holds>
+                </div>
               </Contents>
             </Holds>
           )}

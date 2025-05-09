@@ -166,7 +166,7 @@ export default function CompanyDocuments() {
           position={"row"}
           className="row-start-1 row-end-2 h-full gap-x-3"
         >
-          <Holds className="w-fit h-full">
+          <Holds className="w-12 h-full">
             <Buttons
               shadow={"none"}
               background={"green"}
