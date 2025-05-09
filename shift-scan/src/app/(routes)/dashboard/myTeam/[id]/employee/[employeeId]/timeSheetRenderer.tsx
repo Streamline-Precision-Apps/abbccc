@@ -60,9 +60,7 @@ export default function TimeSheetRenderer({
             truckingMileage={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "truckingEquipmentHaulLogs":
@@ -71,9 +69,7 @@ export default function TimeSheetRenderer({
             truckingEquipmentHaulLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "truckingMaterialHaulLogs":
@@ -82,9 +78,7 @@ export default function TimeSheetRenderer({
             truckingMaterialHaulLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "truckingRefuelLogs":
@@ -93,9 +87,7 @@ export default function TimeSheetRenderer({
             truckingRefuelLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "truckingStateLogs":
@@ -104,9 +96,7 @@ export default function TimeSheetRenderer({
             truckingStateLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "tascoHaulLogs":
@@ -115,9 +105,7 @@ export default function TimeSheetRenderer({
             tascoHaulLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "tascoRefuelLogs":
@@ -126,9 +114,7 @@ export default function TimeSheetRenderer({
             tascoRefuelLog={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "equipmentLogs":
@@ -137,9 +123,7 @@ export default function TimeSheetRenderer({
             equipmentLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
       case "equipmentRefuelLogs":
@@ -148,19 +132,17 @@ export default function TimeSheetRenderer({
             equipmentRefuelLogs={data}
             edit={edit}
             manager={manager}
-            setEdit={function (edit: boolean): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDataChange={onDataChange}
           />
         );
-        default:
-          return null;
-      }
-    };
-  
-    return (
-      <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
-        {renderContent()}
-      </Holds>
-    );
-  }
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
+      {renderContent()}
+    </Holds>
+  );
+}

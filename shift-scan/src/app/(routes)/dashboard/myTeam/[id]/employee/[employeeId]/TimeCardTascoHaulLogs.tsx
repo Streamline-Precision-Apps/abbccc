@@ -5,14 +5,23 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TascoHaulLogData, TascoHaulLogs } from "@/lib/types";
+import { TascoHaulLogs, TascoHaulLogData } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
+
+// Define the type for processed haul logs
+type ProcessedTascoHaulLog = {
+  id: string;
+  shiftType: string;
+  equipmentId: string | null;
+  materialType: string;
+  LoadQuantity: number | null;
+};
 
 type TimeCardTascoHaulLogsProps = {
   edit: boolean;
   manager: string;
   tascoHaulLogs: TascoHaulLogData;
-  onDataChange: (data: typeof allTascoHaulLogs) => void;
+  onDataChange: (data: ProcessedTascoHaulLog[]) => void;
 };
 
 export default function TimeCardTascoHaulLogs({
@@ -21,13 +30,21 @@ export default function TimeCardTascoHaulLogs({
   tascoHaulLogs,
   onDataChange,
 }: TimeCardTascoHaulLogsProps) {
-  const allTascoHaulLogs = tascoHaulLogs
+  // Process the tasco haul logs
+  const allTascoHaulLogs: ProcessedTascoHaulLog[] = tascoHaulLogs
     .flatMap((log) => log.TascoLogs)
     .filter(
       (log): log is TascoHaulLogs => log !== null && log?.id !== undefined
-    );
+    )
+    .map((log) => ({
+      id: log.id,
+      shiftType: log.shiftType,
+      equipmentId: log.equipmentId,
+      materialType: log.materialType,
+      LoadQuantity: log.LoadQuantity,
+    }));
 
-  const [editedTascoHaulLogs, setEditedTascoHaulLogs] = useState(allTascoHaulLogs);
+  const [editedTascoHaulLogs, setEditedTascoHaulLogs] = useState<ProcessedTascoHaulLog[]>(allTascoHaulLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
@@ -39,7 +56,7 @@ export default function TimeCardTascoHaulLogs({
   }, [edit, tascoHaulLogs]);
 
   const handleTascoHaulChange = useCallback(
-    (id: string, field: keyof TascoHaulLogs, value: string | number) => {
+    (id: string, field: keyof ProcessedTascoHaulLog, value: string | number) => {
       const updatedLogs = editedTascoHaulLogs.map(log => {
         if (log.id === id) {
           return { 

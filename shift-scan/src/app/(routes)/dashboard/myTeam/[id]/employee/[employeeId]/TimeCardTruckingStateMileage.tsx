@@ -12,7 +12,16 @@ type TimeCardTruckingStateMileageLogsProps = {
   edit: boolean;
   manager: string;
   truckingStateLogs: TruckingStateLogData;
-  onDataChange: (data: typeof allStateMileages) => void;
+  onDataChange: (data: ProcessedStateMileage[]) => void;
+};
+
+type ProcessedStateMileage = {
+  id: string;
+  state: string;
+  stateLineMileage: number;
+  truckName: string;
+  equipmentId: string;
+  truckingLogId: string;
 };
 
 export default function TimeCardTruckingStateMileageLogs({
@@ -30,16 +39,18 @@ export default function TimeCardTruckingStateMileageLogs({
         log?.Equipment !== undefined &&
         log?.StateMileages !== undefined
     )
-    .flatMap((log) =>
-      log.StateMileages.map((mileage) => ({
-        ...mileage,
+    .flatMap((log, logIndex) =>
+      log.StateMileages.map((mileage, mileageIndex) => ({
+        id: `${logIndex}-${mileageIndex}`, // Generate a unique ID
+        state: mileage.state,
+        stateLineMileage: mileage.stateLineMileage,
         truckName: log.Equipment.name,
         equipmentId: log.Equipment.id,
-        truckingLogId: log.id, // Add reference to parent log
+        truckingLogId: `${logIndex}`, // Use logIndex as a temporary ID
       }))
     );
 
-  const [editedStateMileages, setEditedStateMileages] = useState(allStateMileages);
+  const [editedStateMileages, setEditedStateMileages] = useState<ProcessedStateMileage[]>(allStateMileages);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
@@ -51,13 +62,13 @@ export default function TimeCardTruckingStateMileageLogs({
   }, [edit, truckingStateLogs]);
 
   const handleStateMileageChange = useCallback(
-    (id: string, truckingLogId: string, field: keyof typeof allStateMileages[0], value: string | number) => {
+    (id: string, truckingLogId: string, field: keyof ProcessedStateMileage, value: string | number) => {
       const updated = editedStateMileages.map(item => {
         if (item.id === id && item.truckingLogId === truckingLogId) {
           return { 
             ...item, 
             [field]: field === 'stateLineMileage' ? 
-              (value ? Number(value) : null) : 
+              (value ? Number(value) : 0) : 
               value 
           };
         }
@@ -111,7 +122,7 @@ export default function TimeCardTruckingStateMileageLogs({
                       <Holds className="col-start-1 col-end-3 w-full h-full border-r-[3px] border-black">
                         <Inputs
                           value={mileage.truckName}
-                          disabled={true} // Truck name should not be editable
+                          disabled={true}
                           className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md text-left text-xs"
                           readOnly
                         />

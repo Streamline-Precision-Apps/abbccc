@@ -5,9 +5,34 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { EquipmentLogsData, ProcessedEquipmentLog } from "@/lib/types";
+import { EquipmentLogsData, EmployeeEquipmentLog, JobsiteData } from "@/lib/types";
 import { differenceInHours, differenceInMinutes, format, parse } from "date-fns";
 import { useEffect, useState, useCallback } from "react";
+
+// Define a type that represents a valid equipment log with all required properties
+type ValidEquipmentLog = EmployeeEquipmentLog & {
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  startTime: string;
+  endTime: string;
+  Jobsite: JobsiteData; // Add this line
+};
+
+type ProcessedEquipmentLog = {
+  id: string;
+  equipmentId: string;
+  equipmentName: string;
+  usageTime: string;
+  startTime: string;
+  endTime: string;
+  jobsite: string;
+  fullStartTime: string | null;
+  fullEndTime: string | null;
+  originalStart: Date;
+  originalEnd: Date;
+};
 
 type TimeCardEquipmentLogsProps = {
   edit: boolean;
@@ -23,70 +48,64 @@ export default function TimeCardEquipmentLogs({
   onDataChange,
 }: TimeCardEquipmentLogsProps) {
   const [editedEquipmentLogs, setEditedEquipmentLogs] = useState<ProcessedEquipmentLog[]>([]);
-  const [changesWereMade, setChangesWereMade] = useState(false);
 
-  const processLogs = useCallback(() => {
-    const allEquipmentLogs = equipmentLogs
+  const processLogs = useCallback((): ProcessedEquipmentLog[] => {
+    return equipmentLogs
       .flatMap((log) => log.EmployeeEquipmentLogs)
-      .filter((log) => log.Equipment !== null && log.startTime && log.endTime);
-
-    const processed = allEquipmentLogs
-      .map((log) => {
-        try {
-          const start = parse(log.startTime!, "yyyy-MM-dd HH:mm:ss", new Date());
-          const end = parse(log.endTime!, "yyyy-MM-dd HH:mm:ss", new Date());
-
-          const durationMinutes = differenceInMinutes(end, start);
-          const durationHours = differenceInHours(end, start);
-          const remainingMinutes = durationMinutes % 60;
-
-          const startTimeValue = format(start, "HH:mm");
-          const endTimeValue = format(end, "HH:mm");
-
-          return {
-            id: log.id,
-            equipmentId: log.Equipment!.id,
-            equipmentName: log.Equipment!.name,
-            usageTime: `${durationHours > 0 ? `${durationHours} hrs ` : ""}${remainingMinutes} min`,
-            startTime: startTimeValue,
-            endTime: endTimeValue,
-            jobsite: log.Jobsite?.name || "N/A",
-            fullStartTime: log.startTime!,
-            fullEndTime: log.endTime!,
-            originalStart: start,
-            originalEnd: end,
-          };
-        } catch (error) {
-          console.error("Error processing log:", error);
-          return null;
-        }
+      .filter((log): log is ValidEquipmentLog => {
+        return (
+          log !== null &&
+          log.Equipment !== null &&
+          typeof log.Equipment?.id === "string" &&
+          typeof log.Equipment?.name === "string" &&
+          typeof log.startTime === "string" &&
+          typeof log.endTime === "string"
+        );
       })
-      .filter((log): log is ProcessedEquipmentLog => log !== null);
+      .map((log) => {
+        const start = parse(log.startTime ?? "", "yyyy-MM-dd HH:mm:ss", new Date());
+        const end = parse(log.endTime ?? "", "yyyy-MM-dd HH:mm:ss", new Date());
 
-    setEditedEquipmentLogs(processed);
+        const durationMinutes = differenceInMinutes(end, start);
+        const durationHours = differenceInHours(end, start);
+        const remainingMinutes = durationMinutes % 60;
+
+        return {
+          id: log.id,
+          equipmentId: log.Equipment!.id,
+          equipmentName: log.Equipment!.name,
+          usageTime: `${durationHours > 0 ? `${durationHours} hrs ` : ""}${remainingMinutes} min`,
+          startTime: format(start, "HH:mm"),
+          endTime: format(end, "HH:mm"),
+          jobsite: log.Jobsite?.name || "N/A",
+          fullStartTime: log.startTime,
+          fullEndTime: log.endTime,
+          originalStart: start,
+          originalEnd: end,
+        };
+      });
   }, [equipmentLogs]);
 
-  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
+    const processedLogs = processLogs();
     if (!edit) {
-      processLogs();
-      setChangesWereMade(false);
+      setEditedEquipmentLogs(processedLogs);
+    } else if (editedEquipmentLogs.length === 0) {
+      setEditedEquipmentLogs(processedLogs);
     }
-  }, [edit, equipmentLogs, processLogs]);
+  }, [edit, equipmentLogs, processLogs, editedEquipmentLogs.length]);
 
   const handleTimeChange = useCallback(
-    (id: string, field: 'startTime' | 'endTime', timeString: string) => {
-      const updatedLogs = editedEquipmentLogs.map(log => {
+    (id: string, field: "startTime" | "endTime", timeString: string) => {
+      const updatedLogs = editedEquipmentLogs.map((log) => {
         if (log.id === id) {
           try {
-            // Parse the new time while keeping the original date
             const datePart = format(log.originalStart, "yyyy-MM-dd");
             const newDateTime = parse(`${datePart} ${timeString}`, "yyyy-MM-dd HH:mm", new Date());
-            
-            // Calculate new duration
-            const start = field === 'startTime' ? newDateTime : log.originalStart;
-            const end = field === 'endTime' ? newDateTime : log.originalEnd;
-            
+
+            const start = field === "startTime" ? newDateTime : log.originalStart;
+            const end = field === "endTime" ? newDateTime : log.originalEnd;
+
             const durationMinutes = differenceInMinutes(end, start);
             const durationHours = differenceInHours(end, start);
             const remainingMinutes = durationMinutes % 60;
@@ -106,7 +125,6 @@ export default function TimeCardEquipmentLogs({
         return log;
       });
 
-      setChangesWereMade(true);
       setEditedEquipmentLogs(updatedLogs);
       onDataChange(updatedLogs);
     },
@@ -150,20 +168,13 @@ export default function TimeCardEquipmentLogs({
               </Grids>
 
               {editedEquipmentLogs.map((log) => (
-                <Holds
-                  key={log.id}
-                  className="border-black border-[3px] rounded-lg bg-white mb-2"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="w-full h-full text-left"
-                  >
+                <Holds key={log.id} className="border-black border-[3px] rounded-lg bg-white mb-2">
+                  <Buttons shadow={"none"} background={"none"} className="w-full h-full text-left">
                     <Grids cols={"4"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-3 w-full h-full">
                         <Inputs
                           value={log.equipmentName}
-                          disabled={true} // Equipment name should not be editable
+                          disabled={true}
                           className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
                           readOnly
                         />
@@ -183,7 +194,7 @@ export default function TimeCardEquipmentLogs({
                             <Inputs
                               type="time"
                               value={log.startTime}
-                              onChange={(e) => handleTimeChange(log.id, 'startTime', e.target.value)}
+                              onChange={(e) => handleTimeChange(log.id, "startTime", e.target.value)}
                               disabled={!edit}
                               className="text-xs border-none h-full rounded-none justify-center text-center"
                             />
@@ -192,7 +203,7 @@ export default function TimeCardEquipmentLogs({
                             <Inputs
                               type="time"
                               value={log.endTime}
-                              onChange={(e) => handleTimeChange(log.id, 'endTime', e.target.value)}
+                              onChange={(e) => handleTimeChange(log.id, "endTime", e.target.value)}
                               disabled={!edit}
                               className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
                             />

@@ -409,6 +409,7 @@ export type TruckingRefuelLog = {
 
 export type TruckingRefuel = {
   id: string;
+  truckingLogId: string;
   gallonsRefueled: number;
   milesAtFueling: number;
 };
@@ -911,6 +912,22 @@ export interface UpdateRefuelLogParams extends RefuelLogBase {
 export interface DeleteRefuelLogParams {
   type: RefuelLogType;
   id: string;
+}
+
+export interface EmployeeEquipmentLogWithEquipment extends Omit<EmployeeEquipmentLog, 'startTime' | 'endTime'> {
+  Equipment: {
+    id: string;
+    name: string;
+    // Include other Equipment properties you need
+  };
+  startTime: Date;  // Matching the base type
+  endTime: Date;    // Matching the base type
+  Jobsite?: {
+    id?: string;
+    name?: string;
+    // Include other Jobsite properties you need
+  } | null;
+  // Include any other properties you need from EmployeeEquipmentLog
 }
 
 export type TimesheetFilter =

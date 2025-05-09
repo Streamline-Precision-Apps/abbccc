@@ -8,11 +8,19 @@ import { Titles } from "@/components/(reusable)/titles";
 import { TascoRefuelLog, TascoRefuelLogData } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
+// Define the type for flattened refuel logs
+type FlattenedTascoRefuelLog = {
+  id: string;
+  gallonsRefueled: number | null;
+  truckName: string;
+  tascoLogId: string;
+};
+
 type TimeCardTascoRefuelLogsProps = {
   edit: boolean;
   manager: string;
   tascoRefuelLog: TascoRefuelLogData;
-  onDataChange: (data: typeof allTascoLogs) => void;
+  onDataChange: (data: FlattenedTascoRefuelLog[]) => void;
 };
 
 export default function TimeCardTascoRefuelLogs({
@@ -21,7 +29,8 @@ export default function TimeCardTascoRefuelLogs({
   tascoRefuelLog,
   onDataChange,
 }: TimeCardTascoRefuelLogsProps) {
-  const allTascoLogs = tascoRefuelLog
+  // Process the tasco refuel logs
+  const allTascoLogs: FlattenedTascoRefuelLog[] = tascoRefuelLog
     .flatMap((item) => item.TascoLogs)
     .filter(
       (log): log is TascoRefuelLog =>
@@ -29,13 +38,14 @@ export default function TimeCardTascoRefuelLogs({
     )
     .flatMap((log) =>
       log.RefuelLogs.map((refuel) => ({
-        ...refuel,
+        id: refuel.id,
+        gallonsRefueled: refuel.gallonsRefueled,
         truckName: log.Equipment?.name || "No Equipment found",
-        tascoLogId: log.id, // Add reference to parent log
+        tascoLogId: log.id,
       }))
     );
 
-  const [editedTascoRefuelLogs, setEditedTascoRefuelLogs] = useState(allTascoLogs);
+  const [editedTascoRefuelLogs, setEditedTascoRefuelLogs] = useState<FlattenedTascoRefuelLog[]>(allTascoLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
@@ -47,14 +57,14 @@ export default function TimeCardTascoRefuelLogs({
   }, [edit, tascoRefuelLog]);
 
   const handleRefuelChange = useCallback(
-    (id: string, tascoLogId: string, field: keyof typeof allTascoLogs[0], value: string | number) => {
+    (id: string, tascoLogId: string, gallonsRefueled: string | number) => {
       const updatedLogs = editedTascoRefuelLogs.map(log => {
         if (log.id === id && log.tascoLogId === tascoLogId) {
           return { 
             ...log, 
-            [field]: field === 'gallonsRefueled' ? 
-              (value ? Number(value) : null) : 
-              value 
+            gallonsRefueled: typeof gallonsRefueled === 'string' 
+              ? (gallonsRefueled ? Number(gallonsRefueled) : null) 
+              : gallonsRefueled 
           };
         }
         return log;
@@ -102,7 +112,7 @@ export default function TimeCardTascoRefuelLogs({
                       <Holds className="col-start-1 col-end-2 w-full h-full">
                         <Inputs
                           value={log.truckName}
-                          disabled={true} // Equipment name should not be editable
+                          disabled={true}
                           className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md py-2 text-xs"
                           readOnly
                         />
@@ -115,7 +125,6 @@ export default function TimeCardTascoRefuelLogs({
                             handleRefuelChange(
                               log.id,
                               log.tascoLogId,
-                              'gallonsRefueled',
                               e.target.value
                             )
                           }
