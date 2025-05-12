@@ -20,16 +20,16 @@ export default function TimesheetList({
     endTime: string | Date | null | undefined
   ) => string;
 }) {
-  const t = useTranslations("Home");
+  const t = useTranslations("TimeSheet");
   return (
     <Holds
       key={timesheet.id}
       size={"full"}
-      className="border-[3px] border-black rounded-[10px] p-2 "
+      className="w-full border-[3px] border-black rounded-[10px] pt-2 pb-4 my-3 relative"
     >
       <Contents width={"section"}>
-        <Holds className="col-start-1 col-end-3 row-start-2 row-end-3 h-full">
-          <Holds className="py-2">
+        <Holds className="w-full h-full ">
+          <Holds className="w-full h-full py-2">
             <Titles size={"h3"} className="underline">
               {t("TotalHoursWorked")}
             </Titles>
@@ -37,17 +37,17 @@ export default function TimesheetList({
               {calculateDuration(timesheet.startTime, timesheet.endTime)}{" "}
               {"Hrs"}
             </Texts>
-          </Holds>
-          <Holds
-            position={"row"}
-            className="justify-center py-2 border-b-[1px]"
-          >
-            <Images
-              titleImg="/document-duplicate.svg"
-              titleImgAlt={"Copy And Paste"}
-              onClick={() => copyToClipboard(timesheet.id)}
-              className="w-8"
-            />
+            <Holds
+              background={"orange"}
+              className="max-w-10 h-auto absolute top-2 right-2"
+            >
+              <Images
+                titleImg="/form.svg"
+                titleImgAlt={"Copy And Paste"}
+                onClick={() => copyToClipboard(timesheet.id)}
+                className="w-full h-auto object-contain"
+              />
+            </Holds>
           </Holds>
           <Holds position={"row"} className="justify-between border-b-[1px]">
             <Texts size={"p6"}>{t("StartTime")}</Texts>
@@ -75,7 +75,7 @@ export default function TimesheetList({
           >
             <Texts size={"p6"}>{t("Jobsite")}</Texts>
 
-            <Texts size={"p6"}>{timesheet.jobsiteId}</Texts>
+            <Texts size={"p6"}>{timesheet.Jobsite.name}</Texts>
           </Holds>
           <Holds
             position={"row"}
@@ -89,13 +89,4 @@ export default function TimesheetList({
       </Contents>
     </Holds>
   );
-}
-{
-  /* <Holds className="col-start-8 col-end-9">
-<Images
-  titleImg={"/document-duplicate.svg"}
-  titleImgAlt={"Copy And Paste"}
-  onClick={() => copyToClipboard(timesheet.id)}
-/>
-</Holds> */
 }
