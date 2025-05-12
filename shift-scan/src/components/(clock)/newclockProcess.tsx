@@ -5,7 +5,6 @@ import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import VerificationStep from "./verification-step";
 import TruckClockInForm from "./(Truck)/truckClockInForm";
-import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
