@@ -43,7 +43,7 @@ export default function TimesheetList({
             className="justify-center py-2 border-b-[1px]"
           >
             <Images
-              titleImg="/document-duplicate.svg"
+              titleImg="/formDuplicate.svg"
               titleImgAlt={"Copy And Paste"}
               onClick={() => copyToClipboard(timesheet.id)}
               className="w-8"
@@ -93,7 +93,7 @@ export default function TimesheetList({
 {
   /* <Holds className="col-start-8 col-end-9">
 <Images
-  titleImg={"/document-duplicate.svg"}
+  titleImg={"/formDuplicate.svg"}
   titleImgAlt={"Copy And Paste"}
   onClick={() => copyToClipboard(timesheet.id)}
 />
