@@ -42,7 +42,7 @@ export default function TimesheetList({
               className="max-w-10 h-auto absolute top-2 right-2"
             >
               <Images
-                titleImg="/form.svg"
+                titleImg="/formDuplicate.svg"
                 titleImgAlt={"Copy And Paste"}
                 onClick={() => copyToClipboard(timesheet.id)}
                 className="w-full h-auto object-contain"
