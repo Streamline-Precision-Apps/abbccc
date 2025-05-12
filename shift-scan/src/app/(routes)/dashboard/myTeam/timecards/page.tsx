@@ -1,27 +1,35 @@
 "use client";
+
+type TinderSwipeRef = {
+  swipeLeft: () => void;
+  swipeRight: () => void;
+};
+
 type TimeSheet = {
   id: string;
   date: string;
   startTime: string;
   endTime: string;
   jobsiteId: string;
-  costCode: {
+  CostCode: {
     name: string;
-    description: string;
+    description?: string; // Made optional since it's not in your JSON
   };
-  tascoLogs: TascoLogs[] | null;
-  truckingLogs: TruckingLogs[] | null;
-  employeeEquipmentLogs: employeeEquipmentLogs[] | null;
-
+  Jobsite: {
+    name: string;
+  };
+  TascoLogs: TascoLog[] | null;
+  TruckingLogs: TruckingLog[] | null;
+  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
   status: string;
 };
 
-type employeeEquipmentLogs = {
+type EmployeeEquipmentLog = {
   id: string;
   startTime: string;
   endTime: string;
-  equipment: Equipment[];
-  refueled: EquipmentRefueled[];
+  Equipment: Equipment;
+  RefuelLogs: EquipmentRefueled[];
 };
 
 type EquipmentRefueled = {
@@ -29,29 +37,29 @@ type EquipmentRefueled = {
   gallonsRefueled: number;
 };
 
-type TruckingLogs = {
+type TruckingLog = {
   id: string;
   laborType: string;
   startingMileage: number;
   endingMileage: number | null;
-  Material: Materials[] | null; // Changed from Materials to Material
-  equipment: Equipment[] | null;
+  Materials: Material[] | null;
+  Equipment: Equipment | null;
   EquipmentHauled: EquipmentHauled[] | null;
-  Refueled: TruckingRefueled[] | null; // Changed from TruckingRefueled to Refueled
-  stateMileage: stateMileage[] | null;
+  RefuelLogs: TruckingRefueled[] | null;
+  StateMileages: StateMileage[] | null;
 };
 
 type EquipmentHauled = {
   id: string;
-  equipment: Equipment[];
-  jobSite: JobSite[];
+  Equipment: Equipment;
+  JobSite: JobSite;
 };
 
 type JobSite = {
   name: string;
 };
 
-type stateMileage = {
+type StateMileage = {
   id: string;
   state: string;
   stateLineMileage: number;
@@ -60,25 +68,26 @@ type stateMileage = {
 type TruckingRefueled = {
   id: string;
   gallonsRefueled: number;
-  milesAtfueling: number;
+  milesAtFueling?: number; // Made optional to match your JSON
 };
 
-type Materials = {
+type Material = {
   id: string;
   name: string;
   quantity: number;
   loadType: string;
-  LoadWeight: number;
+  grossWeight: number;
+  lightWeight: number;
+  materialWeight: number;
 };
 
-type TascoLogs = {
+type TascoLog = {
   id: string;
   shiftType: string;
-  materialType: string;
+  materialType: string | null;
   LoadQuantity: number;
-  comment: string;
-  Equipment: Equipment[];
-  refueled: TascoRefueled[];
+  Equipment: Equipment | null;
+  RefuelLogs: TascoRefueled[];
 };
 
 type TascoRefueled = {
@@ -96,12 +105,7 @@ type TeamMember = {
   firstName: string;
   lastName: string;
   clockedIn: boolean;
-  timeSheets: TimeSheet[];
-};
-
-type TinderSwipeRef = {
-  swipeLeft: () => void;
-  swipeRight: () => void;
+  TimeSheets: TimeSheet[]; // Changed to match JSON
 };
 
 import { Bases } from "@/components/(reusable)/bases";
@@ -113,19 +117,19 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import TinderSwipe from "@/components/(animations)/tinderSwipe";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Labels } from "@/components/(reusable)/labels";
 import { Images } from "@/components/(reusable)/images";
 import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
 import TascoReviewSection from "./_Components/TascoReviewSection";
 import TruckingReviewSection from "./_Components/TruckingReviewSection";
 import GeneralReviewSection from "./_Components/GeneralReviewSection";
-import TopOfCardSection from "./_Components/TopOfCardSection";
 import { CardControls } from "./_Components/CardControls";
+import { useTranslations } from "next-intl";
+import { Selects } from "@/components/(reusable)/selects";
 
 export default function TimeCards() {
+  const t = useTranslations("TimeCardSwiper");
   const { id: myTeamId } = useParams();
   const router = useRouter();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -154,13 +158,11 @@ export default function TimeCards() {
     const fetchCrewTimeCards = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/getPendingTeamTimeSheets/${myTeamId}`
-        );
+        const response = await fetch(`/api/getPendingTeamTimeSheets`);
         const data = await response.json();
         // Filter members who actually have pending timesheets
         setTeamMembers(
-          data.filter((member: TeamMember) => member.timeSheets.length > 0)
+          data.filter((member: TeamMember) => member.TimeSheets.length > 0)
         );
       } catch (error) {
         console.error("Error fetching crew time cards:", error);
@@ -173,7 +175,7 @@ export default function TimeCards() {
   }, [myTeamId]);
 
   const currentMember = teamMembers[currentIndex];
-  const currentTimeSheets = currentMember?.timeSheets || [];
+  const currentTimeSheets = currentMember?.TimeSheets || [];
 
   const swiped = (direction: string, memberId: string) => {
     // Apply decision to all timesheets for this member
@@ -229,14 +231,14 @@ export default function TimeCards() {
     });
     const hours = Math.floor(totalMs / (1000 * 60 * 60));
     const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+    return `${hours} hrs ${minutes} mins`;
   };
 
   return (
     <Bases className="fixed w-full h-full">
-      <Contents className="h-full">
+      <Contents>
         <Grids
-          rows={"9"}
+          rows={"7"}
           gap={"5"}
           className={`h-full pb-5 bg-white rounded-[10px] ${
             loading && "animate-pulse"
@@ -244,11 +246,11 @@ export default function TimeCards() {
         >
           <Holds className="row-span-1 h-full">
             <TitleBoxes onClick={() => router.push("/dashboard")}>
-              <Titles size={"h2"}>Review Your Team</Titles>
+              <Titles size={"h2"}>{t("ReviewYourTeam")}</Titles>
             </TitleBoxes>
           </Holds>
 
-          <Holds className="row-span-7 h-full w-full">
+          <Holds className="row-span-5 h-full w-full">
             <Contents width={"section"} className="h-full">
               <Holds
                 className={`w-full h-full rounded-[10px] border-[3px] border-black bg-[#EBC68E] ${
@@ -265,26 +267,38 @@ export default function TimeCards() {
                         onSwipeRight={() => swiped("right", currentMember.id)}
                       >
                         <Grids
-                          rows={"10"}
-                          gap={"3"}
-                          className="h-full w-full p-4 bg-[#EBC68E]"
+                          rows={"7"}
+                          gap={"5"}
+                          className="h-full w-full p-3 bg-[#EBC68E]"
                         >
-                          <TopOfCardSection
-                            page={page}
-                            setPage={setPage}
-                            currentTimeSheets={currentTimeSheets}
-                            currentMember={currentMember}
-                            calculateTotalHours={calculateTotalHours}
-                          />
+                          <Holds className="row-start-1 row-end-2 w-full h-full">
+                            <Holds position={"row"} className="pb-2">
+                              <Holds>
+                                <Titles position={"left"} size={"h3"}>
+                                  {currentMember.firstName}{" "}
+                                  {currentMember.lastName}
+                                </Titles>
+                              </Holds>
+
+                              <Holds
+                                position={"right"}
+                                className="w-1/2 h-full justify-center items-center"
+                              >
+                                <Texts size={"p5"}>{`${calculateTotalHours(
+                                  currentTimeSheets
+                                )}`}</Texts>
+                              </Holds>
+                            </Holds>
+                            <Selects>
+                              <option>{t("selectOption")}</option>
+                            </Selects>
+                          </Holds>
 
                           {/* 
                           Start of Review Section 
                           pages are managed in the TopOfCardSection 
                           */}
-                          <Holds
-                            className="h-full row-start-3 row-end-11 "
-                            style={{ touchAction: "pan-y" }}
-                          >
+                          <Holds className="h-full row-start-3 row-end-8 border-t-4 border-opacity-10 border-black rounded-none">
                             <>
                               {page === 1 && (
                                 <GeneralReviewSection
@@ -313,21 +327,23 @@ export default function TimeCards() {
                         {loading ? (
                           <Spinner size={70} />
                         ) : (
-                          <Titles size={"h5"}>No Time Sheets to Approve</Titles>
+                          <Titles size={"h5"}>
+                            {t("NoTimesheetsToApprove")}
+                          </Titles>
                         )}
                       </Holds>
                     )}
                   </>
                 ) : (
                   <Holds className="h-full flex items-center justify-center">
-                    <Titles size={"h5"}>Complete!</Titles>
+                    <Titles size={"h5"}>{t("Complete")}</Titles>
                     <Images
                       titleImg="/statusApprovedFilled.svg"
                       titleImgAlt="approved"
                       className="w-16 h-16 border-[3px] border-black rounded-full"
                     />
                     <Texts size={"p6"} className="mt-4">
-                      You have Approved All Time Sheets.
+                      {t("YouHaveApprovedAllTimesheets")}
                     </Texts>
                   </Holds>
                 )}
@@ -335,6 +351,7 @@ export default function TimeCards() {
             </Contents>
           </Holds>
           <CardControls
+            completed={completed}
             handleEditClick={handleEditClick}
             handleApproveClick={handleApproveClick}
           />

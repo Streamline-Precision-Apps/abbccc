@@ -1,26 +1,27 @@
 "use client";
+
 type TimeSheet = {
   id: string;
   date: string;
   startTime: string;
   endTime: string;
   jobsiteId: string;
-  costCode: {
+  CostCode: {
     name: string;
-    description: string;
+    description?: string; // Made optional since it's not in your JSON
   };
-  tascoLogs: TascoLogs[] | null;
-  truckingLogs: TruckingLogs[] | null;
-  employeeEquipmentLogs: employeeEquipmentLogs[] | null;
+  TascoLogs: TascoLog[] | null;
+  TruckingLogs: TruckingLog[] | null;
+  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
   status: string;
 };
 
-type employeeEquipmentLogs = {
+type EmployeeEquipmentLog = {
   id: string;
   startTime: string;
   endTime: string;
-  equipment: Equipment[];
-  refueled: EquipmentRefueled[];
+  Equipment: Equipment;
+  RefuelLogs: EquipmentRefueled[];
 };
 
 type EquipmentRefueled = {
@@ -28,29 +29,29 @@ type EquipmentRefueled = {
   gallonsRefueled: number;
 };
 
-type TruckingLogs = {
+type TruckingLog = {
   id: string;
   laborType: string;
   startingMileage: number;
   endingMileage: number | null;
-  Material: Materials[] | null; // Changed from Materials to Material
-  equipment: Equipment[] | null;
+  Materials: Material[] | null;
+  Equipment: Equipment | null;
   EquipmentHauled: EquipmentHauled[] | null;
-  Refueled: TruckingRefueled[] | null; // Changed from TruckingRefueled to Refueled
-  stateMileage: stateMileage[] | null;
+  RefuelLogs: TruckingRefueled[] | null;
+  StateMileages: StateMileage[] | null;
 };
 
 type EquipmentHauled = {
   id: string;
-  equipment: Equipment[];
-  jobSite: JobSite[];
+  Equipment: Equipment;
+  JobSite: JobSite;
 };
 
 type JobSite = {
   name: string;
 };
 
-type stateMileage = {
+type StateMileage = {
   id: string;
   state: string;
   stateLineMileage: number;
@@ -59,25 +60,26 @@ type stateMileage = {
 type TruckingRefueled = {
   id: string;
   gallonsRefueled: number;
-  milesAtfueling: number;
+  milesAtFueling?: number; // Made optional to match your JSON
 };
 
-type Materials = {
+type Material = {
   id: string;
   name: string;
   quantity: number;
   loadType: string;
-  LoadWeight: number;
+  grossWeight: number;
+  lightWeight: number;
+  materialWeight: number;
 };
 
-type TascoLogs = {
+type TascoLog = {
   id: string;
   shiftType: string;
-  materialType: string;
+  materialType: string | null;
   LoadQuantity: number;
-  comment: string;
-  Equipment: Equipment[];
-  refueled: TascoRefueled[];
+  Equipment: Equipment | null;
+  RefuelLogs: TascoRefueled[];
 };
 
 type TascoRefueled = {
@@ -90,19 +92,29 @@ type Equipment = {
   name: string;
 };
 
+type TeamMember = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+  TimeSheets: TimeSheet[]; // Changed to match JSON
+};
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 export default function TruckingReviewSection({
   currentTimeSheets,
 }: {
   currentTimeSheets: TimeSheet[];
 }) {
+  const t = useTranslations("TimeCardSwiper");
   // Combine all trucking logs from all timesheets
   const allTruckingLogs = currentTimeSheets.flatMap(
-    (timesheet) => timesheet.truckingLogs || []
+    (timesheet) => timesheet.TruckingLogs || []
   );
 
   // Check if we have any trucking data at all
@@ -113,84 +125,80 @@ export default function TruckingReviewSection({
     (log) => log.startingMileage || log.endingMileage
   );
 
-  const hasRefuelData = allTruckingLogs.some((log) => log.Refueled?.length);
+  const hasRefuelData = allTruckingLogs.some((log) => log.RefuelLogs?.length);
 
   const hasStateMileage = allTruckingLogs.some(
-    (log) => log.stateMileage?.length
+    (log) => log.StateMileages?.length
   );
 
   const hasMaterials = allTruckingLogs.some(
-    (log) => log.Material?.length // Changed from Materials to Material
+    (log) => log.Materials?.length // Changed from Materials to Material
   );
   const hasEquipmentHauled = allTruckingLogs.some(
     (log) => log.EquipmentHauled?.length
   );
 
-  console.log("All Trucking Logs:", allTruckingLogs);
-  console.log("Has Any Trucking Data:", hasAnyTruckingData);
-  console.log("Has Mileage Data:", hasMileageData);
-  console.log("Has Refuel Data:", hasRefuelData);
-  console.log("Has State Mileage Data:", hasStateMileage);
-  console.log("Has Materials Data:", hasMaterials);
-  console.log("Has Equipment Hauled Data:", hasEquipmentHauled);
-
   if (!hasAnyTruckingData) {
     return (
       <Holds className="h-full w-full flex items-center justify-center">
-        <Texts size="p6">No trucking data available</Texts>
+        <Texts size="p6">{t("NoTruckingDataAvailable")}</Texts>
       </Holds>
     );
   }
 
   return (
     <Holds
-      className="h-full w-full overflow-y-auto no-scrollbar"
+      className="h-full w-full overflow-y-auto no-scrollbar py-5 "
       style={{ touchAction: "pan-y" }}
     >
       {/* Main Trucking Logs */}
-      <Holds className="mb-2">
-        <Titles position="left" size="h6" className="mb-2">
-          Mileage Reports
-        </Titles>
+      <Titles position="left" size="h6" className="">
+        {t("MileageReports")}
+      </Titles>
+      <Holds background={"white"} className="border-[3px] border-black">
         {hasMileageData && (
-          <Holds
-            background="white"
-            className="border-2 border-black rounded-md"
-          >
-            <Grids
-              cols={"3"}
-              gap={"2"}
-              className="p-1 bg-gray-100 border-b border-black"
-            >
-              <Texts size={"p7"}>EQ#</Texts>
-              <Texts size={"p7"}>Start </Texts>
-              <Texts size={"p7"}>End Mileage</Texts>
+          <>
+            <Grids cols={"2"} gap={"2"}>
+              <Holds className="w-full pl-3 ">
+                <Texts position={"left"} size={"p7"}>
+                  {t("EQ")}
+                </Texts>
+              </Holds>
+
+              <Texts size={"p7"}>{t("StartEndMileage")}</Texts>
             </Grids>
             {allTruckingLogs.map((log) => (
               <Grids
                 key={log.id}
-                cols={"3"}
+                cols={"2"}
                 gap={"2"}
-                className="p-2 border-b border-gray-200 last:border-0"
+                className={`p-2 border-b border-gray-200 last:border-0 ${
+                  log.endingMileage &&
+                  log.startingMileage > log.endingMileage &&
+                  "bg-red-500"
+                }`}
               >
-                <Texts size={"p7"}>
-                  {`${(log.equipment as Equipment | null)?.name.slice(0, 9)}${
-                    ((log.equipment as Equipment | null)?.name?.length ?? 0) > 9
+                <Texts position={"left"} size={"p7"}>
+                  {`${(log.Equipment as Equipment | null)?.name.slice(0, 15)}${
+                    ((log.Equipment as Equipment | null)?.name?.length ?? 0) >
+                    15
                       ? "..."
                       : ""
                   }` || "-"}
                 </Texts>
-                {log.laborType === "truckEquipmentOperator" ? (
-                  <Texts size={"p7"}>EQ Operator</Texts>
-                ) : (
-                  <>
-                    <Texts size={"p7"}>{log.startingMileage || "-"}</Texts>
-                    <Texts size={"p7"}>{log.endingMileage || "-"}</Texts>
-                  </>
-                )}
+
+                <Holds position={"row"} className={`w-full gap-2 `}>
+                  <Texts size={"p7"}>{log.startingMileage || "-"}</Texts>
+                  <Images
+                    titleImg={"/arrowRightThin.svg"}
+                    titleImgAlt="Arrow"
+                    className="max-w-4 h-auto object-contain"
+                  />
+                  <Texts size={"p7"}>{log.endingMileage || "-"}</Texts>
+                </Holds>
               </Grids>
             ))}
-          </Holds>
+          </>
         )}
       </Holds>
       <Holds position={"row"} className="h-full w-full gap-4 my-2">
@@ -198,7 +206,7 @@ export default function TruckingReviewSection({
         {hasRefuelData && (
           <Holds className="h-full w-full ">
             <Titles position="left" size="h6">
-              Fuel Reports
+              {t("FuelReport")}
             </Titles>
             <Holds
               background="white"
@@ -209,12 +217,12 @@ export default function TruckingReviewSection({
                 gap={"2"}
                 className="p-2 bg-gray-100 border-b border-black"
               >
-                <Texts size={"p7"}>Gallons</Texts>
-                <Texts size={"p7"}>Mileage</Texts>
+                <Texts size={"p7"}>{t("Gallons")}</Texts>
+                <Texts size={"p7"}>{t("Mileage")}</Texts>
               </Grids>
               {allTruckingLogs.flatMap(
                 (log) =>
-                  log.Refueled?.map((refuel) => (
+                  log.RefuelLogs?.map((refuel) => (
                     <Grids
                       key={refuel.id}
                       cols={"2"}
@@ -224,7 +232,7 @@ export default function TruckingReviewSection({
                       <Texts
                         size={"p7"}
                       >{`${refuel.gallonsRefueled} Gal`}</Texts>
-                      <Texts size={"p7"}>{`${refuel.milesAtfueling} mi`}</Texts>
+                      <Texts size={"p7"}>{`${refuel.milesAtFueling} mi`}</Texts>
                     </Grids>
                   )) || []
               )}
@@ -236,7 +244,7 @@ export default function TruckingReviewSection({
         {hasStateMileage && (
           <Holds className="h-full w-full my-2">
             <Titles position="left" size="h6">
-              State Mileage
+              {t("StateMileage")}
             </Titles>
             <Holds
               background="white"
@@ -247,12 +255,12 @@ export default function TruckingReviewSection({
                 gap={"2"}
                 className="p-2 bg-gray-100 border-b border-black"
               >
-                <Texts size={"p7"}>State</Texts>
-                <Texts size={"p7"}>Mileage</Texts>
+                <Texts size={"p7"}>{t("State")}</Texts>
+                <Texts size={"p7"}>{t("Mileage")}</Texts>
               </Grids>
               {allTruckingLogs.flatMap(
                 (log) =>
-                  log.stateMileage?.map((state) => (
+                  log.StateMileages?.map((state) => (
                     <Grids
                       key={state.id}
                       cols={"2"}
@@ -272,7 +280,7 @@ export default function TruckingReviewSection({
       {hasMaterials && (
         <Holds className="mb-6">
           <Titles position="left" size="h6" className="mb-2">
-            Materials Hauled
+            {t("MaterialHauled")}
           </Titles>
           <Holds
             background="white"
@@ -283,14 +291,14 @@ export default function TruckingReviewSection({
               gap={"2"}
               className="p-2 bg-gray-100 border-b border-black"
             >
-              <Texts size={"p7"}>Material</Texts>
-              <Texts size={"p7"}>Quantity</Texts>
-              <Texts size={"p7"}>Load Type</Texts>
-              <Texts size={"p7"}>Weight</Texts>
+              <Texts size={"p7"}>{t("Material")}</Texts>
+
+              <Texts size={"p7"}>{t("LoadType")}</Texts>
+              <Texts size={"p7"}>{t("Weight")}</Texts>
             </Grids>
             {allTruckingLogs.flatMap(
               (log) =>
-                log.Material?.map((material) => (
+                log.Materials?.map((material) => (
                   <Grids
                     key={material.id}
                     cols={"4"}
@@ -298,10 +306,10 @@ export default function TruckingReviewSection({
                     className="p-2 border-b border-gray-200 last:border-0"
                   >
                     <Texts size={"p7"}>{material.name || "-"}</Texts>
-                    <Texts size={"p7"}>{material.quantity || "-"}</Texts>
-
                     <Texts size={"p7"}>{material.loadType || "-"}</Texts>
-                    <Texts size={"p7"}>{material.LoadWeight || "-"}</Texts>
+                    <Texts size={"p7"}>{material.lightWeight || "-"}</Texts>
+                    <Texts size={"p7"}>{material.grossWeight || "-"}</Texts>
+                    <Texts size={"p7"}>{material.grossWeight || "-"}</Texts>
                   </Grids>
                 )) || []
             )}
@@ -312,8 +320,8 @@ export default function TruckingReviewSection({
       {/* Equipment Hauled Section */}
       {hasEquipmentHauled && (
         <Holds className="mb-6">
-          <Titles position="left" size="h6" className="mb-2">
-            Equipment Hauled
+          <Titles position="left" size="h6">
+            {t("EquipmentHauled")}
           </Titles>
           <Holds
             background="white"
@@ -322,10 +330,10 @@ export default function TruckingReviewSection({
             <Grids
               cols={"2"}
               gap={"2"}
-              className="p-2 bg-gray-100 border-b border-black"
+              className="py-1 bg-gray-200 border-b border-black"
             >
-              <Texts size={"p7"}>Equipment</Texts>
-              <Texts size={"p7"}>Job Site</Texts>
+              <Texts size={"p7"}>{t("Equipment")}</Texts>
+              <Texts size={"p7"}>{t("Job")}</Texts>
             </Grids>
             {allTruckingLogs.flatMap(
               (log) =>
@@ -337,10 +345,10 @@ export default function TruckingReviewSection({
                     className="p-2 border-b border-gray-200 last:border-0"
                   >
                     <Texts size={"p7"}>
-                      {(hauled.equipment as unknown as Equipment | null)?.name}
+                      {(hauled.Equipment as unknown as Equipment | null)?.name}
                     </Texts>
                     <Texts size={"p7"}>
-                      {(hauled.jobSite as unknown as JobSite | null)?.name}
+                      {(hauled.JobSite as unknown as JobSite | null)?.name}
                     </Texts>
                   </Grids>
                 )) || []

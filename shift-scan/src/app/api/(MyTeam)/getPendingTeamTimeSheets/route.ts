@@ -3,10 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { crewId: string } }
-) {
+export async function GET(request: Request) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
@@ -15,20 +12,15 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { crewId } = params;
-
-    if (!crewId) {
-      return NextResponse.json(
-        { error: "Missing or invalid crew ID" },
-        { status: 400 }
-      );
-    }
-
     const crew = await prisma.user.findMany({
       where: {
         Crews: {
           some: {
-            id: crewId,
+            Users: {
+              some: {
+                id: userId,
+              },
+            },
           },
         },
       },
@@ -48,6 +40,11 @@ export async function GET(
             startTime: true,
             endTime: true,
             jobsiteId: true,
+            Jobsite: {
+              select: {
+                name: true,
+              },
+            },
             CostCode: {
               select: {
                 name: true,
@@ -151,10 +148,6 @@ export async function GET(
         },
       },
     });
-
-    if (!crew) {
-      return NextResponse.json({ error: "Crew not found" }, { status: 404 });
-    }
 
     return NextResponse.json(crew);
   } catch (error) {
