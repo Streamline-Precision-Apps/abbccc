@@ -489,11 +489,14 @@
     "LeftIdaho": "Left Idaho?",
     "recentlyUsed": "Recently Used",
     "CostCode-Label": "Cost Code:",
-    "EndWorkDay": "End work for the day?",
     "StartBreak": "Start Break",
-    "Submit": "Submit"
+    "Submit": "Submit",
+    "EndWorkForTheDay": "End work for the day",
+    "PreviousJobComments": "Previous Job Comments",
+    "ReviewYourTeam": "Review Your Team"
   },
   "ClockOut": {
+    "EndWorkDay": "End Work Day",
     "Date-label": "Date",
     "JobSite-label": "Job Site #",
     "CostCode-label": "Cost Code",
@@ -520,7 +523,7 @@
     "Signature": "Signature: ",
     "SignatureFailure": "Failed to capture signature. Please try again.",
     "NavError": "Failed to navigate. Please try again.",
-    "InjuryVerification": "End Work Day",
+    "InjuryVerification": "Injury Report",
     "SignatureCaptured": "Signature captured! ",
     "SignatureVerify": "This is my signature",
     "Continue": "Continue",

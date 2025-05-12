@@ -1,19 +1,19 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { breakOutTimeSheet, updateTimeSheet } from "@/actions/timeSheetActions";
+import { breakOutTimeSheet } from "@/actions/timeSheetActions";
 import { setCurrentPageView } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
-import { Images } from "@/components/(reusable)/images";
 import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { form } from "@nextui-org/theme";
-import { auth } from "@/auth";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Contents } from "@/components/(reusable)/contents";
+import { Images } from "@/components/(reusable)/images";
 
 export default function Comment({
   handleClick,
@@ -32,6 +32,7 @@ export default function Comment({
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const c = useTranslations("Clock");
+
   const router = useRouter();
   const returnRoute = () => {
     window.history.back();
@@ -56,7 +57,7 @@ export default function Comment({
 
       const isUpdated = await breakOutTimeSheet(formData2);
       if (isUpdated) {
-        setCurrentPageView("break");
+        await setCurrentPageView("break");
         router.push("/");
       }
     } catch (err) {
@@ -68,67 +69,77 @@ export default function Comment({
     <Holds background={"white"} className="h-full w-full">
       <Grids rows={"8"} gap={"5"}>
         <Holds className="row-start-1 row-end-2 h-full w-full justify-center">
-          <Grids rows={"1"} cols={"5"} gap={"3"} className=" h-full w-full">
-            <Holds
-              className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-              onClick={returnRoute}
-            >
-              <Images
-                titleImg="/arrowBack.svg"
-                titleImgAlt="back"
-                position={"left"}
-              />
+          <TitleBoxes onClick={returnRoute}>
+            <Holds className="h-full justify-end">
+              <Titles size={"h2"}>{c("PreviousJobComments")}</Titles>
             </Holds>
-          </Grids>
+          </TitleBoxes>
         </Holds>
 
         <Holds className="row-start-2 row-end-4 h-full w-full justify-center relative">
-          <Holds className="h-full w-[90%] relative">
-            <Labels size={"p4"} htmlFor="comment">
-              {c("PreviousJobComment")}
-            </Labels>
-            <TextAreas
-              value={commentsValue}
-              onChange={(e) => {
-                setCommentsValue(e.target.value);
-              }}
-              placeholder={c("TodayIDidTheFollowing")}
-              className="w-full h-full"
-              maxLength={40}
-              style={{ resize: "none" }}
-            />
+          <Contents width={"section"}>
+            <Holds className="h-full w-full relative">
+              <TextAreas
+                value={commentsValue}
+                onChange={(e) => {
+                  setCommentsValue(e.target.value);
+                }}
+                placeholder={c("TodayIDidTheFollowing")}
+                className="w-full h-full text-sm"
+                maxLength={40}
+                style={{ resize: "none" }}
+              />
 
-            <Texts
-              size={"p2"}
-              className={`${
-                commentsValue.length >= 40
-                  ? "text-red-500 absolute bottom-5 right-2"
-                  : "absolute bottom-5 right-2"
-              }`}
-            >
-              {commentsValue.length}/40
-            </Texts>
-          </Holds>
+              <Texts
+                size={"p5"}
+                className={`${
+                  commentsValue.length >= 40
+                    ? "text-red-500 absolute bottom-5 right-2"
+                    : "absolute bottom-5 right-2"
+                }`}
+              >
+                {commentsValue.length}/40
+              </Texts>
+            </Holds>
+          </Contents>
         </Holds>
-        <CheckBox
-          checked={checked}
-          id="end-day"
-          name="end-day"
-          label={c("EndWorkDay")}
-          size={2}
-          onChange={handleCheckboxChange}
-        />
-        <Holds position={"row"} className="row-start-8 row-end-9 h-full ">
-          <Buttons
-            background={commentsValue.length < 3 ? "darkGray" : "orange"}
-            onClick={checked ? handleClick : processOne}
-            disabled={commentsValue.length < 3}
-            className="w-full h-full py-3"
-          >
-            <Titles size={"h2"}>
-              {checked ? c("Continue") : c("StartBreak")}
-            </Titles>
-          </Buttons>
+        <Holds className="row-start-4 row-end-5 h-full w-full justify-center">
+          <Contents width={"section"}>
+            <Holds position={"row"}>
+              <Holds className="w-fit pr-5">
+                <CheckBox
+                  checked={checked}
+                  id="end-day"
+                  name="end-day"
+                  size={3}
+                  onChange={handleCheckboxChange}
+                />
+              </Holds>
+              <Texts size={"p3"}>{c("EndWorkForTheDay")}</Texts>
+            </Holds>
+          </Contents>
+        </Holds>
+        <Holds position={"row"} className="row-start-8 row-end-9 h-full pb-5">
+          <Contents width={"section"} className="h-full">
+            <Buttons
+              background={commentsValue.length < 3 ? "darkGray" : "orange"}
+              onClick={checked ? handleClick : processOne}
+              disabled={commentsValue.length < 3}
+            >
+              <Holds position={"row"} className="w-full justify-center gap-2">
+                <Titles size={"h2"}>
+                  {checked ? c("Continue") : c("StartBreak")}
+                </Titles>
+                {!checked && (
+                  <Images
+                    titleImg="/clockBreak.svg"
+                    titleImgAlt="clock Break"
+                    className="max-w-10 h-auto"
+                  />
+                )}
+              </Holds>
+            </Buttons>
+          </Contents>
         </Holds>
       </Grids>
     </Holds>

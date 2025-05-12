@@ -41,6 +41,13 @@ export async function GET() {
           lte: endOfDay,
         },
       },
+      include: {
+        Jobsite: {
+          select: {
+            name: true,
+          },
+        },
+      },
       orderBy: { createdAt: "asc" },
     });
 
