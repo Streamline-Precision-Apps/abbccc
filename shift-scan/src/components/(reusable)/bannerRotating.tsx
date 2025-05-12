@@ -186,16 +186,16 @@ export default function BannerRotating() {
                 </>
               ) : equipment.laborType === "tascoEEquipment" ? (
                 <>
-                  <Titles text={"white"}>{t("TascoEShift")}</Titles>
+                  <Titles text={"white"}>{t("EShift")}</Titles>
 
                   <Texts className="text-white" size={"p5"}>
-                    {`EQ - ${equipment.equipment?.name}`}
+                    {t("MudConditioning")}
                   </Texts>
                 </>
               ) : equipment.laborType === "tascoAbcdLabor" ? (
                 <>
-                  <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>{t("ABCDShiftLabor")}</Titles>
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <Titles text={"white"}>{t("AbcdShift")}</Titles>
                     <Texts className="text-white" size={"p5"}>
                       {t("ManualLabor")}
                     </Texts>
@@ -205,46 +205,50 @@ export default function BannerRotating() {
             </Holds>
           ))}
 
-        {bannerData.tascoLogs &&
-          bannerData.tascoLogs.map((equipment, index) => (
-            <Holds key={index} className="h-full justify-center items-center">
-              {equipment.laborType === "tascoAbcdEquipment" ? (
-                <>
+        {bannerData.tascoLogs
+          .filter((log) => log.laborType !== "tascoAbcdLabor")
+          .map((log, index) => {
+            if (log.laborType === "tascoAbcdEquipment") {
+              return (
+                <Holds
+                  key={index}
+                  className="h-full justify-center items-center"
+                >
                   <Holds className="h-full justify-center items-center space-y-1">
                     <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
                     <Texts className="text-white" size={"p5"}>
-                      {equipment.equipment?.name}
+                      {log.equipment?.name}
                     </Texts>
                   </Holds>
-                </>
-              ) : equipment.laborType === "tascoEEquipment" ? (
-                <>
-                  <Titles text={"white"}>{t("TascoEShift")}</Titles>
+                </Holds>
+              );
+            } else if (log.laborType === "tascoEEquipment") {
+              return (
+                <Holds
+                  key={index}
+                  className="h-full justify-center items-center space-y-1"
+                >
+                  <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
 
                   <Texts className="text-white" size={"p5"}>
-                    {`EQ - ${equipment.equipment?.name}`}
+                    {log.equipment?.name}
                   </Texts>
-                </>
-              ) : equipment.laborType === "tascoAbcdLabor" ? (
-                <>
-                  <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>{t("ABCDShiftLabor")}</Titles>
-                    <Texts className="text-white" size={"p5"}>
-                      {t("ManualLabor")}
-                    </Texts>
-                  </Holds>
-                </>
-              ) : null}
-            </Holds>
-          ))}
+                </Holds>
+              );
+            }
+            return null;
+          })}
 
         {/* Trucking Logs */}
         {bannerData.truckingLogs &&
           bannerData.truckingLogs.map((equipment, index) => (
-            <Holds key={index}>
-              <Titles text={"white"}>{equipment.equipment?.name}</Titles>
+            <Holds
+              key={index}
+              className="h-full justify-center items-center space-y-1"
+            >
+              <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
               <Texts className="text-white" size={"p5"}>
-                {t("TruckDriver")}
+                {equipment.equipment?.name}
               </Texts>
             </Holds>
           ))}
