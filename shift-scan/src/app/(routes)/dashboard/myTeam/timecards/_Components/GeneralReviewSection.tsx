@@ -1,27 +1,30 @@
 "use client";
+
 type TimeSheet = {
   id: string;
   date: string;
   startTime: string;
   endTime: string;
   jobsiteId: string;
-  costCode: {
+  CostCode: {
     name: string;
-    description: string;
+    description?: string; // Made optional since it's not in your JSON
   };
-  tascoLogs: TascoLogs[] | null;
-  truckingLogs: TruckingLogs[] | null;
-  employeeEquipmentLogs: employeeEquipmentLogs[] | null;
-
+  Jobsite: {
+    name: string;
+  };
+  TascoLogs: TascoLog[] | null;
+  TruckingLogs: TruckingLog[] | null;
+  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
   status: string;
 };
 
-type employeeEquipmentLogs = {
+type EmployeeEquipmentLog = {
   id: string;
   startTime: string;
   endTime: string;
-  equipment: Equipment[];
-  refueled: EquipmentRefueled[];
+  Equipment: Equipment;
+  RefuelLogs: EquipmentRefueled[];
 };
 
 type EquipmentRefueled = {
@@ -29,29 +32,29 @@ type EquipmentRefueled = {
   gallonsRefueled: number;
 };
 
-type TruckingLogs = {
+type TruckingLog = {
   id: string;
   laborType: string;
   startingMileage: number;
   endingMileage: number | null;
-  Material: Materials[] | null; // Changed from Materials to Material
-  equipment: Equipment[] | null;
+  Materials: Material[] | null;
+  Equipment: Equipment | null;
   EquipmentHauled: EquipmentHauled[] | null;
-  Refueled: TruckingRefueled[] | null; // Changed from TruckingRefueled to Refueled
-  stateMileage: stateMileage[] | null;
+  RefuelLogs: TruckingRefueled[] | null;
+  StateMileages: StateMileage[] | null;
 };
 
 type EquipmentHauled = {
   id: string;
-  equipment: Equipment[];
-  jobSite: JobSite[];
+  Equipment: Equipment;
+  JobSite: JobSite;
 };
 
 type JobSite = {
   name: string;
 };
 
-type stateMileage = {
+type StateMileage = {
   id: string;
   state: string;
   stateLineMileage: number;
@@ -60,25 +63,26 @@ type stateMileage = {
 type TruckingRefueled = {
   id: string;
   gallonsRefueled: number;
-  milesAtfueling: number;
+  milesAtFueling?: number; // Made optional to match your JSON
 };
 
-type Materials = {
+type Material = {
   id: string;
   name: string;
   quantity: number;
   loadType: string;
-  LoadWeight: number;
+  grossWeight: number;
+  lightWeight: number;
+  materialWeight: number;
 };
 
-type TascoLogs = {
+type TascoLog = {
   id: string;
   shiftType: string;
-  materialType: string;
+  materialType: string | null;
   LoadQuantity: number;
-  comment: string;
-  Equipment: Equipment[];
-  refueled: TascoRefueled[];
+  Equipment: Equipment | null;
+  RefuelLogs: TascoRefueled[];
 };
 
 type TascoRefueled = {
@@ -94,6 +98,7 @@ type Equipment = {
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 export default function GeneralReviewSection({
   currentTimeSheets,
@@ -102,17 +107,21 @@ export default function GeneralReviewSection({
   currentTimeSheets: TimeSheet[];
   formatTime: (dateString: string) => string;
 }) {
+  const t = useTranslations("TimeCardSwiper");
   return (
     <>
       <Holds className="p-1">
         <Holds className="grid grid-cols-4 gap-2">
-          <Titles size={"h6"}>Start Time</Titles>
-          <Titles size={"h6"}>End Time</Titles>
-          <Titles size={"h6"}>Jobsite #</Titles>
-          <Titles size={"h6"}>Cost Code</Titles>
+          <Titles size={"h6"}>{t("StartTime")}</Titles>
+          <Titles size={"h6"}>{t("EndTime")}</Titles>
+          <Titles size={"h6"}>{t("Jobs")}</Titles>
+          <Titles size={"h6"}>{t("CostCode")}</Titles>
         </Holds>
       </Holds>
-      <Holds background={"white"} className="h-full border-[3px] border-black ">
+      <Holds
+        background={"white"}
+        className="h-full border-[3px] border-black overflow-y-auto no-scrollbar"
+      >
         {currentTimeSheets.map((timesheet: TimeSheet) => (
           <Holds
             key={timesheet.id}
@@ -126,16 +135,12 @@ export default function GeneralReviewSection({
             </Holds>
             <Holds>
               <Texts size={"p7"}>
-                {`${timesheet.jobsiteId.slice(0, 9)}${
-                  timesheet.jobsiteId.length > 9 ? "..." : ""
-                }` || "-"}
+                {`${timesheet.Jobsite.name.slice(0, 9)}` || "-"}
               </Texts>
             </Holds>
             <Holds>
               <Texts size={"p7"}>
-                {`${timesheet.costCode.name.slice(0, 9)}${
-                  timesheet.costCode.name.length > 9 ? "..." : ""
-                }` || "-"}
+                {`${timesheet.CostCode.name.split(" ")[0]}` || "-"}
               </Texts>
             </Holds>
           </Holds>
