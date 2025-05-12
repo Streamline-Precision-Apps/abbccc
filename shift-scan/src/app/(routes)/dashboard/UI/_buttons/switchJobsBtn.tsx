@@ -15,14 +15,13 @@ import VerticalLayout from "./verticalLayout";
 export default function SwitchJobsBtn({
   permission,
   mechanicProjectID,
-  handleShowManagerButtons,
   logs,
   laborType,
   view,
 }: {
   permission: string;
   mechanicProjectID?: string;
-  handleShowManagerButtons: () => void;
+
   logs: LogItem[];
   laborType: string;
   view: string;
@@ -102,7 +101,6 @@ export default function SwitchJobsBtn({
                   <Holds
                     className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
                     onClick={() => {
-                      handleShowManagerButtons();
                       modalState.handleCloseModal();
                     }}
                   >

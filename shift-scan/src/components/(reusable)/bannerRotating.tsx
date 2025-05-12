@@ -153,11 +153,9 @@ export default function BannerRotating() {
       <Slider {...settings} className="h-full">
         {/* Jobsite Information */}
         {bannerData.jobsite && (
-          <Holds position={"row"}>
-            <Titles text={"white"} size={"h3"}>
-              {t("CurrentlyWorkingAt")}
-            </Titles>
-            <Texts text={"white"} size={"p4"}>
+          <Holds className="h-full justify-center items-center space-y-1">
+            <Titles text={"white"}>{t("CurrentSite")}</Titles>
+            <Texts text={"white"} size={"p5"}>
               {bannerData.jobsite.name}
             </Texts>
           </Holds>
@@ -165,53 +163,13 @@ export default function BannerRotating() {
 
         {/* Cost Code Information */}
         {bannerData.costCode && (
-          <Holds>
-            <Titles size={"h3"} text={"white"}>
-              {t("ActiveCostCodeOf")}
-            </Titles>
-            <Texts text={"white"} size={"p4"}>
+          <Holds className="h-full justify-center items-center space-y-1">
+            <Titles text={"white"}>{t("CurrentCostCode")}</Titles>
+            <Texts text={"white"} size={"p5"}>
               {bannerData.costCode.name || ""}
             </Texts>
           </Holds>
         )}
-
-        <Holds className="w-full flex items-center">
-          <Titles text={"white"} size={"h3"}>
-            {t("ActiveTime")}
-          </Titles>
-          <Holds position={"row"} className="w-full justify-center gap-1">
-            <Texts size={"p5"} text={"white"}>
-              {calculateDuration()}
-            </Texts>
-
-            <Holds
-              background={"white"}
-              position={"left"}
-              className="max-w-6 h-auto rounded-full  "
-            >
-              <Images
-                titleImg="/clock.svg"
-                titleImgAlt="Clock Icon"
-                className="size-full object-contain mx-auto "
-              />
-            </Holds>
-          </Holds>
-        </Holds>
-
-        {/* Employee Equipment Logs */}
-        {bannerData.employeeEquipmentLog &&
-          bannerData.employeeEquipmentLog.map((equipment, index) => (
-            <Holds key={index}>
-              <Titles text={"white"}>
-                {equipment.equipment?.name || t("UnknownEquipment")}
-              </Titles>
-              <Texts className="text-white" size={"p5"}>
-                {equipment.startTime
-                  ? `${t("StartTime")} ${equipment.startTime}`
-                  : t("NoStartTime")}
-              </Texts>
-            </Holds>
-          ))}
 
         {/* Tasco Logs */}
         {bannerData.tascoLogs &&
@@ -219,9 +177,41 @@ export default function BannerRotating() {
             <Holds key={index} className="h-full justify-center items-center">
               {equipment.laborType === "tascoAbcdEquipment" ? (
                 <>
-                  <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>{t("AbcdShiftEquipment")}</Titles>
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <Titles text={"white"}>{t("AbcdShift")}</Titles>
+                    <Texts text={"white"} size={"p5"}>
+                      {t("EquipmentOperator")}
+                    </Texts>
+                  </Holds>
+                </>
+              ) : equipment.laborType === "tascoEEquipment" ? (
+                <>
+                  <Titles text={"white"}>{t("TascoEShift")}</Titles>
 
+                  <Texts className="text-white" size={"p5"}>
+                    {`EQ - ${equipment.equipment?.name}`}
+                  </Texts>
+                </>
+              ) : equipment.laborType === "tascoAbcdLabor" ? (
+                <>
+                  <Holds className="h-full justify-center items-center">
+                    <Titles text={"white"}>{t("ABCDShiftLabor")}</Titles>
+                    <Texts className="text-white" size={"p5"}>
+                      {t("ManualLabor")}
+                    </Texts>
+                  </Holds>
+                </>
+              ) : null}
+            </Holds>
+          ))}
+
+        {bannerData.tascoLogs &&
+          bannerData.tascoLogs.map((equipment, index) => (
+            <Holds key={index} className="h-full justify-center items-center">
+              {equipment.laborType === "tascoAbcdEquipment" ? (
+                <>
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
                     <Texts className="text-white" size={"p5"}>
                       {equipment.equipment?.name}
                     </Texts>
@@ -258,6 +248,41 @@ export default function BannerRotating() {
               </Texts>
             </Holds>
           ))}
+
+        {/* Employee Equipment Logs */}
+        {bannerData.employeeEquipmentLog &&
+          bannerData.employeeEquipmentLog.map((equipment, index) => (
+            <Holds key={index}>
+              <Titles text={"white"}>
+                {equipment.equipment?.name || t("UnknownEquipment")}
+              </Titles>
+              <Texts className="text-white" size={"p5"}>
+                {equipment.startTime
+                  ? `${t("StartTime")} ${equipment.startTime}`
+                  : t("NoStartTime")}
+              </Texts>
+            </Holds>
+          ))}
+
+        <Holds className="w-full flex items-center space-y-1">
+          <Titles text={"white"}>{t("ActiveTime")}</Titles>
+          <Holds position={"row"} className="w-full justify-center gap-x-2 ">
+            <Holds
+              background={"white"}
+              position={"left"}
+              className="max-w-6 h-auto rounded-full  "
+            >
+              <Images
+                titleImg="/clock.svg"
+                titleImgAlt="Clock Icon"
+                className="size-full object-contain mx-auto "
+              />
+            </Holds>
+            <Texts size={"p5"} text={"white"}>
+              {calculateDuration()}
+            </Texts>
+          </Holds>
+        </Holds>
       </Slider>
     </Holds>
   );

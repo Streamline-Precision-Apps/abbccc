@@ -95,14 +95,17 @@
     "StartTime": "Start Time: ",
     "NoStartTime": "No Start Time",
     "UnknownEquipment": "Unknown Equipment",
-    "AbcdShiftEquipment": "Abcd Shift - Equipment",
+    "AbcdShift": "ABCD Shift",
+    "EquipmentOperator": "Equipment Operator",
     "TascoEShift": "Tasco - E Shift",
     "ABCDShiftLabor": "ABCD Shift - Labor",
-    "Manual Labor": "Manual Labor",
+    "ManualLabor": "Manual Labor",
     "TruckDriver": "Truck Driver",
-    "ActiveCostCodeOf": "Active Cost Code of ",
+    "CurrentCostCode": "Current Cost Code",
     "ActiveTime": "Active Time",
-    "CurrentlyWorkingAt": "Currently Working At"
+    "CurrentSite": "Current Site",
+    "CurrentlyOperating": "Currently Operating",
+    "CurrentShift": "Current Shift"
   },
 
   "Home": {
@@ -137,7 +140,10 @@
     "EndTime": "End Time",
     "Duration": "Duration",
     "Jobsite": "Job Site",
-    "CostCode": "Cost Code"
+    "CostCode": "Cost Code",
+    "QrIcon": "QR Icon",
+    "MyTeamIcon": "My Team Icon",
+    "ClockInIcon": "ClockIn Icon"
   },
   "Widgets": {
     "Mechanic": "Mechanic",
