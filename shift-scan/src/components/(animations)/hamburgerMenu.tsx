@@ -142,7 +142,7 @@ export function AnimatedHamburgerButton() {
             <Buttons href="/hamburger/inbox" background={"none"}>
               <Holds>
                 <Images
-                  titleImg={"/inbox-sm.svg"}
+                  titleImg={"/inbox.svg"}
                   titleImgAlt={"inbox"}
                   position={"right"}
                   size={"70"}
