@@ -238,7 +238,7 @@ function WidgetButtonsSection({
           titleImgAlt={t("ClockInIcon")}
           text={"Clock-btn" + (pageView === "break" ? "-break" : "")}
           textSize={isManager ? "h2" : "h1"}
-          background={pageView === "break" ? "orange" : "green"}
+          background={"green"}
           translation={"Home"}
           href={pageView === "break" ? "/break" : "/clock"}
         />
