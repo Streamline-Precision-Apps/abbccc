@@ -108,7 +108,6 @@
   },
 
   "Home": {
-    "TotalHoursWorked": "Hours Worked",
     "EnjoyYourBreak": "Enjoy Your Break!",
     "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",
@@ -127,7 +126,6 @@
     "Clock-btn-break": "Return",
     "Title": "View Time Cards",
     "Header1": "Please enter a date to search for your Time Cards.",
-    "EnterDate": "Enter Date",
     "SearchTimesheets": "Search TimeSheets",
     "FirstMessage": "Enter a Date and Submit to have a look at your TimeSheets records.",
     "NoData": "No TimeSheets Found",
@@ -135,14 +133,25 @@
     "Loading": "Loading...",
     "DataMessage": "TimeSheets Found",
     "TimesheetID": "TimeSheet ID",
-    "StartTime": "Start Time",
-    "EndTime": "End Time",
     "Duration": "Duration",
     "Jobsite": "Job Site",
     "CostCode": "Cost Code",
     "QrIcon": "QR Icon",
     "MyTeamIcon": "My Team Icon",
     "ClockInIcon": "ClockIn Icon"
+  },
+  "TimeSheet": {
+    "EnterDate": "Enter Date",
+    "MyTimecards": "My Timecards",
+    "ViewTimecards": "View Timecards",
+    "LoadingTimecards": "Loading Timecards...",
+    "NoTimecardsFoundForTheDaySelected": "No Timecards Found for the day selected.",
+    "CopyToClipboard": "(Copy to Clipboard)",
+    "StartTime": "Start Time",
+    "EndTime": "End Time",
+    "Jobsite": "Job Site",
+    "CostCode": "Cost Code",
+    "TotalHoursWorked": "Hours Worked"
   },
   "Widgets": {
     "Mechanic": "Mechanic",

@@ -58,6 +58,13 @@ export async function GET(request: Request) {
         },
       },
       orderBy: { date: "desc" },
+      include: {
+        Jobsite: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     // Return the timesheets if found, or a message if none are found
