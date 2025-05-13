@@ -9,9 +9,9 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { Clock } from "@/components/clock";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,17 +29,17 @@ export type TimeSheet = {
   Jobsite: {
     name: string;
   };
+  TascoLogs: {
+    laborType: string;
+    shiftType: string;
+  }[];
 };
 
 export const LaborClockOut = ({
-  scanResult,
-  savedCostCode,
   prevStep,
   commentsValue,
   pendingTimeSheets,
 }: {
-  scanResult: string | undefined;
-  savedCostCode: string | null;
   prevStep: () => void;
   commentsValue: string;
   pendingTimeSheets: TimeSheet | undefined;
@@ -106,11 +106,11 @@ export const LaborClockOut = ({
             loading ? `h-full w-full  opacity-[0.50]` : `h-full w-full `
           }
         >
-          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 ">
               <TitleBoxes onClick={prevStep}>
                 <Holds className="h-full justify-end">
-                  <Holds position={"row"} className="justify-center gap-2">
+                  <Holds position={"row"} className="justify-center gap-3">
                     <Titles size={"h1"} position={"right"}>
                       {t("ClockOut")}
                     </Titles>
@@ -127,78 +127,110 @@ export const LaborClockOut = ({
 
             {/* form Grid */}
             <Holds className="row-start-2 row-end-8 h-full w-full ">
-              <Grids rows={"10"} cols={"5"}>
-                <Holds className="row-start-2 row-end-7 col-start-1 col-end-6 h-full pt-1">
-                  <Holds
-                    background={"lightBlue"}
-                    className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
-                  >
-                    <Contents width={"section"} className="h-full">
-                      <Labels
-                        htmlFor="date"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("Date-label")}
-                      </Labels>
-                      <Inputs
-                        name="date"
-                        state="disabled"
-                        variant={"white"}
-                        data={date.toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
+              <Contents width={"section"}>
+                <Holds
+                  background={"timeCardYellow"}
+                  className="h-full w-full rounded-[10px] border-[3px] border-black mt-8"
+                >
+                  <Holds className="h-full w-full px-3 py-2">
+                    <Holds position={"row"} className="justify-between">
+                      <Texts size={"p7"} className="font-bold">
+                        {date.toLocaleDateString()}
+                      </Texts>
+                      <Texts size={"p7"}>
+                        {date.toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                          hour12: false,
                         })}
-                      />
-                      <Labels
-                        htmlFor="jobsiteId"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("JobSite-label")}
+                      </Texts>
+                    </Holds>
+                    <Holds className="h-full w-full py-5">
+                      <Labels htmlFor="laborType" size={"p5"} position={"left"}>
+                        {t("LaborType")}
+                      </Labels>
+                      {pendingTimeSheets?.workType === "TASCO" ? (
+                        <Inputs
+                          state="disabled"
+                          name="laborType"
+                          className="text-center"
+                          variant={"white"}
+                          data={
+                            pendingTimeSheets?.TascoLogs[0].laborType ===
+                            "tascoAbcdLabor"
+                              ? t("TascoLabor")
+                              : t("TascoOperator")
+                          }
+                        />
+                      ) : (
+                        <Inputs
+                          state="disabled"
+                          name="laborType"
+                          className="text-center"
+                          variant={"white"}
+                          data={
+                            pendingTimeSheets?.workType === "LABOR"
+                              ? t("GeneralLabor")
+                              : pendingTimeSheets?.workType === "TRUCK_DRIVER"
+                              ? t("TruckDriver")
+                              : pendingTimeSheets?.workType === "MECHANIC"
+                              ? t("Mechanic")
+                              : ""
+                          }
+                        />
+                      )}
+                      {pendingTimeSheets?.workType === "TASCO" && (
+                        <>
+                          <Labels
+                            htmlFor="laborType"
+                            size={"p5"}
+                            position={"left"}
+                          >
+                            {t("ShiftType")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="laborType"
+                            className="text-center"
+                            variant={"white"}
+                            data={
+                              pendingTimeSheets?.TascoLogs[0].shiftType || ""
+                            }
+                          />
+                        </>
+                      )}
+                      <Labels htmlFor="jobsiteId" size={"p5"} position={"left"}>
+                        {t("JobSite")}
                       </Labels>
                       <Inputs
                         state="disabled"
                         name="jobsiteId"
+                        className="text-center"
                         variant={"white"}
                         data={pendingTimeSheets?.Jobsite.name || ""}
                       />
-                      <Labels
-                        htmlFor="costcode"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("CostCode-label")}
+                      <Labels htmlFor="costcode" size={"p6"} position={"left"}>
+                        {t("CostCode")}
                       </Labels>
                       <Inputs
                         state="disabled"
                         name="costcode"
                         variant={"white"}
+                        className="text-center"
                         data={pendingTimeSheets?.costcode || ""}
                       />
-                    </Contents>
+                    </Holds>
                   </Holds>
                 </Holds>
-
-                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full">
-                  <Holds
-                    background={"darkBlue"}
-                    className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
-                  >
-                    {/* Cancel out the button shadow with none background  and then add a class name */}
-                    <Buttons
-                      onClick={awaitAllProcesses}
-                      className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
-                    >
-                      <Clock time={date.getTime()} />
-                    </Buttons>
-                  </Holds>
-                </Holds>
-              </Grids>
+              </Contents>
+            </Holds>
+            <Holds className="row-start-8 row-end-9 w-full h-full pb-5 ">
+              <Contents width={"section"} className="">
+                <Buttons background={"red"} onClick={awaitAllProcesses}>
+                  <Titles size={"h2"}>{t("EndDay")}</Titles>
+                </Buttons>
+              </Contents>
             </Holds>
           </Grids>
         </Holds>

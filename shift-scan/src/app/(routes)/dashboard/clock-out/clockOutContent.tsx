@@ -3,8 +3,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { ChangeEvent, useEffect, useState } from "react";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import ReviewYourDay from "./(components)/reviewYourDay/reviewYourDay";
 import { Bases } from "@/components/(reusable)/bases";
@@ -26,6 +24,10 @@ export type TimeSheet = {
   Jobsite: {
     name: string;
   };
+  TascoLogs: {
+    laborType: string;
+    shiftType: string;
+  }[];
 };
 
 export default function ClockOutContent({ manager }: { manager: boolean }) {
@@ -33,8 +35,6 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
   const [step, setStep] = useState(0); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
   const [checked, setChecked] = useState(false);
-  const { scanResult } = useScanData();
-  const { savedCostCode } = useSavedCostCode();
   const [base64String, setBase64String] = useState<string>("");
   const { currentView } = useCurrentView();
   const [commentsValue, setCommentsValue] = useState("");
@@ -129,8 +129,6 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
     incrementStep();
   };
 
-  const handleBreak = async () => {};
-
   const handleSubmitInjury = async () => {
     setPath("clockOut");
   };
@@ -200,8 +198,6 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
   } else if (step === 3 && path === "clockOut") {
     return (
       <LaborClockOut
-        scanResult={scanResult?.qrCode}
-        savedCostCode={savedCostCode}
         prevStep={prevStep}
         commentsValue={commentsValue}
         pendingTimeSheets={pendingTimeSheets}

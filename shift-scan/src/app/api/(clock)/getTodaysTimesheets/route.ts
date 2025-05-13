@@ -47,6 +47,12 @@ export async function GET() {
             name: true,
           },
         },
+        TascoLogs: {
+          select: {
+            laborType: true,
+            shiftType: true,
+          },
+        },
       },
       orderBy: { createdAt: "asc" },
     });
