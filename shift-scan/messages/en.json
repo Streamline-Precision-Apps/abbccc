@@ -358,6 +358,10 @@
     "ID": "Id: #"
   },
   "TimeCardSwiper": {
+    "highlight": "Time Sheet Highlights",
+    "Trucking": "Trucking",
+    "Tasco": "Tasco",
+    "EquipmentLogs": "Equipment Logs",
     "ReviewYourTeam": "Review Your Team",
     "NoTimesheetsToApprove": "No Timesheets To Approve",
     "Complete": "Complete!",
@@ -365,6 +369,7 @@
     "TotalHours": "Total Hours",
     "StartTime": "Start Time",
     "EndTime": "End Time",
+    "StartEnd": "Start & End",
     "Jobs": "Jobs",
     "Job": "Job",
     "CostCode": "Cost Code",

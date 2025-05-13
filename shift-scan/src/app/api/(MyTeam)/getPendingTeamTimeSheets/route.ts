@@ -29,6 +29,7 @@ export async function GET(request: Request) {
         firstName: true,
         lastName: true,
         clockedIn: true,
+
         TimeSheets: {
           where: {
             status: "PENDING",
@@ -40,6 +41,7 @@ export async function GET(request: Request) {
             startTime: true,
             endTime: true,
             jobsiteId: true,
+            workType: true,
             Jobsite: {
               select: {
                 name: true,
