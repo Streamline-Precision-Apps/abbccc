@@ -387,9 +387,23 @@
     "Material": "Material",
     "Quantity": "Quantity",
     "LoadType": "Load Type",
-    "Weight": "Weight",
+
+    "Weight": "Weight (lbs)",
+    "EquipmentHauls": "Equipment Hauls",
+    "Equipment": "Equipment",
+    "HaulingLogs": "Hauling Logs",
+    "RefuelLogs": "Refuel Logs",
+    "StateLogs": "State Logs",
+    "TruckId": "Truck ID",
+    "TransportedTo": "Transported To",
     "EquipmentHauled": "Equipment Hauled",
-    "Equipment": "Equipment"
+    "Screened": "Screened?",
+    "Light": "Light: ",
+    "Gross": "Gross: ",
+    "MaterialWeight": "Material: ",
+    "Yes": "Yes",
+    "No": "No",
+    "EquipmentId": "Equipment ID"
   },
 
   "Clock": {
