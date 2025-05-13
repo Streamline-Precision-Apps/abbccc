@@ -36,10 +36,10 @@ export const PreInjuryReport = ({
               <TitleBoxes onClick={prevStep}>
                 <Holds className="h-full justify-end items-end">
                   <Holds position={"row"} className="justify-center gap-2">
-                    <Titles size={"h2"}>{t("InjuryVerification")}</Titles>
+                    <Titles size={"h2"}>{t("EndWorkDay")}</Titles>
                     <Images
                       titleImg="/endDay.svg"
-                      titleImgAlt="logo"
+                      titleImgAlt="end work day"
                       className="max-w-8 h-auto"
                     />
                   </Holds>
@@ -49,7 +49,7 @@ export const PreInjuryReport = ({
 
             <Holds className="row-start-2 row-end-3 h-full">
               <Contents width={"section"}>
-                <Texts size={"p5"}>{t("SignBelow")}</Texts>
+                <Texts size={"p5"}>{t("SignatureAcknowledgement")}</Texts>
               </Contents>
             </Holds>
 
@@ -87,12 +87,12 @@ export const PreInjuryReport = ({
                       name="injury-verify"
                       onChange={handleCheckboxChange}
                       checked={checked}
-                      size={3}
+                      size={2.5}
                     />
                   </Holds>
                   <Holds className="w-full">
                     <Texts size={"p3"} position={"left"}>
-                      {t("SignatureVerify")}
+                      {t("ThisIsMySignature")}
                     </Texts>
                   </Holds>
                 </Holds>
@@ -102,7 +102,7 @@ export const PreInjuryReport = ({
             <Holds className="row-start-8 row-end-9 h-full pb-5 ">
               <Contents width={"section"} className="h-full">
                 <Buttons
-                  background={checked ? "green" : "red"}
+                  background={checked ? "orange" : "red"}
                   onClick={handleNextStepAndSubmit}
                   disabled={loading}
                   className="w-full h-full "

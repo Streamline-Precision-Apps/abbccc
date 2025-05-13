@@ -76,7 +76,7 @@ export default function ReviewYourDay({
                           <Holds className="w-[30px]"></Holds>
                           <Grids cols={"3"} gap={"2"} className="w-full">
                             <Titles position={"left"} size={"h6"}>
-                              {t("StartTime")}
+                              {t("StartEndTime")}
                             </Titles>
                             <Titles position={"center"} size={"h6"}>
                               {t("Jobsite")}
@@ -99,7 +99,7 @@ export default function ReviewYourDay({
                           <Holds className="w-[30px]"></Holds>
                           <Grids cols={"3"} gap={"2"} className="w-full">
                             <Titles position={"left"} size={"h6"}>
-                              {t("StartTime")}
+                              {t("StartEnd")}
                             </Titles>
                             <Titles position={"center"} size={"h6"}>
                               {t("Jobsite")}

@@ -5,7 +5,6 @@ import { setCurrentPageView } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
@@ -111,7 +110,7 @@ export default function Comment({
                   checked={checked}
                   id="end-day"
                   name="end-day"
-                  size={3}
+                  size={2.5}
                   onChange={handleCheckboxChange}
                 />
               </Holds>

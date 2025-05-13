@@ -98,10 +98,10 @@ export const InjuryReportContent = ({
                   >
                     <Titles size={"h2"}>{t("InjuryVerification")}</Titles>
                     <Images
-                      titleImg="/clockOut.svg"
+                      titleImg="/injury.svg"
                       titleImgAlt="Verify"
                       size={"full"}
-                      className="w-10 h-10"
+                      className="max-w-8 h-auto"
                     />
                   </Holds>
                 </Holds>
@@ -109,79 +109,86 @@ export const InjuryReportContent = ({
             </Holds>
 
             {/* Describe What Happened */}
-            <Holds className="row-start-2 row-end-4 h-full">
-              <Contents width={"section"}>
-                <Labels type="title" size={"p4"} htmlFor="incidentDescription">
-                  {t("incidentDescription")}
-                </Labels>
-                <TextAreas
-                  id="incidentDescription"
-                  value={textarea}
-                  onChange={handleChange}
-                  minLength={1}
-                  maxLength={500}
-                  style={{ resize: "none", width: "100%", height: "100%" }}
-                  className="border-[3px] border-black"
-                />
-              </Contents>
-            </Holds>
 
-            <Holds position={"row"} className="row-start-4 row-end-5">
-              <Contents width={"section"}>
-                <Holds position={"row"}>
-                  <Holds size={"20"}>
-                    <CheckBox
-                      checked={supervisorChecked}
-                      onChange={handleSupervisorCheckboxChange}
-                      id={"1"}
-                      name={""}
-                      size={3}
+            <Holds className="row-start-2 row-end-8 h-full pt-5 ">
+              <Grids rows={"7"} gap={"5"} className="h-full w-full">
+                <Holds className="h-full row-start-1 row-end-3">
+                  <Contents width={"section"}>
+                    <TextAreas
+                      id="incidentDescription"
+                      placeholder={t("incidentDescription")}
+                      value={textarea}
+                      onChange={handleChange}
+                      minLength={1}
+                      maxLength={500}
+                      style={{ resize: "none", width: "100%", height: "100%" }}
+                      className="border-[3px] border-black"
                     />
-                  </Holds>
-                  <Holds size={"80"}>
-                    <Titles position={"left"} size="h3">
-                      {t("ContactedSupervisor")}
-                    </Titles>
-                  </Holds>
+                  </Contents>
                 </Holds>
-              </Contents>
-            </Holds>
 
-            <Holds className="row-start-5 row-end-7 h-full">
-              <Contents width={"section"}>
-                <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
-                  {base64String ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={base64String}
-                      alt="Loading signature"
-                      className="w-[40%] m-auto"
-                    />
-                  ) : (
-                    <p>No Signature </p>
-                  )}
+                <Holds position={"row"} className="row-start-3 row-end-4">
+                  <Contents width={"section"}>
+                    <Holds position={"row"} className="w-full">
+                      <Holds className="w-fit pr-5">
+                        <CheckBox
+                          checked={supervisorChecked}
+                          onChange={handleSupervisorCheckboxChange}
+                          id={"1"}
+                          name={""}
+                          size={2.5}
+                        />
+                      </Holds>
+                      <Holds size={"80"}>
+                        <Texts position={"left"} size="p4">
+                          {t("ContactedSupervisor")}
+                        </Texts>
+                      </Holds>
+                    </Holds>
+                  </Contents>
                 </Holds>
-              </Contents>
-            </Holds>
-            <Holds position={"row"} className="row-start-7 row-end-8">
-              <Contents width={"section"}>
-                <Holds position={"row"}>
-                  <Holds size={"20"}>
-                    <CheckBox
-                      checked={signatureChecked}
-                      onChange={handleSignatureCheckboxChange}
-                      id={"2"}
-                      name={""}
-                      size={3}
-                    />
-                  </Holds>
-                  <Holds size={"80"}>
-                    <Texts position={"left"} size="p3">
-                      {t("SignatureVerify")}
-                    </Texts>
-                  </Holds>
+
+                <Holds className="h-full row-start-4 row-end-6">
+                  <Contents width={"section"}>
+                    <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
+                      {base64String ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={base64String}
+                          alt="Loading signature"
+                          className="w-[40%] m-auto"
+                        />
+                      ) : (
+                        <p>No Signature </p>
+                      )}
+                    </Holds>
+                  </Contents>
                 </Holds>
-              </Contents>
+
+                <Holds
+                  position={"row"}
+                  className="h-full row-start-6 row-end-7 "
+                >
+                  <Contents width={"section"}>
+                    <Holds position={"row"}>
+                      <Holds size={"20"}>
+                        <CheckBox
+                          checked={signatureChecked}
+                          onChange={handleSignatureCheckboxChange}
+                          id={"2"}
+                          name={""}
+                          size={2.5}
+                        />
+                      </Holds>
+                      <Holds size={"80"}>
+                        <Texts position={"left"} size="p3">
+                          {t("SignatureVerify")}
+                        </Texts>
+                      </Holds>
+                    </Holds>
+                  </Contents>
+                </Holds>
+              </Grids>
             </Holds>
             <Holds className="row-start-8 row-end-9 h-full pb-5">
               <Contents width={"section"}>
