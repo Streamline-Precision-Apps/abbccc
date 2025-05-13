@@ -63,12 +63,22 @@ type StateMileage = {
   id: string;
   state: string;
   stateLineMileage: number;
+  TruckingLog: {
+    Equipment: {
+      name: string;
+    };
+  };
 };
 
 type TruckingRefueled = {
   id: string;
   gallonsRefueled: number;
   milesAtFueling?: number; // Made optional to match your JSON
+  TruckingLog: {
+    Equipment: {
+      name: string;
+    };
+  };
 };
 
 type Material = {
@@ -278,7 +288,7 @@ export default function TimeCardApprover({
                     <Grids
                       rows={"5"}
                       gap={"4"}
-                      className="h-full w-full px-3 pt-1 pb-5 bg-[#EBC68E]"
+                      className="h-full w-full px-2 pt-1 pb-5 bg-[#EBC68E]"
                     >
                       <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
                         <Holds position={"row"} className="h-full">

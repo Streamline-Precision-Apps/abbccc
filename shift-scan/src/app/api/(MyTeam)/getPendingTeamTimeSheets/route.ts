@@ -115,6 +115,15 @@ export async function GET(request: Request) {
                     id: true,
                     gallonsRefueled: true,
                     milesAtFueling: true,
+                    TruckingLog: {
+                      select: {
+                        Equipment: {
+                          select: {
+                            name: true,
+                          },
+                        },
+                      },
+                    },
                   },
                 },
                 StateMileages: {
@@ -122,6 +131,15 @@ export async function GET(request: Request) {
                     id: true,
                     state: true,
                     stateLineMileage: true,
+                    TruckingLog: {
+                      select: {
+                        Equipment: {
+                          select: {
+                            name: true,
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },

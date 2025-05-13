@@ -96,6 +96,7 @@ type Equipment = {
   name: string;
 };
 
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
@@ -113,21 +114,26 @@ export default function GeneralReviewSection({
   return (
     <>
       <Holds background={"white"} className="h-full border-[3px] border-black ">
-        <Holds className="p-1 border-b-[3px] border-black pl-4">
-          <Holds className="grid grid-cols-3 gap-1">
+        <Holds
+          position={"row"}
+          className="border-b-[3px] border-black py-1 px-2"
+        >
+          <Holds className="max-w-7"></Holds>
+          <Grids cols={"3"} gap={"2"} className="w-full">
             <Titles size={"h6"}>{t("StartEnd")}</Titles>
             <Titles size={"h6"}>{t("Jobs")}</Titles>
             <Titles size={"h6"}>{t("CostCode")}</Titles>
-          </Holds>
+          </Grids>
         </Holds>
         <Holds className="h-full overflow-y-auto no-scrollbar">
           {currentTimeSheets.map((timesheet: TimeSheet) => (
             <Holds
+              position={"row"}
+              className=" border-b-[3px] border-black py-2 pr-1"
               key={timesheet.id}
-              className="h-fit grid grid-cols-3 gap-2 border-b-[2px] py-2 border-black"
             >
               <Holds position={"row"}>
-                <Holds className="w-[25px] mx-2">
+                <Holds className="max-w-7 mx-2">
                   {timesheet.workType === "TRUCK_DRIVER" ? (
                     <Images
                       titleImg="/trucking.svg"
@@ -154,25 +160,29 @@ export default function GeneralReviewSection({
                     />
                   )}
                 </Holds>
+                <Grids cols={"3"} gap={"1"} className="w-full h-full">
+                  <Holds className="col-span-1">
+                    <Holds>
+                      <Texts size={"p7"}>
+                        {formatTime(timesheet.startTime)}
+                      </Texts>
+                    </Holds>
+                    <Holds>
+                      <Texts size={"p7"}>{formatTime(timesheet.endTime)}</Texts>
+                    </Holds>
+                  </Holds>
 
-                <Holds>
-                  <Holds>
-                    <Texts size={"p7"}>{formatTime(timesheet.startTime)}</Texts>
+                  <Holds className="col-span-1">
+                    <Texts size={"p7"}>
+                      {`${timesheet.Jobsite.name.slice(0, 9)}` || "-"}
+                    </Texts>
                   </Holds>
-                  <Holds>
-                    <Texts size={"p7"}>{formatTime(timesheet.endTime)}</Texts>
+                  <Holds className="col-span-1">
+                    <Texts size={"p7"}>
+                      {`${timesheet.CostCode.name.split(" ")[0]}` || "-"}
+                    </Texts>
                   </Holds>
-                </Holds>
-              </Holds>
-              <Holds>
-                <Texts size={"p7"}>
-                  {`${timesheet.Jobsite.name.slice(0, 9)}` || "-"}
-                </Texts>
-              </Holds>
-              <Holds>
-                <Texts size={"p7"}>
-                  {`${timesheet.CostCode.name.split(" ")[0]}` || "-"}
-                </Texts>
+                </Grids>
               </Holds>
             </Holds>
           ))}
