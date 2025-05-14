@@ -94,6 +94,7 @@ type Material = {
 type TascoLog = {
   id: string;
   shiftType: string;
+  laborType: string;
   materialType: string | null;
   LoadQuantity: number;
   Equipment: Equipment | null;
@@ -103,6 +104,11 @@ type TascoLog = {
 type TascoRefueled = {
   id: string;
   gallonsRefueled: number;
+  TascoLog: {
+    Equipment: {
+      name: string;
+    };
+  };
 };
 
 type Equipment = {
@@ -286,9 +292,9 @@ export default function TimeCardApprover({
                     onSwipeRight={() => swiped("right", currentMember.id)}
                   >
                     <Grids
-                      rows={"5"}
+                      rows={"6"}
                       gap={"4"}
-                      className="h-full w-full px-2 pt-1 pb-5 bg-[#EBC68E]"
+                      className="h-full w-full px-1.5 pt-1 pb-5 bg-[#EBC68E]"
                     >
                       <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
                         <Holds position={"row"} className="h-full">
@@ -331,7 +337,7 @@ export default function TimeCardApprover({
                           Start of Review Section 
                           pages are managed in the TopOfCardSection 
                           */}
-                      <Holds className="h-full row-start-2 row-end-6 rounded-none">
+                      <Holds className="h-full row-start-2 row-end-7 rounded-none">
                         <>
                           {viewOption === "highlight" && (
                             <GeneralReviewSection

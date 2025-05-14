@@ -86,6 +86,7 @@ type Material = {
 type TascoLog = {
   id: string;
   shiftType: string;
+  laborType: string;
   materialType: string | null;
   LoadQuantity: number;
   Equipment: Equipment | null;
@@ -110,11 +111,9 @@ type TeamMember = {
   TimeSheets: TimeSheet[]; // Changed to match JSON
 };
 
-import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { NewTab } from "@/components/(reusable)/newTabs";
 import { Tab } from "@/components/(reusable)/tab";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";

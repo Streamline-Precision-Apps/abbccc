@@ -131,12 +131,13 @@ export const Tab: FC<TabProps> = ({
                 : "w-full"
             } `}
           >
-            <div className="w-3/4 h-full">{isActive && children}</div>
-            <div className={`${isActive ? "w-1/4 h-full" : "w-full "} `}>
+            <div className="w-full h-full flex items-center gap-2 justify-center">
+              {isActive && children}
+
               <img
                 src={titleImage}
                 alt={titleImageAlt}
-                className={isActive ? " w-8 h-8" : "w-10 h-10 "}
+                className={isActive ? " w-8 h-8 " : "w-8 h-8"}
               />
             </div>
             {!isComplete && !isLoading && (
@@ -155,7 +156,7 @@ export const Tab: FC<TabProps> = ({
               <img
                 src={titleImage}
                 alt={titleImageAlt}
-                className={isActive ? "size-8" : "size-8"}
+                className={isActive ? "size-8 mx-auto" : "size-8"}
               />
             </div>
             {!isComplete && !isLoading && (
