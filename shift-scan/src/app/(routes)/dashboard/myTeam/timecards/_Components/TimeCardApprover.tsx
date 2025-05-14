@@ -11,109 +11,79 @@ type TimeSheet = {
   endTime: string;
   jobsiteId: string;
   workType: string;
+  status: string;
   CostCode: {
     name: string;
-    description?: string; // Made optional since it's not in your JSON
   };
   Jobsite: {
     name: string;
   };
-  TascoLogs: TascoLog[] | null;
-  TruckingLogs: TruckingLog[] | null;
-  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
-  status: string;
-};
-
-type EmployeeEquipmentLog = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  Equipment: Equipment;
-  RefuelLogs: EquipmentRefueled[];
-};
-
-type EquipmentRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type TruckingLog = {
-  id: string;
-  laborType: string;
-  startingMileage: number;
-  endingMileage: number | null;
-  Materials: Material[] | null;
-  Equipment: Equipment | null;
-  EquipmentHauled: EquipmentHauled[] | null;
-  RefuelLogs: TruckingRefueled[] | null;
-  StateMileages: StateMileage[] | null;
-};
-
-type EquipmentHauled = {
-  id: string;
-  Equipment: Equipment;
-  JobSite: JobSite;
-};
-
-type JobSite = {
-  name: string;
-};
-
-type StateMileage = {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-  TruckingLog: {
+  TascoLogs: {
+    id: string;
+    shiftType: string;
+    laborType: string;
+    materialType: string | null;
+    LoadQuantity: number;
     Equipment: {
+      id: string;
       name: string;
     };
-  };
-};
-
-type TruckingRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number; // Made optional to match your JSON
-  TruckingLog: {
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
+  TruckingLogs: {
+    id: string;
+    laborType: string;
+    startingMileage: number;
+    endingMileage: number | null;
     Equipment: {
+      id: string;
       name: string;
     };
-  };
-};
-
-type Material = {
-  id: string;
-  name: string;
-  quantity: number;
-  loadType: string;
-  grossWeight: number;
-  lightWeight: number;
-  materialWeight: number;
-};
-
-type TascoLog = {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string | null;
-  LoadQuantity: number;
-  Equipment: Equipment | null;
-  RefuelLogs: TascoRefueled[];
-};
-
-type TascoRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  TascoLog: {
+    Materials: {
+      id: string;
+      name: string;
+      quantity: number;
+      loadType: string;
+      grossWeight: number;
+      lightWeight: number;
+      materialWeight: number;
+    }[];
+    EquipmentHauled: {
+      id: string;
+      Equipment: {
+        name: string;
+      };
+      JobSite: {
+        name: string;
+      };
+    }[];
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+      milesAtFueling?: number;
+    }[];
+    StateMileages: {
+      id: string;
+      state: string;
+      stateLineMileage: number;
+    }[];
+  }[];
+  EmployeeEquipmentLogs: {
+    id: string;
+    startTime: string;
+    endTime: string;
     Equipment: {
+      id: string;
       name: string;
     };
-  };
-};
-
-type Equipment = {
-  id: string;
-  name: string;
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
 };
 
 type TeamMember = {
@@ -122,6 +92,7 @@ type TeamMember = {
   lastName: string;
   clockedIn: boolean;
   TimeSheets: TimeSheet[]; // Changed to match JSON
+  totalTime: number;
 };
 
 type ViewOption = "highlight" | "Trucking" | "Tasco" | "Equipment";
@@ -133,7 +104,6 @@ import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-
 import { CardControls } from "./CardControls";
 import GeneralReviewSection from "./GeneralReviewSection";
 import TascoReviewSection from "./TascoReviewSection";
@@ -144,6 +114,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import TinderSwipe from "@/components/(animations)/tinderSwipe";
 import Spinner from "@/components/(animations)/spinner";
+import EquipmentLogsSection from "./EquipmentLogsSection";
+import { ApproveUsersTimeSheets } from "@/actions/ManagerTimeCardActions";
 
 export default function TimeCardApprover({
   loading,
@@ -167,17 +139,20 @@ export default function TimeCardApprover({
   const swipeRef = useRef<TinderSwipeRef>(null);
 
   const getAvailableViewOptions = (timeSheets: TimeSheet[]) => {
-    const options = new Set<string>(["highlight"]); // Always include highlights
+    const options = new Set<ViewOption>(["highlight"]);
 
     timeSheets.forEach((timesheet) => {
-      if (timesheet.workType === "TRUCK_DRIVER") {
-        options.add("Trucking");
-      } else if (timesheet.workType === "TASCO") {
-        options.add("Tasco");
-      } else if (
-        timesheet.EmployeeEquipmentLogs &&
-        timesheet.EmployeeEquipmentLogs.length > 0
+      if (
+        timesheet.workType === "TRUCK_DRIVER" &&
+        timesheet.TruckingLogs?.length
       ) {
+        options.add("Trucking");
+      } else if (
+        timesheet.workType === "TASCO" &&
+        timesheet.TascoLogs?.length
+      ) {
+        options.add("Tasco");
+      } else if (timesheet.EmployeeEquipmentLogs?.length) {
         options.add("Equipment");
       }
     });
@@ -190,11 +165,26 @@ export default function TimeCardApprover({
       try {
         setLoading(true);
         const response = await fetch(`/api/getPendingTeamTimeSheets`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
-        // Filter members who actually have pending timesheets
-        setTeamMembers(
-          data.filter((member: TeamMember) => member.TimeSheets.length > 0)
-        );
+
+        // Process the API response
+        const membersWithTotals = data
+          .map((member: any) => ({
+            id: member.id,
+            firstName: member.firstName,
+            lastName: member.lastName,
+            clockedIn: member.clockedIn,
+            TimeSheets: member.TimeSheets,
+            totalTime: calculateTotalTime(member.TimeSheets),
+          }))
+          .filter((member: TeamMember) => member.TimeSheets.length > 0);
+
+        setTeamMembers(membersWithTotals);
       } catch (error) {
         console.error("Error fetching crew time cards:", error);
       } finally {
@@ -243,12 +233,28 @@ export default function TimeCardApprover({
   };
 
   //todo : make this a server action
-  const handleSubmitAll = async () => {
+  const ApproveTimeSheets = async (id: string) => {
     try {
-      console.log("Submitting all decisions:", decisions);
+      const ApproveTimesheet = teamMembers.find((member) => member.id === id);
+      const timesheets = ApproveTimesheet?.TimeSheets || [];
+      const timeSheetIds = timesheets.map((timesheet) => timesheet.id);
+      console.log("id", id);
+      console.log("timesheets", timesheets);
+      console.log("timeSheetIds", timeSheetIds);
+
       const formData = new FormData();
-      formData.append("decisions", JSON.stringify(decisions));
-      formData.append("comment", `Approved by ${manager}`);
+      formData.append("id", id);
+      formData.append("timesheetIds", JSON.stringify(timeSheetIds));
+
+      formData.append("statusComment", `Approved by ${manager}`);
+
+      const response = await ApproveUsersTimeSheets(formData);
+
+      if (response.success) {
+        console.log("Timecards approved successfully");
+      } else {
+        console.error("Failed to approve timecards");
+      }
     } catch (error) {
       console.error("Error submitting timecards:", error);
     }
@@ -261,138 +267,157 @@ export default function TimeCardApprover({
     });
   };
 
-  const calculateTotalHours = (timeSheets: TimeSheet[]) => {
+  const calculateTotalTime = (timeSheets: TimeSheet[]) => {
     let totalMs = 0;
     timeSheets.forEach((timesheet) => {
-      const start = new Date(timesheet.startTime).getTime();
-      const end = new Date(timesheet.endTime).getTime();
-      totalMs += end - start;
+      try {
+        const start = new Date(timesheet.startTime).getTime();
+        const end = new Date(timesheet.endTime).getTime();
+        if (!isNaN(start) && !isNaN(end)) {
+          totalMs += end - start;
+        }
+      } catch (e) {
+        console.error("Invalid date in timesheet", timesheet.id);
+      }
     });
+
     const hours = Math.floor(totalMs / (1000 * 60 * 60));
     const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours} hrs ${minutes} mins`;
   };
 
   return (
-    <>
-      <Holds className="row-span-5 h-full w-full">
-        <Contents width={"section"} className="h-full">
-          <Holds
-            className={`w-full h-full rounded-[10px] border-[3px] border-black bg-[#EBC68E] ${
-              loading && "animate-pulse"
-            }`}
-          >
-            {!completed ? (
-              <>
-                {currentMember ? (
-                  <TinderSwipe
-                    ref={swipeRef}
-                    key={currentMember.id}
-                    onSwipeLeft={() => swiped("left", currentMember.id)}
-                    onSwipeRight={() => swiped("right", currentMember.id)}
-                  >
-                    <Grids
-                      rows={"6"}
-                      gap={"4"}
-                      className="h-full w-full px-1.5 pt-1 pb-5 bg-[#EBC68E]"
+    <Holds className="h-full w-full">
+      <Grids rows={"8"} className="h-full w-full pb-5">
+        <Holds className="row-start-1 row-end-8 h-full w-full">
+          <Contents className="h-full">
+            <Holds
+              className={`w-full h-full rounded-[10px] border-[3px] border-black bg-[#EBC68E] ${
+                loading && "animate-pulse"
+              }`}
+            >
+              {!completed ? (
+                <>
+                  {currentMember ? (
+                    <TinderSwipe
+                      ref={swipeRef}
+                      key={currentMember.id}
+                      onSwipeLeft={() => {
+                        swiped("left", currentMember.id);
+                      }}
+                      onSwipeRight={() => {
+                        swiped("right", currentMember.id);
+                        ApproveTimeSheets(currentMember.id);
+                      }}
                     >
-                      <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
-                        <Holds position={"row"} className="h-full">
-                          <Holds>
-                            <Titles position={"left"} size={"h5"}>
-                              {currentMember.firstName} {currentMember.lastName}
-                            </Titles>
-                          </Holds>
+                      <Grids
+                        rows={"6"}
+                        gap={"4"}
+                        className="h-full w-full px-2 pb-3 bg-[#EBC68E]"
+                      >
+                        <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
+                          <Holds position={"row"} className="h-full">
+                            <Holds>
+                              <Titles position={"left"} size={"h5"}>
+                                {currentMember.firstName}{" "}
+                                {currentMember.lastName}
+                              </Titles>
+                            </Holds>
 
-                          <Holds
-                            position={"right"}
-                            className="w-full h-full justify-center items-center"
-                          >
-                            <Texts
+                            <Holds
                               position={"right"}
-                              size={"p5"}
-                            >{`${calculateTotalHours(
-                              currentTimeSheets
-                            )}`}</Texts>
+                              className="w-full h-full justify-center items-center"
+                            >
+                              <Texts position={"right"} size={"p5"}>
+                                {currentMember.totalTime}
+                              </Texts>
+                            </Holds>
                           </Holds>
+                          <Selects
+                            value={viewOption}
+                            onChange={(e) => {
+                              setViewOption(e.target.value as ViewOption);
+                            }}
+                            className="text-center text-sm"
+                          >
+                            {getAvailableViewOptions(currentTimeSheets).map(
+                              (option) => (
+                                <option key={option} value={option}>
+                                  {t(option)}
+                                </option>
+                              )
+                            )}
+                          </Selects>
                         </Holds>
-                        <Selects
-                          value={viewOption}
-                          onChange={(e) => {
-                            setViewOption(e.target.value as ViewOption);
-                          }}
-                          className="text-center text-sm"
-                        >
-                          {getAvailableViewOptions(currentTimeSheets).map(
-                            (option) => (
-                              <option key={option} value={option}>
-                                {t(option)}
-                              </option>
-                            )
-                          )}
-                        </Selects>
-                      </Holds>
 
-                      {/* 
+                        {/* 
                           Start of Review Section 
                           pages are managed in the TopOfCardSection 
                           */}
-                      <Holds className="h-full row-start-2 row-end-7 rounded-none">
-                        <>
-                          {viewOption === "highlight" && (
-                            <GeneralReviewSection
-                              currentTimeSheets={currentTimeSheets}
-                              formatTime={formatTime}
-                            />
-                          )}
+                        <Holds className="h-full row-start-2 row-end-7 rounded-none">
+                          <>
+                            {viewOption === "highlight" && (
+                              <GeneralReviewSection
+                                currentTimeSheets={currentTimeSheets}
+                                formatTime={formatTime}
+                              />
+                            )}
 
-                          {viewOption === "Trucking" && (
-                            <TruckingReviewSection
-                              currentTimeSheets={currentTimeSheets}
-                            />
-                          )}
-                          {viewOption === "Tasco" && (
-                            <TascoReviewSection
-                              currentTimeSheets={currentTimeSheets}
-                            />
-                          )}
-                          {viewOption === "Equipment" && <></>}
-                        </>
-                      </Holds>
-                      {/* End of Review Section */}
-                    </Grids>
-                  </TinderSwipe>
-                ) : (
-                  <Holds className="h-full flex items-center justify-center">
-                    {loading ? (
-                      <Spinner size={70} />
-                    ) : (
-                      <Titles size={"h5"}>{t("NoTimesheetsToApprove")}</Titles>
-                    )}
-                  </Holds>
-                )}
-              </>
-            ) : (
-              <Holds className="h-full flex items-center justify-center">
-                <Titles size={"h5"}>{t("Complete")}</Titles>
-                <Images
-                  titleImg="/statusApprovedFilled.svg"
-                  titleImgAlt="approved"
-                  className="w-16 h-16 border-[3px] border-black rounded-full"
-                />
-                <Texts size={"p6"} className="mt-4">
-                  {t("YouHaveApprovedAllTimesheets")}
-                </Texts>
-              </Holds>
-            )}
-          </Holds>
-        </Contents>
-      </Holds>
-      <CardControls
-        completed={completed}
-        handleEditClick={handleEditClick}
-        handleApproveClick={handleApproveClick}
-      />
-    </>
+                            {viewOption === "Trucking" && (
+                              <TruckingReviewSection
+                                currentTimeSheets={currentTimeSheets}
+                              />
+                            )}
+                            {viewOption === "Tasco" && (
+                              <TascoReviewSection
+                                currentTimeSheets={currentTimeSheets}
+                              />
+                            )}
+                            {viewOption === "Equipment" && (
+                              <EquipmentLogsSection
+                                currentTimeSheets={currentTimeSheets}
+                              />
+                            )}
+                          </>
+                        </Holds>
+                        {/* End of Review Section */}
+                      </Grids>
+                    </TinderSwipe>
+                  ) : (
+                    <Holds className="h-full flex items-center justify-center">
+                      {loading ? (
+                        <Spinner size={70} />
+                      ) : (
+                        <Titles size={"h5"}>
+                          {t("NoTimesheetsToApprove")}
+                        </Titles>
+                      )}
+                    </Holds>
+                  )}
+                </>
+              ) : (
+                <Holds className="h-full flex items-center justify-center">
+                  <Titles size={"h5"}>{t("Complete")}</Titles>
+                  <Images
+                    titleImg="/statusApprovedFilled.svg"
+                    titleImgAlt="approved"
+                    className="w-16 h-16 border-[3px] border-black rounded-full"
+                  />
+                  <Texts size={"p6"} className="mt-4">
+                    {t("YouHaveApprovedAllTimesheets")}
+                  </Texts>
+                </Holds>
+              )}
+            </Holds>
+          </Contents>
+        </Holds>
+
+        <CardControls
+          completed={completed}
+          handleEditClick={handleEditClick}
+          handleApproveClick={handleApproveClick}
+        />
+      </Grids>
+    </Holds>
   );
 }

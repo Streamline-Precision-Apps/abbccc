@@ -19,8 +19,8 @@ export const CardControls = ({
       background="white"
       className="row-span-1 h-full flex items-center justify-center "
     >
-      <Contents width={"section"} className="py-2">
-        <Grids cols={"2"} gap={"5"} className="w-full">
+      <Contents className="h-full">
+        <Grids cols={"2"} gap={"5"} className="w-full h-full pt-5">
           {!completed && (
             <>
               <Buttons

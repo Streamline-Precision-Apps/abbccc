@@ -7,93 +7,79 @@ type TimeSheet = {
   endTime: string;
   jobsiteId: string;
   workType: string;
+  status: string;
   CostCode: {
     name: string;
-    description?: string; // Made optional since it's not in your JSON
   };
   Jobsite: {
     name: string;
   };
-  TascoLogs: TascoLog[] | null;
-  TruckingLogs: TruckingLog[] | null;
-  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
-  status: string;
-};
-
-type EmployeeEquipmentLog = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  Equipment: Equipment;
-  RefuelLogs: EquipmentRefueled[];
-};
-
-type EquipmentRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type TruckingLog = {
-  id: string;
-  laborType: string;
-  startingMileage: number;
-  endingMileage: number | null;
-  Materials: Material[] | null;
-  Equipment: Equipment | null;
-  EquipmentHauled: EquipmentHauled[] | null;
-  RefuelLogs: TruckingRefueled[] | null;
-  StateMileages: StateMileage[] | null;
-};
-
-type EquipmentHauled = {
-  id: string;
-  Equipment: Equipment;
-  JobSite: JobSite;
-};
-
-type JobSite = {
-  name: string;
-};
-
-type StateMileage = {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-};
-
-type TruckingRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number; // Made optional to match your JSON
-};
-
-type Material = {
-  id: string;
-  name: string;
-  quantity: number;
-  loadType: string;
-  grossWeight: number;
-  lightWeight: number;
-  materialWeight: number;
-};
-
-type TascoLog = {
-  id: string;
-  shiftType: string;
-  materialType: string | null;
-  LoadQuantity: number;
-  Equipment: Equipment | null;
-  RefuelLogs: TascoRefueled[];
-};
-
-type TascoRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type Equipment = {
-  id: string;
-  name: string;
+  TascoLogs: {
+    id: string;
+    shiftType: string;
+    laborType: string;
+    materialType: string | null;
+    LoadQuantity: number;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
+  TruckingLogs: {
+    id: string;
+    laborType: string;
+    startingMileage: number;
+    endingMileage: number | null;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    Materials: {
+      id: string;
+      name: string;
+      quantity: number;
+      loadType: string;
+      grossWeight: number;
+      lightWeight: number;
+      materialWeight: number;
+    }[];
+    EquipmentHauled: {
+      id: string;
+      Equipment: {
+        name: string;
+      };
+      JobSite: {
+        name: string;
+      };
+    }[];
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+      milesAtFueling?: number;
+    }[];
+    StateMileages: {
+      id: string;
+      state: string;
+      stateLineMileage: number;
+    }[];
+  }[];
+  EmployeeEquipmentLogs: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
 };
 
 import { Grids } from "@/components/(reusable)/grids";

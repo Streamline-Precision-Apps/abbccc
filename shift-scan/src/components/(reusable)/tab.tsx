@@ -10,7 +10,7 @@ const tabStyles = cva(
     variants: {
       isActive: {
         true: " w-full px-1.5",
-        false: " px-3",
+        false: "p-3",
       },
       animatePulse: {
         true: "animate-pulse",
@@ -152,13 +152,12 @@ export const Tab: FC<TabProps> = ({
                 : "w-full"
             } `}
           >
-            <div className={`${isActive ? "w-1/4 h-full " : "w-full "} `}>
-              <img
-                src={titleImage}
-                alt={titleImageAlt}
-                className={isActive ? "size-8 mx-auto" : "size-8"}
-              />
-            </div>
+            <img
+              src={titleImage}
+              alt={titleImageAlt}
+              className={isActive ? "size-10 mx-auto" : "size-10"}
+            />
+
             {!isComplete && !isLoading && (
               <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
             )}

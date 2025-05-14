@@ -16,12 +16,12 @@ export default function TimeCards() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Bases className="fixed w-full h-full">
+    <Bases>
       <Contents>
         <Grids
           rows={"7"}
           gap={"5"}
-          className={`h-full pb-5 bg-white rounded-[10px] ${
+          className={`h-full bg-white rounded-[10px] ${
             loading && "animate-pulse"
           }`}
         >
@@ -30,8 +30,9 @@ export default function TimeCards() {
               <Titles size={"h2"}>{t("ReviewYourTeam")}</Titles>
             </TitleBoxes>
           </Holds>
-
-          <TimeCardApprover loading={loading} setLoading={setLoading} />
+          <Holds className="row-start-2 row-end-8 h-full w-full">
+            <TimeCardApprover loading={loading} setLoading={setLoading} />
+          </Holds>
         </Grids>
       </Contents>
     </Bases>

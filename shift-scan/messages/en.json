@@ -408,7 +408,9 @@
     "Labor": "Labor",
     "ShiftLabor": "Shift & Labor",
     "NoTascoDataAvailable": "No Tasco Data Available",
-    "TascoLabor": "Tasco Labor"
+    "TascoLabor": "Tasco Labor",
+    "UsageTime": "Usage Time",
+    "NA": "N/A"
   },
 
   "Clock": {
