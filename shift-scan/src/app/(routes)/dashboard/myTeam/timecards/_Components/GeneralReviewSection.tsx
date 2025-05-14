@@ -91,12 +91,18 @@ import { useTranslations } from "next-intl";
 
 export default function GeneralReviewSection({
   currentTimeSheets,
-  formatTime,
 }: {
   currentTimeSheets: TimeSheet[];
-  formatTime: (dateString: string) => string;
 }) {
   const t = useTranslations("TimeCardSwiper");
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <>
       <Holds background={"white"} className="h-full border-[3px] border-black ">
