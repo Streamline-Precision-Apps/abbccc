@@ -40,6 +40,7 @@ export default function Content() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("rPath");
+  const timeCard = searchParams.get("timecard");
   const params = useParams();
   const { id } = params;
 

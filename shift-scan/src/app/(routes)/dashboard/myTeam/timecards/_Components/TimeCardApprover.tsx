@@ -115,7 +115,7 @@ import TascoReviewSection from "./TascoReviewSection";
 import TruckingReviewSection from "./TruckingReviewSection";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import TinderSwipe from "@/components/(animations)/tinderSwipe";
 import Spinner from "@/components/(animations)/spinner";
@@ -142,6 +142,8 @@ export default function TimeCardApprover({
   const currentTimeSheets = currentMember?.TimeSheets || [];
   const [viewOption, setViewOption] = useState<ViewOption>("highlight");
   const swipeRef = useRef<TinderSwipeRef>(null);
+  const urls = useSearchParams();
+  const rPath = urls.get("rPath");
 
   const getAvailableViewOptions = (timeSheets: TimeSheet[]) => {
     const options = new Set<ViewOption>(["highlight"]);
@@ -232,7 +234,7 @@ export default function TimeCardApprover({
 
     if (direction === "left") {
       router.push(
-        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timecard=/dashboard/myTeam/timecards`
+        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/timecards?rPath=${rPath}`
       );
     } else {
       setDecisions((prev) => ({
