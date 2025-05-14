@@ -410,7 +410,8 @@
     "NoTascoDataAvailable": "No Tasco Data Available",
     "TascoLabor": "Tasco Labor",
     "UsageTime": "Usage Time",
-    "NA": "N/A"
+    "NA": "N/A",
+    "PullToRefresh": "(Pull to refresh)"
   },
 
   "Clock": {
