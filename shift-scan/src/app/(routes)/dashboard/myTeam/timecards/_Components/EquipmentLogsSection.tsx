@@ -126,7 +126,11 @@ export default function EquipmentLogsSection({
         >
           <Holds className="w-full h-full ">
             <Holds>
-              <Grids className="grid grid-cols-3 gap-2 p-2 border-b-[3px] border-black">
+              <Grids
+                cols={"3"}
+                gap={"2"}
+                className="p-2 border-b-[3px] border-black"
+              >
                 <Titles position={"left"} size={"h7"}>
                   {t("Equipment")}
                 </Titles>
@@ -140,7 +144,9 @@ export default function EquipmentLogsSection({
               {allEquipmentLogs.map((log) => (
                 <Grids
                   key={log.id}
-                  className="grid grid-cols-3 gap-2 p-2 border-b-[3px] border-black  justify-center items-center grid-"
+                  cols={"3"}
+                  gap={"2"}
+                  className="p-2 border-b-[3px] border-black"
                 >
                   <Texts position={"left"} size={"p7"}>
                     {log.Equipment?.name || "-"}

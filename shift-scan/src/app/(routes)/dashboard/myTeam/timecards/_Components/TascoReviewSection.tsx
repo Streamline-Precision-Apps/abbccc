@@ -201,7 +201,7 @@ export default function TascoReviewSection({
                 {allTascoLogs.map((log) => (
                   <Grids
                     key={log.id}
-                    className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 p-1 py-2 border-b border-gray-200 last:border-0 justify-center items-center"
+                    className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 p-2 border-b-[3px] border-black justify-center items-center"
                   >
                     <Texts position={"left"} size={"p7"}>
                       {log.shiftType?.split(" ")[0] || "-"}

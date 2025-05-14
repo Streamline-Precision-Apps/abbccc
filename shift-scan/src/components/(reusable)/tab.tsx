@@ -5,12 +5,12 @@ import "@/app/globals.css";
 
 // Define CVA-based styles for the Tab component
 const tabStyles = cva(
-  "h-full rounded-[10px] flex items-center justify-center rounded-b-none font-bold  relative",
+  "h-full  rounded-[10px] flex items-center justify-center rounded-b-none font-bold  relative",
   {
     variants: {
       isActive: {
-        true: " w-full px-1.5",
-        false: "p-3",
+        true: " w-full ",
+        false: " min-w-[50px] ",
       },
       animatePulse: {
         true: "animate-pulse",
@@ -148,16 +148,17 @@ export const Tab: FC<TabProps> = ({
           <div
             className={`${
               isActive
-                ? "w-full flex flex-row justify-center items-center"
+                ? "w-full flex flex-row justify-between items-center"
                 : "w-full"
             } `}
           >
-            <img
-              src={titleImage}
-              alt={titleImageAlt}
-              className={isActive ? "size-10 mx-auto" : "size-10"}
-            />
-
+            <div className="w-full h-full flex items-center  justify-center">
+              <img
+                src={titleImage}
+                alt={titleImageAlt}
+                className={isActive ? " w-8 h-8 " : "w-8 h-8"}
+              />
+            </div>
             {!isComplete && !isLoading && (
               <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
             )}
