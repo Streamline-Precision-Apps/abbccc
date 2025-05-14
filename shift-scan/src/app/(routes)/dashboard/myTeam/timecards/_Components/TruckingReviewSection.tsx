@@ -1,116 +1,85 @@
 "use client";
-
 type TimeSheet = {
   id: string;
   date: string;
   startTime: string;
   endTime: string;
   jobsiteId: string;
+  workType: string;
+  status: string;
   CostCode: {
     name: string;
-    description?: string; // Made optional since it's not in your JSON
   };
-  TascoLogs: TascoLog[] | null;
-  TruckingLogs: TruckingLog[] | null;
-  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
-  status: string;
-};
-
-type EmployeeEquipmentLog = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  Equipment: Equipment;
-  RefuelLogs: EquipmentRefueled[];
-};
-
-type EquipmentRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type TruckingLog = {
-  id: string;
-  laborType: string;
-  startingMileage: number;
-  endingMileage: number | null;
-  Materials: Material[] | null;
-  Equipment: Equipment | null;
-  EquipmentHauled: EquipmentHauled[] | null;
-  RefuelLogs: TruckingRefueled[] | null;
-  StateMileages: StateMileage[] | null;
-};
-
-type EquipmentHauled = {
-  id: string;
-  Equipment: Equipment;
-  JobSite: JobSite;
-};
-
-type JobSite = {
-  name: string;
-};
-
-type StateMileage = {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-  TruckingLog: {
+  Jobsite: {
+    name: string;
+  };
+  TascoLogs: {
+    id: string;
+    shiftType: string;
+    laborType: string;
+    materialType: string | null;
+    LoadQuantity: number;
     Equipment: {
+      id: string;
       name: string;
     };
-  };
-};
-
-type TruckingRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number; // Made optional to match your JSON
-  TruckingLog: {
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
+  TruckingLogs: {
+    id: string;
+    laborType: string;
+    startingMileage: number;
+    endingMileage: number | null;
     Equipment: {
+      id: string;
       name: string;
     };
-  };
+    Materials: {
+      id: string;
+      name: string;
+      quantity: number;
+      loadType: string;
+      grossWeight: number;
+      lightWeight: number;
+      materialWeight: number;
+    }[];
+    EquipmentHauled: {
+      id: string;
+      Equipment: {
+        name: string;
+      };
+      JobSite: {
+        name: string;
+      };
+    }[];
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+      milesAtFueling?: number;
+    }[];
+    StateMileages: {
+      id: string;
+      state: string;
+      stateLineMileage: number;
+    }[];
+  }[];
+  EmployeeEquipmentLogs: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
 };
-
-type Material = {
-  id: string;
-  name: string;
-  quantity: number;
-  loadType: string;
-  grossWeight: number;
-  lightWeight: number;
-  materialWeight: number;
-};
-
-type TascoLog = {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string | null;
-  LoadQuantity: number;
-  Equipment: Equipment | null;
-  RefuelLogs: TascoRefueled[];
-};
-
-type TascoRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type Equipment = {
-  id: string;
-  name: string;
-};
-
-type TeamMember = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  clockedIn: boolean;
-  TimeSheets: TimeSheet[]; // Changed to match JSON
-};
-
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -271,17 +240,25 @@ export default function TruckingReviewSection({
           {/* Main Trucking Logs */}
           {tabs === 1 && (
             <Holds className="w-full h-full ">
-              <Holds
-                position={"row"}
-                className="p-2 border-b-[3px] border-black justify-between"
-              >
-                <Titles size={"h7"}>{t("TruckId")}</Titles>
-                <Titles size={"h7"}>{t("StartEndMileage")}</Titles>
+              <Holds>
+                <Grids
+                  cols={"2"}
+                  gap={"2"}
+                  className="p-2 border-b-[3px] border-black justify-between"
+                >
+                  <Titles position={"left"} size={"h7"}>
+                    {t("TruckId")}
+                  </Titles>
+                  <Titles position={"left"} size={"h7"}>
+                    {t("StartEndMileage")}
+                  </Titles>
+                </Grids>
               </Holds>
               <Holds className="overflow-y-auto no-scrollbar">
                 {allTruckingLogs.map((log) => (
-                  <Holds
-                    position={"row"}
+                  <Grids
+                    cols={"2"}
+                    gap={"2"}
                     key={log.id}
                     className={`p-2 py-3 border-b-[3px] border-black last:border-0 ${
                       log.endingMileage &&
@@ -289,19 +266,11 @@ export default function TruckingReviewSection({
                       "bg-red-500"
                     }`}
                   >
-                    <Holds className="min-w-6 max-w-[50%]">
-                      <Texts position={"left"} size={"p7"}>
-                        {`${(log.Equipment as Equipment | null)?.name.slice(
-                          0,
-                          15
-                        )}${
-                          ((log.Equipment as Equipment | null)?.name?.length ??
-                            0) > 15
-                            ? "..."
-                            : ""
-                        }` || "-"}
-                      </Texts>
-                    </Holds>
+                    <Texts position={"left"} size={"p7"}>
+                      {`${log.Equipment?.name.slice(0, 15)}${
+                        (log.Equipment?.name?.length ?? 0) > 15 ? "..." : ""
+                      }` || "-"}
+                    </Texts>
 
                     <Holds
                       position={"row"}
@@ -315,7 +284,7 @@ export default function TruckingReviewSection({
                       />
                       <Texts size={"p7"}>{log.endingMileage || "-"}</Texts>
                     </Holds>
-                  </Holds>
+                  </Grids>
                 ))}
               </Holds>
             </Holds>
@@ -418,9 +387,7 @@ export default function TruckingReviewSection({
                         gap={"2"}
                         className="p-2 border-b border-gray-200 last:border-0"
                       >
-                        <Texts size={"p7"}>
-                          {refuel.TruckingLog.Equipment.name || "-"}
-                        </Texts>
+                        <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
                         <Texts
                           size={"p7"}
                         >{`${refuel.gallonsRefueled} Gal`}</Texts>
@@ -457,9 +424,7 @@ export default function TruckingReviewSection({
                       gap={"2"}
                       className="p-2 border-b border-gray-200 last:border-0"
                     >
-                      <Texts size={"p7"}>
-                        {state.TruckingLog.Equipment.name || "-"}
-                      </Texts>
+                      <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
                       <Texts size={"p7"}>{state.state || "-"}</Texts>
                       <Texts size={"p7"}>
                         {`${state.stateLineMileage} mi` || "-"}
@@ -492,20 +457,13 @@ export default function TruckingReviewSection({
                       gap={"2"}
                       className="p-2 border-b-[3px] border-black last:border-0"
                     >
-                      <Texts size={"p7"}>
-                        {
-                          (hauled.Equipment as unknown as Equipment | null)
-                            ?.name
-                        }
-                      </Texts>
+                      <Texts size={"p7"}>{hauled.Equipment?.name}</Texts>
                       <Images
                         titleImg="/arrowRightThin.svg"
                         titleImgAlt="arrow"
                         className="max-w-5 h-auto mx-auto"
                       />
-                      <Texts size={"p7"}>
-                        {(hauled.JobSite as unknown as JobSite | null)?.name}
-                      </Texts>
+                      <Texts size={"p7"}>{hauled.JobSite?.name}</Texts>
                     </Grids>
                   )) || []
               )}

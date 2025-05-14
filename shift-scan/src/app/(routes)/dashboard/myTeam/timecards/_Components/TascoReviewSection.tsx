@@ -1,147 +1,84 @@
 "use client";
-type employeeEquipmentLogs = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  equipment: Equipment[];
-  refueled: EquipmentRefueled[];
-};
-
-type TruckingLogs = {
-  id: string;
-  laborType: string;
-  startingMileage: number;
-  endingMileage: number | null;
-  Material: Materials[] | null; // Changed from Materials to Material
-  equipment: Equipment[] | null;
-  EquipmentHauled: EquipmentHauled[] | null;
-  Refueled: TruckingRefueled[] | null; // Changed from TruckingRefueled to Refueled
-  stateMileage: stateMileage[] | null;
-};
-
-type stateMileage = {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-};
-
-type Materials = {
-  id: string;
-  name: string;
-  quantity: number;
-  loadType: string;
-  LoadWeight: number;
-};
-
-type TinderSwipeRef = {
-  swipeLeft: () => void;
-  swipeRight: () => void;
-};
-
 type TimeSheet = {
   id: string;
   date: string;
   startTime: string;
   endTime: string;
   jobsiteId: string;
+  workType: string;
+  status: string;
   CostCode: {
     name: string;
-    description?: string; // Made optional since it's not in your JSON
   };
-  TascoLogs: TascoLog[] | null;
-  TruckingLogs: TruckingLog[] | null;
-  EmployeeEquipmentLogs: EmployeeEquipmentLog[] | null;
-  status: string;
-};
-
-type EmployeeEquipmentLog = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  Equipment: Equipment;
-  RefuelLogs: EquipmentRefueled[];
-};
-
-type EquipmentRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type TruckingLog = {
-  id: string;
-  laborType: string;
-  startingMileage: number;
-  endingMileage: number | null;
-  Materials: Material[] | null;
-  Equipment: Equipment | null;
-  EquipmentHauled: EquipmentHauled[] | null;
-  RefuelLogs: TruckingRefueled[] | null;
-  StateMileages: StateMileage[] | null;
-};
-
-type EquipmentHauled = {
-  id: string;
-  Equipment: Equipment;
-  JobSite: JobSite;
-};
-
-type JobSite = {
-  name: string;
-};
-
-type StateMileage = {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-};
-
-type TruckingRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number; // Made optional to match your JSON
-};
-
-type Material = {
-  id: string;
-  name: string;
-  quantity: number;
-  loadType: string;
-  grossWeight: number;
-  lightWeight: number;
-  materialWeight: number;
-};
-
-type TascoLog = {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string | null;
-  LoadQuantity: number;
-  Equipment: Equipment | null;
-  RefuelLogs: TascoRefueled[];
-};
-
-type TascoRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  TascoLog: {
+  Jobsite: {
+    name: string;
+  };
+  TascoLogs: {
+    id: string;
+    shiftType: string;
+    laborType: string;
+    materialType: string | null;
+    LoadQuantity: number;
     Equipment: {
+      id: string;
       name: string;
     };
-  };
-};
-
-type Equipment = {
-  id: string;
-  name: string;
-};
-
-type TeamMember = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  clockedIn: boolean;
-  TimeSheets: TimeSheet[]; // Changed to match JSON
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
+  TruckingLogs: {
+    id: string;
+    laborType: string;
+    startingMileage: number;
+    endingMileage: number | null;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    Materials: {
+      id: string;
+      name: string;
+      quantity: number;
+      loadType: string;
+      grossWeight: number;
+      lightWeight: number;
+      materialWeight: number;
+    }[];
+    EquipmentHauled: {
+      id: string;
+      Equipment: {
+        name: string;
+      };
+      JobSite: {
+        name: string;
+      };
+    }[];
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+      milesAtFueling?: number;
+    }[];
+    StateMileages: {
+      id: string;
+      state: string;
+      stateLineMileage: number;
+    }[];
+  }[];
+  EmployeeEquipmentLogs: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
 };
 
 import { Grids } from "@/components/(reusable)/grids";
@@ -179,17 +116,20 @@ export default function TascoReviewSection({
       </Holds>
     );
   }
+
   return (
     <Holds
       className="h-full w-full overflow-y-auto no-scrollbar"
       style={{ touchAction: "pan-y" }}
     >
       <Grids rows={"9"} className="w-full h-full">
+        {/* Tab Navigation */}
         <Holds
           position={"row"}
           className="row-start-1 row-end-2 w-full h-full gap-x-[2px] relative"
         >
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black z-0" />
+
           {hasHaulingData && (
             <Tab
               isActive={tabs === 1}
@@ -212,6 +152,7 @@ export default function TascoReviewSection({
               </Titles>
             </Tab>
           )}
+
           {hasRefuelData && (
             <Tab
               isActive={tabs === 2}
@@ -235,17 +176,19 @@ export default function TascoReviewSection({
             </Tab>
           )}
         </Holds>
+
+        {/* Content Area */}
         <Holds
           background={"white"}
           className="row-start-2 row-end-10 h-full rounded-t-none border-x-[3px] border-b-[3px] border-black"
         >
+          {/* Hauling Logs Tab */}
           {tabs === 1 && (
-            <Holds className="w-full h-full ">
+            <Holds className="w-full h-full">
               <Holds>
                 <Grids className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 py-2 px-1 border-b-[3px] border-black">
                   <Titles size={"h7"}>{t("Shift")}</Titles>
                   <Titles size={"h7"}>{t("Labor")}</Titles>
-
                   <Titles size={"h7"}>{t("Equipment")}</Titles>
                   <Titles size={"h7"}>{t("Material")}</Titles>
                   <Titles position={"right"} size={"h7"}>
@@ -253,33 +196,37 @@ export default function TascoReviewSection({
                   </Titles>
                 </Grids>
               </Holds>
+
               <Holds className="overflow-y-auto no-scrollbar">
                 {allTascoLogs.map((log) => (
                   <Grids
                     key={log.id}
-                    className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 p-1 py-2 border-b border-gray-200 last:border-0 justify-center items-center grid-"
+                    className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 p-1 py-2 border-b border-gray-200 last:border-0 justify-center items-center"
                   >
                     <Texts position={"left"} size={"p7"}>
-                      {log.shiftType.split(" ")[0]}
+                      {log.shiftType?.split(" ")[0] || "-"}
                     </Texts>
                     <Texts position={"left"} size={"p7"}>
                       {log.laborType === "tascoAbcdEquipment"
                         ? "EQ.Operator"
                         : log.laborType === "tascoAbcdLabor"
-                        ? `Labor`
+                        ? "Labor"
                         : log.laborType === "tascoEEquipment"
                         ? "EQ.Operator"
-                        : log.laborType}
+                        : log.laborType || "-"}
                     </Texts>
-
                     <Texts size={"p7"}>{log.Equipment?.name || "-"}</Texts>
                     <Texts size={"p7"}>{log.materialType || "N/A"}</Texts>
-                    <Texts size={"p7"}>{log.LoadQuantity || "0"}</Texts>
+                    <Texts size={"p7"} className="text-right">
+                      {log.LoadQuantity || "0"}
+                    </Texts>
                   </Grids>
                 ))}
               </Holds>
             </Holds>
           )}
+
+          {/* Refuel Logs Tab */}
           {tabs === 2 && (
             <Holds background="white" className="w-full h-full">
               <Holds>
@@ -288,11 +235,12 @@ export default function TascoReviewSection({
                   gap={"2"}
                   className="p-2 h-full border-b-[3px] border-black"
                 >
-                  <Titles size={"h7"}>{t("EquipmentId")}</Titles>
+                  <Titles size={"h7"}>{t("Equipment")}</Titles>
                   <Titles size={"h7"}>{t("Gallons")}</Titles>
                 </Grids>
               </Holds>
-              <Holds>
+
+              <Holds className="overflow-y-auto no-scrollbar">
                 {allTascoLogs.flatMap(
                   (log) =>
                     log.RefuelLogs?.map((refuel) => (
@@ -302,12 +250,10 @@ export default function TascoReviewSection({
                         gap={"2"}
                         className="p-2 border-b border-gray-200 last:border-0"
                       >
-                        <Texts size={"p7"}>
-                          {refuel.TascoLog?.Equipment?.name || "-"}
+                        <Texts size={"p7"}>{log.Equipment?.name || "-"}</Texts>
+                        <Texts size={"p7"} className="text-right">
+                          {refuel.gallonsRefueled} Gal
                         </Texts>
-                        <Texts
-                          size={"p7"}
-                        >{`${refuel.gallonsRefueled} Gal`}</Texts>
                       </Grids>
                     )) || []
                 )}
