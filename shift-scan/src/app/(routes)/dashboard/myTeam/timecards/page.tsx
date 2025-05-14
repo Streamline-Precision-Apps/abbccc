@@ -4,7 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
@@ -14,7 +14,8 @@ export default function TimeCards() {
   const t = useTranslations("TimeCardSwiper");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
+  const searchParams = useSearchParams();
+  const url = searchParams.get("rPath");
   return (
     <Bases>
       <Contents>
@@ -26,7 +27,9 @@ export default function TimeCards() {
           }`}
         >
           <Holds className="row-span-1 h-full">
-            <TitleBoxes onClick={() => router.push("/dashboard/myTeam")}>
+            <TitleBoxes
+              onClick={() => router.push(`/dashboard/myTeam?rPath=${url}`)}
+            >
               <Holds className="h-full justify-end">
                 <Titles size={"h2"}>{t("ReviewYourTeam")}</Titles>
               </Holds>
