@@ -56,6 +56,7 @@ export async function GET(request: Request) {
               select: {
                 id: true,
                 shiftType: true,
+                laborType: true,
                 materialType: true,
                 LoadQuantity: true,
                 Equipment: {
@@ -68,6 +69,15 @@ export async function GET(request: Request) {
                   select: {
                     id: true,
                     gallonsRefueled: true,
+                    TascoLog: {
+                      select: {
+                        Equipment: {
+                          select: {
+                            name: true,
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },

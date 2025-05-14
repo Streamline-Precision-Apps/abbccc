@@ -387,7 +387,7 @@
     "Material": "Material",
     "Quantity": "Quantity",
     "LoadType": "Load Type",
-
+    "Loads": "Loads",
     "Weight": "Weight (lbs)",
     "EquipmentHauls": "Equipment Hauls",
     "Equipment": "Equipment",
@@ -403,7 +403,12 @@
     "MaterialWeight": "Material: ",
     "Yes": "Yes",
     "No": "No",
-    "EquipmentId": "Equipment ID"
+    "EquipmentId": "Equipment ID",
+    "Shift": "Shift",
+    "Labor": "Labor",
+    "ShiftLabor": "Shift & Labor",
+    "NoTascoDataAvailable": "No Tasco Data Available",
+    "TascoLabor": "Tasco Labor"
   },
 
   "Clock": {
