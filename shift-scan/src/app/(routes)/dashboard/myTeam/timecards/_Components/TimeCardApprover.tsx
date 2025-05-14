@@ -12,6 +12,10 @@ type TimeSheet = {
   jobsiteId: string;
   workType: string;
   status: string;
+  Crews: {
+    id: string;
+    leadId: string;
+  }[];
   CostCode: {
     name: string;
   };
@@ -91,8 +95,9 @@ type TeamMember = {
   firstName: string;
   lastName: string;
   clockedIn: boolean;
-  TimeSheets: TimeSheet[]; // Changed to match JSON
-  totalTime: number;
+  TimeSheets: TimeSheet[];
+  totalTime: string; // Changed from number to string to match your usage
+  Crews: { id: string; leadId: string }[]; // Added optional teamId
 };
 
 type ViewOption = "highlight" | "Trucking" | "Tasco" | "Equipment";
@@ -126,7 +131,6 @@ export default function TimeCardApprover({
 }) {
   const t = useTranslations("TimeCardSwiper");
   const router = useRouter();
-  const { id: myTeamId } = useParams();
   const [decisions, setDecisions] = useState<Record<string, string>>({});
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -134,6 +138,7 @@ export default function TimeCardApprover({
   const [completed, setCompleted] = useState(false);
   const { data: session } = useSession();
   const manager = session?.user?.firstName + " " + session?.user?.lastName;
+  const managerId = session?.user?.id;
   const currentTimeSheets = currentMember?.TimeSheets || [];
   const [viewOption, setViewOption] = useState<ViewOption>("highlight");
   const swipeRef = useRef<TinderSwipeRef>(null);
@@ -160,29 +165,36 @@ export default function TimeCardApprover({
     return Array.from(options);
   };
 
+  // Updated fetch function with proper typing
   useEffect(() => {
     const fetchCrewTimeCards = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/getPendingTeamTimeSheets`);
+        const response = await fetch(
+          `/api/getPendingTeamTimeSheets?managerId=${managerId}`
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data: TeamMember[] = await response.json();
 
-        // Process the API response
+        // Process the API response with proper typing
         const membersWithTotals = data
-          .map((member: any) => ({
+          .map((member) => ({
             id: member.id,
             firstName: member.firstName,
             lastName: member.lastName,
             clockedIn: member.clockedIn,
-            TimeSheets: member.TimeSheets,
+            TimeSheets: member.TimeSheets.map((timesheet) => ({
+              ...timesheet,
+              id: timesheet.id, // Ensure each timesheet has an id
+            })),
             totalTime: calculateTotalTime(member.TimeSheets),
+            Crews: member.Crews,
           }))
-          .filter((member: TeamMember) => member.TimeSheets.length > 0);
+          .filter((member) => member.TimeSheets.length > 0);
 
         setTeamMembers(membersWithTotals);
       } catch (error) {
@@ -193,7 +205,7 @@ export default function TimeCardApprover({
     };
 
     fetchCrewTimeCards();
-  }, [myTeamId]);
+  }, []);
 
   const handleEditClick = () => {
     if (swipeRef.current) {
@@ -206,6 +218,7 @@ export default function TimeCardApprover({
       swipeRef.current.swipeRight();
     }
   };
+
   const swiped = (direction: string, memberId: string) => {
     // Apply decision to all timesheets for this member
     const newDecisions = currentTimeSheets.reduce((acc, timesheet) => {
@@ -213,9 +226,13 @@ export default function TimeCardApprover({
       return acc;
     }, {} as Record<string, string>);
 
+    const myTeamId = currentMember.Crews.find(
+      (crew) => crew.leadId === managerId
+    )?.id;
+
     if (direction === "left") {
       router.push(
-        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/${myTeamId}/timecards`
+        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timecard=/dashboard/myTeam/timecards`
       );
     } else {
       setDecisions((prev) => ({
@@ -289,125 +306,128 @@ export default function TimeCardApprover({
   return (
     <Holds className="h-full w-full">
       <Grids rows={"8"} className="h-full w-full pb-5">
-        <Holds className="row-start-1 row-end-8 h-full w-full">
-          <Contents className="h-full">
+        <Holds className="row-start-1 row-end-8  h-full w-full">
+          <Contents>
             <Holds
               className={`w-full h-full rounded-[10px] border-[3px] border-black bg-[#EBC68E] ${
                 loading && "animate-pulse"
               }`}
             >
-              {!completed ? (
-                <>
-                  {currentMember ? (
-                    <TinderSwipe
-                      ref={swipeRef}
-                      key={currentMember.id}
-                      onSwipeLeft={() => {
-                        swiped("left", currentMember.id);
-                      }}
-                      onSwipeRight={() => {
-                        swiped("right", currentMember.id);
-                        ApproveTimeSheets(currentMember.id);
-                      }}
-                    >
-                      <Grids
-                        rows={"6"}
-                        gap={"4"}
-                        className="h-full w-full px-2 pb-3 bg-[#EBC68E]"
+              <Contents width={"section"}>
+                {!completed ? (
+                  <>
+                    {currentMember ? (
+                      <TinderSwipe
+                        ref={swipeRef}
+                        key={currentMember.id}
+                        onSwipeLeft={() => {
+                          swiped("left", currentMember.id);
+                        }}
+                        onSwipeRight={() => {
+                          swiped("right", currentMember.id);
+                          ApproveTimeSheets(currentMember.id);
+                        }}
                       >
-                        <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
-                          <Holds position={"row"} className="h-full">
-                            <Holds>
-                              <Titles position={"left"} size={"h5"}>
-                                {currentMember.firstName}{" "}
-                                {currentMember.lastName}
-                              </Titles>
-                            </Holds>
+                        <Grids
+                          rows={"6"}
+                          gap={"5"}
+                          className="h-full w-full pb-4"
+                        >
+                          <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
+                            <Holds position={"row"} className="h-full">
+                              <Holds>
+                                <Titles position={"left"} size={"h5"}>
+                                  {`${currentMember.firstName} 
+                                  
+                                  ${currentMember.lastName}`}
+                                </Titles>
+                              </Holds>
 
-                            <Holds
-                              position={"right"}
-                              className="w-full h-full justify-center items-center"
+                              <Holds
+                                position={"right"}
+                                className="w-full h-full justify-center items-center"
+                              >
+                                <Texts position={"right"} size={"p5"}>
+                                  {currentMember.totalTime}
+                                </Texts>
+                              </Holds>
+                            </Holds>
+                            <Selects
+                              value={viewOption}
+                              onChange={(e) => {
+                                setViewOption(e.target.value as ViewOption);
+                              }}
+                              className="text-center text-sm"
                             >
-                              <Texts position={"right"} size={"p5"}>
-                                {currentMember.totalTime}
-                              </Texts>
-                            </Holds>
+                              {getAvailableViewOptions(currentTimeSheets).map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {t(option)}
+                                  </option>
+                                )
+                              )}
+                            </Selects>
                           </Holds>
-                          <Selects
-                            value={viewOption}
-                            onChange={(e) => {
-                              setViewOption(e.target.value as ViewOption);
-                            }}
-                            className="text-center text-sm"
-                          >
-                            {getAvailableViewOptions(currentTimeSheets).map(
-                              (option) => (
-                                <option key={option} value={option}>
-                                  {t(option)}
-                                </option>
-                              )
-                            )}
-                          </Selects>
-                        </Holds>
 
-                        {/* 
+                          {/* 
                           Start of Review Section 
                           pages are managed in the TopOfCardSection 
                           */}
-                        <Holds className="h-full row-start-2 row-end-7 rounded-none">
-                          <>
-                            {viewOption === "highlight" && (
-                              <GeneralReviewSection
-                                currentTimeSheets={currentTimeSheets}
-                                formatTime={formatTime}
-                              />
-                            )}
+                          <Holds className="h-full row-start-2 row-end-7 rounded-none">
+                            <>
+                              {viewOption === "highlight" && (
+                                <GeneralReviewSection
+                                  currentTimeSheets={currentTimeSheets}
+                                  formatTime={formatTime}
+                                />
+                              )}
 
-                            {viewOption === "Trucking" && (
-                              <TruckingReviewSection
-                                currentTimeSheets={currentTimeSheets}
-                              />
-                            )}
-                            {viewOption === "Tasco" && (
-                              <TascoReviewSection
-                                currentTimeSheets={currentTimeSheets}
-                              />
-                            )}
-                            {viewOption === "Equipment" && (
-                              <EquipmentLogsSection
-                                currentTimeSheets={currentTimeSheets}
-                              />
-                            )}
-                          </>
-                        </Holds>
-                        {/* End of Review Section */}
-                      </Grids>
-                    </TinderSwipe>
-                  ) : (
-                    <Holds className="h-full flex items-center justify-center">
-                      {loading ? (
-                        <Spinner size={70} />
-                      ) : (
-                        <Titles size={"h5"}>
-                          {t("NoTimesheetsToApprove")}
-                        </Titles>
-                      )}
-                    </Holds>
-                  )}
-                </>
-              ) : (
-                <Holds className="h-full flex items-center justify-center">
-                  <Titles size={"h5"}>{t("Complete")}</Titles>
-                  <Images
-                    titleImg="/statusApprovedFilled.svg"
-                    titleImgAlt="approved"
-                    className="w-16 h-16 border-[3px] border-black rounded-full"
-                  />
-                  <Texts size={"p6"} className="mt-4">
-                    {t("YouHaveApprovedAllTimesheets")}
-                  </Texts>
-                </Holds>
-              )}
+                              {viewOption === "Trucking" && (
+                                <TruckingReviewSection
+                                  currentTimeSheets={currentTimeSheets}
+                                />
+                              )}
+                              {viewOption === "Tasco" && (
+                                <TascoReviewSection
+                                  currentTimeSheets={currentTimeSheets}
+                                />
+                              )}
+                              {viewOption === "Equipment" && (
+                                <EquipmentLogsSection
+                                  currentTimeSheets={currentTimeSheets}
+                                />
+                              )}
+                            </>
+                          </Holds>
+                          {/* End of Review Section */}
+                        </Grids>
+                      </TinderSwipe>
+                    ) : (
+                      <Holds className="h-full flex items-center justify-center">
+                        {loading ? (
+                          <Spinner size={70} />
+                        ) : (
+                          <Titles size={"h5"}>
+                            {t("NoTimesheetsToApprove")}
+                          </Titles>
+                        )}
+                      </Holds>
+                    )}
+                  </>
+                ) : (
+                  <Holds className="h-full flex items-center justify-center">
+                    <Titles size={"h5"}>{t("Complete")}</Titles>
+                    <Images
+                      titleImg="/statusApprovedFilled.svg"
+                      titleImgAlt="approved"
+                      className="w-16 h-16 border-[3px] border-black rounded-full"
+                    />
+                    <Texts size={"p6"} className="mt-4">
+                      {t("YouHaveApprovedAllTimesheets")}
+                    </Texts>
+                  </Holds>
+                )}
+              </Contents>
             </Holds>
           </Contents>
         </Holds>

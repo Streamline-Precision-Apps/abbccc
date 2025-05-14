@@ -16,11 +16,7 @@ export async function GET(request: Request) {
       where: {
         Crews: {
           some: {
-            Users: {
-              some: {
-                id: userId,
-              },
-            },
+            leadId: userId,
           },
         },
       },
@@ -29,6 +25,12 @@ export async function GET(request: Request) {
         firstName: true,
         lastName: true,
         clockedIn: true,
+        Crews: {
+          select: {
+            id: true,
+            leadId: true,
+          },
+        },
 
         TimeSheets: {
           where: {

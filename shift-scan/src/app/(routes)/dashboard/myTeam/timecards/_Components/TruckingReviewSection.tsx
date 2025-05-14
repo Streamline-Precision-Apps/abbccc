@@ -80,6 +80,7 @@ type TimeSheet = {
     }[];
   }[];
 };
+
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -244,7 +245,7 @@ export default function TruckingReviewSection({
                 <Grids
                   cols={"2"}
                   gap={"2"}
-                  className="p-2 border-b-[3px] border-black justify-between"
+                  className="p-2 border-b-[3px] border-black "
                 >
                   <Titles position={"left"} size={"h7"}>
                     {t("TruckId")}
@@ -260,7 +261,7 @@ export default function TruckingReviewSection({
                     cols={"2"}
                     gap={"2"}
                     key={log.id}
-                    className={`p-2 py-3 border-b-[3px] border-black last:border-0 ${
+                    className={`p-2 border-b-[3px] border-black  ${
                       log.endingMileage &&
                       log.startingMileage > log.endingMileage &&
                       "bg-red-500"
@@ -314,7 +315,7 @@ export default function TruckingReviewSection({
                         key={material.id}
                         cols={"3"}
                         gap={"2"}
-                        className="p-2 border-b-[3px] border-black last:border-0"
+                        className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
                       >
                         <Holds>
                           <Texts position={"left"} size={"p7"}>
@@ -370,7 +371,7 @@ export default function TruckingReviewSection({
                 <Grids
                   cols={"3"}
                   gap={"2"}
-                  className="p-2 h-full border-b-[3px] border-black"
+                  className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
                 >
                   <Titles size={"h7"}>{t("EquipmentId")}</Titles>
                   <Titles size={"h7"}>{t("Gallons")}</Titles>
@@ -385,7 +386,7 @@ export default function TruckingReviewSection({
                         key={refuel.id}
                         cols={"3"}
                         gap={"2"}
-                        className="p-2 border-b border-gray-200 last:border-0"
+                        className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
                       >
                         <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
                         <Texts
@@ -408,30 +409,32 @@ export default function TruckingReviewSection({
                 <Grids
                   cols={"3"}
                   gap={"2"}
-                  className="p-2 h-full border-b-[3px] border-black"
+                  className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
                 >
                   <Titles size={"h7"}>{t("EquipmentId")}</Titles>
                   <Titles size={"h7"}>{t("State")}</Titles>
                   <Titles size={"h7"}>{t("Mileage")}</Titles>
                 </Grids>
               </Holds>
-              {allTruckingLogs.flatMap(
-                (log) =>
-                  log.StateMileages?.map((state) => (
-                    <Grids
-                      key={state.id}
-                      cols={"3"}
-                      gap={"2"}
-                      className="p-2 border-b border-gray-200 last:border-0"
-                    >
-                      <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
-                      <Texts size={"p7"}>{state.state || "-"}</Texts>
-                      <Texts size={"p7"}>
-                        {`${state.stateLineMileage} mi` || "-"}
-                      </Texts>
-                    </Grids>
-                  )) || []
-              )}
+              <Holds>
+                {allTruckingLogs.flatMap(
+                  (log) =>
+                    log.StateMileages?.map((state) => (
+                      <Grids
+                        key={state.id}
+                        cols={"3"}
+                        gap={"2"}
+                        className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
+                      >
+                        <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
+                        <Texts size={"p7"}>{state.state || "-"}</Texts>
+                        <Texts size={"p7"}>
+                          {`${state.stateLineMileage} mi` || "-"}
+                        </Texts>
+                      </Grids>
+                    )) || []
+                )}
+              </Holds>
             </Holds>
           )}
 
@@ -442,7 +445,7 @@ export default function TruckingReviewSection({
             <Holds>
               <Grids
                 cols={"2"}
-                className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
+                className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
               >
                 <Titles size={"h7"}>{t("EquipmentHauled")}</Titles>
                 <Titles size={"h7"}>{t("TransportedTo")}</Titles>
