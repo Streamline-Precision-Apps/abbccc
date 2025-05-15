@@ -5,15 +5,19 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingMileage, TruckingMileageData } from "@/lib/types";
+import {
+  TruckingMileage,
+  TruckingMileageData,
+  TruckingMileageUpdate,
+} from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
-type TimeCardTruckingMileageProps = {
+interface TimeCardTruckingMileageProps {
   edit: boolean;
   manager: string;
   truckingMileage: TruckingMileageData;
-  onDataChange: (data: TruckingMileage[]) => void;
-};
+  onDataChange: (data: TruckingMileageUpdate[]) => void; // Change this line
+}
 
 export default function TimeCardTruckingMileage({
   edit,
@@ -38,17 +42,29 @@ export default function TimeCardTruckingMileage({
   }, [edit, truckingMileage]);
 
   const handleMileageChange = useCallback(
-    (id: string, field: keyof TruckingMileage, value: string | number) => {
-      const updatedLogs = editedTruckingLogs.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
-      );
-      
-      setChangesWereMade(true);
-      setEditedTruckingLogs(updatedLogs);
-      onDataChange(updatedLogs);
-    },
-    [editedTruckingLogs, onDataChange]
-  );
+  (id: string, field: keyof TruckingMileage, value: string | number) => {
+    const updatedLogs = editedTruckingLogs.map((item) =>
+      item.id === id ? { 
+        ...item, 
+        [field]: typeof value === 'string' ? Number(value) : value 
+      } : item
+    );
+    
+    setChangesWereMade(true);
+    setEditedTruckingLogs(updatedLogs);
+    
+    // Find the complete log that was changed
+    const changedLog = updatedLogs.find(log => log.id === id);
+    if (changedLog) {
+      onDataChange([{
+        id: changedLog.id,
+        startingMileage: changedLog.startingMileage,
+        endingMileage: changedLog.endingMileage
+      }]);
+    }
+  },
+  [editedTruckingLogs, onDataChange]
+);
 
   const isEmptyData = allTruckingLogs.length === 0;
 

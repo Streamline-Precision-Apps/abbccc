@@ -2,12 +2,12 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimeSheet, TimesheetHighlights } from "@/lib/types";
+import { TimeSheet, TimesheetHighlights, TimesheetUpdate, TruckingMileageUpdate } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
-import { TimesheetUpdate } from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/employee-tabs";
+import { select } from "@nextui-org/theme";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -533,6 +533,13 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const jobsiteId = formData.get("jobsiteId") as string;
       const userId = formData.get("userId") as string;
       const equipmentId = formData.get("equipment") as string;
+      const equipment = await prisma.equipment.findUnique({
+        where: { id: equipmentId },
+        select: { qrId: true },
+      });
+      if (!equipment) {
+        throw new Error("Equipment not found");
+      }
       const previoustimeSheetComments = formData.get(
         "timeSheetComments"
       ) as string;
@@ -560,7 +567,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           TascoLogs: {
             create: {
               shiftType,
-              equipmentId: equipmentId || null,
+              equipmentId: equipment.qrId,
               laborType: laborType,
               materialType: materialType,
             },
@@ -864,36 +871,3 @@ export async function deleteTimeSheet(id: string) {
   });
 }
 
-export async function updateTimesheetHighlights(
-  updatedTimesheets: TimesheetUpdate[]
-) {
-  try {
-    const session = await auth();
-    if (!session) throw new Error("Unauthorized");
-
-    const updatePromises = updatedTimesheets.map(timesheet => 
-      prisma.timeSheet.update({
-        where: { id: timesheet.id },
-        data: {
-          startTime: timesheet.startTime ? new Date(timesheet.startTime) : undefined,
-          endTime: timesheet.endTime ? new Date(timesheet.endTime) : null,
-          jobsiteId: timesheet.jobsiteId,
-          costcode: timesheet.costcode,
-          editedByUserId: session.user.id,
-          updatedAt: new Date(),
-        },
-      })
-    );
-
-    await Promise.all(updatePromises);
-    
-    // Aggressive revalidation
-    revalidatePath("/dashboard/myTeam");
-    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
-    
-    return { success: true };
-  } catch (error) {
-    console.error("Error updating timesheets:", error);
-    throw error;
-  }
-}

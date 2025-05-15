@@ -13,8 +13,24 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
-import { TimesheetHighlights, TimesheetFilter } from "@/lib/types";
-import { updateTimesheetHighlights } from "@/actions/timeSheetActions";
+import {
+  TimesheetHighlights,
+  TimesheetFilter,
+  TruckingMileageUpdate,
+  TruckingEquipmentHaulLog,
+} from "@/lib/types";
+import {
+  updateTruckingHaulLogs,
+  updateTimesheetHighlights,
+  updateEquipmentLogs,
+  updateTascoHaulLogs,
+  updateTascoRefuelLogs,
+  updateTruckingMaterialLogs,
+  updateTruckingRefuelLogs,
+  updateTruckingStateLogs,
+  updateEquipmentRefuelLogs,
+  updateTruckingMileage,
+} from "@/actions/myTeamsActions";
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();
@@ -63,43 +79,242 @@ export default function EmployeeTabs() {
 
   useEffect(() => {
     fetchTimesheetsForFilter(timeSheetFilter);
-  }, [timeSheetFilter]);
+  }, [timeSheetFilter, fetchTimesheetsForFilter]);
 
-  const onSaveChanges = useCallback(async (changes: TimesheetHighlights[] | TimesheetHighlights) => {
+  const onSaveChanges = useCallback(
+  async (
+    changes:
+      | TimesheetHighlights[]
+      | TimesheetHighlights
+      | TruckingMileageUpdate[]
+      | TruckingEquipmentHaulLog[]
+      | any[]
+  ) => {
     try {
-      const changesArray = Array.isArray(changes) ? changes : [changes];
-      
-      const serializedChanges = changesArray.map(timesheet => ({
-        id: timesheet.id,
-        startTime: timesheet.startTime ? new Date(timesheet.startTime).toISOString() : undefined,
-        endTime: timesheet.endTime ? new Date(timesheet.endTime).toISOString() : undefined,
-        jobsiteId: timesheet.jobsiteId,
-        costcode: timesheet.costcode
-      }));
+      switch (timeSheetFilter) {
+        case "timesheetHighlights":
+            const timesheetChanges = changes as
+              | TimesheetHighlights[]
+              | TimesheetHighlights;
+            const changesArray = Array.isArray(timesheetChanges)
+              ? timesheetChanges
+              : [timesheetChanges];
 
-      const validChanges = serializedChanges.filter(timesheet => 
-        timesheet.id && timesheet.startTime !== undefined
-      );
+            const serializedChanges = changesArray.map((timesheet) => ({
+              id: timesheet.id,
+              startTime: timesheet.startTime
+                ? new Date(timesheet.startTime).toISOString()
+                : undefined,
+              endTime: timesheet.endTime
+                ? new Date(timesheet.endTime).toISOString()
+                : undefined,
+              jobsiteId: timesheet.jobsiteId,
+              costcode: timesheet.costcode,
+            }));
 
-      if (validChanges.length === 0) return;
+            const validChanges = serializedChanges.filter(
+              (timesheet) => timesheet.id && timesheet.startTime !== undefined
+            );
 
-      setEdit(true); // Keep edit mode during save
-      
-      const result = await updateTimesheetHighlights(validChanges);
-      
-      if (result.success) {
+            if (validChanges.length === 0) return;
+
+            const result = await updateTimesheetHighlights(validChanges);
+            if (result?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            }
+            break;
+
+          case "truckingMileage": {
+          const mileageChanges = changes as TruckingMileageUpdate[];
+          if (mileageChanges.length === 0) {
+            console.warn("No valid mileage changes to save");
+            return;
+          }
+
+          const formData = new FormData();
+          mileageChanges.forEach((change, index) => {
+            formData.append(`changes[${index}]`, JSON.stringify(change));
+          });
+          await updateTruckingMileage(formData);
+
+          await Promise.all([
+            fetchTimesheetsForDate(date),
+            fetchTimesheetsForFilter(timeSheetFilter),
+          ]);
+          setEdit(false);
+          break;
+        }
+
+          
+
+          case "truckingEquipmentHaulLogs": {
+          const haulLogChanges = changes as TruckingEquipmentHaulLog[];
+          const updates = haulLogChanges.flatMap(
+            (log) =>
+              log.EquipmentHauled?.map((hauledItem) => ({
+                id: hauledItem.id,
+                equipmentId: hauledItem.Equipment?.id,
+                jobSiteId: hauledItem.JobSite?.id,
+              })) || []
+          );
+
+          const haulingResult = await updateTruckingHaulLogs(updates);
+          if (haulingResult?.success) {
+            await Promise.all([
+              fetchTimesheetsForDate(date),
+              fetchTimesheetsForFilter(timeSheetFilter),
+            ]);
+            setEdit(false);
+          }
+          break;
+        }
+
+        case "truckingMaterialHaulLogs": {
+          const materialChanges = changes as any[];
+          if (materialChanges.length > 0) {
+            const formattedChanges = materialChanges.map((change) => ({
+              id: change.id,
+              name: change.name,
+              LocationOfMaterial: change.LocationOfMaterial,
+              materialWeight: change.materialWeight,
+              lightWeight: change.lightWeight,
+              grossWeight: change.grossWeight,
+            }));
+            await updateTruckingMaterialLogs(formattedChanges);
+          }
+          break;
+        }
+
+          case "truckingRefuelLogs":
+            if (
+              changes &&
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  ("gallonsRefueled" in change || "milesAtFueling" in change)
+              )
+            ) {
+              await updateTruckingRefuelLogs(
+                changes as {
+                  id: string;
+                  gallonsRefueled?: number | null;
+                  milesAtFueling?: number | null;
+                }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "truckingStateLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  ("state" in change || "stateLineMileage" in change)
+              )
+            ) {
+              await updateTruckingStateLogs(changes);
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "tascoHaulLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  "shiftType" in change &&
+                  "equipmentId" in change &&
+                  "materialType" in change &&
+                  "LoadQuantity" in change
+              )
+            ) {
+              await updateTascoHaulLogs(
+                changes as {
+                  id: string;
+                  shiftType?: string | undefined;
+                  equipmentId?: string | null | undefined;
+                  materialType?: string | undefined;
+                  LoadQuantity?: number | null | undefined;
+                }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "tascoRefuelLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  ("gallonsRefueled" in change ||
+                    !("gallonsRefueled" in change))
+              )
+            ) {
+              await updateTascoRefuelLogs(
+                changes as { id: string; gallonsRefueled?: number | null }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "equipmentLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change && "startTime" in change && "endTime" in change
+              )
+            ) {
+              await updateEquipmentLogs(
+                changes as { id: string; startTime?: Date; endTime?: Date }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "equipmentRefuelLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) => "id" in change && "gallonsRefueled" in change
+              )
+            ) {
+              updateEquipmentRefuelLogs(
+                changes as { id: string; gallonsRefueled?: number | null }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+        }
+
         await Promise.all([
           fetchTimesheetsForDate(date),
-          fetchTimesheetsForFilter(timeSheetFilter)
+          fetchTimesheetsForFilter(timeSheetFilter),
         ]);
         setEdit(false);
+      } catch (error) {
+        console.error("Failed to save changes:", error);
+        setEdit(false);
+        throw error;
       }
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-      setEdit(false);
-      throw error;
-    }
-  }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
+    },
+    [date, timeSheetFilter, fetchTimesheetsForDate, fetchTimesheetsForFilter]
+  );
 
   const onCancelEdits = useCallback(() => {
     fetchTimesheetsForDate(date);
@@ -111,25 +326,58 @@ export default function EmployeeTabs() {
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="h-full w-full">
         <Holds className="row-start-1 row-end-2 h-full w-full">
-          <TitleBoxes onClick={() => router.push(timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`)}>
+          <TitleBoxes
+            onClick={() =>
+              router.push(
+                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`
+              )
+            }
+          >
             <Titles size={"h2"}>
-              {loading ? "Loading..." : `${employee?.firstName} ${employee?.lastName}`}
+              {loading
+                ? "Loading..."
+                : `${employee?.firstName} ${employee?.lastName}`}
             </Titles>
           </TitleBoxes>
         </Holds>
 
-        <Holds className={`w-full h-full row-start-2 row-end-8 ${loading ? "animate-pulse" : ""}`}>
+        <Holds
+          className={`w-full h-full row-start-2 row-end-8 ${
+            loading ? "animate-pulse" : ""
+          }`}
+        >
           <Grids rows={"12"} className="h-full w-full">
-            <Holds position={"row"} className={"row-start-1 row-end-2 h-full gap-1"}>
-              <NewTab onClick={() => setActiveTab(1)} isActive={activeTab === 1} isComplete={true} titleImage="/information.svg" titleImageAlt={""}>
+            <Holds
+              position={"row"}
+              className={"row-start-1 row-end-2 h-full gap-1"}
+            >
+              <NewTab
+                onClick={() => setActiveTab(1)}
+                isActive={activeTab === 1}
+                isComplete={true}
+                titleImage="/information.svg"
+                titleImageAlt={""}
+              >
                 {t("ContactInfo")}
               </NewTab>
-              <NewTab onClick={() => setActiveTab(2)} isActive={activeTab === 2} isComplete={true} titleImage="/form.svg" titleImageAlt={""}>
+              <NewTab
+                onClick={() => setActiveTab(2)}
+                isActive={activeTab === 2}
+                isComplete={true}
+                titleImage="/form.svg"
+                titleImageAlt={""}
+              >
                 {t("TimeCards")}
               </NewTab>
             </Holds>
             <Holds className="h-full w-full row-start-2 row-end-13">
-              {activeTab === 1 && <EmployeeInfo employee={employee} contacts={contacts} loading={loading} />}
+              {activeTab === 1 && (
+                <EmployeeInfo
+                  employee={employee}
+                  contacts={contacts}
+                  loading={loading}
+                />
+              )}
               {activeTab === 2 && (
                 <EmployeeTimeSheets
                   data={timesheetData}
@@ -143,6 +391,8 @@ export default function EmployeeTabs() {
                   setTimeSheetFilter={setTimeSheetFilter}
                   onSaveChanges={onSaveChanges}
                   onCancelEdits={onCancelEdits}
+                  fetchTimesheetsForDate={fetchTimesheetsForDate}
+                  fetchTimesheetsForFilter={fetchTimesheetsForFilter}
                 />
               )}
             </Holds>

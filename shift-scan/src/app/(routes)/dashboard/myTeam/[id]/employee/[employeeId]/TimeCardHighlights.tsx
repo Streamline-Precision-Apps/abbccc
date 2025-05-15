@@ -38,34 +38,38 @@ export default function TimeCardHighlights({
   const t = useTranslations("Clock");
 
   useEffect(() => {
-    if (!edit) {
-      setEditedHighlightTimesheet(highlightTimesheet);
-      setChangesWereMade(false);
-    }
-  }, [edit, highlightTimesheet]);
+  if (!edit && !changesWereMade) {
+    setEditedHighlightTimesheet(highlightTimesheet);
+  }
+}, [edit, highlightTimesheet, changesWereMade]);
 
   const isEmptyData = !highlightTimesheet || highlightTimesheet.length === 0;
 
   const handleTimeChange = useCallback(
-    (id: string, field: 'startTime' | 'endTime', timeString: string) => {
-      const updated = editedHighlightTimesheet.map(item => {
+  (id: string, field: "startTime" | "endTime", timeString: string) => {
+    setEditedHighlightTimesheet(prev => {
+      const updated = prev.map((item) => {
         if (item.id === id) {
-          const newValue = timeString ? new Date(`${date}T${timeString}:00`) : null;
+          const newValue = timeString
+            ? new Date(`${date}T${timeString}:00`)
+            : null;
           return { ...item, [field]: newValue };
         }
         return item;
       });
       
-      setChangesWereMade(true);
-      setEditedHighlightTimesheet(updated);
+      // Send the updated data to parent
       onDataChange(updated);
-    },
-    [date, editedHighlightTimesheet, onDataChange]
-  );
+      return updated;
+    });
+    setChangesWereMade(true);
+  },
+  [date, onDataChange]
+);
 
   const handleJobsiteChange = useCallback(
     (id: string, jobsiteId: string) => {
-      const updatedData = editedHighlightTimesheet.map(item => {
+      const updatedData = editedHighlightTimesheet.map((item) => {
         if (item.id === id) {
           return {
             ...item,
@@ -83,7 +87,7 @@ export default function TimeCardHighlights({
 
   const handleCostCodeChange = useCallback(
     (id: string, costcode: string) => {
-      const updatedData = editedHighlightTimesheet.map(item => {
+      const updatedData = editedHighlightTimesheet.map((item) => {
         if (item.id === id) {
           return {
             ...item,
@@ -130,19 +134,25 @@ export default function TimeCardHighlights({
     setCostCodeModalOpen(true);
   };
 
-  const handleJobsiteSelect = (jobsite: { code: string; label: string } | null) => {
+  const handleJobsiteSelect = (
+    jobsite: { code: string; label: string } | null
+  ) => {
     if (currentEditingId && jobsite) {
       handleJobsiteChange(currentEditingId, jobsite.code);
-      setEditedHighlightTimesheet(prev => prev.map(item => 
-        item.id === currentEditingId 
-          ? { ...item, Jobsite: { ...item.Jobsite, name: jobsite.label } }
-          : item
-      ));
+      setEditedHighlightTimesheet((prev) =>
+        prev.map((item) =>
+          item.id === currentEditingId
+            ? { ...item, Jobsite: { ...item.Jobsite, name: jobsite.label } }
+            : item
+        )
+      );
     }
     setJobsiteModalOpen(false);
   };
 
-  const handleCostCodeSelect = (costcode: { code: string; label: string } | null) => {
+  const handleCostCodeSelect = (
+    costcode: { code: string; label: string } | null
+  ) => {
     if (currentEditingId && costcode) {
       handleCostCodeChange(currentEditingId, costcode.code);
     }
@@ -241,8 +251,9 @@ export default function TimeCardHighlights({
                             <Inputs
                               type={"text"}
                               value={
-                                editedHighlightTimesheet.find(item => item.id === sheet.id)?.Jobsite?.name || 
-                                "N/A"
+                                editedHighlightTimesheet.find(
+                                  (item) => item.id === sheet.id
+                                )?.Jobsite?.name || "N/A"
                               }
                               className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none justify-center text-right"
                               onClick={() => openJobsiteModal(sheet.id)}
@@ -287,9 +298,10 @@ export default function TimeCardHighlights({
             initialValue={
               currentEditingId
                 ? {
-                    code: editedHighlightTimesheet.find(
-                      (item) => item.id === currentEditingId
-                    )?.jobsiteId || "",
+                    code:
+                      editedHighlightTimesheet.find(
+                        (item) => item.id === currentEditingId
+                      )?.jobsiteId || "",
                     label:
                       editedHighlightTimesheet.find(
                         (item) => item.id === currentEditingId

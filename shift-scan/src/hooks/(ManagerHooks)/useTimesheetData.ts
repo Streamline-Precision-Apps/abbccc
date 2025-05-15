@@ -4,9 +4,9 @@ import { TimesheetFilter } from "@/lib/types";
 interface TimesheetDataResponse {
   data: any;
   loading: boolean;
-  error: string | null; // Consider a more specific error type
-  updateDate: (newDate: string) => void;
-  updateFilter: (newFilter: TimesheetFilter) => void;
+  error: string | null;
+  updateDate: (newDate: string) => Promise<void>;
+  updateFilter: (newFilter: TimesheetFilter) => Promise<void>;
 }
 
 export const useTimesheetData = (
@@ -38,29 +38,31 @@ export const useTimesheetData = (
       const result = await response.json();
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+      setError(`Failed to fetch timesheets: ${err}`);
     } finally {
       setLoading(false);
     }
   }, [employeeId, currentDate, currentFilter]);
 
+  const fetchTimesheetsForDate = useCallback(async (newDate: string) => {
+    setCurrentDate(newDate);
+    await fetchTimesheets();
+  }, [fetchTimesheets]);
+
+  const updateFilter = useCallback(async (newFilter: TimesheetFilter) => {
+    setCurrentFilter(newFilter);
+    await fetchTimesheets();
+  }, [fetchTimesheets]);
+
   useEffect(() => {
     fetchTimesheets();
   }, [fetchTimesheets]);
-
-  const updateDate = useCallback((newDate: string) => {
-    setCurrentDate(newDate);
-  }, []);
-
-  const updateFilter = useCallback((newFilter: TimesheetFilter) => {
-    setCurrentFilter(newFilter);
-  }, []);
 
   return {
     data,
     loading,
     error,
-    updateDate,
+    updateDate: fetchTimesheetsForDate,
     updateFilter,
   };
 };
