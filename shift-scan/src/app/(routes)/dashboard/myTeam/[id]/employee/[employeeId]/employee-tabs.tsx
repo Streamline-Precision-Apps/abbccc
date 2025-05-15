@@ -82,17 +82,17 @@ export default function EmployeeTabs() {
   }, [timeSheetFilter, fetchTimesheetsForFilter]);
 
   const onSaveChanges = useCallback(
-  async (
-    changes:
-      | TimesheetHighlights[]
-      | TimesheetHighlights
-      | TruckingMileageUpdate[]
-      | TruckingEquipmentHaulLog[]
-      | any[]
-  ) => {
-    try {
-      switch (timeSheetFilter) {
-        case "timesheetHighlights":
+    async (
+      changes:
+        | TimesheetHighlights[]
+        | TimesheetHighlights
+        | TruckingMileageUpdate[]
+        | TruckingEquipmentHaulLog[]
+        | any[]
+    ) => {
+      try {
+        switch (timeSheetFilter) {
+          case "timesheetHighlights":
             const timesheetChanges = changes as
               | TimesheetHighlights[]
               | TimesheetHighlights;
@@ -129,65 +129,63 @@ export default function EmployeeTabs() {
             break;
 
           case "truckingMileage": {
-          const mileageChanges = changes as TruckingMileageUpdate[];
-          if (mileageChanges.length === 0) {
-            console.warn("No valid mileage changes to save");
-            return;
-          }
+            const mileageChanges = changes as TruckingMileageUpdate[];
+            if (mileageChanges.length === 0) {
+              console.warn("No valid mileage changes to save");
+              return;
+            }
 
-          const formData = new FormData();
-          mileageChanges.forEach((change, index) => {
-            formData.append(`changes[${index}]`, JSON.stringify(change));
-          });
-          await updateTruckingMileage(formData);
+            const formData = new FormData();
+            mileageChanges.forEach((change, index) => {
+              formData.append(`changes[${index}]`, JSON.stringify(change));
+            });
+            await updateTruckingMileage(formData);
 
-          await Promise.all([
-            fetchTimesheetsForDate(date),
-            fetchTimesheetsForFilter(timeSheetFilter),
-          ]);
-          setEdit(false);
-          break;
-        }
-
-          
-
-          case "truckingEquipmentHaulLogs": {
-          const haulLogChanges = changes as TruckingEquipmentHaulLog[];
-          const updates = haulLogChanges.flatMap(
-            (log) =>
-              log.EquipmentHauled?.map((hauledItem) => ({
-                id: hauledItem.id,
-                equipmentId: hauledItem.Equipment?.id,
-                jobSiteId: hauledItem.JobSite?.id,
-              })) || []
-          );
-
-          const haulingResult = await updateTruckingHaulLogs(updates);
-          if (haulingResult?.success) {
             await Promise.all([
               fetchTimesheetsForDate(date),
               fetchTimesheetsForFilter(timeSheetFilter),
             ]);
             setEdit(false);
+            break;
           }
-          break;
-        }
 
-        case "truckingMaterialHaulLogs": {
-          const materialChanges = changes as any[];
-          if (materialChanges.length > 0) {
-            const formattedChanges = materialChanges.map((change) => ({
-              id: change.id,
-              name: change.name,
-              LocationOfMaterial: change.LocationOfMaterial,
-              materialWeight: change.materialWeight,
-              lightWeight: change.lightWeight,
-              grossWeight: change.grossWeight,
-            }));
-            await updateTruckingMaterialLogs(formattedChanges);
+          case "truckingEquipmentHaulLogs": {
+            const haulLogChanges = changes as TruckingEquipmentHaulLog[];
+            const updates = haulLogChanges.flatMap(
+              (log) =>
+                log.EquipmentHauled?.map((hauledItem) => ({
+                  id: hauledItem.id,
+                  equipmentId: hauledItem.Equipment?.name,
+                  jobSiteId: hauledItem.JobSite?.id,
+                })) || []
+            );
+
+            const haulingResult = await updateTruckingHaulLogs(updates);
+            if (haulingResult?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            }
+            break;
           }
-          break;
-        }
+
+          case "truckingMaterialHaulLogs": {
+            const materialChanges = changes as any[];
+            if (materialChanges.length > 0) {
+              const formattedChanges = materialChanges.map((change) => ({
+                id: change.id,
+                name: change.name,
+                LocationOfMaterial: change.LocationOfMaterial,
+                materialWeight: change.materialWeight,
+                lightWeight: change.lightWeight,
+                grossWeight: change.grossWeight,
+              }));
+              await updateTruckingMaterialLogs(formattedChanges);
+            }
+            break;
+          }
 
           case "truckingRefuelLogs":
             if (
