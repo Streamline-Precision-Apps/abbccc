@@ -436,22 +436,21 @@ export type TruckingStateLogItem = {
 export type TruckingStateLogData = TruckingStateLogItem[];
 
 //--------------------------------------
-export type TruckingMileageData = TruckingMileageItem[];
+// export type TruckingMileageData = TruckingMileageItem[];
 
 export type TruckingMileageItem = {
   TruckingLogs: TruckingMileage[];
 };
-export type TruckingMileage = {
-  id: string;
-  timeSheetId: string | null;
-  equipmentId: string | null;
-  Equipment: {
-    name: string;
-  };
-  startingMileage: number;
-  endingMileage: number | null;
-};
-
+// export type TruckingMileage = {
+//   id: string;
+//   timeSheetId: string | null;
+//   equipmentId: string | null;
+//   Equipment: {
+//     name: string;
+//   };
+//   startingMileage: number;
+//   endingMileage: number | null;
+// };
 //--------------------------------------
 
 export type TimesheetHighlights = {
@@ -928,6 +927,42 @@ export interface EmployeeEquipmentLogWithEquipment extends Omit<EmployeeEquipmen
     // Include other Jobsite properties you need
   } | null;
   // Include any other properties you need from EmployeeEquipmentLog
+}
+
+export type TimesheetUpdate = {
+  id: string;
+  startTime?: string;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
+
+export type TruckingMileage = {
+  id: string;
+  timeSheetId: string | null;
+  equipmentId: string | null;
+  Equipment: {
+    name: string;
+  };
+  startingMileage: number;
+  endingMileage: number | null;
+};
+
+export type TruckingMileageUpdate = {
+  id: string;
+  startingMileage?: number;
+  endingMileage?: number | null;
+};
+
+export type TruckingMileageData = {
+  TruckingLogs: TruckingMileage[];
+}[];
+
+export interface TruckingEquipmentHaulUpdate {
+  id: string;
+  equipmentId?: string | null;
+  jobSiteId?: string | null;
+  editedByUserId?: string | null;
 }
 
 export type TimesheetFilter =

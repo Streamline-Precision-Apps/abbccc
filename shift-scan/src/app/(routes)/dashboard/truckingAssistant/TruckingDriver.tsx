@@ -164,7 +164,11 @@ export default function TruckDriver() {
         setNotes(data[1] || "");
         setRefuelLogs(data[2]);
         setStateMileage(data[3]);
-        setMaterial(data[4]);
+        if (data[4] === Error) {
+          setMaterial([]);
+        } else {
+          setMaterial(data[4]);
+        }
         setEquipmentHauled(data[5]);
         setLaborType(data[6]);
       } catch (error) {

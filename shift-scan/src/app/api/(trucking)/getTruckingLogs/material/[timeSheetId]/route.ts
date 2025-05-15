@@ -19,18 +19,18 @@ export async function GET(
 
   try {
     // Query the database for materials related to the given truckingLogId (timeSheetId)
-    const stateMileage = await prisma.material.findMany({
+    const material = await prisma.material.findMany({
       where: {
         truckingLogId: timeSheetId,
       },
     });
 
     // Return the found materials (state mileage)
-    return NextResponse.json(stateMileage);
+    return NextResponse.json(material);
   } catch (error) {
-    console.error("Error fetching state mileage:", error);
+    console.error("Error fetching materials:", error);
     return NextResponse.json(
-      { error: "Failed to fetch state mileage" },
+      { error: "Failed to fetch material" },
       { status: 500 }
     );
   }

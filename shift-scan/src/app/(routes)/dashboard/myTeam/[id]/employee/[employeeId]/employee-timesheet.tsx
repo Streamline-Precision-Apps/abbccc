@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
@@ -10,7 +10,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
-import { TimesheetFilter, TimesheetHighlights } from "@/lib/types";
+import { TimesheetFilter, TimesheetHighlights, TruckingMileageUpdate, TruckingEquipmentHaulLog } from "@/lib/types";
 import TimeSheetRenderer from "./timeSheetRenderer";
 
 interface EmployeeTimeSheetsProps {
@@ -23,8 +23,10 @@ interface EmployeeTimeSheetsProps {
   manager: string;
   timeSheetFilter: TimesheetFilter;
   setTimeSheetFilter: Dispatch<SetStateAction<TimesheetFilter>>;
-  onSaveChanges: (changes: TimesheetHighlights[] | TimesheetHighlights) => Promise<void>;
+  onSaveChanges: (changes: TimesheetHighlights[] | TimesheetHighlights | TruckingMileageUpdate[] | TruckingEquipmentHaulLog[]) => Promise<void>;
   onCancelEdits: () => void;
+  fetchTimesheetsForDate: (date: string) => Promise<void>;
+  fetchTimesheetsForFilter: (filter: TimesheetFilter) => Promise<void>;
 }
 
 export const EmployeeTimeSheets = ({
@@ -37,41 +39,60 @@ export const EmployeeTimeSheets = ({
   manager,
   timeSheetFilter,
   setTimeSheetFilter,
-  onSaveChanges,
+  onSaveChanges: parentOnSaveChanges,
   onCancelEdits,
+  fetchTimesheetsForDate,
+  fetchTimesheetsForFilter
 }: EmployeeTimeSheetsProps) => {
   const t = useTranslations("MyTeam");
-  const [changes, setChanges] = useState<any>(null);
+  const [changes, setChanges] = useState<any[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDate(e.target.value);
+  const handleDateChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    setDate(newDate);
+    await fetchTimesheetsForDate(newDate);
   };
 
-  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setTimeSheetFilter(e.target.value as TimesheetFilter);
+  const handleFilterChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const newFilter = e.target.value as TimesheetFilter;
+    setTimeSheetFilter(newFilter);
+    await fetchTimesheetsForFilter(newFilter);
   };
 
-  const handleSave = async () => {
-    if (!changes) return;
+  // In EmployeeTimeSheets.tsx
+const handleSave = useCallback(async () => {
+  try {
     setIsSaving(true);
-    try {
-      await onSaveChanges(changes);
-      setChanges(null);
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-    } finally {
-      setIsSaving(false);
+    
+    if (changes.length === 0) {
+      console.log('No changes to save');
+      return;
     }
-  };
+    
+    console.log('Saving changes:', changes);
+    await parentOnSaveChanges(changes);
+    // Don't clear changes here - let the parent handle it after successful save
+  } catch (error) {
+    console.error("Error saving changes:", error);
+  } finally {
+    setIsSaving(false);
+  }
+}, [changes, parentOnSaveChanges]);
 
   const handleCancel = () => {
     onCancelEdits();
-    setChanges(null);
+    setChanges([]);
   };
 
-  const handleDataChange = (updatedData: TimesheetHighlights[] | TimesheetHighlights) => {
-    setChanges(Array.isArray(updatedData) ? updatedData : [updatedData]);
+  const handleDataChange = (updatedData: TimesheetHighlights[] | TimesheetHighlights | TruckingMileageUpdate[] | TruckingEquipmentHaulLog[]) => {
+    if (timeSheetFilter === "truckingEquipmentHaulLogs") {
+      // For haul logs, we get the accumulated changes
+setChanges(prev => [...prev, ...(Array.isArray(updatedData) ? updatedData : [updatedData])]);
+    } else {
+      // For other types, replace existing changes
+      setChanges(Array.isArray(updatedData) ? updatedData : [updatedData]);
+    }
   };
 
   return (
@@ -119,13 +140,13 @@ export const EmployeeTimeSheets = ({
                     background={"green"}
                     className="w-1/4"
                     onClick={handleSave}
-                    disabled={loading || !changes || isSaving}
+                    disabled={loading || changes.length === 0 || isSaving}
                   >
                     {isSaving ? (
                       <Spinner size={24} />
                     ) : (
                       <Images
-                        titleImg={"/save-edit.svg"}
+                        titleImg={"/formSave.svg"}
                         titleImgAlt={"Save"}
                         className="w-6 h-6 mx-auto"
                       />
@@ -138,7 +159,7 @@ export const EmployeeTimeSheets = ({
                     disabled={loading}
                   >
                     <Images
-                      titleImg={"/undo-edit.svg"}
+                      titleImg={"/formUndo.svg"}
                       titleImgAlt={"Cancel"}
                       className="w-6 h-6 mx-auto"
                     />
