@@ -2,7 +2,12 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimeSheet, TimesheetHighlights } from "@/lib/types";
+import {
+  TimeSheet,
+  TimesheetHighlights,
+  TimesheetUpdate,
+  TruckingMileageUpdate,
+} from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";

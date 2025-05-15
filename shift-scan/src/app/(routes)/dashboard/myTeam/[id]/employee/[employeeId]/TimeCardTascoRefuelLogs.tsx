@@ -1,3 +1,4 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -5,22 +6,31 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { TascoRefuelLog, TascoRefuelLogData } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-type TimeCardTruckingStateMileageLogsProps = {
+// Define the type for flattened refuel logs
+type FlattenedTascoRefuelLog = {
+  id: string;
+  gallonsRefueled: number | null;
+  truckName: string;
+  tascoLogId: string;
+};
+
+type TimeCardTascoRefuelLogsProps = {
   edit: boolean;
-  setEdit: (edit: boolean) => void;
   manager: string;
   tascoRefuelLog: TascoRefuelLogData;
+  onDataChange: (data: FlattenedTascoRefuelLog[]) => void;
 };
 
 export default function TimeCardTascoRefuelLogs({
   edit,
-  setEdit,
   manager,
   tascoRefuelLog,
-}: TimeCardTruckingStateMileageLogsProps) {
-  const allTascoLogs = tascoRefuelLog
+  onDataChange,
+}: TimeCardTascoRefuelLogsProps) {
+  // Process the tasco refuel logs
+  const allTascoLogs: FlattenedTascoRefuelLog[] = tascoRefuelLog
     .flatMap((item) => item.TascoLogs)
     .filter(
       (log): log is TascoRefuelLog =>
@@ -28,17 +38,44 @@ export default function TimeCardTascoRefuelLogs({
     )
     .flatMap((log) =>
       log.RefuelLogs.map((refuel) => ({
-        ...refuel,
+        id: refuel.id,
+        gallonsRefueled: refuel.gallonsRefueled,
         truckName: log.Equipment?.name || "No Equipment found",
+        tascoLogId: log.id,
       }))
     );
 
-  const [editedTascoRefuelLogs, setEditedTascoRefuelLogs] =
-    useState(allTascoLogs);
+  const [editedTascoRefuelLogs, setEditedTascoRefuelLogs] = useState<FlattenedTascoRefuelLog[]>(allTascoLogs);
+  const [changesWereMade, setChangesWereMade] = useState(false);
 
+  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    setEditedTascoRefuelLogs(allTascoLogs);
-  }, [tascoRefuelLog]);
+    if (!edit) {
+      setEditedTascoRefuelLogs(allTascoLogs);
+      setChangesWereMade(false);
+    }
+  }, [edit, tascoRefuelLog]);
+
+  const handleRefuelChange = useCallback(
+    (id: string, tascoLogId: string, gallonsRefueled: string | number) => {
+      const updatedLogs = editedTascoRefuelLogs.map(log => {
+        if (log.id === id && log.tascoLogId === tascoLogId) {
+          return { 
+            ...log, 
+            gallonsRefueled: typeof gallonsRefueled === 'string' 
+              ? (gallonsRefueled ? Number(gallonsRefueled) : null) 
+              : gallonsRefueled 
+          };
+        }
+        return log;
+      });
+
+      setChangesWereMade(true);
+      setEditedTascoRefuelLogs(updatedLogs);
+      onDataChange(updatedLogs);
+    },
+    [editedTascoRefuelLogs, onDataChange]
+  );
 
   const isEmptyData = editedTascoRefuelLogs.length === 0;
 
@@ -61,9 +98,9 @@ export default function TimeCardTascoRefuelLogs({
                 </Holds>
               </Grids>
 
-              {editedTascoRefuelLogs.map((sheet) => (
+              {editedTascoRefuelLogs.map((log) => (
                 <Holds
-                  key={sheet.id}
+                  key={`${log.tascoLogId}-${log.id}`}
                   className="border-black border-[3px] rounded-lg bg-white mb-2"
                 >
                   <Buttons
@@ -74,16 +111,25 @@ export default function TimeCardTascoRefuelLogs({
                     <Grids cols={"2"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-2 w-full h-full">
                         <Inputs
-                          value={sheet.truckName}
-                          disabled
-                          className="w-full h-full border-none rounded-none  rounded-tl-md rounded-bl-md py-2 text-xs "
+                          value={log.truckName}
+                          disabled={true}
+                          className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md py-2 text-xs"
+                          readOnly
                         />
                       </Holds>
                       <Holds className="col-start-2 col-end-3 w-full h-full border-l-[3px] border-black">
                         <Inputs
-                          value={sheet.gallonsRefueled}
-                          disabled
-                          className="w-full h-full border-none rounded-none  rounded-tr-md rounded-br-md py-2 text-xs text-center"
+                          type="number"
+                          value={log.gallonsRefueled?.toString() || ""}
+                          onChange={(e) => 
+                            handleRefuelChange(
+                              log.id,
+                              log.tascoLogId,
+                              e.target.value
+                            )
+                          }
+                          disabled={!edit}
+                          className="w-full h-full border-none rounded-none rounded-tr-md rounded-br-md py-2 text-xs text-center"
                         />
                       </Holds>
                     </Grids>

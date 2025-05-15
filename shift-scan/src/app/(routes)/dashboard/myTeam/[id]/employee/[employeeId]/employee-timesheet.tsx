@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
@@ -10,7 +10,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
-import { TimesheetFilter, TimesheetHighlights } from "@/lib/types";
+import { TimesheetFilter, TimesheetHighlights, TruckingMileageUpdate, TruckingEquipmentHaulLog } from "@/lib/types";
 import TimeSheetRenderer from "./timeSheetRenderer";
 
 interface EmployeeTimeSheetsProps {
@@ -23,11 +23,10 @@ interface EmployeeTimeSheetsProps {
   manager: string;
   timeSheetFilter: TimesheetFilter;
   setTimeSheetFilter: Dispatch<SetStateAction<TimesheetFilter>>;
-  onSaveChanges: (
-    changes: TimesheetHighlights[] | TimesheetHighlights
-  ) => Promise<void>;
+  onSaveChanges: (changes: TimesheetHighlights[] | TimesheetHighlights | TruckingMileageUpdate[] | TruckingEquipmentHaulLog[]) => Promise<void>;
   onCancelEdits: () => void;
-  error: Error | null;
+  fetchTimesheetsForDate: (date: string) => Promise<void>;
+  fetchTimesheetsForFilter: (filter: TimesheetFilter) => Promise<void>;
 }
 
 export const EmployeeTimeSheets = ({
@@ -40,71 +39,65 @@ export const EmployeeTimeSheets = ({
   manager,
   timeSheetFilter,
   setTimeSheetFilter,
-  onSaveChanges,
+  onSaveChanges: parentOnSaveChanges,
   onCancelEdits,
-  error,
+  fetchTimesheetsForDate,
+  fetchTimesheetsForFilter
 }: EmployeeTimeSheetsProps) => {
   const t = useTranslations("MyTeam");
-  const [changes, setChanges] = useState<any>(null);
+  const [changes, setChanges] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDate(e.target.value);
+  const handleDateChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    setDate(newDate);
+    await fetchTimesheetsForDate(newDate);
   };
 
-  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setTimeSheetFilter(e.target.value as TimesheetFilter);
+  const handleFilterChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const newFilter = e.target.value as TimesheetFilter;
+    setTimeSheetFilter(newFilter);
+    await fetchTimesheetsForFilter(newFilter);
   };
 
-  const handleSave = async () => {
-    if (!changes) return;
-    try {
-      await onSaveChanges(changes);
-      setChanges(null);
-    } catch (error) {
-      console.error("Failed to save changes:", error);
+  // In EmployeeTimeSheets.tsx
+const handleSave = useCallback(async () => {
+  try {
+    setIsSaving(true);
+    
+    if (changes.length === 0) {
+      console.log('No changes to save');
+      return;
+    }
+    
+    console.log('Saving changes:', changes);
+    await parentOnSaveChanges(changes);
+    // Don't clear changes here - let the parent handle it after successful save
+  } catch (error) {
+    console.error("Error saving changes:", error);
+  } finally {
+    setIsSaving(false);
+  }
+}, [changes, parentOnSaveChanges]);
+
+  const handleCancel = () => {
+    onCancelEdits();
+    setChanges([]);
+  };
+
+  const handleDataChange = (updatedData: TimesheetHighlights[] | TimesheetHighlights | TruckingMileageUpdate[] | TruckingEquipmentHaulLog[]) => {
+    if (timeSheetFilter === "truckingEquipmentHaulLogs") {
+      // For haul logs, we get the accumulated changes
+setChanges(prev => [...prev, ...(Array.isArray(updatedData) ? updatedData : [updatedData])]);
+    } else {
+      // For other types, replace existing changes
+      setChanges(Array.isArray(updatedData) ? updatedData : [updatedData]);
     }
   };
 
-  const handleCancel = () => {
-    onCancelEdits(); // This will trigger the parent's refresh
-    setChanges(null); // Clear local changes
-  };
-
-  const handleDataChange = (
-    updatedData: TimesheetHighlights[] | TimesheetHighlights
-  ) => {
-    setChanges(Array.isArray(updatedData) ? updatedData : [updatedData]);
-  };
-
-  const renderError = () => (
-    <Holds className="w-full h-full flex flex-col items-center justify-center p-4">
-      <Images
-        titleImg="/error-icon.svg"
-        titleImgAlt="Error"
-        className="w-12 h-12 mb-3"
-      />
-      <Texts size="p4" className="text-red-500 font-semibold text-center">
-        Error loading data
-      </Texts>
-      <Texts size="p6" className="text-gray-600 text-center mt-2">
-        {error?.message || "An unknown error occurred"}
-      </Texts>
-      <Buttons
-        background="lightGray"
-        className="mt-4 px-4 py-2"
-        onClick={() => window.location.reload()}
-      >
-        Try Again
-      </Buttons>
-    </Holds>
-  );
-
   return (
     <Grids rows={"3"} gap={"3"} className="h-full w-full">
-      <Holds
-        background={"white"}
-        className={"row-start-1 row-end-2 h-full w-full rounded-t-none"}
-      >
+      <Holds background={"white"} className={"row-start-1 row-end-2 h-full w-full rounded-t-none"}>
         <Contents width={"section"} className="h-full pt-1 pb-5">
           <Grids rows={"3"} className="h-full w-full">
             <Holds className="row-start-1 row-end-1">
@@ -128,46 +121,32 @@ export const EmployeeTimeSheets = ({
                 className="text-center text-xs py-2"
                 disabled={loading}
               >
-                <option value="timesheetHighlights">
-                  Timesheet Highlights
-                </option>
+                <option value="timesheetHighlights">Timesheet Highlights</option>
                 <option value="truckingMileage">Trucking Mileage</option>
-                <option value="truckingEquipmentHaulLogs">
-                  Trucking Equipment Hauls
-                </option>
-                <option value="truckingMaterialHaulLogs">
-                  Trucking Material Hauls
-                </option>
-                <option value="truckingRefuelLogs">
-                  Trucking Refuel Logs
-                </option>
+                <option value="truckingEquipmentHaulLogs">Trucking Equipment Hauls</option>
+                <option value="truckingMaterialHaulLogs">Trucking Material Hauls</option>
+                <option value="truckingRefuelLogs">Trucking Refuel Logs</option>
                 <option value="truckingStateLogs">Trucking State Logs</option>
                 <option value="tascoHaulLogs">TASCO Haul Logs</option>
                 <option value="tascoRefuelLogs">TASCO Refuel Logs</option>
                 <option value="equipmentLogs">Equipment Logs</option>
-                <option value="equipmentRefuelLogs">
-                  Equipment Refuel Logs
-                </option>
-                
+                <option value="equipmentRefuelLogs">Equipment Refuel Logs</option>
               </Selects>
             </Holds>
-            <Holds
-              position={"row"}
-              className="row-start-3 row-end-4 justify-between"
-            >
+            <Holds position={"row"} className="row-start-3 row-end-4 justify-between">
               {edit ? (
                 <>
                   <Buttons
                     background={"green"}
                     className="w-1/4"
                     onClick={handleSave}
-                    disabled={loading || !changes}
+                    disabled={loading || changes.length === 0 || isSaving}
                   >
-                    {loading ? (
+                    {isSaving ? (
                       <Spinner size={24} />
                     ) : (
                       <Images
-                        titleImg={"/save-edit.svg"}
+                        titleImg={"/formSave.svg"}
                         titleImgAlt={"Save"}
                         className="w-6 h-6 mx-auto"
                       />
@@ -176,16 +155,11 @@ export const EmployeeTimeSheets = ({
                   <Buttons
                     background={"red"}
                     className="w-1/4"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleCancel(); // Call the local cancel handler
-                      onCancelEdits(); // Also call the parent's cancel handler
-                    }}
+                    onClick={handleCancel}
                     disabled={loading}
                   >
                     <Images
-                      titleImg={"/undo-edit.svg"}
+                      titleImg={"/formUndo.svg"}
                       titleImgAlt={"Cancel"}
                       className="w-6 h-6 mx-auto"
                     />
@@ -210,10 +184,7 @@ export const EmployeeTimeSheets = ({
         </Contents>
       </Holds>
 
-      <Holds
-        background={"white"}
-        className={"row-start-2 row-end-4 h-full w-full"}
-      >
+      <Holds background={"white"} className={"row-start-2 row-end-4 h-full w-full"}>
         <Contents width={"section"} className="pt-2 pb-5">
           {loading ? (
             <Holds className="w-full h-full flex items-center justify-center">
@@ -222,8 +193,6 @@ export const EmployeeTimeSheets = ({
                 {t("loadingTimesheetData")}
               </Texts>
             </Holds>
-          ) : error ? (
-            renderError()
           ) : (
             <TimeSheetRenderer
               filter={timeSheetFilter}

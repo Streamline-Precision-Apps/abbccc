@@ -15,16 +15,22 @@ import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
 import {
   TimesheetHighlights,
-  TruckingEquipmentHaulLogData,
-  TruckingMileageData,
-  TruckingRefuelLogData,
-  TruckingStateLogData,
-  TascoRefuelLogData,
-  TascoHaulLogData,
-  EquipmentLogsData,
-  EmployeeEquipmentLogWithRefuel,
-  TruckingMaterialHaulLogData,
+  TimesheetFilter,
+  TruckingMileageUpdate,
+  TruckingEquipmentHaulLog,
 } from "@/lib/types";
+import {
+  updateTruckingHaulLogs,
+  updateTimesheetHighlights,
+  updateEquipmentLogs,
+  updateTascoHaulLogs,
+  updateTascoRefuelLogs,
+  updateTruckingMaterialLogs,
+  updateTruckingRefuelLogs,
+  updateTruckingStateLogs,
+  updateEquipmentRefuelLogs,
+  updateTruckingMileage,
+} from "@/actions/myTeamsActions";
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();
@@ -48,7 +54,6 @@ export default function EmployeeTabs() {
     "timesheetHighlights"
   );
 
-  // Employee data
   const {
     employee,
     contacts,
@@ -56,7 +61,6 @@ export default function EmployeeTabs() {
     error: errorEmployee,
   } = useEmployeeData(employeeId as string | undefined);
 
-  // Timesheet data
   const {
     data: timesheetData,
     loading: loadingTimesheets,
@@ -67,56 +71,252 @@ export default function EmployeeTabs() {
 
   const loading = loadingEmployee || loadingTimesheets;
 
-  // Handle date changes
   useEffect(() => {
     if (date && date !== today) {
       fetchTimesheetsForDate(date);
     }
   }, [date, fetchTimesheetsForDate, today]);
 
-  // Handle filter changes
   useEffect(() => {
     fetchTimesheetsForFilter(timeSheetFilter);
-  }, [timeSheetFilter]);
+  }, [timeSheetFilter, fetchTimesheetsForFilter]);
 
-   // Handle save changes
-  const onSaveChanges = useCallback(async (changes: TimesheetHighlights[] | TimesheetHighlights) => {
+  const onSaveChanges = useCallback(
+  async (
+    changes:
+      | TimesheetHighlights[]
+      | TimesheetHighlights
+      | TruckingMileageUpdate[]
+      | TruckingEquipmentHaulLog[]
+      | any[]
+  ) => {
     try {
-      const changesArray = Array.isArray(changes) ? changes : [changes];
-      
-      const serializedChanges = changesArray.map(timesheet => ({
-        id: timesheet.id,
-        startTime: timesheet.startTime ? new Date(timesheet.startTime).toISOString() : undefined,
-        endTime: timesheet.endTime ? new Date(timesheet.endTime).toISOString() : undefined,
-        jobsiteId: timesheet.jobsiteId,
-        costcode: timesheet.costcode
-      }));
+      switch (timeSheetFilter) {
+        case "timesheetHighlights":
+            const timesheetChanges = changes as
+              | TimesheetHighlights[]
+              | TimesheetHighlights;
+            const changesArray = Array.isArray(timesheetChanges)
+              ? timesheetChanges
+              : [timesheetChanges];
 
-      const validChanges = serializedChanges.filter(timesheet => 
-        timesheet.id && timesheet.startTime !== undefined
-      );
+            const serializedChanges = changesArray.map((timesheet) => ({
+              id: timesheet.id,
+              startTime: timesheet.startTime
+                ? new Date(timesheet.startTime).toISOString()
+                : undefined,
+              endTime: timesheet.endTime
+                ? new Date(timesheet.endTime).toISOString()
+                : undefined,
+              jobsiteId: timesheet.jobsiteId,
+              costcode: timesheet.costcode,
+            }));
 
-      if (validChanges.length === 0) return;
+            const validChanges = serializedChanges.filter(
+              (timesheet) => timesheet.id && timesheet.startTime !== undefined
+            );
 
-      const result = await updateTimesheetHighlights(validChanges);
-      
-      if (result.success) {
-        // Force a complete refresh of the data
+            if (validChanges.length === 0) return;
+
+            const result = await updateTimesheetHighlights(validChanges);
+            if (result?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            }
+            break;
+
+          case "truckingMileage": {
+          const mileageChanges = changes as TruckingMileageUpdate[];
+          if (mileageChanges.length === 0) {
+            console.warn("No valid mileage changes to save");
+            return;
+          }
+
+          const formData = new FormData();
+          mileageChanges.forEach((change, index) => {
+            formData.append(`changes[${index}]`, JSON.stringify(change));
+          });
+          await updateTruckingMileage(formData);
+
+          await Promise.all([
+            fetchTimesheetsForDate(date),
+            fetchTimesheetsForFilter(timeSheetFilter),
+          ]);
+          setEdit(false);
+          break;
+        }
+
+          
+
+          case "truckingEquipmentHaulLogs": {
+          const haulLogChanges = changes as TruckingEquipmentHaulLog[];
+          const updates = haulLogChanges.flatMap(
+            (log) =>
+              log.EquipmentHauled?.map((hauledItem) => ({
+                id: hauledItem.id,
+                equipmentId: hauledItem.Equipment?.id,
+                jobSiteId: hauledItem.JobSite?.id,
+              })) || []
+          );
+
+          const haulingResult = await updateTruckingHaulLogs(updates);
+          if (haulingResult?.success) {
+            await Promise.all([
+              fetchTimesheetsForDate(date),
+              fetchTimesheetsForFilter(timeSheetFilter),
+            ]);
+            setEdit(false);
+          }
+          break;
+        }
+
+        case "truckingMaterialHaulLogs": {
+          const materialChanges = changes as any[];
+          if (materialChanges.length > 0) {
+            const formattedChanges = materialChanges.map((change) => ({
+              id: change.id,
+              name: change.name,
+              LocationOfMaterial: change.LocationOfMaterial,
+              materialWeight: change.materialWeight,
+              lightWeight: change.lightWeight,
+              grossWeight: change.grossWeight,
+            }));
+            await updateTruckingMaterialLogs(formattedChanges);
+          }
+          break;
+        }
+
+          case "truckingRefuelLogs":
+            if (
+              changes &&
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  ("gallonsRefueled" in change || "milesAtFueling" in change)
+              )
+            ) {
+              await updateTruckingRefuelLogs(
+                changes as {
+                  id: string;
+                  gallonsRefueled?: number | null;
+                  milesAtFueling?: number | null;
+                }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "truckingStateLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  ("state" in change || "stateLineMileage" in change)
+              )
+            ) {
+              await updateTruckingStateLogs(changes);
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "tascoHaulLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  "shiftType" in change &&
+                  "equipmentId" in change &&
+                  "materialType" in change &&
+                  "LoadQuantity" in change
+              )
+            ) {
+              await updateTascoHaulLogs(
+                changes as {
+                  id: string;
+                  shiftType?: string | undefined;
+                  equipmentId?: string | null | undefined;
+                  materialType?: string | undefined;
+                  LoadQuantity?: number | null | undefined;
+                }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "tascoRefuelLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change &&
+                  ("gallonsRefueled" in change ||
+                    !("gallonsRefueled" in change))
+              )
+            ) {
+              await updateTascoRefuelLogs(
+                changes as { id: string; gallonsRefueled?: number | null }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "equipmentLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) =>
+                  "id" in change && "startTime" in change && "endTime" in change
+              )
+            ) {
+              await updateEquipmentLogs(
+                changes as { id: string; startTime?: Date; endTime?: Date }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+
+          case "equipmentRefuelLogs":
+            if (
+              Array.isArray(changes) &&
+              changes.every(
+                (change) => "id" in change && "gallonsRefueled" in change
+              )
+            ) {
+              updateEquipmentRefuelLogs(
+                changes as { id: string; gallonsRefueled?: number | null }[]
+              );
+            } else {
+              console.error("Invalid changes type");
+            }
+            break;
+        }
+
         await Promise.all([
           fetchTimesheetsForDate(date),
-          fetchTimesheetsForFilter(timeSheetFilter)
+          fetchTimesheetsForFilter(timeSheetFilter),
         ]);
         setEdit(false);
+      } catch (error) {
+        console.error("Failed to save changes:", error);
+        setEdit(false);
+        throw error;
       }
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-      throw error;
-    }
-  }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
+    },
+    [date, timeSheetFilter, fetchTimesheetsForDate, fetchTimesheetsForFilter]
+  );
 
-  // Handle cancel edits remains the same
   const onCancelEdits = useCallback(() => {
-    // Force a complete refresh of the data from the database
     fetchTimesheetsForDate(date);
     fetchTimesheetsForFilter(timeSheetFilter);
     setEdit(false);
@@ -125,10 +325,7 @@ export default function EmployeeTabs() {
   return (
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="h-full w-full">
-        <Holds
-          background={"white"}
-          className="row-start-1 row-end-2 h-full w-full"
-        >
+        <Holds className="row-start-1 row-end-2 h-full w-full">
           <TitleBoxes
             onClick={() =>
               router.push(
@@ -194,7 +391,8 @@ export default function EmployeeTabs() {
                   setTimeSheetFilter={setTimeSheetFilter}
                   onSaveChanges={onSaveChanges}
                   onCancelEdits={onCancelEdits}
-                  error={errorTimesheets} // Added error prop
+                  fetchTimesheetsForDate={fetchTimesheetsForDate}
+                  fetchTimesheetsForFilter={fetchTimesheetsForFilter}
                 />
               )}
             </Holds>

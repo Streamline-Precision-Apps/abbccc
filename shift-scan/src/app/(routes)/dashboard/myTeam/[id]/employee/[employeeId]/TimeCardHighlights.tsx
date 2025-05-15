@@ -14,7 +14,6 @@ import { useTranslations } from "next-intl";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { CostCodeSelector } from "@/components/(clock)/(General)/costCodeSelector";
 
-
 interface TimeCardHighlightsProps {
   highlightTimesheet: TimesheetHighlights[];
   edit: boolean;
@@ -35,35 +34,42 @@ export default function TimeCardHighlights({
   const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
   const [costCodeModalOpen, setCostCodeModalOpen] = useState(false);
   const [currentEditingId, setCurrentEditingId] = useState<string | null>(null);
+  const [changesWereMade, setChangesWereMade] = useState(false);
   const t = useTranslations("Clock");
 
-  // Reset local state when props change
   useEffect(() => {
+  if (!edit && !changesWereMade) {
     setEditedHighlightTimesheet(highlightTimesheet);
-  }, [highlightTimesheet]);
+  }
+}, [edit, highlightTimesheet, changesWereMade]);
 
   const isEmptyData = !highlightTimesheet || highlightTimesheet.length === 0;
 
   const handleTimeChange = useCallback(
-    (id: string, field: 'startTime' | 'endTime', timeString: string) => {
-      const updated = editedHighlightTimesheet.map(item => {
+  (id: string, field: "startTime" | "endTime", timeString: string) => {
+    setEditedHighlightTimesheet(prev => {
+      const updated = prev.map((item) => {
         if (item.id === id) {
-          // Use the component's date prop
-          const newValue = timeString ? new Date(`${date}T${timeString}:00`) : null;
+          const newValue = timeString
+            ? new Date(`${date}T${timeString}:00`)
+            : null;
           return { ...item, [field]: newValue };
         }
         return item;
       });
       
-      setEditedHighlightTimesheet(updated);
+      // Send the updated data to parent
       onDataChange(updated);
-    },
-    [date, editedHighlightTimesheet, onDataChange]
-  );
+      return updated;
+    });
+    setChangesWereMade(true);
+  },
+  [date, onDataChange]
+);
 
   const handleJobsiteChange = useCallback(
     (id: string, jobsiteId: string) => {
-      const updatedData = editedHighlightTimesheet.map(item => {
+      const updatedData = editedHighlightTimesheet.map((item) => {
         if (item.id === id) {
           return {
             ...item,
@@ -72,6 +78,7 @@ export default function TimeCardHighlights({
         }
         return item;
       });
+      setChangesWereMade(true);
       setEditedHighlightTimesheet(updatedData);
       onDataChange(updatedData);
     },
@@ -80,7 +87,7 @@ export default function TimeCardHighlights({
 
   const handleCostCodeChange = useCallback(
     (id: string, costcode: string) => {
-      const updatedData = editedHighlightTimesheet.map(item => {
+      const updatedData = editedHighlightTimesheet.map((item) => {
         if (item.id === id) {
           return {
             ...item,
@@ -89,6 +96,7 @@ export default function TimeCardHighlights({
         }
         return item;
       });
+      setChangesWereMade(true);
       setEditedHighlightTimesheet(updatedData);
       onDataChange(updatedData);
     },
@@ -126,14 +134,25 @@ export default function TimeCardHighlights({
     setCostCodeModalOpen(true);
   };
 
-  const handleJobsiteSelect = (jobsite: { code: string; label: string } | null) => {
+  const handleJobsiteSelect = (
+    jobsite: { code: string; label: string } | null
+  ) => {
     if (currentEditingId && jobsite) {
       handleJobsiteChange(currentEditingId, jobsite.code);
+      setEditedHighlightTimesheet((prev) =>
+        prev.map((item) =>
+          item.id === currentEditingId
+            ? { ...item, Jobsite: { ...item.Jobsite, name: jobsite.label } }
+            : item
+        )
+      );
     }
     setJobsiteModalOpen(false);
   };
 
-  const handleCostCodeSelect = (costcode: { code: string; label: string } | null) => {
+  const handleCostCodeSelect = (
+    costcode: { code: string; label: string } | null
+  ) => {
     if (currentEditingId && costcode) {
       handleCostCodeChange(currentEditingId, costcode.code);
     }
@@ -231,7 +250,11 @@ export default function TimeCardHighlights({
                           <Holds className="border-b-[1.5px] border-black h-full justify-center">
                             <Inputs
                               type={"text"}
-                              value={sheet.Jobsite?.name || "N/A"}
+                              value={
+                                editedHighlightTimesheet.find(
+                                  (item) => item.id === sheet.id
+                                )?.Jobsite?.name || "N/A"
+                              }
                               className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none justify-center text-right"
                               onClick={() => openJobsiteModal(sheet.id)}
                               disabled={!edit}
@@ -263,7 +286,6 @@ export default function TimeCardHighlights({
         </Holds>
       </Grids>
 
-      {/* Jobsite Modal */}
       <NModals
         background={"white"}
         size={"xlW"}
@@ -276,9 +298,10 @@ export default function TimeCardHighlights({
             initialValue={
               currentEditingId
                 ? {
-                    code: editedHighlightTimesheet.find(
-                      (item) => item.id === currentEditingId
-                    )?.jobsiteId || "",
+                    code:
+                      editedHighlightTimesheet.find(
+                        (item) => item.id === currentEditingId
+                      )?.jobsiteId || "",
                     label:
                       editedHighlightTimesheet.find(
                         (item) => item.id === currentEditingId
@@ -290,7 +313,6 @@ export default function TimeCardHighlights({
         </Holds>
       </NModals>
 
-      {/* Cost Code Modal */}
       <NModals
         background={"white"}
         size={"xlW"}
