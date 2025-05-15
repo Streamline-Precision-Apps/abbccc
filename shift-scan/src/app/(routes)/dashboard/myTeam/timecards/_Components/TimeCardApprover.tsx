@@ -110,7 +110,14 @@ import { CardControls } from "./CardControls";
 import GeneralReviewSection from "./GeneralReviewSection";
 import TascoReviewSection from "./TascoReviewSection";
 import TruckingReviewSection from "./TruckingReviewSection";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -119,6 +126,7 @@ import Spinner from "@/components/(animations)/spinner";
 import EquipmentLogsSection from "./EquipmentLogsSection";
 import { ApproveUsersTimeSheets } from "@/actions/ManagerTimeCardActions";
 import { PullToRefresh } from "@/components/(animations)/pullToRefresh";
+
 export default function TimeCardApprover({
   loading,
   setLoading,
@@ -142,148 +150,138 @@ export default function TimeCardApprover({
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
 
-  const getAvailableViewOptions = (timeSheets: TimeSheet[]) => {
-    const options = new Set<ViewOption>(["highlight"]);
-
-    timeSheets.forEach((timesheet) => {
-      if (
-        timesheet.workType === "TRUCK_DRIVER" &&
-        timesheet.TruckingLogs?.length
-      ) {
-        options.add("Trucking");
-      } else if (
-        timesheet.workType === "TASCO" &&
-        timesheet.TascoLogs?.length
-      ) {
-        options.add("Tasco");
-      } else if (timesheet.EmployeeEquipmentLogs?.length) {
-        options.add("Equipment");
+  // Memoized calculation of total time for performance
+  const calculateTotalTime = useCallback((timeSheets: TimeSheet[]): string => {
+    let totalMs = 0;
+    for (const timesheet of timeSheets) {
+      const start = Date.parse(timesheet.startTime);
+      const end = Date.parse(timesheet.endTime);
+      if (!isNaN(start) && !isNaN(end)) {
+        totalMs += end - start;
       }
-    });
+    }
+    const hours = Math.floor(totalMs / 3_600_000);
+    const minutes = Math.floor((totalMs % 3_600_000) / 60_000);
+    return `${hours} hrs ${minutes} mins`;
+  }, []);
 
-    return Array.from(options);
-  };
-  const fetchCrewTimeCards = async () => {
+  // Memoized getAvailableViewOptions for stable reference
+  const getAvailableViewOptions = useCallback(
+    (timeSheets: TimeSheet[]): ViewOption[] => {
+      const options = new Set<ViewOption>(["highlight"]);
+      for (const timesheet of timeSheets) {
+        if (
+          timesheet.workType === "TRUCK_DRIVER" &&
+          timesheet.TruckingLogs?.length
+        ) {
+          options.add("Trucking");
+        } else if (
+          timesheet.workType === "TASCO" &&
+          timesheet.TascoLogs?.length
+        ) {
+          options.add("Tasco");
+        } else if (timesheet.EmployeeEquipmentLogs?.length) {
+          options.add("Equipment");
+        }
+      }
+      return Array.from(options);
+    },
+    []
+  );
+
+  // Memoized fetchCrewTimeCards for stable reference
+  const fetchCrewTimeCards = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
         `/api/getPendingTeamTimeSheets?managerId=${managerId}`
       );
-
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data: TeamMember[] = await response.json();
-
-      // Process the API response with proper typing
       const membersWithTotals = data
         .map((member) => ({
-          id: member.id,
-          firstName: member.firstName,
-          lastName: member.lastName,
-          clockedIn: member.clockedIn,
+          ...member,
           TimeSheets: member.TimeSheets.map((timesheet) => ({
             ...timesheet,
-            id: timesheet.id, // Ensure each timesheet has an id
+            id: timesheet.id,
           })),
           totalTime: calculateTotalTime(member.TimeSheets),
-          Crews: member.Crews,
         }))
         .filter((member) => member.TimeSheets.length > 0);
-
       setTeamMembers(membersWithTotals);
     } catch (error) {
       console.error("Error fetching crew time cards:", error);
     } finally {
       setLoading(false);
     }
-  };
-  // Updated fetch function with proper typing
+  }, [managerId, setLoading, calculateTotalTime]);
+
   useEffect(() => {
     fetchCrewTimeCards();
-  }, []);
+  }, [fetchCrewTimeCards]);
 
-  const handleEditClick = () => {
-    if (swipeRef.current) {
-      swipeRef.current.swipeLeft();
-    }
-  };
-
-  const handleApproveClick = () => {
-    if (swipeRef.current) {
-      swipeRef.current.swipeRight();
-    }
-  };
-
-  const swiped = (direction: string, memberId: string) => {
-    // Apply decision to all timesheets for this member
-
-    const myTeamId = currentMember.Crews.find(
-      (crew) => crew.leadId === managerId
-    )?.id;
-
-    if (direction === "left") {
-      router.push(
-        `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/timecards?rPath=${rPath}`
-      );
-    } else {
-      ApproveTimeSheets(memberId);
-      // Move to next member with pending timesheets
-      if (currentIndex < teamMembers.length - 1) {
-        setCurrentIndex((prev) => prev + 1);
-      } else {
-        setCompleted(true);
-      }
-    }
-  };
-
-  //todo : make this a server action
-  const ApproveTimeSheets = async (id: string) => {
-    try {
-      const ApproveTimesheet = teamMembers.find((member) => member.id === id);
-      const timesheets = ApproveTimesheet?.TimeSheets || [];
-      const timeSheetIds = timesheets.map((timesheet) => timesheet.id);
-      console.log("id", id);
-      console.log("timesheets", timesheets);
-      console.log("timeSheetIds", timeSheetIds);
-
-      const formData = new FormData();
-      formData.append("id", id);
-      formData.append("timesheetIds", JSON.stringify(timeSheetIds));
-
-      formData.append("statusComment", `Approved by ${manager}`);
-
-      const response = await ApproveUsersTimeSheets(formData);
-
-      if (response.success) {
-        console.log("Timecards approved successfully");
-      } else {
-        console.error("Failed to approve timecards");
-      }
-    } catch (error) {
-      console.error("Error submitting timecards:", error);
-    }
-  };
-
-  const calculateTotalTime = (timeSheets: TimeSheet[]) => {
-    let totalMs = 0;
-    timeSheets.forEach((timesheet) => {
+  // Memoized ApproveTimeSheets for stable reference
+  const ApproveTimeSheets = useCallback(
+    async (id: string) => {
       try {
-        const start = new Date(timesheet.startTime).getTime();
-        const end = new Date(timesheet.endTime).getTime();
-        if (!isNaN(start) && !isNaN(end)) {
-          totalMs += end - start;
+        const approveMember = teamMembers.find((member) => member.id === id);
+        if (!approveMember) return;
+        const timeSheetIds = approveMember.TimeSheets.map(
+          (timesheet) => timesheet.id
+        );
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("timesheetIds", JSON.stringify(timeSheetIds));
+        formData.append("statusComment", `Approved by ${manager}`);
+        const response = await ApproveUsersTimeSheets(formData);
+        if (!response.success) {
+          console.error("Failed to approve timecards");
         }
-      } catch (e) {
-        console.error("Invalid date in timesheet", timesheet.id);
+      } catch (error) {
+        console.error("Error submitting timecards:", error);
       }
-    });
+    },
+    [teamMembers, manager]
+  );
 
-    const hours = Math.floor(totalMs / (1000 * 60 * 60));
-    const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours} hrs ${minutes} mins`;
-  };
+  // Memoized swipe handler
+  const swiped = useCallback(
+    (direction: string, memberId: string) => {
+      const myTeamId = currentMember?.Crews.find(
+        (crew) => crew.leadId === managerId
+      )?.id;
+      if (direction === "left") {
+        router.push(
+          `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/timecards?rPath=${rPath}`
+        );
+      } else {
+        ApproveTimeSheets(memberId);
+        if (currentIndex < teamMembers.length - 1) {
+          setCurrentIndex((prev) => prev + 1);
+        } else {
+          setCompleted(true);
+        }
+      }
+    },
+    [
+      currentMember,
+      managerId,
+      router,
+      rPath,
+      ApproveTimeSheets,
+      currentIndex,
+      teamMembers.length,
+    ]
+  );
+
+  // Memoized edit/approve click handlers
+  const handleEditClick = useCallback(() => {
+    swipeRef.current?.swipeLeft();
+  }, []);
+  const handleApproveClick = useCallback(() => {
+    swipeRef.current?.swipeRight();
+  }, []);
 
   return (
     <Holds className="h-full w-full">
