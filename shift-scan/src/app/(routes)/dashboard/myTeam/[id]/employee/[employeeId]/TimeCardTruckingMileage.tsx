@@ -5,20 +5,25 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingMileage, TruckingMileageData } from "@/lib/types";
-import { useEffect, useState } from "react";
+import {
+  TruckingMileage,
+  TruckingMileageData,
+  TruckingMileageUpdate,
+} from "@/lib/types";
+import { useEffect, useState, useCallback } from "react";
 
-type TimeCardTruckingMileageProps = {
+interface TimeCardTruckingMileageProps {
   edit: boolean;
-  setEdit: (edit: boolean) => void;
   manager: string;
-  truckingMileage: TruckingMileageData; // Changed to the new type
-};
+  truckingMileage: TruckingMileageData;
+  onDataChange: (data: TruckingMileageUpdate[]) => void; // Change this line
+}
+
 export default function TimeCardTruckingMileage({
   edit,
-  setEdit,
   manager,
   truckingMileage,
+  onDataChange,
 }: TimeCardTruckingMileageProps) {
   const allTruckingLogs = truckingMileage
     .flatMap((item) => item.TruckingLogs)
@@ -26,27 +31,46 @@ export default function TimeCardTruckingMileage({
 
   const [editedTruckingLogs, setEditedTruckingLogs] =
     useState<TruckingMileage[]>(allTruckingLogs);
+  const [changesWereMade, setChangesWereMade] = useState(false);
 
-  const handleMileageChange = (
-    id: string,
-    field: keyof TruckingMileage,
-    value: string | number
-  ) => {
-    setEditedTruckingLogs((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
-    );
-  };
-
+  // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    setEditedTruckingLogs(allTruckingLogs);
-  }, [truckingMileage]);
+    if (!edit) {
+      setEditedTruckingLogs(allTruckingLogs);
+      setChangesWereMade(false);
+    }
+  }, [edit, truckingMileage]);
+
+  const handleMileageChange = useCallback(
+  (id: string, field: keyof TruckingMileage, value: string | number) => {
+    const updatedLogs = editedTruckingLogs.map((item) =>
+      item.id === id ? { 
+        ...item, 
+        [field]: typeof value === 'string' ? Number(value) : value 
+      } : item
+    );
+    
+    setChangesWereMade(true);
+    setEditedTruckingLogs(updatedLogs);
+    
+    // Find the complete log that was changed
+    const changedLog = updatedLogs.find(log => log.id === id);
+    if (changedLog) {
+      onDataChange([{
+        id: changedLog.id,
+        startingMileage: changedLog.startingMileage,
+        endingMileage: changedLog.endingMileage
+      }]);
+    }
+  },
+  [editedTruckingLogs, onDataChange]
+);
 
   const isEmptyData = allTruckingLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
       <Grids rows={"7"}>
-        {/* Timesheet Editing Section */}
         <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
           {isEmptyData ? (
             <Holds className="w-full h-full flex items-center justify-center">
@@ -85,19 +109,13 @@ export default function TimeCardTruckingMileage({
                     className="w-full h-full text-left"
                   >
                     <Grids cols={"4"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-3 h-full w-full ">
+                      <Holds className="col-start-1 col-end-3 h-full w-full">
                         <Inputs
                           type={"text"}
                           value={sheet.Equipment?.name || ""}
                           className="text-xs border-none h-full w-full p-2.5 rounded-md rounded-tr-none rounded-br-none justify-center"
-                          disabled={!edit}
-                          onChange={(e) =>
-                            handleMileageChange(
-                              sheet.id,
-                              "Equipment",
-                              e.target.value
-                            )
-                          }
+                          disabled={true} // Equipment name should not be editable
+                          readOnly
                         />
                       </Holds>
                       <Holds className="col-start-3 col-end-4 border-x-[3px] border-black h-full">
@@ -105,7 +123,7 @@ export default function TimeCardTruckingMileage({
                           <Inputs
                             type={"number"}
                             value={sheet.startingMileage}
-                            className="text-xs border-none h-full rounded-none justify-center  p-2.5 "
+                            className="text-xs border-none h-full rounded-none justify-center p-2.5"
                             disabled={!edit}
                             onChange={(e) =>
                               handleMileageChange(
@@ -123,7 +141,7 @@ export default function TimeCardTruckingMileage({
                           <Inputs
                             type={"number"}
                             value={sheet.endingMileage || ""}
-                            className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right  p-2.5 "
+                            className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right p-2.5"
                             disabled={!edit}
                             onChange={(e) =>
                               handleMileageChange(
