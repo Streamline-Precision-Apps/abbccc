@@ -155,7 +155,7 @@ export default function EmployeeTabs() {
               (log) =>
                 log.EquipmentHauled?.map((hauledItem) => ({
                   id: hauledItem.id,
-                  equipmentId: hauledItem.Equipment?.name,
+                  equipmentId: hauledItem.Equipment?.id,
                   jobSiteId: hauledItem.JobSite?.id,
                 })) || []
             );

@@ -12,11 +12,13 @@ type Option = {
 type EquipmentSelectorProps = {
   onEquipmentSelect: (equipment: Option | null) => void;
   initialValue?: Option; // Optional initial value
+  useEquipmentId?: boolean;
 };
 
 export const EquipmentSelector = ({
   onEquipmentSelect,
   initialValue,
+  useEquipmentId = false,
 }: EquipmentSelectorProps) => {
   const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
     null
@@ -26,9 +28,9 @@ export const EquipmentSelector = ({
   const { equipmentResults } = useDBEquipment();
 
   useEffect(() => {
-    const options = equipmentResults.map((costcode) => ({
-      code: costcode.id,
-      label: costcode.name,
+    const options = equipmentResults.map((equipment) => ({
+      code: useEquipmentId ? equipment.id : equipment.qrId,
+      label: equipment.name,
     }));
     setEquipmentOptions(options);
   }, [equipmentResults]);
