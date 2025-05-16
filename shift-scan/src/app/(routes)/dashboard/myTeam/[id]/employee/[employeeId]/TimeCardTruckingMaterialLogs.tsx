@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingMaterialHaulLog, TruckingMaterialHaulLogData } from "@/lib/types";
+import { MaterialType, TruckingMaterialHaulLog, TruckingMaterialHaulLogData } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
 // Define the type for processed material data
@@ -48,14 +48,28 @@ export default function TimeCardTruckingMaterialLogs({
 
   const [editedMaterials, setEditedMaterials] = useState<ProcessedMaterialLog[]>(allMaterials);
   const [changesWereMade, setChangesWereMade] = useState(false);
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
+
+  useEffect(() => {
+    const fetchMaterialTypes = async () => {
+      try {
+        const materialTypesResponse = await fetch("/api/getMaterialTypes");
+        const materialTypesData = await materialTypesResponse.json();
+        setMaterialTypes(materialTypesData);
+        console.log("Material Types:", materialTypesData);
+      } catch {
+        console.error("Error fetching material types");
+      }
+    };
+
+    fetchMaterialTypes();
+  }, []);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    if (!edit) {
       setEditedMaterials(allMaterials);
       setChangesWereMade(false);
-    }
-  }, [edit, truckingMaterialHaulLogs]);
+  }, [truckingMaterialHaulLogs]);
 
   const handleMaterialChange = useCallback(
     (id: string, logId: string, field: keyof ProcessedMaterialLog, value: string | number | null) => {
@@ -114,20 +128,43 @@ export default function TimeCardTruckingMaterialLogs({
                       <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
                         <Grids rows={"2"} className="w-full h-full rounded-none">
                           <Holds className="row-start-1 row-end-2 h-full rounded-none border-b-[1.5px] border-black">
-                            <Inputs
-                              value={material.name}
-                              onChange={(e) => 
-                                handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'name', 
-                                  e.target.value
-                                )
-                              }
-                              disabled={!edit}
-                              placeholder="Material"
-                              className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
-                            />
+                            {edit ? (
+                              <select
+                                value={material.name}
+                                onChange={(e) => 
+                                  handleMaterialChange(
+                                    material.id, 
+                                    material.logId, 
+                                    'name', 
+                                    e.target.value
+                                  )
+                                }
+                                disabled={!edit}
+                                className="w-full h-full border-none rounded-none rounded-tl-md text-xs px-2 bg-white"
+                              >
+                                <option value="">Select Material</option>
+                                {materialTypes.map((materialType) => (
+                                  <option key={materialType.id} value={materialType.name}>
+                                    {materialType.name}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <Inputs
+                                value={material.name}
+                                onChange={(e) => 
+                                  handleMaterialChange(
+                                    material.id, 
+                                    material.logId, 
+                                    'name', 
+                                    e.target.value
+                                  )
+                                }
+                                disabled={true}
+                                placeholder="Material"
+                                className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
+                              />
+                            )}
                           </Holds>
                           <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
                             <Inputs

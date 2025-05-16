@@ -34,12 +34,10 @@ export default function TimeCardTruckingMileage({
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
-  useEffect(() => {
-    if (!edit) {
-      setEditedTruckingLogs(allTruckingLogs);
-      setChangesWereMade(false);
-    }
-  }, [edit, truckingMileage]);
+useEffect(() => {
+  setEditedTruckingLogs(allTruckingLogs);
+  setChangesWereMade(false);
+}, [truckingMileage]);
 
   const handleMileageChange = useCallback(
   (id: string, field: keyof TruckingMileage, value: string | number) => {

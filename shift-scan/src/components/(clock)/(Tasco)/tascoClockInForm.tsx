@@ -9,6 +9,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentSelector } from "../(General)/equipmentSelector";
+import { MaterialType } from "@/lib/types";
 
 type TascoClockInFormProps = {
   handlePrevStep: () => void;
@@ -25,10 +26,7 @@ type TascoClockInFormProps = {
   equipment: Option;
   setEquipment: Dispatch<SetStateAction<Option>>;
 };
-type MaterialType = {
-  id: number;
-  name: string;
-};
+
 type Option = {
   code: string;
   label: string;
@@ -50,8 +48,8 @@ export default function TascoClockInForm({
   setEquipment,
 }: TascoClockInFormProps) {
   const t = useTranslations("Clock");
-  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
 
   useEffect(() => {
     const fetchMaterialTypes = async () => {
