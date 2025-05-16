@@ -10,7 +10,7 @@ interface UseInfiniteScrollOptions<T> {
   initialSkip?: number; // Starting point for pagination
   take?: number; // Number of items to fetch per request (page size)
   fetchFn: FetchFunction<T>; // User-provided fetch function
-  dependencies?: any[]; // When these change, the data will reset
+  dependencies?: unknown[]; // When these change, the data will reset
 }
 
 export function useInfiniteScroll<T>({
@@ -54,7 +54,7 @@ export function useInfiniteScroll<T>({
           setHasMore(false);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data:", error as Error);
       } finally {
         // Reset loading states
         setIsLoading(false);

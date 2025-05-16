@@ -33,20 +33,26 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const initializeJobSite = async () => {
       try {
-        // Fetch both the QR code and name from your API
+        // Fetch the QR code from your API
         const cookieData = await fetch(
           "/api/cookies?method=get&name=jobSite"
         ).then((res) => res.json());
 
-        // If you need to fetch the name separately, you might need another endpoint
-        // const jobSiteDetails = await fetch(`/api/jobsites/${cookieData}`).then(
-        //   (res) => res.json()
-        // );
-
+        let jobSiteName = "";
         if (cookieData && cookieData !== "") {
+          // Try to fetch the job site details for the name
+          try {
+            const jobSiteDetails = await fetch(
+              `/api/jobsites/${cookieData}`
+            ).then((res) => res.json());
+            jobSiteName = jobSiteDetails?.name || "";
+          } catch (err) {
+            // If fetching details fails, fallback to empty string
+            jobSiteName = "";
+          }
           setScanResult({
             qrCode: cookieData,
-            name: jobSiteDetails?.name || "", // Fallback to empty string if name not available
+            name: jobSiteName,
           });
         }
       } catch (error) {

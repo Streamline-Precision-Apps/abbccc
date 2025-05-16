@@ -39,7 +39,7 @@ export default function WidgetSection({ session, locale }: Props) {
   });
   const permission = session.user?.permission;
   const accountSetup = session.user?.accountSetup;
-  const user = session.user;
+  const user = session.user as Session["user"];
   const isManager = ["ADMIN", "SUPERADMIN", "MANAGER"].includes(permission);
 
   // Custom hooks
@@ -113,7 +113,7 @@ function BannerSection({
   date,
 }: {
   pageView: string;
-  user: any;
+  user: Session["user"];
   date: string;
 }) {
   return (

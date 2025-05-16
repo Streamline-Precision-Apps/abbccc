@@ -1,9 +1,35 @@
 import { useState, useEffect } from "react";
-import { TimesheetFilter } from "@/lib/types";
+import {
+  TimesheetFilter,
+  TimesheetHighlights,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
+  TruckingMaterialHaulLogData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoHaulLogData,
+  TascoRefuelLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
+} from "@/lib/types";
+
+// Union type for all possible timesheet data
+export type TimesheetDataUnion =
+  | TimesheetHighlights[]
+  | TruckingMileageData
+  | TruckingEquipmentHaulLogData
+  | TruckingMaterialHaulLogData
+  | TruckingRefuelLogData
+  | TruckingStateLogData
+  | TascoHaulLogData
+  | TascoRefuelLogData
+  | EquipmentLogsData
+  | EmployeeEquipmentLogWithRefuel[]
+  | null;
 
 interface TimesheetDataResponse {
-  data: any;
-  setData: (data: any) => void;
+  data: TimesheetDataUnion;
+  setData: (data: TimesheetDataUnion) => void;
   loading: boolean;
   error: string | null;
   updateDate: (newDate: string) => Promise<void>;
@@ -15,7 +41,7 @@ export const useTimesheetData = (
   initialDate: string,
   initialFilter: TimesheetFilter
 ): TimesheetDataResponse => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<TimesheetDataUnion>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
