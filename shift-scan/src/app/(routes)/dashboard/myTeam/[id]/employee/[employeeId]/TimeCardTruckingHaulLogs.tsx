@@ -5,7 +5,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingEquipmentHaulLog, TruckingEquipmentHaulLogData } from "@/lib/types";
+import {
+  TruckingEquipmentHaulLog,
+  TruckingEquipmentHaulLogData,
+} from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
@@ -31,10 +34,15 @@ export default function TimeCardTruckingHaulLogs({
 
   const [editedTruckingHaulLogs, setEditedTruckingHaulLogs] =
     useState<TruckingEquipmentHaulLog[]>(allTruckingLogs);
-  const [pendingChanges, setPendingChanges] = useState<Record<string, TruckingEquipmentHaulLog>>({});
+  const [pendingChanges, setPendingChanges] = useState<
+    Record<string, TruckingEquipmentHaulLog>
+  >({});
   const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
   const [equipmentModalOpen, setEquipmentModalOpen] = useState(false);
-  const [currentEditingLog, setCurrentEditingLog] = useState<{logId: string, equipmentIndex: number} | null>(null);
+  const [currentEditingLog, setCurrentEditingLog] = useState<{
+    logId: string;
+    equipmentIndex: number;
+  } | null>(null);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
@@ -45,70 +53,89 @@ export default function TimeCardTruckingHaulLogs({
   }, [edit, truckingEquipmentHaulLogs]);
 
   const handleHaulLogChange = useCallback(
-  (logId: string, equipmentIndex: number, field: keyof TruckingEquipmentHaulLog['EquipmentHauled'][0], value: string) => {
-    setEditedTruckingHaulLogs(prevLogs => 
-      prevLogs.map(log => {
-        if (log.id === logId) {
-          const updatedEquipment = [...log.EquipmentHauled];
-          updatedEquipment[equipmentIndex] = {
-            ...updatedEquipment[equipmentIndex],
-            [field]: value
-          };
-          
-          return {
-            ...log,
-            EquipmentHauled: updatedEquipment
-          };
-        }
-        return log;
-      })
-    );
+    (
+      logId: string,
+      equipmentIndex: number,
+      field: keyof TruckingEquipmentHaulLog["EquipmentHauled"][0],
+      value: string | { id: string; name: string }
+    ) => {
+      setEditedTruckingHaulLogs((prevLogs) =>
+        prevLogs.map((log) => {
+          if (log.id === logId) {
+            const updatedEquipment = [...log.EquipmentHauled];
+            updatedEquipment[equipmentIndex] = {
+              ...updatedEquipment[equipmentIndex],
+              [field]:
+                typeof value === "object" && value !== null
+                  ? { ...value }
+                  : value,
+            };
 
-    // Update pending changes - use a Map to prevent duplicates
-    setPendingChanges(prev => {
-      const newChanges = new Map(Object.entries(prev));
-      const logKey = logId;
-      
-      if (!newChanges.has(logKey)) {
-        newChanges.set(logKey, {
-          id: logId,
-          Equipment: allTruckingLogs.find(l => l.id === logId)!.Equipment,
-          EquipmentHauled: [...allTruckingLogs.find(l => l.id === logId)!.EquipmentHauled]
-        });
-      }
-      
-      const logEntry = newChanges.get(logKey)!;
-      logEntry.EquipmentHauled[equipmentIndex] = {
-        ...logEntry.EquipmentHauled[equipmentIndex],
-        [field]: value
-      };
-      
-      return Object.fromEntries(newChanges);
-    });
-  },
-  [allTruckingLogs]
-);
+            return {
+              ...log,
+              EquipmentHauled: updatedEquipment,
+            };
+          }
+          return log;
+        })
+      );
+
+      // Update pending changes - use a Map to prevent duplicates
+      setPendingChanges((prev) => {
+        const newChanges = new Map(Object.entries(prev));
+        const logKey = logId;
+
+        if (!newChanges.has(logKey)) {
+          newChanges.set(logKey, {
+            id: logId,
+            Equipment: allTruckingLogs.find((l) => l.id === logId)!.Equipment,
+            EquipmentHauled: [
+              ...allTruckingLogs.find((l) => l.id === logId)!.EquipmentHauled,
+            ],
+          });
+        }
+
+        const logEntry = newChanges.get(logKey)!;
+        logEntry.EquipmentHauled[equipmentIndex] = {
+          ...logEntry.EquipmentHauled[equipmentIndex],
+          [field]: value,
+        };
+
+        return Object.fromEntries(newChanges);
+      });
+    },
+    [allTruckingLogs]
+  );
 
   const handleJobsiteChange = useCallback(
-    (logId: string, equipmentIndex: number, jobsiteId: string, jobsiteName: string) => {
-      handleHaulLogChange(logId, equipmentIndex, 'JobSite', jobsiteId);
-      
+    (
+      logId: string,
+      equipmentIndex: number,
+      jobsiteId: string,
+      jobsiteName: string
+    ) => {
+      handleHaulLogChange(logId, equipmentIndex, "JobSite", {
+        id: jobsiteId,
+        name: jobsiteName,
+      });
+
       // Update the jobsite name in the local state for display
-      setEditedTruckingHaulLogs(prevLogs => 
-        prevLogs.map(log => {
+      setEditedTruckingHaulLogs((prevLogs) =>
+        prevLogs.map((log) => {
           if (log.id === logId) {
             const updatedEquipment = [...log.EquipmentHauled];
             updatedEquipment[equipmentIndex] = {
               ...updatedEquipment[equipmentIndex],
               JobSite: {
                 ...updatedEquipment[equipmentIndex].JobSite,
-                name: jobsiteName
-              }
+                id: jobsiteId,
+                name: jobsiteName,
+              },
             };
-            
+
             return {
               ...log,
-              EquipmentHauled: updatedEquipment
+              EquipmentHauled: updatedEquipment,
             };
           }
           return log;
@@ -119,25 +146,34 @@ export default function TimeCardTruckingHaulLogs({
   );
 
   const handleEquipmentChange = useCallback(
-    (logId: string, equipmentIndex: number, equipmentId: string, equipmentName: string) => {
-      handleHaulLogChange(logId, equipmentIndex, 'Equipment', equipmentId);
-      
+    (
+      logId: string,
+      equipmentIndex: number,
+      equipmentId: string,
+      equipmentName: string
+    ) => {
+      handleHaulLogChange(logId, equipmentIndex, "Equipment", {
+        id: equipmentId,
+        name: equipmentName,
+      });
+
       // Update the equipment name in the local state for display
-      setEditedTruckingHaulLogs(prevLogs => 
-        prevLogs.map(log => {
+      setEditedTruckingHaulLogs((prevLogs) =>
+        prevLogs.map((log) => {
           if (log.id === logId) {
             const updatedEquipment = [...log.EquipmentHauled];
             updatedEquipment[equipmentIndex] = {
               ...updatedEquipment[equipmentIndex],
               Equipment: {
                 ...updatedEquipment[equipmentIndex].Equipment,
-                name: equipmentName
-              }
+                id: equipmentId,
+                name: equipmentName,
+              },
             };
-            
+
             return {
               ...log,
-              EquipmentHauled: updatedEquipment
+              EquipmentHauled: updatedEquipment,
             };
           }
           return log;
@@ -148,14 +184,14 @@ export default function TimeCardTruckingHaulLogs({
   );
 
   // Notify parent of all changes when pendingChanges updates
-useEffect(() => {
-  console.log('Pending changes:', pendingChanges);
-  if (Object.keys(pendingChanges).length > 0) {
-    const changesArray = Object.values(pendingChanges);
-    console.log('Sending to parent:', changesArray);
-    onDataChange(changesArray);
-  }
-}, [pendingChanges, onDataChange]);
+  useEffect(() => {
+    console.log("Pending changes:", pendingChanges);
+    if (Object.keys(pendingChanges).length > 0) {
+      const changesArray = Object.values(pendingChanges);
+      console.log("Sending to parent:", changesArray);
+      onDataChange(changesArray);
+    }
+  }, [pendingChanges]);
 
   const openJobsiteModal = (logId: string, equipmentIndex: number) => {
     if (!edit) return;
@@ -169,19 +205,23 @@ useEffect(() => {
     setEquipmentModalOpen(true);
   };
 
-  const handleJobsiteSelect = (jobsite: { code: string; label: string } | null) => {
+  const handleJobsiteSelect = (
+    jobsite: { code: string; label: string } | null
+  ) => {
     if (currentEditingLog && jobsite) {
       handleJobsiteChange(
-        currentEditingLog.logId, 
-        currentEditingLog.equipmentIndex, 
-        jobsite.code, 
+        currentEditingLog.logId,
+        currentEditingLog.equipmentIndex,
+        jobsite.code,
         jobsite.label
       );
     }
     setJobsiteModalOpen(false);
   };
 
-  const handleEquipmentSelect = (equipment: { code: string; label: string } | null) => {
+  const handleEquipmentSelect = (
+    equipment: { code: string; label: string } | null
+  ) => {
     if (currentEditingLog && equipment) {
       handleEquipmentChange(
         currentEditingLog.logId,
@@ -285,16 +325,21 @@ useEffect(() => {
       >
         <Holds background={"white"} className="w-full h-full p-2">
           <JobsiteSelector
+            useJobSiteId={true}
             onJobsiteSelect={handleJobsiteSelect}
             initialValue={
               currentEditingLog
                 ? {
-                    code: editedTruckingHaulLogs
-                      .find(log => log.id === currentEditingLog.logId)
-                      ?.EquipmentHauled[currentEditingLog.equipmentIndex]?.JobSite?.id || "",
-                    label: editedTruckingHaulLogs
-                      .find(log => log.id === currentEditingLog.logId)
-                      ?.EquipmentHauled[currentEditingLog.equipmentIndex]?.JobSite?.name || ""
+                    code:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.JobSite?.id || "",
+                    label:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.JobSite?.name || "",
                   }
                 : undefined
             }
@@ -315,12 +360,16 @@ useEffect(() => {
             initialValue={
               currentEditingLog
                 ? {
-                    code: editedTruckingHaulLogs
-                      .find(log => log.id === currentEditingLog.logId)
-                      ?.EquipmentHauled[currentEditingLog.equipmentIndex]?.Equipment?.id || "",
-                    label: editedTruckingHaulLogs
-                      .find(log => log.id === currentEditingLog.logId)
-                      ?.EquipmentHauled[currentEditingLog.equipmentIndex]?.Equipment?.name || ""
+                    code:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.Equipment?.id || "",
+                    label:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.Equipment?.name || "",
                   }
                 : undefined
             }

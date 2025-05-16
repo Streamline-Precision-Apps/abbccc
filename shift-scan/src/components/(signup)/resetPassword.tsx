@@ -200,7 +200,7 @@ const ResetPassword = ({
                   {t("NewPassword")}
                 </Labels>
                 <Images
-                  titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
+                  titleImg={viewSecret1 ? "/eye.svg" : "/eyeSlash.svg"}
                   titleImgAlt={t("EyeImageAlt")}
                   background="none"
                   size="10"
@@ -222,7 +222,7 @@ const ResetPassword = ({
                   {t("ConfirmPassword")}
                 </Labels>
                 <Images
-                  titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
+                  titleImg={viewSecret2 ? "/eye.svg" : "/eyeSlash.svg"}
                   titleImgAlt={t("EyeImageAlt")}
                   background="none"
                   size="10"

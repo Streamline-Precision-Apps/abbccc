@@ -3,25 +3,44 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { ChangeEvent, useEffect, useState } from "react";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import ReviewYourDay from "./(components)/reviewYourDay/reviewYourDay";
 import { Bases } from "@/components/(reusable)/bases";
 import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockOut";
 import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
+import ReviewYourTeam from "./(components)/reviewYourTeam";
 
-export default function ClockOutContent() {
+export type TimeSheet = {
+  submitDate: string;
+  date: Date | string;
+  id: string;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: string;
+  endTime: string | null;
+  workType: string;
+  Jobsite: {
+    name: string;
+  };
+  TascoLogs: {
+    laborType: string;
+    shiftType: string;
+  }[];
+};
+
+export default function ClockOutContent({ manager }: { manager: boolean }) {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
   const [checked, setChecked] = useState(false);
-  const { scanResult } = useScanData();
-  const { savedCostCode } = useSavedCostCode();
   const [base64String, setBase64String] = useState<string>("");
   const { currentView } = useCurrentView();
   const [commentsValue, setCommentsValue] = useState("");
+  const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
+  const [reviewYourTeam, setReviewYourTeam] = useState<boolean>(false);
+  const [pendingTimeSheets, setPendingTimeSheets] = useState<TimeSheet>();
 
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
@@ -62,6 +81,30 @@ export default function ClockOutContent() {
     fetchSignature();
   }, [currentView]);
 
+  useEffect(() => {
+    const fetchTimesheets = async () => {
+      try {
+        const response = await fetch("/api/getTodaysTimesheets");
+        const data = await response.json();
+
+        const activeTimeSheet = data
+          .filter((timesheet: TimeSheet) => timesheet.endTime === null)
+          .sort(
+            (a: TimeSheet, b: TimeSheet) =>
+              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          )[0]; // Get the most recent one
+
+        // Set state with both all pending timesheets and the active one
+        setPendingTimeSheets(activeTimeSheet || null);
+
+        setTimesheets(data);
+      } catch (error) {
+        console.error("Error fetching timesheets:", error);
+      }
+    };
+    fetchTimesheets();
+  }, []);
+
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
   };
@@ -86,10 +129,6 @@ export default function ClockOutContent() {
     incrementStep();
   };
 
-  const handleBreak = async () => {
-    
-  };
-
   const handleSubmitInjury = async () => {
     setPath("clockOut");
   };
@@ -99,27 +138,42 @@ export default function ClockOutContent() {
     return (
       <Bases>
         <Contents>
-          <Holds background={"white"} className="row-span-2 h-full">
-            <Contents width={"section"} className="py-4">
-              <Holds className="row-span-2">
-                <Comment
-                  handleClick={handleNextStep}
-                  clockInRole={""}
-                  setCommentsValue={setCommentsValue}
-                  commentsValue={commentsValue}
-                  checked={checked}
-                  handleCheckboxChange={handleCheckboxChange}
-                  setLoading={setLoading}
-                />
-              </Holds>
-            </Contents>
+          <Holds background={"white"} className="h-full">
+            <Comment
+              handleClick={handleNextStep}
+              clockInRole={""}
+              setCommentsValue={setCommentsValue}
+              commentsValue={commentsValue}
+              checked={checked}
+              handleCheckboxChange={handleCheckboxChange}
+              setLoading={setLoading}
+            />
           </Holds>
         </Contents>
       </Bases>
     );
   }
-  if (step === 1) {
-    return <ReviewYourDay handleClick={handleNextStep} prevStep={prevStep} />;
+  if (step === 1 && !reviewYourTeam) {
+    return (
+      <ReviewYourDay
+        handleClick={handleNextStep}
+        prevStep={prevStep}
+        loading={loading}
+        timesheets={timesheets}
+        manager={false} // Pass the manager prop once team is implemented
+        setReviewYourTeam={setReviewYourTeam}
+      />
+    );
+  }
+  if (step === 1 && reviewYourTeam) {
+    return (
+      <ReviewYourTeam
+        handleClick={handleNextStep}
+        prevStep={prevStep}
+        loading={loading}
+        manager={manager}
+      />
+    );
   }
 
   if (step === 2) {
@@ -144,10 +198,9 @@ export default function ClockOutContent() {
   } else if (step === 3 && path === "clockOut") {
     return (
       <LaborClockOut
-        scanResult={scanResult?.qrCode}
-        savedCostCode={savedCostCode}
         prevStep={prevStep}
         commentsValue={commentsValue}
+        pendingTimeSheets={pendingTimeSheets}
       />
     );
   } else {

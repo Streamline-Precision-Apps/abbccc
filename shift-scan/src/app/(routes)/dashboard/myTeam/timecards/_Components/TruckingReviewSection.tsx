@@ -5,104 +5,101 @@ type TimeSheet = {
   startTime: string;
   endTime: string;
   jobsiteId: string;
-  costCode: {
-    name: string;
-    description: string;
-  };
-  tascoLogs: TascoLogs[] | null;
-  truckingLogs: TruckingLogs[] | null;
-  employeeEquipmentLogs: employeeEquipmentLogs[] | null;
+  workType: string;
   status: string;
-};
-
-type employeeEquipmentLogs = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  equipment: Equipment[];
-  refueled: EquipmentRefueled[];
-};
-
-type EquipmentRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type TruckingLogs = {
-  id: string;
-  laborType: string;
-  startingMileage: number;
-  endingMileage: number | null;
-  Material: Materials[] | null; // Changed from Materials to Material
-  equipment: Equipment[] | null;
-  EquipmentHauled: EquipmentHauled[] | null;
-  Refueled: TruckingRefueled[] | null; // Changed from TruckingRefueled to Refueled
-  stateMileage: stateMileage[] | null;
-};
-
-type EquipmentHauled = {
-  id: string;
-  equipment: Equipment[];
-  jobSite: JobSite[];
-};
-
-type JobSite = {
-  name: string;
-};
-
-type stateMileage = {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-};
-
-type TruckingRefueled = {
-  id: string;
-  gallonsRefueled: number;
-  milesAtfueling: number;
-};
-
-type Materials = {
-  id: string;
-  name: string;
-  quantity: number;
-  loadType: string;
-  LoadWeight: number;
-};
-
-type TascoLogs = {
-  id: string;
-  shiftType: string;
-  materialType: string;
-  LoadQuantity: number;
-  comment: string;
-  Equipment: Equipment[];
-  refueled: TascoRefueled[];
-};
-
-type TascoRefueled = {
-  id: string;
-  gallonsRefueled: number;
-};
-
-type Equipment = {
-  id: string;
-  name: string;
+  CostCode: {
+    name: string;
+  };
+  Jobsite: {
+    name: string;
+  };
+  TascoLogs: {
+    id: string;
+    shiftType: string;
+    laborType: string;
+    materialType: string | null;
+    LoadQuantity: number;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
+  TruckingLogs: {
+    id: string;
+    laborType: string;
+    startingMileage: number;
+    endingMileage: number | null;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    Materials: {
+      id: string;
+      name: string;
+      quantity: number;
+      loadType: string;
+      grossWeight: number;
+      lightWeight: number;
+      materialWeight: number;
+    }[];
+    EquipmentHauled: {
+      id: string;
+      Equipment: {
+        name: string;
+      };
+      JobSite: {
+        name: string;
+      };
+    }[];
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+      milesAtFueling?: number;
+    }[];
+    StateMileages: {
+      id: string;
+      state: string;
+      stateLineMileage: number;
+    }[];
+  }[];
+  EmployeeEquipmentLogs: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    Equipment: {
+      id: string;
+      name: string;
+    };
+    RefuelLogs: {
+      id: string;
+      gallonsRefueled: number;
+    }[];
+  }[];
 };
 
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { Tab } from "@/components/(reusable)/tab";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 export default function TruckingReviewSection({
   currentTimeSheets,
 }: {
   currentTimeSheets: TimeSheet[];
 }) {
+  const t = useTranslations("TimeCardSwiper");
+  const [tabs, setTabs] = useState(1);
   // Combine all trucking logs from all timesheets
   const allTruckingLogs = currentTimeSheets.flatMap(
-    (timesheet) => timesheet.truckingLogs || []
+    (timesheet) => timesheet.TruckingLogs || []
   );
 
   // Check if we have any trucking data at all
@@ -113,31 +110,23 @@ export default function TruckingReviewSection({
     (log) => log.startingMileage || log.endingMileage
   );
 
-  const hasRefuelData = allTruckingLogs.some((log) => log.Refueled?.length);
+  const hasRefuelData = allTruckingLogs.some((log) => log.RefuelLogs?.length);
 
   const hasStateMileage = allTruckingLogs.some(
-    (log) => log.stateMileage?.length
+    (log) => log.StateMileages?.length
   );
 
   const hasMaterials = allTruckingLogs.some(
-    (log) => log.Material?.length // Changed from Materials to Material
+    (log) => log.Materials?.length // Changed from Materials to Material
   );
   const hasEquipmentHauled = allTruckingLogs.some(
     (log) => log.EquipmentHauled?.length
   );
 
-  console.log("All Trucking Logs:", allTruckingLogs);
-  console.log("Has Any Trucking Data:", hasAnyTruckingData);
-  console.log("Has Mileage Data:", hasMileageData);
-  console.log("Has Refuel Data:", hasRefuelData);
-  console.log("Has State Mileage Data:", hasStateMileage);
-  console.log("Has Materials Data:", hasMaterials);
-  console.log("Has Equipment Hauled Data:", hasEquipmentHauled);
-
   if (!hasAnyTruckingData) {
     return (
       <Holds className="h-full w-full flex items-center justify-center">
-        <Texts size="p6">No trucking data available</Texts>
+        <Texts size="p6">{t("NoTruckingDataAvailable")}</Texts>
       </Holds>
     );
   }
@@ -147,207 +136,344 @@ export default function TruckingReviewSection({
       className="h-full w-full overflow-y-auto no-scrollbar"
       style={{ touchAction: "pan-y" }}
     >
-      {/* Main Trucking Logs */}
-      <Holds className="mb-2">
-        <Titles position="left" size="h6" className="mb-2">
-          Mileage Reports
-        </Titles>
-        {hasMileageData && (
-          <Holds
-            background="white"
-            className="border-2 border-black rounded-md"
-          >
-            <Grids
-              cols={"3"}
-              gap={"2"}
-              className="p-1 bg-gray-100 border-b border-black"
-            >
-              <Texts size={"p7"}>EQ#</Texts>
-              <Texts size={"p7"}>Start </Texts>
-              <Texts size={"p7"}>End Mileage</Texts>
-            </Grids>
-            {allTruckingLogs.map((log) => (
-              <Grids
-                key={log.id}
-                cols={"3"}
-                gap={"2"}
-                className="p-2 border-b border-gray-200 last:border-0"
-              >
-                <Texts size={"p7"}>
-                  {`${(log.equipment as Equipment | null)?.name.slice(0, 9)}${
-                    ((log.equipment as Equipment | null)?.name?.length ?? 0) > 9
-                      ? "..."
-                      : ""
-                  }` || "-"}
-                </Texts>
-                {log.laborType === "truckEquipmentOperator" ? (
-                  <Texts size={"p7"}>EQ Operator</Texts>
-                ) : (
-                  <>
-                    <Texts size={"p7"}>{log.startingMileage || "-"}</Texts>
-                    <Texts size={"p7"}>{log.endingMileage || "-"}</Texts>
-                  </>
-                )}
-              </Grids>
-            ))}
-          </Holds>
-        )}
-      </Holds>
-      <Holds position={"row"} className="h-full w-full gap-4 my-2">
-        {/* Refueling Section */}
-        {hasRefuelData && (
-          <Holds className="h-full w-full ">
-            <Titles position="left" size="h6">
-              Fuel Reports
-            </Titles>
-            <Holds
-              background="white"
-              className="border-2 border-black rounded-md h-full"
-            >
-              <Grids
-                cols={"2"}
-                gap={"2"}
-                className="p-2 bg-gray-100 border-b border-black"
-              >
-                <Texts size={"p7"}>Gallons</Texts>
-                <Texts size={"p7"}>Mileage</Texts>
-              </Grids>
-              {allTruckingLogs.flatMap(
-                (log) =>
-                  log.Refueled?.map((refuel) => (
-                    <Grids
-                      key={refuel.id}
-                      cols={"2"}
-                      gap={"2"}
-                      className="p-2 border-b border-gray-200 last:border-0"
-                    >
-                      <Texts
-                        size={"p7"}
-                      >{`${refuel.gallonsRefueled} Gal`}</Texts>
-                      <Texts size={"p7"}>{`${refuel.milesAtfueling} mi`}</Texts>
-                    </Grids>
-                  )) || []
-              )}
-            </Holds>
-          </Holds>
-        )}
+      <Grids rows={"9"} className="w-full h-full">
+        <Holds
+          position={"row"}
+          className="row-start-1 row-end-2 w-full h-full gap-x-[2px] relative"
+        >
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black z-0" />
+          {hasMileageData && (
+            <Tab
+              isActive={tabs === 1}
+              onClick={() => setTabs(1)}
+              titleImage={"/mileage.svg"}
+              titleImageAlt={"mileage"}
+              activeColor={"white"}
+              inActiveColor={"lightBlue"}
+              isComplete={true}
+              activeBorder={"border"}
+              inActiveBorder={"default"}
+              className={
+                tabs === 1
+                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
+                  : ""
+              }
+            />
+          )}
+          {hasMaterials && (
+            <Tab
+              isActive={tabs === 2}
+              onClick={() => setTabs(2)}
+              titleImage={"/haulingFilled.svg"}
+              titleImageAlt={"haulingFilled"}
+              activeColor={"white"}
+              inActiveColor={"lightBlue"}
+              isComplete={true}
+              activeBorder={"border"}
+              inActiveBorder={"default"}
+              className={
+                tabs === 2
+                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
+                  : ""
+              }
+            />
+          )}
 
-        {/* State Mileage Section */}
-        {hasStateMileage && (
-          <Holds className="h-full w-full my-2">
-            <Titles position="left" size="h6">
-              State Mileage
-            </Titles>
-            <Holds
-              background="white"
-              className="border-2 border-black rounded-md h-fit"
-            >
-              <Grids
-                cols={"2"}
-                gap={"2"}
-                className="p-2 bg-gray-100 border-b border-black"
-              >
-                <Texts size={"p7"}>State</Texts>
-                <Texts size={"p7"}>Mileage</Texts>
-              </Grids>
-              {allTruckingLogs.flatMap(
-                (log) =>
-                  log.stateMileage?.map((state) => (
-                    <Grids
-                      key={state.id}
-                      cols={"2"}
-                      gap={"2"}
-                      className="p-2 border-b border-gray-200 last:border-0"
-                    >
-                      <Texts size={"p7"}>{state.state || "-"}</Texts>
-                      <Texts size={"p7"}>{state.stateLineMileage || "-"}</Texts>
-                    </Grids>
-                  )) || []
-              )}
-            </Holds>
-          </Holds>
-        )}
-      </Holds>
-      {/* Materials Section */}
-      {hasMaterials && (
-        <Holds className="mb-6">
-          <Titles position="left" size="h6" className="mb-2">
-            Materials Hauled
-          </Titles>
-          <Holds
-            background="white"
-            className="border-2 border-black rounded-md"
-          >
-            <Grids
-              cols={"4"}
-              gap={"2"}
-              className="p-2 bg-gray-100 border-b border-black"
-            >
-              <Texts size={"p7"}>Material</Texts>
-              <Texts size={"p7"}>Quantity</Texts>
-              <Texts size={"p7"}>Load Type</Texts>
-              <Texts size={"p7"}>Weight</Texts>
-            </Grids>
-            {allTruckingLogs.flatMap(
-              (log) =>
-                log.Material?.map((material) => (
-                  <Grids
-                    key={material.id}
-                    cols={"4"}
-                    gap={"2"}
-                    className="p-2 border-b border-gray-200 last:border-0"
-                  >
-                    <Texts size={"p7"}>{material.name || "-"}</Texts>
-                    <Texts size={"p7"}>{material.quantity || "-"}</Texts>
-
-                    <Texts size={"p7"}>{material.loadType || "-"}</Texts>
-                    <Texts size={"p7"}>{material.LoadWeight || "-"}</Texts>
-                  </Grids>
-                )) || []
-            )}
-          </Holds>
+          {hasRefuelData && (
+            <Tab
+              isActive={tabs === 3}
+              onClick={() => setTabs(3)}
+              titleImage={"/refuelFilled.svg"}
+              titleImageAlt={"refuelFilled"}
+              activeColor={"white"}
+              inActiveColor={"lightBlue"}
+              isComplete={true}
+              activeBorder={"border"}
+              inActiveBorder={"default"}
+              className={
+                tabs === 3
+                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
+                  : ""
+              }
+            />
+          )}
+          {hasStateMileage && (
+            <Tab
+              isActive={tabs === 4}
+              onClick={() => setTabs(4)}
+              titleImage={"/stateFilled.svg"}
+              titleImageAlt={"stateFilled"}
+              activeColor={"white"}
+              inActiveColor={"lightBlue"}
+              isComplete={true}
+              activeBorder={"border"}
+              inActiveBorder={"default"}
+              className={
+                tabs === 4
+                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
+                  : ""
+              }
+            />
+          )}
+          {hasEquipmentHauled && (
+            <Tab
+              isActive={tabs === 5}
+              onClick={() => setTabs(5)}
+              titleImage={"/trucking.svg"}
+              titleImageAlt={"trucking"}
+              activeColor={"white"}
+              inActiveColor={"lightBlue"}
+              isComplete={true}
+              activeBorder={"border"}
+              inActiveBorder={"default"}
+              className={
+                tabs === 5
+                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
+                  : ""
+              }
+            />
+          )}
         </Holds>
-      )}
-
-      {/* Equipment Hauled Section */}
-      {hasEquipmentHauled && (
-        <Holds className="mb-6">
-          <Titles position="left" size="h6" className="mb-2">
-            Equipment Hauled
-          </Titles>
-          <Holds
-            background="white"
-            className="border-2 border-black rounded-md"
-          >
-            <Grids
-              cols={"2"}
-              gap={"2"}
-              className="p-2 bg-gray-100 border-b border-black"
-            >
-              <Texts size={"p7"}>Equipment</Texts>
-              <Texts size={"p7"}>Job Site</Texts>
-            </Grids>
-            {allTruckingLogs.flatMap(
-              (log) =>
-                log.EquipmentHauled?.map((hauled) => (
+        <Holds
+          background={"white"}
+          className="row-start-2 row-end-10 h-full rounded-t-none border-x-[3px] border-b-[3px] border-black"
+        >
+          {/* Main Trucking Logs */}
+          {tabs === 1 && (
+            <Holds className="w-full h-full ">
+              <Holds>
+                <Grids
+                  cols={"2"}
+                  gap={"2"}
+                  className="p-2 border-b-[3px] border-black "
+                >
+                  <Titles position={"left"} size={"h7"}>
+                    {t("TruckId")}
+                  </Titles>
+                  <Titles position={"left"} size={"h7"}>
+                    {t("StartEndMileage")}
+                  </Titles>
+                </Grids>
+              </Holds>
+              <Holds className="overflow-y-auto no-scrollbar">
+                {allTruckingLogs.map((log) => (
                   <Grids
-                    key={hauled.id}
                     cols={"2"}
                     gap={"2"}
-                    className="p-2 border-b border-gray-200 last:border-0"
+                    key={log.id}
+                    className={`p-2 border-b-[3px] border-black  ${
+                      log.endingMileage &&
+                      log.startingMileage > log.endingMileage &&
+                      "bg-red-500"
+                    }`}
                   >
-                    <Texts size={"p7"}>
-                      {(hauled.equipment as unknown as Equipment | null)?.name}
+                    <Texts position={"left"} size={"p7"}>
+                      {`${log.Equipment?.name.slice(0, 15)}${
+                        (log.Equipment?.name?.length ?? 0) > 15 ? "..." : ""
+                      }` || "-"}
                     </Texts>
-                    <Texts size={"p7"}>
-                      {(hauled.jobSite as unknown as JobSite | null)?.name}
-                    </Texts>
+
+                    <Holds
+                      position={"row"}
+                      className={`max-w-[50%] gap-2 justify-start items-center`}
+                    >
+                      <Texts size={"p7"}>{log.startingMileage || "-"}</Texts>
+                      <Images
+                        titleImg={"/arrowRightThin.svg"}
+                        titleImgAlt="Arrow"
+                        className="max-w-4 h-auto object-contain"
+                      />
+                      <Texts size={"p7"}>{log.endingMileage || "-"}</Texts>
+                    </Holds>
                   </Grids>
-                )) || []
-            )}
-          </Holds>
+                ))}
+              </Holds>
+            </Holds>
+          )}
+
+          {tabs === 2 && (
+            <Holds className="h-full w-full ">
+              <Holds background="white" className="">
+                <Grids
+                  cols={"3"}
+                  gap={"2"}
+                  className="p-1 py-2 border-b-[3px] border-black"
+                >
+                  <Titles position={"left"} size={"h7"}>
+                    {t("Material")}
+                  </Titles>
+
+                  <Titles size={"h7"}>{t("Weight")}</Titles>
+                  <Titles position={"right"} size={"h7"}>
+                    {t("Screened")}
+                  </Titles>
+                </Grids>
+                {allTruckingLogs.flatMap(
+                  (log) =>
+                    log.Materials?.map((material) => (
+                      <Grids
+                        key={material.id}
+                        cols={"3"}
+                        gap={"2"}
+                        className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
+                      >
+                        <Holds>
+                          <Texts position={"left"} size={"p7"}>
+                            {material.name || "-"}
+                          </Texts>
+                        </Holds>
+
+                        <Holds className="w-full ">
+                          <Holds
+                            position={"row"}
+                            className="w-full justify-center gap-1"
+                          >
+                            <Texts size={"p7"}>{t("Light")}</Texts>
+                            <Texts size={"p7"}>
+                              {material.lightWeight || "-"}
+                            </Texts>
+                          </Holds>
+                          <Holds
+                            position={"row"}
+                            className="w-full justify-center gap-1"
+                          >
+                            <Texts size={"p7"}>{t("Gross")}</Texts>
+                            <Texts size={"p7"}>
+                              {material.grossWeight || "-"}
+                            </Texts>
+                          </Holds>
+                          <Holds
+                            position={"row"}
+                            className="w-full justify-center gap-1"
+                          >
+                            <Texts size={"p7"}>{t("MaterialWeight")}</Texts>
+                            <Texts size={"p7"}>
+                              {material.materialWeight || "-"}
+                            </Texts>
+                          </Holds>
+                        </Holds>
+                        <Texts position={"right"} size={"p6"}>
+                          {material.loadType === "SCREENED"
+                            ? t("Yes")
+                            : t("No")}
+                        </Texts>
+                      </Grids>
+                    )) || []
+                )}
+              </Holds>
+            </Holds>
+          )}
+
+          {/* Refueling Section */}
+          {tabs === 3 && (
+            <Holds background="white" className="w-full h-full">
+              <Holds>
+                <Grids
+                  cols={"3"}
+                  gap={"2"}
+                  className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
+                >
+                  <Titles size={"h7"}>{t("EquipmentId")}</Titles>
+                  <Titles size={"h7"}>{t("Gallons")}</Titles>
+                  <Titles size={"h7"}>{t("Mileage")}</Titles>
+                </Grids>
+              </Holds>
+              <Holds>
+                {allTruckingLogs.flatMap(
+                  (log) =>
+                    log.RefuelLogs?.map((refuel) => (
+                      <Grids
+                        key={refuel.id}
+                        cols={"3"}
+                        gap={"2"}
+                        className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
+                      >
+                        <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
+                        <Texts
+                          size={"p7"}
+                        >{`${refuel.gallonsRefueled} Gal`}</Texts>
+                        <Texts
+                          size={"p7"}
+                        >{`${refuel.milesAtFueling} mi`}</Texts>
+                      </Grids>
+                    )) || []
+                )}
+              </Holds>
+            </Holds>
+          )}
+
+          {/* State Mileage Section */}
+          {tabs === 4 && (
+            <Holds className="h-full w-full">
+              <Holds>
+                <Grids
+                  cols={"3"}
+                  gap={"2"}
+                  className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
+                >
+                  <Titles size={"h7"}>{t("EquipmentId")}</Titles>
+                  <Titles size={"h7"}>{t("State")}</Titles>
+                  <Titles size={"h7"}>{t("Mileage")}</Titles>
+                </Grids>
+              </Holds>
+              <Holds>
+                {allTruckingLogs.flatMap(
+                  (log) =>
+                    log.StateMileages?.map((state) => (
+                      <Grids
+                        key={state.id}
+                        cols={"3"}
+                        gap={"2"}
+                        className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
+                      >
+                        <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
+                        <Texts size={"p7"}>{state.state || "-"}</Texts>
+                        <Texts size={"p7"}>
+                          {`${state.stateLineMileage} mi` || "-"}
+                        </Texts>
+                      </Grids>
+                    )) || []
+                )}
+              </Holds>
+            </Holds>
+          )}
+
+          {/* Materials Section */}
+
+          {/* Equipment Hauled Section */}
+          {tabs === 5 && (
+            <Holds>
+              <Grids
+                cols={"2"}
+                className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
+              >
+                <Titles size={"h7"}>{t("EquipmentHauled")}</Titles>
+                <Titles size={"h7"}>{t("TransportedTo")}</Titles>
+              </Grids>
+
+              {allTruckingLogs.flatMap(
+                (log) =>
+                  log.EquipmentHauled?.map((hauled) => (
+                    <Grids
+                      key={hauled.id}
+                      cols={"3"}
+                      gap={"2"}
+                      className="p-2 border-b-[3px] border-black last:border-0"
+                    >
+                      <Texts size={"p7"}>{hauled.Equipment?.name}</Texts>
+                      <Images
+                        titleImg="/arrowRightThin.svg"
+                        titleImgAlt="arrow"
+                        className="max-w-5 h-auto mx-auto"
+                      />
+                      <Texts size={"p7"}>{hauled.JobSite?.name}</Texts>
+                    </Grids>
+                  )) || []
+              )}
+            </Holds>
+          )}
         </Holds>
-      )}
+      </Grids>
     </Holds>
   );
 }

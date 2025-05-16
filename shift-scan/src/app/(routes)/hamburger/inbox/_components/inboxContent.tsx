@@ -20,6 +20,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
   const url = searchParams.get("returnUrl") || "/dashboard";
   const t = useTranslations("Hamburger-Inbox");
   const [loading, setLoading] = useState<boolean>(false);
+
   return (
     <Grids rows={"7"} gap={"5"} className="h-full">
       <Holds
