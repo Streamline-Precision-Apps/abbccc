@@ -129,6 +129,7 @@ export type UserTraining = {
   isCompleted: boolean;
 };
 
+// moved to searchUser.ts
 export type SearchUser = {
   id: string;
   firstName: string;
@@ -144,6 +145,7 @@ export type SearchUser = {
   terminationDate: Date | null;
 };
 
+// moved to personnel.ts
 export type SearchCrew = {
   id: string;
   name: string;
@@ -913,14 +915,15 @@ export interface DeleteRefuelLogParams {
   id: string;
 }
 
-export interface EmployeeEquipmentLogWithEquipment extends Omit<EmployeeEquipmentLog, 'startTime' | 'endTime'> {
+export interface EmployeeEquipmentLogWithEquipment
+  extends Omit<EmployeeEquipmentLog, "startTime" | "endTime"> {
   Equipment: {
     id: string;
     name: string;
     // Include other Equipment properties you need
   };
-  startTime: Date;  // Matching the base type
-  endTime: Date;    // Matching the base type
+  startTime: Date; // Matching the base type
+  endTime: Date; // Matching the base type
   Jobsite?: {
     id?: string;
     name?: string;
