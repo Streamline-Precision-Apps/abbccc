@@ -15,14 +15,7 @@ import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function GeneralDashboardView({
   additionalButtonsType,
-  isModalOpen,
-  isModal2Open,
-  setIsModal2Open,
-  comment,
-  setComment,
-  handleCOButton3,
-  handleCloseModal,
-  handleShowManagerButtons,
+  verifyLogsCompletion,
   permission,
   logs,
   mechanicProjectID,
@@ -33,11 +26,8 @@ export default function GeneralDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton3: () => void;
-  handleCloseModal: () => void;
-  handleShowManagerButtons: () => void;
+  verifyLogsCompletion: () => void;
   permission: string;
-  handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
   mechanicProjectID: string;
 }) {
@@ -45,18 +35,18 @@ export default function GeneralDashboardView({
   return (
     <>
       <Contents width={"section"} className="py-5">
-        <Grids
-          cols={"2"}
-          rows={
-            permission === "ADMIN" ||
-            permission === "SUPERADMIN" ||
-            permission === "MANAGER"
-              ? "3"
-              : "3"
-          }
-          gap={"5"}
-        >
+        <Grids cols={"2"} rows={"3"} gap={"5"}>
           <>
+            <EquipmentBtn permission={permission} />
+
+            <SwitchJobsBtn
+              {...modalState}
+              permission={permission}
+              logs={logs}
+              laborType={"general"}
+              view={"general"}
+            />
+
             {permission !== "USER" && !additionalButtonsType && (
               <GeneratorBtn />
             )}
@@ -65,19 +55,8 @@ export default function GeneralDashboardView({
               <MyTeamWidget />
             )}
 
-            <EquipmentBtn permission={permission} />
-
-            <SwitchJobsBtn
-              {...modalState}
-              handleShowManagerButtons={handleShowManagerButtons}
-              permission={permission}
-              logs={logs}
-              laborType={"general"}
-              view={"general"}
-            />
-
             <ClockOutBtn
-              handleShowAdditionalButtons={handleCOButton3}
+              handleShowAdditionalButtons={verifyLogsCompletion}
               permission={permission}
               logs={logs}
               mechanicProjectID={mechanicProjectID}

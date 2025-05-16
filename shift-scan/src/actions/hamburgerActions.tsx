@@ -75,7 +75,7 @@ export async function deleteFormSubmission(id: string) {
         id,
       },
     });
-
+    revalidatePath("/hamburger/inbox");
     return true;
   } catch {
     console.error("error deleting Form Submission");
@@ -138,7 +138,6 @@ export async function saveDraft(
             ...existingData, // Preserve existing data
             ...changedFields, // Overwrite with changed fields
           },
-          status: "DRAFT", // Ensure the status remains DRAFT
         },
       });
 

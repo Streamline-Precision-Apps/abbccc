@@ -204,9 +204,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
                           {t("NewPassword")}
                         </Labels>
                         <Images
-                          titleImg={
-                            viewSecret1 ? "/eye.old.svg" : "/eye-slash.old.svg"
-                          }
+                          titleImg={viewSecret1 ? "/eye.svg" : "/eyeSlash.svg"}
                           titleImgAlt="eye"
                           background="none"
                           size="10"
@@ -230,9 +228,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
                           {t("ConfirmPassword")}
                         </Labels>
                         <Images
-                          titleImg={
-                            viewSecret2 ? "/eye.old.svg" : "/eye-slash.old.svg"
-                          }
+                          titleImg={viewSecret2 ? "/eye.svg" : "/eyeSlash.svg"}
                           titleImgAlt="eye"
                           background="none"
                           size="10"

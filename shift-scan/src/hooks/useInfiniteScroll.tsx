@@ -118,6 +118,7 @@ export function useInfiniteScroll<T>({
   // RETURN VALUES FOR COMPONENTS TO USE
   return {
     data, // The accumulated data array
+    setData, // Function to set the data
     isLoading, // Whether additional data is being loaded
     isInitialLoading, // Whether initial data is being loaded
     isRefreshing, // Whether a refresh is in progress

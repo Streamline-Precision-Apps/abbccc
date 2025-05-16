@@ -2,12 +2,16 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimeSheet, TimesheetHighlights, TimesheetUpdate, TruckingMileageUpdate } from "@/lib/types";
+import {
+  TimeSheet,
+  TimesheetHighlights,
+  TimesheetUpdate,
+  TruckingMileageUpdate,
+} from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
-import { select } from "@nextui-org/theme";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -533,14 +537,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const jobsiteId = formData.get("jobsiteId") as string;
       const userId = formData.get("userId") as string;
       const equipmentId = formData.get("equipment") as string;
-      const equipment = await prisma.equipment.findUnique({
-        where: { id: equipmentId },
-        select: { qrId: true },
-      });
-      if (!equipment) {
-        throw new Error("Equipment not found");
-      }
-      const previoustimeSheetComments = formData.get(
+      const previousTimeSheetComments = formData.get(
         "timeSheetComments"
       ) as string;
       const costCode = formData.get("costcode") as string;
@@ -552,7 +549,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       if (shiftType === "ABCD Shift") {
         materialType = formData.get("materialType") as string;
       } else {
-        materialType = null;
+        materialType = undefined;
       }
 
       // Create a new TimeSheet
@@ -567,9 +564,13 @@ export async function handleTascoTimeSheet(formData: FormData) {
           TascoLogs: {
             create: {
               shiftType,
-              equipmentId: equipment.qrId,
               laborType: laborType,
-              materialType: materialType,
+              ...(equipmentId && {
+                Equipment: { connect: { id: equipmentId } },
+              }),
+              ...(materialType && {
+                TascoMaterialTypes: { connect: { name: materialType } },
+              }),
             },
           },
         },
@@ -591,7 +592,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           data: {
             endTime: formatISO(formData.get("endTime") as string),
-            comment: previoustimeSheetComments,
+            comment: previousTimeSheetComments,
           },
         });
 
@@ -871,3 +872,38 @@ export async function deleteTimeSheet(id: string) {
   });
 }
 
+export async function updateTimesheetHighlights(
+  updatedTimesheets: TimesheetUpdate[]
+) {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("Unauthorized");
+
+    const updatePromises = updatedTimesheets.map((timesheet) =>
+      prisma.timeSheet.update({
+        where: { id: timesheet.id },
+        data: {
+          startTime: timesheet.startTime
+            ? new Date(timesheet.startTime)
+            : undefined,
+          endTime: timesheet.endTime ? new Date(timesheet.endTime) : null,
+          jobsiteId: timesheet.jobsiteId,
+          costcode: timesheet.costcode,
+          editedByUserId: session.user.id,
+          updatedAt: new Date(),
+        },
+      })
+    );
+
+    await Promise.all(updatePromises);
+
+    // Aggressive revalidation
+    revalidatePath("/dashboard/myTeam");
+    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating timesheets:", error);
+    throw error;
+  }
+}

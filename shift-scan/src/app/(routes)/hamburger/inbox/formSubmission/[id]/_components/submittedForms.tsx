@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { useTranslations } from "next-intl";
 
 interface FormField {
   id: string;
@@ -67,6 +68,7 @@ export default function SubmittedForms({
   submissionId: string | null;
   submissionStatus: string | null;
 }) {
+  const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
   const [deleteRequestModal, setDeleteRequestModal] = useState(false);
   console.log(signature);
@@ -84,7 +86,6 @@ export default function SubmittedForms({
           submissionId ? submissionId : "",
           title
         );
-        console.log("Draft saved successfully");
       } catch (error) {
         console.error("Error saving draft:", error);
       }
@@ -92,10 +93,10 @@ export default function SubmittedForms({
   };
 
   // Use the auto-save hook with the FormValues type
-  const autoSave = useAutoSave<{ values: FormValues; title: string }>(
-    (data) => saveDraftData(data.values, data.title),
-    2000
-  );
+  const { autoSave } = useAutoSave<{
+    values: FormValues;
+    title: string;
+  }>((data) => saveDraftData(data.values, data.title), 500);
 
   // Trigger auto-save when formValues or formTitle changes
   useEffect(() => {
@@ -125,40 +126,27 @@ export default function SubmittedForms({
           }}
         >
           <>
-            <Holds className="w-full h-full justify-center items-center">
-              <Titles size={"h4"}>
-                {formTitle === ""
-                  ? formData.name
-                  : formTitle.charAt(0).toUpperCase() +
-                    formTitle.slice(1).slice(0, 24)}
+            <Holds className="px-8 h-full justify-center items-center">
+              <Titles size={"h3"}>
+                {formTitle
+                  ? formTitle.charAt(0).toUpperCase() +
+                    formTitle.slice(1).slice(0, 24)
+                  : formData.name.charAt(0).toUpperCase() +
+                    formData.name.slice(1).slice(0, 24)}
               </Titles>
-
-              {formTitle === "" ? (
-                <Titles size={"h7"}>{formData.name}</Titles>
-              ) : null}
-
-              <Titles size={"h6"}>{formData.name}</Titles>
+              {formTitle !== "" && <Titles size={"h6"}>{formData.name}</Titles>}
             </Holds>
-            <Holds
-              className="flex items-center justify-center w-10 h-auto rounded-full absolute top-2 right-3 "
-              background={
-                submissionStatus === "PENDING"
-                  ? "orange"
-                  : submissionStatus === "APPROVED"
-                  ? "green"
-                  : "red"
-              }
-            >
+            <Holds className=" w-12 h-12 absolute right-1 top-0 justify-center">
               <Images
                 titleImgAlt={"form Status"}
                 titleImg={
                   submissionStatus === "PENDING"
                     ? "/statusOngoingFilled.svg"
                     : submissionStatus === "APPROVED"
-                    ? "/statusApproved.svg"
-                    : "/statusReject.svg"
+                    ? "/statusApprovedFilled.svg"
+                    : "/statusDeniedFilled.svg"
                 }
-                className=" w-10 h-auto object-contain"
+                className="max-w-10 h-auto object-contain"
               />
             </Holds>
           </>
@@ -167,14 +155,14 @@ export default function SubmittedForms({
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-8 px-2 "
+        className="w-full h-full row-start-2 row-end-8 "
       >
         <Contents width={"section"}>
           <form
             onSubmit={() => {
               handleDelete();
             }}
-            className="h-full"
+            className="h-full "
           >
             <Grids rows={"6"} gap={"3"} className="h-full w-full">
               <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-hidden no-scrollbar">
@@ -210,7 +198,7 @@ export default function SubmittedForms({
                         />
                       ) : (
                         <Holds className="w-full h-24 flex items-center justify-center">
-                          <Texts>No Signature</Texts>
+                          <Texts>{t("NoSignature")}</Texts>
                         </Holds>
                       )}
                     </Holds>
@@ -220,7 +208,8 @@ export default function SubmittedForms({
                       className="pt-1"
                       position={"left"}
                       size={"p7"}
-                    >{`Originally Submitted: ${
+                      text={"gray"}
+                    >{`${t("OriginallySubmitted")} ${
                       format(new Date(submittedForm || ""), "M/dd/yy") || ""
                     } `}</Texts>
                   )}
@@ -234,11 +223,12 @@ export default function SubmittedForms({
                     onClick={() => setDeleteRequestModal(true)}
                     className="w-full h-[50px]"
                   >
-                    <Titles size={"h4"}>Delete Request</Titles>
+                    <Titles size={"h4"}>{t("DeleteRequest")}</Titles>
                   </Buttons>
                 </Holds>
               )}
               <NModals
+                background={"noOpacity"}
                 isOpen={deleteRequestModal}
                 handleClose={() => setDeleteRequestModal(false)}
                 size={"medWW"}
@@ -246,7 +236,7 @@ export default function SubmittedForms({
                 <Holds className="w-full h-full pb-5">
                   <Holds className="w-full h-3/4 justify-center items-center">
                     <Texts size={"p2"}>
-                      Are you sure you want to delete this request?
+                      {t("AreYouSureYouWantToDeleteThisRequest")}
                     </Texts>
                   </Holds>
                   <Holds position={"row"} className="gap-4 h-1/4">
@@ -256,7 +246,7 @@ export default function SubmittedForms({
                       onClick={() => handleDelete()}
                       className="w-full py-2"
                     >
-                      <Titles size={"h4"}>Yes</Titles>
+                      <Titles size={"h4"}>{t("Yes")}</Titles>
                     </Buttons>
 
                     <Buttons
@@ -265,7 +255,7 @@ export default function SubmittedForms({
                       onClick={() => setDeleteRequestModal(false)}
                       className="w-full py-2"
                     >
-                      <Titles size={"h4"}>cancel</Titles>
+                      <Titles size={"h4"}>{t("Cancel")}</Titles>
                     </Buttons>
                   </Holds>
                 </Holds>
