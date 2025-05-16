@@ -46,11 +46,9 @@ export default function TimeCardTruckingHaulLogs({
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    if (!edit) {
       setEditedTruckingHaulLogs(allTruckingLogs);
       setPendingChanges({});
-    }
-  }, [edit, truckingEquipmentHaulLogs]);
+  }, [truckingEquipmentHaulLogs]);
 
   const handleHaulLogChange = useCallback(
     (

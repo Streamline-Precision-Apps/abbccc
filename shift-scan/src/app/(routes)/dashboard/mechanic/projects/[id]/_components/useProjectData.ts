@@ -67,7 +67,7 @@ export default function useProjectData(projectId: string) {
           problemReceived: data.equipmentIssue,
           additionalNotes: data.additionalInfo,
           hasBeenDelayed: data.hasBeenDelayed,
-          maintenanceLogs: data.MaintenanceLogs,
+          MaintenanceLogs: data.MaintenanceLogs,
         };
         setProjectData(processedData);
 

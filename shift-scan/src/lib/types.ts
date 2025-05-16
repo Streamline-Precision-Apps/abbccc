@@ -424,6 +424,7 @@ export type StateMileageLog = {
   stateLineMileage: number;
 };
 export type TruckingStateLog = {
+  id: string;
   Equipment: {
     id: string;
     name: string;
@@ -964,6 +965,11 @@ export interface TruckingEquipmentHaulUpdate {
   jobSiteId?: string | null;
   editedByUserId?: string | null;
 }
+
+export type MaterialType = {
+  id: number;
+  name: string;
+};
 
 export type TimesheetFilter =
   | "timesheetHighlights"

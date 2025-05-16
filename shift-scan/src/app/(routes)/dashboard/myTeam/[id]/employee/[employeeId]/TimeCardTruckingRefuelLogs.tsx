@@ -47,11 +47,9 @@ export default function TimeCardTruckingRefuelLogs({
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    if (!edit) {
       setEditedRefuelLogs(allTruckingLogs);
       setChangesWereMade(false);
-    }
-  }, [edit, truckingRefuelLogs]);
+  }, [truckingRefuelLogs]);
 
   const handleRefuelChange = useCallback(
     (id: string, truckingLogId: string, field: keyof ExtendedTruckingRefuel, value: string | number | null) => {

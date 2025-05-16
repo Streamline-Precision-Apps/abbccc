@@ -63,6 +63,7 @@ export default function EmployeeTabs() {
 
   const {
     data: timesheetData,
+    setData: setTimesheetData,
     loading: loadingTimesheets,
     error: errorTimesheets,
     updateDate: fetchTimesheetsForDate,
@@ -139,13 +140,15 @@ export default function EmployeeTabs() {
             mileageChanges.forEach((change, index) => {
               formData.append(`changes[${index}]`, JSON.stringify(change));
             });
-            await updateTruckingMileage(formData);
+            const result = await updateTruckingMileage(formData);
 
-            await Promise.all([
-              fetchTimesheetsForDate(date),
-              fetchTimesheetsForFilter(timeSheetFilter),
-            ]);
-            setEdit(false);
+            if (result?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            }
             break;
           }
 
@@ -273,11 +276,17 @@ export default function EmployeeTabs() {
               Array.isArray(changes) &&
               changes.every(
                 (change) =>
-                  "id" in change && "startTime" in change && "endTime" in change
+                  "id" in change &&
+                  change.startTime instanceof Date && // Check for Date objects
+                  change.endTime instanceof Date
               )
             ) {
               await updateEquipmentLogs(
-                changes as { id: string; startTime?: Date; endTime?: Date }[]
+                changes.map((change) => ({
+                  id: change.id,
+                  startTime: change.startTime,
+                  endTime: change.endTime,
+                }))
               );
             } else {
               console.error("Invalid changes type");
@@ -304,6 +313,7 @@ export default function EmployeeTabs() {
           fetchTimesheetsForDate(date),
           fetchTimesheetsForFilter(timeSheetFilter),
         ]);
+
         setEdit(false);
       } catch (error) {
         console.error("Failed to save changes:", error);
@@ -311,7 +321,13 @@ export default function EmployeeTabs() {
         throw error;
       }
     },
-    [date, timeSheetFilter, fetchTimesheetsForDate, fetchTimesheetsForFilter]
+    [
+      date,
+      timeSheetFilter,
+      fetchTimesheetsForDate,
+      fetchTimesheetsForFilter,
+      setTimesheetData,
+    ]
   );
 
   const onCancelEdits = useCallback(() => {
