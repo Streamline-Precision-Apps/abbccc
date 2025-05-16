@@ -18,6 +18,15 @@ import {
   TimesheetFilter,
   TruckingMileageUpdate,
   TruckingEquipmentHaulLog,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
+  TruckingMaterialHaulLogData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoHaulLogData,
+  TascoRefuelLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
 import {
   updateTruckingHaulLogs,
@@ -31,6 +40,56 @@ import {
   updateEquipmentRefuelLogs,
   updateTruckingMileage,
 } from "@/actions/myTeamsActions";
+import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
+
+// Add a type for material haul log changes
+interface TruckingMaterialHaulLog {
+  id: string;
+  name: string;
+  LocationOfMaterial: string;
+  materialWeight?: number;
+  lightWeight?: number;
+  grossWeight?: number;
+}
+// Add a type for equipment log changes
+interface EquipmentLogChange {
+  id: string;
+  startTime: Date;
+  endTime: Date;
+}
+// Type guard for EquipmentLogChange
+function isEquipmentLogChange(
+  obj:
+    | EquipmentLogChange
+    | TruckingMaterialHaulLog
+    | TimesheetHighlights
+    | TruckingMileageUpdate
+    | TruckingEquipmentHaulLog
+    | {
+        id: string;
+        gallonsRefueled?: number | null;
+        milesAtFueling?: number | null;
+      }
+    | { id: string; state?: string; stateLineMileage?: number }
+    | {
+        id: string;
+        shiftType?: string;
+        equipmentId?: string | null;
+        materialType?: string;
+        LoadQuantity?: number | null;
+      }
+    | { id: string; gallonsRefueled?: number | null }
+): obj is EquipmentLogChange {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "id" in obj &&
+    "startTime" in obj &&
+    "endTime" in obj &&
+    obj["startTime"] instanceof Date &&
+    obj["endTime"] instanceof Date
+  );
+}
 
 export default function EmployeeTabs() {
   const { employeeId } = useParams();
@@ -89,7 +148,22 @@ export default function EmployeeTabs() {
         | TimesheetHighlights
         | TruckingMileageUpdate[]
         | TruckingEquipmentHaulLog[]
-        | any[]
+        | TruckingMaterialHaulLog[]
+        | {
+            id: string;
+            gallonsRefueled?: number | null;
+            milesAtFueling?: number | null;
+          }[]
+        | { id: string; state?: string; stateLineMileage?: number }[]
+        | {
+            id: string;
+            shiftType?: string;
+            equipmentId?: string | null;
+            materialType?: string;
+            LoadQuantity?: number | null;
+          }[]
+        | { id: string; gallonsRefueled?: number | null }[]
+        | EquipmentLogChange[]
     ) => {
       try {
         switch (timeSheetFilter) {
@@ -175,7 +249,7 @@ export default function EmployeeTabs() {
           }
 
           case "truckingMaterialHaulLogs": {
-            const materialChanges = changes as any[];
+            const materialChanges = changes as TruckingMaterialHaulLog[];
             if (materialChanges.length > 0) {
               const formattedChanges = materialChanges.map((change) => ({
                 id: change.id,
@@ -272,15 +346,7 @@ export default function EmployeeTabs() {
             break;
 
           case "equipmentLogs":
-            if (
-              Array.isArray(changes) &&
-              changes.every(
-                (change) =>
-                  "id" in change &&
-                  change.startTime instanceof Date && // Check for Date objects
-                  change.endTime instanceof Date
-              )
-            ) {
+            if (Array.isArray(changes) && changes.every(isEquipmentLogChange)) {
               await updateEquipmentLogs(
                 changes.map((change) => ({
                   id: change.id,
@@ -415,4 +481,45 @@ export default function EmployeeTabs() {
       </Grids>
     </Holds>
   );
+}
+
+// In EmployeeTimesheetProps (or EmployeeTimesheetData type), allow null:
+export type EmployeeTimesheetData = TimesheetDataUnion;
+
+export interface EmployeeTimeSheetsProps {
+  data: EmployeeTimesheetData;
+  date: string;
+  setDate: (date: string) => void;
+  edit: boolean;
+  setEdit: (edit: boolean) => void;
+  loading: boolean;
+  manager: string;
+  timeSheetFilter: TimesheetFilter;
+  setTimeSheetFilter: React.Dispatch<React.SetStateAction<TimesheetFilter>>;
+  onSaveChanges: (
+    changes:
+      | TimesheetHighlights[]
+      | TimesheetHighlights
+      | TruckingMileageUpdate[]
+      | TruckingEquipmentHaulLog[]
+      | TruckingMaterialHaulLog[]
+      | {
+          id: string;
+          gallonsRefueled?: number | null;
+          milesAtFueling?: number | null;
+        }[]
+      | { id: string; state?: string; stateLineMileage?: number }[]
+      | {
+          id: string;
+          shiftType?: string;
+          equipmentId?: string | null;
+          materialType?: string;
+          LoadQuantity?: number | null;
+        }[]
+      | { id: string; gallonsRefueled?: number | null }[]
+      | EquipmentLogChange[]
+  ) => Promise<void>;
+  onCancelEdits: () => void;
+  fetchTimesheetsForDate: (date: string) => Promise<void>;
+  fetchTimesheetsForFilter: (filter: TimesheetFilter) => Promise<void>;
 }
