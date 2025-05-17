@@ -473,6 +473,20 @@ export async function updateEquipmentLogs(
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating equipment logs:", updates);
+    
+    // Validate input
+    if (!updates.every(update => 
+      update.startTime instanceof Date || update.startTime === undefined
+    )) {
+      throw new Error("Invalid startTime format");
+    }
+    
+    if (!updates.every(update => 
+      update.endTime instanceof Date || update.endTime === undefined
+    )) {
+      throw new Error("Invalid endTime format");
+    }
+
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 

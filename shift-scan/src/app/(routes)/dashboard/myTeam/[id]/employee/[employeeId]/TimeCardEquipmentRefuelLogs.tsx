@@ -56,25 +56,27 @@ export default function TimeCardEquipmentRefuelLogs({
         (log) => log.RefuelLogs && log.RefuelLogs.length > 0
       );
       const newFlattenedLogs = flattenRefuelLogs(filteredLogs);
-      
-      if (!edit) {
-        setFlattenedLogs(newFlattenedLogs);
-        setChangesWereMade(false);
-      } else if (!changesWereMade) {
+
+      setFlattenedLogs(newFlattenedLogs);
+      setChangesWereMade(false);
+      if (!changesWereMade) {
         setFlattenedLogs(newFlattenedLogs);
       }
     } else {
       setFlattenedLogs([]);
     }
-  }, [edit, equipmentRefuelLogs, flattenRefuelLogs, changesWereMade]);
+  }, [equipmentRefuelLogs, flattenRefuelLogs]);
 
   const handleRefuelChange = useCallback(
     (id: string, employeeEquipmentLogId: string, value: string) => {
-      const updatedLogs = flattenedLogs.map(log => {
-        if (log.id === id && log.employeeEquipmentLogId === employeeEquipmentLogId) {
+      const updatedLogs = flattenedLogs.map((log) => {
+        if (
+          log.id === id &&
+          log.employeeEquipmentLogId === employeeEquipmentLogId
+        ) {
           return {
             ...log,
-            gallonsRefueled: value ? Number(value) : null
+            gallonsRefueled: value ? Number(value) : null,
           };
         }
         return log;
@@ -133,7 +135,7 @@ export default function TimeCardEquipmentRefuelLogs({
                         <Inputs
                           type="number"
                           value={log.gallonsRefueled?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleRefuelChange(
                               log.id,
                               log.employeeEquipmentLogId,

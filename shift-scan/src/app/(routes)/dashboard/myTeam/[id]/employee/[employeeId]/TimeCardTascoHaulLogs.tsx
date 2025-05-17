@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TascoHaulLogs, TascoHaulLogData } from "@/lib/types";
+import { TascoHaulLogs, TascoHaulLogData, MaterialType } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
 // Define the type for processed haul logs
@@ -16,6 +16,12 @@ type ProcessedTascoHaulLog = {
   materialType: string;
   LoadQuantity: number | null;
 };
+
+// Define shift type options
+const SHIFT_TYPES = [
+  { value: "ABCD Shift", label: "ABCD Shift" },
+  { value: "E Shift", label: "E Shift" }
+];
 
 type TimeCardTascoHaulLogsProps = {
   edit: boolean;
@@ -46,14 +52,28 @@ export default function TimeCardTascoHaulLogs({
 
   const [editedTascoHaulLogs, setEditedTascoHaulLogs] = useState<ProcessedTascoHaulLog[]>(allTascoHaulLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
+
+  useEffect(() => {
+    const fetchMaterialTypes = async () => {
+      try {
+        const materialTypesResponse = await fetch("/api/getMaterialTypes");
+        const materialTypesData = await materialTypesResponse.json();
+        setMaterialTypes(materialTypesData);
+        console.log("Material Types:", materialTypesData);
+      } catch {
+        console.error("Error fetching material types");
+      }
+    };
+
+    fetchMaterialTypes();
+  }, []);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    if (!edit) {
       setEditedTascoHaulLogs(allTascoHaulLogs);
       setChangesWereMade(false);
-    }
-  }, [edit, tascoHaulLogs]);
+  }, [tascoHaulLogs]);
 
   const handleTascoHaulChange = useCallback(
     (id: string, field: keyof ProcessedTascoHaulLog, value: string | number) => {
@@ -109,18 +129,32 @@ export default function TimeCardTascoHaulLogs({
                   >
                     <Grids cols={"2"} rows={"2"} className="w-full h-full">
                       <Holds className="size-full col-start-1 col-end-2 row-start-1 row-end-2 border-b-[3px] border-r-[3px] border-black">
-                        <Inputs
-                          value={log.shiftType}
-                          onChange={(e) => 
-                            handleTascoHaulChange(
-                              log.id,
-                              'shiftType',
-                              e.target.value
-                            )
-                          }
-                          disabled={!edit}
-                          className="size-full text-xs text-center border-none rounded-none rounded-tl-md py-2"
-                        />
+                        {edit ? (
+                          <select
+                            value={log.shiftType}
+                            onChange={(e) => 
+                              handleTascoHaulChange(
+                                log.id,
+                                'shiftType',
+                                e.target.value
+                              )
+                            }
+                            className="w-full h-full text-xs text-center border-none rounded-none rounded-tl-md py-2 bg-white"
+                          >
+                            {SHIFT_TYPES.map((shift) => (
+                              <option key={shift.value} value={shift.value}>
+                                {shift.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Inputs
+                            value={log.shiftType}
+                            disabled={true}
+                            className="size-full text-xs text-center border-none rounded-none rounded-tl-md py-2"
+                            readOnly
+                          />
+                        )}
                       </Holds>
                       <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
                         <Inputs
@@ -132,23 +166,38 @@ export default function TimeCardTascoHaulLogs({
                               e.target.value
                             )
                           }
-                          disabled={!edit}
+                          disabled={true}
                           className="size-full text-xs text-center border-none rounded-none rounded-bl-md py-2"
                         />
                       </Holds>
                       <Holds className="size-full col-start-2 col-end-3 row-start-1 row-end-2 border-b-[3px] border-black">
-                        <Inputs
-                          value={log.materialType}
-                          onChange={(e) => 
-                            handleTascoHaulChange(
-                              log.id,
-                              'materialType',
-                              e.target.value
-                            )
-                          }
-                          disabled={!edit}
-                          className="size-full text-xs text-center border-none rounded-none rounded-tr-md py-2"
-                        />
+                        {edit ? (
+                          <select
+                            value={log.materialType}
+                            onChange={(e) => 
+                              handleTascoHaulChange(
+                                log.id,
+                                'materialType',
+                                e.target.value
+                              )
+                            }
+                            className="w-full h-full text-xs text-center border-none rounded-none rounded-tr-md py-2 bg-white"
+                          >
+                            <option value="">Select Material</option>
+                            {materialTypes.map((material) => (
+                              <option key={material.id} value={material.name}>
+                                {material.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Inputs
+                            value={log.materialType}
+                            disabled={true}
+                            className="size-full text-xs text-center border-none rounded-none rounded-tr-md py-2"
+                            readOnly
+                          />
+                        )}
                       </Holds>
                       <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3">
                         <Inputs

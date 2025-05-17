@@ -50,11 +50,9 @@ export default function TimeCardTascoRefuelLogs({
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    if (!edit) {
       setEditedTascoRefuelLogs(allTascoLogs);
       setChangesWereMade(false);
-    }
-  }, [edit, tascoRefuelLog]);
+  }, [tascoRefuelLog]);
 
   const handleRefuelChange = useCallback(
     (id: string, tascoLogId: string, gallonsRefueled: string | number) => {
