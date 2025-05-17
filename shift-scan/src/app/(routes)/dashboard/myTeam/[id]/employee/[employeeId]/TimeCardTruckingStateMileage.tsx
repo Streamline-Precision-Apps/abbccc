@@ -6,7 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { TruckingStateLog, TruckingStateLogData } from "@/lib/types";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 
 type TimeCardTruckingStateMileageLogsProps = {
   edit: boolean;
@@ -92,34 +92,37 @@ export default function TimeCardTruckingStateMileageLogs({
 }: TimeCardTruckingStateMileageLogsProps) {
   // Process the data to combine state mileages with their truck info
   const allStateMileages = truckingStateLogs
-    .flatMap((item) => item.TruckingLogs)
-    .filter(
-      (log): log is TruckingStateLog =>
-        log !== null &&
-        log?.Equipment !== undefined &&
-        log?.StateMileages !== undefined
-    )
-    .flatMap((log, logIndex) =>
-      log.StateMileages.map((mileage, mileageIndex) => ({
-        id: `${logIndex}-${mileageIndex}`, // Generate a unique ID
-        state: mileage.state,
-        stateLineMileage: mileage.stateLineMileage,
-        truckName: log.Equipment.name,
-        equipmentId: log.Equipment.id,
-        truckingLogId: `${logIndex}`, // Use logIndex as a temporary ID
-      }))
-    );
+  .flatMap((item) => item.TruckingLogs)
+  .filter(
+    (log): log is TruckingStateLog =>
+      log !== null &&
+      log?.Equipment !== undefined &&
+      log?.StateMileages !== undefined
+  )
+  .flatMap((log) =>
+    log.StateMileages.map((mileage) => ({
+      id: mileage.id, // Use the actual database ID
+      state: mileage.state,
+      stateLineMileage: mileage.stateLineMileage,
+      truckName: log.Equipment.name,
+      equipmentId: log.Equipment.id,
+      truckingLogId: log.id, // Use the actual trucking log ID
+    }))
+  );
+
+  useEffect(() => {
+    console.log("truckingStateLogs", truckingStateLogs);
+    console.log("allStateMileages", allStateMileages);
+  }, [allStateMileages]);
 
   const [editedStateMileages, setEditedStateMileages] = useState<ProcessedStateMileage[]>(allStateMileages);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-    if (!edit) {
       setEditedStateMileages(allStateMileages);
       setChangesWereMade(false);
-    }
-  }, [edit, truckingStateLogs]);
+  }, [truckingStateLogs]);
 
   const handleStateMileageChange = useCallback(
     (id: string, truckingLogId: string, field: keyof ProcessedStateMileage, value: string | number) => {

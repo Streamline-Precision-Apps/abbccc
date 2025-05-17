@@ -159,3 +159,23 @@
 - Destroy and reconstruct my teams timesheet edit section. (4 hours)
 - merge Meeting (1 hours)
 - Destroy and reconstruct my teams timesheet edit section. (4 hours)
+
+# May 12, 2025 - Monday
+### built/created
+- Debugging the server actions and types for the my teams section. (6 hours)
+
+# May 13, 2025 - Tuesday
+### built/created
+- Debugging the server actions and types for the my teams section. (10.5 hours)
+
+# May 14, 2025 - Wednesday
+### built/created
+- Debugging the server actions and types for the my teams section. (10 hours)
+
+# May 15, 2025 - Thursday
+### built/createda
+- Debugging the server actions and types for the my teams section. (7.5 hours)
+
+# May 16, 2025 - Friday
+### built/created
+- Debugging the server actions and types for the my teams section. (6 hours)

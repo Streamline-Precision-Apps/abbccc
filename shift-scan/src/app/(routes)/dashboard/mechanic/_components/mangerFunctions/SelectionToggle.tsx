@@ -1,11 +1,6 @@
 import Spinner from "@/components/(animations)/spinner";
 import { Holds } from "@/components/(reusable)/holds";
 
-type Equipment = {
-  id: string;
-  name: string;
-};
-
 type MaintenanceLog = {
   id: string;
   startTime: string;

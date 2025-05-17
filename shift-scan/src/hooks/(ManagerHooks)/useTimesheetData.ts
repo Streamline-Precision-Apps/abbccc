@@ -1,8 +1,35 @@
-import { useState, useEffect, useCallback } from "react";
-import { TimesheetFilter } from "@/lib/types";
+import { useState, useEffect } from "react";
+import {
+  TimesheetFilter,
+  TimesheetHighlights,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
+  TruckingMaterialHaulLogData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoHaulLogData,
+  TascoRefuelLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
+} from "@/lib/types";
+
+// Union type for all possible timesheet data
+export type TimesheetDataUnion =
+  | TimesheetHighlights[]
+  | TruckingMileageData
+  | TruckingEquipmentHaulLogData
+  | TruckingMaterialHaulLogData
+  | TruckingRefuelLogData
+  | TruckingStateLogData
+  | TascoHaulLogData
+  | TascoRefuelLogData
+  | EquipmentLogsData
+  | EmployeeEquipmentLogWithRefuel[]
+  | null;
 
 interface TimesheetDataResponse {
-  data: any;
+  data: TimesheetDataUnion;
+  setData: (data: TimesheetDataUnion) => void;
   loading: boolean;
   error: string | null;
   updateDate: (newDate: string) => Promise<void>;
@@ -14,13 +41,13 @@ export const useTimesheetData = (
   initialDate: string,
   initialFilter: TimesheetFilter
 ): TimesheetDataResponse => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<TimesheetDataUnion>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [currentFilter, setCurrentFilter] = useState<TimesheetFilter>(initialFilter);
 
-  const fetchTimesheets = useCallback(async () => {
+  const fetchTimesheets = async () => {
     if (!employeeId) return;
 
     setLoading(true);
@@ -42,24 +69,25 @@ export const useTimesheetData = (
     } finally {
       setLoading(false);
     }
-  }, [employeeId, currentDate, currentFilter]);
+  };
 
-  const fetchTimesheetsForDate = useCallback(async (newDate: string) => {
+  const fetchTimesheetsForDate = async (newDate: string) => {
     setCurrentDate(newDate);
-    await fetchTimesheets();
-  }, [fetchTimesheets]);
+    // fetchTimesheets will be triggered by useEffect when currentDate changes
+  };
 
-  const updateFilter = useCallback(async (newFilter: TimesheetFilter) => {
+  const updateFilter = async (newFilter: TimesheetFilter) => {
     setCurrentFilter(newFilter);
-    await fetchTimesheets();
-  }, [fetchTimesheets]);
+    // fetchTimesheets will be triggered by useEffect when currentFilter changes
+  };
 
   useEffect(() => {
     fetchTimesheets();
-  }, [fetchTimesheets]);
+  }, [employeeId, currentDate, currentFilter]);
 
   return {
     data,
+    setData,
     loading,
     error,
     updateDate: fetchTimesheetsForDate,

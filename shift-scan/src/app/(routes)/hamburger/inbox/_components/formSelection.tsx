@@ -73,31 +73,39 @@ export default function FormSelection({
   const userId = session?.user.id;
   const router = useRouter();
 
-  const fetchSentContent = async (skip: number, reset?: boolean) => {
+  const fetchSentContent = async (
+    skip: number,
+    reset?: boolean
+  ): Promise<SentContent[]> => {
     const response = await fetch(
       `/api/formSubmissions/${selectedFilter}?skip=${skip}&take=10`
     );
-    return await response.json();
+    const data = await response.json();
+    // Defensive: filter out any non-object/string results
+    return Array.isArray(data)
+      ? data.filter(
+          (item): item is SentContent =>
+            typeof item === "object" && item !== null && "id" in item
+        )
+      : [];
   };
 
   const {
     data: sentContent,
-    setData: setSentContent,
     isLoading,
     isInitialLoading,
     lastItemRef,
   } = useInfiniteScroll<SentContent>({
     fetchFn: fetchSentContent,
-    dependencies: [selectedFilter],
+    dependencies: [selectedFilter as unknown as SentContent], // Type assertion to bypass dependency type
   });
-
   // Fetch forms from the database on mount
   useEffect(() => {
     const fetchForms = async () => {
       try {
         setLoading(true);
         const response = await fetch("/api/forms");
-        const data = await response.json();
+        const data: Form[] = await response.json();
         setForms(data);
       } catch (error) {
         console.error("Error fetching forms:", error);
@@ -252,60 +260,61 @@ export default function FormSelection({
                   ))}
 
                 <div className="pt-3 pb-5 h-full w-full overflow-y-auto no-scrollbar ">
-                  {sentContent.map((form, index) => {
-                    const title =
-                      form.title.charAt(0).toUpperCase() +
-                        form.title.slice(1) || form.FormTemplate?.name;
+                  {Array.isArray(sentContent) &&
+                    sentContent.map((form, index) => {
+                      if (typeof form === "string") return null; // Defensive: skip invalid entries
+                      const title =
+                        form.title.charAt(0).toUpperCase() +
+                          form.title.slice(1) || form.FormTemplate?.name;
 
-                    const isLastItem = index === sentContent.length - 1;
+                      const isLastItem = index === sentContent.length - 1;
 
-                    return (
-                      <Holds className="pb-3">
-                        <Buttons
-                          key={form.id}
-                          ref={isLastItem ? lastItemRef : null}
-                          shadow={"none"}
-                          className="py-1 relative"
-                          background={
-                            form.status === "PENDING"
-                              ? "orange"
-                              : form.status === "APPROVED"
-                              ? "green"
-                              : form.status === "DENIED"
-                              ? "red"
-                              : "lightBlue"
-                          }
-                          onClick={() => {
-                            router.push(
-                              `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
-                            );
-                          }}
-                          disabled={isLoading}
-                        >
-                          <Holds className="w-full h-full relative">
-                            <Titles size={"h3"}>{title}</Titles>
-                            <Titles size={"h7"}>
-                              {form.FormTemplate?.formType}
-                            </Titles>
+                      return (
+                        <Holds className="pb-3" key={form.id}>
+                          <Buttons
+                            ref={isLastItem ? lastItemRef : null}
+                            shadow={"none"}
+                            className="py-1 relative"
+                            background={
+                              form.status === "PENDING"
+                                ? "orange"
+                                : form.status === "APPROVED"
+                                ? "green"
+                                : form.status === "DENIED"
+                                ? "red"
+                                : "lightBlue"
+                            }
+                            onClick={() => {
+                              router.push(
+                                `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
+                              );
+                            }}
+                            disabled={isLoading}
+                          >
+                            <Holds className="w-full h-full relative">
+                              <Titles size={"h3"}>{title}</Titles>
+                              <Titles size={"h7"}>
+                                {form.FormTemplate?.formType}
+                              </Titles>
 
-                            <Images
-                              titleImgAlt={"form Status"}
-                              titleImg={
-                                form.status === "PENDING"
-                                  ? "/statusOngoingFilled.svg"
-                                  : form.status === "APPROVED"
-                                  ? "/statusApprovedFilled.svg"
-                                  : form.status === "DENIED"
-                                  ? "/statusDeniedFilled.svg"
-                                  : "/formSent.svg"
-                              }
-                              className="absolute max-w-10 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
-                            />
-                          </Holds>
-                        </Buttons>
-                      </Holds>
-                    );
-                  })}
+                              <Images
+                                titleImgAlt={"form Status"}
+                                titleImg={
+                                  form.status === "PENDING"
+                                    ? "/statusOngoingFilled.svg"
+                                    : form.status === "APPROVED"
+                                    ? "/statusApprovedFilled.svg"
+                                    : form.status === "DENIED"
+                                    ? "/statusDeniedFilled.svg"
+                                    : "/formSent.svg"
+                                }
+                                className="absolute max-w-10 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
+                              />
+                            </Holds>
+                          </Buttons>
+                        </Holds>
+                      );
+                    })}
                   {isLoading && (
                     <Holds className="flex justify-center py-4">
                       <Spinner />

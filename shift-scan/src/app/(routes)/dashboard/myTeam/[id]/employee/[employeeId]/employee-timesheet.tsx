@@ -1,5 +1,12 @@
 "use client";
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState, useCallback } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
@@ -10,11 +17,52 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
-import { TimesheetFilter, TimesheetHighlights, TruckingMileageUpdate, TruckingEquipmentHaulLog } from "@/lib/types";
+import {
+  TimesheetFilter,
+  TimesheetHighlights,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
+  TruckingMaterialHaulLogData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoHaulLogData,
+  TascoRefuelLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
+} from "@/lib/types";
 import TimeSheetRenderer from "./timeSheetRenderer";
 
-interface EmployeeTimeSheetsProps {
-  data: any;
+// Add a type for material haul log changes
+interface TruckingMaterialHaulLog {
+  id: string;
+  name: string;
+  LocationOfMaterial: string;
+  materialWeight?: number;
+  lightWeight?: number;
+  grossWeight?: number;
+}
+// Add a type for equipment log changes
+interface EquipmentLogChange {
+  id: string;
+  startTime: Date;
+  endTime: Date;
+}
+
+export type EmployeeTimesheetData =
+  | TimesheetHighlights[]
+  | TruckingMileageData
+  | TruckingEquipmentHaulLogData
+  | TruckingMaterialHaulLogData
+  | TruckingRefuelLogData
+  | TruckingStateLogData
+  | TascoHaulLogData
+  | TascoRefuelLogData
+  | EquipmentLogsData
+  | EmployeeEquipmentLogWithRefuel[]
+  | null;
+
+export interface EmployeeTimeSheetsProps {
+  data: EmployeeTimesheetData;
   date: string;
   setDate: (date: string) => void;
   edit: boolean;
@@ -22,8 +70,28 @@ interface EmployeeTimeSheetsProps {
   loading: boolean;
   manager: string;
   timeSheetFilter: TimesheetFilter;
-  setTimeSheetFilter: Dispatch<SetStateAction<TimesheetFilter>>;
-  onSaveChanges: (changes: TimesheetHighlights[] | TimesheetHighlights | TruckingMileageUpdate[] | TruckingEquipmentHaulLog[]) => Promise<void>;
+  setTimeSheetFilter: React.Dispatch<React.SetStateAction<TimesheetFilter>>;
+  onSaveChanges: (
+    changes:
+      | TimesheetHighlights[]
+      | TimesheetHighlights
+      | TruckingMaterialHaulLog[]
+      | {
+          id: string;
+          gallonsRefueled?: number | null;
+          milesAtFueling?: number | null;
+        }[]
+      | { id: string; state?: string; stateLineMileage?: number }[]
+      | {
+          id: string;
+          shiftType?: string;
+          equipmentId?: string | null;
+          materialType?: string;
+          LoadQuantity?: number | null;
+        }[]
+      | { id: string; gallonsRefueled?: number | null }[]
+      | EquipmentLogChange[]
+  ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
   fetchTimesheetsForFilter: (filter: TimesheetFilter) => Promise<void>;
@@ -42,10 +110,29 @@ export const EmployeeTimeSheets = ({
   onSaveChanges: parentOnSaveChanges,
   onCancelEdits,
   fetchTimesheetsForDate,
-  fetchTimesheetsForFilter
+  fetchTimesheetsForFilter,
 }: EmployeeTimeSheetsProps) => {
   const t = useTranslations("MyTeam");
-  const [changes, setChanges] = useState<any[]>([]);
+  // Fix: Ensure changes is always an array and never null
+  const [changes, setChanges] = useState<
+    | TimesheetHighlights[]
+    | TruckingMaterialHaulLog[]
+    | EquipmentLogChange[]
+    | {
+        id: string;
+        gallonsRefueled?: number | null;
+        milesAtFueling?: number | null;
+      }[]
+    | { id: string; state?: string; stateLineMileage?: number }[]
+    | {
+        id: string;
+        shiftType?: string;
+        equipmentId?: string | null;
+        materialType?: string;
+        LoadQuantity?: number | null;
+      }[]
+    | { id: string; gallonsRefueled?: number | null }[]
+  >([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleDateChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,43 +148,72 @@ export const EmployeeTimeSheets = ({
   };
 
   // In EmployeeTimeSheets.tsx
-const handleSave = useCallback(async () => {
-  try {
-    setIsSaving(true);
-    
-    if (changes.length === 0) {
-      console.log('No changes to save');
-      return;
+  const handleSave = useCallback(async () => {
+    try {
+      setIsSaving(true);
+
+      // In handleSave, check for array length
+      if (!Array.isArray(changes) || changes.length === 0) {
+        console.log("No changes to save");
+        return;
+      }
+
+      console.log("Saving changes:", changes);
+      await parentOnSaveChanges(changes);
+      // Don't clear changes here - let the parent handle it after successful save
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    } finally {
+      setIsSaving(false);
     }
-    
-    console.log('Saving changes:', changes);
-    await parentOnSaveChanges(changes);
-    // Don't clear changes here - let the parent handle it after successful save
-  } catch (error) {
-    console.error("Error saving changes:", error);
-  } finally {
-    setIsSaving(false);
-  }
-}, [changes, parentOnSaveChanges]);
+  }, [changes, parentOnSaveChanges]);
 
   const handleCancel = () => {
     onCancelEdits();
     setChanges([]);
   };
 
-  const handleDataChange = (updatedData: TimesheetHighlights[] | TimesheetHighlights | TruckingMileageUpdate[] | TruckingEquipmentHaulLog[]) => {
+  const handleDataChange = (
+    updatedData:
+      | TimesheetHighlights[]
+      | TimesheetHighlights
+      | TruckingMaterialHaulLog[]
+      | EquipmentLogChange[]
+      | {
+          id: string;
+          gallonsRefueled?: number | null;
+          milesAtFueling?: number | null;
+        }[]
+      | { id: string; state?: string; stateLineMileage?: number }[]
+      | {
+          id: string;
+          shiftType?: string;
+          equipmentId?: string | null;
+          materialType?: string;
+          LoadQuantity?: number | null;
+        }[]
+      | { id: string; gallonsRefueled?: number | null }[]
+  ) => {
     if (timeSheetFilter === "truckingEquipmentHaulLogs") {
-      // For haul logs, we get the accumulated changes
-setChanges(prev => [...prev, ...(Array.isArray(updatedData) ? updatedData : [updatedData])]);
+      // For haul logs, we get the accumulated changes (must be same type)
+      setChanges((prev) => [
+        ...((prev as TruckingMaterialHaulLog[]) ?? []),
+        ...((Array.isArray(updatedData)
+          ? updatedData
+          : [updatedData]) as TruckingMaterialHaulLog[]),
+      ]);
     } else {
-      // For other types, replace existing changes
+      // Always set changes as a single array type
       setChanges(Array.isArray(updatedData) ? updatedData : [updatedData]);
     }
   };
 
   return (
     <Grids rows={"3"} gap={"3"} className="h-full w-full">
-      <Holds background={"white"} className={"row-start-1 row-end-2 h-full w-full rounded-t-none"}>
+      <Holds
+        background={"white"}
+        className={"row-start-1 row-end-2 h-full w-full rounded-t-none"}
+      >
         <Contents width={"section"} className="h-full pt-1 pb-5">
           <Grids rows={"3"} className="h-full w-full">
             <Holds className="row-start-1 row-end-1">
@@ -121,26 +237,42 @@ setChanges(prev => [...prev, ...(Array.isArray(updatedData) ? updatedData : [upd
                 className="text-center text-xs py-2"
                 disabled={loading}
               >
-                <option value="timesheetHighlights">Timesheet Highlights</option>
+                <option value="timesheetHighlights">
+                  Timesheet Highlights
+                </option>
                 <option value="truckingMileage">Trucking Mileage</option>
-                <option value="truckingEquipmentHaulLogs">Trucking Equipment Hauls</option>
-                <option value="truckingMaterialHaulLogs">Trucking Material Hauls</option>
+                <option value="truckingEquipmentHaulLogs">
+                  Trucking Equipment Hauls
+                </option>
+                <option value="truckingMaterialHaulLogs">
+                  Trucking Material Hauls
+                </option>
                 <option value="truckingRefuelLogs">Trucking Refuel Logs</option>
                 <option value="truckingStateLogs">Trucking State Logs</option>
                 <option value="tascoHaulLogs">TASCO Haul Logs</option>
                 <option value="tascoRefuelLogs">TASCO Refuel Logs</option>
                 <option value="equipmentLogs">Equipment Logs</option>
-                <option value="equipmentRefuelLogs">Equipment Refuel Logs</option>
+                <option value="equipmentRefuelLogs">
+                  Equipment Refuel Logs
+                </option>
               </Selects>
             </Holds>
-            <Holds position={"row"} className="row-start-3 row-end-4 justify-between">
+            <Holds
+              position={"row"}
+              className="row-start-3 row-end-4 justify-between"
+            >
               {edit ? (
                 <>
                   <Buttons
                     background={"green"}
                     className="w-1/4"
                     onClick={handleSave}
-                    disabled={loading || changes.length === 0 || isSaving}
+                    disabled={
+                      loading ||
+                      !Array.isArray(changes) ||
+                      changes.length === 0 ||
+                      isSaving
+                    }
                   >
                     {isSaving ? (
                       <Spinner size={24} />
@@ -184,7 +316,10 @@ setChanges(prev => [...prev, ...(Array.isArray(updatedData) ? updatedData : [upd
         </Contents>
       </Holds>
 
-      <Holds background={"white"} className={"row-start-2 row-end-4 h-full w-full"}>
+      <Holds
+        background={"white"}
+        className={"row-start-2 row-end-4 h-full w-full"}
+      >
         <Contents width={"section"} className="pt-2 pb-5">
           {loading ? (
             <Holds className="w-full h-full flex items-center justify-center">
