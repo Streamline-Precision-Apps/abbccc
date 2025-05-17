@@ -133,12 +133,12 @@ export default function Content() {
                             <Holds position={"row"}>
                               <Holds size={"20"} className="relative">
                                 <Images
-                                  titleImg={
-                                    member.image || "/profile-default.svg"
-                                  }
-                                  titleImgAlt="profile picture"
+                                  titleImg={member.image || "/profileEmpty.svg"}
+                                  titleImgAlt="profileEmpty"
                                   loading="lazy"
-                                  className="rounded-full border-[3px] border-black"
+                                  className={`rounded-full ${
+                                    member.image && "border-[3px] border-black"
+                                  } `}
                                 />
                                 <Holds
                                   background={
