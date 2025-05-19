@@ -199,7 +199,7 @@ export async function GET() {
             isFieldIncomplete(item, ["state", "stateLineMileage"])
           ),
           refueled: log.RefuelLogs.some((item) =>
-            isFieldIncomplete(item, ["gallonsRefueled", "milesAtfueling"])
+            isFieldIncomplete(item, ["gallonsRefueled", "milesAtFueling"])
           ),
           material: log.Materials.some((item) =>
             isFieldIncomplete(item, ["LocationOfMaterial", "quantity", "name"])

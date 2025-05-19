@@ -1,14 +1,21 @@
-<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="100" cy="100" r="96" stroke="black" stroke-width="8"/>
-<circle cx="100" cy="100" r="9" stroke="black" stroke-width="8"/>
-<path d="M42 41L48.0122 47.0122" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M154 152L160.012 158.012" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M100 183.502V175" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M42 158.012L48.0122 152" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M154 47.0122L160.012 41.0001" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M100.006 24.2573V15.7549" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M100 91V45" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M18 100H26.5025" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M174 100H182.502" stroke="black" stroke-width="8" stroke-linecap="round"/>
-<path d="M109 92L127 74" stroke="black" stroke-width="8" stroke-linecap="round"/>
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_5556_139980)">
+<circle cx="50" cy="50" r="47" stroke="black" stroke-width="6"/>
+<path d="M50 43L50 13" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M54 54L67.609 68.6559" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<circle cx="50" cy="50" r="5" stroke="black" stroke-width="6"/>
+<path d="M50 13V11" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M50 89V87" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M13 50L11 50.0112" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M89 49.9766L87 49.9883" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M77.1543 78.5576L75.7399 77.1436" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M23 77.5967L24.4141 76.1823" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M74.5576 23.8289L75.9717 22.4145" stroke="black" stroke-width="6" stroke-linecap="round"/>
+<path d="M24.3867 23.8281L22.9723 22.4141" stroke="black" stroke-width="6" stroke-linecap="round"/>
+</g>
+<defs>
+<clipPath id="clip0_5556_139980">
+<rect width="100" height="100" fill="white"/>
+</clipPath>
+</defs>
 </svg>

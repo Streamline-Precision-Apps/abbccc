@@ -22,6 +22,8 @@ const HoldVariants = cva(
         darkGray:
           "bg-app-dark-gray rounded-xl border border-app-dark-gray border-8",
         lightGray: "bg-app-gray rounded-xl border border-app-gray border-8",
+        timeCardYellow: "bg-[#EBC68E] ",
+        adminBlue: "bg-gradient-to-r from-[#21355C]/60 to-[#4670C2]/60 ",
       },
       position: {
         //only position attributes
@@ -29,8 +31,8 @@ const HoldVariants = cva(
         center: "flex flex-col self-center content-center",
         left: "flex flex-col self-start",
         right: "flex flex-col self-end ",
-        absolute: "absolute top-1 left-0",
-        test: ""
+        absolute: "absolute top-0 left-0",
+        test: "",
       },
       size: {
         //only width and height

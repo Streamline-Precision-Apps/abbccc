@@ -3,8 +3,6 @@ model Equipment {
   qrId                  String                 @unique
   name                  String
   description           String
-  documentTagId         String?
-  equipmentVehicleInfo  EquipmentVehicleInfo? // one to one connection
   equipmentTag          EquipmentTags          @default(EQUIPMENT)
   status                EquipmentStatus        @default(OPERATIONAL)
   createdAt             DateTime               @default(now())
@@ -16,6 +14,7 @@ model Equipment {
   CreationLogs          CreationLogs?
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   EquipmentHauled       EquipmentHauled[]
+  equipmentVehicleInfo  EquipmentVehicleInfo?
   Maintenances          Maintenance[]
   TascoLogs             TascoLog[]
   TruckingLogs          TruckingLog[]
@@ -24,17 +23,16 @@ model Equipment {
   @@index([qrId])
 }
 
-//We Use Creation Logs as a way to monitor Created 
 model CreationLogs {
   id              String     @id @default(cuid())
-  createdById     String? // User ID (employee or admin)
+  createdById     String?
   equipmentId     String?    @unique
-  jobsiteId       String?    @unique
-  comment         String? // creating section
-  createdByOffice Boolean    @default(false) // True if created by admin/office
+  jobsiteId       String?
+  comment         String?
+  createdByOffice Boolean    @default(false)
+  User            User?      @relation(fields: [createdById], references: [id])
   Equipment       Equipment? @relation(fields: [equipmentId], references: [id])
   Jobsite         Jobsite?   @relation(fields: [jobsiteId], references: [id])
-  User            User?      @relation(fields: [createdById], references: [id])
 }
 
 model EquipmentVehicleInfo {
@@ -64,11 +62,11 @@ model EmployeeEquipmentLog {
   tascoLogId    String?
   laborLogId    String?
   truckingLogId String?
-  MaintenanceId Maintenance? //one to one relationship
   User          User         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   Equipment     Equipment    @relation(fields: [equipmentId], references: [id])
   Jobsite       Jobsite      @relation(fields: [jobsiteId], references: [qrId])
   TimeSheet     TimeSheet?   @relation(fields: [timeSheetId], references: [id])
+  MaintenanceId Maintenance?
   RefuelLogs    RefuelLog[]
 }
 
@@ -78,7 +76,7 @@ model EquipmentHauled {
   equipmentId   String?
   createdAt     DateTime    @default(now())
   jobSiteId     String?
-  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
+  Equipment     Equipment?  @relation(fields: [equipmentId], references: [qrId])
   JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
   TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id])
 }

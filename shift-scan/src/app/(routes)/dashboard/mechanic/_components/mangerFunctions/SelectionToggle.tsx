@@ -1,6 +1,39 @@
 import Spinner from "@/components/(animations)/spinner";
 import { Holds } from "@/components/(reusable)/holds";
 
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+  timeSheetId: string;
+  User: {
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
+
+type Equipment = {
+  id: string;
+  name: string;
+};
+
+type Project = {
+  id: string;
+  equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
+  equipmentIssue: string;
+  additionalInfo: string;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
+};
+
 enum Priority {
   LOW = "LOW",
   MEDIUM = "MEDIUM",
@@ -9,31 +42,6 @@ enum Priority {
   PENDING = "PENDING",
   TODAY = "TODAY",
 }
-type MaintenanceLog = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  userId: string;
-  timeSheetId: string;
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    image: string;
-  };
-};
-
-type Project = {
-  id: string;
-  equipmentId: string;
-  equipment: { name: string };
-  selected: boolean;
-  repaired: boolean;
-  priority: Priority;
-  delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-};
-
 export function SelectionToggle({
   project,
   updatingId,

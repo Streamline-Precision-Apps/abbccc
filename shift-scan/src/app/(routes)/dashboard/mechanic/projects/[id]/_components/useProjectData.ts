@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  findUniqueUser,
   LeaveEngineerProject,
   SubmitEngineerProject,
 } from "@/actions/mechanicActions";
@@ -15,7 +14,6 @@ type MaintenanceLog = {
   endTime?: string | null;
   userId: string;
   comment?: string;
-  maintenanceId: string;
 };
 
 type ProjectData = {
@@ -23,17 +21,20 @@ type ProjectData = {
   problemReceived: string;
   additionalNotes: string;
   hasBeenDelayed: boolean;
-  maintenanceLogs: MaintenanceLog[];
+  MaintenanceLogs: MaintenanceLog[];
 };
 
 type ApiResponse = {
-  equipment: {
-    name: string;
-  };
+  id: string;
   equipmentIssue: string;
   additionalInfo: string;
+  delay: Date | null;
   hasBeenDelayed: boolean;
-  maintenanceLogs: MaintenanceLog[];
+  delayReasoning: string | null;
+  Equipment: {
+    name: string;
+  };
+  MaintenanceLogs: MaintenanceLog[];
 };
 
 export default function useProjectData(projectId: string) {
@@ -59,19 +60,19 @@ export default function useProjectData(projectId: string) {
       try {
         const response = await fetch(`/api/getReceivedInfo/${projectId}`);
         const data: ApiResponse = await response.json();
-
+        
         // Process and set project data
         const processedData: ProjectData = {
-          title: data.equipment.name,
+          title: data.Equipment.name,
           problemReceived: data.equipmentIssue,
           additionalNotes: data.additionalInfo,
           hasBeenDelayed: data.hasBeenDelayed,
-          maintenanceLogs: data.maintenanceLogs,
+          MaintenanceLogs: data.MaintenanceLogs,
         };
         setProjectData(processedData);
 
         // Find and set user's maintenance log
-        const userMaintenanceLog = data.maintenanceLogs.find(
+        const userMaintenanceLog = data.MaintenanceLogs.find(
           (log) => log.userId === userId && log.endTime === null
         );
 
@@ -81,15 +82,15 @@ export default function useProjectData(projectId: string) {
         }
 
         // Calculate total labor hours
-        const totalMilliseconds = data.maintenanceLogs
-          .filter((log) => log.startTime)
-          .reduce((sum, log) => {
-            const start = new Date(log.startTime!).getTime();
-            const end = log.endTime
-              ? new Date(log.endTime).getTime()
-              : new Date().getTime();
-            return sum + (end - start);
-          }, 0);
+        const totalMilliseconds = data.MaintenanceLogs.filter(
+          (log) => log.startTime
+        ).reduce((sum, log) => {
+          const start = new Date(log.startTime!).getTime();
+          const end = log.endTime
+            ? new Date(log.endTime).getTime()
+            : new Date().getTime();
+          return sum + (end - start);
+        }, 0);
 
         const totalHours = parseFloat(
           (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
@@ -99,7 +100,7 @@ export default function useProjectData(projectId: string) {
         setLaborHours(`${hours} hrs ${minutes} min`);
 
         // Count active users
-        const uniqueUserCount = data.maintenanceLogs.filter(
+        const uniqueUserCount = data.MaintenanceLogs.filter(
           (log) => log.userId && log.endTime === null
         ).length;
         setActiveUsers(uniqueUserCount || 0);
@@ -137,18 +138,35 @@ export default function useProjectData(projectId: string) {
   };
 
   const handleFinishProject = async () => {
-    if (!session.data || !myMaintenanceLogs) return;
+    console.log("Starting handleFinishProject");
+    if (!session.data) {
+      console.log("No session data");
+      return;
+    }
+    if (!myMaintenanceLogs) {
+      console.log("No maintenance logs found for user");
+      return;
+    }
+  
     setLoading(true);
-
+    console.log("Attempting to finish project...");
+  
     try {
       // First leave the project (save comment)
       const leaveFormData = new FormData();
       leaveFormData.append("comment", myComment);
       leaveFormData.append("maintenanceId", myMaintenanceLogs.id);
       leaveFormData.append("userId", myMaintenanceLogs.userId);
-
+  
+      console.log("Leaving project with data:", {
+        comment: myComment,
+        maintenanceId: myMaintenanceLogs.id,
+        userId: myMaintenanceLogs.userId
+      });
+  
       const clockOut = await LeaveEngineerProject(leaveFormData);
-
+      console.log("Clock out result:", clockOut);
+  
       if (clockOut) {
         // Then submit the project solution
         const submitFormData = new FormData();
@@ -156,16 +174,27 @@ export default function useProjectData(projectId: string) {
         submitFormData.append("solution", solution);
         submitFormData.append("diagnosedProblem", diagnosedProblem);
         submitFormData.append("totalHoursLaboured", laborHours);
-
+  
+        console.log("Submitting project with data:", {
+          id: projectId,
+          solution,
+          diagnosedProblem,
+          laborHours
+        });
+  
         const res = await SubmitEngineerProject(submitFormData);
+        console.log("Submission result:", res);
+        
         await setMechanicProjectID("");
-
+        
         if (res) {
+          console.log("Successfully submitted, redirecting...");
           router.push("/dashboard/mechanic");
         }
       }
     } catch (error) {
       console.error("Error finishing project:", error);
+      // Consider adding user feedback here
     } finally {
       setLoading(false);
     }

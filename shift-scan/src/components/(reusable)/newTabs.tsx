@@ -5,18 +5,48 @@ import "@/app/globals.css";
 
 // Define CVA-based styles for the Tab component
 const tabStyles = cva(
-  "h-full rounded-[10px] flex items-center justify-center rounded-b-none font-bold border-t-transparent border-t-4 relative",
+  "h-full rounded-[10px] flex items-center justify-center rounded-b-none font-bold  relative",
   {
     variants: {
       isActive: {
-        true: "bg-white w-full px-1.5",
-        false: "bg-app-gray border-transparent border-b-4 px-1.5",
+        true: " w-full px-1.5",
+        false: " px-3",
       },
       animatePulse: {
         true: "animate-pulse",
         false: "",
       },
+
+      color: {
+        lightBlue: "bg-app-blue",
+        darkBlue: "bg-app-dark-blue",
+        green: "bg-app-green",
+        red: "bg-app-red",
+        orange: "bg-app-orange",
+        white: "bg-white",
+        lightGray: "bg-app-gray",
+        darkGray: "bg-app-dark-gray",
+        none: "bg-none border-0 shadow-none",
+      },
+      border: {
+        default: "border-black border-t-[3px] border-l-[3px] border-r-[3px]",
+        transparent: "border-transparent border-b-[3px]",
+        border: "border-black border-t-[3px] border-l-[3px] border-r-[3px]",
+      },
     },
+    compoundVariants: [
+      {
+        isActive: true,
+        color: "white", // Default active color
+        className: "bg-white",
+      },
+      {
+        isActive: false,
+        border: "default",
+        color: "lightGray", // Default inactive color
+        className: "bg-app-gray",
+      },
+    ],
     defaultVariants: {
       isActive: false,
       animatePulse: false,
@@ -33,6 +63,32 @@ interface TabProps extends VariantProps<typeof tabStyles> {
   isComplete?: boolean;
   isLoading?: boolean;
   animatePulse?: boolean;
+  activeColor?:
+    | "lightBlue"
+    | "darkBlue"
+    | "green"
+    | "red"
+    | "orange"
+    | "white"
+    | "lightGray"
+    | "darkGray"
+    | "none"
+    | null
+    | undefined;
+  inActiveColor?:
+    | "lightBlue"
+    | "darkBlue"
+    | "green"
+    | "red"
+    | "orange"
+    | "white"
+    | "lightGray"
+    | "darkGray"
+    | "none"
+    | null
+    | undefined;
+  activeBorder?: "default" | "transparent" | "border" | null | undefined;
+  inActiveBorder?: "default" | "transparent" | "border" | null | undefined;
 }
 
 // Functional Tab component with children rendering
@@ -45,19 +101,38 @@ export const NewTab: FC<TabProps> = ({
   isComplete,
   isLoading,
   animatePulse,
+  activeColor = "white",
+  inActiveColor = "lightGray",
+  activeBorder = "transparent",
+  inActiveBorder = "transparent",
 }) => {
   return (
     <button
       onClick={onClick}
-      className={classNames(tabStyles({ isActive, animatePulse }))}
+      className={classNames(
+        tabStyles({
+          isActive,
+          animatePulse,
+          color: isActive ? activeColor : inActiveColor,
+          border: isActive ? activeBorder : inActiveBorder,
+        })
+      )}
     >
-      <div className="flex justify-center items-center ">
-        {isActive && children}
-        <img
-          src={titleImage}
-          alt={titleImageAlt}
-          className={isActive ? " w-16 h-full p-4" : "w-12 h-full p-1 "}
-        />
+      <div
+        className={`${
+          isActive
+            ? "w-full flex flex-row justify-between items-center"
+            : "w-full"
+        } `}
+      >
+        <div className="w-3/4 h-full">{isActive && children}</div>
+        <div className={`${isActive ? "w-1/4 h-full" : "w-full "} `}>
+          <img
+            src={titleImage}
+            alt={titleImageAlt}
+            className={isActive ? " w-8 h-8" : "w-10 h-10 "}
+          />
+        </div>
         {!isComplete && !isLoading && (
           <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
         )}

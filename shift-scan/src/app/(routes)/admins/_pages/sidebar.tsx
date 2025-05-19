@@ -49,7 +49,7 @@ const Sidebar = () => {
               <Holds>
                 <Buttons background={"none"} size={"20"} onClick={toggle}>
                   <Images
-                    titleImg="/expandLeft.svg"
+                    titleImg="/arrowRightSymbol.svg"
                     titleImgAlt="arrow left"
                     className="rotate-180"
                   />
@@ -193,7 +193,7 @@ const Sidebar = () => {
                   <Holds position={"row"} className="justify-evenly">
                     <Holds className="w-1/3 h-full ">
                       <Images
-                        titleImg="/inbox.svg"
+                        titleImg="/form.svg"
                         titleImgAlt="Inbox Icon"
                         className="m-auto"
                         size={"50"}
@@ -282,7 +282,7 @@ const Sidebar = () => {
                 className=""
               >
                 <Images
-                  titleImg="/end-day.svg"
+                  titleImg="/endDay.svg"
                   titleImgAlt="Sign Out Icon"
                   className="m-auto p-2"
                 />
@@ -398,7 +398,7 @@ const Sidebar = () => {
                 >
                   <Holds position={"row"}>
                     <Images
-                      titleImg="/inbox.svg"
+                      titleImg="/form.svg"
                       titleImgAlt="Inbox Icon"
                       className="m-auto"
                     />

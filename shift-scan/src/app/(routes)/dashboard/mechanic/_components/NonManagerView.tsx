@@ -1,7 +1,12 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import MechanicPriority from "./MechanicPriorityList";
-import { Header } from "./Header";
+
+import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type Equipment = {
   id: string;
@@ -14,8 +19,7 @@ type MaintenanceLog = {
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
-    id: string;
+  User: {
     firstName: string;
     lastName: string;
     image: string;
@@ -25,16 +29,16 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
   equipmentIssue: string;
   additionalInfo: string;
-  selected: boolean;
   repaired: boolean;
   createdBy: string;
   createdAt: string | undefined;
-  priority: Priority;
-  delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-  equipment: Equipment;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {
@@ -50,24 +54,31 @@ export function NonManagerView({
   projects,
   loading,
   timeSheetId,
+  handleRefresh,
 }: {
   projects: Project[];
   loading: boolean;
   timeSheetId: string | null;
+  handleRefresh: () => Promise<void>;
 }) {
+  const t = useTranslations("MechanicWidget");
+  const router = useRouter();
   return (
-    <Grids rows="8" gap="5">
+    <Grids rows="7" gap="5">
       {/* Header */}
-      <Header title="Projects" />
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+        <TitleBoxes onClick={() => router.push("/dashboard")}>
+          <Titles size="h2">{t("Projects")}</Titles>
+        </TitleBoxes>
+      </Holds>
 
       {/* Priority List */}
 
       <MechanicPriority
         loading={loading}
-        projects={projects.filter(
-          (project) => project.selected && !project.repaired
-        )}
+        projects={projects}
         timeSheetId={timeSheetId}
+        handleRefresh={handleRefresh}
       />
     </Grids>
   );

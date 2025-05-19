@@ -22,6 +22,7 @@ const BaseVariants = cva("h-full w-full", {
       scroll: "pb-3 pt-7 h-full no-scrollbar overflow-y-auto", // Use if data exceeds screen size
       screen: "h-screen w-screen", // Use for modals
       noScroll: "pb-3 pt-7 h-full", // Ensure no scrolling behavior for fixed elements
+      admin: "h-screen w-screen ", // Use for admin pages
     },
   },
   defaultVariants: {

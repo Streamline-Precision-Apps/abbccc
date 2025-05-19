@@ -12,7 +12,6 @@ import CodeStep from "./code-step";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
-import { form } from "@nextui-org/theme";
 
 type VerifyProcessProps = {
   handleNextStep: () => void;
@@ -35,9 +34,12 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
   const router = useRouter();
   // Handle local storage logic after hooks
   useEffect(() => {
-    if (!scanResult?.data) {
+    if (!scanResult?.qrCode) {
       const jobSiteId = localStorage.getItem("jobSite");
-      setScanResult({ data: jobSiteId || "" });
+      setScanResult({
+        qrCode: jobSiteId || "",
+        name: "",
+      });
     }
   }, [scanResult, setScanResult]);
 
@@ -46,7 +48,7 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
     event.preventDefault();
     const formData = new FormData();
     formData.append("equipmentId", scanEQResult?.data || "");
-    formData.append("jobsiteId", scanResult?.data || "");
+    formData.append("jobsiteId", scanResult?.qrCode || "");
     formData.append("startTime", new Date().toString());
     formData.append("employeeId", id || "");
 

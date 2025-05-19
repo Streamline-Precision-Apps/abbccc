@@ -21,17 +21,21 @@ export default async function RootLayout({
       <NextIntlClientProvider messages={messages}>
         <Providers>
           <Contents width={"100"} className="">
-          <Holds className="h-[60px]">
-            <TopTabBar />
-          </Holds>
-          <Holds position={"row"} className="h-full">
-            <Holds position={"test"} className="h-full w-[60px]">
-              <LeftSidebar/>
+            {/* Top bar */}
+            <Holds className="h-[60px]">
+              <TopTabBar />
             </Holds>
-            <Holds className="p-3 h-full no-scrollbar overflow-y-auto">
-              {children}
+            {/* Main layout: sidebar + scrollable content */}
+            <Holds position={"row"} className="h-[calc(100dvh-60px)] min-h-0 w-full">
+              {/* Sidebar */}
+              <Holds position={"test"} className="h-full w-[60px] flex-shrink-0">
+                <LeftSidebar />
+              </Holds>
+              {/* Scrollable content area */}
+              <Holds className="flex-1 min-h-0 h-full p-3 overflow-y-auto no-scrollbar">
+                {children}
+              </Holds>
             </Holds>
-          </Holds>
           </Contents>
         </Providers>
       </NextIntlClientProvider>

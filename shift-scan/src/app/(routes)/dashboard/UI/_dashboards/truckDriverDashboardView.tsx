@@ -1,8 +1,6 @@
 "use client";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
@@ -15,19 +13,11 @@ import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function TruckDriverDashboardView({
   additionalButtonsType,
-  isModalOpen,
-  isModal2Open,
-  setIsModal2Open,
-  comment,
-  setComment,
-  handleCOButton2,
-  handleCOButton3,
-  handleCloseModal,
-  handleShowManagerButtons,
+  verifyLogsCompletion,
   permission,
-  handleShowAdditionalButtons,
   logs,
   laborType,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -35,77 +25,55 @@ export default function TruckDriverDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton2: () => void;
-  handleCOButton3: () => void;
   handleCloseModal: () => void;
-  handleShowManagerButtons: () => void;
+  verifyLogsCompletion: () => void;
   permission: string;
-  handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
   laborType: string;
+  mechanicProjectID: string;
 }) {
   const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
         <Grids cols={"2"} rows={"3"} gap={"5"}>
-          {/* Render buttons based on state */}
-          {additionalButtonsType === "clockOut" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <ClockOutWidget
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                logs={logs}
-              />
-            </Holds>
-          ) : (
-            <>
-              <TruckingBtn
-                permission={permission}
-                view={"truck"}
-                laborType={laborType}
-              />
-              {permission === "USER" && laborType === "truckLabor" && (
-                <EquipmentBtn permission={permission} />
-              )}
+          <>
+            <TruckingBtn
+              permission={permission}
+              view={"truck"}
+              laborType={laborType}
+            />
+            {permission === "USER" && laborType === "truckLabor" && (
+              <EquipmentBtn permission={permission} />
+            )}
 
-              <SwitchJobsBtn
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                permission={permission}
-                logs={logs}
-                laborType={laborType}
-                view={"truck"}
-              />
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
+            <SwitchJobsBtn
+              {...modalState}
+              permission={permission}
+              logs={logs}
+              laborType={laborType}
+              view={"truck"}
+            />
+            {permission !== "USER" && !additionalButtonsType && (
+              <GeneratorBtn />
+            )}
 
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
-              {permission !== "USER" && laborType === "truckLabor" && (
-                <EquipmentBtn permission={permission} />
-              )}
+            {permission !== "USER" && !additionalButtonsType && (
+              <MyTeamWidget />
+            )}
+            {permission !== "USER" && laborType === "truckLabor" && (
+              <EquipmentBtn permission={permission} />
+            )}
 
-              <ClockOutBtn
-                handleShowAdditionalButtons={handleShowAdditionalButtons}
-                permission={permission}
-                View={"truck"}
-                laborType={laborType}
-              />
-            </>
-          )}
+            <ClockOutBtn
+              handleShowAdditionalButtons={verifyLogsCompletion}
+              permission={permission}
+              mechanicProjectID={mechanicProjectID}
+              logs={logs}
+              View={"truck"}
+              laborType={laborType}
+            />
+          </>
         </Grids>
       </Contents>
     </>

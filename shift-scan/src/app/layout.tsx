@@ -4,28 +4,24 @@ import { Providers } from "./providers";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-export const metadata: Metadata = {
-  manifest: "/manifest.json",
-  title: "Shift Scan",
-  description: "TimeCards made easy",
-};
-
 export const viewport: Viewport = {
   themeColor: "#57BDE9",
 };
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  // Providing all messages to the client
-  // side is the easiest way to get started
+
+export const metadata: Metadata = {
+  title: { default: "Shift Scan", template: "%s | Shift Scan" },
+  description: "Time Cards made easier",
+  manifest: "/manifest.json",
+};
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const messages = await getMessages();
   const locale = await getLocale();
+
   return (
-    <html lang={locale}>
-      <body>
-        <main>
+    <html lang={locale} className="h-full">
+      <body className="min-h-screen overflow-auto">
+        <main className="min-h-screen overflow-auto">
           <NextIntlClientProvider messages={messages}>
             <Providers>
               {children}
@@ -37,3 +33,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

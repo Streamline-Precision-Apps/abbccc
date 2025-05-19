@@ -14,10 +14,12 @@ import { useTranslations } from "next-intl";
 import React from "react";
 import { z } from "zod";
 import { Texts } from "@/components/(reusable)/texts";
+import { Images } from "@/components/(reusable)/images";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Zod schema for Team data
 const countSchema = z.object({
-  users: z.number(),
+  Users: z.number(),
 });
 
 // Define the main schema
@@ -33,6 +35,9 @@ const TeamsResponseSchema = z.array(TeamSchema);
 type Team = z.infer<typeof TeamSchema>;
 
 export default function Content() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const url = searchParams.get("rPath");
   const t = useTranslations("MyTeam");
   const [myTeams, setMyTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,8 +56,6 @@ export default function Content() {
           try {
             TeamsResponseSchema.parse(myTeamsData);
             setMyTeams(myTeamsData);
-
-            localStorage.setItem("myTeams", JSON.stringify(myTeamsData));
           } catch (error) {
             if (error instanceof z.ZodError) {
               console.error("Validation error in team data:", error.errors);
@@ -70,48 +73,37 @@ export default function Content() {
     };
 
     if (sessionStatus === "authenticated") {
-      // Check if data is already in local storage
-      const storedTeams = localStorage.getItem("myTeams");
-      if (storedTeams) {
-        const parsedTeams = JSON.parse(storedTeams);
-
-        // Validate stored data using Zod
-        try {
-          TeamsResponseSchema.parse(parsedTeams);
-          setMyTeams(parsedTeams);
-          setIsLoading(false);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error(
-              "Validation error in stored team data:",
-              error.errors
-            );
-            fetchCrew(); // Fetch fresh data if stored data is invalid
-          }
-        }
-      } else {
-        fetchCrew(); // Fetch from server if no data in local storage
-      }
+        fetchCrew();
     }
   }, [sessionStatus]);
 
   return (
     <Bases>
       <Contents>
-        <Grids rows={"5"} gap={"5"}>
-          <Holds background={"white"} className="row-span-1 h-full">
-            <Contents width={"section"}>
-              <TitleBoxes
-                title={`${t("Teams-Title")}`}
-                titleImg="/team.svg"
+        <Grids rows={"7"} gap={"5"}>
+          <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+            <TitleBoxes
+              position={"row"}
+              onClick={() => {
+                if (url) {
+                  router.push(url);
+                }
+              }}
+            >
+              <Titles size="h1">{t("Teams-Title")}</Titles>
+              <Images
+                titleImg={"/team.svg"}
                 titleImgAlt={`${t("Teams-Logo-Title")}`}
-                className="my-auto"
+                className="h-8 w-8"
               />
-            </Contents>
+            </TitleBoxes>
           </Holds>
 
           {isLoading ? (
-            <Holds background={"white"} className="row-span-4 h-full">
+            <Holds
+              background={"white"}
+              className="row-start-2 row-end-8 h-full"
+            >
               <Contents width={"section"}>
                 <Holds className="my-auto">
                   <Spinner />
@@ -119,26 +111,42 @@ export default function Content() {
               </Contents>
             </Holds>
           ) : (
-            <Holds background={"white"} className="row-span-6 h-full p-3">
-              <Holds className="h-full p-3 border-[3px] border-black rounded-[10px]">
-                {myTeams.map((teams) => (
-                  <Holds className="w-full" key={teams.id}>
+            <Holds
+              background={"white"}
+              className="row-start-2 row-end-8 h-full py-5"
+            >
+              <Contents width={"section"}>
+                <Grids rows={"7"} gap={"5"}>
+                  <Holds className="row-start-1 row-end-7 h-full w-full">
+                    {myTeams.map((teams) => (
+                      <Holds className="w-full" key={teams.id}>
+                        <Buttons
+                          background="lightBlue"
+                          href={`/dashboard/myTeam/${teams.id}?rPath=${url}`}
+                          className="py-4 w-full relative"
+                        >
+                          <Titles size="h2">{teams.name}</Titles>
+                          <Texts
+                            size="p4"
+                            className="absolute top-1/2 transform -translate-y-1/2 right-2"
+                          >
+                            ({teams._count.Users})
+                          </Texts>
+                        </Buttons>
+                      </Holds>
+                    ))}
+                  </Holds>
+                  <Holds className="row-start-7 row-end-8 w-full">
                     <Buttons
-                      background="lightBlue"
-                      href={`/dashboard/myTeam/${teams.id}`}
-                      className="py-2 w-full relative"
+                      background="green"
+                      href={`/dashboard/myTeam/timecards?rPath=${url}`}
+                      className=" w-full py-3"
                     >
-                      <Titles size="h2">{teams.name}</Titles>
-                      <Texts
-                        size="p4"
-                        className="absolute top-1/2 transform -translate-y-1/2 right-2"
-                      >
-                        ({teams._count.users})
-                      </Texts>
+                      <Titles size="h2">{t("TimeCards")}</Titles>
                     </Buttons>
                   </Holds>
-                ))}
-              </Holds>
+                </Grids>
+              </Contents>
             </Holds>
           )}
         </Grids>

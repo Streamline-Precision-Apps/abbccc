@@ -114,83 +114,91 @@ export async function fetchByNameEquipment(name: string) {
 
 // Create equipment
 export async function createEquipment(formData: FormData) {
+  console.log("Creating equipment...");
+  console.log(formData);
+
   try {
-    console.log("Creating equipment...");
-    // Log form data values for debugging
-    console.log({
-      equipmentTag: formData.get("equipmentTag"),
-      status: formData.get("equipmentStatus"),
-    });
-
-    // Retrieve form data
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const equipmentTagSubmission = formData.get("equipmentTag") as string;
-    const statusSubmission = formData.get("equipmentStatus") as string;
-    let equipmentTag: EquipmentTags;
-    let EQstatus: EquipmentStatus;
-
-    // Update validation to include EQUIPMENT
-    if (equipmentTagSubmission.toUpperCase() === "TRUCK")
-      equipmentTag = "TRUCK";
-    else if (equipmentTagSubmission.toUpperCase() === "TRAILER")
-      equipmentTag = "TRAILER";
-    else if (equipmentTagSubmission.toUpperCase() === "EQUIPMENT")
-      // Changed from VEHICLE to EQUIPMENT
-      equipmentTag = "EQUIPMENT";
-    else throw new Error("Invalid enum value provided for equipmentTag.");
-
-    // Status validation remains the same
-    if (statusSubmission.toUpperCase() === "OPERATIONAL")
-      EQstatus = "OPERATIONAL";
-    else if (statusSubmission.toUpperCase() === "NEEDS_REPAIR")
-      EQstatus = "NEEDS_REPAIR";
-    else if (statusSubmission.toUpperCase() === "NEEDS_MAINTENANCE")
-      EQstatus = "NEEDS_MAINTENANCE";
-    else throw new Error("Invalid enum value provided for status.");
-
-    const qrId = formData.get("qrId") as string;
-    const jobsiteLocation = formData.get("jobsiteLocation") as string;
-    // form data for trucks, trailers, and vehicles
+    const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
     const make = formData.get("make") as string;
     const model = formData.get("model") as string;
     const year = formData.get("year") as string;
     const licensePlate = formData.get("licensePlate") as string;
-    const registrationExpiration = formData.get("registrationExpiration")
-      ? new Date(formData.get("registrationExpiration") as string)
-      : null;
-    const mileage = formData.get("mileage")
-      ? Number(formData.get("mileage"))
-      : null;
+    const registrationExpiration = new Date(
+      formData.get("registration") as string
+    );
+    const mileage = Number(formData.get("mileage") as string);
+    const name = formData.get("temporaryEquipmentName") as string;
+    const comment = formData.get("creationReasoning") as string;
+    const jobsiteId = formData.get("jobsiteLocation") as string;
+    const qrId = formData.get("eqCode") as string;
+    const createdById = formData.get("createdById") as string;
+    const description = "";
 
-    if (!equipmentTag || !EQstatus) {
-      throw new Error("Invalid enum value provided.");
+    // Validate required fields before starting transaction
+    if (!equipmentTag) {
+      throw new Error("Please select an equipment tag.");
     }
 
-    await prisma.equipment.create({
-      data: {
-        name,
-        description,
-        qrId,
-        equipmentTag: equipmentTag,
-        status: EQstatus,
-        equipmentVehicleInfo: {
-          create: {
-            make: make || null,
-            model: model || null,
-            year: year || null,
-            licensePlate: licensePlate || null,
-            registrationExpiration: registrationExpiration || null,
-            mileage: mileage || null,
+    const result = await prisma.$transaction(async (prisma) => {
+      if (equipmentTag === "EQUIPMENT") {
+        return await prisma.equipment.create({
+          data: {
+            qrId,
+            name,
+            description,
+            equipmentTag,
+            CreationLogs: {
+              create: {
+                createdById,
+                comment,
+                jobsiteId,
+              },
+            },
           },
-        },
-      },
+        });
+      } else {
+        // Validate vehicle-specific fields
+        if (!make || !model || !year || !licensePlate || !mileage) {
+          throw new Error("All vehicle fields are required");
+        }
+
+        return await prisma.equipment.create({
+          data: {
+            qrId,
+            name,
+            description,
+            equipmentVehicleInfo: {
+              create: {
+                make,
+                model,
+                year,
+                licensePlate,
+                registrationExpiration,
+                mileage,
+              },
+            },
+            equipmentTag,
+            CreationLogs: {
+              create: {
+                createdById,
+                comment,
+                jobsiteId,
+              },
+            },
+          },
+        });
+      }
     });
+
     revalidatePath("/dashboard/qr-generator");
-    console.log("Equipment created successfully.");
+    return { success: true, data: result };
   } catch (error) {
     console.error("Error creating equipment:", error);
-    throw error;
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
   }
 }
 
@@ -235,7 +243,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       // 1. Check if related records exist
       const [employee, equipment, jobsite] = await Promise.all([
         tx.user.findUnique({ where: { id: employeeId } }),
-        tx.equipment.findUnique({ where: { qrId: equipmentQRId } }),
+        tx.equipment.findUnique({ where: { id: equipmentQRId } }),
         tx.jobsite.findUnique({ where: { qrId: jobsiteId } }),
       ]);
 

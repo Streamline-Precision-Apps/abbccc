@@ -64,7 +64,7 @@ const NumberInputWithRevert: React.FC<NumberInputWithRevertProps> = ({
               title="Revert changes"
               onClick={handleRevert}
             >
-              <Image src="/turnBack.svg" alt="revert" className="w-5 h-5" />
+              <Image src="/arrowBack.svg" alt="revert" className="w-5 h-5" />
             </button>
           )}
         </div>

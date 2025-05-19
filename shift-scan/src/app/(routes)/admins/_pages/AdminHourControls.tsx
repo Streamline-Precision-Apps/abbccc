@@ -86,7 +86,7 @@ export default function AdminHourControls({
             onClick={scrollLeft}
           >
             <Images
-              titleImg={"/expandLeft.svg"}
+              titleImg={"/arrowRightSymbol.svg"}
               titleImgAlt="left"
               size={"80"}
               className="mx-auto p-4 rotate-180"
@@ -115,7 +115,7 @@ export default function AdminHourControls({
             onClick={scrollRight}
           >
             <Images
-              titleImg={"/expandLeft.svg"}
+              titleImg={"/arrowRightSymbol.svg"}
               titleImgAlt="right"
               size={"80"}
               className="mx-auto p-4"

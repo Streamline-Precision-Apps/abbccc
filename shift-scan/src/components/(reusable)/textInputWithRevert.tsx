@@ -72,7 +72,7 @@ const TextInputWithRevert: React.FC<TextInputWithRevertProps> = ({
                 onClick={handleRevert}
               >
                 <Image
-                  src="/turnBack.svg"
+                  src="/arrowBack.svg"
                   alt="revert"
                   className="w-5 h-5"
                   width="4"
@@ -115,7 +115,7 @@ const TextInputWithRevert: React.FC<TextInputWithRevertProps> = ({
                 title="Revert changes"
                 onClick={handleRevert}
               >
-                <Image src="/turnBack.svg" alt="revert" className="w-5 h-5" />
+                <Image src="/arrowBack.svg" alt="revert" className="w-5 h-5" />
               </button>
             )}
           </div>

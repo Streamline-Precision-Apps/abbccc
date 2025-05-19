@@ -129,6 +129,7 @@ export type UserTraining = {
   isCompleted: boolean;
 };
 
+// moved to searchUser.ts
 export type SearchUser = {
   id: string;
   firstName: string;
@@ -144,6 +145,7 @@ export type SearchUser = {
   terminationDate: Date | null;
 };
 
+// moved to personnel.ts
 export type SearchCrew = {
   id: string;
   name: string;
@@ -178,7 +180,7 @@ export type EmployeeEquipmentLogs = {
   isCompleted: boolean;
   isFinished: boolean;
   status: FormStatus;
-  equipment?: Equipment | null;
+  Equipment?: Equipment | null;
 };
 export type TimeSheetView = {
   submitDate?: string; // Changed to string since API returns string dates
@@ -314,6 +316,7 @@ export type EquipmentCode = {
   id: string;
   qrId: string;
   name: string;
+  equipmentTag: EquipmentTags;
 };
 
 export type EquipmentCodes = {
@@ -336,6 +339,236 @@ export type EquipmentCodes = {
   name: string;
 };
 
+//--------------------------------------
+
+export type TruckingEquipmentHaulLogData = TruckingEquipmentHaulLogItem[];
+
+export type TruckingEquipmentHaulLogItem = {
+  TruckingLogs: TruckingEquipmentHaulLog[];
+};
+
+export type TruckingEquipmentHaulLog = {
+  id: string;
+  Equipment: {
+    name: string;
+  };
+  EquipmentHauled: EquipmentHauledItem[]; // Changed from object to array
+};
+
+export type EquipmentHauledItem = {
+  id: string;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  JobSite: {
+    // Changed from JobSiteHauledName to JobSite
+    id: string;
+    name: string;
+  };
+};
+
+//--------------------------------------
+export type TruckingMaterial = {
+  id: string;
+  name: string;
+  LocationOfMaterial: string;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+};
+
+export type TruckingMaterialHaulLog = {
+  id: string;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  Materials: TruckingMaterial[];
+};
+
+export type TruckingMaterialHaulLogItem = {
+  id: string;
+  TruckingLogs: (TruckingMaterialHaulLog | null)[];
+};
+
+export type TruckingMaterialHaulLogData = TruckingMaterialHaulLogItem[];
+
+//--------------------------------------
+export type TruckingRefuelLogData = TruckingRefuelLogItem[];
+
+export type TruckingRefuelLogItem = {
+  TruckingLogs: TruckingRefuelLog[];
+};
+export type TruckingRefuelLog = {
+  id: string;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  RefuelLogs: TruckingRefuel[];
+};
+
+export type TruckingRefuel = {
+  id: string;
+  truckingLogId: string;
+  gallonsRefueled: number;
+  milesAtFueling: number;
+};
+
+//--------------------------------------
+
+// Updated types to match your API response
+export type StateMileageLog = {
+  id: string;
+  truckingLogId: string;
+  state: string;
+  stateLineMileage: number;
+};
+export type TruckingStateLog = {
+  id: string;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  StateMileages: StateMileageLog[];
+};
+export type TruckingStateLogItem = {
+  TruckingLogs: (TruckingStateLog | null)[];
+};
+export type TruckingStateLogData = TruckingStateLogItem[];
+
+//--------------------------------------
+// export type TruckingMileageData = TruckingMileageItem[];
+
+export type TruckingMileageItem = {
+  TruckingLogs: TruckingMileage[];
+};
+// export type TruckingMileage = {
+//   id: string;
+//   timeSheetId: string | null;
+//   equipmentId: string | null;
+//   Equipment: {
+//     name: string;
+//   };
+//   startingMileage: number;
+//   endingMileage: number | null;
+// };
+//--------------------------------------
+
+export type TimesheetHighlights = {
+  submitDate: string;
+  date: Date | string;
+  id: string;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: Date | string;
+  endTime: Date | string | null;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+  Jobsite: {
+    name: string;
+  };
+};
+//--------------------------------------
+
+export type TascoRefuelLogData = TascoRefuelLogItem[];
+
+export type TascoRefuelLogItem = {
+  TascoLogs: TascoRefuelLog[];
+};
+
+export type RefuelLog = {
+  id: string;
+  tascoLogId: string;
+  gallonsRefueled: number;
+};
+
+export type TascoRefuelLog = {
+  id: string;
+  Equipment: {
+    id: string;
+    name: string;
+  } | null;
+  RefuelLogs: RefuelLog[];
+};
+
+//--------------------------------------
+export type TascoHaulLogData = TascoHaulLogItem[];
+
+export type TascoHaulLogItem = {
+  TascoLogs: TascoHaulLogs[];
+};
+
+export type TascoHaulLogs = {
+  id: string;
+  timeSheetId: string;
+  shiftType: string;
+  equipmentId: string;
+  laborType: string;
+  materialType: string;
+  LoadQuantity: number;
+};
+
+//--------------------------------------
+
+export type EquipmentData = {
+  id: string;
+  name: string;
+};
+
+export type JobsiteData = {
+  id: string;
+  name: string;
+};
+
+export type EmployeeEquipmentLogData = {
+  id: string;
+  startTime: string | null; // JSON provides strings, not Date objects
+  endTime: string | null; // JSON provides strings, not Date objects
+  Jobsite: JobsiteData;
+  employeeId: string;
+  Equipment: EquipmentData | null; // Make Equipment nullable to match your filter
+};
+
+export type EquipmentLogsData = {
+  EmployeeEquipmentLogs: EmployeeEquipmentLogData[];
+}[];
+
+export type FlattenedRefuelLog = {
+  equipmentId: string;
+  equipmentName: string;
+  refuelLog: {
+    id: string;
+    gallonsRefueled: number;
+  };
+};
+
+export type EquipmentRefuelLogItem = {
+  id: string;
+  gallonsRefueled: number;
+};
+
+export type EmployeeEquipmentLogWithRefuel = {
+  id: string;
+  Equipment: EquipmentData;
+  RefuelLogs: EquipmentRefuelLogItem[];
+};
+
+// Processed type for your component's state
+export type ProcessedEquipmentLog = {
+  id: string;
+  equipmentId: string;
+  equipmentName: string;
+  usageTime: string;
+  startTime: string;
+  endTime: string;
+  jobsite: string;
+  fullStartTime: string;
+  fullEndTime: string;
+};
+
 export type TimeSheet = {
   submitDate: string;
   date: Date | string;
@@ -354,6 +587,9 @@ export type TimeSheet = {
   workType: WorkType; // Enum: Type of work
 
   // Relations
+  Jobsite: {
+    name: string;
+  };
   tascoLogs?: TascoLog[] | null;
   truckingLogs?: TruckingLog[] | null;
   maintenanceLogs?: MaintenanceLog[] | null;
@@ -420,8 +656,6 @@ export type TruckingLog = {
   taskName: string | null; // E.g., drive or operator
   startingMileage: number;
   endingMileage: number | null;
-  startTime: Date;
-  endTime: Date | null;
   netWeight: number | null;
   comment: string | null;
   createdAt: Date;
@@ -681,3 +915,73 @@ export interface DeleteRefuelLogParams {
   type: RefuelLogType;
   id: string;
 }
+
+export interface EmployeeEquipmentLogWithEquipment
+  extends Omit<EmployeeEquipmentLog, "startTime" | "endTime"> {
+  Equipment: {
+    id: string;
+    name: string;
+    // Include other Equipment properties you need
+  };
+  startTime: Date; // Matching the base type
+  endTime: Date; // Matching the base type
+  Jobsite?: {
+    id?: string;
+    name?: string;
+    // Include other Jobsite properties you need
+  } | null;
+  // Include any other properties you need from EmployeeEquipmentLog
+}
+
+export type TimesheetUpdate = {
+  id: string;
+  startTime?: string;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
+
+export type TruckingMileage = {
+  id: string;
+  timeSheetId: string | null;
+  equipmentId: string | null;
+  Equipment: {
+    name: string;
+  };
+  startingMileage: number;
+  endingMileage: number | null;
+};
+
+export type TruckingMileageUpdate = {
+  id: string;
+  startingMileage?: number;
+  endingMileage?: number | null;
+};
+
+export type TruckingMileageData = {
+  TruckingLogs: TruckingMileage[];
+}[];
+
+export interface TruckingEquipmentHaulUpdate {
+  id: string;
+  equipmentId?: string | null;
+  jobSiteId?: string | null;
+  editedByUserId?: string | null;
+}
+
+export type MaterialType = {
+  id: number;
+  name: string;
+};
+
+export type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs";

@@ -2,15 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
-import { Contents } from "@/components/(reusable)/contents";
 import { useTranslations } from "next-intl";
-import { NewTab } from "@/components/(reusable)/newTabs";
-import { Titles } from "@/components/(reusable)/titles";
 import HaulingLogs from "./components/HaulingLogs";
 import StateLog from "./components/StateLog";
 import RefuelLayout from "./components/RefuelLayout";
-import { EndingMileage } from "./components/EndingMileage";
-import TruckDriverNotes from "./components/TruckDriverNotes";
+import WorkDetails from "./components/workDetails";
+import TruckTabOptions from "./TruckTabOptions";
 
 type StateMileage = {
   id: string;
@@ -35,21 +32,39 @@ type EquipmentHauled = {
   equipmentId: string | null;
   createdAt: Date;
   jobSiteId: string | null;
-  equipment: {
-    name: string | null;
-  };
-  jobSite: {
-    name: string | null;
-  };
+  Equipment: {
+    id: string;
+    name: string;
+  } | null;
+  JobSite: {
+    id: string;
+    name: string;
+  } | null;
 };
 
 type Material = {
-  name: string;
   id: string;
-  LocationOfMaterial: string | null;
   truckingLogId: string;
+  LocationOfMaterial: string | null;
+  name: string;
   quantity: number | null;
+  materialWeight: number | null;
+  lightWeight: number | null;
+  grossWeight: number | null;
+  loadType: LoadType | null;
   createdAt: Date;
+};
+
+enum LoadType {
+  UNSCREENED,
+  SCREENED,
+}
+
+type LaborType = {
+  id: string;
+  type: string | null;
+  startTime: string;
+  endTime: string | null;
 };
 
 export default function TruckDriver() {
@@ -63,6 +78,7 @@ export default function TruckDriver() {
   const [notes, setNotes] = useState<string>("");
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [material, setMaterial] = useState<Material[]>();
+  const [laborType, setLaborType] = useState<LaborType[]>([]);
 
   const [isComplete, setIsComplete] = useState({
     haulingLogsTab: true,
@@ -80,7 +96,12 @@ export default function TruckDriver() {
           material &&
           material.length >= 0 &&
           material.every(
-            (item) => item.LocationOfMaterial && item.quantity && item.name
+            (item) =>
+              item.LocationOfMaterial &&
+              item.grossWeight &&
+              item.name &&
+              item.materialWeight &&
+              item.lightWeight
           )
       ),
       notesTab: endMileage !== null,
@@ -97,6 +118,7 @@ export default function TruckDriver() {
           )
       ),
     });
+    console.log("Hauling Logs", isComplete.haulingLogsTab);
   };
 
   useEffect(() => {
@@ -131,6 +153,7 @@ export default function TruckDriver() {
           `/api/getTruckingLogs/stateMileage/${timeSheetId}`,
           `/api/getTruckingLogs/material/${timeSheetId}`,
           `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
+          `/api/getTruckingLogs/laborType/${timeSheetId}`,
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
@@ -138,11 +161,16 @@ export default function TruckDriver() {
 
         setEndMileage(data[0].endingMileage || null);
 
-        setNotes(data[1].comment || "");
+        setNotes(data[1] || "");
         setRefuelLogs(data[2]);
         setStateMileage(data[3]);
-        setMaterial(data[4]);
+        if (data[4] === Error) {
+          setMaterial([]);
+        } else {
+          setMaterial(data[4]);
+        }
         setEquipmentHauled(data[5]);
+        setLaborType(data[6]);
       } catch (error) {
         console.error(t("FetchingError"), error);
       } finally {
@@ -154,109 +182,63 @@ export default function TruckDriver() {
   }, [timeSheetId]);
 
   return (
-    <Holds className="h-full w-full ">
-      <Grids
-        rows={"10"}
-        className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
-      >
-        <Holds position={"row"} className="row-span-1 w-full gap-1">
-          <NewTab
-            titleImage="/Hauling-logs.svg"
-            titleImageAlt="Truck"
-            onClick={() => setActiveTab(1)}
-            isActive={activeTab === 1}
-            isComplete={isComplete.haulingLogsTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("HaulingLogs")}</Titles>
-          </NewTab>
-          <NewTab
-            titleImage="/comment.svg"
-            titleImageAlt="Comment"
-            onClick={() => setActiveTab(2)}
-            isActive={activeTab === 2}
-            isComplete={isComplete.notesTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("MyComments")}</Titles>
-          </NewTab>
-          <NewTab
-            titleImage="/state-mileage.svg"
-            titleImageAlt="State Mileage"
-            onClick={() => setActiveTab(3)}
-            isActive={activeTab === 3}
-            isComplete={isComplete.stateMileageTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("StateMileage")}</Titles>
-          </NewTab>
-          <NewTab
-            titleImage="/refuel-Icon.svg"
-            titleImageAlt="Refuel"
-            onClick={() => setActiveTab(4)}
-            isActive={activeTab === 4}
-            isComplete={isComplete.refuelLogsTab}
-            isLoading={isLoading}
-          >
-            <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
-          </NewTab>
-        </Holds>
+    <Grids rows={"10"} className="h-full w-full">
+      <Holds className={"w-full h-full rounded-t-none row-start-1 row-end-2 "}>
+        <TruckTabOptions
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isLoading={isLoading}
+          isComplete={isComplete}
+        />
+      </Holds>
+      <Holds className={"w-full h-full rounded-t-none row-start-2 row-end-11"}>
         {activeTab === 1 && (
           <HaulingLogs
+            isComplete={isComplete}
+            isLoading={isLoading}
             truckingLog={timeSheetId}
             material={material}
             equipmentHauled={equipmentHauled}
             setEquipmentHauled={setEquipmentHauled}
             setMaterial={setMaterial}
-            isLoading={isLoading}
           />
         )}
-        {activeTab !== 1 && (
-          <Holds
-            background={"white"}
-            className={
-              "rounded-t-none row-span-9 h-full overflow-y-hidden no-scrollbar"
-            }
-          >
-            <Contents width={"section"} className="py-5">
-              {activeTab === 2 && (
-                <Holds className="h-full w-full">
-                  <Grids rows={"8"} gap={"5"} className="h-full">
-                    <Holds className="h-full w-full row-start-1 row-end-2 ">
-                      <EndingMileage
-                        truckingLog={timeSheetId}
-                        endMileage={endMileage ?? null}
-                        setEndMileage={setEndMileage}
-                      />
-                    </Holds>
-                    <Holds className="h-full w-full row-start-2 row-end-9 relative">
-                      <TruckDriverNotes
-                        truckingLog={timeSheetId}
-                        notes={notes}
-                        setNotes={setNotes}
-                      />
-                    </Holds>
-                  </Grids>
-                </Holds>
-              )}
-              {activeTab === 3 && (
-                <StateLog
-                  StateMileage={StateMileage}
-                  setStateMileage={setStateMileage}
-                  truckingLog={timeSheetId}
-                />
-              )}
-              {activeTab === 4 && (
-                <RefuelLayout
-                  truckingLog={timeSheetId}
-                  refuelLogs={refuelLogs}
-                  setRefuelLogs={setRefuelLogs}
-                />
-              )}
-            </Contents>
-          </Holds>
+        {activeTab === 2 && (
+          <WorkDetails
+            isLoading={isLoading}
+            timeSheetId={timeSheetId}
+            notes={notes}
+            setNotes={setNotes}
+            endMileage={endMileage}
+            setEndMileage={setEndMileage}
+            laborType={laborType}
+            setLaborType={setLaborType}
+          />
         )}
-      </Grids>
-    </Holds>
+
+        {activeTab === 3 && (
+          <StateLog
+            isLoading={isLoading}
+            isComplete={isComplete}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            StateMileage={StateMileage}
+            setStateMileage={setStateMileage}
+            truckingLog={timeSheetId}
+          />
+        )}
+        {activeTab === 4 && (
+          <RefuelLayout
+            isLoading={isLoading}
+            isComplete={isComplete}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            truckingLog={timeSheetId}
+            refuelLogs={refuelLogs}
+            setRefuelLogs={setRefuelLogs}
+          />
+        )}
+      </Holds>
+    </Grids>
   );
 }
