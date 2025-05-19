@@ -10,6 +10,7 @@ import {
   TruckingMileageData,
   TruckingMileageUpdate,
 } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 interface TimeCardTruckingMileageProps {
@@ -28,52 +29,56 @@ export default function TimeCardTruckingMileage({
   const allTruckingLogs = truckingMileage
     .flatMap((item) => item.TruckingLogs)
     .filter((log) => log !== null && log.id);
-
+  const t = useTranslations("MyTeam.TimeCardTruckingMileage");
   const [editedTruckingLogs, setEditedTruckingLogs] =
     useState<TruckingMileage[]>(allTruckingLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
-useEffect(() => {
-  setEditedTruckingLogs(allTruckingLogs);
-  setChangesWereMade(false);
-}, [truckingMileage]);
+  useEffect(() => {
+    setEditedTruckingLogs(allTruckingLogs);
+    setChangesWereMade(false);
+  }, [truckingMileage]);
 
   const handleMileageChange = useCallback(
-  (id: string, field: keyof TruckingMileage, value: string | number) => {
-    const updatedLogs = editedTruckingLogs.map((item) =>
-      item.id === id ? { 
-        ...item, 
-        [field]: typeof value === 'string' ? Number(value) : value 
-      } : item
-    );
-    
-    setChangesWereMade(true);
-    setEditedTruckingLogs(updatedLogs);
-    
-    // Find the complete log that was changed
-    const changedLog = updatedLogs.find(log => log.id === id);
-    if (changedLog) {
-      onDataChange([{
-        id: changedLog.id,
-        startingMileage: changedLog.startingMileage,
-        endingMileage: changedLog.endingMileage
-      }]);
-    }
-  },
-  [editedTruckingLogs, onDataChange]
-);
+    (id: string, field: keyof TruckingMileage, value: string | number) => {
+      const updatedLogs = editedTruckingLogs.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              [field]: typeof value === "string" ? Number(value) : value,
+            }
+          : item
+      );
+
+      setChangesWereMade(true);
+      setEditedTruckingLogs(updatedLogs);
+
+      // Find the complete log that was changed
+      const changedLog = updatedLogs.find((log) => log.id === id);
+      if (changedLog) {
+        onDataChange([
+          {
+            id: changedLog.id,
+            startingMileage: changedLog.startingMileage,
+            endingMileage: changedLog.endingMileage,
+          },
+        ]);
+      }
+    },
+    [editedTruckingLogs, onDataChange]
+  );
 
   const isEmptyData = allTruckingLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
       <Grids rows={"7"}>
-        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
+        <Holds className="row-start-1 row-end-8 overflow-y-scroll no-scrollbar h-full w-full">
           {isEmptyData ? (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No trucking mileage data available
+                {t("NoTruckingMileageDataAvailable")}
               </Texts>
             </Holds>
           ) : (
@@ -81,17 +86,17 @@ useEffect(() => {
               <Grids cols={"4"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-3 w-full h-full pl-1">
                   <Titles position={"left"} size={"h6"}>
-                    Truck ID
+                    {t("TruckID")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-3 col-end-4 w-full h-full pr-1">
                   <Titles position={"center"} size={"h6"}>
-                    Start
+                    {t("Start")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-4 col-end-5 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    End
+                    {t("End")}
                   </Titles>
                 </Holds>
               </Grids>

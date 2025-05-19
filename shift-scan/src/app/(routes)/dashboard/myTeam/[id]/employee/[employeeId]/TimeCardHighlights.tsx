@@ -7,7 +7,6 @@ import { TimesheetHighlights } from "@/lib/types";
 import { useState, useEffect, useCallback } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { format } from "date-fns";
 import { Titles } from "@/components/(reusable)/titles";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { useTranslations } from "next-intl";
@@ -35,37 +34,37 @@ export default function TimeCardHighlights({
   const [costCodeModalOpen, setCostCodeModalOpen] = useState(false);
   const [currentEditingId, setCurrentEditingId] = useState<string | null>(null);
   const [changesWereMade, setChangesWereMade] = useState(false);
-  const t = useTranslations("Clock");
+  const t = useTranslations("MyTeam.TimeCardHighlights");
 
   useEffect(() => {
-  if (!edit && !changesWereMade) {
-    setEditedHighlightTimesheet(highlightTimesheet);
-  }
-}, [edit, highlightTimesheet, changesWereMade]);
+    if (!edit && !changesWereMade) {
+      setEditedHighlightTimesheet(highlightTimesheet);
+    }
+  }, [edit, highlightTimesheet, changesWereMade]);
 
   const isEmptyData = !highlightTimesheet || highlightTimesheet.length === 0;
 
   const handleTimeChange = useCallback(
-  (id: string, field: "startTime" | "endTime", timeString: string) => {
-    setEditedHighlightTimesheet(prev => {
-      const updated = prev.map((item) => {
-        if (item.id === id) {
-          const newValue = timeString
-            ? new Date(`${date}T${timeString}:00`)
-            : null;
-          return { ...item, [field]: newValue };
-        }
-        return item;
+    (id: string, field: "startTime" | "endTime", timeString: string) => {
+      setEditedHighlightTimesheet((prev) => {
+        const updated = prev.map((item) => {
+          if (item.id === id) {
+            const newValue = timeString
+              ? new Date(`${date}T${timeString}:00`)
+              : null;
+            return { ...item, [field]: newValue };
+          }
+          return item;
+        });
+
+        // Send the updated data to parent
+        onDataChange(updated);
+        return updated;
       });
-      
-      // Send the updated data to parent
-      onDataChange(updated);
-      return updated;
-    });
-    setChangesWereMade(true);
-  },
-  [date, onDataChange]
-);
+      setChangesWereMade(true);
+    },
+    [date, onDataChange]
+  );
 
   const handleJobsiteChange = useCallback(
     (id: string, jobsiteId: string) => {
@@ -162,11 +161,11 @@ export default function TimeCardHighlights({
   return (
     <Holds className="w-full h-full">
       <Grids rows={"7"}>
-        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
+        <Holds className="row-start-1 row-end-8 overflow-y-scroll no-scrollbar h-full w-full">
           {isEmptyData ? (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No timesheet data available
+                {t("NoDataFoundForCurrentDate")}
               </Texts>
             </Holds>
           ) : (
@@ -174,12 +173,12 @@ export default function TimeCardHighlights({
               <Grids cols={"6"} className="w-full h-fit">
                 <Holds className="col-start-2 col-end-4 w-full h-full pl-1">
                   <Titles position={"left"} size={"h6"}>
-                    Start & End
+                    {t("StartEnd")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-4 col-end-7 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Jobsite & Cost Code
+                    {t("JobsiteCostCode")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -275,7 +274,7 @@ export default function TimeCardHighlights({
                       </Grids>
                     ) : (
                       <Texts size="p6" className="text-gray-500 italic">
-                        Incomplete timesheet data
+                        {t("IncompleteTimesheetData")}
                       </Texts>
                     )}
                   </Buttons>

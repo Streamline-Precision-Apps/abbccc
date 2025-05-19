@@ -5,7 +5,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { MaterialType, TruckingMaterialHaulLog, TruckingMaterialHaulLogData } from "@/lib/types";
+import {
+  MaterialType,
+  TruckingMaterialHaulLog,
+  TruckingMaterialHaulLogData,
+} from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define the type for processed material data
@@ -32,6 +37,7 @@ export default function TimeCardTruckingMaterialLogs({
   truckingMaterialHaulLogs,
   onDataChange,
 }: TimeCardTruckingMaterialHaulLogsProps) {
+  const t = useTranslations("MyTeam.TimeCardTruckingMaterialLogs");
   // Process the material haul logs
   const allMaterials: ProcessedMaterialLog[] = truckingMaterialHaulLogs
     .flatMap((item) => item.TruckingLogs)
@@ -46,7 +52,8 @@ export default function TimeCardTruckingMaterialLogs({
       }))
     );
 
-  const [editedMaterials, setEditedMaterials] = useState<ProcessedMaterialLog[]>(allMaterials);
+  const [editedMaterials, setEditedMaterials] =
+    useState<ProcessedMaterialLog[]>(allMaterials);
   const [changesWereMade, setChangesWereMade] = useState(false);
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
 
@@ -67,24 +74,33 @@ export default function TimeCardTruckingMaterialLogs({
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-      setEditedMaterials(allMaterials);
-      setChangesWereMade(false);
+    setEditedMaterials(allMaterials);
+    setChangesWereMade(false);
   }, [truckingMaterialHaulLogs]);
 
   const handleMaterialChange = useCallback(
-    (id: string, logId: string, field: keyof ProcessedMaterialLog, value: string | number | null) => {
-      const updated = editedMaterials.map(m => {
+    (
+      id: string,
+      logId: string,
+      field: keyof ProcessedMaterialLog,
+      value: string | number | null
+    ) => {
+      const updated = editedMaterials.map((m) => {
         if (m.id === id && m.logId === logId) {
-          return { 
-            ...m, 
-            [field]: ['materialWeight', 'lightWeight', 'grossWeight'].includes(field) 
-              ? (value ? Number(value) : null) 
-              : value 
+          return {
+            ...m,
+            [field]: ["materialWeight", "lightWeight", "grossWeight"].includes(
+              field
+            )
+              ? value
+                ? Number(value)
+                : null
+              : value,
           };
         }
         return m;
       });
-      
+
       setChangesWereMade(true);
       setEditedMaterials(updated);
       onDataChange(updated);
@@ -103,12 +119,12 @@ export default function TimeCardTruckingMaterialLogs({
               <Grids cols={"2"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-2 w-full h-full pr-1">
                   <Titles position={"left"} size={"h6"}>
-                    Material & Location
+                    {t("MaterialLocation")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-2 col-end-3 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Weight
+                    {t("Weight")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -126,25 +142,31 @@ export default function TimeCardTruckingMaterialLogs({
                   >
                     <Grids cols={"2"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
-                        <Grids rows={"2"} className="w-full h-full rounded-none">
+                        <Grids
+                          rows={"2"}
+                          className="w-full h-full rounded-none"
+                        >
                           <Holds className="row-start-1 row-end-2 h-full rounded-none border-b-[1.5px] border-black">
                             {edit ? (
                               <select
                                 value={material.name}
-                                onChange={(e) => 
+                                onChange={(e) =>
                                   handleMaterialChange(
-                                    material.id, 
-                                    material.logId, 
-                                    'name', 
+                                    material.id,
+                                    material.logId,
+                                    "name",
                                     e.target.value
                                   )
                                 }
                                 disabled={!edit}
                                 className="w-full h-full border-none rounded-none rounded-tl-md text-xs px-2 bg-white"
                               >
-                                <option value="">Select Material</option>
+                                <option value="">{t("SelectMaterial")}</option>
                                 {materialTypes.map((materialType) => (
-                                  <option key={materialType.id} value={materialType.name}>
+                                  <option
+                                    key={materialType.id}
+                                    value={materialType.name}
+                                  >
                                     {materialType.name}
                                   </option>
                                 ))}
@@ -152,11 +174,11 @@ export default function TimeCardTruckingMaterialLogs({
                             ) : (
                               <Inputs
                                 value={material.name}
-                                onChange={(e) => 
+                                onChange={(e) =>
                                   handleMaterialChange(
-                                    material.id, 
-                                    material.logId, 
-                                    'name', 
+                                    material.id,
+                                    material.logId,
+                                    "name",
                                     e.target.value
                                   )
                                 }
@@ -169,11 +191,11 @@ export default function TimeCardTruckingMaterialLogs({
                           <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
                             <Inputs
                               value={material.LocationOfMaterial}
-                              onChange={(e) => 
+                              onChange={(e) =>
                                 handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'LocationOfMaterial', 
+                                  material.id,
+                                  material.logId,
+                                  "LocationOfMaterial",
                                   e.target.value
                                 )
                               }
@@ -192,16 +214,20 @@ export default function TimeCardTruckingMaterialLogs({
                               edit ? "bg-white" : "bg-app-gray"
                             }`}
                           >
-                            <Titles position={"left"} size={"h7"} className="px-1">
-                              Material
+                            <Titles
+                              position={"left"}
+                              size={"h7"}
+                              className="px-1"
+                            >
+                              {t("Material")}
                             </Titles>
                             <Inputs
                               value={material.materialWeight?.toString() || ""}
-                              onChange={(e) => 
+                              onChange={(e) =>
                                 handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'materialWeight', 
+                                  material.id,
+                                  material.logId,
+                                  "materialWeight",
                                   e.target.value ? Number(e.target.value) : null
                                 )
                               }
@@ -216,16 +242,20 @@ export default function TimeCardTruckingMaterialLogs({
                               edit ? "bg-white" : "bg-app-gray"
                             }`}
                           >
-                            <Titles position={"left"} size={"h7"} className="px-1">
-                              Light
+                            <Titles
+                              position={"left"}
+                              size={"h7"}
+                              className="px-1"
+                            >
+                              {t("Light")}
                             </Titles>
                             <Inputs
                               value={material.lightWeight?.toString() || ""}
-                              onChange={(e) => 
+                              onChange={(e) =>
                                 handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'lightWeight', 
+                                  material.id,
+                                  material.logId,
+                                  "lightWeight",
                                   e.target.value ? Number(e.target.value) : null
                                 )
                               }
@@ -240,16 +270,20 @@ export default function TimeCardTruckingMaterialLogs({
                               edit ? "bg-white" : "bg-app-gray"
                             }`}
                           >
-                            <Titles position={"left"} size={"h7"} className="px-1">
-                              Gross
+                            <Titles
+                              position={"left"}
+                              size={"h7"}
+                              className="px-1"
+                            >
+                              {t("Gross")}
                             </Titles>
                             <Inputs
                               value={material.grossWeight?.toString() || ""}
-                              onChange={(e) => 
+                              onChange={(e) =>
                                 handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'grossWeight', 
+                                  material.id,
+                                  material.logId,
+                                  "grossWeight",
                                   e.target.value ? Number(e.target.value) : null
                                 )
                               }
@@ -268,7 +302,7 @@ export default function TimeCardTruckingMaterialLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No haul logs available
+                {t("NoHaulLogsAvailable")}
               </Texts>
             </Holds>
           )}
