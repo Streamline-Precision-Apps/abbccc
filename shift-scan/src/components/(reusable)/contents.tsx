@@ -15,7 +15,7 @@ const ContentVariants = cva(
       width: {
         //only width
         responsive:
-          "w-[90%] sm:w-[85%] md:w-[85%] lg:w-[75%] xl:w-[60%] 2xl:w-[40%]",
+          "w-[90%] sm:w-[85%] md:w-[85%] lg:w-[75%] xl:w-[60%] 2xl:w-[40%]", //before 95%
         section: "w-[90%]",
         "95": "w-[95%]",
         "60": "w-[50%]",
