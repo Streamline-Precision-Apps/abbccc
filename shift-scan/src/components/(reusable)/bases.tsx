@@ -18,7 +18,7 @@ const BaseVariants = cva("h-full w-full", {
     },
     size: {
       // Only width and height
-      default: "pb-3 pt-7 h-dvh", // Use if data fits on screen
+      default: "py-7 h-dvh", // Use if data fits on screen
       scroll: "pb-3 pt-7 h-full no-scrollbar overflow-y-auto", // Use if data exceeds screen size
       screen: "h-screen w-screen", // Use for modals
       noScroll: "pb-3 pt-7 h-full", // Ensure no scrolling behavior for fixed elements
