@@ -4,18 +4,37 @@ import { Texts } from "@/components/(reusable)/texts";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { SelectionToggle } from "./SelectionToggle";
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 type MaintenanceLog = {
   id: string;
   startTime: string;
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
-    id: string;
+  User: {
     firstName: string;
     lastName: string;
     image: string;
   };
+};
+
+type Project = {
+  id: string;
+  equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
+  equipmentIssue: string;
+  additionalInfo: string;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
 
 enum Priority {
@@ -26,17 +45,6 @@ enum Priority {
   PENDING = "PENDING",
   TODAY = "TODAY",
 }
-
-type Project = {
-  id: string;
-  equipmentId: string;
-  equipment: { name: string };
-  selected: boolean;
-  repaired: boolean;
-  priority: Priority;
-  delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
-};
 
 export function ProjectItem({
   project,
@@ -50,11 +58,11 @@ export function ProjectItem({
   router: AppRouterInstance;
 }) {
   const priorityIcons = {
-    DELAYED: "/delayPriority.svg",
-    PENDING: "/pending.svg",
-    LOW: "/lowPriority.svg",
-    MEDIUM: "/mediumPriority.svg",
-    HIGH: "/highPriority.svg",
+    DELAYED: "/priorityDelay.svg",
+    PENDING: "/priorityPending.svg",
+    LOW: "/priorityLow.svg",
+    MEDIUM: "/priorityMedium.svg",
+    HIGH: "/priorityHigh.svg",
     TODAY: "/todayPriority.svg",
   };
 
@@ -75,15 +83,15 @@ export function ProjectItem({
       >
         <Holds size="20">
           <Images
-            titleImg={priorityIcons[project.priority] || "/pending.svg"}
+            titleImg={priorityIcons[project.priority] || "/priorityPending.svg"}
             titleImgAlt="priority"
             size="80"
           />
         </Holds>
         <Holds>
           <Texts className="text-center" size="p6">
-            {project.equipment.name.slice(0, 16)}
-            {project.equipment.name.length > 16 ? "..." : ""}
+            {project.Equipment.name.slice(0, 16)}
+            {project.Equipment.name.length > 16 ? "..." : ""}
           </Texts>
         </Holds>
       </Holds>

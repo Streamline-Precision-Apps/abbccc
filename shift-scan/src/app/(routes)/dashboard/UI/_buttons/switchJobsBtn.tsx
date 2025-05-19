@@ -15,14 +15,13 @@ import VerticalLayout from "./verticalLayout";
 export default function SwitchJobsBtn({
   permission,
   mechanicProjectID,
-  handleShowManagerButtons,
   logs,
   laborType,
   view,
 }: {
   permission: string;
   mechanicProjectID?: string;
-  handleShowManagerButtons: () => void;
+
   logs: LogItem[];
   laborType: string;
   view: string;
@@ -30,8 +29,6 @@ export default function SwitchJobsBtn({
   const t = useTranslations("Widgets");
   const modalState = useModalState();
   const router = useRouter();
-
-  console.log("logs", logs);
 
   return (
     <>
@@ -104,12 +101,11 @@ export default function SwitchJobsBtn({
                   <Holds
                     className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
                     onClick={() => {
-                      handleShowManagerButtons();
                       modalState.handleCloseModal();
                     }}
                   >
                     <Images
-                      titleImg="/turnBack.svg"
+                      titleImg="/arrowBack.svg"
                       titleImgAlt="back"
                       position="left"
                     />

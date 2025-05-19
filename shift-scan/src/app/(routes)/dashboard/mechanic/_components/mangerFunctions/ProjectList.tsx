@@ -3,23 +3,20 @@ import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ProjectItem } from "./ProjectItem";
+import { Texts } from "@/components/(reusable)/texts";
 
-enum Priority {
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  DELAYED = "DELAYED",
-  PENDING = "PENDING",
-  TODAY = "TODAY",
-}
+type Equipment = {
+  id: string;
+  name: string;
+};
+
 type MaintenanceLog = {
   id: string;
   startTime: string;
   endTime: string;
   userId: string;
   timeSheetId: string;
-  user: {
-    id: string;
+  User: {
     firstName: string;
     lastName: string;
     image: string;
@@ -29,13 +26,26 @@ type MaintenanceLog = {
 type Project = {
   id: string;
   equipmentId: string;
-  equipment: { name: string };
   selected: boolean;
-  repaired: boolean;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: MaintenanceLog[];
+  equipmentIssue: string;
+  additionalInfo: string;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  MaintenanceLogs: MaintenanceLog[];
+  Equipment: Equipment;
 };
+
+enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  DELAYED = "DELAYED",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+}
 
 export function ProjectList({
   projects,
@@ -52,8 +62,10 @@ export function ProjectList({
 
   if (projects.length === 0) {
     return (
-      <Holds className="h-full w-full row-start-2 row-end-9 rounded-none">
-        <EmptyView />
+      <Holds className="h-full w-full row-start-2 row-end-9 rounded-none justify-center px-6">
+        <Texts size={"p5"} className="text-center text-gray-500 italic">
+          {t("NoProjectsFound")}
+        </Texts>
       </Holds>
     );
   }

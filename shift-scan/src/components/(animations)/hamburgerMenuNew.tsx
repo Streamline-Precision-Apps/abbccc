@@ -9,58 +9,76 @@ export default function HamburgerMenuNew() {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const fetched = await fetch("/api/getUserImage");
-      const data = await fetched.json();
-      setImage(data.image);
+      const CachedImage = localStorage.getItem("userProfileImage");
+      if (CachedImage) {
+        setImage(CachedImage);
+        return;
+      }
+      try {
+        const fetched = await fetch("/api/getUserImage");
+        const data = await fetched.json();
+        if (data.image) {
+          setImage(data.image);
+          localStorage.setItem("userProfileImage", data.image);
+        }
+      } catch (error) {
+        console.error("Error fetching image:", error);
+      }
     };
     fetchImage();
   }, []);
 
   return (
-    <Holds position={"row"} background={"white"} className="row-span-1 h-full">
-      <Holds size={"20"}>
+    <Holds
+      position={"row"}
+      background={"white"}
+      className="row-start-1 row-end-2 h-full p-2"
+    >
+      <Holds className="w-16 h-full justify-center">
         <Buttons
-          href="/hamburger/profile"
+          href="/hamburger/profile?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="relative h-full w-full p-1"
+          className="relative w-16 h-full justify-center"
         >
           <img
-            src={image ? image : "/profile-sm.svg"}
+            src={image ? image : "/profileEmpty.svg"}
             alt="profile"
             className={
               image
-                ? "mx-auto h-full w-full border-[3px] border-black rounded-full"
-                : "mx-auto h-full w-full "
+                ? "mx-auto w-16 h-auto border-[2px] border-black rounded-full justify-center"
+                : "mx-auto w-16 h-auto"
             }
           />
-          <div className="absolute right-0 bottom-0 w-7 h-7">
-            <Images
-              titleImg={"/gray-settings-sm.svg"}
-              titleImgAlt={"settings"}
-              className="w-full h-full p-0.5" // White icon
-            />
-          </div>
+
+          <img
+            src={"/settingsFilled.svg"}
+            alt={"settings"}
+            className="w-7 h-7 absolute right-[-10px] bottom-0 " // White icon
+          />
         </Buttons>
       </Holds>
 
-      <Holds size={"60"} className="h-full">
+      <Holds className="w-full h-full justify-center">
         <Images
           titleImg="/logo.svg"
           titleImgAlt="logo"
           position={"left"}
-          className="relative h-full w-full p-2"
+          className="relative h-full w-full mx-auto"
         />
       </Holds>
 
-      <Holds size={"20"}>
-        <Buttons href="/hamburger/inbox" background={"none"} shadow={"none"}>
-          <Images
-            titleImg={"/inbox-sm.svg"}
-            titleImgAlt={"inbox"}
-            position={"left"}
-            size={"60"}
-            className="relative h-full w-full px-3"
+      <Holds className="w-16 h-full justify-center">
+        <Buttons
+          href="/hamburger/inbox?returnUrl=/"
+          background={"none"}
+          shadow={"none"}
+          className=" w-16 h-auto justify-center"
+        >
+          <img
+            src={"/form.svg"}
+            alt={"inbox"}
+            className="relative max-w-10 h-auto object-contain  mx-auto"
           />
         </Buttons>
       </Holds>

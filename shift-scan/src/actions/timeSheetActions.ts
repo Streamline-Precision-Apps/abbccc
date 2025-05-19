@@ -2,7 +2,12 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimeSheet } from "@/lib/types";
+import {
+  TimeSheet,
+  TimesheetHighlights,
+  TimesheetUpdate,
+  TruckingMileageUpdate,
+} from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
@@ -532,7 +537,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const jobsiteId = formData.get("jobsiteId") as string;
       const userId = formData.get("userId") as string;
       const equipmentId = formData.get("equipment") as string;
-      const previoustimeSheetComments = formData.get(
+      const previousTimeSheetComments = formData.get(
         "timeSheetComments"
       ) as string;
       const costCode = formData.get("costcode") as string;
@@ -544,7 +549,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       if (shiftType === "ABCD Shift") {
         materialType = formData.get("materialType") as string;
       } else {
-        materialType = null;
+        materialType = undefined;
       }
 
       // Create a new TimeSheet
@@ -559,9 +564,13 @@ export async function handleTascoTimeSheet(formData: FormData) {
           TascoLogs: {
             create: {
               shiftType,
-              equipmentId: equipmentId || null,
               laborType: laborType,
-              materialType: materialType,
+              ...(equipmentId && {
+                Equipment: { connect: { id: equipmentId } },
+              }),
+              ...(materialType && {
+                TascoMaterialTypes: { connect: { name: materialType } },
+              }),
             },
           },
         },
@@ -583,7 +592,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           data: {
             endTime: formatISO(formData.get("endTime") as string),
-            comment: previoustimeSheetComments,
+            comment: previousTimeSheetComments,
           },
         });
 
@@ -706,7 +715,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
 //--------------------------
 //-- update TimeSheets - located in manager section
 export async function updateTimeSheets(
-  updatedSheets: TimeSheet[],
+  updatedSheets: TimesheetHighlights[],
   manager: string
 ) {
   try {
@@ -720,8 +729,6 @@ export async function updateTimeSheets(
           workType: timesheet.workType as WorkType,
           startTime: timesheet.startTime,
           endTime: timesheet?.endTime,
-          comment: timesheet.comment,
-          editedByUserId: manager,
         },
       });
     });
@@ -799,34 +806,62 @@ export async function updateTimeSheet(formData: FormData) {
 //--------- return to prev work
 //---------
 export async function returnToPrevWork(formData: FormData) {
-  const id = formData.get("id") as string;
-  const PrevTimeSheet = await prisma.timeSheet.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      jobsiteId: true,
-      costcode: true,
-      workType: true,
-      TascoLogs: {
-        select: {
-          shiftType: true,
-          equipmentId: true,
-          laborType: true,
-          materialType: true,
-        },
-      },
-      TruckingLogs: {
-        select: {
-          laborType: true,
-          equipmentId: true,
-          startingMileage: true,
-        },
-      },
-    },
-  });
-  console.log(PrevTimeSheet);
+  try {
+    console.log("formData:", formData);
 
-  return PrevTimeSheet;
+    const id = formData.get("id") as string;
+    const PrevTimeSheet = await prisma.timeSheet.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        Jobsite: {
+          select: {
+            id: true,
+            qrId: true,
+            name: true,
+          },
+        },
+        CostCode: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        workType: true,
+        TascoLogs: {
+          select: {
+            shiftType: true,
+
+            Equipment: {
+              select: {
+                qrId: true,
+                name: true,
+              },
+            },
+            laborType: true,
+            materialType: true,
+          },
+        },
+        TruckingLogs: {
+          select: {
+            laborType: true,
+            Equipment: {
+              select: {
+                qrId: true,
+                name: true,
+              },
+            },
+            startingMileage: true,
+          },
+        },
+      },
+    });
+    console.log(PrevTimeSheet);
+
+    return PrevTimeSheet;
+  } catch (error) {
+    console.error("Error updating timesheet:", error);
+  }
 }
 //---------
 //---------  Delete TimeSheet by id - will be used by Admin only
@@ -835,4 +870,40 @@ export async function deleteTimeSheet(id: string) {
   await prisma.timeSheet.delete({
     where: { id },
   });
+}
+
+export async function updateTimesheetHighlights(
+  updatedTimesheets: TimesheetUpdate[]
+) {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("Unauthorized");
+
+    const updatePromises = updatedTimesheets.map((timesheet) =>
+      prisma.timeSheet.update({
+        where: { id: timesheet.id },
+        data: {
+          startTime: timesheet.startTime
+            ? new Date(timesheet.startTime)
+            : undefined,
+          endTime: timesheet.endTime ? new Date(timesheet.endTime) : null,
+          jobsiteId: timesheet.jobsiteId,
+          costcode: timesheet.costcode,
+          editedByUserId: session.user.id,
+          updatedAt: new Date(),
+        },
+      })
+    );
+
+    await Promise.all(updatePromises);
+
+    // Aggressive revalidation
+    revalidatePath("/dashboard/myTeam");
+    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating timesheets:", error);
+    throw error;
+  }
 }

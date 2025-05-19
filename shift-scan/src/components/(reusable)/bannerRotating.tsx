@@ -9,6 +9,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Texts } from "./texts";
 import Spinner from "../(animations)/spinner";
+import { useTranslations } from "next-intl";
+import { formatDuration } from "@/utils/formatDuration";
+import { Images } from "./images";
 // Type for Equipment
 interface Equipment {
   id: string;
@@ -53,6 +56,7 @@ interface CostCode {
 // Type for API Response
 interface BannerData {
   id: string;
+  startTime: string;
   jobsite: Jobsite;
   costCode: CostCode;
   employeeEquipmentLog: EmployeeEquipmentLog[];
@@ -61,8 +65,10 @@ interface BannerData {
 }
 
 export default function BannerRotating() {
+  const t = useTranslations("BannerRotating");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true); // Track loading state
+  const [newDate, setNewDate] = useState(new Date());
 
   const settings = {
     dots: true,
@@ -73,9 +79,21 @@ export default function BannerRotating() {
     slidesToScroll: 1,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 6000,
     pauseOnHover: true,
     pauseOnFocus: true,
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNewDate(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const calculateDuration = () => {
+    if (!bannerData?.startTime) return "";
+    return formatDuration(bannerData?.startTime, newDate);
   };
 
   // Fetch timeSheetId and banner data together
@@ -125,7 +143,7 @@ export default function BannerRotating() {
   if (!bannerData || !bannerData.jobsite) {
     return (
       <Holds className="w-[80%] ">
-        <Titles text={"white"}>No available timesheet data.</Titles>
+        <Titles text={"white"}>{t("ErrorFetchingClockInDetails")}</Titles>
       </Holds>
     );
   }
@@ -135,42 +153,23 @@ export default function BannerRotating() {
       <Slider {...settings} className="h-full">
         {/* Jobsite Information */}
         {bannerData.jobsite && (
-          <Holds position={"row"}>
-            <Titles text={"white"} size={"h2"}>
+          <Holds className="h-full justify-center items-center space-y-1">
+            <Titles text={"white"}>{t("CurrentSite")}</Titles>
+            <Texts text={"white"} size={"p5"}>
               {bannerData.jobsite.name}
-            </Titles>
-            <Texts className="text-white" size={"p5"}>
-              {bannerData.jobsite.qrId}
             </Texts>
           </Holds>
         )}
 
         {/* Cost Code Information */}
         {bannerData.costCode && (
-          <Holds>
-            <Titles text={"white"}>
-              {bannerData.costCode.name.split(" ").slice(1).join(" ") || ""}
-            </Titles>
-            <Texts className="text-white" size={"p5"}>
-              {bannerData.costCode.name.split(" ")[0] || ""}
+          <Holds className="h-full justify-center items-center space-y-1">
+            <Titles text={"white"}>{t("CurrentCostCode")}</Titles>
+            <Texts text={"white"} size={"p5"}>
+              {bannerData.costCode.name || ""}
             </Texts>
           </Holds>
         )}
-
-        {/* Employee Equipment Logs */}
-        {bannerData.employeeEquipmentLog &&
-          bannerData.employeeEquipmentLog.map((equipment, index) => (
-            <Holds key={index}>
-              <Titles text={"white"}>
-                {equipment.equipment?.name || "Unknown Equipment"}
-              </Titles>
-              <Texts className="text-white" size={"p5"}>
-                {equipment.startTime
-                  ? `Start Time: ${equipment.startTime}`
-                  : "No Start Time"}
-              </Texts>
-            </Holds>
-          ))}
 
         {/* Tasco Logs */}
         {bannerData.tascoLogs &&
@@ -178,28 +177,27 @@ export default function BannerRotating() {
             <Holds key={index} className="h-full justify-center items-center">
               {equipment.laborType === "tascoAbcdEquipment" ? (
                 <>
-                  <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>ABCD Shift - Equipment</Titles>
-
-                    <Texts className="text-white" size={"p5"}>
-                      {equipment.equipment?.name}
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <Titles text={"white"}>{t("AbcdShift")}</Titles>
+                    <Texts text={"white"} size={"p5"}>
+                      {t("EquipmentOperator")}
                     </Texts>
                   </Holds>
                 </>
               ) : equipment.laborType === "tascoEEquipment" ? (
                 <>
-                  <Titles text={"white"}>TASCO - E Shift</Titles>
+                  <Titles text={"white"}>{t("EShift")}</Titles>
 
                   <Texts className="text-white" size={"p5"}>
-                    {`EQ - ${equipment.equipment?.name}`}
+                    {t("MudConditioning")}
                   </Texts>
                 </>
               ) : equipment.laborType === "tascoAbcdLabor" ? (
                 <>
-                  <Holds className="h-full justify-center items-center">
-                    <Titles text={"white"}>ABCD Shift - Labor</Titles>
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <Titles text={"white"}>{t("AbcdShift")}</Titles>
                     <Texts className="text-white" size={"p5"}>
-                      Manual Labor
+                      {t("ManualLabor")}
                     </Texts>
                   </Holds>
                 </>
@@ -207,28 +205,88 @@ export default function BannerRotating() {
             </Holds>
           ))}
 
+        {bannerData.tascoLogs
+          .filter((log) => log.laborType !== "tascoAbcdLabor")
+          .map((log, index) => {
+            if (log.laborType === "tascoAbcdEquipment") {
+              return (
+                <Holds
+                  key={index}
+                  className="h-full justify-center items-center"
+                >
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
+                    <Texts className="text-white" size={"p5"}>
+                      {log.equipment?.name}
+                    </Texts>
+                  </Holds>
+                </Holds>
+              );
+            } else if (log.laborType === "tascoEEquipment") {
+              return (
+                <Holds
+                  key={index}
+                  className="h-full justify-center items-center space-y-1"
+                >
+                  <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
+
+                  <Texts className="text-white" size={"p5"}>
+                    {log.equipment?.name}
+                  </Texts>
+                </Holds>
+              );
+            }
+            return null;
+          })}
+
         {/* Trucking Logs */}
         {bannerData.truckingLogs &&
           bannerData.truckingLogs.map((equipment, index) => (
-            <Holds key={index}>
-              {equipment.laborType !== "truckLabor" ? (
-                <Titles text={"white"}>{equipment.equipment?.name}</Titles>
-              ) : (
-                <Titles text={"white"}>
-                  {equipment.laborType === "truckLabor" && "Manual Labor"}
-                </Titles>
-              )}
-              {equipment.laborType !== "truckLabor" && (
-                <Texts className="text-white" size={"p5"}>
-                  {equipment.laborType === "truckEquipmentOperator"
-                    ? "Truck Equipment Operator"
-                    : equipment.laborType === "truckDriver"
-                    ? "Truck Driver"
-                    : ""}
-                </Texts>
-              )}
+            <Holds
+              key={index}
+              className="h-full justify-center items-center space-y-1"
+            >
+              <Titles text={"white"}>{t("CurrentlyOperating")}</Titles>
+              <Texts className="text-white" size={"p5"}>
+                {equipment.equipment?.name}
+              </Texts>
             </Holds>
           ))}
+
+        {/* Employee Equipment Logs */}
+        {bannerData.employeeEquipmentLog &&
+          bannerData.employeeEquipmentLog.map((equipment, index) => (
+            <Holds key={index}>
+              <Titles text={"white"}>
+                {equipment.equipment?.name || t("UnknownEquipment")}
+              </Titles>
+              <Texts className="text-white" size={"p5"}>
+                {equipment.startTime
+                  ? `${t("StartTime")} ${equipment.startTime}`
+                  : t("NoStartTime")}
+              </Texts>
+            </Holds>
+          ))}
+
+        <Holds className="w-full flex items-center space-y-1">
+          <Titles text={"white"}>{t("ActiveTime")}</Titles>
+          <Holds position={"row"} className="w-full justify-center gap-x-2 ">
+            <Holds
+              background={"white"}
+              position={"left"}
+              className="max-w-6 h-auto rounded-full  "
+            >
+              <Images
+                titleImg="/clock.svg"
+                titleImgAlt="Clock Icon"
+                className="size-full object-contain mx-auto "
+              />
+            </Holds>
+            <Texts size={"p5"} text={"white"}>
+              {calculateDuration()}
+            </Texts>
+          </Holds>
+        </Holds>
       </Slider>
     </Holds>
   );

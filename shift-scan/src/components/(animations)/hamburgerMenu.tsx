@@ -116,7 +116,7 @@ export function AnimatedHamburgerButton() {
             <Buttons href="/hamburger/settings" background={"none"}>
               <Holds>
                 <Images
-                  titleImg={"/settings-sm.svg"}
+                  titleImg={"/settings.svg"}
                   titleImgAlt={"settings"}
                   position={"right"}
                   size={"70"}
@@ -142,7 +142,7 @@ export function AnimatedHamburgerButton() {
             <Buttons href="/hamburger/inbox" background={"none"}>
               <Holds>
                 <Images
-                  titleImg={"/inbox-sm.svg"}
+                  titleImg={"/inbox.svg"}
                   titleImgAlt={"inbox"}
                   position={"right"}
                   size={"70"}
@@ -168,7 +168,7 @@ export function AnimatedHamburgerButton() {
             <Buttons href="/hamburger/profile" background={"none"}>
               <Holds>
                 <Images
-                  titleImg={"/profile-sm.svg"}
+                  titleImg={"/profileEmpty.svg"}
                   titleImgAlt={"profile"}
                   position={"right"}
                   size={"70"}

@@ -2,10 +2,10 @@
 import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ButtonHTMLAttributes, FC } from "react";
+import { ButtonHTMLAttributes, forwardRef, ForwardedRef } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
-//This determines styles of all buttons
+// This determines styles of all buttons
 const ButtonVariants = cva(
   "border-[3px] border-black rounded-[10px]", //this applies to all variants
   {
@@ -44,7 +44,7 @@ const ButtonVariants = cva(
       shadow: {
         none: "shadow-none",
         yes: "shadow-[8px_8px_0px_grey]",
-      }
+      },
     },
     defaultVariants: {
       background: "lightBlue",
@@ -59,34 +59,37 @@ interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof ButtonVariants> {
   href?: string;
+  ref?: React.Ref<HTMLButtonElement | HTMLDivElement>;
 }
 
-const Buttons: FC<ButtonProps> = ({
-  className,
-  background,
-  position,
-  size,
-  shadow,
-  href,
-  ...props
-}) => {
-  const router = useRouter();
-  const pageAction = () => {
-    if (href) {
-      if (href === "back") {
-        router.back();
-      } else router.push(href);
-    }
-  };
-  return (
-    <button
-      onClick={() => {
-        pageAction();
-      }}
-      className={cn(ButtonVariants({ background, size, position, shadow, className }))}
-      {...props}
-    />
-  );
-};
+const Buttons = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    { className, background, position, size, shadow, href, ...props },
+    ref: ForwardedRef<HTMLButtonElement>
+  ) => {
+    const router = useRouter();
+    const pageAction = () => {
+      if (href) {
+        if (href === "back") {
+          router.back();
+        } else router.push(href);
+      }
+    };
+    return (
+      <button
+        ref={ref}
+        onClick={() => {
+          pageAction();
+        }}
+        className={cn(
+          ButtonVariants({ background, size, position, shadow, className })
+        )}
+        {...props}
+      />
+    );
+  }
+);
+
+Buttons.displayName = "Buttons";
 
 export { Buttons, ButtonVariants };

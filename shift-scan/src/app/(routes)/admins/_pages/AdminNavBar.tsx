@@ -106,15 +106,15 @@ return (
 >
     {isInboxPage ? (
         screenWidth < 1300 ? (
-            <Images titleImg="/inbox.svg" titleImgAlt="Inbox Icon" className="m-auto h-[40px] min-w-[60px]" />
+            <Images titleImg="/form.svg" titleImgAlt="Inbox Icon" className="m-auto h-[40px] min-w-[60px]" />
         ) : (
             <Holds position="row" className="justify-center items-center h-full">
                 <Titles size="h5">Inbox</Titles>
-                <Images size="30" titleImg="/inbox.svg" titleImgAlt="Inbox Icon" className="h-[30px] pl-3 mb-1" />
+                <Images size="30" titleImg="/form.svg" titleImgAlt="Inbox Icon" className="h-[30px] pl-3 mb-1" />
             </Holds>
         )
     ) : (
-        <Images titleImg="/inbox.svg" titleImgAlt="Inbox Icon" className="m-auto h-[40px] min-w-[60px]" />
+        <Images titleImg="/form.svg" titleImgAlt="Inbox Icon" className="m-auto h-[40px] min-w-[60px]" />
     )}
 </Buttons>
 

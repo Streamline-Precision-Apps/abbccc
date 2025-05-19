@@ -41,16 +41,23 @@ export async function GET() {
           lte: endOfDay,
         },
       },
+      include: {
+        Jobsite: {
+          select: {
+            name: true,
+          },
+        },
+        TascoLogs: {
+          select: {
+            laborType: true,
+            shiftType: true,
+          },
+        },
+      },
       orderBy: { createdAt: "asc" },
     });
 
     // Check if timesheets were found and return appropriate response
-    if (timesheets.length === 0) {
-      return NextResponse.json(
-        { message: "No timesheets found for today" },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json(timesheets);
   } catch (error) {

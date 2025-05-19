@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const employeeId = searchParams.get("employeeId");
     const date = searchParams.get("date");
+    const type = searchParams.get("type");
 
     const session = await auth();
     const userId = session?.user?.id;
@@ -42,53 +43,411 @@ export async function GET(request: Request) {
     const endOfDay = new Date(startOfDay);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
-    console.log("Start Of Day:", startOfDay, "End Of Day:", endOfDay);
+    let result;
 
-    const timeSheets = await prisma.timeSheet.findMany({
-      where: {
-        userId: employeeId,
-        date: {
-          gte: startOfDay.toISOString(), // Start of the day in UTC
-          lte: endOfDay.toISOString(), // End of the day in UTC
+    if (type === "timesheetHighlights") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
         },
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-      include: {
-        TascoLogs: true,
-        TruckingLogs: true,
-        MaintenanceLogs: true,
-        EmployeeEquipmentLogs: true,
-      },
-    });
+        orderBy: {
+          startTime: "asc",
+        },
+        include: {
+          Jobsite: {
+            select: {
+              name: true,
+            },
+          },
+          TascoLogs: true,
+          TruckingLogs: true,
+          MaintenanceLogs: true,
+          EmployeeEquipmentLogs: true,
+        },
+      });
 
-    if (!timeSheets || timeSheets.length === 0) {
-      return NextResponse.json(
-        { message: "No timesheets found for the specified date." },
-        { status: 404 }
-      );
+      if (!timeSheets || timeSheets.length === 0) {
+        return NextResponse.json(
+          { message: "No timesheets found for the specified date." },
+          { status: 404 }
+        );
+      }
+
+      // Convert fetched ISO times to local timezone
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const adjustedTimeSheets = timeSheets.map((sheet) => ({
+        ...sheet,
+        submitDate: sheet.createdAt
+          ? formatInTimeZone(sheet.createdAt, timeZone, "yyyy-MM-dd HH:mm:ss")
+          : "",
+        date: formatInTimeZone(sheet.date, timeZone, "yyyy-MM-dd"),
+        startTime: sheet.startTime
+          ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+          : "",
+        endTime: sheet.endTime
+          ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+          : "",
+      }));
+
+      result = adjustedTimeSheets;
+    }
+    if (type === "truckingMileage") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              id: true,
+              timeSheetId: true,
+              equipmentId: true,
+              Equipment: {
+                select: {
+                  name: true,
+                },
+              },
+              startingMileage: true,
+              endingMileage: true,
+            },
+          },
+        },
+      });
+
+      result = timeSheets;
+    }
+    if (type === "truckingEquipmentHaulLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              id: true,
+              Equipment: {
+                select: {
+                  name: true,
+                },
+              },
+              EquipmentHauled: {
+                select: {
+                  id: true,
+                  Equipment: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  JobSite: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Filter out timesheets with empty TruckingLogs arrays
+      result = timeSheets;
+    }
+    if (type === "truckingMaterialHaulLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              id: true,
+              Materials: {
+                select: {
+                  id: true,
+                  name: true,
+                  LocationOfMaterial: true,
+                  materialWeight: true,
+                  lightWeight: true,
+                  grossWeight: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Filter out timesheets with empty TruckingLogs arrays
+      result = timeSheets;
+    }
+    if (type === "truckingRefuelLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              RefuelLogs: {
+                select: {
+                  id: true,
+                  gallonsRefueled: true,
+                  milesAtFueling: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      result = timeSheets;
+    }
+    if (type === "truckingStateLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TruckingLogs: {
+            select: {
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              StateMileages: {
+                select: {
+                  id: true,
+                  truckingLogId: true,
+                  state: true,
+                  stateLineMileage: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      result = timeSheets;
+    }
+    if (type === "tascoHaulLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TascoLogs: {
+            select: {
+              id: true,
+              timeSheetId: true,
+              shiftType: true,
+              equipmentId: true,
+              laborType: true,
+              materialType: true,
+              LoadQuantity: true,
+            },
+          },
+        },
+      });
+
+      result = timeSheets;
     }
 
-    console.log("Fetched Timesheets:", timeSheets);
+    if (type === "tascoRefuelLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          TascoLogs: {
+            select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              RefuelLogs: {
+                select: {
+                  id: true,
+                  tascoLogId: true,
+                  gallonsRefueled: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-    // Convert fetched ISO times to local timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const adjustedTimeSheets = timeSheets.map((sheet) => ({
-      ...sheet,
-      submitDate: sheet.createdAt
-        ? formatInTimeZone(sheet.createdAt, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-      date: formatInTimeZone(sheet.date, timeZone, "yyyy-MM-dd"),
-      startTime: sheet.startTime
-        ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-      endTime: sheet.endTime
-        ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-    }));
+      result = timeSheets;
+    }
 
-    return NextResponse.json(adjustedTimeSheets, {
+    if (type === "equipmentLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              employeeId: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              Jobsite: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              startTime: true,
+              endTime: true,
+            },
+          },
+        },
+      });
+
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      const adjustedTimeSheets = timeSheets.map((sheet) => {
+        const baseData = {
+          ...sheet,
+        };
+
+        // Process each equipment log's times
+        const adjustedLogs = sheet.EmployeeEquipmentLogs.map((log) => ({
+          ...log,
+          startTime: log.startTime
+            ? formatInTimeZone(log.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+            : "",
+          endTime: log.endTime
+            ? formatInTimeZone(log.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
+            : "",
+        }));
+
+        return {
+          ...baseData,
+          EmployeeEquipmentLogs: adjustedLogs,
+        };
+      });
+
+      result = adjustedTimeSheets;
+    }
+
+    if (type === "equipmentRefuelLogs") {
+      const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+          userId: employeeId,
+          date: {
+            gte: startOfDay.toISOString(), // Start of the day in UTC
+            lte: endOfDay.toISOString(), // End of the day in UTC
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+        select: {
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              RefuelLogs: {
+                select: {
+                  id: true,
+                  gallonsRefueled: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      result = timeSheets
+        .flatMap((sheet) => sheet.EmployeeEquipmentLogs)
+        .filter((log) => log.RefuelLogs && log.RefuelLogs.length > 0); // or any other condition you need;
+    }
+
+    return NextResponse.json(result, {
       headers: {
         "Cache-Control":
           "public, max-age=60, s-maxage=60, stale-while-revalidate=30",

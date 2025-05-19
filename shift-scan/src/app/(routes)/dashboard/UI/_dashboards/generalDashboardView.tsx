@@ -6,7 +6,6 @@ import { Spinner } from "@nextui-org/react";
 import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
-import FormsBtn from "../_buttons/formsBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
@@ -16,18 +15,10 @@ import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function GeneralDashboardView({
   additionalButtonsType,
-  isModalOpen,
-  isModal2Open,
-  setIsModal2Open,
-  comment,
-  setComment,
-  handleCOButton2,
-  handleCOButton3,
-  handleCloseModal,
-  handleShowManagerButtons,
+  verifyLogsCompletion,
   permission,
-  handleShowAdditionalButtons,
   logs,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -35,79 +26,44 @@ export default function GeneralDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton2: () => void;
-  handleCOButton3: () => void;
-  handleCloseModal: () => void;
-  handleShowManagerButtons: () => void;
+  verifyLogsCompletion: () => void;
   permission: string;
-  handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
+  mechanicProjectID: string;
 }) {
   const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
-        <Grids
-          cols={"2"}
-          rows={
-            permission === "ADMIN" ||
-            permission === "SUPERADMIN" ||
-            permission === "MANAGER"
-              ? "3"
-              : "3"
-          }
-          gap={"5"}
-        >
-          {/* Render buttons based on state */}
-          {additionalButtonsType === "clockOut" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <ClockOutWidget
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                logs={logs}
-              />
-            </Holds>
-          ) : (
-            <>
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
+        <Grids cols={"2"} rows={"3"} gap={"5"}>
+          <>
+            <EquipmentBtn permission={permission} />
 
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
+            <SwitchJobsBtn
+              {...modalState}
+              permission={permission}
+              logs={logs}
+              laborType={"general"}
+              view={"general"}
+            />
 
-              <EquipmentBtn permission={permission} />
+            {permission !== "USER" && !additionalButtonsType && (
+              <GeneratorBtn />
+            )}
 
-              <FormsBtn permission={permission} view={"general"} />
+            {permission !== "USER" && !additionalButtonsType && (
+              <MyTeamWidget />
+            )}
 
-              <SwitchJobsBtn
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                permission={permission}
-                logs={logs}
-                laborType={"general"}
-                view={"general"}
-              />
-
-              <ClockOutBtn
-                handleShowAdditionalButtons={handleShowAdditionalButtons}
-                permission={permission}
-                View={"general"}
-                laborType="general"
-              />
-            </>
-          )}
+            <ClockOutBtn
+              handleShowAdditionalButtons={verifyLogsCompletion}
+              permission={permission}
+              logs={logs}
+              mechanicProjectID={mechanicProjectID}
+              View={"general"}
+              laborType="general"
+            />
+          </>
         </Grids>
       </Contents>
     </>

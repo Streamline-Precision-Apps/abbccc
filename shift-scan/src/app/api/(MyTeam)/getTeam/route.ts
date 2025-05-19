@@ -30,13 +30,6 @@ export async function GET() {
       },
     });
 
-    if (!teams || teams.length === 0) {
-      return NextResponse.json(
-        { message: "No teams found for the current user." },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(teams, {
       headers: {
         "Cache-Control":

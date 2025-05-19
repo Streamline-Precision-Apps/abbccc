@@ -3,7 +3,6 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { useEffect, useState } from "react";
 import Counter from "./counter";
-import { Labels } from "@/components/(reusable)/labels";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
@@ -14,7 +13,6 @@ import TascoComments from "./tascoComments";
 import { SetLoad } from "@/actions/tascoActions";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { useTranslations } from "next-intl";
-import { Texts } from "@/components/(reusable)/texts";
 
 export default function TascoEQClientPage() {
   const t = useTranslations("Tasco");
@@ -88,7 +86,7 @@ export default function TascoEQClientPage() {
   // Trigger auto-save when formValues or formTitle changes
   useEffect(() => {
     if (!tascoLogId) return;
-    autoSave({ values: { tascoLogId, loadCount } });
+    autoSave.autoSave({ values: { tascoLogId, loadCount } });
   }, [loadCount]);
 
   return (
@@ -110,7 +108,7 @@ export default function TascoEQClientPage() {
         </Holds>
 
         <Holds className="row-start-3 row-end-11 h-full w-full">
-          <Holds position={"row"} className="gap-0.5 h-[50px]">
+          <Holds position={"row"} className="gap-1.5 h-[50px]">
             <NewTab
               titleImage="/comment.svg"
               titleImageAlt={t("Comments")}
@@ -121,7 +119,7 @@ export default function TascoEQClientPage() {
               <Titles size={"h4"}>{t("Comments")}</Titles>
             </NewTab>
             <NewTab
-              titleImage="/refuel-Icon.svg"
+              titleImage="/refuel.svg"
               titleImageAlt={t("RefuelIcon")}
               onClick={() => setActiveTab(2)}
               isActive={activeTab === 2}

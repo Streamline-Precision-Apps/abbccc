@@ -26,6 +26,7 @@ export async function GET(req: Request) {
       where: { userId, id },
       select: {
         id: true,
+        startTime: true,
         Jobsite: {
           select: { id: true, qrId: true, name: true },
         },
@@ -94,6 +95,7 @@ export async function GET(req: Request) {
 
     const responseData = {
       id: jobCode.id,
+      startTime: jobCode.startTime,
       jobsite: jobCode.Jobsite
         ? {
             id: jobCode.Jobsite.id,
@@ -121,9 +123,6 @@ export async function GET(req: Request) {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

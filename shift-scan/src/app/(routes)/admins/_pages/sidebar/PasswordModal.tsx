@@ -160,7 +160,7 @@ export default function PasswordModal({ setIsOpenChangePassword }: Props) {
                 <Holds position="row" className="">
                   <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
                   <Images
-                    titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
+                    titleImg={viewSecret1 ? "/eye.svg" : "/eyeSlash.svg"}
                     titleImgAlt="eye"
                     background="none"
                     size="10"
@@ -189,7 +189,7 @@ export default function PasswordModal({ setIsOpenChangePassword }: Props) {
                     {t("ConfirmPassword")}
                   </Labels>
                   <Images
-                    titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
+                    titleImg={viewSecret2 ? "/eye.svg" : "/eyeSlash.svg"}
                     titleImgAlt="eye"
                     background="none"
                     size="10"

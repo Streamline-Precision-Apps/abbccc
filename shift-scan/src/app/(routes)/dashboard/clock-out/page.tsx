@@ -8,6 +8,7 @@ export default async function ClockOutPage() {
   if (!session) {
     redirect("/signin");
   }
+  const manager = session.user.permission !== "USER";
 
-  return <ClockOutContent />;
+  return <ClockOutContent manager={manager} />;
 }
