@@ -5,7 +5,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingRefuel, TruckingRefuelLog, TruckingRefuelLogData } from "@/lib/types";
+import {
+  TruckingRefuel,
+  TruckingRefuelLog,
+  TruckingRefuelLogData,
+} from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define a type that extends TruckingRefuel with our additional properties
@@ -27,6 +32,7 @@ export default function TimeCardTruckingRefuelLogs({
   truckingRefuelLogs,
   onDataChange,
 }: TimeCardTruckingRefuelLogsProps) {
+  const t = useTranslations("MyTeam.TimeCardTruckingRefuelLogs");
   // Get all trucking logs with their refuel logs
   const allTruckingLogs: ExtendedTruckingRefuel[] = truckingRefuelLogs
     .flatMap((item) => item.TruckingLogs)
@@ -42,24 +48,33 @@ export default function TimeCardTruckingRefuelLogs({
       }))
     );
 
-  const [editedRefuelLogs, setEditedRefuelLogs] = useState<ExtendedTruckingRefuel[]>(allTruckingLogs);
+  const [editedRefuelLogs, setEditedRefuelLogs] =
+    useState<ExtendedTruckingRefuel[]>(allTruckingLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-      setEditedRefuelLogs(allTruckingLogs);
-      setChangesWereMade(false);
+    setEditedRefuelLogs(allTruckingLogs);
+    setChangesWereMade(false);
   }, [truckingRefuelLogs]);
 
   const handleRefuelChange = useCallback(
-    (id: string, truckingLogId: string, field: keyof ExtendedTruckingRefuel, value: string | number | null) => {
-      const updatedLogs = editedRefuelLogs.map(log => {
+    (
+      id: string,
+      truckingLogId: string,
+      field: keyof ExtendedTruckingRefuel,
+      value: string | number | null
+    ) => {
+      const updatedLogs = editedRefuelLogs.map((log) => {
         if (log.id === id && log.truckingLogId === truckingLogId) {
-          return { 
-            ...log, 
-            [field]: field === 'gallonsRefueled' || field === 'milesAtFueling' 
-              ? (value ? Number(value) : null) 
-              : value 
+          return {
+            ...log,
+            [field]:
+              field === "gallonsRefueled" || field === "milesAtFueling"
+                ? value
+                  ? Number(value)
+                  : null
+                : value,
           };
         }
         return log;
@@ -83,17 +98,17 @@ export default function TimeCardTruckingRefuelLogs({
               <Grids cols={"4"} className="w-full h-fit pb-1">
                 <Holds className="col-start-1 col-end-3 w-full h-full pr-1">
                   <Titles position={"left"} size={"h6"}>
-                    Truck ID
+                    {t("TruckID")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-3 col-end-4 w-full h-full pr-1">
                   <Titles position={"center"} size={"h6"}>
-                    Gallons
+                    {t("Gallons")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-4 col-end-5 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Mileage
+                    {t("Mileage")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -123,11 +138,11 @@ export default function TimeCardTruckingRefuelLogs({
                         <Inputs
                           type="number"
                           value={rl.gallonsRefueled?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleRefuelChange(
                               rl.id,
                               rl.truckingLogId,
-                              'gallonsRefueled',
+                              "gallonsRefueled",
                               e.target.value
                             )
                           }
@@ -139,11 +154,11 @@ export default function TimeCardTruckingRefuelLogs({
                         <Inputs
                           type="number"
                           value={rl.milesAtFueling?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleRefuelChange(
                               rl.id,
                               rl.truckingLogId,
-                              'milesAtFueling',
+                              "milesAtFueling",
                               e.target.value
                             )
                           }
@@ -159,7 +174,7 @@ export default function TimeCardTruckingRefuelLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No Refuel data available
+                {t("NoRefuelDataAvailable")}
               </Texts>
             </Holds>
           )}

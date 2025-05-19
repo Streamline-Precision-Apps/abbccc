@@ -6,6 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { EmployeeEquipmentLogWithRefuel } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define the type for flattened refuel logs with equipment info
@@ -30,6 +31,7 @@ export default function TimeCardEquipmentRefuelLogs({
   equipmentRefuelLogs,
   onDataChange,
 }: TimeCardEquipmentRefuelLogsProps) {
+  const t = useTranslations("MyTeam.TimeCardEquipmentLogs");
   // Flatten the logs to pair each RefuelLog with its Equipment
   const flattenRefuelLogs = useCallback(
     (logs: EmployeeEquipmentLogWithRefuel[]): EquipmentRefuelLog[] => {
@@ -100,13 +102,13 @@ export default function TimeCardEquipmentRefuelLogs({
               <Grids cols={"4"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-3 w-full h-full">
                   <Titles position={"center"} size={"h6"}>
-                    Equipment ID
+                    {t("EquipmentID")}
                   </Titles>
                 </Holds>
 
                 <Holds className="col-start-3 col-end-5 w-full h-full pr-1">
                   <Titles position={"center"} size={"h6"}>
-                    Gallons Refueled
+                    {t("GallonsRefueled")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -154,7 +156,7 @@ export default function TimeCardEquipmentRefuelLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No Equipment Refuel Logs Found
+                {t("NoEquipmentRefuelLogsAvailable")}
               </Texts>
             </Holds>
           )}

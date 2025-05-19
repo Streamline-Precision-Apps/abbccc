@@ -18,15 +18,6 @@ import {
   TimesheetFilter,
   TruckingMileageUpdate,
   TruckingEquipmentHaulLog,
-  TruckingMileageData,
-  TruckingEquipmentHaulLogData,
-  TruckingMaterialHaulLogData,
-  TruckingRefuelLogData,
-  TruckingStateLogData,
-  TascoHaulLogData,
-  TascoRefuelLogData,
-  EquipmentLogsData,
-  EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
 import {
   updateTruckingHaulLogs,
@@ -92,21 +83,21 @@ function isEquipmentLogChange(
 }
 
 export default function EmployeeTabs() {
+  const t = useTranslations("MyTeam");
+  const router = useRouter();
   const { employeeId } = useParams();
+  const { data: session } = useSession();
   const { id } = useParams();
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
   const timeCard = urls.get("timeCard");
-  const router = useRouter();
-  const t = useTranslations("MyTeam");
-  const { data: session } = useSession();
 
   const manager = useMemo(
     () => `${session?.user?.firstName} ${session?.user?.lastName}`,
     [session]
   );
-  const [activeTab, setActiveTab] = useState(1);
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
+  const [activeTab, setActiveTab] = useState(1);
   const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
   const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
@@ -405,7 +396,10 @@ export default function EmployeeTabs() {
   return (
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="h-full w-full">
-        <Holds className="row-start-1 row-end-2 h-full w-full">
+        <Holds
+          background={"white"}
+          className="row-start-1 row-end-2 h-full w-full"
+        >
           <TitleBoxes
             onClick={() =>
               router.push(
@@ -415,7 +409,7 @@ export default function EmployeeTabs() {
           >
             <Titles size={"h2"}>
               {loading
-                ? "Loading..."
+                ? t("Loading")
                 : `${employee?.firstName} ${employee?.lastName}`}
             </Titles>
           </TitleBoxes>

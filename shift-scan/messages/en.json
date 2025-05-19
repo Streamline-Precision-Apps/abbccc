@@ -326,9 +326,27 @@
     "Form3Submit": "Submit form"
   },
   "MyTeam": {
-    "ManageProjects": "Manage Projects",
+    "Loading": "Loading...",
     "ContactInfo": "Contact Info",
-    "TimeCards": "Time Cards",
+    "PhoneNumber": "Phone Number",
+    "Email": "Email",
+    "EmergencyContact": "Emergency Contact",
+    "EmergencyContactNumber": "Emergency Contact #",
+    "DOB": "Date of Birth",
+    "TimeCards": "Timecards",
+    "SelectDate": "Select Date",
+    "timesheetHighlights": "Timecard Highlights",
+    "truckingMileage": "Trucking Mileage",
+    "truckingEquipmentHaulLogs": "Trucking Equipment Hauls",
+    "truckingMaterialHaulLogs": "Trucking Material Hauls",
+    "truckingRefuelLogs": "Trucking Refuel Logs",
+    "truckingStateLogs": "Trucking State Logs",
+    "tascoHaulLogs": "TASCO Haul Logs",
+    "tascoRefuelLogs": "TASCO Refuel Logs",
+    "equipmentLogs": "Equipment Logs",
+    "equipmentRefuelLogs": "Equipment Refuel Logs",
+    "LoadingTimesheetData": "Loading timesheet data...",
+    "ManageProjects": "Manage Projects",
     "NoTimesheetsFound": "No Time Cards Found",
     "ForThisDate": "for this date",
     "Teams-Title": "My Teams",
@@ -344,16 +362,75 @@
     "CostCode": "Recorded Cost Code",
     "Equipment": "Equipment",
     "EQTotalTime": "Total Time",
-    "NoData": "No Data Found",
-    "EquipmentLogs": "Equipment Logs",
-    "PhoneNumber": "Phone Number",
-    "Email": "Email",
-    "EmergencyContact": "Emergency Contact",
-    "EmergencyContactNumber": "Emergency Contact #",
-    "DOB": "Date of Birth",
+    "NoDataFoundForCurrentDate": "No Data Found For Current Date",
+    "TimeCardHighlights": {
+      "NoTimecardDataAvailable": " No timecard data available",
+      "StartEnd": "Start & End",
+      "JobsiteCostCode": "Jobsite & Cost Code",
+      "IncompleteTimesheetData": "Incomplete timesheet data"
+    },
+    "TimeCardTruckingMileage": {
+      "NoTruckingMileageDataAvailable": "No trucking mileage data available",
+      "TruckID": "Truck ID",
+      "Start": "Start",
+      "End": "End"
+    },
+    "TimeCardTruckingHaulLogs": {
+      "Truck": "Truck",
+      "HauledEQ": "Hauled EQ",
+      "JobSite": "Job Site",
+      "NoHaulLogsAvailable": "No Haul Logs Available"
+    },
+    "TimeCardTruckingMaterialLogs": {
+      "MaterialLocation": "Material & Location",
+      "Weight": "Weight",
+      "SelectMaterial": "Select Material",
+      "Material": "Material",
+      "Light": "Light",
+      "Gross": "Gross",
+      "NoHaulLogsAvailable": "No Haul Logs Available"
+    },
+    "TimeCardTruckingRefuelLogs": {
+      "Gallons": "Gallons",
+      "TruckID": "Truck ID",
+      "Mileage": "Mileage",
+      "NoRefuelDataAvailable": "No Refuel data available"
+    },
+    "TimeCardTruckingStateMileageLogs": {
+      "TruckID": "Truck ID",
+      "State": "State",
+      "Mileage": "Mileage",
+      "SelectState": "Select State",
+      "NoStateMileageDataAvailable": "No state mileage data available"
+    },
+    "TimeCardTascoHaulLogs": {
+      "ShiftTypeEquipmentID": "Shift Type & Equipment ID",
+      "MaterialLoads": "Material & Loads",
+      "ABCDShift": "ABCD Shift",
+      "EShift": "E Shift",
+      "SelectMaterial": "Select Material",
+      "NoTascoHaulingLogsAvailable": "No Tasco Hauling Logs Available"
+    },
+    "TimeCardTascoRefuelLogs": {
+      "NoEquipmentFound": "No Equipment Found",
+      "EquipmentID": "Equipment ID",
+      "GallonUsage": "Gallon Usage",
+      "NoTascoFuelingLogsAvailable": "No Tasco Fueling Logs Available"
+    },
+    "TimeCardEquipmentLogs": {
+      "EquipmentID": "Equipment ID",
+      "Duration": "Duration",
+      "Start": "Start",
+      "End": "End",
+      "NoEquipmentLogsAvailable": "No Equipment Logs Available"
+    },
+    "TimeCardEquipmentRefuelLogs": {
+      "EquipmentID": "Equipment ID",
+      "GallonsRefueled": "Gallons Refueled",
+      "NoEquipmentRefuelLogsAvailable": "No Equipment Refuel Logs Available"
+    },
     "Edit": "Edit",
     "Delete": "Delete",
-    "SelectDate": "Select Date",
     "NoEquipmentLogs": "No logs found for the day selected.",
     "ID": "Id: #"
   },
