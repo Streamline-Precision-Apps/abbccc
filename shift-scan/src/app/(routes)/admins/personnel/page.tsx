@@ -5,7 +5,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { Images } from "@/components/(reusable)/images";
 import { SearchUser } from "@/lib/types/admin/personnel";
@@ -19,12 +19,82 @@ import ViewCrew from "./components/ViewCrew";
 import UserSelected from "./components/UserSelected";
 import DefaultTab from "./components/defaultTab";
 
+interface UserData {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  DOB: string;
+  truckView: boolean;
+  tascoView: boolean;
+  laborView: boolean;
+  mechanicView: boolean;
+  permission: string;
+  activeEmployee: boolean;
+  startDate?: string;
+  terminationDate?: string;
+  Contact: {
+    phoneNumber: string;
+    emergencyContact: string;
+    emergencyContactNumber: string;
+  };
+  Crews: {
+    id: string;
+    name: string;
+  }[];
+  image?: string;
+}
+
 export default function Personnel() {
   const t = useTranslations("Admins");
-  const [loading, setLoading] = useState(false); // Optimized: fetch both in parallel, handle errors, and loading state properly
+  const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<SearchUser[]>([]);
   const [crew, setCrew] = useState<SearchCrew[]>([]);
   const [term, setTerm] = useState<string>("");
+
+  // User edit state management
+  interface UserEditState {
+    user: UserData | null;
+    originalUser: UserData | null;
+    selectedCrews: string[];
+    originalCrews: string[];
+    edited: { [key: string]: boolean };
+    loading: boolean;
+    successfullyUpdated: boolean;
+  }
+
+  const [userEditStates, setUserEditStates] = useState<{
+    [userId: string]: UserEditState;
+  }>({});
+
+  // Helper function to initialize edit state for a user
+  const initializeUserEditState = (userData: UserData) => {
+    const crewIds = userData.Crews.map((c) => c.id);
+    return {
+      user: userData,
+      originalUser: userData,
+      selectedCrews: crewIds,
+      originalCrews: crewIds,
+      edited: {},
+      loading: false,
+      successfullyUpdated: false,
+    };
+  };
+
+  // Helper function to update user edit state
+  const updateUserEditState = (
+    userId: string,
+    updates: Partial<UserEditState>
+  ) => {
+    setUserEditStates((prev) => ({
+      ...prev,
+      [userId]: {
+        ...prev[userId],
+        ...updates,
+      },
+    }));
+  };
 
   // Unified view state
   type PersonnelView =
@@ -221,8 +291,21 @@ export default function Personnel() {
                 setView={() => setView({ mode: "default" })}
                 setRegistration={() => setView({ mode: "registerUser" })}
                 userid={view.userId}
+                editState={
+                  userEditStates[view.userId] || {
+                    user: null,
+                    originalUser: null,
+                    selectedCrews: [],
+                    originalCrews: [],
+                    edited: {},
+                    loading: false,
+                    successfullyUpdated: false,
+                  }
+                }
+                updateEditState={(updates) =>
+                  updateUserEditState(view.userId, updates)
+                }
               />
-
               <CreateNewCrewTab
                 setView={() =>
                   setView(
@@ -264,6 +347,20 @@ export default function Personnel() {
                 setView={() => setView({ mode: "registerCrew" })}
                 setRegistration={() => setView({ mode: "registerBoth" })}
                 userid={view.userId}
+                editState={
+                  userEditStates[view.userId] || {
+                    user: null,
+                    originalUser: null,
+                    selectedCrews: [],
+                    originalCrews: [],
+                    edited: {},
+                    loading: false,
+                    successfullyUpdated: false,
+                  }
+                }
+                updateEditState={(updates) =>
+                  updateUserEditState(view.userId, updates)
+                }
               />
             </>
           )}
@@ -302,6 +399,20 @@ export default function Personnel() {
                   setView({ mode: "registerUser+crew", crewId: view.crewId })
                 }
                 userid={view.userId}
+                editState={
+                  userEditStates[view.userId] || {
+                    user: null,
+                    originalUser: null,
+                    selectedCrews: [],
+                    originalCrews: [],
+                    edited: {},
+                    loading: false,
+                    successfullyUpdated: false,
+                  }
+                }
+                updateEditState={(updates) =>
+                  updateUserEditState(view.userId, updates)
+                }
               />
             </>
           )}
@@ -319,6 +430,17 @@ export default function Personnel() {
               />
               <CreateNewCrewTab
                 setView={() => setView({ mode: "registerBoth" })}
+              />
+            </>
+          )}
+          {view.mode === "registerBoth" && (
+            <>
+              <RegisterNewUser
+                crew={crew}
+                cancelRegistration={() => setView({ mode: "registerCrew" })}
+              />
+              <RegisterNewCrew
+                cancelCrewCreation={() => setView({ mode: "registerUser" })}
               />
             </>
           )}
