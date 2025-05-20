@@ -6,13 +6,18 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNotification } from "@/app/context/NotificationContext";
 import { z } from "zod";
 import { Images } from "@/components/(reusable)/images";
 import { SearchUser } from "@/lib/types/admin/personnel";
 import { SearchCrew } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
-import { NModals } from "@/components/(reusable)/newmodals";
+import RegisterNewCrew from "./components/RegisterNewCrew";
+import CreateNewUserTab from "./components/CreateNewUserTab";
+import CreateNewCrewTab from "./components/CreateNewCrew";
+import RegisterNewUser from "./components/RegisterNewUser";
+import ViewCrew from "./components/ViewCrew";
+import UserSelected from "./components/UserSelected";
+import DefaultTab from "./components/defaultTab";
 
 export default function Personnel() {
   const t = useTranslations("Admins");
@@ -20,7 +25,6 @@ export default function Personnel() {
   const [employees, setEmployees] = useState<SearchUser[]>([]);
   const [crew, setCrew] = useState<SearchCrew[]>([]);
   const [term, setTerm] = useState<string>("");
-  const { notification } = useNotification();
 
   // Unified view state
   type PersonnelView =
@@ -212,578 +216,122 @@ export default function Personnel() {
           {/* Display logic based on new state variables */}
           {view.mode === "user" && (
             <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1  justify-between items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() => setView({ mode: "registerUser" })}
-                      >
-                        Register New Employee
-                      </Texts>
-                    </Holds>
-                    <Holds
-                      position={"row"}
-                      className="flex w-fit items-center space-x-10 "
-                    >
-                      <Holds className="flex w-fit items-center ">
-                        <Texts
-                          text={"link"}
-                          size={"p7"}
-                          onClick={() => setView({ mode: "default" })}
-                        >
-                          Discard All Changes
-                        </Texts>
-                      </Holds>
-                      <Holds className="flex w-fit items-center ">
-                        <Texts text={"link"} size={"p7"}>
-                          Save Changes
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    User Data for {view.userId}
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 space-x-10 items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() =>
-                          setView(
-                            view.mode === "user" && "userId" in view
-                              ? {
-                                  mode: "registerCrew+user",
-                                  userId: view.userId,
-                                }
-                              : view
-                          )
+              <UserSelected
+                crew={crew}
+                setView={() => setView({ mode: "default" })}
+                setRegistration={() => setView({ mode: "registerUser" })}
+                userid={view.userId}
+              />
+
+              <CreateNewCrewTab
+                setView={() =>
+                  setView(
+                    view.mode === "user" && "userId" in view
+                      ? {
+                          mode: "registerCrew+user",
+                          userId: view.userId,
                         }
-                      >
-                        Create New Crew
-                      </Texts>
-                    </Holds>
-                  </Holds>
-                </Grids>
-              </Holds>
+                      : view
+                  )
+                }
+              />
             </>
           )}
           {view.mode === "registerUser+crew" && (
             <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between  items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Create New Crew
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Delete Crew
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() => setView({ mode: "registerUser" })}
-                      >
-                        Discard All Changes
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Save Changes
-                      </Texts>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    Crew Data
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1  justify-between items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Register New Employee
-                      </Texts>
-                    </Holds>
-                    <Holds
-                      position={"row"}
-                      className="flex w-fit items-center space-x-10 "
-                    >
-                      <Holds className="flex w-fit items-center ">
-                        <Texts
-                          text={"link"}
-                          size={"p7"}
-                          onClick={() =>
-                            setView({ mode: "crew", crewId: view.crewId })
-                          }
-                        >
-                          Discard All Changes
-                        </Texts>
-                      </Holds>
-                      <Holds className="flex w-fit items-center ">
-                        <Texts text={"link"} size={"p7"}>
-                          Save Changes
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    Register User Form
-                  </Holds>
-                </Grids>
-              </Holds>
+              <ViewCrew
+                setView={() => {
+                  setView({ mode: "registerUser" });
+                }}
+              />
+              <RegisterNewUser
+                crew={crew}
+                cancelRegistration={() =>
+                  setView({ mode: "crew", crewId: view.crewId })
+                } // Pass the crewId to setView
+              />
             </>
           )}
-
           {view.mode === "registerCrew+user" && (
             <>
-              {" "}
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Submit New Crew
-                    </Texts>
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() =>
-                        setView({ mode: "user", userId: view.userId })
-                      }
-                    >
-                      Cancel Crew Creation
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar p-3"
-                  >
-                    Create New Crew Form
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1  justify-between items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() => setView({ mode: "registerUser" })}
-                      >
-                        Register New Employee
-                      </Texts>
-                    </Holds>
-                    <Holds
-                      position={"row"}
-                      className="flex w-fit items-center space-x-10 "
-                    >
-                      <Holds className="flex w-fit items-center ">
-                        <Texts
-                          text={"link"}
-                          size={"p7"}
-                          onClick={() => setView({ mode: "registerCrew" })}
-                        >
-                          Discard All Changes
-                        </Texts>
-                      </Holds>
-                      <Holds className="flex w-fit items-center ">
-                        <Texts text={"link"} size={"p7"}>
-                          Save Changes
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    User Data for {view.userId}
-                  </Holds>
-                </Grids>
-              </Holds>
+              <RegisterNewCrew
+                cancelCrewCreation={() =>
+                  setView({ mode: "user", userId: view.userId })
+                }
+              />
+              <UserSelected
+                crew={crew}
+                setView={() => setView({ mode: "registerCrew" })}
+                setRegistration={() => setView({ mode: "registerBoth" })}
+                userid={view.userId}
+              />
             </>
+          )}
+          {view.mode === "registerBoth" && (
+            <>
+              <RegisterNewCrew
+                cancelCrewCreation={() => setView({ mode: "registerUser" })}
+              />
+              <RegisterNewUser
+                crew={crew}
+                cancelRegistration={() => setView({ mode: "registerCrew" })}
+              />
+            </>
+          )}
+          {view.mode === "crew" && (
+            <>
+              <ViewCrew setView={() => setView({ mode: "default" })} />
+              <CreateNewUserTab
+                setView={() => () =>
+                  setView({
+                    mode: "registerUser+crew",
+                    crewId: view.crewId,
+                  })}
+              />
+            </>
+          )}
+          {view.mode === "user+crew" && (
+            <>
+              <ViewCrew
+                setView={() => setView({ mode: "user", userId: view.userId })}
+              />
+              <UserSelected
+                crew={crew}
+                setView={() => setView({ mode: "crew", crewId: view.crewId })}
+                setRegistration={() =>
+                  setView({ mode: "registerUser+crew", crewId: view.crewId })
+                }
+                userid={view.userId}
+              />
+            </>
+          )}
+          {view.mode === "default" && (
+            <DefaultTab
+              createNewCrew={() => setView({ mode: "registerCrew" })}
+              RegisterEmployee={() => setView({ mode: "registerUser" })}
+            />
           )}
           {view.mode === "registerUser" && (
             <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Submit New Employee
-                    </Texts>
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() => setView({ mode: "default" })}
-                    >
-                      Cancel Registration
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar p-3"
-                  >
-                    New Employee Form
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() => setView({ mode: "registerBoth" })}
-                    >
-                      Create New Crew
-                    </Texts>
-                  </Holds>
-                </Grids>
-              </Holds>
+              <RegisterNewUser
+                crew={crew}
+                cancelRegistration={() => setView({ mode: "default" })}
+              />
+              <CreateNewCrewTab
+                setView={() => setView({ mode: "registerBoth" })}
+              />
             </>
           )}
           {/* registerBoth mode is not used in this UI, so this block is removed for clarity */}
           {view.mode === "registerCrew" && (
             <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Submit New Crew
-                    </Texts>
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() => setView({ mode: "default" })}
-                    >
-                      Cancel Crew Creation
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar p-3"
-                  >
-                    Create New Crew Form
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() => setView({ mode: "registerBoth" })}
-                    >
-                      Register New Employee
-                    </Texts>
-                  </Holds>
-                </Grids>
-              </Holds>
+              <RegisterNewCrew
+                cancelCrewCreation={() => setView({ mode: "default" })}
+              />
+              <CreateNewUserTab
+                setView={() => setView({ mode: "registerBoth" })}
+              />
             </>
-          )}
-          {view.mode === "registerBoth" && (
-            <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Submit New Crew
-                    </Texts>
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() => setView({ mode: "registerUser" })}
-                    >
-                      Cancel Crew Creation
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar p-3"
-                  >
-                    Create New Crew Form
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Submit New Employee
-                    </Texts>
-                    <Texts
-                      text={"link"}
-                      size={"p7"}
-                      onClick={() => setView({ mode: "registerCrew" })}
-                    >
-                      Cancel Registration
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar p-3"
-                  >
-                    New Employee Form
-                  </Holds>
-                </Grids>
-              </Holds>
-            </>
-          )}
-          {view.mode === "crew" && (
-            <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between  items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Create New Crew
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Delete Crew
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() => setView({ mode: "default" })}
-                      >
-                        Discard All Changes
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Save Changes
-                      </Texts>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    Crew Data
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 space-x-10 items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() =>
-                          setView({
-                            mode: "registerUser+crew",
-                            crewId: view.crewId,
-                          })
-                        }
-                      >
-                        Register New Employee
-                      </Texts>
-                    </Holds>
-                  </Holds>
-                </Grids>
-              </Holds>
-            </>
-          )}
-          {view.mode === "user+crew" && (
-            <>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between  items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Create New Crew
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Delete Crew
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts
-                        text={"link"}
-                        size={"p7"}
-                        onClick={() =>
-                          setView({ mode: "user", userId: view.userId })
-                        }
-                      >
-                        Discard All Changes
-                      </Texts>
-                    </Holds>
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Save Changes
-                      </Texts>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    Crew Data
-                  </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-                <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                  <Holds
-                    background={"white"}
-                    position={"row"}
-                    className="w-full px-5 py-1 justify-between items-center"
-                  >
-                    <Holds className="flex w-fit items-center ">
-                      <Texts text={"link"} size={"p7"}>
-                        Register New Employee
-                      </Texts>
-                    </Holds>
-                    <Holds
-                      position={"row"}
-                      className="flex w-fit space-x-10 items-center "
-                    >
-                      <Holds className="flex w-fit items-center ">
-                        <Texts
-                          text={"link"}
-                          size={"p7"}
-                          onClick={() =>
-                            setView({ mode: "crew", crewId: view.crewId })
-                          }
-                        >
-                          Discard All Changes
-                        </Texts>
-                      </Holds>
-                      <Holds className="flex w-fit items-center ">
-                        <Texts text={"link"} size={"p7"}>
-                          Save Changes
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Holds>
-                  <Holds
-                    background={"white"}
-                    className="w-full h-full overflow-y-auto no-scrollbar p-3"
-                  >
-                    User Data
-                  </Holds>
-                </Grids>
-              </Holds>
-            </>
-          )}
-          {view.mode === "default" && (
-            <Holds className="col-span-8 w-full h-full overflow-y-auto no-scrollbar">
-              <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-                <Holds
-                  background={"white"}
-                  position={"row"}
-                  className="w-full px-5 py-1 space-x-10 items-center"
-                >
-                  <Holds
-                    className="flex w-fit items-center"
-                    onClick={() => setView({ mode: "registerCrew" })}
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Create New Crew
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    className="flex w-fit items-center "
-                    onClick={() => setView({ mode: "registerUser" })}
-                  >
-                    <Texts text={"link"} size={"p7"}>
-                      Register New Employee
-                    </Texts>
-                  </Holds>
-                </Holds>
-              </Grids>
-            </Holds>
           )}
         </Grids>
       </Holds>

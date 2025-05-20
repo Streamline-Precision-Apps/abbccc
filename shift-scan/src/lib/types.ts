@@ -149,7 +149,6 @@ export type SearchUser = {
 export type SearchCrew = {
   id: string;
   name: string;
-  description: string;
 };
 
 export type CustomSession = {
