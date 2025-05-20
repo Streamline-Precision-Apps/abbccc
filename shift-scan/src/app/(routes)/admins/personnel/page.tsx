@@ -1,23 +1,31 @@
 "use client";
+
+// UI Components
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { use, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { Images } from "@/components/(reusable)/images";
-import { SearchUser } from "@/lib/types/admin/personnel";
-import { SearchCrew } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
+
+// Page Components
 import RegisterNewCrew from "./components/RegisterNewCrew";
+import RegisterNewUser from "./components/RegisterNewUser";
 import CreateNewUserTab from "./components/CreateNewUserTab";
 import CreateNewCrewTab from "./components/CreateNewCrew";
-import RegisterNewUser from "./components/RegisterNewUser";
 import ViewCrew from "./components/ViewCrew";
 import UserSelected from "./components/UserSelected";
 import DefaultTab from "./components/defaultTab";
+
+// Types
+import { SearchCrew } from "@/lib/types";
+import { createCrew, submitNewEmployee } from "@/actions/adminActions";
+
+// Actions
 
 interface UserData {
   id: string;
@@ -46,6 +54,40 @@ interface UserData {
   image?: string;
 }
 
+// BaseUser contains common properties
+interface BaseUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  permission?: string;
+  supervisor?: boolean;
+  image?: string;
+}
+
+// SearchUser extends BaseUser for search-specific functionality
+interface SearchUser extends BaseUser {
+  // Additional search-specific properties can go here
+}
+
+// User extends BaseUser for full user functionality
+interface User extends BaseUser {
+  permission: string;
+  supervisor: boolean;
+  image: string;
+}
+
+// Helper function to ensure user type compatibility
+const toUser = (user: BaseUser): User => {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    permission: user.permission || "USER",
+    supervisor: user.supervisor || false,
+    image: user.image || "/person.svg",
+  };
+};
+
 export default function Personnel() {
   const t = useTranslations("Admins");
   const [loading, setLoading] = useState(false);
@@ -67,6 +109,239 @@ export default function Personnel() {
   const [userEditStates, setUserEditStates] = useState<{
     [userId: string]: UserEditState;
   }>({});
+
+  // Registration state management
+  interface RegistrationState {
+    form: {
+      username: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      email: string;
+      emergencyContact: string;
+      emergencyContactNumber: string;
+      dateOfBirth: string;
+      permissionLevel: string;
+      employmentStatus: string;
+      truckingView: boolean;
+      tascoView: boolean;
+      engineerView: boolean;
+      generalView: boolean;
+    };
+    selectedCrews: string[];
+    isPending: boolean;
+  }
+
+  const [registrationState, setRegistrationState] = useState<RegistrationState>(
+    {
+      form: {
+        username: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        email: "",
+        emergencyContact: "",
+        emergencyContactNumber: "",
+        dateOfBirth: "",
+        permissionLevel: "USER",
+        employmentStatus: "Active",
+        truckingView: false,
+        tascoView: false,
+        engineerView: false,
+        generalView: false,
+      },
+      selectedCrews: [],
+      isPending: false,
+    }
+  );
+
+  const updateRegistrationForm = (
+    updates: Partial<RegistrationState["form"]>
+  ) => {
+    setRegistrationState((prev) => ({
+      ...prev,
+      form: {
+        ...prev.form,
+        ...updates,
+      },
+    }));
+  };
+
+  const updateRegistrationCrews = (crewIds: string[]) => {
+    setRegistrationState((prev) => ({
+      ...prev,
+      selectedCrews: crewIds,
+    }));
+  };
+
+  const setRegistrationPending = (isPending: boolean) => {
+    setRegistrationState((prev) => ({
+      ...prev,
+      isPending,
+    }));
+  };
+
+  const resetRegistrationState = () => {
+    setRegistrationState({
+      form: {
+        username: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        email: "",
+        emergencyContact: "",
+        emergencyContactNumber: "",
+        dateOfBirth: "",
+        permissionLevel: "USER",
+        employmentStatus: "Active",
+        truckingView: false,
+        tascoView: false,
+        engineerView: false,
+        generalView: false,
+      },
+      selectedCrews: [],
+      isPending: false,
+    });
+  };
+
+  const handleRegistrationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setRegistrationPending(true);
+      const result = await submitNewEmployee({
+        ...registrationState.form,
+        crews: registrationState.selectedCrews,
+      });
+
+      if (result?.success) {
+        resetRegistrationState();
+        await fetchAllData(); // Refresh employee list
+        setView({ mode: "default" }); // Return to default view
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRegistrationPending(false);
+    }
+  };
+
+  // Crew creation state
+  const [crewCreationState, setCrewCreationState] = useState({
+    form: {
+      crewName: "",
+      crewDescription: "",
+    },
+    selectedUsers: [] as { id: string }[],
+    teamLead: null as string | null,
+    toggledUsers: {} as Record<string, boolean>,
+    toggledManager: {} as Record<string, boolean>,
+    isPending: false,
+  });
+
+  const updateCrewForm = (updates: Partial<typeof crewCreationState.form>) => {
+    setCrewCreationState((prev) => ({
+      ...prev,
+      form: {
+        ...prev.form,
+        ...updates,
+      },
+    }));
+  };
+
+  const toggleCrewUser = (id: string) => {
+    setCrewCreationState((prev) => {
+      const isToggled = !prev.toggledUsers[id];
+
+      // Only store user ID in selectedUsers
+      return {
+        ...prev,
+        selectedUsers: isToggled
+          ? [...prev.selectedUsers, { id }]
+          : prev.selectedUsers.filter((user) => user.id !== id),
+        toggledUsers: {
+          ...prev.toggledUsers,
+          [id]: isToggled,
+        },
+      };
+    });
+  };
+
+  const toggleCrewManager = (id: string) => {
+    setCrewCreationState((prev) => {
+      if (prev.teamLead === id) {
+        return {
+          ...prev,
+          teamLead: null,
+          toggledManager: {
+            ...prev.toggledManager,
+            [id]: false,
+          },
+        };
+      }
+
+      const updatedToggledManager = { ...prev.toggledManager };
+      Object.keys(updatedToggledManager).forEach((key) => {
+        updatedToggledManager[key] = key === id;
+      });
+
+      return {
+        ...prev,
+        teamLead: id,
+        toggledManager: updatedToggledManager,
+      };
+    });
+  };
+
+  const handleCrewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (!crewCreationState.form.crewName.trim()) {
+        // Show error notification
+        return;
+      }
+
+      if (!crewCreationState.teamLead) {
+        // Show error notification
+        return;
+      }
+
+      setCrewCreationState((prev) => ({ ...prev, isPending: true }));
+
+      const formData = new FormData();
+      formData.append("crewName", crewCreationState.form.crewName.trim());
+      formData.append(
+        "crewDescription",
+        crewCreationState.form.crewDescription.trim()
+      );
+      formData.append("crew", JSON.stringify(crewCreationState.selectedUsers));
+      formData.append("teamLead", crewCreationState.teamLead);
+
+      await createCrew(formData);
+      await fetchAllData(); // Refresh data
+
+      setCrewCreationState({
+        form: {
+          crewName: "",
+          crewDescription: "",
+        },
+        selectedUsers: [],
+        teamLead: null,
+        toggledUsers: {},
+        toggledManager: {},
+        isPending: false,
+      });
+
+      setView({ mode: "default" });
+      // Show success notification
+    } catch (error) {
+      console.error("Failed to create crew:", error);
+      // Show error notification
+      setCrewCreationState((prev) => ({ ...prev, isPending: false }));
+    }
+  };
 
   // Helper function to initialize edit state for a user
   const initializeUserEditState = (userData: UserData) => {
@@ -331,7 +606,11 @@ export default function Personnel() {
                 crew={crew}
                 cancelRegistration={() =>
                   setView({ mode: "crew", crewId: view.crewId })
-                } // Pass the crewId to setView
+                }
+                registrationState={registrationState}
+                updateRegistrationForm={updateRegistrationForm}
+                updateRegistrationCrews={updateRegistrationCrews}
+                handleSubmit={handleRegistrationSubmit}
               />
             </>
           )}
@@ -372,6 +651,10 @@ export default function Personnel() {
               <RegisterNewUser
                 crew={crew}
                 cancelRegistration={() => setView({ mode: "registerCrew" })}
+                registrationState={registrationState}
+                updateRegistrationForm={updateRegistrationForm}
+                updateRegistrationCrews={updateRegistrationCrews}
+                handleSubmit={handleRegistrationSubmit}
               />
             </>
           )}
@@ -427,23 +710,17 @@ export default function Personnel() {
               <RegisterNewUser
                 crew={crew}
                 cancelRegistration={() => setView({ mode: "default" })}
+                registrationState={registrationState}
+                updateRegistrationForm={updateRegistrationForm}
+                updateRegistrationCrews={updateRegistrationCrews}
+                handleSubmit={handleRegistrationSubmit}
               />
               <CreateNewCrewTab
                 setView={() => setView({ mode: "registerBoth" })}
               />
             </>
           )}
-          {view.mode === "registerBoth" && (
-            <>
-              <RegisterNewUser
-                crew={crew}
-                cancelRegistration={() => setView({ mode: "registerCrew" })}
-              />
-              <RegisterNewCrew
-                cancelCrewCreation={() => setView({ mode: "registerUser" })}
-              />
-            </>
-          )}
+
           {/* registerBoth mode is not used in this UI, so this block is removed for clarity */}
           {view.mode === "registerCrew" && (
             <>
