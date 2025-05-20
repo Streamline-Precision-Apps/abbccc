@@ -26,9 +26,15 @@ export default async function RootLayout({
               <TopTabBar />
             </Holds>
             {/* Main layout: sidebar + scrollable content */}
-            <Holds position={"row"} className="h-[calc(100dvh-60px)] min-h-0 w-full">
+            <Holds
+              position={"row"}
+              className="h-[calc(100dvh-60px)] min-h-0 w-full"
+            >
               {/* Sidebar */}
-              <Holds position={"test"} className="h-full w-[60px] flex-shrink-0">
+              <Holds
+                position={"test"}
+                className="h-full w-[60px] flex-shrink-0"
+              >
                 <LeftSidebar />
               </Holds>
               {/* Scrollable content area */}
