@@ -7,119 +7,80 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { SearchCrew } from "@/lib/types";
-import { useState, useTransition } from "react";
-
-type newUserFormType = {
-  username: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-  emergencyContact: string;
-  emergencyContactNumber: string;
-  dateOfBirth: string;
-  permissionLevel: string;
-  employmentStatus: string;
-  password?: string;
-};
-
-import { submitNewEmployee } from "@/actions/adminActions"; // Adjust path as needed
 import CrewSelectList from "./RegisterNewUser/CrewSelectList";
 
 export default function RegisterNewUser({
   crew,
   cancelRegistration,
+  registrationState,
+  updateRegistrationForm,
+  updateRegistrationCrews,
+  handleSubmit,
 }: {
-  crew: SearchCrew[];
+  crew: Array<{
+    id: string;
+    name: string;
+  }>;
   cancelRegistration: () => void;
-}) {
-  const [isPending, startTransition] = useTransition();
-  const [newUserForm, setNewUserForm] = useState<
-    newUserFormType & {
+  registrationState: {
+    form: {
+      username: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      email: string;
+      emergencyContact: string;
+      emergencyContactNumber: string;
+      dateOfBirth: string;
+      permissionLevel: string;
+      employmentStatus: string;
       truckingView: boolean;
       tascoView: boolean;
       engineerView: boolean;
       generalView: boolean;
-    }
-  >({
-    username: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    emergencyContact: "",
-    emergencyContactNumber: "",
-    dateOfBirth: "",
-    permissionLevel: "USER",
-    employmentStatus: "Active",
-    truckingView: false,
-    tascoView: false,
-    engineerView: false,
-    generalView: false,
-  });
-  const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
+    };
+    selectedCrews: string[];
+    isPending: boolean;
+  };
+  updateRegistrationForm: (
+    updates: Partial<{
+      username: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      email: string;
+      emergencyContact: string;
+      emergencyContactNumber: string;
+      dateOfBirth: string;
+      permissionLevel: string;
+      employmentStatus: string;
+      truckingView: boolean;
+      tascoView: boolean;
+      engineerView: boolean;
+      generalView: boolean;
+    }>
+  ) => void;
+  updateRegistrationCrews: (crewIds: string[]) => void;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+}) {
+  const { form, selectedCrews, isPending } = registrationState;
 
   const handleCrewCheckbox = (id: string) => {
-    setSelectedCrews((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
+    const newCrews = selectedCrews.includes(id)
+      ? selectedCrews.filter((c) => c !== id)
+      : [...selectedCrews, id];
+    updateRegistrationCrews(newCrews);
   };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setNewUserForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    updateRegistrationForm({ [name]: value });
   };
 
-  // Submit handler
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      startTransition(async () => {
-        const result = await submitNewEmployee({
-          ...newUserForm,
-          password: newUserForm.password || "",
-          crews: selectedCrews,
-          truckingView: newUserForm.truckingView,
-          tascoView: newUserForm.tascoView,
-          engineerView: newUserForm.engineerView,
-          generalView: newUserForm.generalView,
-        });
-
-        if (result?.success) {
-          // Reset form state
-          setNewUserForm({
-            username: "",
-            password: "",
-            firstName: "",
-            lastName: "",
-            phoneNumber: "",
-            email: "",
-            emergencyContact: "",
-            emergencyContactNumber: "",
-            dateOfBirth: "",
-            permissionLevel: "USER",
-            employmentStatus: "Active",
-            truckingView: false,
-            tascoView: false,
-            engineerView: false,
-            generalView: false,
-          });
-          setSelectedCrews([]);
-
-          // Optionally show success message or redirect
-          console.log("Employee created successfully!");
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
   // Define the fields to render
   const fields = [
     { label: "Username", name: "username", type: "text" },
@@ -191,17 +152,15 @@ export default function RegisterNewUser({
                   <Buttons
                     shadow={"none"}
                     type="button"
-                    aria-pressed={newUserForm.truckingView}
                     className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      newUserForm.truckingView
+                      form.truckingView
                         ? "bg-app-blue"
                         : "bg-gray-400 gray opacity-80"
                     }`}
                     onClick={() =>
-                      setNewUserForm((f) => ({
-                        ...f,
-                        truckingView: !f.truckingView,
-                      }))
+                      updateRegistrationForm({
+                        truckingView: !form.truckingView,
+                      })
                     }
                   >
                     <img
@@ -210,17 +169,19 @@ export default function RegisterNewUser({
                       className="w-full h-full mx-auto object-contain"
                     />
                   </Buttons>
+
                   <Buttons
                     shadow={"none"}
                     type="button"
-                    aria-pressed={newUserForm.tascoView}
                     className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      newUserForm.tascoView
+                      form.tascoView
                         ? "bg-app-blue"
                         : "bg-gray-400 gray opacity-80"
                     }`}
                     onClick={() =>
-                      setNewUserForm((f) => ({ ...f, tascoView: !f.tascoView }))
+                      updateRegistrationForm({
+                        tascoView: !form.tascoView,
+                      })
                     }
                   >
                     <img
@@ -229,47 +190,45 @@ export default function RegisterNewUser({
                       className="w-full h-full mx-auto object-contain"
                     />
                   </Buttons>
+
                   <Buttons
                     shadow={"none"}
                     type="button"
-                    aria-pressed={newUserForm.engineerView}
                     className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      newUserForm.engineerView
+                      form.engineerView
                         ? "bg-app-blue"
                         : "bg-gray-400 gray opacity-80"
                     }`}
                     onClick={() =>
-                      setNewUserForm((f) => ({
-                        ...f,
-                        engineerView: !f.engineerView,
-                      }))
+                      updateRegistrationForm({
+                        engineerView: !form.engineerView,
+                      })
                     }
                   >
                     <img
                       src="/mechanic.svg"
-                      alt="Engineer Icon"
+                      alt="tasco"
                       className="w-full h-full mx-auto object-contain"
                     />
                   </Buttons>
+
                   <Buttons
                     shadow={"none"}
                     type="button"
-                    aria-pressed={newUserForm.generalView}
                     className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      newUserForm.generalView
+                      form.generalView
                         ? "bg-app-blue"
                         : "bg-gray-400 gray opacity-80"
                     }`}
                     onClick={() =>
-                      setNewUserForm((f) => ({
-                        ...f,
-                        generalView: !f.generalView,
-                      }))
+                      updateRegistrationForm({
+                        generalView: !form.generalView,
+                      })
                     }
                   >
                     <img
                       src="/equipment.svg"
-                      alt="General Icon"
+                      alt="tasco"
                       className="w-full h-full mx-auto object-contain"
                     />
                   </Buttons>
@@ -277,20 +236,20 @@ export default function RegisterNewUser({
               </Holds>
               <Holds
                 position={"row"}
-                className="size-full row-start-2 row-end-3 gap-3 "
+                className="size-full row-start-2 row-end-3 gap-3"
               >
                 <Holds size={"50"} className="h-full">
                   {fields.map((field) => (
                     <Holds key={field.name}>
-                      <label htmlFor={field.name} className="text-sm pt-2 ">
+                      <label htmlFor={field.name} className="text-sm pt-2">
                         {field.label}
                       </label>
                       {field.name === "permissionLevel" ? (
                         <Selects
                           name="permissionLevel"
-                          value={newUserForm.permissionLevel}
+                          value={form.permissionLevel}
                           onChange={handleChange}
-                          className="w-full px-2 h-8 text-sm text-center "
+                          className="w-full px-2 h-8 text-sm text-center"
                         >
                           <option value="">Select Permission Level</option>
                           <option value="USER">User</option>
@@ -301,9 +260,9 @@ export default function RegisterNewUser({
                       ) : field.name === "employmentStatus" ? (
                         <Selects
                           name="employmentStatus"
-                          value={newUserForm.employmentStatus}
+                          value={form.employmentStatus}
                           onChange={handleChange}
-                          className="w-full px-2 h-8 text-sm text-center "
+                          className="w-full px-2 h-8 text-sm text-center"
                         >
                           <option value="">Select Employment Status</option>
                           <option value="Active">Active</option>
@@ -315,7 +274,7 @@ export default function RegisterNewUser({
                           type={field.type}
                           name={field.name}
                           value={
-                            newUserForm[field.name as keyof newUserFormType]
+                            form[field.name as keyof typeof form] as string
                           }
                           onChange={handleChange}
                         />
