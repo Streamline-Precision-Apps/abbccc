@@ -9,33 +9,10 @@ import { editPersonnelInfo } from "@/actions/adminActions";
 import EditedCrew from "./UserSelected/editedCrew";
 import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
-
-interface UserData {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  DOB: string;
-  truckView: boolean;
-  tascoView: boolean;
-  laborView: boolean;
-  mechanicView: boolean;
-  permission: string;
-  activeEmployee: boolean;
-  startDate?: string;
-  terminationDate?: string;
-  Contact: {
-    phoneNumber: string;
-    emergencyContact: string;
-    emergencyContactNumber: string;
-  };
-  Crews: {
-    id: string;
-    name: string;
-  }[];
-  image?: string;
-}
+import { Buttons } from "@/components/(reusable)/buttons";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { deletePersonnel } from "@/actions/PersonnelActions";
+import { UserData, UserEditState } from "./types/personnel";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -223,158 +200,179 @@ const UserSelected = ({
     }
   };
 
+  const handleDelete = async (userid: string) => {
+    if (!user) return;
+    const result = await deletePersonnel(user.id);
+    if (result === true) {
+      setView();
+    } else {
+      alert("Failed to delete user");
+    }
+  };
+
   return (
-    <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar ">
-      <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-        <Holds
-          background={"white"}
-          position={"row"}
-          className="w-full px-5 py-1 justify-between items-center relative"
-        >
-          {successfullyUpdated && (
-            <Holds
-              background={"green"}
-              className="h-full absolute top-0 right-0 z-50 justify-center items-center rounded-[10px] px-3 py-1"
-            >
-              <Texts size={"p7"}>Successfully Updated!</Texts>
-            </Holds>
-          )}
-          <Holds className="flex w-fit items-center ">
-            <Texts
-              text={"link"}
-              size={"p7"}
-              onClick={
-                edited && Object.values(edited).some(Boolean)
-                  ? undefined
-                  : () => setRegistration()
-              }
-              style={{
-                pointerEvents:
-                  edited && Object.values(edited).some(Boolean)
-                    ? "none"
-                    : "auto",
-                opacity:
-                  edited && Object.values(edited).some(Boolean) ? 0.5 : 1,
-                cursor:
-                  edited && Object.values(edited).some(Boolean)
-                    ? "not-allowed"
-                    : "pointer",
-              }}
-            >
-              Register New Employee
-            </Texts>
-          </Holds>
+    <>
+      <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar ">
+        <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
           <Holds
+            background={"white"}
             position={"row"}
-            className="flex w-fit items-center space-x-10 "
+            className="w-full px-5 py-1 justify-between items-center relative"
           >
+            {successfullyUpdated && (
+              <Holds
+                background={"green"}
+                className="h-full absolute top-0 right-0 z-50 justify-center items-center rounded-[10px] px-3 py-1"
+              >
+                <Texts size={"p7"}>Successfully Updated!</Texts>
+              </Holds>
+            )}
             <Holds className="flex w-fit items-center ">
               <Texts
                 text={"link"}
                 size={"p7"}
                 onClick={
                   edited && Object.values(edited).some(Boolean)
-                    ? handleDiscard
-                    : undefined
+                    ? undefined
+                    : () => setRegistration()
                 }
                 style={{
                   pointerEvents:
                     edited && Object.values(edited).some(Boolean)
-                      ? "auto"
-                      : "none",
+                      ? "none"
+                      : "auto",
                   opacity:
-                    edited && Object.values(edited).some(Boolean) ? 1 : 0.5,
+                    edited && Object.values(edited).some(Boolean) ? 0.5 : 1,
                   cursor:
                     edited && Object.values(edited).some(Boolean)
-                      ? "pointer"
-                      : "not-allowed",
+                      ? "not-allowed"
+                      : "pointer",
                 }}
               >
-                Discard All Changes
+                Register New Employee
               </Texts>
             </Holds>
-            <Holds className="flex w-fit items-center ">
-              <Texts
-                text={"link"}
-                size={"p7"}
-                onClick={
-                  !loading && edited && Object.values(edited).some(Boolean)
-                    ? handleSave
-                    : undefined
-                }
-                style={{
-                  pointerEvents:
-                    !loading && edited && Object.values(edited).some(Boolean)
-                      ? "auto"
-                      : "none",
-                  opacity:
-                    !loading && edited && Object.values(edited).some(Boolean)
-                      ? 1
-                      : 0.5,
-                  cursor:
-                    !loading && edited && Object.values(edited).some(Boolean)
-                      ? "pointer"
-                      : "not-allowed",
-                }}
-              >
-                {!loading ? "Save Changes" : "saving..."}
-              </Texts>
-            </Holds>
-          </Holds>
-        </Holds>
-        <>
-          {loading || !user ? (
             <Holds
-              background={"white"}
-              className="w-full h-full overflow-y-auto no-scrollbar p-1 py-2 animate-pulse"
+              position={"row"}
+              className="flex w-fit items-center space-x-10 "
             >
-              <Holds className="w-full h-full justify-center items-center">
-                <Texts size="p6">Loading...</Texts>
-                <Spinner />
+              <Holds className="flex w-fit items-center ">
+                <Texts
+                  text={"link"}
+                  size={"p7"}
+                  onClick={
+                    edited && Object.values(edited).some(Boolean)
+                      ? handleDiscard
+                      : undefined
+                  }
+                  style={{
+                    pointerEvents:
+                      edited && Object.values(edited).some(Boolean)
+                        ? "auto"
+                        : "none",
+                    opacity:
+                      edited && Object.values(edited).some(Boolean) ? 1 : 0.5,
+                    cursor:
+                      edited && Object.values(edited).some(Boolean)
+                        ? "pointer"
+                        : "not-allowed",
+                  }}
+                >
+                  Discard All Changes
+                </Texts>
+              </Holds>
+              <Holds className="flex w-fit items-center ">
+                <Texts
+                  text={"link"}
+                  size={"p7"}
+                  onClick={
+                    !loading && edited && Object.values(edited).some(Boolean)
+                      ? handleSave
+                      : undefined
+                  }
+                  style={{
+                    pointerEvents:
+                      !loading && edited && Object.values(edited).some(Boolean)
+                        ? "auto"
+                        : "none",
+                    opacity:
+                      !loading && edited && Object.values(edited).some(Boolean)
+                        ? 1
+                        : 0.5,
+                    cursor:
+                      !loading && edited && Object.values(edited).some(Boolean)
+                        ? "pointer"
+                        : "not-allowed",
+                  }}
+                >
+                  {!loading ? "Save Changes" : "saving..."}
+                </Texts>
               </Holds>
             </Holds>
-          ) : (
-            <Holds
-              background={"white"}
-              className="w-full h-full overflow-y-auto no-scrollbar p-1"
-            >
-              <Grids className="w-full h-full grid-rows-[50px_1fr] p-3 gap-5">
-                <Holds
-                  position={"row"}
-                  className="size-full row-start-1 row-end-2"
-                >
-                  <ProfileAndRoles
-                    user={user}
-                    originalUser={originalUser}
-                    edited={edited}
-                    updateEditState={updateEditState}
-                  />
+          </Holds>
+          <>
+            {loading || !user ? (
+              <Holds
+                background={"white"}
+                className="w-full h-full overflow-y-auto no-scrollbar p-1 py-2 animate-pulse"
+              >
+                <Holds className="w-full h-full justify-center items-center">
+                  <Texts size="p6">Loading...</Texts>
+                  <Spinner />
                 </Holds>
-                <Holds
-                  position={"row"}
-                  className="size-full row-start-2 row-end-3 gap-3 "
-                >
-                  <UserInformation
-                    fields={fields}
-                    user={user}
-                    edited={edited}
-                    handleInputChange={handleInputChange}
-                    updateEditState={updateEditState}
-                    originalUser={originalUser}
-                  />
-                  <EditedCrew
-                    edited={edited}
-                    crew={crew}
-                    selectedCrews={selectedCrews}
-                    handleCrewCheckbox={handleCrewCheckbox}
-                  />
-                </Holds>
-              </Grids>
-            </Holds>
-          )}
-        </>
-      </Grids>
-    </Holds>
+              </Holds>
+            ) : (
+              <Holds
+                background={"white"}
+                className="w-full h-full overflow-y-auto no-scrollbar p-1"
+              >
+                <Grids className="w-full h-full grid-rows-[50px_1fr] p-3 gap-5">
+                  <Holds
+                    position={"row"}
+                    className="size-full row-start-1 row-end-2"
+                  >
+                    <Buttons
+                      background={"red"}
+                      onClick={() => handleDelete(user.id)}
+                      className="w-full h-full"
+                    >
+                      Delete User
+                    </Buttons>
+                    <ProfileAndRoles
+                      user={user}
+                      originalUser={originalUser}
+                      edited={edited}
+                      updateEditState={updateEditState}
+                    />
+                  </Holds>
+                  <Holds
+                    position={"row"}
+                    className="size-full row-start-2 row-end-3 gap-3 "
+                  >
+                    <UserInformation
+                      fields={fields}
+                      user={user}
+                      edited={edited}
+                      handleInputChange={handleInputChange}
+                      updateEditState={updateEditState}
+                      originalUser={originalUser}
+                    />
+                    <EditedCrew
+                      user={user}
+                      edited={edited}
+                      crew={crew}
+                      selectedCrews={selectedCrews}
+                      handleCrewCheckbox={handleCrewCheckbox}
+                      permission={user.permission}
+                    />
+                  </Holds>
+                </Grids>
+              </Holds>
+            )}
+          </>
+        </Grids>
+      </Holds>
+    </>
   );
 };
 

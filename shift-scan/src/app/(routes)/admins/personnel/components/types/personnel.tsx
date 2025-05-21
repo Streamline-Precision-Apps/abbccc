@@ -21,8 +21,15 @@ export interface UserData {
   Crews: {
     id: string;
     name: string;
+    leadId: string;
   }[];
   image?: string;
+}
+
+export interface CrewData {
+  id: string;
+  name: string;
+  leadId?: string;
 }
 
 // BaseUser contains common properties
@@ -67,6 +74,7 @@ export interface RegistrationState {
   };
   selectedCrews: string[];
   isPending: boolean;
+  isSuccess: boolean;
 }
 
 // Unified view state

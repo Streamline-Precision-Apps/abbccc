@@ -23,6 +23,7 @@ export const useRegistrationState = () => {
     },
     selectedCrews: [] as string[],
     isPending: false,
+    isSuccess: false,
   });
 
   const updateForm = (updates: Partial<RegistrationState["form"]>) => {
@@ -58,7 +59,12 @@ export const useRegistrationState = () => {
       },
       selectedCrews: [],
       isPending: false,
+      isSuccess: false,
     });
+  };
+
+  const setSuccess = (isSuccess: boolean) => {
+    setState((prev) => ({ ...prev, isSuccess }));
   };
 
   return {
@@ -66,6 +72,7 @@ export const useRegistrationState = () => {
     updateRegistrationForm: updateForm,
     updateRegistrationCrews: updateCrews,
     setRegistrationPending: setPending,
+    setRegistrationSuccess: setSuccess,
     resetRegistrationState: reset,
   };
 };
