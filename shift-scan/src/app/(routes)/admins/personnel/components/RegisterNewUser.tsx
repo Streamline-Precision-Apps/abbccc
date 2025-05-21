@@ -8,6 +8,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import CrewSelectList from "./RegisterNewUser/CrewSelectList";
+import { RegistrationState } from "./types/personnel";
 
 export default function RegisterNewUser({
   crew,
@@ -22,45 +23,9 @@ export default function RegisterNewUser({
     name: string;
   }>;
   cancelRegistration: () => void;
-  registrationState: {
-    form: {
-      username: string;
-      password: string;
-      firstName: string;
-      lastName: string;
-      phoneNumber: string;
-      email: string;
-      emergencyContact: string;
-      emergencyContactNumber: string;
-      dateOfBirth: string;
-      permissionLevel: string;
-      employmentStatus: string;
-      truckingView: boolean;
-      tascoView: boolean;
-      engineerView: boolean;
-      generalView: boolean;
-    };
-    selectedCrews: string[];
-    isPending: boolean;
-  };
+  registrationState: RegistrationState;
   updateRegistrationForm: (
-    updates: Partial<{
-      username: string;
-      password: string;
-      firstName: string;
-      lastName: string;
-      phoneNumber: string;
-      email: string;
-      emergencyContact: string;
-      emergencyContactNumber: string;
-      dateOfBirth: string;
-      permissionLevel: string;
-      employmentStatus: string;
-      truckingView: boolean;
-      tascoView: boolean;
-      engineerView: boolean;
-      generalView: boolean;
-    }>
+    RegistrationState: Partial<RegistrationState["form"]>
   ) => void;
   updateRegistrationCrews: (crewIds: string[]) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;

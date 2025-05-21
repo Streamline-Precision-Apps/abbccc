@@ -1,0 +1,94 @@
+export interface UserData {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  DOB: string;
+  truckView: boolean;
+  tascoView: boolean;
+  laborView: boolean;
+  mechanicView: boolean;
+  permission: string;
+  activeEmployee: boolean;
+  startDate?: string;
+  terminationDate?: string;
+  Contact: {
+    phoneNumber: string;
+    emergencyContact: string;
+    emergencyContactNumber: string;
+  };
+  Crews: {
+    id: string;
+    name: string;
+  }[];
+  image?: string;
+}
+
+// BaseUser contains common properties
+export interface BaseUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  permission?: string;
+  supervisor?: boolean;
+  image?: string;
+}
+
+// User edit state management
+export interface UserEditState {
+  user: UserData | null;
+  originalUser: UserData | null;
+  selectedCrews: string[];
+  originalCrews: string[];
+  edited: { [key: string]: boolean };
+  loading: boolean;
+  successfullyUpdated: boolean;
+}
+
+// Registration state management
+export interface RegistrationState {
+  form: {
+    username: string;
+    password?: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    emergencyContact: string;
+    emergencyContactNumber: string;
+    dateOfBirth: string;
+    permissionLevel: "USER" | "MANAGER" | "ADMIN" | "SUPERADMIN"; // Use a union type for specific values
+    employmentStatus: "Active" | "Inactive"; // Use a union type
+    truckingView: boolean;
+    tascoView: boolean;
+    engineerView: boolean;
+    generalView: boolean;
+  };
+  selectedCrews: string[];
+  isPending: boolean;
+}
+
+// Unified view state
+export type PersonnelView =
+  | { mode: "default" }
+  | { mode: "user"; userId: string }
+  | { mode: "crew"; crewId: string }
+  | { mode: "user+crew"; userId: string; crewId: string }
+  | { mode: "registerUser+crew"; crewId: string }
+  | { mode: "registerCrew+user"; userId: string }
+  | { mode: "registerUser" }
+  | { mode: "registerCrew" }
+  | { mode: "registerBoth" };
+
+export interface CrewCreationState {
+  form: {
+    crewName: string;
+    crewDescription: string;
+  };
+  selectedUsers: { id: string }[];
+  teamLead: string | null;
+  toggledUsers: Record<string, boolean>;
+  toggledManager: Record<string, boolean>;
+  isPending: boolean;
+}
