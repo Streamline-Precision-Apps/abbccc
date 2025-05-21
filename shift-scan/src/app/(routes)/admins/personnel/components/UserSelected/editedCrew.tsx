@@ -7,9 +7,10 @@ import { Images } from "@/components/(reusable)/images";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { changeCrewLead, removeCrewLead } from "@/actions/PersonnelActions";
+import { changeCrewLead } from "@/actions/PersonnelActions";
 import { UserData, CrewData } from "../types/personnel";
 import { useState, useEffect } from "react";
+import { SearchCrew } from "@/lib/types";
 
 export default function EditedCrew({
   edited,
@@ -23,8 +24,8 @@ export default function EditedCrew({
   edited: {
     [key: string]: boolean;
   };
-  crew: CrewData[];
-  selectedCrews: CrewData[];
+  crew: SearchCrew[];
+  selectedCrews: string[];
   handleCrewCheckbox: (id: string) => void;
   permission: string;
 }) {
@@ -34,11 +35,8 @@ export default function EditedCrew({
 
   const handleCrewLeadChange = async (crewId: string) => {
     try {
-      if (isDemoting) {
-        await removeCrewLead(crewId);
-      } else {
-        await changeCrewLead(crewId, user.id);
-      }
+      await changeCrewLead(crewId, user.id);
+
       SetCrewLeadModal(false);
       setIsDemoting(false);
     } catch (error) {
@@ -66,7 +64,7 @@ export default function EditedCrew({
               >
                 <Holds
                   background={
-                    selectedCrews.some((sc) => sc.id === c.id)
+                    selectedCrews.some((sc) => sc === c.id)
                       ? "lightBlue"
                       : "lightGray"
                   }
@@ -76,7 +74,7 @@ export default function EditedCrew({
                   <Titles size={"h6"}>{c.name}</Titles>
                 </Holds>
                 {permission !== "USER" &&
-                  selectedCrews.some((sc) => sc.id === c.id) && (
+                  selectedCrews.some((sc) => sc === c.id) && (
                     <Holds className="w-fit h-full">
                       {c.leadId === user.id ? (
                         <img
@@ -102,7 +100,7 @@ export default function EditedCrew({
                     shadow={false}
                     id={`crew-${c.id}`}
                     name="selectedCrews"
-                    checked={selectedCrews.some((sc) => sc.id === c.id)}
+                    checked={selectedCrews.some((sc) => sc === c.id)}
                     onChange={() => handleCrewCheckbox(c.id)}
                     label=""
                     size={2}

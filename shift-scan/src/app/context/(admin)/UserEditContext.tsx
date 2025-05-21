@@ -30,6 +30,7 @@ export const UserEditProvider = ({
 
   const initializeUserEditState = (userData: UserData) => {
     const crewIds = userData.Crews.map((c) => c.id);
+
     return {
       user: userData,
       originalUser: userData,

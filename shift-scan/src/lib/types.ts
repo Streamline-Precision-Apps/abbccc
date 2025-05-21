@@ -149,6 +149,7 @@ export type SearchUser = {
 export type SearchCrew = {
   id: string;
   name: string;
+  leadId: string;
 };
 
 export type CustomSession = {

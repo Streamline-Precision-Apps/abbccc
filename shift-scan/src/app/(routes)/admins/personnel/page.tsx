@@ -1,7 +1,6 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { createCrew, submitNewEmployee } from "@/actions/adminActions";
 import { usePersonnelState } from "@/hooks/(Admin)/usePersonnelState";
@@ -13,9 +12,6 @@ import PersonnelSideBar from "./components/PersonnelSideBar";
 import PersonnelMainContent from "./components/PersonnelMainContent";
 
 export default function Personnel() {
-  const t = useTranslations("Admins");
-  // State for personnel in the system
-  // This includes the list of employees, crews, and the search term
   const {
     loading,
     employees,

@@ -29,7 +29,7 @@ export interface UserData {
 export interface CrewData {
   id: string;
   name: string;
-  leadId?: string;
+  leadId: string;
 }
 
 // BaseUser contains common properties
