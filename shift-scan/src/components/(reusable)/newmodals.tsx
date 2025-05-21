@@ -19,6 +19,7 @@ const NModalVariants = cva("", {
       center: "relative",
     },
     size: {
+      xs: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[350px] h-[200px]",
       sm: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
       med: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
       medW: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/3",

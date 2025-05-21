@@ -24,11 +24,6 @@ export default function PersonnelMainContent({
   updateRegistrationForm,
   updateRegistrationCrews,
   handleRegistrationSubmit,
-  crewCreationState,
-  updateCrewForm,
-  toggleCrewUser,
-  toggleCrewManager,
-  handleCrewSubmit,
   userEditStates,
   updateUserEditState,
 }: {

@@ -1,5 +1,4 @@
 "use client";
-import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -9,6 +8,70 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import CrewSelectList from "./RegisterNewUser/CrewSelectList";
 import { RegistrationState } from "./types/personnel";
+import { useState } from "react";
+
+// Validation utilities
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const formatPhoneNumber = (value: string) => {
+  if (!value) return value;
+  const phoneNumber = value.replace(/[^\d]/g, "");
+  const phoneNumberLength = phoneNumber.length;
+  if (phoneNumberLength < 4) return phoneNumber;
+  if (phoneNumberLength < 7) {
+    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+  }
+  return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
+    3,
+    6
+  )}-${phoneNumber.slice(6, 10)}`;
+};
+
+const isValidPhoneNumber = (phone: string) => {
+  const phoneNumber = phone.replace(/[^\d]/g, "");
+  return phoneNumber.length === 10;
+};
+
+type ValidationErrors = {
+  email?: string;
+  phoneNumber?: string;
+  emergencyContactNumber?: string;
+};
+
+interface RegisterNewUserProps {
+  crew: Array<{
+    id: string;
+    name: string;
+  }>;
+  cancelRegistration: () => void;
+  registrationState: RegistrationState;
+  updateRegistrationForm: (updates: Partial<RegistrationState["form"]>) => void;
+  updateRegistrationCrews: (crewIds: string[]) => void;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+}
+
+const fields = [
+  { label: "Username", name: "username" as const, type: "text" },
+  { label: "Password", name: "password" as const, type: "password" },
+  { label: "First Name", name: "firstName" as const, type: "text" },
+  { label: "Last Name", name: "lastName" as const, type: "text" },
+  { label: "Phone Number", name: "phoneNumber" as const, type: "tel" },
+  { label: "Email", name: "email" as const, type: "email" },
+  {
+    label: "Emergency Contact",
+    name: "emergencyContact" as const,
+    type: "text",
+  },
+  {
+    label: "Emergency Contact Number",
+    name: "emergencyContactNumber" as const,
+    type: "tel",
+  },
+  { label: "Date of Birth", name: "dateOfBirth" as const, type: "date" },
+] as const;
 
 export default function RegisterNewUser({
   crew,
@@ -17,20 +80,11 @@ export default function RegisterNewUser({
   updateRegistrationForm,
   updateRegistrationCrews,
   handleSubmit,
-}: {
-  crew: Array<{
-    id: string;
-    name: string;
-  }>;
-  cancelRegistration: () => void;
-  registrationState: RegistrationState;
-  updateRegistrationForm: (
-    RegistrationState: Partial<RegistrationState["form"]>
-  ) => void;
-  updateRegistrationCrews: (crewIds: string[]) => void;
-  handleSubmit: (e: React.FormEvent) => Promise<void>;
-}) {
-  const { form, selectedCrews, isPending } = registrationState;
+}: RegisterNewUserProps) {
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+    {}
+  );
+  const { form, selectedCrews, isPending, isSuccess } = registrationState;
 
   const handleCrewCheckbox = (id: string) => {
     const newCrews = selectedCrews.includes(id)
@@ -39,44 +93,131 @@ export default function RegisterNewUser({
     updateRegistrationCrews(newCrews);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    updateRegistrationForm({ [name]: value });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name: randomName, value } = e.target;
+    const realName = e.target.getAttribute("data-name") || randomName;
+
+    let formattedValue = value;
+    let error = "";
+
+    // Format and validate phone numbers
+    if (realName === "phoneNumber" || realName === "emergencyContactNumber") {
+      formattedValue = formatPhoneNumber(value);
+      if (value && !isValidPhoneNumber(formattedValue)) {
+        error = "Please enter a valid phone number";
+      }
+    }
+
+    // Validate email
+    if (realName === "email") {
+      if (value && !isValidEmail(value)) {
+        error = "Please enter a valid email address";
+      }
+    }
+
+    // Update validation errors
+    setValidationErrors((prev) => ({
+      ...prev,
+      [realName]: error,
+    }));
+
+    // Update form state with formatted value
+    updateRegistrationForm({
+      [realName as keyof RegistrationState["form"]]: formattedValue,
+    });
   };
 
-  // Define the fields to render
-  const fields = [
-    { label: "Username", name: "username", type: "text" },
-    { label: "Temporary Password", name: "password", type: "password" },
-    { label: "First Name", name: "firstName", type: "text" },
-    { label: "Last Name", name: "lastName", type: "text" },
-    { label: "Phone Number", name: "phoneNumber", type: "tel" },
-    { label: "Email", name: "email", type: "email" },
-    { label: "Emergency Contact", name: "emergencyContact", type: "text" },
-    {
-      label: "Emergency Contact Number",
-      name: "emergencyContactNumber",
-      type: "tel",
-    },
-    { label: "Date of Birth", name: "dateOfBirth", type: "date" },
-    { label: "Permission Level", name: "permissionLevel", type: "text" },
-    { label: "Employment Status", name: "employmentStatus", type: "text" },
-  ];
+  // Validate form before submission
+  const validateForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: ValidationErrors = {};
+
+    if (!form.email || !isValidEmail(form.email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    if (!form.phoneNumber || !isValidPhoneNumber(form.phoneNumber)) {
+      errors.phoneNumber = "Please enter a valid phone number";
+    }
+
+    if (
+      !form.emergencyContactNumber ||
+      !isValidPhoneNumber(form.emergencyContactNumber)
+    ) {
+      errors.emergencyContactNumber =
+        "Please enter a valid emergency contact number";
+    }
+
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length === 0) {
+      handleSubmit(e);
+    }
+  };
+
+  const renderField = (field: (typeof fields)[number]) => {
+    const randomFieldName = `reg_${field.name}_${Math.random()}`;
+    const error = validationErrors[field.name as keyof ValidationErrors];
+    const value = form[field.name];
+
+    // Check if field is valid
+    const isValid = () => {
+      if (!value) return false;
+      switch (field.name) {
+        case "email":
+          return isValidEmail(String(value));
+        case "phoneNumber":
+        case "emergencyContactNumber":
+          return isValidPhoneNumber(String(value));
+        default:
+          return String(value).trim() !== "";
+      }
+    };
+
+    return (
+      <Holds className="flex flex-col py-1" key={field.name}>
+        <Texts position={"left"} size={"p7"} text={isValid() ? "black" : "red"}>
+          {field.label}
+        </Texts>
+        <Inputs
+          variant={"empty"}
+          name={randomFieldName}
+          data-name={field.name}
+          type={field.type}
+          value={String(form[field.name] || "")}
+          onChange={handleInputChange}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          className={`w-full text-base border-[3px] px-1.5  ${
+            error ? "border-red-500" : "border-black"
+          }`}
+          required
+        />
+        {error && (
+          <Texts size={"p8"} position={"left"} className="text-red-500 ">
+            {error}
+          </Texts>
+        )}
+      </Holds>
+    );
+  };
 
   return (
     <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={validateForm}
         className="w-full h-full"
         autoComplete="off"
+        autoCorrect="off"
+        spellCheck="false"
+        data-form-type="other"
       >
         <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
           <Holds
             background={"white"}
             position={"row"}
-            className="w-full px-5 py-1 justify-between items-center"
+            className="w-full px-5 py-1 justify-between items-center relative"
           >
             <button
               type="submit"
@@ -87,7 +228,16 @@ export default function RegisterNewUser({
                 {isPending ? "Submitting..." : "Submit New Employee"}
               </Texts>
             </button>
-
+            {isSuccess && (
+              <Holds
+                background={"green"}
+                className="absolute w-full h-full top-0 left-0 justify-center items-center"
+              >
+                <Texts size={"p6"} className="italic">
+                  Successfully Registered New Employee!
+                </Texts>
+              </Holds>
+            )}
             <Texts
               text={"link"}
               size={"p7"}
@@ -98,7 +248,7 @@ export default function RegisterNewUser({
           </Holds>
           <Holds
             background={"white"}
-            className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar "
+            className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar"
           >
             <Grids className="w-full h-full grid-rows-[50px_1fr] p-3">
               <Holds
@@ -172,7 +322,7 @@ export default function RegisterNewUser({
                   >
                     <img
                       src="/mechanic.svg"
-                      alt="tasco"
+                      alt="mechanic"
                       className="w-full h-full mx-auto object-contain"
                     />
                   </Buttons>
@@ -193,7 +343,7 @@ export default function RegisterNewUser({
                   >
                     <img
                       src="/equipment.svg"
-                      alt="tasco"
+                      alt="equipment"
                       className="w-full h-full mx-auto object-contain"
                     />
                   </Buttons>
@@ -204,48 +354,49 @@ export default function RegisterNewUser({
                 className="size-full row-start-2 row-end-3 gap-3"
               >
                 <Holds size={"50"} className="h-full">
-                  {fields.map((field) => (
-                    <Holds key={field.name}>
-                      <label htmlFor={field.name} className="text-sm pt-2">
-                        {field.label}
-                      </label>
-                      {field.name === "permissionLevel" ? (
-                        <Selects
-                          name="permissionLevel"
-                          value={form.permissionLevel}
-                          onChange={handleChange}
-                          className="w-full px-2 h-8 text-sm text-center"
-                        >
-                          <option value="">Select Permission Level</option>
-                          <option value="USER">User</option>
-                          <option value="MANAGER">Manager</option>
-                          <option value="ADMIN">Admin</option>
-                          <option value="SUPERADMIN">SuperAdmin</option>
-                        </Selects>
-                      ) : field.name === "employmentStatus" ? (
-                        <Selects
-                          name="employmentStatus"
-                          value={form.employmentStatus}
-                          onChange={handleChange}
-                          className="w-full px-2 h-8 text-sm text-center"
-                        >
-                          <option value="">Select Employment Status</option>
-                          <option value="Active">Active</option>
-                          <option value="Inactive">Inactive</option>
-                        </Selects>
-                      ) : (
-                        <Inputs
-                          className="w-full px-2 h-8"
-                          type={field.type}
-                          name={field.name}
-                          value={
-                            form[field.name as keyof typeof form] as string
-                          }
-                          onChange={handleChange}
-                        />
-                      )}
-                    </Holds>
-                  ))}
+                  {fields.map(renderField)}
+
+                  <Holds className="flex flex-col pb-1">
+                    <Texts position={"left"} size={"p7"}>
+                      Permission Level
+                    </Texts>
+                    <Selects
+                      name="permissionLevel"
+                      value={form.permissionLevel}
+                      onChange={(e) =>
+                        updateRegistrationForm({
+                          permissionLevel: e.target
+                            .value as RegistrationState["form"]["permissionLevel"],
+                        })
+                      }
+                      className="w-full text-base "
+                    >
+                      <option value="USER">User</option>
+                      <option value="MANAGER">Manager</option>
+                      <option value="ADMIN">Admin</option>
+                      <option value="SUPERADMIN">Super Admin</option>
+                    </Selects>
+                  </Holds>
+
+                  <Holds className="flex flex-col pb-1">
+                    <Texts position={"left"} size={"p7"}>
+                      Employment Status
+                    </Texts>
+                    <Selects
+                      name="employmentStatus"
+                      value={form.employmentStatus}
+                      onChange={(e) =>
+                        updateRegistrationForm({
+                          employmentStatus: e.target
+                            .value as RegistrationState["form"]["employmentStatus"],
+                        })
+                      }
+                      className="w-full text-base "
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </Selects>
+                  </Holds>
                 </Holds>
                 <CrewSelectList
                   crew={crew}

@@ -14,7 +14,9 @@ export const usePersonnelState = () => {
     setLoading(true);
     try {
       const [employeesRes, crewRes] = await Promise.all([
-        fetch("/api/getAllEmployees?filter=all"),
+        fetch("/api/getAllEmployees?filter=all", {
+          next: { tags: ["employees"] },
+        }),
         fetch("/api/getAllCrews", { next: { tags: ["crews"] } }),
       ]);
 

@@ -4,7 +4,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { createCrew, submitNewEmployee } from "@/actions/adminActions";
-import { UserData } from "./components/types/personnel";
 import { usePersonnelState } from "@/hooks/(Admin)/usePersonnelState";
 import { useRegistrationState } from "@/hooks/(Admin)/useRegistrationState";
 import { useCrewCreationState } from "@/hooks/(Admin)/useCrewCreationState";
@@ -15,6 +14,8 @@ import PersonnelMainContent from "./components/PersonnelMainContent";
 
 export default function Personnel() {
   const t = useTranslations("Admins");
+  // State for personnel in the system
+  // This includes the list of employees, crews, and the search term
   const {
     loading,
     employees,
@@ -26,14 +27,17 @@ export default function Personnel() {
     fetchAllData,
   } = usePersonnelState();
 
+  // State for registration of user
   const {
     registrationState,
     updateRegistrationForm,
     updateRegistrationCrews,
     setRegistrationPending,
+    setRegistrationSuccess,
     resetRegistrationState,
   } = useRegistrationState();
 
+  // crew creation state
   const {
     crewCreationState,
     updateCrewForm,
@@ -53,13 +57,17 @@ export default function Personnel() {
         setRegistrationPending(true);
         const result = await submitNewEmployee({
           ...registrationState.form,
-          password: registrationState.form.password || "", // add a default value
+          password: registrationState.form.password || "",
           crews: registrationState.selectedCrews,
         });
         if (result?.success) {
-          resetRegistrationState();
-          await fetchAllData();
-          setView({ mode: "default" });
+          setRegistrationSuccess(true);
+          // Wait 3 seconds before resetting and redirecting
+          setTimeout(async () => {
+            resetRegistrationState();
+            await fetchAllData();
+            setView({ mode: "default" });
+          }, 3000);
         }
       } catch (error) {
         console.error(error);
@@ -71,6 +79,7 @@ export default function Personnel() {
       registrationState,
       fetchAllData,
       setRegistrationPending,
+      setRegistrationSuccess,
       resetRegistrationState,
       setView,
     ]
@@ -117,20 +126,6 @@ export default function Personnel() {
     ]
   );
 
-  // Helper function to initialize edit state for a user
-  const initializeUserEditState = (userData: UserData) => {
-    const crewIds = userData.Crews.map((c) => c.id);
-    return {
-      user: userData,
-      originalUser: userData,
-      selectedCrews: crewIds,
-      originalCrews: crewIds,
-      edited: {},
-      loading: false,
-      successfullyUpdated: false,
-    };
-  };
-
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -149,6 +144,7 @@ export default function Personnel() {
             setTerm={setTerm}
             handleSearchChange={handleSearchChange}
             filteredList={filteredList}
+            userEditStates={userEditStates}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}

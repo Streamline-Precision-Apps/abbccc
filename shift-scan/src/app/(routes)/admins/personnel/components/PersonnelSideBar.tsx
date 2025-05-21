@@ -6,7 +6,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Spinner } from "@nextui-org/react";
 import { view } from "framer-motion";
-import { BaseUser, PersonnelView } from "./types/personnel";
+import { BaseUser, PersonnelView, UserEditState } from "./types/personnel";
 import { SearchCrew } from "@/lib/types";
 import { Dispatch, SetStateAction, use } from "react";
 import { useTranslations } from "next-intl";
@@ -20,6 +20,7 @@ export default function PersonnelSideBar({
   setTerm,
   handleSearchChange,
   filteredList,
+  userEditStates,
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
@@ -29,6 +30,7 @@ export default function PersonnelSideBar({
   setTerm: Dispatch<SetStateAction<string>>;
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   filteredList: BaseUser[];
+  userEditStates: Record<string, UserEditState>;
 }) {
   const t = useTranslations("Admins");
   return (
@@ -100,6 +102,13 @@ export default function PersonnelSideBar({
                   (view.mode === "registerCrew+user" &&
                     view.userId === employee.id);
 
+                const hasUnsavedChanges =
+                  userEditStates &&
+                  userEditStates[employee.id] &&
+                  !userEditStates[employee.id].successfullyUpdated &&
+                  JSON.stringify(userEditStates[employee.id].user) !==
+                    JSON.stringify(userEditStates[employee.id].originalUser);
+
                 return (
                   <Holds
                     key={employee.id}
@@ -120,13 +129,23 @@ export default function PersonnelSideBar({
                         setView({ mode: "user", userId: employee.id });
                       }
                     }}
-                    className={`p-1 pl-2 flex-shrink-0 hover:bg-gray-100 ${
-                      isSelected ? "border-[3px] border-black" : ""
+                    className={`p-1 pl-2 flex-shrink-0 hover:bg-gray-100 relative ${
+                      isSelected
+                        ? "border-[3px] border-black"
+                        : hasUnsavedChanges
+                        ? "border-[3px] border-app-orange"
+                        : ""
                     }  rounded-[10px]`}
                   >
                     <Texts position={"left"} size={"p7"}>
                       {`${employee.firstName} ${employee.lastName}`}
                     </Texts>
+
+                    {hasUnsavedChanges && (
+                      <Holds className="absolute top-1/2 right-1 transform -translate-y-1/2  w-6 h-6 rounded-full">
+                        <img src="/statusOngoingFilled.svg" alt="edit icon" />
+                      </Holds>
+                    )}
                   </Holds>
                 );
               })}
