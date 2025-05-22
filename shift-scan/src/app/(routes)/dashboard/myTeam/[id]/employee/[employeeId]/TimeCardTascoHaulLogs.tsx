@@ -75,6 +75,9 @@ export default function TimeCardTascoHaulLogs({
       setChangesWereMade(false);
   }, [tascoHaulLogs]);
 
+  // If you use local state, sync it here
+  // setEditedTascoHaulLogs(tascoHaulLogs ?? []);
+
   const handleTascoHaulChange = useCallback(
     (id: string, field: keyof ProcessedTascoHaulLog, value: string | number) => {
       const updatedLogs = editedTascoHaulLogs.map(log => {

@@ -94,6 +94,17 @@ interface TimeSheetRendererProps {
     | EquipmentLogsData
     | EmployeeEquipmentLogWithRefuel[]
     | null;
+  setData?: (data: TimesheetHighlights[]
+    | TruckingMileageData
+    | TruckingEquipmentHaulLogData
+    | TruckingMaterialHaulLogData
+    | TruckingRefuelLogData
+    | TruckingStateLogData
+    | TascoHaulLogData
+    | TascoRefuelLogData
+    | EquipmentLogsData
+    | EmployeeEquipmentLogWithRefuel[]
+  ) => void;
   edit: boolean;
   manager: string;
   onDataChange:
@@ -113,6 +124,7 @@ interface TimeSheetRendererProps {
 export default function TimeSheetRenderer({
   filter,
   data,
+  setData,
   edit,
   manager,
   onDataChange,

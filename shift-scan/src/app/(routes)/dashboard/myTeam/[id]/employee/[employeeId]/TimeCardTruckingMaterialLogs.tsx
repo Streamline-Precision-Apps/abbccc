@@ -5,8 +5,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { MaterialType, TruckingMaterialHaulLog, TruckingMaterialHaulLogData } from "@/lib/types";
-import { useEffect, useState, useCallback } from "react";
+import {
+  MaterialType,
+  TruckingMaterialHaulLog,
+  TruckingMaterialHaulLogData,
+} from "@/lib/types";
+import { useEffect, useState } from "react";
 
 // Define the type for processed material data
 type ProcessedMaterialLog = {
@@ -32,22 +36,39 @@ export default function TimeCardTruckingMaterialLogs({
   truckingMaterialHaulLogs,
   onDataChange,
 }: TimeCardTruckingMaterialHaulLogsProps) {
-  // Process the material haul logs
-  const allMaterials: ProcessedMaterialLog[] = truckingMaterialHaulLogs
-    .flatMap((item) => item.TruckingLogs)
-    .filter(
-      (log): log is TruckingMaterialHaulLog =>
-        log !== null && log?.id !== undefined && log?.Materials !== undefined
-    )
-    .flatMap((log) =>
-      log.Materials.map((material) => ({
-        ...material,
-        logId: log.id, // Keep reference to the parent log
-      }))
-    );
+  // Use truckingMaterialHaulLogs prop directly for rendering and updates
+  // Handler for updating a nested Material item
+  const handleMaterialChange = (
+    truckingLogItemIndex: number,
+    truckingLogId: string,
+    materialId: string,
+    field: keyof ProcessedMaterialLog,
+    value: any
+  ) => {
+    const updated = truckingMaterialHaulLogs.map((item, idx) => {
+      if (idx === truckingLogItemIndex) {
+        return {
+          ...item,
+          TruckingLogs: item.TruckingLogs.map((log) => {
+            if (log.id === truckingLogId) {
+              return {
+                ...log,
+                Materials: log.Materials.map((material) =>
+                  material.id === materialId
+                    ? { ...material, [field]: value }
+                    : material
+                ),
+              };
+            }
+            return log;
+          }),
+        };
+      }
+      return item;
+    });
+    onDataChange(updated);
+  };
 
-  const [editedMaterials, setEditedMaterials] = useState<ProcessedMaterialLog[]>(allMaterials);
-  const [changesWereMade, setChangesWereMade] = useState(false);
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
 
   useEffect(() => {
@@ -65,34 +86,7 @@ export default function TimeCardTruckingMaterialLogs({
     fetchMaterialTypes();
   }, []);
 
-  // Reset when edit mode is turned off or when new data comes in
-  useEffect(() => {
-      setEditedMaterials(allMaterials);
-      setChangesWereMade(false);
-  }, [truckingMaterialHaulLogs]);
-
-  const handleMaterialChange = useCallback(
-    (id: string, logId: string, field: keyof ProcessedMaterialLog, value: string | number | null) => {
-      const updated = editedMaterials.map(m => {
-        if (m.id === id && m.logId === logId) {
-          return { 
-            ...m, 
-            [field]: ['materialWeight', 'lightWeight', 'grossWeight'].includes(field) 
-              ? (value ? Number(value) : null) 
-              : value 
-          };
-        }
-        return m;
-      });
-      
-      setChangesWereMade(true);
-      setEditedMaterials(updated);
-      onDataChange(updated);
-    },
-    [editedMaterials, onDataChange]
-  );
-
-  const isEmptyData = editedMaterials.length === 0;
+  const isEmptyData = truckingMaterialHaulLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
@@ -113,157 +107,186 @@ export default function TimeCardTruckingMaterialLogs({
                 </Holds>
               </Grids>
 
-              {editedMaterials.map((material) => (
-                <Holds
-                  key={`${material.logId}-${material.id}`}
-                  background={"white"}
-                  className="border-black border-[3px] rounded-lg mb-2"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="w-full h-full text-left"
-                  >
-                    <Grids cols={"2"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
-                        <Grids rows={"2"} className="w-full h-full rounded-none">
-                          <Holds className="row-start-1 row-end-2 h-full rounded-none border-b-[1.5px] border-black">
-                            {edit ? (
-                              <select
-                                value={material.name}
-                                onChange={(e) => 
-                                  handleMaterialChange(
-                                    material.id, 
-                                    material.logId, 
-                                    'name', 
-                                    e.target.value
-                                  )
-                                }
-                                disabled={!edit}
-                                className="w-full h-full border-none rounded-none rounded-tl-md text-xs px-2 bg-white"
+              {truckingMaterialHaulLogs.map(
+                (truckingLogItem, truckingLogItemIndex) =>
+                  truckingLogItem.TruckingLogs.map((material) => (
+                    <Holds
+                      key={`${material.logId}-${material.id}`}
+                      background={"white"}
+                      className="border-black border-[3px] rounded-lg mb-2"
+                    >
+                      <Buttons
+                        shadow={"none"}
+                        background={"none"}
+                        className="w-full h-full text-left"
+                      >
+                        <Grids cols={"2"} className="w-full h-full">
+                          <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
+                            <Grids
+                              rows={"2"}
+                              className="w-full h-full rounded-none"
+                            >
+                              <Holds className="row-start-1 row-end-2 h-full rounded-none border-b-[1.5px] border-black">
+                                {edit ? (
+                                  <select
+                                    value={material.name}
+                                    onChange={(e) =>
+                                      handleMaterialChange(
+                                        truckingLogItemIndex,
+                                        material.logId,
+                                        "name",
+                                        e.target.value
+                                      )
+                                    }
+                                    disabled={!edit}
+                                    className="w-full h-full border-none rounded-none rounded-tl-md text-xs px-2 bg-white"
+                                  >
+                                    <option value="">Select Material</option>
+                                    {materialTypes.map((materialType) => (
+                                      <option
+                                        key={materialType.id}
+                                        value={materialType.name}
+                                      >
+                                        {materialType.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <Inputs
+                                    value={material.name}
+                                    onChange={(e) =>
+                                      handleMaterialChange(
+                                        truckingLogItemIndex,
+                                        material.logId,
+                                        "name",
+                                        e.target.value
+                                      )
+                                    }
+                                    disabled={true}
+                                    placeholder="Material"
+                                    className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
+                                  />
+                                )}
+                              </Holds>
+                              <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
+                                <Inputs
+                                  value={material.LocationOfMaterial}
+                                  onChange={(e) =>
+                                    handleMaterialChange(
+                                      truckingLogItemIndex,
+                                      material.logId,
+                                      "LocationOfMaterial",
+                                      e.target.value
+                                    )
+                                  }
+                                  disabled={!edit}
+                                  placeholder="Location"
+                                  className="w-full h-full border-none rounded-none rounded-bl-md text-xs"
+                                />
+                              </Holds>
+                            </Grids>
+                          </Holds>
+                          <Holds className="col-start-2 col-end-3 border-l-[1.5px] border-black">
+                            <Grids rows={"3"} className="w-full h-full">
+                              <Holds
+                                position={"row"}
+                                className={`row-start-1 row-end-2 h-full rounded-none rounded-tr-md border-b-[2px] border-black ${
+                                  edit ? "bg-white" : "bg-app-gray"
+                                }`}
                               >
-                                <option value="">Select Material</option>
-                                {materialTypes.map((materialType) => (
-                                  <option key={materialType.id} value={materialType.name}>
-                                    {materialType.name}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <Inputs
-                                value={material.name}
-                                onChange={(e) => 
-                                  handleMaterialChange(
-                                    material.id, 
-                                    material.logId, 
-                                    'name', 
-                                    e.target.value
-                                  )
-                                }
-                                disabled={true}
-                                placeholder="Material"
-                                className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
-                              />
-                            )}
-                          </Holds>
-                          <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
-                            <Inputs
-                              value={material.LocationOfMaterial}
-                              onChange={(e) => 
-                                handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'LocationOfMaterial', 
-                                  e.target.value
-                                )
-                              }
-                              disabled={!edit}
-                              placeholder="Location"
-                              className="w-full h-full border-none rounded-none rounded-bl-md text-xs"
-                            />
-                          </Holds>
-                        </Grids>
-                      </Holds>
-                      <Holds className="col-start-2 col-end-3 border-l-[1.5px] border-black">
-                        <Grids rows={"3"} className="w-full h-full">
-                          <Holds
-                            position={"row"}
-                            className={`row-start-1 row-end-2 h-full rounded-none rounded-tr-md border-b-[2px] border-black ${
-                              edit ? "bg-white" : "bg-app-gray"
-                            }`}
-                          >
-                            <Titles position={"left"} size={"h7"} className="px-1">
-                              Material
-                            </Titles>
-                            <Inputs
-                              value={material.materialWeight?.toString() || ""}
-                              onChange={(e) => 
-                                handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'materialWeight', 
-                                  e.target.value ? Number(e.target.value) : null
-                                )
-                              }
-                              disabled={!edit}
-                              placeholder="Material"
-                              className="w-full h-full border-none rounded-none rounded-tr-md text-right text-xs"
-                            />
-                          </Holds>
-                          <Holds
-                            position={"row"}
-                            className={`row-start-2 row-end-3 h-full rounded-none border-b-[2px] border-black ${
-                              edit ? "bg-white" : "bg-app-gray"
-                            }`}
-                          >
-                            <Titles position={"left"} size={"h7"} className="px-1">
-                              Light
-                            </Titles>
-                            <Inputs
-                              value={material.lightWeight?.toString() || ""}
-                              onChange={(e) => 
-                                handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'lightWeight', 
-                                  e.target.value ? Number(e.target.value) : null
-                                )
-                              }
-                              disabled={!edit}
-                              placeholder="Light"
-                              className="w-full h-full border-none rounded-none text-right text-xs"
-                            />
-                          </Holds>
-                          <Holds
-                            position={"row"}
-                            className={`row-start-3 row-end-4 h-full w-full rounded-br-md ${
-                              edit ? "bg-white" : "bg-app-gray"
-                            }`}
-                          >
-                            <Titles position={"left"} size={"h7"} className="px-1">
-                              Gross
-                            </Titles>
-                            <Inputs
-                              value={material.grossWeight?.toString() || ""}
-                              onChange={(e) => 
-                                handleMaterialChange(
-                                  material.id, 
-                                  material.logId, 
-                                  'grossWeight', 
-                                  e.target.value ? Number(e.target.value) : null
-                                )
-                              }
-                              disabled={!edit}
-                              placeholder="Gross"
-                              className="w-full h-full border-none text-xs text-right rounded-none rounded-br-md"
-                            />
+                                <Titles
+                                  position={"left"}
+                                  size={"h7"}
+                                  className="px-1"
+                                >
+                                  Material
+                                </Titles>
+                                <Inputs
+                                  value={
+                                    material.materialWeight?.toString() || ""
+                                  }
+                                  onChange={(e) =>
+                                    handleMaterialChange(
+                                      truckingLogItemIndex,
+                                      material.logId,
+                                      "materialWeight",
+                                      e.target.value
+                                        ? Number(e.target.value)
+                                        : null
+                                    )
+                                  }
+                                  disabled={!edit}
+                                  placeholder="Material"
+                                  className="w-full h-full border-none rounded-none rounded-tr-md text-right text-xs"
+                                />
+                              </Holds>
+                              <Holds
+                                position={"row"}
+                                className={`row-start-2 row-end-3 h-full rounded-none border-b-[2px] border-black ${
+                                  edit ? "bg-white" : "bg-app-gray"
+                                }`}
+                              >
+                                <Titles
+                                  position={"left"}
+                                  size={"h7"}
+                                  className="px-1"
+                                >
+                                  Light
+                                </Titles>
+                                <Inputs
+                                  value={material.lightWeight?.toString() || ""}
+                                  onChange={(e) =>
+                                    handleMaterialChange(
+                                      truckingLogItemIndex,
+                                      material.logId,
+                                      "lightWeight",
+                                      e.target.value
+                                        ? Number(e.target.value)
+                                        : null
+                                    )
+                                  }
+                                  disabled={!edit}
+                                  placeholder="Light"
+                                  className="w-full h-full border-none rounded-none text-right text-xs"
+                                />
+                              </Holds>
+                              <Holds
+                                position={"row"}
+                                className={`row-start-3 row-end-4 h-full w-full rounded-br-md ${
+                                  edit ? "bg-white" : "bg-app-gray"
+                                }`}
+                              >
+                                <Titles
+                                  position={"left"}
+                                  size={"h7"}
+                                  className="px-1"
+                                >
+                                  Gross
+                                </Titles>
+                                <Inputs
+                                  value={material.grossWeight?.toString() || ""}
+                                  onChange={(e) =>
+                                    handleMaterialChange(
+                                      truckingLogItemIndex,
+                                      material.logId,
+                                      "grossWeight",
+                                      e.target.value
+                                        ? Number(e.target.value)
+                                        : null
+                                    )
+                                  }
+                                  disabled={!edit}
+                                  placeholder="Gross"
+                                  className="w-full h-full border-none text-xs text-right rounded-none rounded-br-md"
+                                />
+                              </Holds>
+                            </Grids>
                           </Holds>
                         </Grids>
-                      </Holds>
-                    </Grids>
-                  </Buttons>
-                </Holds>
-              ))}
+                      </Buttons>
+                    </Holds>
+                  ))
+              )}
             </>
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">

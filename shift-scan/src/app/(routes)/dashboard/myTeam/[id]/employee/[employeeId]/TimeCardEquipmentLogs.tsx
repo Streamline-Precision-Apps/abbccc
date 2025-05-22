@@ -79,12 +79,19 @@ export default function TimeCardEquipmentLogs({
         );
       })
       .map((log) => {
-        const start = parse(
-          log.startTime ?? "",
-          "yyyy-MM-dd HH:mm:ss",
-          new Date()
+        // Parse as UTC and convert to local time
+        const startUTC = new Date(log.startTime + "Z");
+        const endUTC = new Date(log.endTime + "Z");
+        const start = new Date(
+          startUTC.getTime() +
+            startUTC.getTimezoneOffset() * 60000 -
+            new Date().getTimezoneOffset() * 60000
         );
-        const end = parse(log.endTime ?? "", "yyyy-MM-dd HH:mm:ss", new Date());
+        const end = new Date(
+          endUTC.getTime() +
+            endUTC.getTimezoneOffset() * 60000 -
+            new Date().getTimezoneOffset() * 60000
+        );
 
         const durationMinutes = differenceInMinutes(end, start);
         const durationHours = differenceInHours(end, start);
@@ -115,6 +122,9 @@ export default function TimeCardEquipmentLogs({
       setEditedEquipmentLogs(processedLogs);
     }
   }, [equipmentLogs, processLogs, editedEquipmentLogs.length]);
+
+  // If you use local state, sync it here
+  // setEditedEquipmentLogs(equipmentLogs ?? []);
 
   const handleTimeChange = useCallback(
     (id: string, field: "startTime" | "endTime", timeString: string) => {

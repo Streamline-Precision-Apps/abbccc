@@ -45,24 +45,31 @@ export default function TimeCardTascoRefuelLogs({
       }))
     );
 
-  const [editedTascoRefuelLogs, setEditedTascoRefuelLogs] = useState<FlattenedTascoRefuelLog[]>(allTascoLogs);
+  const [editedTascoRefuelLogs, setEditedTascoRefuelLogs] =
+    useState<FlattenedTascoRefuelLog[]>(allTascoLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-      setEditedTascoRefuelLogs(allTascoLogs);
-      setChangesWereMade(false);
+    setEditedTascoRefuelLogs(allTascoLogs);
+    setChangesWereMade(false);
   }, [tascoRefuelLog]);
+
+  // If you use local state, sync it here
+  // setEditedTascoRefuelLogs(tascoRefuelLog ?? []);
 
   const handleRefuelChange = useCallback(
     (id: string, tascoLogId: string, gallonsRefueled: string | number) => {
-      const updatedLogs = editedTascoRefuelLogs.map(log => {
+      const updatedLogs = editedTascoRefuelLogs.map((log) => {
         if (log.id === id && log.tascoLogId === tascoLogId) {
-          return { 
-            ...log, 
-            gallonsRefueled: typeof gallonsRefueled === 'string' 
-              ? (gallonsRefueled ? Number(gallonsRefueled) : null) 
-              : gallonsRefueled 
+          return {
+            ...log,
+            gallonsRefueled:
+              typeof gallonsRefueled === "string"
+                ? gallonsRefueled
+                  ? Number(gallonsRefueled)
+                  : null
+                : gallonsRefueled,
           };
         }
         return log;
@@ -119,7 +126,7 @@ export default function TimeCardTascoRefuelLogs({
                         <Inputs
                           type="number"
                           value={log.gallonsRefueled?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleRefuelChange(
                               log.id,
                               log.tascoLogId,
