@@ -36,8 +36,9 @@ export default function Personnel() {
   const {
     crewCreationState,
     updateCrewForm,
-    toggleCrewUser,
-    toggleCrewManager,
+    selectLead,
+    addMembers,
+    removeMembers,
     setCrewCreationPending,
     resetCrewCreationState,
   } = useCrewCreationState();
@@ -101,13 +102,18 @@ export default function Personnel() {
         formData.append("crewName", crewCreationState.form.crewName.trim());
         formData.append(
           "crewDescription",
-          crewCreationState.form.crewDescription.trim()
+          crewCreationState.form.crewType.trim()
         );
         formData.append(
           "crew",
           JSON.stringify(crewCreationState.selectedUsers)
         );
         formData.append("teamLead", crewCreationState.teamLead);
+
+        // Add crew type if it's set
+        if (crewCreationState.form.crewType) {
+          formData.append("crewType", crewCreationState.form.crewType);
+        }
 
         await createCrew(formData);
         await fetchAllData();
@@ -148,6 +154,10 @@ export default function Personnel() {
             userEditStates={userEditStates}
             isUserEditStateDirty={isUserEditStateDirty}
             discardUserEditChanges={discardUserEditChanges}
+            crewCreationState={crewCreationState}
+            selectLead={selectLead}
+            addMembers={addMembers}
+            removeMembers={removeMembers}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}
@@ -161,8 +171,6 @@ export default function Personnel() {
             handleRegistrationSubmit={handleRegistrationSubmit}
             crewCreationState={crewCreationState}
             updateCrewForm={updateCrewForm}
-            toggleCrewUser={toggleCrewUser}
-            toggleCrewManager={toggleCrewManager}
             handleCrewSubmit={handleCrewSubmit}
             userEditStates={userEditStates}
             updateUserEditState={updateUserEditState}
