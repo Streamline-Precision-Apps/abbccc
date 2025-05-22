@@ -48,6 +48,8 @@ export interface UserEditState {
   originalUser: UserData | null;
   selectedCrews: string[];
   originalCrews: string[];
+  crewLeads: Record<string, boolean>; // Track which crews this user leads
+  originalCrewLeads: Record<string, boolean>;
   edited: { [key: string]: boolean };
   loading: boolean;
   successfullyUpdated: boolean;

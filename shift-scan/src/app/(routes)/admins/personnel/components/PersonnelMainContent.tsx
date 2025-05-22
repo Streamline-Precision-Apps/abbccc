@@ -1,5 +1,4 @@
 "use client";
-
 import { SearchCrew } from "@/lib/types";
 import {
   CrewCreationState,
@@ -26,6 +25,8 @@ export default function PersonnelMainContent({
   handleRegistrationSubmit,
   userEditStates,
   updateUserEditState,
+  retainOnlyUserEditState,
+  discardUserEditChanges,
 }: {
   view: PersonnelView;
   crew: SearchCrew[];
@@ -44,6 +45,8 @@ export default function PersonnelMainContent({
     userId: string,
     updates: Partial<UserEditState>
   ) => void;
+  retainOnlyUserEditState: (userId: string) => void;
+  discardUserEditChanges: (userId: string) => void;
 }) {
   return (
     <>
@@ -68,6 +71,8 @@ export default function PersonnelMainContent({
             updateEditState={(updates) =>
               updateUserEditState(view.userId, updates)
             }
+            retainOnlyUserEditState={retainOnlyUserEditState}
+            discardUserEditChanges={discardUserEditChanges}
           />
           <CreateNewCrewTab
             setView={() =>
@@ -128,6 +133,8 @@ export default function PersonnelMainContent({
             updateEditState={(updates) =>
               updateUserEditState(view.userId, updates)
             }
+            retainOnlyUserEditState={retainOnlyUserEditState}
+            discardUserEditChanges={discardUserEditChanges}
           />
         </>
       )}
@@ -184,6 +191,8 @@ export default function PersonnelMainContent({
             updateEditState={(updates) =>
               updateUserEditState(view.userId, updates)
             }
+            retainOnlyUserEditState={retainOnlyUserEditState}
+            discardUserEditChanges={discardUserEditChanges}
           />
         </>
       )}
