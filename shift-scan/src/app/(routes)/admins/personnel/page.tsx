@@ -14,7 +14,6 @@ import PersonnelMainContent from "./components/PersonnelMainContent";
 export default function Personnel() {
   const {
     loading,
-    employees,
     crew,
     term,
     setTerm,
@@ -44,7 +43,13 @@ export default function Personnel() {
   } = useCrewCreationState();
 
   const { view, setView } = useViewState();
-  const { userEditStates, updateUserEditState } = useUserEdit();
+  const {
+    userEditStates,
+    updateUserEditState,
+    retainOnlyUserEditState,
+    isUserEditStateDirty,
+    discardUserEditChanges,
+  } = useUserEdit();
 
   const handleRegistrationSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -141,6 +146,8 @@ export default function Personnel() {
             handleSearchChange={handleSearchChange}
             filteredList={filteredList}
             userEditStates={userEditStates}
+            isUserEditStateDirty={isUserEditStateDirty}
+            discardUserEditChanges={discardUserEditChanges}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}
@@ -159,6 +166,8 @@ export default function Personnel() {
             handleCrewSubmit={handleCrewSubmit}
             userEditStates={userEditStates}
             updateUserEditState={updateUserEditState}
+            retainOnlyUserEditState={retainOnlyUserEditState}
+            discardUserEditChanges={discardUserEditChanges}
           />
         </Grids>
       </Holds>
