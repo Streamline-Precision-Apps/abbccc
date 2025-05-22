@@ -5,7 +5,11 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TruckingRefuel, TruckingRefuelLog, TruckingRefuelLogData } from "@/lib/types";
+import {
+  TruckingRefuel,
+  TruckingRefuelLog,
+  TruckingRefuelLogData,
+} from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 
 // Define a type that extends TruckingRefuel with our additional properties
@@ -42,24 +46,38 @@ export default function TimeCardTruckingRefuelLogs({
       }))
     );
 
-  const [editedRefuelLogs, setEditedRefuelLogs] = useState<ExtendedTruckingRefuel[]>(allTruckingLogs);
+  const [editedRefuelLogs, setEditedRefuelLogs] =
+    useState<ExtendedTruckingRefuel[]>(allTruckingLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-      setEditedRefuelLogs(allTruckingLogs);
-      setChangesWereMade(false);
+    setEditedRefuelLogs(allTruckingLogs);
+    setChangesWereMade(false);
+  }, [truckingRefuelLogs]);
+
+  // If you use local state, sync it here
+  useEffect(() => {
+    setEditedRefuelLogs(allTruckingLogs);
   }, [truckingRefuelLogs]);
 
   const handleRefuelChange = useCallback(
-    (id: string, truckingLogId: string, field: keyof ExtendedTruckingRefuel, value: string | number | null) => {
-      const updatedLogs = editedRefuelLogs.map(log => {
+    (
+      id: string,
+      truckingLogId: string,
+      field: keyof ExtendedTruckingRefuel,
+      value: string | number | null
+    ) => {
+      const updatedLogs = editedRefuelLogs.map((log) => {
         if (log.id === id && log.truckingLogId === truckingLogId) {
-          return { 
-            ...log, 
-            [field]: field === 'gallonsRefueled' || field === 'milesAtFueling' 
-              ? (value ? Number(value) : null) 
-              : value 
+          return {
+            ...log,
+            [field]:
+              field === "gallonsRefueled" || field === "milesAtFueling"
+                ? value
+                  ? Number(value)
+                  : null
+                : value,
           };
         }
         return log;
@@ -123,11 +141,11 @@ export default function TimeCardTruckingRefuelLogs({
                         <Inputs
                           type="number"
                           value={rl.gallonsRefueled?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleRefuelChange(
                               rl.id,
                               rl.truckingLogId,
-                              'gallonsRefueled',
+                              "gallonsRefueled",
                               e.target.value
                             )
                           }
@@ -139,11 +157,11 @@ export default function TimeCardTruckingRefuelLogs({
                         <Inputs
                           type="number"
                           value={rl.milesAtFueling?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleRefuelChange(
                               rl.id,
                               rl.truckingLogId,
-                              'milesAtFueling',
+                              "milesAtFueling",
                               e.target.value
                             )
                           }

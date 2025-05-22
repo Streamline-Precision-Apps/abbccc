@@ -67,6 +67,12 @@ export default function TimeCardEquipmentRefuelLogs({
     }
   }, [equipmentRefuelLogs, flattenRefuelLogs]);
 
+  useEffect(() => {
+    // Flatten the logs to pair each RefuelLog with its Equipment
+    // If you use local state, sync it here
+    // setEditedEquipmentRefuelLogs(equipmentRefuelLogs ?? []);
+  }, [equipmentRefuelLogs]);
+
   const handleRefuelChange = useCallback(
     (id: string, employeeEquipmentLogId: string, value: string) => {
       const updatedLogs = flattenedLogs.map((log) => {

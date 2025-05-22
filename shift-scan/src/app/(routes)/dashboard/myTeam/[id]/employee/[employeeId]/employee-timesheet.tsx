@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -31,6 +32,7 @@ import {
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
 import TimeSheetRenderer from "./timeSheetRenderer";
+import { set } from "date-fns";
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -133,7 +135,49 @@ export const EmployeeTimeSheets = ({
       }[]
     | { id: string; gallonsRefueled?: number | null }[]
   >([]);
+  // Two sources of truth: originalData and newData
+  const [originalData, setOriginalData] = useState<typeof data | null>(
+    data ? JSON.parse(JSON.stringify(data)) : null
+  );
+  const [newData, setNewData] = useState<typeof data | null>(
+    data ? JSON.parse(JSON.stringify(data)) : null
+  );
+  const newDataRef = useRef(newData);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Track last loaded date and filter to know when to sync with parent data
+  const [lastLoadedDate, setLastLoadedDate] = useState<string>(date);
+  const [lastLoadedFilter, setLastLoadedFilter] =
+    useState<TimesheetFilter>(timeSheetFilter);
+
+  useEffect(() => {
+    console.log("Data: ", data);
+  }, [data]);
+
+  useEffect(() => {
+    console.log("newData: ", newData);
+  }, [newData]);
+
+  useEffect(() => {
+    console.log("originalData: ", originalData);
+  }, [originalData]);
+
+  // Only sync local state with parent data if date or filter changes
+  useEffect(() => {
+    // When filter or date changes, always sync local state to the new data from props
+    setOriginalData(data ? JSON.parse(JSON.stringify(data)) : null);
+    setNewData(data ? JSON.parse(JSON.stringify(data)) : null);
+    setLastLoadedDate(date);
+    setLastLoadedFilter(timeSheetFilter);
+  }, [date, timeSheetFilter, data]);
+
+  // On initial load, if data arrives and local state is still null, set it
+  useEffect(() => {
+    if (data && originalData === null && newData === null) {
+      setOriginalData(JSON.parse(JSON.stringify(data)));
+      setNewData(JSON.parse(JSON.stringify(data)));
+    }
+  }, [data]);
 
   const handleDateChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
@@ -151,16 +195,16 @@ export const EmployeeTimeSheets = ({
   const handleSave = useCallback(async () => {
     try {
       setIsSaving(true);
-
-      // In handleSave, check for array length
       if (!Array.isArray(changes) || changes.length === 0) {
         console.log("No changes to save");
         return;
       }
-
       console.log("Saving changes:", changes);
-      await parentOnSaveChanges(changes);
-      // Don't clear changes here - let the parent handle it after successful save
+      const result = await parentOnSaveChanges(changes);
+      // After save, update both originalData and newData to the just-saved state using the latest newData
+      setOriginalData(JSON.parse(JSON.stringify(newData)));
+      setChanges([]); // Clear changes after save
+      setEdit(false); // Exit edit mode after save
     } catch (error) {
       console.error("Error saving changes:", error);
     } finally {
@@ -171,6 +215,10 @@ export const EmployeeTimeSheets = ({
   const handleCancel = () => {
     onCancelEdits();
     setChanges([]);
+    // Only restore newData if originalData is not null
+    if (originalData) {
+      setNewData(JSON.parse(JSON.stringify(originalData)));
+    }
   };
 
   const handleDataChange = (
@@ -193,19 +241,30 @@ export const EmployeeTimeSheets = ({
           LoadQuantity?: number | null;
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
+      | TruckingMileageData
   ) => {
-    if (timeSheetFilter === "truckingEquipmentHaulLogs") {
-      // For haul logs, we get the accumulated changes (must be same type)
-      setChanges((prev) => [
-        ...((prev as TruckingMaterialHaulLog[]) ?? []),
-        ...((Array.isArray(updatedData)
-          ? updatedData
-          : [updatedData]) as TruckingMaterialHaulLog[]),
-      ]);
-    } else {
-      // Always set changes as a single array type
-      setChanges(Array.isArray(updatedData) ? updatedData : [updatedData]);
-    }
+    // Always ensure we're working with an array
+    const changesArray = Array.isArray(updatedData)
+      ? updatedData
+      : [updatedData];
+    // Create deep copies of the changes
+    const newChanges = changesArray.map((item) =>
+      JSON.parse(JSON.stringify(item))
+    );
+    setChanges(newChanges);
+    setNewData((prevData) => {
+      // Special handling for TruckingMileageData
+      if (
+        timeSheetFilter === "truckingMileage" &&
+        Array.isArray(updatedData) &&
+        updatedData.length > 0 &&
+        "TruckingLogs" in updatedData[0]
+      ) {
+        return updatedData as typeof prevData;
+      }
+      // Default: just use the new changes
+      return newChanges as typeof prevData;
+    });
   };
 
   return (
@@ -330,8 +389,9 @@ export const EmployeeTimeSheets = ({
             </Holds>
           ) : (
             <TimeSheetRenderer
+              key={`${edit}-${JSON.stringify(newData)}`}
               filter={timeSheetFilter}
-              data={data}
+              data={newData}
               edit={edit}
               manager={manager}
               onDataChange={handleDataChange}
