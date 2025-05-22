@@ -5,8 +5,12 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import { Spinner } from "@nextui-org/react";
-import { BaseUser, PersonnelView, UserEditState } from "./types/personnel";
+import {
+  BaseUser,
+  CrewCreationState,
+  PersonnelView,
+  UserEditState,
+} from "./types/personnel";
 import { SearchCrew } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -14,6 +18,8 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { CheckBox } from "@/components/(inputs)/checkBox";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function PersonnelSideBar({
   view,
@@ -27,6 +33,10 @@ export default function PersonnelSideBar({
   userEditStates,
   isUserEditStateDirty,
   discardUserEditChanges,
+  crewCreationState,
+  selectLead,
+  addMembers,
+  removeMembers,
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
@@ -39,6 +49,10 @@ export default function PersonnelSideBar({
   userEditStates: Record<string, UserEditState>;
   isUserEditStateDirty: (userId: string) => boolean;
   discardUserEditChanges: (userId: string) => void;
+  crewCreationState: CrewCreationState;
+  selectLead: (leadId: string | null) => void;
+  addMembers: (userId: string[]) => void;
+  removeMembers: (userId: string[]) => void;
 }) {
   const t = useTranslations("Admins");
   const [nextView, setNextView] = useState<PersonnelView | null>(null);
@@ -52,6 +66,10 @@ export default function PersonnelSideBar({
     const targetView: PersonnelView =
       view.mode === "crew"
         ? { mode: "user+crew", userId: employee.id, crewId: view.crewId }
+        : view.mode === "registerCrew"
+        ? { mode: "registerCrew+user", userId: employee.id }
+        : view.mode === "registerCrew+user"
+        ? { mode: "registerCrew" }
         : { mode: "user", userId: employee.id };
 
     const isSameUser = view.mode === "user" && view.userId === employee.id;
@@ -61,6 +79,34 @@ export default function PersonnelSideBar({
       setIsDiscardChangesModalOpen(true);
     } else {
       setView(isSameUser ? { mode: "default" } : targetView);
+    }
+  };
+
+  const handleCrewLeadToggle = (employeeId: string) => {
+    // Only allow if employee is in selectedUsers
+    const isCrewMember = crewCreationState.selectedUsers.some(
+      (user) => user.id === employeeId
+    );
+
+    if (!isCrewMember) return;
+
+    // Toggle crew lead
+    if (crewCreationState.teamLead === employeeId) {
+      selectLead(null);
+    } else {
+      selectLead(employeeId);
+    }
+  };
+
+  const handleEmployeeCheck = (employee: BaseUser) => {
+    const isSelected = crewCreationState.selectedUsers.some(
+      (user) => user.id === employee.id
+    );
+
+    if (isSelected) {
+      removeMembers([employee.id]); // From your hook - remove if already selected
+    } else {
+      addMembers([employee.id]); // From your hook - add if not selected
     }
   };
 
@@ -147,32 +193,97 @@ export default function PersonnelSideBar({
                     (view.mode === "registerCrew+user" &&
                       view.userId === employee.id);
 
-                  const hasUnsavedChanges =
-                    userEditStates[employee.id] &&
-                    !userEditStates[employee.id].successfullyUpdated &&
-                    JSON.stringify(userEditStates[employee.id].user) !==
-                      JSON.stringify(userEditStates[employee.id].originalUser);
+                  const isCrew =
+                    view.mode === "crew" ||
+                    view.mode === "user+crew" ||
+                    view.mode === "registerCrew" ||
+                    view.mode === "registerCrew+user" ||
+                    view.mode === "registerBoth";
+
+                  const isCrewMember = crewCreationState.selectedUsers.some(
+                    (user) => user.id === employee.id
+                  );
+
+                  const isCurrentLead =
+                    crewCreationState.teamLead === employee.id;
+
+                  const isManager = employee.permission !== "USER";
 
                   return (
                     <Holds
                       key={employee.id}
-                      onClick={() => handleEmployeeClick(employee)}
-                      className={`p-1 pl-2 flex-shrink-0 hover:bg-gray-100 relative ${
-                        isSelected
-                          ? "border-[3px] border-black"
-                          : hasUnsavedChanges
-                          ? "border-[3px] border-app-orange"
-                          : ""
-                      } rounded-[10px]`}
+                      position={"row"}
+                      className="w-full gap-4"
                     >
-                      <Texts position="left" size="p7">
-                        {`${employee.firstName} ${employee.lastName}`}
-                      </Texts>
-
-                      {hasUnsavedChanges && (
-                        <Holds className="absolute top-1/2 right-1 transform -translate-y-1/2 w-6 h-6 rounded-full">
-                          <img src="/statusOngoingFilled.svg" alt="edit icon" />
-                        </Holds>
+                      <Holds
+                        size={isCrew ? "70" : "full"}
+                        onClick={() => handleEmployeeClick(employee)}
+                        background={isCrew ? "darkGray" : "white"}
+                        className={`p-1 pl-2 flex-shrink-0 ${
+                          !isCrew && "hover:bg-gray-100"
+                        } relative ${
+                          isSelected ? "border-[3px] border-black" : ""
+                        } rounded-[10px]`}
+                      >
+                        <Texts position="left" size="p7">
+                          {`${employee.firstName} ${employee.lastName}`}
+                        </Texts>
+                      </Holds>
+                      {isCrew && (
+                        <>
+                          <Holds
+                            size={"20"}
+                            className="w-fit min-w-[35px] h-full flex items-center"
+                          >
+                            {isManager && (
+                              <img
+                                onClick={() =>
+                                  isCrewMember &&
+                                  handleCrewLeadToggle(employee.id)
+                                }
+                                src={
+                                  isCurrentLead
+                                    ? "/starFilled.svg"
+                                    : isCrewMember
+                                    ? "/star.svg"
+                                    : "/star.svg"
+                                }
+                                alt={
+                                  isCurrentLead
+                                    ? "Current Crew Lead"
+                                    : isCrewMember
+                                    ? "Make Crew Lead"
+                                    : "Add to crew first"
+                                }
+                                className={`w-[35px] h-[35px] ${
+                                  isCrewMember
+                                    ? "cursor-pointer hover:opacity-80"
+                                    : "cursor-not-allowed opacity-50"
+                                } transition-opacity`}
+                                title={
+                                  isCurrentLead
+                                    ? "Current Crew Lead"
+                                    : isCrewMember
+                                    ? "Make Crew Lead"
+                                    : "Add to crew first"
+                                }
+                              />
+                            )}
+                          </Holds>
+                          <Holds size={isManager ? "10" : "30"}>
+                            <CheckBox
+                              shadow={false}
+                              checked={crewCreationState.selectedUsers.some(
+                                (user) => user.id === employee.id
+                              )}
+                              onChange={() => handleEmployeeCheck(employee)}
+                              id={`crew-member-${employee.id}`}
+                              name={`crew-member-${employee.id}`}
+                              width={30}
+                              height={30}
+                            />
+                          </Holds>
+                        </>
                       )}
                     </Holds>
                   );

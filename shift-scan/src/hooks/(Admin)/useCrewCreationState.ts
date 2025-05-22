@@ -1,4 +1,5 @@
 // hooks/useCrewCreationState.ts
+"use client";
 import { CrewCreationState } from "@/app/(routes)/admins/personnel/components/types/personnel";
 import { useState } from "react";
 
@@ -6,12 +7,10 @@ export const useCrewCreationState = () => {
   const [state, setState] = useState<CrewCreationState>({
     form: {
       crewName: "",
-      crewDescription: "",
+      crewType: "",
     },
     selectedUsers: [] as { id: string }[],
     teamLead: null as string | null,
-    toggledUsers: {} as Record<string, boolean>,
-    toggledManager: {} as Record<string, boolean>,
     isPending: false,
   });
 
@@ -19,66 +18,70 @@ export const useCrewCreationState = () => {
     setState((prev) => ({ ...prev, form: { ...prev.form, ...updates } }));
   };
 
-  const toggleUser = (id: string) => {
-    setState((prev) => {
-      const isToggled = !prev.toggledUsers[id];
-      return {
-        ...prev,
-        selectedUsers: isToggled
-          ? [...prev.selectedUsers, { id }]
-          : prev.selectedUsers.filter((user) => user.id !== id),
-        toggledUsers: { ...prev.toggledUsers, [id]: isToggled },
-      };
-    });
-  };
-
-  const toggleManager = (id: string) => {
-    setState((prev) => {
-      if (prev.teamLead === id) {
-        return {
-          ...prev,
-          teamLead: null,
-          toggledManager: { ...prev.toggledManager, [id]: false },
-        };
-      }
-
-      const updatedToggledManager = { ...prev.toggledManager };
-      Object.keys(updatedToggledManager).forEach((key) => {
-        updatedToggledManager[key] = key === id;
-      });
-
-      return {
-        ...prev,
-        teamLead: id,
-        toggledManager: updatedToggledManager,
-      };
-    });
-  };
-
   const setPending = (isPending: boolean) => {
     setState((prev) => ({ ...prev, isPending }));
+  };
+
+  const selectLead = (leadId: string | null) => {
+    setState((prev) => {
+      // If the new lead isn't in selectedUsers, don't set it
+      if (leadId && !prev.selectedUsers.some((user) => user.id === leadId)) {
+        return prev;
+      }
+      return { ...prev, teamLead: leadId };
+    });
+  };
+
+  const addMembers = (userIds: string[]) => {
+    setState((prev) => {
+      const newUsers = userIds
+        .filter((id) => !prev.selectedUsers.some((user) => user.id === id)) // Avoid duplicates
+        .map((id) => ({ id }));
+
+      return {
+        ...prev,
+        selectedUsers: [...prev.selectedUsers, ...newUsers],
+      };
+    });
+  };
+
+  const removeMembers = (userIds: string[]) => {
+    setState((prev) => {
+      const newUsers = prev.selectedUsers.filter(
+        (user) => !userIds.includes(user.id)
+      );
+
+      // If we're removing the current team lead, clear it
+      const shouldClearLead = userIds.includes(prev.teamLead || "");
+
+      return {
+        ...prev,
+        selectedUsers: newUsers,
+        teamLead: shouldClearLead ? null : prev.teamLead,
+      };
+    });
   };
 
   const reset = () => {
     setState({
       form: {
         crewName: "",
-        crewDescription: "",
+        crewType: "",
       },
       selectedUsers: [],
       teamLead: null,
-      toggledUsers: {},
-      toggledManager: {},
       isPending: false,
     });
   };
 
   return {
     crewCreationState: state,
+    setCrewCreationState: setState,
     updateCrewForm: updateForm,
-    toggleCrewUser: toggleUser,
-    toggleCrewManager: toggleManager,
     setCrewCreationPending: setPending,
     resetCrewCreationState: reset,
+    selectLead,
+    addMembers,
+    removeMembers,
   };
 };

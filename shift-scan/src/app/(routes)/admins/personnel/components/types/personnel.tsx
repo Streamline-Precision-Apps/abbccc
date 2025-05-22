@@ -94,11 +94,9 @@ export type PersonnelView =
 export interface CrewCreationState {
   form: {
     crewName: string;
-    crewDescription: string;
+    crewType: "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO" | "";
   };
   selectedUsers: { id: string }[];
   teamLead: string | null;
-  toggledUsers: Record<string, boolean>;
-  toggledManager: Record<string, boolean>;
   isPending: boolean;
 }

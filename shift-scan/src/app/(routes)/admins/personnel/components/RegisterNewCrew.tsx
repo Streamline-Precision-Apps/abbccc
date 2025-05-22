@@ -14,8 +14,17 @@ export default function RegisterNewCrew({
 }: {
   cancelCrewCreation: () => void;
 }) {
-  // const {form} = useCrewCreationState();
-  const numberOfCrewMembers = 1;
+  const { crewCreationState } = useCrewCreationState();
+
+  // Calculate counts
+  const totalMembers = crewCreationState.selectedUsers.length;
+  // Get the crew lead details (if any)
+  const crewLead = crewCreationState.teamLead
+    ? crewCreationState.selectedUsers.find(
+        (user) => user.id === crewCreationState.teamLead
+      )
+    : null;
+
   return (
     <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
       <form action="" className="w-full h-full">
@@ -73,17 +82,41 @@ export default function RegisterNewCrew({
                     <Texts size={"p7"} position={"left"}>
                       Crew Lead
                     </Texts>
-                    <Inputs type="text" name="crewLead" value={""} />
+                    <Inputs
+                      type="text"
+                      name="crewLead"
+                      value={
+                        crewLead ? `${crewLead} ${crewLead}` : "Not selected"
+                      }
+                      readOnly
+                    />
                   </Holds>
                   <Holds className="h-full">
                     <Texts position={"right"} size={"p7"}>
-                      Total Crew Members:{" "}
-                      {numberOfCrewMembers ? numberOfCrewMembers : 0}
+                      Total Crew Members: {totalMembers}
                     </Texts>
                   </Holds>
                 </Holds>
                 <Holds className="w-full h-full border-[3px] border-black rounded-[10px]">
-                  <Holds className="w-full h-full overflow-y-auto no-scrollbar"></Holds>
+                  <Holds className="w-full h-full overflow-y-auto no-scrollbar">
+                    {crewCreationState.selectedUsers.length === 0 ? (
+                      <Texts size="p7" className="text-center p-4">
+                        No members selected yet
+                      </Texts>
+                    ) : (
+                      <div className="space-y-2">
+                        {/* Display regular members */}
+                        {crewCreationState.selectedUsers.map((member) => (
+                          <Holds
+                            key={member.id}
+                            className="p-2 border-b flex justify-between items-center"
+                          >
+                            <Texts size="p7">{member.id}</Texts>
+                          </Holds>
+                        ))}
+                      </div>
+                    )}
+                  </Holds>
                 </Holds>
               </Grids>
             </Holds>

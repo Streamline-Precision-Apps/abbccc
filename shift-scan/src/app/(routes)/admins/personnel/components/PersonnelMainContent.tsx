@@ -15,19 +15,7 @@ import RegisterNewCrew from "./RegisterNewCrew";
 import RegisterNewUser from "./RegisterNewUser";
 import ViewCrew from "./ViewCrew";
 
-export default function PersonnelMainContent({
-  view,
-  crew,
-  setView,
-  registrationState,
-  updateRegistrationForm,
-  updateRegistrationCrews,
-  handleRegistrationSubmit,
-  userEditStates,
-  updateUserEditState,
-  retainOnlyUserEditState,
-  discardUserEditChanges,
-}: {
+interface PersonnelMainContentProps {
   view: PersonnelView;
   crew: SearchCrew[];
   setView: Dispatch<SetStateAction<PersonnelView>>;
@@ -37,8 +25,6 @@ export default function PersonnelMainContent({
   handleRegistrationSubmit: (e: React.FormEvent) => Promise<void>;
   crewCreationState: CrewCreationState;
   updateCrewForm: (updates: Partial<CrewCreationState["form"]>) => void;
-  toggleCrewUser: (id: string) => void;
-  toggleCrewManager: (id: string) => void;
   handleCrewSubmit: (e: React.FormEvent) => Promise<void>;
   userEditStates: Record<string, UserEditState>;
   updateUserEditState: (
@@ -47,7 +33,24 @@ export default function PersonnelMainContent({
   ) => void;
   retainOnlyUserEditState: (userId: string) => void;
   discardUserEditChanges: (userId: string) => void;
-}) {
+}
+
+export default function PersonnelMainContent({
+  view,
+  crew,
+  setView,
+  registrationState,
+  updateRegistrationForm,
+  updateRegistrationCrews,
+  handleRegistrationSubmit,
+  crewCreationState,
+  updateCrewForm,
+  handleCrewSubmit,
+  userEditStates,
+  updateUserEditState,
+  retainOnlyUserEditState,
+  discardUserEditChanges,
+}: PersonnelMainContentProps) {
   return (
     <>
       {view.mode === "user" && (
