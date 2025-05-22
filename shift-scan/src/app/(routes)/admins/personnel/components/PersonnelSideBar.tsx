@@ -81,7 +81,7 @@ export default function PersonnelSideBar({
   return (
     <>
       <Holds className="w-full h-full col-start-1 col-end-3">
-        <Grids className="w-full h-full grid-rows-[40px_40px_1fr] gap-2">
+        <Grids className="w-full h-full grid-rows-[40px_40px_1fr] gap-4">
           <Holds className="w-full h-full">
             <Selects
               onChange={(e) => {
