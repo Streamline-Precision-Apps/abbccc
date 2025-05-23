@@ -24,8 +24,7 @@ import {
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
-
-// Local processed types for subcomponents
+import { useTranslations } from "next-intl";
 
 type ProcessedMaterialLog = {
   id: string;
@@ -130,6 +129,7 @@ export default function TimeSheetRenderer({
   onDataChange,
   date,
 }: TimeSheetRendererProps) {
+  const t = useTranslations("MyTeam");
   const isEmptyData = !data || (Array.isArray(data) && data.length === 0);
 
   const renderContent = () => {
@@ -137,7 +137,7 @@ export default function TimeSheetRenderer({
       return (
         <Holds className="w-full h-full flex items-center justify-center">
           <Texts size="p6" className="text-gray-500 italic">
-            No data available
+            {`${t("NoDataFoundForCurrentDate")} `}
           </Texts>
         </Holds>
       );

@@ -221,8 +221,8 @@ export default function ProfilePage({ userId }: { userId: string }) {
             <Titles size={"h4"}>{t("AccountInformation")}</Titles>
           </NewTab>
           <NewTab
-            titleImage={"/settings.svg"}
-            titleImageAlt={""}
+            titleImage={"/Settings.svg"}
+            titleImageAlt={"Settings"}
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
             isComplete={true}
