@@ -21,6 +21,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import Spinner from "@/components/(animations)/spinner";
+import { user } from "@nextui-org/theme";
 
 export default function PersonnelSideBar({
   view,
@@ -98,6 +99,10 @@ export default function PersonnelSideBar({
     const targetView: PersonnelView =
       view.mode === "crew"
         ? { mode: "user+crew", userId: employee.id, crewId: view.crewId }
+        : view.mode === "user+crew"
+        ? employee.id === view.userId
+          ? { mode: "crew", crewId: view.crewId }
+          : { mode: "user+crew", userId: employee.id, crewId: view.crewId }
         : view.mode === "registerCrew"
         ? { mode: "registerCrew+user", userId: employee.id }
         : view.mode === "registerCrew+user"
@@ -272,26 +277,37 @@ export default function PersonnelSideBar({
                       className="w-full gap-4"
                     >
                       <Holds
-                        size={isCrew ? "70" : "full"}
                         onClick={() => handleEmployeeClick(employee)}
-                        background={isCrew ? "darkGray" : "white"}
-                        className={`p-1 pl-2 flex-shrink-0 ${
+                        background={
+                          isCrew &&
+                          isEditingExistingCrew &&
+                          selectedUsers.some((user) => user.id === employee.id)
+                            ? "lightBlue"
+                            : isCrew &&
+                              !isEditingExistingCrew &&
+                              crewCreationState.selectedUsers.some(
+                                (user) => user.id === employee.id
+                              )
+                            ? "lightBlue"
+                            : isCrew
+                            ? "lightGray"
+                            : "white"
+                        }
+                        className={`w-full pl-2 ${
                           !isCrew && "hover:bg-gray-100"
                         } relative ${
-                          isSelected ? "border-[3px] border-black" : ""
+                          isSelected &&
+                          " `w-full pl-2 p-1 border-[3px] border-black"
                         } rounded-[10px]`}
                       >
-                        <Texts position="left" size="p7">
+                        <Texts position="left" size="xs">
                           {`${employee.firstName} ${employee.lastName}`}
                         </Texts>
                       </Holds>
                       {isCrew && (
                         <>
-                          <Holds
-                            size={"20"}
-                            className="w-fit min-w-[35px] h-full flex items-center"
-                          >
-                            {isManager && (
+                          {isManager && (
+                            <Holds className="w-fit min-w-[35px] h-full flex items-center">
                               <img
                                 onClick={() =>
                                   isCrewMember &&
@@ -324,9 +340,9 @@ export default function PersonnelSideBar({
                                     : "Add to crew first"
                                 }
                               />
-                            )}
-                          </Holds>
-                          <Holds size={isManager ? "10" : "30"}>
+                            </Holds>
+                          )}
+                          <Holds className="w-fit min-w-[35px] h-full flex items-center">
                             <CheckBox
                               shadow={false}
                               checked={
