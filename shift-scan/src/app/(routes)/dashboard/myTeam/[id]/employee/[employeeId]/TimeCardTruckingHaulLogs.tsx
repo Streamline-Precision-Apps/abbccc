@@ -13,6 +13,7 @@ import { useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
+import { useTranslations } from "next-intl";
 
 type TimeCardTruckingHaulLogsProps = {
   edit: boolean;
@@ -120,17 +121,17 @@ export default function TimeCardTruckingHaulLogs({
               <Grids cols={"3"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-2 w-full h-full pl-1">
                   <Titles position={"left"} size={"h6"}>
-                    Truck
+                    {t("Truck")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-2 col-end-3 w-full h-full pr-1">
                   <Titles position={"center"} size={"h6"}>
-                    Hauled EQ
+                    {t("HauledEQ")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-3 col-end-4 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Job Site
+                    {t("JobSite")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -185,7 +186,7 @@ export default function TimeCardTruckingHaulLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No haul logs available
+                {t("NoHaulLogsAvailable")}
               </Texts>
             </Holds>
           )}

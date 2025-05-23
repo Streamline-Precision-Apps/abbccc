@@ -297,22 +297,26 @@ export const EmployeeTimeSheets = ({
                 disabled={loading}
               >
                 <option value="timesheetHighlights">
-                  Timesheet Highlights
+                  {t("timesheetHighlights")}
                 </option>
-                <option value="truckingMileage">Trucking Mileage</option>
+                <option value="truckingMileage">{t("truckingMileage")}</option>
                 <option value="truckingEquipmentHaulLogs">
-                  Trucking Equipment Hauls
+                  {t("truckingEquipmentHaulLogs")}
                 </option>
                 <option value="truckingMaterialHaulLogs">
-                  Trucking Material Hauls
+                  {t("truckingMaterialHaulLogs")}
                 </option>
-                <option value="truckingRefuelLogs">Trucking Refuel Logs</option>
-                <option value="truckingStateLogs">Trucking State Logs</option>
-                <option value="tascoHaulLogs">TASCO Haul Logs</option>
-                <option value="tascoRefuelLogs">TASCO Refuel Logs</option>
-                <option value="equipmentLogs">Equipment Logs</option>
+                <option value="truckingRefuelLogs">
+                  {t("truckingRefuelLogs")}
+                </option>
+                <option value="truckingStateLogs">
+                  {t("truckingStateLogs")}
+                </option>
+                <option value="tascoHaulLogs">{t("tascoHaulLogs")}</option>
+                <option value="tascoRefuelLogs">{t("tascoRefuelLogs")}</option>
+                <option value="equipmentLogs">{t("equipmentLogs")}</option>
                 <option value="equipmentRefuelLogs">
-                  Equipment Refuel Logs
+                  {t("equipmentRefuelLogs")}
                 </option>
               </Selects>
             </Holds>
@@ -384,7 +388,7 @@ export const EmployeeTimeSheets = ({
             <Holds className="w-full h-full flex items-center justify-center">
               <Spinner size={70} />
               <Texts size="p6" className="mt-2">
-                {t("loadingTimesheetData")}
+                {t("LoadingTimesheetData")}
               </Texts>
             </Holds>
           ) : (

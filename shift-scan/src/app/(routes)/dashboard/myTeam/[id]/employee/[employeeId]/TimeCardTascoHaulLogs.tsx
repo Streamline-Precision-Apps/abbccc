@@ -6,6 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { TascoHaulLogs, TascoHaulLogData, MaterialType } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define the type for processed haul logs
@@ -16,12 +17,6 @@ type ProcessedTascoHaulLog = {
   materialType: string;
   LoadQuantity: number | null;
 };
-
-// Define shift type options
-const SHIFT_TYPES = [
-  { value: "ABCD Shift", label: "ABCD Shift" },
-  { value: "E Shift", label: "E Shift" }
-];
 
 type TimeCardTascoHaulLogsProps = {
   edit: boolean;
@@ -36,6 +31,7 @@ export default function TimeCardTascoHaulLogs({
   tascoHaulLogs,
   onDataChange,
 }: TimeCardTascoHaulLogsProps) {
+  const t = useTranslations("MyTeam.TimeCardTascoHaulLogs");
   // Process the tasco haul logs
   const allTascoHaulLogs: ProcessedTascoHaulLog[] = tascoHaulLogs
     .flatMap((log) => log.TascoLogs)
@@ -50,9 +46,16 @@ export default function TimeCardTascoHaulLogs({
       LoadQuantity: log.LoadQuantity,
     }));
 
-  const [editedTascoHaulLogs, setEditedTascoHaulLogs] = useState<ProcessedTascoHaulLog[]>(allTascoHaulLogs);
+  const [editedTascoHaulLogs, setEditedTascoHaulLogs] =
+    useState<ProcessedTascoHaulLog[]>(allTascoHaulLogs);
   const [changesWereMade, setChangesWereMade] = useState(false);
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
+
+  // Define shift type options
+  const SHIFT_TYPES = [
+    { value: "ABCD Shift", label: t("ABCDShift") },
+    { value: "E Shift", label: t("EShift") },
+  ];
 
   useEffect(() => {
     const fetchMaterialTypes = async () => {
@@ -71,22 +74,25 @@ export default function TimeCardTascoHaulLogs({
 
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
-      setEditedTascoHaulLogs(allTascoHaulLogs);
-      setChangesWereMade(false);
+    setEditedTascoHaulLogs(allTascoHaulLogs);
+    setChangesWereMade(false);
   }, [tascoHaulLogs]);
 
   // If you use local state, sync it here
   // setEditedTascoHaulLogs(tascoHaulLogs ?? []);
 
   const handleTascoHaulChange = useCallback(
-    (id: string, field: keyof ProcessedTascoHaulLog, value: string | number) => {
-      const updatedLogs = editedTascoHaulLogs.map(log => {
+    (
+      id: string,
+      field: keyof ProcessedTascoHaulLog,
+      value: string | number
+    ) => {
+      const updatedLogs = editedTascoHaulLogs.map((log) => {
         if (log.id === id) {
-          return { 
-            ...log, 
-            [field]: field === 'LoadQuantity' ? 
-              (value ? Number(value) : null) : 
-              value 
+          return {
+            ...log,
+            [field]:
+              field === "LoadQuantity" ? (value ? Number(value) : null) : value,
           };
         }
         return log;
@@ -110,12 +116,12 @@ export default function TimeCardTascoHaulLogs({
               <Grids cols={"2"} className="w-full h-fit mb-1">
                 <Holds className="col-start-1 col-end-2 w-full h-full pr-1">
                   <Titles position={"left"} size={"h6"}>
-                    Shift Type & Equipment ID
+                    {t("ShiftTypeEquipmentID")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-2 col-end-3 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Material & loads
+                    {t("MaterialLoads")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -135,10 +141,10 @@ export default function TimeCardTascoHaulLogs({
                         {edit ? (
                           <select
                             value={log.shiftType}
-                            onChange={(e) => 
+                            onChange={(e) =>
                               handleTascoHaulChange(
                                 log.id,
-                                'shiftType',
+                                "shiftType",
                                 e.target.value
                               )
                             }
@@ -162,10 +168,10 @@ export default function TimeCardTascoHaulLogs({
                       <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
                         <Inputs
                           value={log.equipmentId || "N/A"}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleTascoHaulChange(
                               log.id,
-                              'equipmentId',
+                              "equipmentId",
                               e.target.value
                             )
                           }
@@ -177,16 +183,16 @@ export default function TimeCardTascoHaulLogs({
                         {edit ? (
                           <select
                             value={log.materialType}
-                            onChange={(e) => 
+                            onChange={(e) =>
                               handleTascoHaulChange(
                                 log.id,
-                                'materialType',
+                                "materialType",
                                 e.target.value
                               )
                             }
                             className="w-full h-full text-xs text-center border-none rounded-none rounded-tr-md py-2 bg-white"
                           >
-                            <option value="">Select Material</option>
+                            <option value="">{t("SelectMaterial")}</option>
                             {materialTypes.map((material) => (
                               <option key={material.id} value={material.name}>
                                 {material.name}
@@ -206,10 +212,10 @@ export default function TimeCardTascoHaulLogs({
                         <Inputs
                           type="number"
                           value={log.LoadQuantity?.toString() || ""}
-                          onChange={(e) => 
+                          onChange={(e) =>
                             handleTascoHaulChange(
                               log.id,
-                              'LoadQuantity',
+                              "LoadQuantity",
                               e.target.value
                             )
                           }
@@ -225,7 +231,7 @@ export default function TimeCardTascoHaulLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No Tasco Hauling Logs found
+                {t("NoTascoHaulingLogsAvailable")}
               </Texts>
             </Holds>
           )}

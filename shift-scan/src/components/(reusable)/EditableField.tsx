@@ -6,29 +6,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
-const EditableFieldsVariants = cva(
-  "flex items-center gap-2 border-[3px] rounded-[10px]", // common styles
-  {
-    variants: {
-      variant: {
-        default: "border-black",
-        danger: "border-red-500",
-        success: "border-green-500",
-        noFrames: "border-none rounded-none",
-      },
-      size: {
-        default: "h-10",
-        sm: "h-8 text-sm",
-        lg: "h-12 text-lg",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-);
-
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
 interface EditableFieldsProps
   extends HTMLAttributes<HTMLElement>,
@@ -46,10 +23,34 @@ interface EditableFieldsProps
   minLength?: number;
   maxLength?: number;
   pattern?: string;
+  name?: string;
 }
 
+const EditableFieldsVariants = cva(
+  "flex items-center border-[3px] rounded-[10px] overflow-hidden", // Added overflow-hidden
+  {
+    variants: {
+      variant: {
+        default: "border-black",
+        danger: "border-red-500",
+        success: "border-green-500",
+        noFrames: "border-none rounded-none",
+      },
+      size: {
+        default: "h-10 text-base",
+        sm: "h-8 text-sm",
+        lg: "h-12 text-lg",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
 const EditableFields: FC<EditableFieldsProps> = ({
-  className = "px-2",
+  className = "",
   variant,
   size,
   value,
@@ -65,35 +66,42 @@ const EditableFields: FC<EditableFieldsProps> = ({
   pattern,
   iconSrc = "/arrowBack.svg",
   iconAlt = "revert",
-
-  ...props
+  name,
 }) => {
   return (
-    <div className={cn(EditableFieldsVariants({ variant, size, className }))}>
-      <input
-        type={type}
-        value={value}
-        disabled={disable}
-        checked={checked}
-        onChange={onChange}
-        placeholder={placeholder || ""}
-        className="h-full w-5/6 border-none focus:outline-none my-auto text-center"
-        minLength={minLength}
-        maxLength={maxLength}
-        pattern={pattern}
-        {...props}
-      />
+    <div
+      className={cn(
+        EditableFieldsVariants({ variant, size, className }),
+        "w-full"
+      )}
+    >
+      {/* Input container with flex-1 to take available space */}
+      <div className="flex-1 h-full">
+        <input
+          type={type}
+          value={value}
+          name={name}
+          disabled={disable}
+          checked={checked}
+          onChange={onChange}
+          placeholder={placeholder || ""}
+          className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
+          minLength={minLength}
+          maxLength={maxLength}
+          pattern={pattern}
+        />
+      </div>
+
+      {/* Revert button - only appears when needed */}
       {isChanged && onRevert && (
         <button
           type="button"
-          className="w-1/6"
+          className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
           title="Revert changes"
           onClick={onRevert}
         >
-          <div className="flex justify-center items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element*/}
-            <img src={iconSrc} alt={iconAlt} className="w-5 h-5" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element*/}
+          <img src={iconSrc} alt={iconAlt} className="w-5 h-5" />
         </button>
       )}
     </div>

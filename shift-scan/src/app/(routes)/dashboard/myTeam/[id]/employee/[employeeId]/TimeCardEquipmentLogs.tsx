@@ -16,6 +16,7 @@ import {
   format,
   parse,
 } from "date-fns";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define a type that represents a valid equipment log with all required properties
@@ -62,6 +63,8 @@ export default function TimeCardEquipmentLogs({
   equipmentLogs,
   onDataChange,
 }: TimeCardEquipmentLogsProps) {
+  const t = useTranslations("MyTeam.TimeCardEquipmentLogs");
+
   const [editedEquipmentLogs, setEditedEquipmentLogs] = useState<
     ProcessedEquipmentLog[]
   >([]);
@@ -188,25 +191,25 @@ export default function TimeCardEquipmentLogs({
               <Grids cols={"4"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-3 w-full h-full">
                   <Titles position={"center"} size={"h6"}>
-                    Equipment ID
+                    {t("EquipmentID")}
                   </Titles>
                 </Holds>
                 {!edit ? (
                   <Holds className="col-start-3 col-end-5 w-full h-full">
                     <Titles position={"center"} size={"h6"}>
-                      Duration
+                      {t("Duration")}
                     </Titles>
                   </Holds>
                 ) : (
                   <>
                     <Holds className="col-start-3 col-end-4 w-full h-full pr-1">
                       <Titles position={"center"} size={"h6"}>
-                        Start
+                        {t("Start")}
                       </Titles>
                     </Holds>
                     <Holds className="col-start-4 col-end-5 w-full h-full pr-1">
                       <Titles position={"center"} size={"h6"}>
-                        End
+                        {t("End")}
                       </Titles>
                     </Holds>
                   </>
@@ -283,7 +286,7 @@ export default function TimeCardEquipmentLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No Equipment Logs found
+                {t("NoEquipmentLogsAvailable")}
               </Texts>
             </Holds>
           )}

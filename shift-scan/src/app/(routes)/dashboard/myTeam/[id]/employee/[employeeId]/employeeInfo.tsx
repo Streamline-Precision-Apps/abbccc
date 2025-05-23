@@ -55,7 +55,7 @@ export default function EmployeeInfo({
             >
               <Images
                 titleImg={
-                  employee?.image ? employee.image : "/profile-default.svg"
+                  employee?.image ? employee.image : "/profileFilled.svg"
                 }
                 titleImgAlt="Team"
                 className="rounded-full border-[3px] border-black "

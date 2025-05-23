@@ -6,6 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { TascoRefuelLog, TascoRefuelLogData } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define the type for flattened refuel logs
@@ -29,6 +30,7 @@ export default function TimeCardTascoRefuelLogs({
   tascoRefuelLog,
   onDataChange,
 }: TimeCardTascoRefuelLogsProps) {
+  const t = useTranslations("MyTeam.TimeCardTascoRefuelLogs");
   // Process the tasco refuel logs
   const allTascoLogs: FlattenedTascoRefuelLog[] = tascoRefuelLog
     .flatMap((item) => item.TascoLogs)
@@ -40,7 +42,7 @@ export default function TimeCardTascoRefuelLogs({
       log.RefuelLogs.map((refuel) => ({
         id: refuel.id,
         gallonsRefueled: refuel.gallonsRefueled,
-        truckName: log.Equipment?.name || "No Equipment found",
+        truckName: log.Equipment?.name || t("NoEquipmentFound"),
         tascoLogId: log.id,
       }))
     );
@@ -93,12 +95,12 @@ export default function TimeCardTascoRefuelLogs({
               <Grids cols={"2"} className="w-full h-fit mb-1">
                 <Holds className="col-start-1 col-end-2 w-full h-full pr-1">
                   <Titles position={"left"} size={"h6"}>
-                    Equipment ID
+                    {t("EquipmentID")}
                   </Titles>
                 </Holds>
                 <Holds className="col-start-2 col-end-3 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
-                    Gallon Usage
+                    {t("GallonUsage")}
                   </Titles>
                 </Holds>
               </Grids>
@@ -145,7 +147,7 @@ export default function TimeCardTascoRefuelLogs({
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
-                No Tasco Fueling Logs found
+                {t("NoTascoFuelingLogsAvailable")}
               </Texts>
             </Holds>
           )}
