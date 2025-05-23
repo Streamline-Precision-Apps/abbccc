@@ -7,6 +7,10 @@ import {
   WorkType,
 } from "@/lib/types";
 import { revalidatePath, revalidateTag } from "next/cache";
+import {
+  CrewData,
+  CrewEditState,
+} from "@/app/(routes)/admins/personnel/components/types/personnel";
 
 //------------------------------------------------------------------------------------------------------------------------
 // Personnel server actions
@@ -180,5 +184,30 @@ export async function createJobsite(formData: FormData) {
   } catch (error) {
     console.error("Error creating jobsite:", error);
     throw error;
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+// Save (create or update) a crew
+export async function saveCrew(crew: CrewData) {
+  console.log("Saving crew...");
+  console.log(crew);
+  return;
+}
+
+// Delete a crew by id
+export async function deleteCrew(crewId: string) {
+  try {
+    await prisma.crew.delete({ where: { id: crewId } });
+    revalidateTag("crews");
+    revalidatePath("/admins/personnel");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting crew:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }

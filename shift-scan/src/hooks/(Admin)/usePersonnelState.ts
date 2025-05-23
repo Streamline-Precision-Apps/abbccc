@@ -2,12 +2,15 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { SearchCrew } from "@/lib/types";
 import { z } from "zod";
-import { BaseUser } from "@/app/(routes)/admins/personnel/components/types/personnel";
+import {
+  BaseUser,
+  CrewData,
+} from "@/app/(routes)/admins/personnel/components/types/personnel";
 
 export const usePersonnelState = () => {
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<BaseUser[]>([]);
-  const [crew, setCrew] = useState<SearchCrew[]>([]);
+  const [crew, setCrew] = useState<CrewData[]>([]);
   const [term, setTerm] = useState("");
 
   const fetchAllData = useCallback(async () => {

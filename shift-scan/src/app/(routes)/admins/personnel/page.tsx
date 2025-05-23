@@ -10,11 +10,13 @@ import { useViewState } from "@/hooks/(Admin)/useViewState";
 import { useUserEdit } from "@/app/context/(admin)/UserEditContext";
 import PersonnelSideBar from "./components/PersonnelSideBar";
 import PersonnelMainContent from "./components/PersonnelMainContent";
+import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
 
 export default function Personnel() {
   const {
     loading,
     crew,
+    employees,
     term,
     setTerm,
     filteredList,
@@ -51,6 +53,15 @@ export default function Personnel() {
     isUserEditStateDirty,
     discardUserEditChanges,
   } = useUserEdit();
+
+  const {
+    crewEditStates,
+    updateCrewEditState,
+    retainOnlyCrewEditState,
+    isCrewEditStateDirty,
+    discardCrewEditChanges,
+    initializeCrewEditState,
+  } = useCrewEdit();
 
   const handleRegistrationSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -118,7 +129,6 @@ export default function Personnel() {
         await createCrew(formData);
         await fetchAllData();
         resetCrewCreationState();
-        setView({ mode: "default" });
       } catch (error) {
         console.error("Failed to create crew:", error);
         setCrewCreationPending(false);
@@ -158,6 +168,8 @@ export default function Personnel() {
             selectLead={selectLead}
             addMembers={addMembers}
             removeMembers={removeMembers}
+            crewEditStates={crewEditStates}
+            updateCrewEditState={updateCrewEditState}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}
@@ -165,6 +177,7 @@ export default function Personnel() {
             view={view}
             setView={setView}
             crew={crew}
+            employees={employees}
             registrationState={registrationState}
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
@@ -176,6 +189,12 @@ export default function Personnel() {
             updateUserEditState={updateUserEditState}
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            crewEditStates={crewEditStates}
+            updateCrewEditState={updateCrewEditState}
+            retainOnlyCrewEditState={retainOnlyCrewEditState}
+            discardCrewEditChanges={discardCrewEditChanges}
+            isCrewEditStateDirty={isCrewEditStateDirty}
+            initializeCrewEditState={initializeCrewEditState}
           />
         </Grids>
       </Holds>
