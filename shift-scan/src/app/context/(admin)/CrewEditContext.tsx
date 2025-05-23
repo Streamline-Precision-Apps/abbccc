@@ -76,6 +76,7 @@ export const CrewEditProvider = ({
         ...prev,
         [crewId]: {
           ...crewState,
+          crew: { ...crewState.originalCrew } as CrewData,
           edited: {},
         },
       };

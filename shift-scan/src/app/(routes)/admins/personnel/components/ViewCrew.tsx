@@ -196,6 +196,7 @@ export default function ViewCrew({
                     name="crewName"
                     value={crew?.name || ""}
                     onChange={(e) => handleInputChange("name", e.target.value)}
+                    className="h-10 pl-2"
                   />
                 </Holds>
 
@@ -206,7 +207,7 @@ export default function ViewCrew({
                   <Selects
                     name="crewType"
                     value={crew?.crewType || ""}
-                    className="h-10"
+                    className="h-10 pl-2"
                     onChange={(e) =>
                       handleInputChange("crewType", e.target.value)
                     }
@@ -224,23 +225,33 @@ export default function ViewCrew({
             {/* Crew Members Section */}
             <Holds
               background={"white"}
-              className="row-start-2 row-end-9 h-full w-full justify-center items-center overflow-y-auto no-scrollbar p-4"
+              className="row-start-2 row-end-9 h-full w-full p-4"
             >
               <Grids className="w-full h-full grid-rows-[80px_1fr] gap-4">
                 <Holds position={"row"} className="w-full h-full gap-4">
-                  <Holds className="h-full flex-1">
+                  <Holds className="h-full w-full ">
                     <Texts size={"p7"} position={"left"}>
                       Crew Lead
                     </Texts>
                     <Inputs
                       type="text"
                       name="crewLead"
-                      value={crew?.leadId || ""}
+                      value={
+                        crew.leadId
+                          ? crew?.Users.find((user) => user.id === crew?.leadId)
+                              ?.firstName +
+                              " " +
+                              crew?.Users.find(
+                                (user) => user.id === crew?.leadId
+                              )?.lastName || ""
+                          : "No crew lead selected"
+                      }
                       readOnly
+                      className={`pl-2 ${crew?.leadId ? "" : "text-app-red "}`}
                     />
                   </Holds>
-                  <Holds className="h-full flex-1 items-center justify-end">
-                    <Texts size={"p7"}>
+                  <Holds className="h-full w-full">
+                    <Texts position={"right"} size={"p7"}>
                       Total Crew Members: {crew?.Users?.length || 0}
                     </Texts>
                   </Holds>
