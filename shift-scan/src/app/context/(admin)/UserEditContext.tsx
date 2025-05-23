@@ -1,15 +1,15 @@
 "use client";
-// context/UserEditContext.tsx
 import {
   UserData,
   UserEditState,
 } from "@/app/(routes)/admins/personnel/components/types/personnel";
-import { user } from "@nextui-org/theme";
 import { createContext, useContext, useState } from "react";
 
 type UserEditContextType = {
   userEditStates: Record<string, UserEditState>;
+
   initializeUserEditState: (userData: UserData) => UserEditState;
+
   updateUserEditState: (
     userId: string,
     updates: Partial<UserEditState>

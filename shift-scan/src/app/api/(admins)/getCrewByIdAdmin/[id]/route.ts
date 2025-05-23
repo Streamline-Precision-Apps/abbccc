@@ -4,13 +4,17 @@ import { revalidateTag } from "next/cache";
 
 export const dynamic = "force-dynamic"; // ✅ No "use server" needed in API routes
 
-export async function GET() {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     // Fetch all crews ordered alphabetically by name
-    const userCrewData = await prisma.crew.findMany({
-      orderBy: {
-        name: "asc",
+    const userCrewData = await prisma.crew.findUnique({
+      where: {
+        id: params.id,
       },
+
       include: {
         Users: {
           select: {
@@ -21,13 +25,6 @@ export async function GET() {
         },
       },
     });
-
-    if (!userCrewData || userCrewData.length === 0) {
-      return NextResponse.json({ message: "No crews found" }, { status: 404 });
-    }
-
-    // Revalidate cache for crews
-    revalidateTag("crews");
 
     return NextResponse.json(userCrewData, {
       headers: {

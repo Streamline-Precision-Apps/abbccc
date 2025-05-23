@@ -8,6 +8,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import {
   BaseUser,
   CrewCreationState,
+  CrewEditState,
   PersonnelView,
   UserEditState,
 } from "./types/personnel";
@@ -37,6 +38,8 @@ export default function PersonnelSideBar({
   selectLead,
   addMembers,
   removeMembers,
+  crewEditStates,
+  updateCrewEditState,
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
@@ -53,11 +56,40 @@ export default function PersonnelSideBar({
   selectLead: (leadId: string | null) => void;
   addMembers: (userId: string[]) => void;
   removeMembers: (userId: string[]) => void;
+  crewEditStates: Record<string, CrewEditState>;
+  updateCrewEditState: (
+    crewId: string,
+    updates: Partial<CrewEditState>
+  ) => void;
 }) {
   const t = useTranslations("Admins");
   const [nextView, setNextView] = useState<PersonnelView | null>(null);
   const [isDiscardChangesModalOpen, setIsDiscardChangesModalOpen] =
     useState(false);
+
+  const isEditingExistingCrew =
+    view.mode === "crew" ||
+    view.mode === "user+crew" ||
+    view.mode === "registerUser+crew";
+
+  const currentCrewId =
+    view.mode === "crew" ||
+    view.mode === "user+crew" ||
+    view.mode === "registerUser+crew"
+      ? view.crewId
+      : null;
+
+  const currentCrewState = isEditingExistingCrew
+    ? crewEditStates[currentCrewId!]?.crew
+    : null;
+
+  const selectedUsers = isEditingExistingCrew
+    ? crewEditStates[currentCrewId!]?.crew?.Users || []
+    : crewCreationState.selectedUsers;
+
+  const teamLead = isEditingExistingCrew
+    ? crewEditStates[currentCrewId!]?.crew?.leadId
+    : crewCreationState.teamLead;
 
   const activeChanges =
     view.mode === "user" && isUserEditStateDirty(view.userId);
@@ -81,32 +113,58 @@ export default function PersonnelSideBar({
       setView(isSameUser ? { mode: "default" } : targetView);
     }
   };
-
   const handleCrewLeadToggle = (employeeId: string) => {
-    // Only allow if employee is in selectedUsers
-    const isCrewMember = crewCreationState.selectedUsers.some(
-      (user) => user.id === employeeId
-    );
+    const isMember = selectedUsers.some((u) => u.id === employeeId);
+    if (!isMember) return;
 
-    if (!isCrewMember) return;
-
-    // Toggle crew lead
-    if (crewCreationState.teamLead === employeeId) {
-      selectLead(null);
+    if (isEditingExistingCrew && currentCrewId) {
+      updateCrewEditState(currentCrewId, {
+        crew: {
+          ...crewEditStates[currentCrewId].crew!,
+          leadId:
+            crewEditStates[currentCrewId].crew?.leadId === employeeId
+              ? ""
+              : employeeId,
+        },
+        edited: {
+          ...crewEditStates[currentCrewId].edited,
+          leadId: true,
+        },
+      });
     } else {
-      selectLead(employeeId);
+      selectLead(teamLead === employeeId ? null : employeeId);
     }
   };
 
   const handleEmployeeCheck = (employee: BaseUser) => {
-    const isSelected = crewCreationState.selectedUsers.some(
-      (user) => user.id === employee.id
-    );
+    const isEditing = isEditingExistingCrew && currentCrewId;
+    const isSelected = selectedUsers.some((u) => u.id === employee.id);
 
-    if (isSelected) {
-      removeMembers([employee.id]); // From your hook - remove if already selected
+    if (isEditing) {
+      const updatedUsers = isSelected
+        ? selectedUsers.filter((u) => u.id !== employee.id)
+        : [...selectedUsers, employee];
+
+      updateCrewEditState(currentCrewId!, {
+        crew: {
+          ...crewEditStates[currentCrewId!].crew!,
+          Users: updatedUsers as {
+            id: string;
+            firstName: string;
+            lastName: string;
+          }[],
+        },
+        edited: {
+          ...crewEditStates[currentCrewId!].edited,
+          users: true,
+        },
+      });
     } else {
-      addMembers([employee.id]); // From your hook - add if not selected
+      if (isSelected) {
+        removeMembers([employee.id]);
+      } else {
+        addMembers([employee.id]);
+      }
     }
   };
 
@@ -194,20 +252,18 @@ export default function PersonnelSideBar({
                       view.userId === employee.id);
 
                   const isCrew =
+                    view.mode === "registerUser+crew" ||
                     view.mode === "crew" ||
                     view.mode === "user+crew" ||
                     view.mode === "registerCrew" ||
                     view.mode === "registerCrew+user" ||
                     view.mode === "registerBoth";
 
-                  const isCrewMember = crewCreationState.selectedUsers.some(
-                    (user) => user.id === employee.id
-                  );
-
-                  const isCurrentLead =
-                    crewCreationState.teamLead === employee.id;
-
                   const isManager = employee.permission !== "USER";
+                  const isCrewMember = selectedUsers.some(
+                    (u) => u.id === employee.id
+                  );
+                  const isCurrentLead = teamLead === employee.id;
 
                   return (
                     <Holds
@@ -273,9 +329,15 @@ export default function PersonnelSideBar({
                           <Holds size={isManager ? "10" : "30"}>
                             <CheckBox
                               shadow={false}
-                              checked={crewCreationState.selectedUsers.some(
-                                (user) => user.id === employee.id
-                              )}
+                              checked={
+                                isEditingExistingCrew
+                                  ? selectedUsers.some(
+                                      (user) => user.id === employee.id
+                                    )
+                                  : crewCreationState.selectedUsers.some(
+                                      (user) => user.id === employee.id
+                                    )
+                              }
                               onChange={() => handleEmployeeCheck(employee)}
                               id={`crew-member-${employee.id}`}
                               name={`crew-member-${employee.id}`}

@@ -1,49 +1,66 @@
 "use client";
-import { Contents } from "@/components/(reusable)/contents";
+
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import { useCrewCreationState } from "@/hooks/(Admin)/useCrewCreationState";
-import { number } from "zod";
+import { BaseUser, CrewCreationState } from "./types/personnel";
+import crewMember from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/page";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 export default function RegisterNewCrew({
   cancelCrewCreation,
+  crewCreationState,
+  employees,
+  handleCrewSubmit,
+  updateCrewForm,
 }: {
   cancelCrewCreation: () => void;
+  crewCreationState: CrewCreationState;
+  employees: BaseUser[];
+  handleCrewSubmit: (e: React.FormEvent) => Promise<void>;
+  updateCrewForm: (updates: Partial<CrewCreationState["form"]>) => void;
 }) {
-  const { crewCreationState } = useCrewCreationState();
-
   // Calculate counts
   const totalMembers = crewCreationState.selectedUsers.length;
   // Get the crew lead details (if any)
-  const crewLead = crewCreationState.teamLead
-    ? crewCreationState.selectedUsers.find(
-        (user) => user.id === crewCreationState.teamLead
-      )
-    : null;
+  const crewLead = crewCreationState.teamLead;
 
   return (
     <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-      <form action="" className="w-full h-full">
+      <form onSubmit={handleCrewSubmit} className="w-full h-full">
         <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
           <Holds
             background={"white"}
             position={"row"}
             className="w-full px-5 py-1 justify-between items-center"
           >
-            <Texts text={"link"} size={"p7"}>
-              Submit New Crew
-            </Texts>
-            <Texts
-              text={"link"}
-              size={"p7"}
-              onClick={() => cancelCrewCreation()}
+            <Buttons
+              background={"none"}
+              shadow={"none"}
+              className="flex w-fit items-center "
+              type="submit"
             >
-              Cancel Crew Creation
-            </Texts>
+              <Texts text={"link"} size={"p7"}>
+                Submit New Crew
+              </Texts>
+            </Buttons>
+            <Buttons
+              background={"none"}
+              shadow={"none"}
+              className="flex w-fit items-center "
+              type="button"
+            >
+              <Texts
+                text={"link"}
+                size={"p7"}
+                onClick={() => cancelCrewCreation()}
+              >
+                Cancel Crew Creation
+              </Texts>
+            </Buttons>
           </Holds>
           <Grids rows={"8"} gap="4" className="w-full h-full">
             <Holds
@@ -55,7 +72,14 @@ export default function RegisterNewCrew({
                   <Texts position={"left"} size={"p7"} className="">
                     Crew Name
                   </Texts>
-                  <Inputs type="text" name="crewName" value={""} />
+                  <Inputs
+                    type="text"
+                    name="crewName"
+                    value={crewCreationState.form.crewName}
+                    onChange={(e) =>
+                      updateCrewForm({ crewName: e.target.value })
+                    }
+                  />
                 </Holds>
                 <Holds className="py-2">
                   <Texts position={"left"} size={"p7"}>
@@ -63,10 +87,20 @@ export default function RegisterNewCrew({
                   </Texts>
                   <Selects
                     name="crewDescription"
-                    value={""}
+                    value={crewCreationState.form.crewType}
+                    onChange={(e) =>
+                      updateCrewForm({
+                        crewType: e.target
+                          .value as CrewCreationState["form"]["crewType"],
+                      })
+                    }
                     className="h-10 text-center"
                   >
-                    <option value="">Select a crew type </option>
+                    <option value="">Select a crew type</option>
+                    <option value="TRUCK_DRIVER">Truck Driver</option>
+                    <option value="TASCO">Tasco</option>
+                    <option value="MECHANIC">Mechanical</option>
+                    <option value="LABOR">Labor</option>
                   </Selects>
                 </Holds>
               </Holds>
@@ -86,7 +120,17 @@ export default function RegisterNewCrew({
                       type="text"
                       name="crewLead"
                       value={
-                        crewLead ? `${crewLead} ${crewLead}` : "Not selected"
+                        crewLead
+                          ? `${
+                              employees.find(
+                                (employee) => employee.id === crewLead
+                              )?.firstName
+                            } ${
+                              employees.find(
+                                (employee) => employee.id === crewLead
+                              )?.lastName
+                            }`
+                          : ""
                       }
                       readOnly
                     />
@@ -111,7 +155,18 @@ export default function RegisterNewCrew({
                             key={member.id}
                             className="p-2 border-b flex justify-between items-center"
                           >
-                            <Texts size="p7">{member.id}</Texts>
+                            <Texts size="p7">
+                              {
+                                employees.find(
+                                  (employee) => employee.id === member.id
+                                )?.firstName
+                              }{" "}
+                              {
+                                employees.find(
+                                  (employee) => employee.id === member.id
+                                )?.lastName
+                              }
+                            </Texts>
                           </Holds>
                         ))}
                       </div>

@@ -30,6 +30,8 @@ export interface CrewData {
   id: string;
   name: string;
   leadId: string;
+  crewType: "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO" | "";
+  Users: { id: string; firstName: string; lastName: string }[];
 }
 
 // BaseUser contains common properties
@@ -50,6 +52,15 @@ export interface UserEditState {
   originalCrews: string[];
   crewLeads: Record<string, boolean>; // Track which crews this user leads
   originalCrewLeads: Record<string, boolean>;
+  edited: { [key: string]: boolean };
+  loading: boolean;
+  successfullyUpdated: boolean;
+}
+
+// Crew edit/create state management (single source of truth for both modes)
+export interface CrewEditState {
+  crew: CrewData | null;
+  originalCrew: CrewData | null;
   edited: { [key: string]: boolean };
   loading: boolean;
   successfullyUpdated: boolean;
