@@ -137,6 +137,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             }
             retainOnlyCrewEditState={retainOnlyCrewEditState}
             discardCrewEditChanges={discardCrewEditChanges}
+            setViewOption={setView}
+            viewOption={view}
           />
           <RegisterNewUser
             crew={crew}
@@ -227,6 +229,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             }
             retainOnlyCrewEditState={retainOnlyCrewEditState}
             discardCrewEditChanges={discardCrewEditChanges}
+            setViewOption={setView}
+            viewOption={view}
           />
           <CreateNewUserTab
             setView={() =>
@@ -260,6 +264,9 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             }
             retainOnlyCrewEditState={retainOnlyCrewEditState}
             discardCrewEditChanges={discardCrewEditChanges}
+            setViewOption={setView}
+            viewOption={view}
+            userId={view.userId}
           />
           <UserSelected
             fetchAllData={fetchAllData}

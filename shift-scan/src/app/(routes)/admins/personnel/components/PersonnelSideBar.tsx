@@ -92,9 +92,6 @@ export default function PersonnelSideBar({
     ? crewEditStates[currentCrewId!]?.crew?.leadId
     : crewCreationState.teamLead;
 
-  const activeChanges =
-    view.mode === "user" && isUserEditStateDirty(view.userId);
-
   const { handleEmployeeClick, handleCrewLeadToggle, handleEmployeeCheck } =
     useEmployeeHandlers({
       view,
@@ -127,7 +124,7 @@ export default function PersonnelSideBar({
   return (
     <>
       <Holds className="w-full h-full col-start-1 col-end-3">
-        <Grids className="w-full h-full grid-rows-[50px_50px_1fr] gap-4">
+        <Grids className="w-full h-full grid-rows-[50px_40px_1fr] gap-4">
           <Holds className="w-full h-full">
             <Selects
               onChange={(e) => {

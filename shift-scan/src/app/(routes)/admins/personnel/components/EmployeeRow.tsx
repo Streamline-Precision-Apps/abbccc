@@ -28,12 +28,12 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
   onEmployeeCheck,
 }) => {
   return (
-    <Holds position={"row"} className="w-full gap-4">
+    <Holds position={"row"} className="w-full gap-2">
       <Holds
         onClick={() => onEmployeeClick(employee)} // Pass employee to handler
         background={isCrewMember ? "lightBlue" : isCrew ? "lightGray" : "white"}
-        className={`w-full pl-2 ${!isCrew && "hover:bg-gray-100"} relative ${
-          isSelected && "w-full pl-2 p-1 border-[3px] border-black"
+        className={`w-full p-2 ${!isCrew && "hover:bg-gray-100"} relative ${
+          isSelected && "w-full py-4 border-[3px] border-black"
         } rounded-[10px]`}
       >
         <Texts position="left" size="xs">
