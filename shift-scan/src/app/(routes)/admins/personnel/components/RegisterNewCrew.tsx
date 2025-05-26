@@ -23,6 +23,7 @@ export default function RegisterNewCrew({
   handleCrewSubmit: (e: React.FormEvent) => Promise<void>;
   updateCrewForm: (updates: Partial<CrewCreationState["form"]>) => void;
 }) {
+  const { isSuccess } = crewCreationState;
   // Calculate counts
   const totalMembers = crewCreationState.selectedUsers.length;
   // Get the crew lead details (if any)
@@ -35,7 +36,7 @@ export default function RegisterNewCrew({
           <Holds
             background={"white"}
             position={"row"}
-            className="w-full px-5 py-1 justify-between items-center"
+            className="w-full px-5 py-1 justify-between items-center relative"
           >
             <Buttons
               background={"none"}
@@ -61,6 +62,16 @@ export default function RegisterNewCrew({
                 Cancel Crew Creation
               </Texts>
             </Buttons>
+            {isSuccess && (
+              <Holds
+                background={"green"}
+                className="absolute w-full h-full top-0 left-0 justify-center items-center"
+              >
+                <Texts size={"p6"} className="italic">
+                  Successfully Registered New Crew!
+                </Texts>
+              </Holds>
+            )}
           </Holds>
           <Grids rows={"8"} gap="4" className="w-full h-full">
             <Holds

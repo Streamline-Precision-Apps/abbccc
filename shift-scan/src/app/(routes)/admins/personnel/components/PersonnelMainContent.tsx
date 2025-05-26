@@ -46,6 +46,8 @@ interface PersonnelMainContentProps {
   retainOnlyCrewEditState: (crewId: string) => void;
   isCrewEditStateDirty: (crewId: string) => boolean;
   initializeCrewEditState: (crewData: CrewData) => CrewEditState;
+  setCrewCreationSuccess: (isSuccess: boolean) => void;
+  fetchAllData: () => Promise<void>;
 }
 
 export default function PersonnelMainContent(props: PersonnelMainContentProps) {
@@ -69,8 +71,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
     updateCrewEditState,
     retainOnlyCrewEditState,
     discardCrewEditChanges,
+    fetchAllData,
   } = props;
-  // Crew context values are only destructured from useCrewEdit, not from props
 
   return (
     <>
@@ -118,6 +120,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             setView={() => {
               setView({ mode: "registerUser" });
             }}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
             employees={employees}
             crewId={view.crewId}
             crewEditStates={
@@ -207,6 +211,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             setView={() => {
               setView({ mode: "registerUser" });
             }}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
             employees={employees}
             crewId={view.crewId}
             crewEditStates={
@@ -240,6 +246,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             setView={() => {
               setView({ mode: "registerUser" });
             }}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
             employees={employees}
             crewId={view.crewId}
             crewEditStates={
@@ -285,6 +293,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       )}
       {view.mode === "default" && (
         <DefaultTab
+          userEditStates={userEditStates}
+          crewEditStates={crewEditStates}
           createNewCrew={() => setView({ mode: "registerCrew" })}
           RegisterEmployee={() => setView({ mode: "registerUser" })}
         />

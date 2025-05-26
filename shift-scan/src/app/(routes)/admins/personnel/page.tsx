@@ -43,6 +43,7 @@ export default function Personnel() {
     removeMembers,
     setCrewCreationPending,
     resetCrewCreationState,
+    setCrewCreationSuccess,
   } = useCrewCreationState();
 
   const { view, setView } = useViewState();
@@ -79,7 +80,6 @@ export default function Personnel() {
           setTimeout(async () => {
             resetRegistrationState();
             await fetchAllData();
-            setView({ mode: "default" });
           }, 3000);
         }
       } catch (error) {
@@ -126,9 +126,15 @@ export default function Personnel() {
           formData.append("crewType", crewCreationState.form.crewType);
         }
 
-        await createCrew(formData);
-        await fetchAllData();
-        resetCrewCreationState();
+        const result = await createCrew(formData);
+        if (result?.success) {
+          setCrewCreationSuccess(true);
+          // Wait 3 seconds before resetting and redirecting
+          setTimeout(async () => {
+            resetCrewCreationState();
+            await fetchAllData();
+          }, 3000);
+        }
       } catch (error) {
         console.error("Failed to create crew:", error);
         setCrewCreationPending(false);
@@ -195,6 +201,8 @@ export default function Personnel() {
             discardCrewEditChanges={discardCrewEditChanges}
             isCrewEditStateDirty={isCrewEditStateDirty}
             initializeCrewEditState={initializeCrewEditState}
+            setCrewCreationSuccess={setCrewCreationSuccess}
+            fetchAllData={fetchAllData}
           />
         </Grids>
       </Holds>

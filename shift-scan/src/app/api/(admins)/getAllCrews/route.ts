@@ -29,12 +29,7 @@ export async function GET() {
     // Revalidate cache for crews
     revalidateTag("crews");
 
-    return NextResponse.json(userCrewData, {
-      headers: {
-        "Cache-Control":
-          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
-      },
-    });
+    return NextResponse.json(userCrewData);
   } catch (error) {
     console.error("Error fetching crews:", error);
 

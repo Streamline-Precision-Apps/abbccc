@@ -2,21 +2,28 @@
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
+import { CrewEditState, UserEditState } from "./types/personnel";
 
 export default function DefaultTab({
   createNewCrew,
   RegisterEmployee,
+  userEditStates,
+  crewEditStates,
 }: {
   createNewCrew: () => void;
   RegisterEmployee: () => void;
+  userEditStates: Record<string, UserEditState>;
+  crewEditStates: Record<string, CrewEditState>;
 }) {
+  const { deletedUser } = userEditStates;
+  const { deleted } = crewEditStates;
   return (
     <Holds className="col-span-8 w-full h-full overflow-y-auto no-scrollbar">
       <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
         <Holds
           background={"white"}
           position={"row"}
-          className="w-full px-5 py-1 space-x-10 items-center"
+          className="w-full px-5 py-1 space-x-10 items-center relative"
         >
           <Holds
             className="flex w-fit items-center"
@@ -33,6 +40,26 @@ export default function DefaultTab({
             <Texts text={"link"} size={"p7"}>
               Register New Employee
             </Texts>
+            {deleted && (
+              <Holds
+                background={"green"}
+                className="absolute w-full h-full top-0 left-0 justify-center items-center"
+              >
+                <Texts size={"p6"} className="italic">
+                  Crew Deleted Successfully
+                </Texts>
+              </Holds>
+            )}
+            {deletedUser && (
+              <Holds
+                background={"green"}
+                className="absolute w-full h-full top-0 left-0 justify-center items-center"
+              >
+                <Texts size={"p6"} className="italic">
+                  User Deleted Successfully
+                </Texts>
+              </Holds>
+            )}
           </Holds>
         </Holds>
       </Grids>

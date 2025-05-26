@@ -202,12 +202,9 @@ export async function deleteCrew(crewId: string) {
     await prisma.crew.delete({ where: { id: crewId } });
     revalidateTag("crews");
     revalidatePath("/admins/personnel");
-    return { success: true };
+    return true;
   } catch (error) {
     console.error("Error deleting crew:", error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "Unknown error",
-    };
+    throw new Error("Failed to delete crew");
   }
 }

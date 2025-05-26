@@ -8,6 +8,7 @@ import { BaseUser, CrewData, CrewEditState } from "./types/personnel";
 import { useEffect } from "react";
 import { saveCrew, deleteCrew } from "@/actions/PersonnelActions";
 import Spinner from "@/components/(animations)/spinner";
+import { useTime } from "framer-motion";
 
 const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   const res = await fetch(`/api/getCrewByIdAdmin/${crewId}`);
@@ -23,6 +24,8 @@ export default function ViewCrew({
   updateCrewEditState,
   retainOnlyCrewEditState,
   discardCrewEditChanges,
+  resetView,
+  fetchAllData,
 }: {
   setView: () => void;
   crewId: string;
@@ -31,6 +34,8 @@ export default function ViewCrew({
   updateCrewEditState: (updates: Partial<CrewEditState>) => void;
   retainOnlyCrewEditState: (crewId: string) => void;
   discardCrewEditChanges: (crewId: string) => void;
+  resetView: () => void;
+  fetchAllData: () => Promise<void>;
 }) {
   const { crew, edited, loading } = crewEditStates;
 
@@ -93,7 +98,13 @@ export default function ViewCrew({
     try {
       updateCrewEditState({ loading: true });
       await deleteCrew(crewId);
-      setView();
+
+      await fetchAllData();
+      updateCrewEditState({ deleted: true });
+      resetView();
+      setTimeout(() => {
+        updateCrewEditState({ deleted: true });
+      }, 3000);
     } catch (error) {
       console.error("Failed to delete crew:", error);
       updateCrewEditState({ loading: false });
