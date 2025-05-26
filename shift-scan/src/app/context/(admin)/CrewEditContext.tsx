@@ -49,7 +49,7 @@ export const CrewEditProvider = ({
     setCrewEditStates((prev) => ({
       ...prev,
       [crewId]: {
-        ...prev[crewId],
+        ...(prev[crewId] || {}),
         ...updates,
       },
     }));
