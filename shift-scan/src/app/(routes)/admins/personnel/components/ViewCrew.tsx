@@ -8,7 +8,7 @@ import { BaseUser, CrewData, CrewEditState } from "./types/personnel";
 import { useEffect } from "react";
 import { saveCrew, deleteCrew } from "@/actions/PersonnelActions";
 import Spinner from "@/components/(animations)/spinner";
-import { useTime } from "framer-motion";
+import { useNotification } from "@/app/context/NotificationContext";
 
 const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   const res = await fetch(`/api/getCrewByIdAdmin/${crewId}`);
@@ -37,6 +37,7 @@ export default function ViewCrew({
   resetView: () => void;
   fetchAllData: () => Promise<void>;
 }) {
+  const { setNotification } = useNotification();
   const { crew, edited, loading } = crewEditStates;
 
   useEffect(() => {
@@ -58,6 +59,8 @@ export default function ViewCrew({
           originalCrew: { ...crewData },
           edited: {},
           loading: false,
+
+          successfullyUpdated: false,
         });
       } catch (e) {
         console.error(e);
@@ -94,17 +97,12 @@ export default function ViewCrew({
 
   const handleDelete = async () => {
     if (!crewId || loading) return;
-
     try {
       updateCrewEditState({ loading: true });
       await deleteCrew(crewId);
-
       await fetchAllData();
-      updateCrewEditState({ deleted: true });
+      setNotification("Crew deleted successfully", "success");
       resetView();
-      setTimeout(() => {
-        updateCrewEditState({ deleted: true });
-      }, 3000);
     } catch (error) {
       console.error("Failed to delete crew:", error);
       updateCrewEditState({ loading: false });
@@ -141,7 +139,7 @@ export default function ViewCrew({
         <Holds
           background={"white"}
           position={"row"}
-          className="w-full px-5 py-1 justify-between items-center"
+          className="w-full px-5 py-1 justify-between items-center relative"
         >
           <Texts text={"link"} size={"p7"} onClick={handleCreateNew}>
             Create New Crew

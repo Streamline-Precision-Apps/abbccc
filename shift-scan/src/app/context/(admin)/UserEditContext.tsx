@@ -9,7 +9,6 @@ type UserEditContextType = {
   userEditStates: Record<string, UserEditState>;
 
   initializeUserEditState: (userData: UserData) => UserEditState;
-
   updateUserEditState: (
     userId: string,
     updates: Partial<UserEditState>

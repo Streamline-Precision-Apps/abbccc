@@ -11,6 +11,9 @@ import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deletePersonnel, editPersonnelInfo } from "@/actions/PersonnelActions";
 import { UserData } from "./types/personnel";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
+import { set } from "date-fns";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -44,6 +47,7 @@ const UserSelected = ({
   updateEditState,
   retainOnlyUserEditState,
   discardUserEditChanges,
+  fetchAllData,
 }: {
   setView: () => void;
   setRegistration: () => void;
@@ -63,7 +67,9 @@ const UserSelected = ({
   updateEditState: (updates: Partial<typeof editState>) => void;
   retainOnlyUserEditState: (userId: string) => void;
   discardUserEditChanges: (userId: string) => void;
+  fetchAllData: () => void;
 }) => {
+  const { setNotification } = useNotification();
   const {
     user,
     originalUser,
@@ -268,6 +274,8 @@ const UserSelected = ({
     try {
       updateEditState({ loading: true });
       await deletePersonnel(user.id);
+      await fetchAllData();
+      setNotification("User deleted successfully", "success");
       setView();
     } catch (error) {
       console.error("Failed to delete user:", error);
