@@ -1,34 +1,7 @@
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-
-interface UserData {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  DOB: string;
-  truckView: boolean;
-  tascoView: boolean;
-  laborView: boolean;
-  mechanicView: boolean;
-  permission: string;
-  activeEmployee: boolean;
-  startDate?: string;
-  terminationDate?: string;
-  Contact: {
-    phoneNumber: string;
-    emergencyContact: string;
-    emergencyContactNumber: string;
-  };
-  Crews: {
-    id: string;
-    name: string;
-    leadId: string;
-  }[];
-  image?: string;
-}
+import { UserData } from "../types/personnel";
 
 export default function UserInformation({
   fields,
@@ -110,7 +83,6 @@ export default function UserInformation({
                 });
               }}
             >
-              <option value="">Select Employment Status</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </Selects>

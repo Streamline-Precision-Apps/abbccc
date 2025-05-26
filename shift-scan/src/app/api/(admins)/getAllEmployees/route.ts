@@ -35,6 +35,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "active") {
@@ -53,6 +54,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "laborers") {
@@ -71,6 +73,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "truckers") {
@@ -89,6 +92,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "tasco") {
@@ -107,6 +111,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "mechanics") {
@@ -125,6 +130,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "managers") {
@@ -143,6 +149,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "supervisors") {
@@ -160,6 +167,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
       employees = employees.filter(
@@ -181,6 +189,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "superAdmins") {
@@ -199,6 +208,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     } else if (filter === "recentlyHired") {
@@ -216,6 +226,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
         orderBy: { startDate: "desc" },
       });
@@ -234,6 +245,7 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+          accountSetup: true,
         },
       });
     }
