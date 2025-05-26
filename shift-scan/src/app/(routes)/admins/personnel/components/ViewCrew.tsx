@@ -10,11 +10,14 @@ import {
   CrewEditState,
   PersonnelView,
 } from "./types/personnel";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { saveCrew, deleteCrew } from "@/actions/PersonnelActions";
 import Spinner from "@/components/(animations)/spinner";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
 
 const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   const res = await fetch(`/api/getCrewByIdAdmin/${crewId}`);
@@ -50,6 +53,8 @@ export default function ViewCrew({
   viewOption: PersonnelView;
   userId?: string;
 }) {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   const { setNotification } = useNotification();
   const { crew, originalCrew, edited, loading, successfullyUpdated } =
     crewEditState;
@@ -164,261 +169,319 @@ export default function ViewCrew({
   };
 
   return (
-    <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-      <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-        {/* Action Bar */}
-        <Holds
-          background={"white"}
-          position={"row"}
-          className="w-full px-5 py-1 justify-between items-center relative"
-        >
-          <Texts
-            text={"link"}
-            size={"p7"}
-            onClick={
-              !isCrewEditStateDirty(crewId) ? handleCreateNew : undefined
-            }
-            style={{
-              pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
-              opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
-              cursor: !isCrewEditStateDirty(crewId) ? "pointer" : "not-allowed",
-            }}
+    <>
+      <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
+        <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
+          {/* Action Bar */}
+          <Holds
+            background={"white"}
+            position={"row"}
+            className="w-full px-5 py-1 justify-between items-center relative"
           >
-            Create New Crew
-          </Texts>
-
-          <Texts
-            text={"link"}
-            size={"p7"}
-            onClick={!isCrewEditStateDirty(crewId) ? handleDelete : undefined}
-            style={{
-              pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
-              opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
-              cursor: !isCrewEditStateDirty(crewId) ? "pointer" : "not-allowed",
-            }}
-          >
-            Delete Crew
-          </Texts>
-          {isCrewEditStateDirty(crewId) && (
             <Texts
               text={"link"}
               size={"p7"}
               onClick={
-                isCrewEditStateDirty(crewId) ? handleDiscardChanges : undefined
+                !isCrewEditStateDirty(crewId) ? handleCreateNew : undefined
               }
               style={{
-                pointerEvents: isCrewEditStateDirty(crewId) ? "auto" : "none",
-                opacity: isCrewEditStateDirty(crewId) ? 1 : 0.5,
-                cursor: isCrewEditStateDirty(crewId)
+                pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
+                opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
+                cursor: !isCrewEditStateDirty(crewId)
                   ? "pointer"
                   : "not-allowed",
               }}
             >
-              Discard Changes
+              Create New Crew
             </Texts>
-          )}
 
-          <Texts
-            text={"link"}
-            size={"p7"}
-            onClick={handleSave}
-            style={{
-              opacity: loading ? 0.5 : Object.keys(edited).length > 0 ? 1 : 0.5,
-              pointerEvents: loading ? "none" : "auto",
-            }}
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </Texts>
-          {!isCrewEditStateDirty(crewId) && (
             <Texts
               text={"link"}
               size={"p7"}
-              onClick={() => {
-                try {
-                  if (viewOption.mode === "crew") {
-                    setViewOption({ mode: "default" });
-                  } else if (viewOption.mode === "user+crew" && userId) {
-                    setViewOption({ mode: "user", userId });
-                  } else if (viewOption.mode === "registerUser+crew") {
-                    setViewOption({ mode: "registerUser" });
-                  } else {
-                    setViewOption({ mode: "default" });
-                  }
-                } catch (error) {
-                  console.error("Error resetting view:", error);
-                } finally {
-                  retainOnlyCrewEditState(crewId);
-                }
+              onClick={
+                !isCrewEditStateDirty(crewId)
+                  ? () => setDeleteModalOpen(true)
+                  : undefined
+              }
+              style={{
+                pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
+                opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
+                cursor: !isCrewEditStateDirty(crewId)
+                  ? "pointer"
+                  : "not-allowed",
               }}
             >
-              Close
+              Delete Crew
             </Texts>
-          )}
-          {successfullyUpdated && (
-            <Holds
-              background={"green"}
-              className="absolute w-full h-full top-0 left-0 justify-center items-center"
-            >
-              <Texts size={"p6"} className="italic">
-                Successfully Updated Crew!
+            {isCrewEditStateDirty(crewId) && (
+              <Texts
+                text={"link"}
+                size={"p7"}
+                onClick={
+                  isCrewEditStateDirty(crewId)
+                    ? handleDiscardChanges
+                    : undefined
+                }
+                style={{
+                  pointerEvents: isCrewEditStateDirty(crewId) ? "auto" : "none",
+                  opacity: isCrewEditStateDirty(crewId) ? 1 : 0.5,
+                  cursor: isCrewEditStateDirty(crewId)
+                    ? "pointer"
+                    : "not-allowed",
+                }}
+              >
+                Discard Changes
               </Texts>
-            </Holds>
-          )}
-        </Holds>
+            )}
 
-        {/* Main Form Content */}
-        {loading || !crew ? (
-          <Grids rows={"8"} gap="4" className="w-full h-full">
-            <Holds
-              background={"white"}
-              className="row-start-1 row-end-2 w-full h-full px-4 animate-pulse"
-            />
-            <Holds
-              background={"white"}
-              className="row-start-2 row-end-9 h-full w-full justify-center items-center overflow-y-auto no-scrollbar p-4 animate-pulse"
+            <Texts
+              text={"link"}
+              size={"p7"}
+              onClick={handleSave}
+              style={{
+                opacity: loading
+                  ? 0.5
+                  : Object.keys(edited).length > 0
+                  ? 1
+                  : 0.5,
+                pointerEvents: loading ? "none" : "auto",
+              }}
             >
-              <Holds className="w-full h-full justify-center items-center">
-                <Texts size="p6">Loading...</Texts>
-                <Spinner />
-              </Holds>
-            </Holds>
-          </Grids>
-        ) : (
-          <Grids rows={"8"} gap="4" className="w-full h-full">
-            {/* Crew Info Section */}
-            <Holds
-              background={"white"}
-              className="row-start-1 row-end-2 w-full h-full px-4"
-            >
-              <Holds position={"row"} className="gap-4">
-                <Holds className="py-2 flex-1">
-                  <Texts position={"left"} size={"p7"}>
-                    Crew Name
-                  </Texts>
-                  <Inputs
-                    type="text"
-                    name="crewName"
-                    value={crew?.name || ""}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    className={`h-10 pl-2 ${
-                      isFieldEdited("name") ? "border-2 border-orange-400" : ""
-                    }`}
-                  />
-                </Holds>
-
-                <Holds className="py-2 flex-1">
-                  <Texts position={"left"} size={"p7"}>
-                    Crew Type
-                  </Texts>
-                  <Selects
-                    name="crewType"
-                    value={crew?.crewType || ""}
-                    className={`h-10 pl-2 ${
-                      isFieldEdited("crewType")
-                        ? "border-2 border-orange-400"
-                        : ""
-                    }`}
-                    onChange={(e) =>
-                      handleInputChange("crewType", e.target.value)
+              {loading ? "Saving..." : "Save Changes"}
+            </Texts>
+            {!isCrewEditStateDirty(crewId) && (
+              <Texts
+                text={"link"}
+                size={"p7"}
+                onClick={() => {
+                  try {
+                    if (viewOption.mode === "crew") {
+                      setViewOption({ mode: "default" });
+                    } else if (viewOption.mode === "user+crew" && userId) {
+                      setViewOption({ mode: "user", userId });
+                    } else if (viewOption.mode === "registerUser+crew") {
+                      setViewOption({ mode: "registerUser" });
+                    } else {
+                      setViewOption({ mode: "default" });
                     }
-                  >
-                    <option value="">Select a crew type</option>
-                    <option value="TRUCK_DRIVER">Truck Driver</option>
-                    <option value="TASCO">Tasco</option>
-                    <option value="MECHANIC">Mechanical</option>
-                    <option value="LABOR">Labor</option>
-                  </Selects>
+                  } catch (error) {
+                    console.error("Error resetting view:", error);
+                  } finally {
+                    retainOnlyCrewEditState(crewId);
+                  }
+                }}
+              >
+                Close
+              </Texts>
+            )}
+            {successfullyUpdated && (
+              <Holds
+                background={"green"}
+                className="absolute w-full h-full top-0 left-0 justify-center items-center"
+              >
+                <Texts size={"p6"} className="italic">
+                  Successfully Updated Crew!
+                </Texts>
+              </Holds>
+            )}
+          </Holds>
+
+          {/* Main Form Content */}
+          {loading || !crew ? (
+            <Grids rows={"8"} gap="4" className="w-full h-full">
+              <Holds
+                background={"white"}
+                className="row-start-1 row-end-2 w-full h-full px-4 animate-pulse"
+              />
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-9 h-full w-full justify-center items-center overflow-y-auto no-scrollbar p-4 animate-pulse"
+              >
+                <Holds className="w-full h-full justify-center items-center">
+                  <Texts size="p6">Loading...</Texts>
+                  <Spinner />
                 </Holds>
               </Holds>
-            </Holds>
-
-            {/* Crew Members Section */}
-            <Holds
-              background={"white"}
-              className="row-start-2 row-end-9 h-full w-full p-4"
-            >
-              <Grids className="w-full h-full grid-rows-[80px_1fr] gap-4">
-                <Holds position={"row"} className="w-full h-full gap-4">
-                  <Holds className="h-full w-full ">
-                    <Texts size={"p7"} position={"left"}>
-                      Crew Lead
+            </Grids>
+          ) : (
+            <Grids rows={"8"} gap="4" className="w-full h-full">
+              {/* Crew Info Section */}
+              <Holds
+                background={"white"}
+                className="row-start-1 row-end-2 w-full h-full px-4"
+              >
+                <Holds position={"row"} className="gap-4">
+                  <Holds className="py-2 flex-1">
+                    <Texts position={"left"} size={"p7"}>
+                      Crew Name
                     </Texts>
                     <Inputs
                       type="text"
-                      name="crewLead"
-                      value={
-                        crew.leadId
-                          ? (() => {
-                              const lead = crew.Users.find(
-                                (user: {
-                                  id: string;
-                                  firstName: string;
-                                  lastName: string;
-                                }) => user.id === crew.leadId
-                              );
-                              return lead
-                                ? `${lead.firstName} ${lead.lastName}`
-                                : "";
-                            })()
-                          : "No crew lead selected"
+                      name="crewName"
+                      value={crew?.name || ""}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
                       }
-                      readOnly
-                      className={`pl-2  ${
-                        isFieldEdited("leadId")
+                      className={`h-10 pl-2 ${
+                        isFieldEdited("name")
                           ? "border-2 border-orange-400"
                           : ""
-                      } ${crew?.leadId ? "" : "text-app-red "}`}
+                      }`}
                     />
                   </Holds>
-                  <Holds className="h-full w-full">
-                    <Texts position={"right"} size={"p7"}>
-                      Total Crew Members: {crew?.Users?.length || 0}
-                    </Texts>
-                  </Holds>
-                </Holds>
 
-                <Holds
-                  className={`w-full h-full border-[3px] ${
-                    isFieldEdited("Users")
-                      ? "border-orange-400"
-                      : "border-black"
-                  } rounded-[10px]`}
-                >
-                  <Holds className="w-full h-full overflow-y-auto no-scrollbar p-3">
-                    {!crew?.Users || crew.Users.length === 0 ? (
-                      <Holds className="w-full h-full justify-center items-center">
-                        <Texts size="p6" className="text-center px-4 italic">
-                          No members selected for this crew.
-                        </Texts>
-                      </Holds>
-                    ) : (
-                      <>
-                        {crew.Users.map(
-                          (member: {
-                            id: string;
-                            firstName: string;
-                            lastName: string;
-                          }) => (
-                            <Holds
-                              key={member.id}
-                              position={"left"}
-                              className="w-full p-2 flex justify-between "
-                            >
-                              <Texts position="left" size="p7">
-                                {member.firstName} {member.lastName}
-                              </Texts>
-                            </Holds>
-                          )
-                        )}
-                      </>
-                    )}
+                  <Holds className="py-2 flex-1">
+                    <Texts position={"left"} size={"p7"}>
+                      Crew Type
+                    </Texts>
+                    <Selects
+                      name="crewType"
+                      value={crew?.crewType || ""}
+                      className={`h-10 pl-2 ${
+                        isFieldEdited("crewType")
+                          ? "border-2 border-orange-400"
+                          : ""
+                      }`}
+                      onChange={(e) =>
+                        handleInputChange("crewType", e.target.value)
+                      }
+                    >
+                      <option value="">Select a crew type</option>
+                      <option value="TRUCK_DRIVER">Truck Driver</option>
+                      <option value="TASCO">Tasco</option>
+                      <option value="MECHANIC">Mechanical</option>
+                      <option value="LABOR">Labor</option>
+                    </Selects>
                   </Holds>
                 </Holds>
-              </Grids>
-            </Holds>
-          </Grids>
-        )}
-      </Grids>
-    </Holds>
+              </Holds>
+
+              {/* Crew Members Section */}
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-9 h-full w-full p-4"
+              >
+                <Grids className="w-full h-full grid-rows-[80px_1fr] gap-4">
+                  <Holds position={"row"} className="w-full h-full gap-4">
+                    <Holds className="h-full w-full ">
+                      <Texts size={"p7"} position={"left"}>
+                        Crew Lead
+                      </Texts>
+                      <Inputs
+                        type="text"
+                        name="crewLead"
+                        value={
+                          crew.leadId
+                            ? (() => {
+                                const lead = crew.Users.find(
+                                  (user: {
+                                    id: string;
+                                    firstName: string;
+                                    lastName: string;
+                                  }) => user.id === crew.leadId
+                                );
+                                return lead
+                                  ? `${lead.firstName} ${lead.lastName}`
+                                  : "";
+                              })()
+                            : "No crew lead selected"
+                        }
+                        readOnly
+                        className={`pl-2  ${
+                          isFieldEdited("leadId")
+                            ? "border-2 border-orange-400"
+                            : ""
+                        } ${crew?.leadId ? "" : "text-app-red "}`}
+                      />
+                    </Holds>
+                    <Holds className="h-full w-full">
+                      <Texts position={"right"} size={"p7"}>
+                        Total Crew Members: {crew?.Users?.length || 0}
+                      </Texts>
+                    </Holds>
+                  </Holds>
+
+                  <Holds
+                    className={`w-full h-full border-[3px] ${
+                      isFieldEdited("Users")
+                        ? "border-orange-400"
+                        : "border-black"
+                    } rounded-[10px]`}
+                  >
+                    <Holds className="w-full h-full overflow-y-auto no-scrollbar p-3">
+                      {!crew?.Users || crew.Users.length === 0 ? (
+                        <Holds className="w-full h-full justify-center items-center">
+                          <Texts size="p6" className="text-center px-4 italic">
+                            No members selected for this crew.
+                          </Texts>
+                        </Holds>
+                      ) : (
+                        <>
+                          {crew.Users.map(
+                            (member: {
+                              id: string;
+                              firstName: string;
+                              lastName: string;
+                            }) => (
+                              <Holds
+                                key={member.id}
+                                position={"left"}
+                                className="w-full p-2 flex justify-between "
+                              >
+                                <Texts position="left" size="p7">
+                                  {member.firstName} {member.lastName}
+                                </Texts>
+                              </Holds>
+                            )
+                          )}
+                        </>
+                      )}
+                    </Holds>
+                  </Holds>
+                </Grids>
+              </Holds>
+            </Grids>
+          )}
+        </Grids>
+      </Holds>
+      <NModals
+        isOpen={deleteModalOpen}
+        handleClose={() => setDeleteModalOpen(false)}
+        size="xs"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full justify-center items-center px-6">
+          <Holds className="w-full h-full justify-center items-center">
+            <Texts size={"p7"}>
+              Are you sure you want to delete this Crew? This cannot be undone.
+            </Texts>
+          </Holds>
+          <Holds className="mt-4 gap-2">
+            <Buttons
+              shadow={"none"}
+              background={"lightBlue"}
+              onClick={() => {
+                handleDelete();
+              }}
+              className="py-2 border-none"
+            >
+              <Titles size="h6" className="">
+                Yes, continue.
+              </Titles>
+            </Buttons>
+            <Buttons
+              shadow={"none"}
+              background={"red"}
+              onClick={() => setDeleteModalOpen(false)}
+              className="py-2 border-none"
+            >
+              <Titles size="h6" className="">
+                No, go back!
+              </Titles>
+            </Buttons>
+          </Holds>
+        </Holds>
+      </NModals>
+    </>
   );
 }
