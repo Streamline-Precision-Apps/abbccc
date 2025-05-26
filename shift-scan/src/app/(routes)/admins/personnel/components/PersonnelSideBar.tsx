@@ -22,6 +22,8 @@ import { Contents } from "@/components/(reusable)/contents";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import Spinner from "@/components/(animations)/spinner";
 import { user } from "@nextui-org/theme";
+import EmployeeRow from "./EmployeeRow";
+import { useEmployeeHandlers } from "../hooks/useEmployeeHandlers";
 
 export default function PersonnelSideBar({
   view,
@@ -95,83 +97,20 @@ export default function PersonnelSideBar({
   const activeChanges =
     view.mode === "user" && isUserEditStateDirty(view.userId);
 
-  const handleEmployeeClick = (employee: BaseUser) => {
-    const targetView: PersonnelView =
-      view.mode === "crew"
-        ? { mode: "user+crew", userId: employee.id, crewId: view.crewId }
-        : view.mode === "user+crew"
-        ? employee.id === view.userId
-          ? { mode: "crew", crewId: view.crewId }
-          : { mode: "user+crew", userId: employee.id, crewId: view.crewId }
-        : view.mode === "registerCrew"
-        ? { mode: "registerCrew+user", userId: employee.id }
-        : view.mode === "registerCrew+user"
-        ? { mode: "registerCrew" }
-        : { mode: "user", userId: employee.id };
-
-    const isSameUser = view.mode === "user" && view.userId === employee.id;
-
-    if (activeChanges && !isSameUser) {
-      setNextView(targetView);
-      setIsDiscardChangesModalOpen(true);
-    } else {
-      setView(isSameUser ? { mode: "default" } : targetView);
-    }
-  };
-  const handleCrewLeadToggle = (employeeId: string) => {
-    const isMember = selectedUsers.some((u) => u.id === employeeId);
-    if (!isMember) return;
-
-    if (isEditingExistingCrew && currentCrewId) {
-      updateCrewEditState(currentCrewId, {
-        crew: {
-          ...crewEditStates[currentCrewId].crew!,
-          leadId:
-            crewEditStates[currentCrewId].crew?.leadId === employeeId
-              ? ""
-              : employeeId,
-        },
-        edited: {
-          ...crewEditStates[currentCrewId].edited,
-          leadId: true,
-        },
-      });
-    } else {
-      selectLead(teamLead === employeeId ? null : employeeId);
-    }
-  };
-
-  const handleEmployeeCheck = (employee: BaseUser) => {
-    const isEditing = isEditingExistingCrew && currentCrewId;
-    const isSelected = selectedUsers.some((u) => u.id === employee.id);
-
-    if (isEditing) {
-      const updatedUsers = isSelected
-        ? selectedUsers.filter((u) => u.id !== employee.id)
-        : [...selectedUsers, employee];
-
-      updateCrewEditState(currentCrewId!, {
-        crew: {
-          ...crewEditStates[currentCrewId!].crew!,
-          Users: updatedUsers as {
-            id: string;
-            firstName: string;
-            lastName: string;
-          }[],
-        },
-        edited: {
-          ...crewEditStates[currentCrewId!].edited,
-          users: true,
-        },
-      });
-    } else {
-      if (isSelected) {
-        removeMembers([employee.id]);
-      } else {
-        addMembers([employee.id]);
-      }
-    }
-  };
+  const { handleEmployeeClick, handleCrewLeadToggle, handleEmployeeCheck } =
+    useEmployeeHandlers({
+      view,
+      setView,
+      crewEditStates,
+      crewCreationState,
+      updateCrewEditState,
+      selectLead,
+      addMembers,
+      removeMembers,
+      discardUserEditChanges,
+      isUserEditStateDirty,
+      filteredList,
+    });
 
   const confirmDiscardChanges = () => {
     if (nextView && view.mode === "user") {
@@ -248,124 +187,35 @@ export default function PersonnelSideBar({
               </Holds>
             ) : (
               <div className="w-full h-full flex flex-col p-3 space-y-2">
-                {filteredList.map((employee) => {
-                  const isSelected =
-                    (view.mode === "user" && view.userId === employee.id) ||
-                    (view.mode === "user+crew" &&
-                      view.userId === employee.id) ||
-                    (view.mode === "registerCrew+user" &&
-                      view.userId === employee.id);
-
-                  const isCrew =
-                    view.mode === "registerUser+crew" ||
-                    view.mode === "crew" ||
-                    view.mode === "user+crew" ||
-                    view.mode === "registerCrew" ||
-                    view.mode === "registerCrew+user" ||
-                    view.mode === "registerBoth";
-
-                  const isManager = employee.permission !== "USER";
-                  const isCrewMember = selectedUsers.some(
-                    (u) => u.id === employee.id
-                  );
-                  const isCurrentLead = teamLead === employee.id;
-
-                  return (
-                    <Holds
-                      key={employee.id}
-                      position={"row"}
-                      className="w-full gap-4"
-                    >
-                      <Holds
-                        onClick={() => handleEmployeeClick(employee)}
-                        background={
-                          isCrew &&
-                          isEditingExistingCrew &&
-                          selectedUsers.some((user) => user.id === employee.id)
-                            ? "lightBlue"
-                            : isCrew &&
-                              !isEditingExistingCrew &&
-                              crewCreationState.selectedUsers.some(
-                                (user) => user.id === employee.id
-                              )
-                            ? "lightBlue"
-                            : isCrew
-                            ? "lightGray"
-                            : "white"
-                        }
-                        className={`w-full pl-2 ${
-                          !isCrew && "hover:bg-gray-100"
-                        } relative ${
-                          isSelected &&
-                          " `w-full pl-2 p-1 border-[3px] border-black"
-                        } rounded-[10px]`}
-                      >
-                        <Texts position="left" size="xs">
-                          {`${employee.firstName} ${employee.lastName}`}
-                        </Texts>
-                      </Holds>
-                      {isCrew && (
-                        <>
-                          {isManager && (
-                            <Holds className="w-fit min-w-[35px] h-full flex items-center">
-                              <img
-                                onClick={() =>
-                                  isCrewMember &&
-                                  handleCrewLeadToggle(employee.id)
-                                }
-                                src={
-                                  isCurrentLead
-                                    ? "/starFilled.svg"
-                                    : isCrewMember
-                                    ? "/star.svg"
-                                    : "/star.svg"
-                                }
-                                alt={
-                                  isCurrentLead
-                                    ? "Current Crew Lead"
-                                    : isCrewMember
-                                    ? "Make Crew Lead"
-                                    : "Add to crew first"
-                                }
-                                className={`w-[35px] h-[35px] ${
-                                  isCrewMember
-                                    ? "cursor-pointer hover:opacity-80"
-                                    : "cursor-not-allowed opacity-50"
-                                } transition-opacity`}
-                                title={
-                                  isCurrentLead
-                                    ? "Current Crew Lead"
-                                    : isCrewMember
-                                    ? "Make Crew Lead"
-                                    : "Add to crew first"
-                                }
-                              />
-                            </Holds>
-                          )}
-                          <Holds className="w-fit min-w-[35px] h-full flex items-center">
-                            <CheckBox
-                              shadow={false}
-                              checked={
-                                isEditingExistingCrew
-                                  ? selectedUsers.some(
-                                      (user) => user.id === employee.id
-                                    )
-                                  : crewCreationState.selectedUsers.some(
-                                      (user) => user.id === employee.id
-                                    )
-                              }
-                              onChange={() => handleEmployeeCheck(employee)}
-                              id={`crew-member-${employee.id}`}
-                              name={`crew-member-${employee.id}`}
-                              width={30}
-                              height={30}
-                            />
-                          </Holds>
-                        </>
-                      )}
-                    </Holds>
-                  );
-                })}
+                {filteredList.map((employee) => (
+                  <EmployeeRow
+                    key={employee.id}
+                    employee={employee}
+                    isSelected={
+                      (view.mode === "user" && view.userId === employee.id) ||
+                      (view.mode === "user+crew" &&
+                        view.userId === employee.id) ||
+                      (view.mode === "registerCrew+user" &&
+                        view.userId === employee.id)
+                    }
+                    isCrew={
+                      view.mode === "registerUser+crew" ||
+                      view.mode === "crew" ||
+                      view.mode === "user+crew" ||
+                      view.mode === "registerCrew" ||
+                      view.mode === "registerCrew+user" ||
+                      view.mode === "registerBoth"
+                    }
+                    isManager={employee.permission !== "USER"}
+                    isCrewMember={selectedUsers.some(
+                      (u) => u.id === employee.id
+                    )}
+                    isCurrentLead={teamLead === employee.id}
+                    onEmployeeClick={handleEmployeeClick}
+                    onCrewLeadToggle={handleCrewLeadToggle}
+                    onEmployeeCheck={handleEmployeeCheck}
+                  />
+                ))}
               </div>
             )}
           </Holds>
