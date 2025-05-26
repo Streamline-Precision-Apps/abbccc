@@ -54,6 +54,7 @@ export async function editPersonnelInfo(formData: FormData) {
       string,
       boolean
     >;
+    const terminationDate = formData.get("terminationDate") as string;
     const selectedCrews = JSON.parse(
       formData.get("selectedCrews") as string
     ) as string[];
@@ -74,6 +75,7 @@ export async function editPersonnelInfo(formData: FormData) {
           laborView,
           mechanicView,
           activeEmployee,
+          terminationDate,
         },
       });
 

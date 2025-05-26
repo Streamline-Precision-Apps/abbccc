@@ -1,36 +1,10 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { user } from "@nextui-org/theme";
-
-interface UserData {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  DOB: string;
-  truckView: boolean;
-  tascoView: boolean;
-  laborView: boolean;
-  mechanicView: boolean;
-  permission: string;
-  activeEmployee: boolean;
-  startDate?: string;
-  terminationDate?: string;
-  Contact: {
-    phoneNumber: string;
-    emergencyContact: string;
-    emergencyContactNumber: string;
-  };
-  Crews: {
-    id: string;
-    name: string;
-    leadId: string;
-  }[];
-  image?: string;
-}
+import { UserData } from "../types/personnel";
 
 export default function ProfileAndRoles({
   user,
@@ -69,7 +43,7 @@ export default function ProfileAndRoles({
               : "max-w-14 h-auto object-contain"
           }
         />
-        <Titles size="h4">{`${user.firstName} ${user.lastName}`}</Titles>
+        <Titles size="h5">{`${user.firstName} ${user.lastName}`}</Titles>
       </Holds>
       <Holds className="w-full flex flex-col">
         <Holds position={"row"} className="w-full gap-x-3 justify-end">

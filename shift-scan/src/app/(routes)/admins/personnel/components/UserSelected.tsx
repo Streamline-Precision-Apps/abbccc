@@ -8,12 +8,9 @@ import { SearchCrew } from "@/lib/types";
 import EditedCrew from "./UserSelected/editedCrew";
 import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { deletePersonnel, editPersonnelInfo } from "@/actions/PersonnelActions";
 import { UserData } from "./types/personnel";
-import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 import { useNotification } from "@/app/context/NotificationContext";
-import { set } from "date-fns";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -241,7 +238,9 @@ const UserSelected = ({
       "emergencyContactNumber",
       user.Contact?.emergencyContactNumber || ""
     );
-    formData.set("activeEmployee", String(user.activeEmployee));
+    // adding termination date
+    formData.set("terminationDate", new Date().toISOString());
+
     formData.set("crewLeads", JSON.stringify(crewLeads));
     formData.set("selectedCrews", JSON.stringify(selectedCrews));
 
@@ -274,7 +273,7 @@ const UserSelected = ({
     try {
       updateEditState({ loading: true });
       await deletePersonnel(user.id);
-      await fetchAllData();
+      fetchAllData();
       setNotification("User deleted successfully", "success");
       setView();
     } catch (error) {
@@ -282,7 +281,8 @@ const UserSelected = ({
       updateEditState({ loading: false });
     }
   };
-
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const userStartDate = new Date(originalUser?.startDate ?? "");
   return (
     <>
       <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar ">
@@ -325,6 +325,33 @@ const UserSelected = ({
                 Register New Employee
               </Texts>
             </Holds>
+            {originalUser?.startDate && userStartDate > twentyFourHoursAgo && (
+              <Holds className="flex w-fit items-center ">
+                <Texts
+                  text={"link"}
+                  size={"p7"}
+                  onClick={
+                    edited && Object.values(edited).some(Boolean)
+                      ? undefined
+                      : () => handleDelete(userid)
+                  }
+                  style={{
+                    pointerEvents:
+                      edited && Object.values(edited).some(Boolean)
+                        ? "none"
+                        : "auto",
+                    opacity:
+                      edited && Object.values(edited).some(Boolean) ? 0.5 : 1,
+                    cursor:
+                      edited && Object.values(edited).some(Boolean)
+                        ? "not-allowed"
+                        : "pointer",
+                  }}
+                >
+                  Delete Employee
+                </Texts>
+              </Holds>
+            )}
             <Holds
               position={"row"}
               className="flex w-fit items-center space-x-10 "
@@ -402,16 +429,8 @@ const UserSelected = ({
                 <Grids className="w-full h-full grid-rows-[50px_1fr] p-3 gap-5">
                   <Holds
                     position={"row"}
-                    className="size-full row-start-1 row-end-2"
+                    className="w-full h-full row-start-1 row-end-2"
                   >
-                    <Buttons
-                      background={"red"}
-                      shadow={"none"}
-                      onClick={() => handleDelete(user.id)}
-                      className="w-fit px-3 h-full mr-4"
-                    >
-                      Delete
-                    </Buttons>
                     <ProfileAndRoles
                       user={user}
                       originalUser={originalUser}
