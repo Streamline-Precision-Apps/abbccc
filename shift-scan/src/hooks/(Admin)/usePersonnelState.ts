@@ -1,6 +1,5 @@
 // hooks/usePersonnelState.ts
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { SearchCrew } from "@/lib/types";
 import { z } from "zod";
 import {
   BaseUser,
@@ -43,6 +42,7 @@ export const usePersonnelState = () => {
     }
   }, []);
 
+  // Automatic fetch on mount and when revalidateCounter changes
   useEffect(() => {
     fetchAllData();
   }, [fetchAllData]);

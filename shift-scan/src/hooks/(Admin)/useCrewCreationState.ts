@@ -12,6 +12,7 @@ export const useCrewCreationState = () => {
     selectedUsers: [] as { id: string }[],
     teamLead: null as string | null,
     isPending: false,
+    isSuccess: false,
   });
 
   const updateForm = (updates: Partial<CrewCreationState["form"]>) => {
@@ -62,6 +63,10 @@ export const useCrewCreationState = () => {
     });
   };
 
+  const setSuccess = (isSuccess: boolean) => {
+    setState((prev) => ({ ...prev, isSuccess }));
+  };
+
   const reset = () => {
     setState({
       form: {
@@ -71,6 +76,7 @@ export const useCrewCreationState = () => {
       selectedUsers: [],
       teamLead: null,
       isPending: false,
+      isSuccess: false,
     });
   };
 
@@ -80,6 +86,7 @@ export const useCrewCreationState = () => {
     updateCrewForm: updateForm,
     setCrewCreationPending: setPending,
     resetCrewCreationState: reset,
+    setCrewCreationSuccess: setSuccess,
     selectLead,
     addMembers,
     removeMembers,

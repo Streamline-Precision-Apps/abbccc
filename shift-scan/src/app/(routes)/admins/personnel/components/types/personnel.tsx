@@ -54,6 +54,7 @@ export interface UserEditState {
   originalCrewLeads: Record<string, boolean>;
   edited: { [key: string]: boolean };
   loading: boolean;
+  deletedUser: boolean;
   successfullyUpdated: boolean;
 }
 
@@ -64,6 +65,7 @@ export interface CrewEditState {
   edited: { [key: string]: boolean };
   loading: boolean;
   successfullyUpdated: boolean;
+  deleted: boolean;
 }
 
 // Registration state management
@@ -110,4 +112,5 @@ export interface CrewCreationState {
   selectedUsers: { id: string }[];
   teamLead: string | null;
   isPending: boolean;
+  isSuccess: boolean;
 }

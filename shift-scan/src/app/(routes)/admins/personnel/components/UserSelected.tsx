@@ -264,12 +264,14 @@ const UserSelected = ({
   };
 
   const handleDelete = async (userid: string) => {
-    if (!user) return;
-    const result = await deletePersonnel(user.id);
-    if (result === true) {
+    if (!user || loading) return;
+    try {
+      updateEditState({ loading: true });
+      await deletePersonnel(user.id);
       setView();
-    } else {
-      alert("Failed to delete user");
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      updateEditState({ loading: false });
     }
   };
 
