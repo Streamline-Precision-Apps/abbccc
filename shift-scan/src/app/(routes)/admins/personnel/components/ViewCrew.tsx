@@ -20,7 +20,8 @@ const fetchCrewData = async (crewId: string): Promise<CrewData> => {
 export default function ViewCrew({
   setView,
   crewId,
-  crewEditStates,
+  employees,
+  crewEditState,
   updateCrewEditState,
   retainOnlyCrewEditState,
   discardCrewEditChanges,
@@ -30,7 +31,7 @@ export default function ViewCrew({
   setView: () => void;
   crewId: string;
   employees: BaseUser[];
-  crewEditStates: CrewEditState;
+  crewEditState: CrewEditState;
   updateCrewEditState: (updates: Partial<CrewEditState>) => void;
   retainOnlyCrewEditState: (crewId: string) => void;
   discardCrewEditChanges: (crewId: string) => void;
@@ -38,14 +39,14 @@ export default function ViewCrew({
   fetchAllData: () => Promise<void>;
 }) {
   const { setNotification } = useNotification();
-  const { crew, edited, loading } = crewEditStates;
+  const { crew, edited, loading } = crewEditState;
 
   useEffect(() => {
     let isMounted = true;
 
     const loadCrewData = async () => {
       // Only fetch if we don't already have crew data or if it's a different crew
-      if (crewEditStates.crew?.id === crewId) return;
+      if (crewEditState.crew?.id === crewId) return;
 
       updateCrewEditState({ loading: true });
 
@@ -247,12 +248,18 @@ export default function ViewCrew({
                       name="crewLead"
                       value={
                         crew.leadId
-                          ? crew?.Users.find((user) => user.id === crew?.leadId)
-                              ?.firstName +
-                              " " +
-                              crew?.Users.find(
-                                (user) => user.id === crew?.leadId
-                              )?.lastName || ""
+                          ? (() => {
+                              const lead = crew.Users.find(
+                                (user: {
+                                  id: string;
+                                  firstName: string;
+                                  lastName: string;
+                                }) => user.id === crew.leadId
+                              );
+                              return lead
+                                ? `${lead.firstName} ${lead.lastName}`
+                                : "";
+                            })()
                           : "No crew lead selected"
                       }
                       readOnly
@@ -274,16 +281,22 @@ export default function ViewCrew({
                       </Texts>
                     ) : (
                       <div className="space-y-2">
-                        {crew.Users.map((member) => (
-                          <Holds
-                            key={member.id}
-                            className="p-2 border-b flex justify-between items-center"
-                          >
-                            <Texts size="p7">
-                              {member.firstName} {member.lastName}
-                            </Texts>
-                          </Holds>
-                        ))}
+                        {crew.Users.map(
+                          (member: {
+                            id: string;
+                            firstName: string;
+                            lastName: string;
+                          }) => (
+                            <Holds
+                              key={member.id}
+                              className="p-2 border-b flex justify-between items-center"
+                            >
+                              <Texts size="p7">
+                                {member.firstName} {member.lastName}
+                              </Texts>
+                            </Holds>
+                          )
+                        )}
                       </div>
                     )}
                   </Holds>
