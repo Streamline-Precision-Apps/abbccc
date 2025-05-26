@@ -79,6 +79,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       {view.mode === "user" && (
         <>
           <UserSelected
+            fetchAllData={fetchAllData}
             crew={crew}
             setView={() => setView({ mode: "default" })}
             setRegistration={() => setView({ mode: "registerUser" })}
@@ -164,6 +165,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
           />
           <UserSelected
             crew={crew}
+            fetchAllData={fetchAllData}
             setView={() => setView({ mode: "registerCrew" })}
             setRegistration={() => setView({ mode: "registerBoth" })}
             userid={view.userId}
@@ -266,6 +268,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             discardCrewEditChanges={discardCrewEditChanges}
           />
           <UserSelected
+            fetchAllData={fetchAllData}
             crew={crew}
             setView={() => setView({ mode: "crew", crewId: view.crewId })}
             setRegistration={() =>
@@ -293,8 +296,6 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       )}
       {view.mode === "default" && (
         <DefaultTab
-          userEditStates={userEditStates}
-          crewEditStates={crewEditStates}
           createNewCrew={() => setView({ mode: "registerCrew" })}
           RegisterEmployee={() => setView({ mode: "registerUser" })}
         />
