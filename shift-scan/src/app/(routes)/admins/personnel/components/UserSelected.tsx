@@ -9,7 +9,10 @@ import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
 import { useUserData } from "../hooks/useUserData";
 import { PersonnelView, UserData } from "./types/personnel";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Titles } from "@/components/(reusable)/titles";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -79,7 +82,7 @@ const UserSelected = ({
     handleSave,
     handleDelete,
   } = useUserData({ userid, editState, updateEditState });
-
+  const [deleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const userStartDate = new Date(originalUser?.startDate ?? "");
 
@@ -133,7 +136,9 @@ const UserSelected = ({
                   onClick={
                     edited && Object.values(edited).some(Boolean)
                       ? undefined
-                      : () => handleDelete(userid)
+                      : () => {
+                          setDeleteUserModalOpen(true);
+                        }
                   }
                   style={{
                     pointerEvents:
@@ -269,6 +274,53 @@ const UserSelected = ({
           </>
         </Grids>
       </Holds>
+      <NModals
+        isOpen={deleteUserModalOpen}
+        handleClose={() => setDeleteUserModalOpen(false)}
+        size="xs"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full justify-center items-center">
+          <Holds className="w-full h-full justify-center items-center ">
+            <Texts size={"p6"} className="italic">
+              Are you sure you want to delete this user?
+            </Texts>
+          </Holds>
+          <Holds className="w-full h-full justify-center items-center gap-3 mt-2 p-3">
+            <Holds className="w-full h-full ">
+              <Buttons
+                background={"lightBlue"}
+                shadow="none"
+                type="button"
+                className="w-full py-2 border-none"
+                onClick={() => {
+                  handleDelete(userid);
+                  fetchAllData();
+                  setView();
+                  setDeleteUserModalOpen(false);
+                }}
+              >
+                <Titles size="h6" className="">
+                  Yes, Continue
+                </Titles>
+              </Buttons>
+            </Holds>
+            <Holds className="w-full">
+              <Buttons
+                background={"red"}
+                shadow="none"
+                type="button"
+                className="w-full py-2 border-none"
+                onClick={() => setDeleteUserModalOpen(false)}
+              >
+                <Titles size="h6" className="">
+                  No, go back!
+                </Titles>
+              </Buttons>
+            </Holds>
+          </Holds>
+        </Holds>
+      </NModals>
     </>
   );
 };

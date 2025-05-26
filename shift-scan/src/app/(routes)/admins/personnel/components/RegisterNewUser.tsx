@@ -10,7 +10,6 @@ import CrewSelectList from "./RegisterNewUser/CrewSelectList";
 import { PersonnelView, RegistrationState } from "./types/personnel";
 import { Dispatch, SetStateAction, useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
-import { set } from "date-fns";
 
 // Validation utilities
 const isValidEmail = (email: string) => {
