@@ -5,25 +5,41 @@ export interface UserData {
   lastName: string;
   email: string;
   DOB: string;
+  permission: string;
   truckView: boolean;
   tascoView: boolean;
   laborView: boolean;
   mechanicView: boolean;
-  permission: string;
   activeEmployee: boolean;
   startDate?: string;
-  terminationDate?: string;
   Contact: {
     phoneNumber: string;
     emergencyContact: string;
     emergencyContactNumber: string;
   };
-  Crews: {
+  Crews: Array<{
     id: string;
     name: string;
     leadId: string;
-  }[];
-  image?: string;
+  }>;
+}
+
+export interface EditState {
+  user: UserData | null;
+  originalUser: UserData | null;
+  selectedCrews: string[];
+  originalCrews: string[];
+  crewLeads: Record<string, boolean>;
+  originalCrewLeads: Record<string, boolean>;
+  edited: { [key: string]: boolean };
+  loading: boolean;
+  successfullyUpdated: boolean;
+}
+
+export interface UseUserDataProps {
+  userid: string;
+  editState: EditState;
+  updateEditState: (updates: Partial<EditState>) => void;
 }
 
 export interface CrewData {

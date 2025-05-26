@@ -6,7 +6,7 @@ import { Texts } from "@/components/(reusable)/texts";
 export default function CreateNewCrewTab({ setView }: { setView: () => void }) {
   return (
     <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-      <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
+      <Grids className="w-full h-full grid-rows-[50px_1fr] gap-5">
         <Holds
           background={"white"}
           position={"row"}

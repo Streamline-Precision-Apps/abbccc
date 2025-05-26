@@ -117,25 +117,27 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       )}
       {view.mode === "registerUser+crew" && (
         <>
-        <ViewCrew
-          setView={() => setView({ mode: "registerUser" })}
-          fetchAllData={fetchAllData}
-          resetView={() => setView({ mode: "default" })}
-          employees={employees}
-          crewId={view.crewId}
-          crewEditState={
-            crewEditStates[view.crewId] || {
-              crew: null,
-              originalCrew: null,
-              edited: {},
-              loading: false,
-              successfullyUpdated: false,
+          <ViewCrew
+            setView={() => setView({ mode: "registerUser" })}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
+            employees={employees}
+            crewId={view.crewId}
+            crewEditState={
+              crewEditStates[view.crewId] || {
+                crew: null,
+                originalCrew: null,
+                edited: {},
+                loading: false,
+                successfullyUpdated: false,
+              }
             }
-          }
-          updateCrewEditState={(updates) => updateCrewEditState(view.crewId, updates)}
-          retainOnlyCrewEditState={retainOnlyCrewEditState}
-          discardCrewEditChanges={discardCrewEditChanges}
-        />
+            updateCrewEditState={(updates) =>
+              updateCrewEditState(view.crewId, updates)
+            }
+            retainOnlyCrewEditState={retainOnlyCrewEditState}
+            discardCrewEditChanges={discardCrewEditChanges}
+          />
           <RegisterNewUser
             crew={crew}
             cancelRegistration={() =>
@@ -220,7 +222,9 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
                 successfullyUpdated: false,
               }
             }
-            updateCrewEditState={(updates) => updateCrewEditState(view.crewId, updates)}
+            updateCrewEditState={(updates) =>
+              updateCrewEditState(view.crewId, updates)
+            }
             retainOnlyCrewEditState={retainOnlyCrewEditState}
             discardCrewEditChanges={discardCrewEditChanges}
           />
@@ -251,7 +255,9 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
                 successfullyUpdated: false,
               }
             }
-            updateCrewEditState={(updates) => updateCrewEditState(view.crewId, updates)}
+            updateCrewEditState={(updates) =>
+              updateCrewEditState(view.crewId, updates)
+            }
             retainOnlyCrewEditState={retainOnlyCrewEditState}
             discardCrewEditChanges={discardCrewEditChanges}
           />
