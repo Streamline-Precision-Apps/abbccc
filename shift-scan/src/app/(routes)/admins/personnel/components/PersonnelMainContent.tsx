@@ -100,6 +100,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             }
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            setViewOption={setView}
+            viewOption={view}
           />
           <CreateNewCrewTab
             setView={() =>
@@ -149,6 +151,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
             handleSubmit={handleRegistrationSubmit}
+            setViewOption={setView}
+            viewOption={view}
           />
         </>
       )}
@@ -185,6 +189,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             }
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            setViewOption={setView}
+            viewOption={view}
           />
         </>
       )}
@@ -204,6 +210,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
             handleSubmit={handleRegistrationSubmit}
+            setViewOption={setView}
+            viewOption={view}
           />
         </>
       )}
@@ -292,6 +300,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             }
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            setViewOption={setView}
+            viewOption={view}
           />
         </>
       )}
@@ -310,6 +320,8 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
             handleSubmit={handleRegistrationSubmit}
+            setViewOption={setView}
+            viewOption={view}
           />
           <CreateNewCrewTab setView={() => setView({ mode: "registerBoth" })} />
         </>

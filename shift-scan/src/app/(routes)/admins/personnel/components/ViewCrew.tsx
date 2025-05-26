@@ -199,21 +199,24 @@ export default function ViewCrew({
           >
             Delete Crew
           </Texts>
-
-          <Texts
-            text={"link"}
-            size={"p7"}
-            onClick={
-              isCrewEditStateDirty(crewId) ? handleDiscardChanges : undefined
-            }
-            style={{
-              pointerEvents: isCrewEditStateDirty(crewId) ? "auto" : "none",
-              opacity: isCrewEditStateDirty(crewId) ? 1 : 0.5,
-              cursor: isCrewEditStateDirty(crewId) ? "pointer" : "not-allowed",
-            }}
-          >
-            Discard Changes
-          </Texts>
+          {isCrewEditStateDirty(crewId) && (
+            <Texts
+              text={"link"}
+              size={"p7"}
+              onClick={
+                isCrewEditStateDirty(crewId) ? handleDiscardChanges : undefined
+              }
+              style={{
+                pointerEvents: isCrewEditStateDirty(crewId) ? "auto" : "none",
+                opacity: isCrewEditStateDirty(crewId) ? 1 : 0.5,
+                cursor: isCrewEditStateDirty(crewId)
+                  ? "pointer"
+                  : "not-allowed",
+              }}
+            >
+              Discard Changes
+            </Texts>
+          )}
 
           <Texts
             text={"link"}
@@ -226,6 +229,31 @@ export default function ViewCrew({
           >
             {loading ? "Saving..." : "Save Changes"}
           </Texts>
+          {!isCrewEditStateDirty(crewId) && (
+            <Texts
+              text={"link"}
+              size={"p7"}
+              onClick={() => {
+                try {
+                  if (viewOption.mode === "crew") {
+                    setViewOption({ mode: "default" });
+                  } else if (viewOption.mode === "user+crew" && userId) {
+                    setViewOption({ mode: "user", userId });
+                  } else if (viewOption.mode === "registerUser+crew") {
+                    setViewOption({ mode: "registerUser" });
+                  } else {
+                    setViewOption({ mode: "default" });
+                  }
+                } catch (error) {
+                  console.error("Error resetting view:", error);
+                } finally {
+                  retainOnlyCrewEditState(crewId);
+                }
+              }}
+            >
+              Close
+            </Texts>
+          )}
           {successfullyUpdated && (
             <Holds
               background={"green"}

@@ -8,7 +8,8 @@ import EditedCrew from "./UserSelected/editedCrew";
 import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
 import { useUserData } from "../hooks/useUserData";
-import { UserData } from "./types/personnel";
+import { PersonnelView, UserData } from "./types/personnel";
+import { Dispatch, SetStateAction } from "react";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -37,6 +38,8 @@ const UserSelected = ({
   retainOnlyUserEditState,
   discardUserEditChanges,
   fetchAllData,
+  setViewOption,
+  viewOption,
 }: {
   setView: () => void;
   setRegistration: () => void;
@@ -57,6 +60,8 @@ const UserSelected = ({
   retainOnlyUserEditState: (userId: string) => void;
   discardUserEditChanges: (userId: string) => void;
   fetchAllData: () => void;
+  setViewOption: Dispatch<SetStateAction<PersonnelView>>;
+  viewOption: PersonnelView;
 }) => {
   const {
     user,
@@ -254,6 +259,8 @@ const UserSelected = ({
                       handleCrewCheckbox={handleCrewCheckbox}
                       handleCrewLeadToggle={handleCrewLeadToggle}
                       permission={user.permission}
+                      setViewOption={setViewOption}
+                      viewOption={viewOption}
                     />
                   </Holds>
                 </Grids>

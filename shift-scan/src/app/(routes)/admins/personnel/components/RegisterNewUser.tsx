@@ -7,8 +7,8 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import CrewSelectList from "./RegisterNewUser/CrewSelectList";
-import { RegistrationState } from "./types/personnel";
-import { useState } from "react";
+import { PersonnelView, RegistrationState } from "./types/personnel";
+import { Dispatch, SetStateAction, useState } from "react";
 
 // Validation utilities
 const isValidEmail = (email: string) => {
@@ -51,6 +51,8 @@ interface RegisterNewUserProps {
   updateRegistrationForm: (updates: Partial<RegistrationState["form"]>) => void;
   updateRegistrationCrews: (crewIds: string[]) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
+  setViewOption: Dispatch<SetStateAction<PersonnelView>>;
+  viewOption: PersonnelView;
 }
 
 const fields = [
@@ -80,6 +82,8 @@ export default function RegisterNewUser({
   updateRegistrationForm,
   updateRegistrationCrews,
   handleSubmit,
+  setViewOption,
+  viewOption,
 }: RegisterNewUserProps) {
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
@@ -402,6 +406,8 @@ export default function RegisterNewUser({
                   crew={crew}
                   selectedCrews={selectedCrews}
                   handleCrewCheckbox={handleCrewCheckbox}
+                  setViewOption={setViewOption}
+                  viewOption={viewOption}
                 />
               </Holds>
             </Grids>
