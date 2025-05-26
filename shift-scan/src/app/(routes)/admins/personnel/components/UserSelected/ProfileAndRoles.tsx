@@ -5,6 +5,14 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { user } from "@nextui-org/theme";
 import { UserData } from "../types/personnel";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { useState } from "react";
+import { Anton } from "next/font/google";
+import { RemoveUserProfilePicture } from "@/actions/PersonnelActions";
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export default function ProfileAndRoles({
   user,
@@ -31,6 +39,27 @@ export default function ProfileAndRoles({
     [key: string]: boolean;
   };
 }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRemoveProfilePicture = async () => {
+    const result = await RemoveUserProfilePicture(user.id); // Call the function to remove the profile picture
+    if (!result) {
+      console.error("Failed to remove profile picture");
+      return;
+    }
+    updateEditState({
+      user: {
+        ...user,
+        image: undefined, // Remove the profile picture
+      },
+      edited: {
+        ...edited,
+        image: true, // Mark the image field as edited
+      },
+    });
+    setIsModalOpen(false); // Close the modal after the action
+  };
+
   return (
     <>
       <Holds position={"row"} className="w-full gap-3">
@@ -39,12 +68,14 @@ export default function ProfileAndRoles({
           alt="profile"
           className={
             user.image
-              ? "max-w-14 h-auto object-contain rounded-full border-2 border-black"
+              ? "max-w-14 h-auto object-contain rounded-full border-2 border-black cursor-pointer"
               : "max-w-14 h-auto object-contain"
           }
+          onClick={() => setIsModalOpen(true)} // Open modal if image exists
         />
         <Titles size="h5">{`${user.firstName} ${user.lastName}`}</Titles>
       </Holds>
+
       <Holds className="w-full flex flex-col">
         <Holds position={"row"} className="w-full gap-x-3 justify-end">
           <Buttons
@@ -185,6 +216,49 @@ export default function ProfileAndRoles({
             </Texts>
           )}
       </Holds>
+
+      {/* Modal for confirmation */}
+
+      <NModals
+        isOpen={isModalOpen}
+        handleClose={() => setIsModalOpen(false)}
+        size="xs"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full justify-center items-center p-2">
+          <Texts size="p7" className="">
+            Are you sure you want to remove
+            <span
+              className={anton.className + " text-sm font-bold text-black"}
+            >{`  ${user.firstName} ${user.lastName}'s  `}</span>
+            profile picture? This will revert it back to the default image.
+          </Texts>
+          <Holds className="gap-3  w-full h-full pt-6 justify-center items-center">
+            <Buttons
+              background={"lightBlue"}
+              shadow="none"
+              type="button"
+              className="py-2 border-none"
+              onClick={() => handleRemoveProfilePicture()}
+            >
+              <Titles size="h6" className="">
+                Yes, Continue.
+              </Titles>
+            </Buttons>
+            <Buttons
+              background={"red"}
+              shadow="none"
+              type="button"
+              className="py-2 border-none"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <Titles size="h6" className="">
+                No, go back!
+              </Titles>
+            </Buttons>
+          </Holds>
+        </Holds>
+      </NModals>
     </>
   );
 }

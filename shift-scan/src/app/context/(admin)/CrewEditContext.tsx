@@ -64,7 +64,7 @@ export const CrewEditProvider = ({
 
   const isCrewEditStateDirty = (crewId: string): boolean => {
     const crewState = crewEditStates[crewId];
-    if (!crewState) return false;
+    if (!crewState || !crewState.edited) return false; // Add null check for edited
     return Object.values(crewState.edited).some(Boolean);
   };
 

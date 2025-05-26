@@ -32,9 +32,7 @@ export const useEmployeeHandlers = ({
   selectLead,
   addMembers,
   removeMembers,
-  discardUserEditChanges,
   isUserEditStateDirty,
-  filteredList,
 }: UseEmployeeHandlersProps) => {
   const handleEmployeeClick = useCallback(
     (employee: BaseUser) => {
@@ -68,22 +66,27 @@ export const useEmployeeHandlers = ({
 
   const handleCrewLeadToggle = useCallback(
     (employeeId: string) => {
+      console.log("handleCrewLeadToggle called with employeeId:", employeeId);
       const isMember = crewCreationState.selectedUsers.some(
         (u) => u.id === employeeId
       );
-      if (!isMember) return;
+      console.log("Is member:", isMember);
 
       if (view.mode === "crew" && view.crewId) {
+        const currentCrew = crewEditStates[view.crewId]?.crew;
+        console.log("Current crew:", currentCrew);
+        if (!currentCrew) return; // Ensure currentCrew is defined
+
+        const updatedLeadId =
+          currentCrew.leadId === employeeId ? "" : employeeId;
+
         updateCrewEditState(view.crewId, {
           crew: {
-            ...crewEditStates[view.crewId].crew!,
-            leadId:
-              crewEditStates[view.crewId].crew?.leadId === employeeId
-                ? ""
-                : employeeId,
+            ...currentCrew,
+            leadId: updatedLeadId,
           },
           edited: {
-            ...crewEditStates[view.crewId].edited,
+            ...crewEditStates[view.crewId]?.edited,
             leadId: true,
           },
         });
@@ -98,23 +101,13 @@ export const useEmployeeHandlers = ({
 
   const handleEmployeeCheck = useCallback(
     (employee: BaseUser) => {
-      const isSelected = crewCreationState.selectedUsers.some(
-        (u) => u.id === employee.id
-      );
-
       if (view.mode === "crew" && view.crewId) {
-        const enrichedUsers = crewCreationState.selectedUsers.map((u) => {
-          const fullUser = filteredList.find((user) => user.id === u.id);
-          return {
-            id: u.id,
-            firstName: fullUser?.firstName || "",
-            lastName: fullUser?.lastName || "",
-          };
-        });
+        const currentUsers = crewEditStates[view.crewId].crew?.Users || [];
+        const isSelected = currentUsers.some((u) => u.id === employee.id);
 
         const updatedUsers = isSelected
-          ? enrichedUsers.filter((u) => u.id !== employee.id)
-          : [...enrichedUsers, employee];
+          ? currentUsers.filter((u) => u.id !== employee.id) // Remove the employee
+          : [...currentUsers, employee]; // Add the employee
 
         updateCrewEditState(view.crewId, {
           crew: {
@@ -127,7 +120,7 @@ export const useEmployeeHandlers = ({
           },
         });
       } else {
-        if (isSelected) {
+        if (crewCreationState.selectedUsers.some((u) => u.id === employee.id)) {
           removeMembers([employee.id]);
         } else {
           addMembers([employee.id]);

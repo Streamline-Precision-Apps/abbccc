@@ -3,6 +3,7 @@ export interface UserData {
   username: string;
   firstName: string;
   lastName: string;
+  image?: string;
   email: string;
   DOB: string;
   permission: string;

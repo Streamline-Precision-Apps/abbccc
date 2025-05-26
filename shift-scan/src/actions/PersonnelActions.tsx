@@ -210,3 +210,19 @@ export async function deleteCrew(crewId: string) {
     throw new Error("Failed to delete crew");
   }
 }
+
+export async function RemoveUserProfilePicture(userId: string) {
+  try {
+    console.log("Removing user profile picture...");
+    console.log("User ID:", userId);
+    await prisma.user.update({
+      where: { id: userId }, // Replace with actual user ID
+      data: { image: null },
+    });
+    revalidateTag("profilePicture");
+    return true;
+  } catch (error) {
+    console.error("Error removing user profile picture:", error);
+    throw new Error("Failed to remove profile picture");
+  }
+}

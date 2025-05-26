@@ -4,11 +4,17 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import { BaseUser, CrewData, CrewEditState } from "./types/personnel";
-import { useEffect } from "react";
+import {
+  BaseUser,
+  CrewData,
+  CrewEditState,
+  PersonnelView,
+} from "./types/personnel";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { saveCrew, deleteCrew } from "@/actions/PersonnelActions";
 import Spinner from "@/components/(animations)/spinner";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
 
 const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   const res = await fetch(`/api/getCrewByIdAdmin/${crewId}`);
@@ -27,6 +33,9 @@ export default function ViewCrew({
   discardCrewEditChanges,
   resetView,
   fetchAllData,
+  setViewOption,
+  viewOption,
+  userId,
 }: {
   setView: () => void;
   crewId: string;
@@ -37,9 +46,14 @@ export default function ViewCrew({
   discardCrewEditChanges: (crewId: string) => void;
   resetView: () => void;
   fetchAllData: () => Promise<void>;
+  setViewOption: Dispatch<SetStateAction<PersonnelView>>;
+  viewOption: PersonnelView;
+  userId?: string;
 }) {
   const { setNotification } = useNotification();
-  const { crew, edited, loading } = crewEditState;
+  const { crew, originalCrew, edited, loading, successfullyUpdated } =
+    crewEditState;
+  const { isCrewEditStateDirty } = useCrewEdit();
 
   useEffect(() => {
     let isMounted = true;
@@ -82,7 +96,6 @@ export default function ViewCrew({
     if (!crew || loading) return;
 
     try {
-      updateCrewEditState({ loading: true });
       await saveCrew(crew);
       updateCrewEditState({
         loading: false,
@@ -90,9 +103,11 @@ export default function ViewCrew({
         originalCrew: { ...crew },
         edited: {},
       });
+      setTimeout(() => {
+        updateCrewEditState({ successfullyUpdated: false });
+      }, 3000);
     } catch (error) {
       console.error("Failed to save crew:", error);
-      updateCrewEditState({ loading: false });
     }
   };
 
@@ -111,7 +126,17 @@ export default function ViewCrew({
   };
 
   const handleCreateNew = () => {
-    retainOnlyCrewEditState("new");
+    if (viewOption.mode === "crew") {
+      setViewOption({
+        mode: "registerCrew",
+      });
+    }
+    if (viewOption.mode === "user+crew" && userId) {
+      setViewOption({
+        mode: "registerCrew+user",
+        userId,
+      });
+    }
   };
 
   const handleDiscardChanges = () => {
@@ -133,6 +158,11 @@ export default function ViewCrew({
     });
   };
 
+  const isFieldEdited = (field: keyof CrewData): boolean => {
+    if (!crew || !originalCrew) return false;
+    return crew[field] !== originalCrew[field];
+  };
+
   return (
     <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
       <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
@@ -142,20 +172,46 @@ export default function ViewCrew({
           position={"row"}
           className="w-full px-5 py-1 justify-between items-center relative"
         >
-          <Texts text={"link"} size={"p7"} onClick={handleCreateNew}>
+          <Texts
+            text={"link"}
+            size={"p7"}
+            onClick={
+              !isCrewEditStateDirty(crewId) ? handleCreateNew : undefined
+            }
+            style={{
+              pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
+              opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
+              cursor: !isCrewEditStateDirty(crewId) ? "pointer" : "not-allowed",
+            }}
+          >
             Create New Crew
           </Texts>
 
           <Texts
             text={"link"}
             size={"p7"}
-            onClick={handleDelete}
-            style={{ color: "red" }}
+            onClick={!isCrewEditStateDirty(crewId) ? handleDelete : undefined}
+            style={{
+              pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
+              opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
+              cursor: !isCrewEditStateDirty(crewId) ? "pointer" : "not-allowed",
+            }}
           >
             Delete Crew
           </Texts>
 
-          <Texts text={"link"} size={"p7"} onClick={handleDiscardChanges}>
+          <Texts
+            text={"link"}
+            size={"p7"}
+            onClick={
+              isCrewEditStateDirty(crewId) ? handleDiscardChanges : undefined
+            }
+            style={{
+              pointerEvents: isCrewEditStateDirty(crewId) ? "auto" : "none",
+              opacity: isCrewEditStateDirty(crewId) ? 1 : 0.5,
+              cursor: isCrewEditStateDirty(crewId) ? "pointer" : "not-allowed",
+            }}
+          >
             Discard Changes
           </Texts>
 
@@ -170,6 +226,16 @@ export default function ViewCrew({
           >
             {loading ? "Saving..." : "Save Changes"}
           </Texts>
+          {successfullyUpdated && (
+            <Holds
+              background={"green"}
+              className="absolute w-full h-full top-0 left-0 justify-center items-center"
+            >
+              <Texts size={"p6"} className="italic">
+                Successfully Updated Crew!
+              </Texts>
+            </Holds>
+          )}
         </Holds>
 
         {/* Main Form Content */}
@@ -206,7 +272,9 @@ export default function ViewCrew({
                     name="crewName"
                     value={crew?.name || ""}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    className="h-10 pl-2"
+                    className={`h-10 pl-2 ${
+                      isFieldEdited("name") ? "border-2 border-orange-400" : ""
+                    }`}
                   />
                 </Holds>
 
@@ -217,7 +285,11 @@ export default function ViewCrew({
                   <Selects
                     name="crewType"
                     value={crew?.crewType || ""}
-                    className="h-10 pl-2"
+                    className={`h-10 pl-2 ${
+                      isFieldEdited("crewType")
+                        ? "border-2 border-orange-400"
+                        : ""
+                    }`}
                     onChange={(e) =>
                       handleInputChange("crewType", e.target.value)
                     }
@@ -263,7 +335,11 @@ export default function ViewCrew({
                           : "No crew lead selected"
                       }
                       readOnly
-                      className={`pl-2 ${crew?.leadId ? "" : "text-app-red "}`}
+                      className={`pl-2  ${
+                        isFieldEdited("leadId")
+                          ? "border-2 border-orange-400"
+                          : ""
+                      } ${crew?.leadId ? "" : "text-app-red "}`}
                     />
                   </Holds>
                   <Holds className="h-full w-full">
@@ -273,14 +349,22 @@ export default function ViewCrew({
                   </Holds>
                 </Holds>
 
-                <Holds className="w-full h-full border-[3px] border-black rounded-[10px]">
-                  <Holds className="w-full h-full overflow-y-auto no-scrollbar">
+                <Holds
+                  className={`w-full h-full border-[3px] ${
+                    isFieldEdited("Users")
+                      ? "border-orange-400"
+                      : "border-black"
+                  } rounded-[10px]`}
+                >
+                  <Holds className="w-full h-full overflow-y-auto no-scrollbar p-3">
                     {!crew?.Users || crew.Users.length === 0 ? (
-                      <Texts size="p7" className="text-center p-4">
-                        No members selected yet
-                      </Texts>
+                      <Holds className="w-full h-full justify-center items-center">
+                        <Texts size="p6" className="text-center px-4 italic">
+                          No members selected for this crew.
+                        </Texts>
+                      </Holds>
                     ) : (
-                      <div className="space-y-2">
+                      <>
                         {crew.Users.map(
                           (member: {
                             id: string;
@@ -289,15 +373,16 @@ export default function ViewCrew({
                           }) => (
                             <Holds
                               key={member.id}
-                              className="p-2 border-b flex justify-between items-center"
+                              position={"left"}
+                              className="w-full p-2 flex justify-between "
                             >
-                              <Texts size="p7">
+                              <Texts position="left" size="p7">
                                 {member.firstName} {member.lastName}
                               </Texts>
                             </Holds>
                           )
                         )}
-                      </div>
+                      </>
                     )}
                   </Holds>
                 </Holds>
