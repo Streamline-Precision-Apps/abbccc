@@ -19,9 +19,7 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
-import { CheckBox } from "@/components/(inputs)/checkBox";
 import Spinner from "@/components/(animations)/spinner";
-import { user } from "@nextui-org/theme";
 import EmployeeRow from "./EmployeeRow";
 import { useEmployeeHandlers } from "../hooks/useEmployeeHandlers";
 
@@ -129,7 +127,7 @@ export default function PersonnelSideBar({
   return (
     <>
       <Holds className="w-full h-full col-start-1 col-end-3">
-        <Grids className="w-full h-full grid-rows-[40px_40px_1fr] gap-4">
+        <Grids className="w-full h-full grid-rows-[50px_50px_1fr] gap-4">
           <Holds className="w-full h-full">
             <Selects
               onChange={(e) => {
