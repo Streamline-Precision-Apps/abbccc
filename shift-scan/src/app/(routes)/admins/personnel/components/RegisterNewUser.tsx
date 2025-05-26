@@ -9,6 +9,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import CrewSelectList from "./RegisterNewUser/CrewSelectList";
 import { PersonnelView, RegistrationState } from "./types/personnel";
 import { Dispatch, SetStateAction, useState } from "react";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { set } from "date-fns";
 
 // Validation utilities
 const isValidEmail = (email: string) => {
@@ -85,6 +87,9 @@ export default function RegisterNewUser({
   setViewOption,
   viewOption,
 }: RegisterNewUserProps) {
+  const [cancelRegistrationModalOpen, setCancelRegistrationModalOpen] =
+    useState(false);
+
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
@@ -208,212 +213,262 @@ export default function RegisterNewUser({
   };
 
   return (
-    <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
-      <form
-        onSubmit={validateForm}
-        className="w-full h-full"
-        autoComplete="off"
-        autoCorrect="off"
-        spellCheck="false"
-        data-form-type="other"
-      >
-        <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
-          <Holds
-            background={"white"}
-            position={"row"}
-            className="w-full px-5 py-1 justify-between items-center relative"
-          >
-            <button
-              type="submit"
-              className="disabled:opacity-50"
-              disabled={isPending}
+    <>
+      <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
+        <form
+          onSubmit={validateForm}
+          className="w-full h-full"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          data-form-type="other"
+        >
+          <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
+            <Holds
+              background={"white"}
+              position={"row"}
+              className="w-full px-5 py-1 justify-between items-center relative"
             >
-              <Texts text={"link"} size={"p7"}>
-                {isPending ? "Submitting..." : "Submit New Employee"}
-              </Texts>
-            </button>
-            {isSuccess && (
-              <Holds
-                background={"green"}
-                className="absolute w-full h-full top-0 left-0 justify-center items-center"
+              <button
+                type="submit"
+                className="disabled:opacity-50"
+                disabled={isPending}
               >
-                <Texts size={"p6"} className="italic">
-                  Successfully Registered New Employee!
+                <Texts text={"link"} size={"p7"}>
+                  {isPending ? "Submitting..." : "Submit New Employee"}
                 </Texts>
-              </Holds>
-            )}
-            <Texts
-              text={"link"}
-              size={"p7"}
-              onClick={() => cancelRegistration()}
+              </button>
+              {isSuccess && (
+                <Holds
+                  background={"green"}
+                  className="absolute w-full h-full top-0 left-0 justify-center items-center"
+                >
+                  <Texts size={"p6"} className="italic">
+                    Successfully Registered New Employee!
+                  </Texts>
+                </Holds>
+              )}
+              <Texts
+                text={"link"}
+                size={"p7"}
+                onClick={() => setCancelRegistrationModalOpen(true)}
+              >
+                Cancel Registration
+              </Texts>
+            </Holds>
+            <Holds
+              background={"white"}
+              className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar"
             >
-              Cancel Registration
+              <Grids className="w-full h-full grid-rows-[50px_1fr] p-3">
+                <Holds
+                  position={"row"}
+                  className="size-full row-start-1 row-end-2"
+                >
+                  <Holds position={"row"} className="w-full gap-3">
+                    <img
+                      src="/profileFilled.svg"
+                      alt="crew"
+                      className="max-w-11 h-auto object-contain"
+                    />
+                    <Titles size="h4">New Employee</Titles>
+                  </Holds>
+                  <Holds
+                    position={"row"}
+                    className="w-full gap-x-3 justify-end"
+                  >
+                    <Buttons
+                      shadow={"none"}
+                      type="button"
+                      className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
+                        form.truckingView
+                          ? "bg-app-blue"
+                          : "bg-gray-400 gray opacity-80"
+                      }`}
+                      onClick={() =>
+                        updateRegistrationForm({
+                          truckingView: !form.truckingView,
+                        })
+                      }
+                    >
+                      <img
+                        src="/trucking.svg"
+                        alt="trucking"
+                        className="w-full h-full mx-auto object-contain"
+                      />
+                    </Buttons>
+
+                    <Buttons
+                      shadow={"none"}
+                      type="button"
+                      className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
+                        form.tascoView
+                          ? "bg-app-blue"
+                          : "bg-gray-400 gray opacity-80"
+                      }`}
+                      onClick={() =>
+                        updateRegistrationForm({
+                          tascoView: !form.tascoView,
+                        })
+                      }
+                    >
+                      <img
+                        src="/tasco.svg"
+                        alt="tasco"
+                        className="w-full h-full mx-auto object-contain"
+                      />
+                    </Buttons>
+
+                    <Buttons
+                      shadow={"none"}
+                      type="button"
+                      className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
+                        form.engineerView
+                          ? "bg-app-blue"
+                          : "bg-gray-400 gray opacity-80"
+                      }`}
+                      onClick={() =>
+                        updateRegistrationForm({
+                          engineerView: !form.engineerView,
+                        })
+                      }
+                    >
+                      <img
+                        src="/mechanic.svg"
+                        alt="mechanic"
+                        className="w-full h-full mx-auto object-contain"
+                      />
+                    </Buttons>
+
+                    <Buttons
+                      shadow={"none"}
+                      type="button"
+                      className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
+                        form.generalView
+                          ? "bg-app-blue"
+                          : "bg-gray-400 gray opacity-80"
+                      }`}
+                      onClick={() =>
+                        updateRegistrationForm({
+                          generalView: !form.generalView,
+                        })
+                      }
+                    >
+                      <img
+                        src="/equipment.svg"
+                        alt="equipment"
+                        className="w-full h-full mx-auto object-contain"
+                      />
+                    </Buttons>
+                  </Holds>
+                </Holds>
+                <Holds
+                  position={"row"}
+                  className="size-full row-start-2 row-end-3 gap-3"
+                >
+                  <Holds size={"50"} className="h-full">
+                    {fields.map(renderField)}
+
+                    <Holds className="flex flex-col pb-1">
+                      <Texts position={"left"} size={"p7"}>
+                        Permission Level
+                      </Texts>
+                      <Selects
+                        name="permissionLevel"
+                        value={form.permissionLevel}
+                        onChange={(e) =>
+                          updateRegistrationForm({
+                            permissionLevel: e.target
+                              .value as RegistrationState["form"]["permissionLevel"],
+                          })
+                        }
+                        className="w-full text-base "
+                      >
+                        <option value="USER">User</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="SUPERADMIN">Super Admin</option>
+                      </Selects>
+                    </Holds>
+
+                    <Holds className="flex flex-col pb-1">
+                      <Texts position={"left"} size={"p7"}>
+                        Employment Status
+                      </Texts>
+                      <Selects
+                        name="employmentStatus"
+                        value={form.employmentStatus}
+                        onChange={(e) =>
+                          updateRegistrationForm({
+                            employmentStatus: e.target
+                              .value as RegistrationState["form"]["employmentStatus"],
+                          })
+                        }
+                        className="w-full text-base "
+                      >
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </Selects>
+                    </Holds>
+                  </Holds>
+                  <CrewSelectList
+                    crew={crew}
+                    selectedCrews={selectedCrews}
+                    handleCrewCheckbox={handleCrewCheckbox}
+                    setViewOption={setViewOption}
+                    viewOption={viewOption}
+                  />
+                </Holds>
+              </Grids>
+            </Holds>
+          </Grids>
+        </form>
+      </Holds>
+      <NModals
+        isOpen={cancelRegistrationModalOpen}
+        handleClose={() => setCancelRegistrationModalOpen(false)}
+        size="xs"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full justify-center items-center">
+          <Holds className="w-full h-full justify-center items-center ">
+            <Texts size={"p6"} className="italic">
+              Are you sure you want to cancel creating this crew?
             </Texts>
           </Holds>
-          <Holds
-            background={"white"}
-            className="w-full h-full justify-center items-center overflow-y-auto no-scrollbar"
-          >
-            <Grids className="w-full h-full grid-rows-[50px_1fr] p-3">
-              <Holds
-                position={"row"}
-                className="size-full row-start-1 row-end-2"
+          <Holds className="w-full h-full justify-center items-center gap-3 mt-2 p-3">
+            <Holds className="w-full h-full ">
+              <Buttons
+                background={"lightBlue"}
+                shadow="none"
+                type="button"
+                className="w-full py-2 border-none"
+                onClick={() => {
+                  cancelRegistration();
+                  setCancelRegistrationModalOpen(false);
+                }}
               >
-                <Holds position={"row"} className="w-full gap-3">
-                  <img
-                    src="/profileFilled.svg"
-                    alt="crew"
-                    className="max-w-11 h-auto object-contain"
-                  />
-                  <Titles size="h4">New Employee</Titles>
-                </Holds>
-                <Holds position={"row"} className="w-full gap-x-3 justify-end">
-                  <Buttons
-                    shadow={"none"}
-                    type="button"
-                    className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      form.truckingView
-                        ? "bg-app-blue"
-                        : "bg-gray-400 gray opacity-80"
-                    }`}
-                    onClick={() =>
-                      updateRegistrationForm({
-                        truckingView: !form.truckingView,
-                      })
-                    }
-                  >
-                    <img
-                      src="/trucking.svg"
-                      alt="trucking"
-                      className="w-full h-full mx-auto object-contain"
-                    />
-                  </Buttons>
-
-                  <Buttons
-                    shadow={"none"}
-                    type="button"
-                    className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      form.tascoView
-                        ? "bg-app-blue"
-                        : "bg-gray-400 gray opacity-80"
-                    }`}
-                    onClick={() =>
-                      updateRegistrationForm({
-                        tascoView: !form.tascoView,
-                      })
-                    }
-                  >
-                    <img
-                      src="/tasco.svg"
-                      alt="tasco"
-                      className="w-full h-full mx-auto object-contain"
-                    />
-                  </Buttons>
-
-                  <Buttons
-                    shadow={"none"}
-                    type="button"
-                    className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      form.engineerView
-                        ? "bg-app-blue"
-                        : "bg-gray-400 gray opacity-80"
-                    }`}
-                    onClick={() =>
-                      updateRegistrationForm({
-                        engineerView: !form.engineerView,
-                      })
-                    }
-                  >
-                    <img
-                      src="/mechanic.svg"
-                      alt="mechanic"
-                      className="w-full h-full mx-auto object-contain"
-                    />
-                  </Buttons>
-
-                  <Buttons
-                    shadow={"none"}
-                    type="button"
-                    className={`w-14 h-12 rounded-[10px] border-none p-1.5 transition-colors ${
-                      form.generalView
-                        ? "bg-app-blue"
-                        : "bg-gray-400 gray opacity-80"
-                    }`}
-                    onClick={() =>
-                      updateRegistrationForm({
-                        generalView: !form.generalView,
-                      })
-                    }
-                  >
-                    <img
-                      src="/equipment.svg"
-                      alt="equipment"
-                      className="w-full h-full mx-auto object-contain"
-                    />
-                  </Buttons>
-                </Holds>
-              </Holds>
-              <Holds
-                position={"row"}
-                className="size-full row-start-2 row-end-3 gap-3"
+                <Titles size="h6" className="">
+                  Yes, Continue
+                </Titles>
+              </Buttons>
+            </Holds>
+            <Holds className="w-full">
+              <Buttons
+                background={"red"}
+                shadow="none"
+                type="button"
+                className="w-full py-2 border-none"
+                onClick={() => setCancelRegistrationModalOpen(false)}
               >
-                <Holds size={"50"} className="h-full">
-                  {fields.map(renderField)}
-
-                  <Holds className="flex flex-col pb-1">
-                    <Texts position={"left"} size={"p7"}>
-                      Permission Level
-                    </Texts>
-                    <Selects
-                      name="permissionLevel"
-                      value={form.permissionLevel}
-                      onChange={(e) =>
-                        updateRegistrationForm({
-                          permissionLevel: e.target
-                            .value as RegistrationState["form"]["permissionLevel"],
-                        })
-                      }
-                      className="w-full text-base "
-                    >
-                      <option value="USER">User</option>
-                      <option value="MANAGER">Manager</option>
-                      <option value="ADMIN">Admin</option>
-                      <option value="SUPERADMIN">Super Admin</option>
-                    </Selects>
-                  </Holds>
-
-                  <Holds className="flex flex-col pb-1">
-                    <Texts position={"left"} size={"p7"}>
-                      Employment Status
-                    </Texts>
-                    <Selects
-                      name="employmentStatus"
-                      value={form.employmentStatus}
-                      onChange={(e) =>
-                        updateRegistrationForm({
-                          employmentStatus: e.target
-                            .value as RegistrationState["form"]["employmentStatus"],
-                        })
-                      }
-                      className="w-full text-base "
-                    >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                    </Selects>
-                  </Holds>
-                </Holds>
-                <CrewSelectList
-                  crew={crew}
-                  selectedCrews={selectedCrews}
-                  handleCrewCheckbox={handleCrewCheckbox}
-                  setViewOption={setViewOption}
-                  viewOption={viewOption}
-                />
-              </Holds>
-            </Grids>
+                <Titles size="h6" className="">
+                  No, go back!
+                </Titles>
+              </Buttons>
+            </Holds>
           </Holds>
-        </Grids>
-      </form>
-    </Holds>
+        </Holds>
+      </NModals>
+    </>
   );
 }
