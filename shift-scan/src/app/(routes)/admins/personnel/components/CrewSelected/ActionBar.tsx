@@ -10,6 +10,7 @@ interface ActionBarProps {
   onSave: () => void;
   loading: boolean;
   successfullyUpdated: boolean;
+  closeCrew: () => void;
 }
 
 const ActionBar: React.FC<ActionBarProps> = ({
@@ -20,6 +21,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   onSave,
   loading,
   successfullyUpdated,
+  closeCrew,
 }) => {
   return (
     <Holds
@@ -89,6 +91,20 @@ const ActionBar: React.FC<ActionBarProps> = ({
             Successfully Updated Crew!
           </Texts>
         </Holds>
+      )}
+      {!isDirty && (
+        <Texts
+          text={"link"}
+          size={"p7"}
+          onClick={closeCrew}
+          style={{
+            pointerEvents: isDirty ? "none" : "auto",
+            opacity: isDirty ? 0.5 : 1,
+            cursor: isDirty ? "not-allowed" : "pointer",
+          }}
+        >
+          Close
+        </Texts>
       )}
     </Holds>
   );

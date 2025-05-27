@@ -147,6 +147,23 @@ export default function CrewSelected({
   const handleDiscardChanges = () => {
     discardCrewEditChanges(crewId);
   };
+  const closeCrew = () => {
+    handleDiscardChanges();
+    if (viewOption.mode === "registerUser+crew") {
+      setViewOption({
+        mode: "registerUser",
+      });
+    } else if (viewOption.mode === "user+crew" && userId) {
+      setViewOption({
+        mode: "user",
+        userId,
+      });
+    } else {
+      setViewOption({
+        mode: "default",
+      });
+    }
+  };
 
   const handleInputChange = (field: keyof CrewData, value: string) => {
     if (!crew) return;
@@ -181,6 +198,7 @@ export default function CrewSelected({
             onSave={handleSave}
             loading={loading}
             successfullyUpdated={successfullyUpdated}
+            closeCrew={closeCrew}
           />
 
           {/* Main Form Content */}

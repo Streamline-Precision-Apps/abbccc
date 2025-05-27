@@ -1,5 +1,5 @@
-import EmployeeRow from "./SideBar/EmployeeRow";
-import { UserData, PersonnelView } from "./types/personnel";
+import EmployeeRow from "./EmployeeRow";
+import { UserData, PersonnelView } from "../types/personnel";
 
 interface EmployeeListProps {
   loading: boolean;
@@ -29,10 +29,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
   }
 
   return (
-    <div
-      className="w-full h-full flex flex-col p-3 pb-5 space-y-10 overflow-y-auto scrollbar-thin"
-      dir="rtl"
-    >
+    <div className="w-full h-full flex flex-col p-3 pb-5 overflow-y-auto scrollbar-thin">
       {filteredList.map((employee) => (
         <EmployeeRow
           key={employee.id}

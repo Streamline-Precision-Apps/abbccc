@@ -37,14 +37,6 @@ export default function DefaultTab({
               Register New Employee
             </Texts>
             <NotificationComponent />
-            {/* <Holds
-              background={"green"}
-              className="absolute w-full h-full top-0 left-0 justify-center items-center"
-            >
-              <Texts size={"p6"} className="italic">
-                Successfully Deleted
-              </Texts>
-            </Holds> */}
           </Holds>
         </Holds>
       </Grids>
