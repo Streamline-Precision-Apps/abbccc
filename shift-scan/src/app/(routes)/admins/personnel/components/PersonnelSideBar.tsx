@@ -130,22 +130,59 @@ export default function PersonnelSideBar({
             <Selects
               onChange={(e) => {
                 const crewId = e.target.value;
+                console.log("Selected Crew ID:", crewId);
                 if (crewId) {
-                  if (view.mode === "user") {
-                    setView({
-                      mode: "user+crew",
-                      userId: view.userId,
-                      crewId,
-                    });
-                  } else {
-                    setView({ mode: "crew", crewId });
+                  switch (view.mode) {
+                    case "user":
+                      setView({
+                        mode: "user+crew",
+                        userId: view.userId,
+                        crewId,
+                      });
+                      break;
+                    case "registerCrew+user":
+                      setView({
+                        mode: "user+crew",
+                        userId: view.userId,
+                        crewId,
+                      });
+                      break;
+                    case "registerUser+crew":
+                      setView({
+                        mode: "registerUser+crew",
+                        crewId,
+                      });
+                      break;
+                    case "registerBoth":
+                      setView({
+                        mode: "registerUser+crew",
+                        crewId,
+                      });
+                      break;
+                    case "registerUser":
+                      setView({
+                        mode: "registerUser+crew",
+                        crewId,
+                      });
+                      break;
+                    case "user+crew":
+                      setView({
+                        mode: "user+crew",
+                        crewId,
+                        userId: view.userId,
+                      });
+                      break;
+                    default:
+                      setView({ mode: "crew", crewId });
                   }
                 } else {
                   setView({ mode: "default" });
                 }
               }}
               value={
-                view.mode === "crew" || view.mode === "user+crew"
+                view.mode === "crew" ||
+                view.mode === "user+crew" ||
+                view.mode === "registerUser+crew"
                   ? view.crewId
                   : ""
               }
@@ -182,7 +219,7 @@ export default function PersonnelSideBar({
                 <Spinner />
               </Holds>
             ) : (
-              <div className="w-full h-full flex flex-col p-3 space-y-2">
+              <div className="w-full h-full overflow-y-auto no-scrollbar p-3">
                 {filteredList.map((employee) => (
                   <EmployeeRow
                     key={employee.id}

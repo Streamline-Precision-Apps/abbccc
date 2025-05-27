@@ -28,65 +28,64 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
   onEmployeeCheck,
 }) => {
   return (
-    <Holds position={"row"} className="w-full gap-2">
+    <Holds position={"row"} className="w-full h-[30px] mt-2 items-center gap-2">
       <Holds
         onClick={() => onEmployeeClick(employee)} // Pass employee to handler
-        background={isCrewMember ? "lightBlue" : isCrew ? "lightGray" : "white"}
-        className={`w-full p-2 ${!isCrew && "hover:bg-gray-100"} relative ${
-          isSelected && "w-full py-4 border-[3px] border-black"
+        background={
+          isCrewMember ? "lightBlue" : isCrew ? "lightGray" : "lightGray"
+        }
+        className={`w-full h-full flex   ${
+          !isCrew && "hover:opacity-80"
+        } relative ${
+          isSelected &&
+          "w-full h-full outline outline-[2px] outline-black justify-center"
         } rounded-[10px]`}
       >
         <Texts position="left" size="xs">
           {`${employee.firstName} ${employee.lastName}`}
         </Texts>
       </Holds>
+      {isCrew && isCrewMember && isManager && (
+        <Holds className="flex items-center justify-center w-fit h-full rounded-md ">
+          <img
+            onClick={() => onCrewLeadToggle(employee.id)} // Pass employeeId to handler
+            src={
+              isCurrentLead
+                ? "/starFilled.svg"
+                : isCrewMember
+                ? "/star.svg"
+                : "/star.svg"
+            }
+            alt={
+              isCurrentLead
+                ? "Current Crew Lead"
+                : isCrewMember
+                ? "Make Crew Lead"
+                : "Add to crew first"
+            }
+            className="w-[30px] h-[30px] cursor-pointer hover:opacity-80 transition-opacity"
+            title={
+              isCurrentLead
+                ? "Current Crew Lead"
+                : isCrewMember
+                ? "Make Crew Lead"
+                : "Add to crew first"
+            }
+          />
+        </Holds>
+      )}
       {isCrew && (
-        <>
-          {isManager && (
-            <Holds className="w-fit min-w-[35px] h-full flex items-center">
-              <img
-                onClick={() => onCrewLeadToggle(employee.id)} // Pass employeeId to handler
-                src={
-                  isCurrentLead
-                    ? "/starFilled.svg"
-                    : isCrewMember
-                    ? "/star.svg"
-                    : "/star.svg"
-                }
-                alt={
-                  isCurrentLead
-                    ? "Current Crew Lead"
-                    : isCrewMember
-                    ? "Make Crew Lead"
-                    : "Add to crew first"
-                }
-                className={`w-[35px] h-[35px] ${
-                  isCrewMember
-                    ? "cursor-pointer hover:opacity-80"
-                    : "cursor-not-allowed opacity-50"
-                } transition-opacity`}
-                title={
-                  isCurrentLead
-                    ? "Current Crew Lead"
-                    : isCrewMember
-                    ? "Make Crew Lead"
-                    : "Add to crew first"
-                }
-              />
-            </Holds>
-          )}
-          <Holds className="w-fit min-w-[35px] h-full flex items-center">
-            <CheckBox
-              shadow={false}
-              checked={isCrewMember}
-              onChange={() => onEmployeeCheck(employee)} // Pass employee to handler
-              id={`crew-member-${employee.id}`}
-              name={`crew-member-${employee.id}`}
-              width={30}
-              height={30}
-            />
-          </Holds>
-        </>
+        <Holds className="w-fit min-w-[35px] h-full flex justify-center">
+          <CheckBox
+            shadow={false}
+            checked={isCrewMember}
+            onChange={() => onEmployeeCheck(employee)} // Pass employee to handler
+            id={`crew-member-${employee.id}`}
+            name={`crew-member-${employee.id}`}
+            width={28}
+            height={28}
+          />
+        </Holds>
       )}
     </Holds>
   );
