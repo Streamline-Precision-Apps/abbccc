@@ -86,6 +86,25 @@ export const useUserData = ({
       return;
     }
 
+    if (name === "activeEmployee") {
+      const isActive = value === "Active";
+      const newTerminationDate = isActive ? null : new Date().toISOString();
+      const hasChanged =
+        (editState.originalUser?.terminationDate === null) !== isActive;
+
+      updateEditState({
+        user: {
+          ...editState.user,
+          terminationDate: newTerminationDate,
+        },
+        edited: {
+          ...editState.edited,
+          terminationDate: hasChanged,
+        },
+      });
+      return;
+    }
+
     updateEditState({
       user: { ...editState.user, [name]: value },
       edited: {
@@ -163,7 +182,7 @@ export const useUserData = ({
       "emergencyContactNumber",
       editState.user.Contact?.emergencyContactNumber || ""
     );
-    formData.set("terminationDate", new Date().toISOString());
+    formData.set("terminationDate", editState.user.terminationDate || "");
     formData.set("crewLeads", JSON.stringify(editState.crewLeads));
     formData.set("selectedCrews", JSON.stringify(editState.selectedCrews));
 

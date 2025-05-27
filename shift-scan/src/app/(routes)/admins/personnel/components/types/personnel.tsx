@@ -11,7 +11,7 @@ export interface UserData {
   tascoView: boolean;
   laborView: boolean;
   mechanicView: boolean;
-  activeEmployee: boolean;
+  terminationDate: string | null;
   startDate?: string;
   Contact: {
     phoneNumber: string;

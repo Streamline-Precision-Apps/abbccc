@@ -48,6 +48,7 @@ interface PersonnelMainContentProps {
   initializeCrewEditState: (crewData: CrewData) => CrewEditState;
   setCrewCreationSuccess: (isSuccess: boolean) => void;
   fetchAllData: () => Promise<void>;
+  isUserEditStateDirty: (userId: string) => boolean;
 }
 
 export default function PersonnelMainContent(props: PersonnelMainContentProps) {
@@ -72,6 +73,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
     retainOnlyCrewEditState,
     discardCrewEditChanges,
     fetchAllData,
+    isUserEditStateDirty,
   } = props;
 
   return (
@@ -102,6 +104,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             discardUserEditChanges={discardUserEditChanges}
             setViewOption={setView}
             viewOption={view}
+            isUserEditStateDirty={isUserEditStateDirty}
           />
           <CreateNewCrewTab
             setView={() =>
@@ -191,6 +194,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             discardUserEditChanges={discardUserEditChanges}
             setViewOption={setView}
             viewOption={view}
+            isUserEditStateDirty={isUserEditStateDirty}
           />
         </>
       )}
@@ -302,6 +306,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             discardUserEditChanges={discardUserEditChanges}
             setViewOption={setView}
             viewOption={view}
+            isUserEditStateDirty={isUserEditStateDirty}
           />
         </>
       )}
