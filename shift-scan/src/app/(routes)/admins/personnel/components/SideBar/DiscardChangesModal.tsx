@@ -34,6 +34,11 @@ const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
       view.mode === "registerBoth"
     ) {
       changeType = "registration form changes";
+    } else if (
+      view.mode === "registerCrew" ||
+      view.mode === "registerCrew+user"
+    ) {
+      changeType = "crew creation form changes";
     }
   }
 

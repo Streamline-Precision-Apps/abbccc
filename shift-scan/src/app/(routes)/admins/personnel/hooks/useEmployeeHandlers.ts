@@ -23,6 +23,7 @@ interface UseEmployeeHandlersProps {
   isCrewEditStateDirty?: (crewId: string) => boolean;
   discardCrewEditChanges?: (crewId: string) => void;
   isRegistrationFormDirty?: () => boolean;
+  isCrewCreationFormDirty?: () => boolean;
   setNextView?: (view: PersonnelView | null) => void; // For showing confirmation
   setIsDiscardChangesModalOpen?: (isOpen: boolean) => void; // For showing confirmation
   filteredList: BaseUser[];
@@ -42,6 +43,7 @@ export const useEmployeeHandlers = ({
   isCrewEditStateDirty,
   discardCrewEditChanges,
   isRegistrationFormDirty,
+  isCrewCreationFormDirty,
   setNextView,
   setIsDiscardChangesModalOpen,
   filteredList,
@@ -88,6 +90,14 @@ export const useEmployeeHandlers = ({
          view.mode === "registerBoth") && 
         isRegistrationFormDirty && 
         isRegistrationFormDirty();
+        
+      // Check for unsaved crew creation form changes
+      const hasUnsavedCrewCreationChanges = 
+        (view.mode === "registerCrew" || 
+         view.mode === "registerCrew+user" || 
+         view.mode === "registerBoth") && 
+        isCrewCreationFormDirty && 
+        isCrewCreationFormDirty();
       
       // Import to check registration state if available
       const needsConfirmation = 
@@ -96,7 +106,8 @@ export const useEmployeeHandlers = ({
          isUserEditStateDirty && 
          isUserEditStateDirty(view.userId)) ||
         (hasDirtyCrewEdits && !isCrewToUserView) ||
-        hasUnsavedRegistrationChanges;
+        hasUnsavedRegistrationChanges ||
+        hasUnsavedCrewCreationChanges;
       
       // Check if we need to show a confirmation dialog
       if (needsConfirmation && setNextView && setIsDiscardChangesModalOpen) {
@@ -107,7 +118,7 @@ export const useEmployeeHandlers = ({
         setView(isSameUser ? { mode: "default" } : targetView);
       }
     },
-    [view, setView, isCrewEditStateDirty, isUserEditStateDirty, isRegistrationFormDirty, setNextView, setIsDiscardChangesModalOpen]
+    [view, setView, isCrewEditStateDirty, isUserEditStateDirty, isRegistrationFormDirty, isCrewCreationFormDirty, setNextView, setIsDiscardChangesModalOpen]
   );
 
   const handleCrewLeadToggle = useCallback(

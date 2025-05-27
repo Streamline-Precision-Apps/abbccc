@@ -18,12 +18,14 @@ export default function RegisterNewCrew({
   employees,
   handleCrewSubmit,
   updateCrewForm,
+  isCrewCreationFormDirty,
 }: {
   cancelCrewCreation: () => void;
   crewCreationState: CrewCreationState;
   employees: BaseUser[];
   handleCrewSubmit: (e: React.FormEvent) => Promise<void>;
   updateCrewForm: (updates: Partial<CrewCreationState["form"]>) => void;
+  isCrewCreationFormDirty?: () => boolean;
 }) {
   const [cancelRegistrationModalOpen, setCancelRegistrationModalOpen] =
     useState(false);
@@ -80,8 +82,12 @@ export default function RegisterNewCrew({
                   text={"link"}
                   size={"p7"}
                   onClick={() => {
-                    if (isFormEmpty()) {
-                      // If the form is empty, bypass the modal and cancel directly
+                    // Use isCrewCreationFormDirty if available, otherwise fall back to isFormEmpty
+                    const hasUnsavedChanges = isCrewCreationFormDirty
+                      ? isCrewCreationFormDirty()
+                      : !isFormEmpty();
+                    if (!hasUnsavedChanges) {
+                      // If no unsaved changes, bypass the modal and cancel directly
                       cancelCrewCreation();
                     } else {
                       // Otherwise show the confirmation modal

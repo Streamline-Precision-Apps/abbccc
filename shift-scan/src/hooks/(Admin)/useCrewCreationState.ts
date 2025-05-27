@@ -79,6 +79,23 @@ export const useCrewCreationState = () => {
       isSuccess: false,
     });
   };
+  
+  // Check if the crew creation form has any user-entered data
+  const isCrewCreationFormDirty = () => {
+    // Check if crew name has content
+    const hasCrewName = state.form.crewName.trim() !== "";
+
+    // Check if crew type is selected
+    const hasCrewType = state.form.crewType.trim() !== "";
+
+    // Check if any users are selected
+    const hasSelectedUsers = state.selectedUsers.length > 0;
+
+    // Check if a team lead is selected
+    const hasTeamLead = state.teamLead !== null;
+
+    return hasCrewName || hasCrewType || hasSelectedUsers || hasTeamLead;
+  };
 
   return {
     crewCreationState: state,
@@ -90,5 +107,6 @@ export const useCrewCreationState = () => {
     selectLead,
     addMembers,
     removeMembers,
+    isCrewCreationFormDirty,
   };
 };

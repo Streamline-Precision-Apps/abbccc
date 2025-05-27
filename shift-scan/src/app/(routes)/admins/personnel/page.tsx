@@ -45,6 +45,7 @@ export default function Personnel() {
     setCrewCreationPending,
     resetCrewCreationState,
     setCrewCreationSuccess,
+    isCrewCreationFormDirty,
   } = useCrewCreationState();
 
   const { view, setView } = useViewState();
@@ -181,6 +182,8 @@ export default function Personnel() {
             discardCrewEditChanges={discardCrewEditChanges}
             isRegistrationFormDirty={isRegistrationFormDirty}
             resetRegistrationState={resetRegistrationState}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
+            resetCrewCreationState={resetCrewCreationState}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}
@@ -209,6 +212,7 @@ export default function Personnel() {
             setCrewCreationSuccess={setCrewCreationSuccess}
             fetchAllData={fetchAllData}
             isUserEditStateDirty={isUserEditStateDirty}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
         </Grids>
       </Holds>
