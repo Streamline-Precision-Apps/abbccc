@@ -49,33 +49,31 @@ const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
       size="sm"
       background="noOpacity"
     >
-      <Holds className="w-full h-full items-center justify-center text-center pt-3">
-        <Contents width="section" className="h-full">
-          <Holds className="flex h-1/2">
-            <Texts size="p5">
-              You have unsaved {changeType}. Are you sure you want to discard
-              them?
-            </Texts>
-          </Holds>
-          <Holds className="flex justify-center items-center gap-4 h-1/2">
-            <Buttons
-              shadow="none"
-              background="lightBlue"
-              className="w-full p-2"
-              onClick={confirmDiscardChanges}
-            >
-              <Titles size="h5">Yes, continue.</Titles>
-            </Buttons>
-            <Buttons
-              background="red"
-              shadow="none"
-              className="w-full p-2"
-              onClick={cancelDiscard}
-            >
-              <Titles size="h5">No, go back!</Titles>
-            </Buttons>
-          </Holds>
-        </Contents>
+      <Holds className="w-full h-full items-center justify-center text-center px-4">
+        <Holds className="w-[90%] flex h-1/2">
+          <Texts size="p5">
+            You have unsaved {changeType}. Are you sure you want to discard
+            them?
+          </Texts>
+        </Holds>
+        <Holds className="w-[80%] flex justify-center items-center gap-4 h-1/2">
+          <Buttons
+            shadow="none"
+            background="lightBlue"
+            className="w-full p-1"
+            onClick={confirmDiscardChanges}
+          >
+            <Titles size="sm">Yes, continue.</Titles>
+          </Buttons>
+          <Buttons
+            background="red"
+            shadow="none"
+            className="w-full p-1"
+            onClick={cancelDiscard}
+          >
+            <Titles size="sm">No, go back!</Titles>
+          </Buttons>
+        </Holds>
       </Holds>
     </NModals>
   );
