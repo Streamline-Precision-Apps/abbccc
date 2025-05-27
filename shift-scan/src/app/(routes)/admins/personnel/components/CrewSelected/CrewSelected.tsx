@@ -1,7 +1,6 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import {
   BaseUser,
@@ -17,7 +16,6 @@ import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
 import DeleteModal from "./DeleteModal";
 import ActionBar from "./ActionBar";
 import { EditableFields } from "@/components/(reusable)/EditableField";
-import { Inputs } from "@/components/(reusable)/inputs";
 
 const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   const res = await fetch(`/api/getCrewByIdAdmin/${crewId}`);
@@ -182,7 +180,16 @@ export default function CrewSelected({
 
   const isFieldEdited = (field: keyof CrewData): boolean => {
     if (!crew || !originalCrew) return false;
-    return crew[field] !== originalCrew[field];
+
+    const currentValue = crew[field];
+    const originalValue = originalCrew[field];
+
+    // Perform a deep comparison for arrays or objects
+    if (Array.isArray(currentValue) && Array.isArray(originalValue)) {
+      return JSON.stringify(currentValue) !== JSON.stringify(originalValue);
+    }
+
+    return currentValue !== originalValue;
   };
 
   return (
@@ -241,7 +248,7 @@ export default function CrewSelected({
                         handleInputChange("name", originalCrew?.name || "")
                       }
                       size="default"
-                      variant="default"
+                      variant={isFieldEdited("name") ? "edited" : "default"}
                     />
                   </Holds>
 
@@ -249,24 +256,30 @@ export default function CrewSelected({
                     <Texts position={"left"} size={"p7"}>
                       Crew Type
                     </Texts>
-                    <Selects
-                      name="crewType"
+                    <EditableFields
                       value={crew?.crewType || ""}
-                      className={`h-10 pl-2 ${
-                        isFieldEdited("crewType")
-                          ? "border-2 border-orange-400"
-                          : ""
-                      }`}
+                      name="crewType"
+                      isChanged={isFieldEdited("crewType")}
                       onChange={(e) =>
                         handleInputChange("crewType", e.target.value)
                       }
-                    >
-                      <option value="">Select a crew type</option>
-                      <option value="TRUCK_DRIVER">Truck Driver</option>
-                      <option value="TASCO">Tasco</option>
-                      <option value="MECHANIC">Mechanical</option>
-                      <option value="LABOR">Labor</option>
-                    </Selects>
+                      onRevert={() =>
+                        handleInputChange(
+                          "crewType",
+                          originalCrew?.crewType || ""
+                        )
+                      }
+                      size="default"
+                      variant={isFieldEdited("crewType") ? "edited" : "default"}
+                      formDatatype="select"
+                      options={[
+                        { value: "", label: "Select a crew type" },
+                        { value: "TRUCK_DRIVER", label: "Truck Driver" },
+                        { value: "TASCO", label: "Tasco" },
+                        { value: "MECHANIC", label: "Mechanical" },
+                        { value: "LABOR", label: "Labor" },
+                      ]}
+                    />
                   </Holds>
                 </Holds>
               </Holds>
@@ -311,10 +324,10 @@ export default function CrewSelected({
                           )
                         }
                         size="default"
-                        variant="default"
+                        variant={isFieldEdited("leadId") ? "edited" : "default"}
                         className={`pl-2 ${
                           crew?.leadId ? "" : "text-app-red "
-                        }`}
+                        } `}
                         readonly={true}
                       />
                     </Holds>

@@ -90,6 +90,42 @@ export const useEmployeeHandlers = ({
             leadId: true,
           },
         });
+      } else if (view.mode === "registerUser+crew" && view.crewId) {
+        const currentCrew = crewEditStates[view.crewId]?.crew;
+        console.log("Current crew:", currentCrew);
+        if (!currentCrew) return; // Ensure currentCrew is defined
+
+        const updatedLeadId =
+          currentCrew.leadId === employeeId ? "" : employeeId;
+
+        updateCrewEditState(view.crewId, {
+          crew: {
+            ...currentCrew,
+            leadId: updatedLeadId,
+          },
+          edited: {
+            ...crewEditStates[view.crewId]?.edited,
+            leadId: true,
+          },
+        });
+      } else if (view.mode === "user+crew" && view.crewId) {
+        const currentCrew = crewEditStates[view.crewId]?.crew;
+        console.log("Current crew:", currentCrew);
+        if (!currentCrew) return; // Ensure currentCrew is defined
+
+        const updatedLeadId =
+          currentCrew.leadId === employeeId ? "" : employeeId;
+
+        updateCrewEditState(view.crewId, {
+          crew: {
+            ...currentCrew,
+            leadId: updatedLeadId,
+          },
+          edited: {
+            ...crewEditStates[view.crewId]?.edited,
+            leadId: true,
+          },
+        });
       } else {
         selectLead(
           crewCreationState.teamLead === employeeId ? null : employeeId
@@ -102,6 +138,42 @@ export const useEmployeeHandlers = ({
   const handleEmployeeCheck = useCallback(
     (employee: BaseUser) => {
       if (view.mode === "crew" && view.crewId) {
+        const currentUsers = crewEditStates[view.crewId].crew?.Users || [];
+        const isSelected = currentUsers.some((u) => u.id === employee.id);
+
+        const updatedUsers = isSelected
+          ? currentUsers.filter((u) => u.id !== employee.id) // Remove the employee
+          : [...currentUsers, employee]; // Add the employee
+
+        updateCrewEditState(view.crewId, {
+          crew: {
+            ...crewEditStates[view.crewId].crew!,
+            Users: updatedUsers,
+          },
+          edited: {
+            ...crewEditStates[view.crewId].edited,
+            users: true,
+          },
+        });
+      } else if (view.mode === "user+crew" && view.crewId && view.userId) {
+        const currentUsers = crewEditStates[view.crewId].crew?.Users || [];
+        const isSelected = currentUsers.some((u) => u.id === employee.id);
+
+        const updatedUsers = isSelected
+          ? currentUsers.filter((u) => u.id !== employee.id) // Remove the employee
+          : [...currentUsers, employee]; // Add the employee
+
+        updateCrewEditState(view.crewId, {
+          crew: {
+            ...crewEditStates[view.crewId].crew!,
+            Users: updatedUsers,
+          },
+          edited: {
+            ...crewEditStates[view.crewId].edited,
+            users: true,
+          },
+        });
+      } else if (view.mode === "registerUser+crew" && view.crewId) {
         const currentUsers = crewEditStates[view.crewId].crew?.Users || [];
         const isSelected = currentUsers.some((u) => u.id === employee.id);
 
