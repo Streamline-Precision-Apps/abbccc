@@ -49,6 +49,7 @@ interface PersonnelMainContentProps {
   setCrewCreationSuccess: (isSuccess: boolean) => void;
   fetchAllData: () => Promise<void>;
   isUserEditStateDirty: (userId: string) => boolean;
+  isCrewCreationFormDirty?: () => boolean;
 }
 
 export default function PersonnelMainContent(props: PersonnelMainContentProps) {
@@ -74,6 +75,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
     discardCrewEditChanges,
     fetchAllData,
     isUserEditStateDirty,
+    isCrewCreationFormDirty,
   } = props;
 
   return (
@@ -169,6 +171,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             employees={employees}
             handleCrewSubmit={handleCrewSubmit}
             updateCrewForm={updateCrewForm}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
           <UserSelected
             crew={crew}
@@ -206,6 +209,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             employees={employees}
             handleCrewSubmit={handleCrewSubmit}
             updateCrewForm={updateCrewForm}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
           <RegisterNewUser
             crew={crew}
@@ -341,6 +345,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
             employees={employees}
             handleCrewSubmit={handleCrewSubmit}
             updateCrewForm={updateCrewForm}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
           <CreateNewUserTab setView={() => setView({ mode: "registerBoth" })} />
         </>

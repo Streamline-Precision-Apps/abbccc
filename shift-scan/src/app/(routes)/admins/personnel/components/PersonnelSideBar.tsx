@@ -46,6 +46,8 @@ export default function PersonnelSideBar({
   discardCrewEditChanges,
   isRegistrationFormDirty,
   resetRegistrationState,
+  isCrewCreationFormDirty,
+  resetCrewCreationState,
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
@@ -71,6 +73,8 @@ export default function PersonnelSideBar({
   discardCrewEditChanges: (crewId: string) => void;
   isRegistrationFormDirty: () => boolean;
   resetRegistrationState: () => void;
+  isCrewCreationFormDirty: () => boolean;
+  resetCrewCreationState: () => void;
 }) {
   const t = useTranslations("Admins");
   const [nextView, setNextView] = useState<PersonnelView | null>(null);
@@ -137,10 +141,21 @@ export default function PersonnelSideBar({
       // Handle registration form discards
       else if (
         view.mode === "registerUser" || 
-        view.mode === "registerUser+crew" || 
-        view.mode === "registerBoth"
+        view.mode === "registerUser+crew"
       ) {
         resetRegistrationState();
+      }
+      // Handle crew creation form discards
+      else if (
+        view.mode === "registerCrew" ||
+        view.mode === "registerCrew+user" 
+      ) {
+        resetCrewCreationState();
+      }
+      // Handle both registration and crew creation form discards
+      else if (view.mode === "registerBoth") {
+        resetRegistrationState();
+        resetCrewCreationState();
       }
 
       setView(nextView);
@@ -227,6 +242,13 @@ export default function PersonnelSideBar({
                    view.mode === "registerUser+crew" || 
                    view.mode === "registerBoth") && 
                   isRegistrationFormDirty();
+                  
+                // Check if there are unsaved crew creation form changes
+                const hasUnsavedCrewCreationChanges =
+                  (view.mode === "registerCrew" ||
+                   view.mode === "registerCrew+user" ||
+                   view.mode === "registerBoth") &&
+                  isCrewCreationFormDirty && isCrewCreationFormDirty();
 
                 // Determine if we're switching from crew to user+crew (adding a user to the view)
                 const isCrewToUserView =
@@ -237,7 +259,10 @@ export default function PersonnelSideBar({
                 // Show confirmation dialog if:
                 // 1. There are unsaved crew changes (and we're not just adding a user to the view)
                 // 2. There are unsaved registration changes
-                if ((hasUnsavedCrewChanges && !isCrewToUserView) || hasUnsavedRegistrationChanges) {
+                // 3. There are unsaved crew creation changes
+                if ((hasUnsavedCrewChanges && !isCrewToUserView) || 
+                    hasUnsavedRegistrationChanges || 
+                    hasUnsavedCrewCreationChanges) {
                   // Store target view and show confirmation modal
                   setNextView(targetView);
                   setIsDiscardChangesModalOpen(true);
