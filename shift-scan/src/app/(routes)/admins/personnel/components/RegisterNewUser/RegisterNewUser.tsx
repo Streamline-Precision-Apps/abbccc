@@ -6,8 +6,8 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import CrewSelectList from "./RegisterNewUser/CrewSelectList";
-import { PersonnelView, RegistrationState } from "./types/personnel";
+import CrewSelectList from "./CrewSelectList";
+import { PersonnelView, RegistrationState } from "../types/personnel";
 import { Dispatch, SetStateAction, useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 
@@ -432,7 +432,7 @@ export default function RegisterNewUser({
         <Holds className="w-full h-full justify-center items-center">
           <Holds className="w-full h-full justify-center items-center ">
             <Texts size={"p6"} className="italic">
-              Are you sure you want to cancel creating this crew?
+              Are you sure you want to cancel creating this user?
             </Texts>
           </Holds>
           <Holds className="w-full h-full justify-center items-center gap-3 mt-2 p-3">

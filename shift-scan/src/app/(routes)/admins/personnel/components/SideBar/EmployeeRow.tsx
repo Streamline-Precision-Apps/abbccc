@@ -2,18 +2,18 @@ import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
-import { BaseUser } from "./types/personnel";
+import { UserData } from "../types/personnel";
 
 interface EmployeeRowProps {
-  employee: BaseUser; // Use BaseUser type directly
+  employee: UserData; // Use BaseUser type directly
   isSelected: boolean;
   isCrew: boolean;
   isManager: boolean;
   isCrewMember: boolean;
   isCurrentLead: boolean;
-  onEmployeeClick: (employee: BaseUser) => void; // Accept employee as argument
+  onEmployeeClick: (employee: UserData) => void; // Accept employee as argument
   onCrewLeadToggle: (employeeId: string) => void; // Accept employeeId as argument
-  onEmployeeCheck: (employee: BaseUser) => void; // Accept employee as argument
+  onEmployeeCheck: (employee: UserData) => void; // Accept employee as argument
 }
 
 const EmployeeRow: React.FC<EmployeeRowProps> = ({

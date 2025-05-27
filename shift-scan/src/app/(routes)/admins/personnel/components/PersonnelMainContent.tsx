@@ -11,12 +11,12 @@ import {
 } from "./types/personnel";
 import { Dispatch, SetStateAction } from "react";
 import UserSelected from "./UserSelected";
-import CreateNewCrewTab from "./CreateNewCrew";
+import CreateNewCrewTab from "./CreateNewCrewTab";
 import CreateNewUserTab from "./CreateNewUserTab";
 import DefaultTab from "./defaultTab";
-import RegisterNewCrew from "./RegisterNewCrew";
-import RegisterNewUser from "./RegisterNewUser";
-import ViewCrew from "./ViewCrew";
+import RegisterNewCrew from "./RegisterNewCrew/RegisterNewCrew";
+import RegisterNewUser from "./RegisterNewUser/RegisterNewUser";
+import CrewSelected from "./CrewSelected/CrewSelected";
 
 interface PersonnelMainContentProps {
   view: PersonnelView;
@@ -119,7 +119,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       )}
       {view.mode === "registerUser+crew" && (
         <>
-          <ViewCrew
+          <CrewSelected
             setView={() => setView({ mode: "registerUser" })}
             fetchAllData={fetchAllData}
             resetView={() => setView({ mode: "default" })}
@@ -217,7 +217,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       )}
       {view.mode === "crew" && (
         <>
-          <ViewCrew
+          <CrewSelected
             setView={() => setView({ mode: "registerUser" })}
             fetchAllData={fetchAllData}
             resetView={() => setView({ mode: "default" })}
@@ -252,7 +252,7 @@ export default function PersonnelMainContent(props: PersonnelMainContentProps) {
       )}
       {view.mode === "user+crew" && (
         <>
-          <ViewCrew
+          <CrewSelected
             setView={() => setView({ mode: "registerUser" })}
             fetchAllData={fetchAllData}
             resetView={() => setView({ mode: "default" })}

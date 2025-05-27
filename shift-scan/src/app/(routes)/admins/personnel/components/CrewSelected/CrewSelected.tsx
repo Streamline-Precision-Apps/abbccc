@@ -1,7 +1,6 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import {
@@ -9,15 +8,16 @@ import {
   CrewData,
   CrewEditState,
   PersonnelView,
-} from "./types/personnel";
+} from "../types/personnel";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { saveCrew, deleteCrew } from "@/actions/PersonnelActions";
 import Spinner from "@/components/(animations)/spinner";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
+import DeleteModal from "./DeleteModal";
+import ActionBar from "./ActionBar";
+import { EditableFields } from "@/components/(reusable)/EditableField";
+import { Inputs } from "@/components/(reusable)/inputs";
 
 const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   const res = await fetch(`/api/getCrewByIdAdmin/${crewId}`);
@@ -26,7 +26,7 @@ const fetchCrewData = async (crewId: string): Promise<CrewData> => {
   return data as CrewData;
 };
 
-export default function ViewCrew({
+export default function CrewSelected({
   setView,
   crewId,
   employees,
@@ -173,118 +173,15 @@ export default function ViewCrew({
       <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
         <Grids className="w-full h-full grid-rows-[40px_1fr] gap-5">
           {/* Action Bar */}
-          <Holds
-            background={"white"}
-            position={"row"}
-            className="w-full px-5 py-1 justify-between items-center relative"
-          >
-            <Texts
-              text={"link"}
-              size={"p7"}
-              onClick={
-                !isCrewEditStateDirty(crewId) ? handleCreateNew : undefined
-              }
-              style={{
-                pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
-                opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
-                cursor: !isCrewEditStateDirty(crewId)
-                  ? "pointer"
-                  : "not-allowed",
-              }}
-            >
-              Create New Crew
-            </Texts>
-
-            <Texts
-              text={"link"}
-              size={"p7"}
-              onClick={
-                !isCrewEditStateDirty(crewId)
-                  ? () => setDeleteModalOpen(true)
-                  : undefined
-              }
-              style={{
-                pointerEvents: !isCrewEditStateDirty(crewId) ? "auto" : "none",
-                opacity: !isCrewEditStateDirty(crewId) ? 1 : 0.5,
-                cursor: !isCrewEditStateDirty(crewId)
-                  ? "pointer"
-                  : "not-allowed",
-              }}
-            >
-              Delete Crew
-            </Texts>
-            {isCrewEditStateDirty(crewId) && (
-              <Texts
-                text={"link"}
-                size={"p7"}
-                onClick={
-                  isCrewEditStateDirty(crewId)
-                    ? handleDiscardChanges
-                    : undefined
-                }
-                style={{
-                  pointerEvents: isCrewEditStateDirty(crewId) ? "auto" : "none",
-                  opacity: isCrewEditStateDirty(crewId) ? 1 : 0.5,
-                  cursor: isCrewEditStateDirty(crewId)
-                    ? "pointer"
-                    : "not-allowed",
-                }}
-              >
-                Discard Changes
-              </Texts>
-            )}
-
-            <Texts
-              text={"link"}
-              size={"p7"}
-              onClick={handleSave}
-              style={{
-                opacity: loading
-                  ? 0.5
-                  : Object.keys(edited).length > 0
-                  ? 1
-                  : 0.5,
-                pointerEvents: loading ? "none" : "auto",
-              }}
-            >
-              {loading ? "Saving..." : "Save Changes"}
-            </Texts>
-            {!isCrewEditStateDirty(crewId) && (
-              <Texts
-                text={"link"}
-                size={"p7"}
-                onClick={() => {
-                  try {
-                    if (viewOption.mode === "crew") {
-                      setViewOption({ mode: "default" });
-                    } else if (viewOption.mode === "user+crew" && userId) {
-                      setViewOption({ mode: "user", userId });
-                    } else if (viewOption.mode === "registerUser+crew") {
-                      setViewOption({ mode: "registerUser" });
-                    } else {
-                      setViewOption({ mode: "default" });
-                    }
-                  } catch (error) {
-                    console.error("Error resetting view:", error);
-                  } finally {
-                    retainOnlyCrewEditState(crewId);
-                  }
-                }}
-              >
-                Close
-              </Texts>
-            )}
-            {successfullyUpdated && (
-              <Holds
-                background={"green"}
-                className="absolute w-full h-full top-0 left-0 justify-center items-center"
-              >
-                <Texts size={"p6"} className="italic">
-                  Successfully Updated Crew!
-                </Texts>
-              </Holds>
-            )}
-          </Holds>
+          <ActionBar
+            isDirty={isCrewEditStateDirty(crewId)}
+            onCreateNew={handleCreateNew}
+            onDelete={() => setDeleteModalOpen(true)}
+            onDiscardChanges={handleDiscardChanges}
+            onSave={handleSave}
+            loading={loading}
+            successfullyUpdated={successfullyUpdated}
+          />
 
           {/* Main Form Content */}
           {loading || !crew ? (
@@ -315,18 +212,18 @@ export default function ViewCrew({
                     <Texts position={"left"} size={"p7"}>
                       Crew Name
                     </Texts>
-                    <Inputs
-                      type="text"
-                      name="crewName"
+                    <EditableFields
                       value={crew?.name || ""}
+                      name="crewName"
+                      isChanged={isFieldEdited("name")}
                       onChange={(e) =>
                         handleInputChange("name", e.target.value)
                       }
-                      className={`h-10 pl-2 ${
-                        isFieldEdited("name")
-                          ? "border-2 border-orange-400"
-                          : ""
-                      }`}
+                      onRevert={() =>
+                        handleInputChange("name", originalCrew?.name || "")
+                      }
+                      size="default"
+                      variant="default"
                     />
                   </Holds>
 
@@ -367,9 +264,7 @@ export default function ViewCrew({
                       <Texts size={"p7"} position={"left"}>
                         Crew Lead
                       </Texts>
-                      <Inputs
-                        type="text"
-                        name="crewLead"
+                      <EditableFields
                         value={
                           crew.leadId
                             ? (() => {
@@ -386,12 +281,23 @@ export default function ViewCrew({
                               })()
                             : "No crew lead selected"
                         }
-                        readOnly
-                        className={`pl-2  ${
-                          isFieldEdited("leadId")
-                            ? "border-2 border-orange-400"
-                            : ""
-                        } ${crew?.leadId ? "" : "text-app-red "}`}
+                        name="crewLead"
+                        isChanged={isFieldEdited("leadId")}
+                        onChange={(e) =>
+                          handleInputChange("leadId", e.target.value)
+                        }
+                        onRevert={() =>
+                          handleInputChange(
+                            "leadId",
+                            originalCrew?.leadId || ""
+                          )
+                        }
+                        size="default"
+                        variant="default"
+                        className={`pl-2 ${
+                          crew?.leadId ? "" : "text-app-red "
+                        }`}
+                        readonly={true}
                       />
                     </Holds>
                     <Holds className="h-full w-full">
@@ -444,44 +350,12 @@ export default function ViewCrew({
           )}
         </Grids>
       </Holds>
-      <NModals
+
+      <DeleteModal
         isOpen={deleteModalOpen}
-        handleClose={() => setDeleteModalOpen(false)}
-        size="xs"
-        background={"noOpacity"}
-      >
-        <Holds className="w-full h-full justify-center items-center px-6">
-          <Holds className="w-full h-full justify-center items-center">
-            <Texts size={"p7"}>
-              Are you sure you want to delete this Crew? This cannot be undone.
-            </Texts>
-          </Holds>
-          <Holds className="mt-4 gap-2">
-            <Buttons
-              shadow={"none"}
-              background={"lightBlue"}
-              onClick={() => {
-                handleDelete();
-              }}
-              className="py-2 border-none"
-            >
-              <Titles size="h6" className="">
-                Yes, continue.
-              </Titles>
-            </Buttons>
-            <Buttons
-              shadow={"none"}
-              background={"red"}
-              onClick={() => setDeleteModalOpen(false)}
-              className="py-2 border-none"
-            >
-              <Titles size="h6" className="">
-                No, go back!
-              </Titles>
-            </Buttons>
-          </Holds>
-        </Holds>
-      </NModals>
+        onClose={() => setDeleteModalOpen(false)}
+        onDelete={handleDelete}
+      />
     </>
   );
 }

@@ -6,7 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import {
-  BaseUser,
+  UserData,
   CrewCreationState,
   CrewEditState,
   PersonnelView,
@@ -20,8 +20,9 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import Spinner from "@/components/(animations)/spinner";
-import EmployeeRow from "./EmployeeRow";
+import EmployeeRow from "./SideBar/EmployeeRow";
 import { useEmployeeHandlers } from "../hooks/useEmployeeHandlers";
+import DiscardChangesModal from "./SideBar/DiscardChangesModal";
 
 export default function PersonnelSideBar({
   view,
@@ -49,7 +50,7 @@ export default function PersonnelSideBar({
   term: string;
   setTerm: Dispatch<SetStateAction<string>>;
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  filteredList: BaseUser[];
+  filteredList: UserData[];
   userEditStates: Record<string, UserEditState>;
   isUserEditStateDirty: (userId: string) => boolean;
   discardUserEditChanges: (userId: string) => void;
@@ -217,40 +218,11 @@ export default function PersonnelSideBar({
         </Grids>
       </Holds>
 
-      <NModals
+      <DiscardChangesModal
         isOpen={isDiscardChangesModalOpen}
-        handleClose={cancelDiscard}
-        size="sm"
-        background={"noOpacity"}
-      >
-        <Holds className="w-full h-full items-center justify-center text-center pt-3">
-          <Contents width={"section"} className="h-full">
-            <Holds className="flex  h-1/2">
-              <Texts size="p5">
-                You have unsaved changes. Are you sure you want to discard them?
-              </Texts>
-            </Holds>
-            <Holds className="flex justify-center items-center gap-4 h-1/2">
-              <Buttons
-                shadow={"none"}
-                background={"lightBlue"}
-                className="w-full p-2 "
-                onClick={confirmDiscardChanges}
-              >
-                <Titles size="h5">Yes, continue.</Titles>
-              </Buttons>
-              <Buttons
-                background={"red"}
-                shadow={"none"}
-                className=" w-full p-2"
-                onClick={cancelDiscard}
-              >
-                <Titles size="h5">No, go back!</Titles>
-              </Buttons>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
+        confirmDiscardChanges={confirmDiscardChanges}
+        cancelDiscard={cancelDiscard}
+      />
     </>
   );
 }

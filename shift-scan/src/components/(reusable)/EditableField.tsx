@@ -5,6 +5,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
+import { read } from "fs";
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
 interface EditableFieldsProps
@@ -24,6 +25,7 @@ interface EditableFieldsProps
   maxLength?: number;
   pattern?: string;
   name?: string;
+  readonly?: boolean;
 }
 
 const EditableFieldsVariants = cva(
@@ -67,6 +69,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
   iconSrc = "/arrowBack.svg",
   iconAlt = "revert",
   name,
+  readonly = false, // Added readonly prop
 }) => {
   return (
     <div
@@ -89,6 +92,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
           minLength={minLength}
           maxLength={maxLength}
           pattern={pattern}
+          readOnly={readonly}
         />
       </div>
 
