@@ -2,13 +2,13 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { z } from "zod";
 import {
-  BaseUser,
+  UserData,
   CrewData,
 } from "@/app/(routes)/admins/personnel/components/types/personnel";
 
 export const usePersonnelState = () => {
   const [loading, setLoading] = useState(false);
-  const [employees, setEmployees] = useState<BaseUser[]>([]);
+  const [employees, setEmployees] = useState<UserData[]>([]);
   const [crew, setCrew] = useState<CrewData[]>([]);
   const [term, setTerm] = useState("");
 

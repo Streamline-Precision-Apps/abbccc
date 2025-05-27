@@ -6,7 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import { BaseUser, CrewCreationState } from "./types/personnel";
+import { BaseUser, CrewCreationState } from "../types/personnel";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { useState } from "react";

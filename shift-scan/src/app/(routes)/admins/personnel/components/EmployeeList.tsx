@@ -1,4 +1,4 @@
-import EmployeeRow from "./EmployeeRow";
+import EmployeeRow from "./SideBar/EmployeeRow";
 import { UserData, PersonnelView } from "./types/personnel";
 
 interface EmployeeListProps {
