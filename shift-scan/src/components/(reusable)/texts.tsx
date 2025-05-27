@@ -22,6 +22,7 @@ const TextVariants = cva(
         red: "text-red-500",
         green: "text-green-500",
         gray: "text-gray-500",
+        italic: "italic",
       },
       position: {
         //only position attributes
