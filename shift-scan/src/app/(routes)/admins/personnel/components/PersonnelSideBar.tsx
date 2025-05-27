@@ -81,10 +81,6 @@ export default function PersonnelSideBar({
       ? view.crewId
       : null;
 
-  const currentCrewState = isEditingExistingCrew
-    ? crewEditStates[currentCrewId!]?.crew
-    : null;
-
   const selectedUsers = isEditingExistingCrew
     ? crewEditStates[currentCrewId!]?.crew?.Users || []
     : crewCreationState.selectedUsers;

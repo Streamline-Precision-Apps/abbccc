@@ -94,6 +94,30 @@ export default function RegisterNewUser({
   );
   const { form, selectedCrews, isPending, isSuccess } = registrationState;
 
+  // Check if form is empty (no information has been entered)
+  const isFormEmpty = () => {
+    // Check if any text field has content, excluding permission level and employment status
+    const relevantFields = Object.entries(form)
+      .filter(([key]) => !["permissionLevel", "employmentStatus"].includes(key))
+      .map(([_, value]) => value);
+
+    const hasTextContent = relevantFields.some(
+      (value) => typeof value === "string" && value.trim() !== ""
+    );
+
+    // Check if any crews are selected
+    const hasSelectedCrews = selectedCrews.length > 0;
+
+    // Check if any view options are toggled
+    const hasToggledViews =
+      form.truckingView ||
+      form.tascoView ||
+      form.engineerView ||
+      form.generalView;
+
+    return !hasTextContent && !hasSelectedCrews && !hasToggledViews;
+  };
+
   const handleCrewCheckbox = (id: string) => {
     const newCrews = selectedCrews.includes(id)
       ? selectedCrews.filter((c) => c !== id)
@@ -250,7 +274,15 @@ export default function RegisterNewUser({
               <Texts
                 text={"link"}
                 size={"p7"}
-                onClick={() => setCancelRegistrationModalOpen(true)}
+                onClick={() => {
+                  if (isFormEmpty()) {
+                    // If the form is empty, bypass the modal and cancel directly
+                    cancelRegistration();
+                  } else {
+                    // Otherwise show the confirmation modal
+                    setCancelRegistrationModalOpen(true);
+                  }
+                }}
               >
                 Cancel Registration
               </Texts>

@@ -33,6 +33,23 @@ export default function RegisterNewCrew({
   // Get the crew lead details (if any)
   const crewLead = crewCreationState.teamLead;
 
+  // Check if the form is empty to bypass the cancel confirmation
+  const isFormEmpty = () => {
+    // Check if crew name has content
+    const hasCrewName = crewCreationState.form.crewName.trim() !== "";
+
+    // Check if crew type is selected
+    const hasCrewType = crewCreationState.form.crewType !== "";
+
+    // Check if any users are selected
+    const hasSelectedUsers = crewCreationState.selectedUsers.length > 0;
+
+    // Check if a team lead is selected
+    const hasTeamLead = crewCreationState.teamLead !== null;
+
+    return !hasCrewName && !hasCrewType && !hasSelectedUsers && !hasTeamLead;
+  };
+
   return (
     <>
       <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar">
@@ -62,7 +79,15 @@ export default function RegisterNewCrew({
                 <Texts
                   text={"link"}
                   size={"p7"}
-                  onClick={() => setCancelRegistrationModalOpen(true)}
+                  onClick={() => {
+                    if (isFormEmpty()) {
+                      // If the form is empty, bypass the modal and cancel directly
+                      cancelCrewCreation();
+                    } else {
+                      // Otherwise show the confirmation modal
+                      setCancelRegistrationModalOpen(true);
+                    }
+                  }}
                 >
                   Cancel Crew Creation
                 </Texts>
