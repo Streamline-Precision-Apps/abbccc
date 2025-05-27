@@ -42,6 +42,10 @@ export default function PersonnelSideBar({
   removeMembers,
   crewEditStates,
   updateCrewEditState,
+  isCrewEditStateDirty,
+  discardCrewEditChanges,
+  isRegistrationFormDirty,
+  resetRegistrationState,
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
@@ -63,6 +67,10 @@ export default function PersonnelSideBar({
     crewId: string,
     updates: Partial<CrewEditState>
   ) => void;
+  isCrewEditStateDirty: (crewId: string) => boolean;
+  discardCrewEditChanges: (crewId: string) => void;
+  isRegistrationFormDirty: () => boolean;
+  resetRegistrationState: () => void;
 }) {
   const t = useTranslations("Admins");
   const [nextView, setNextView] = useState<PersonnelView | null>(null);
@@ -101,12 +109,40 @@ export default function PersonnelSideBar({
       removeMembers,
       discardUserEditChanges,
       isUserEditStateDirty,
+      isCrewEditStateDirty,
+      discardCrewEditChanges,
+      isRegistrationFormDirty,
+      setNextView,
+      setIsDiscardChangesModalOpen,
       filteredList,
     });
 
   const confirmDiscardChanges = () => {
-    if (nextView && view.mode === "user") {
-      discardUserEditChanges(view.userId); // <-- discard context state
+    if (nextView) {
+      // Handle user edit discards
+      if (view.mode === "user") {
+        discardUserEditChanges(view.userId);
+      }
+      // Handle crew edit discards
+      else if (view.mode === "crew" && "crewId" in view) {
+        discardCrewEditChanges(view.crewId);
+      }
+      // Handle user+crew edit discards
+      else if (view.mode === "user+crew" && "crewId" in view) {
+        discardCrewEditChanges(view.crewId);
+        if ("userId" in view) {
+          discardUserEditChanges(view.userId);
+        }
+      }
+      // Handle registration form discards
+      else if (
+        view.mode === "registerUser" || 
+        view.mode === "registerUser+crew" || 
+        view.mode === "registerBoth"
+      ) {
+        resetRegistrationState();
+      }
+
       setView(nextView);
       setNextView(null);
       setIsDiscardChangesModalOpen(false);
@@ -127,52 +163,87 @@ export default function PersonnelSideBar({
               onChange={(e) => {
                 const crewId = e.target.value;
                 console.log("Selected Crew ID:", crewId);
+
+                // Determine target view based on current mode and selected crew
+                let targetView: PersonnelView;
+
                 if (crewId) {
                   switch (view.mode) {
                     case "user":
-                      setView({
+                      targetView = {
                         mode: "user+crew",
                         userId: view.userId,
                         crewId,
-                      });
+                      };
                       break;
                     case "registerCrew+user":
-                      setView({
+                      targetView = {
                         mode: "user+crew",
                         userId: view.userId,
                         crewId,
-                      });
+                      };
                       break;
                     case "registerUser+crew":
-                      setView({
+                      targetView = {
                         mode: "registerUser+crew",
                         crewId,
-                      });
+                      };
                       break;
                     case "registerBoth":
-                      setView({
+                      targetView = {
                         mode: "registerUser+crew",
                         crewId,
-                      });
+                      };
                       break;
                     case "registerUser":
-                      setView({
+                      targetView = {
                         mode: "registerUser+crew",
                         crewId,
-                      });
+                      };
                       break;
                     case "user+crew":
-                      setView({
+                      targetView = {
                         mode: "user+crew",
                         crewId,
                         userId: view.userId,
-                      });
+                      };
                       break;
                     default:
-                      setView({ mode: "crew", crewId });
+                      targetView = { mode: "crew", crewId };
                   }
                 } else {
-                  setView({ mode: "default" });
+                  targetView = { mode: "default" };
+                }
+
+                // Check for unsaved changes before changing views
+                const hasUnsavedCrewChanges =
+                  (view.mode === "crew" || view.mode === "user+crew") &&
+                  "crewId" in view &&
+                  isCrewEditStateDirty(view.crewId);
+                  
+                // Check if there are unsaved registration form changes
+                const hasUnsavedRegistrationChanges = 
+                  (view.mode === "registerUser" || 
+                   view.mode === "registerUser+crew" || 
+                   view.mode === "registerBoth") && 
+                  isRegistrationFormDirty();
+
+                // Determine if we're switching from crew to user+crew (adding a user to the view)
+                const isCrewToUserView =
+                  view.mode === "crew" &&
+                  targetView.mode === "user+crew" &&
+                  "userId" in targetView;
+
+                // Show confirmation dialog if:
+                // 1. There are unsaved crew changes (and we're not just adding a user to the view)
+                // 2. There are unsaved registration changes
+                if ((hasUnsavedCrewChanges && !isCrewToUserView) || hasUnsavedRegistrationChanges) {
+                  // Store target view and show confirmation modal
+                  setNextView(targetView);
+                  setIsDiscardChangesModalOpen(true);
+                } else {
+                  // No unsaved changes or switching from crew to user view, proceed with view change
+                  setView(targetView);
                 }
               }}
               value={
@@ -235,6 +306,7 @@ export default function PersonnelSideBar({
                       view.mode === "registerCrew+user" ||
                       view.mode === "registerBoth"
                     }
+                    view={view}
                     isManager={employee.permission !== "USER"}
                     isCrewMember={selectedUsers.some(
                       (u) => u.id === employee.id
@@ -243,6 +315,13 @@ export default function PersonnelSideBar({
                     onEmployeeClick={handleEmployeeClick}
                     onCrewLeadToggle={handleCrewLeadToggle}
                     onEmployeeCheck={handleEmployeeCheck}
+                    hasUnsavedChanges={
+                      // Only show confirmation when in user mode and editing that specific user
+                      // We're handling crew changes in the useEmployeeHandlers hook
+                      view.mode === "user" &&
+                      view.userId === employee.id &&
+                      isUserEditStateDirty(view.userId)
+                    }
                   />
                 ))}
               </div>
@@ -255,6 +334,7 @@ export default function PersonnelSideBar({
         isOpen={isDiscardChangesModalOpen}
         confirmDiscardChanges={confirmDiscardChanges}
         cancelDiscard={cancelDiscard}
+        view={view}
       />
     </>
   );

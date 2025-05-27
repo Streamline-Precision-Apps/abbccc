@@ -20,6 +20,11 @@ interface UseEmployeeHandlersProps {
   removeMembers: (userId: string[]) => void;
   discardUserEditChanges: (userId: string) => void;
   isUserEditStateDirty: (userId: string) => boolean;
+  isCrewEditStateDirty?: (crewId: string) => boolean;
+  discardCrewEditChanges?: (crewId: string) => void;
+  isRegistrationFormDirty?: () => boolean;
+  setNextView?: (view: PersonnelView | null) => void; // For showing confirmation
+  setIsDiscardChangesModalOpen?: (isOpen: boolean) => void; // For showing confirmation
   filteredList: BaseUser[];
 }
 
@@ -32,7 +37,14 @@ export const useEmployeeHandlers = ({
   selectLead,
   addMembers,
   removeMembers,
+  discardUserEditChanges,
   isUserEditStateDirty,
+  isCrewEditStateDirty,
+  discardCrewEditChanges,
+  isRegistrationFormDirty,
+  setNextView,
+  setIsDiscardChangesModalOpen,
+  filteredList,
 }: UseEmployeeHandlersProps) => {
   const handleEmployeeClick = useCallback(
     (employee: BaseUser) => {
@@ -51,17 +63,51 @@ export const useEmployeeHandlers = ({
 
       const isSameUser = view.mode === "user" && view.userId === employee.id;
 
-      if (
-        "userId" in view &&
-        isUserEditStateDirty(view.userId) &&
-        !isSameUser
-      ) {
-        setView({ mode: "default" });
+      // Only show confirmation when we are:
+      // 1. In crew mode with crew edits AND
+      // 2. Switching from one crew to another crew (not from crew to user)
+      const hasDirtyCrewEdits =
+        isCrewEditStateDirty &&
+        view.mode === "crew" &&
+        "crewId" in view &&
+        isCrewEditStateDirty(view.crewId);
+      
+      // Check if we need to show a confirmation dialog
+      // We should only show it when:
+      // 1. The user has unsaved changes in the user view, OR
+      // 2. We're switching between crews (crew-to-crew) with unsaved changes, OR
+      // 3. The user is in the registerUser mode with non-empty form fields
+      const isCrewToUserView = 
+        view.mode === "crew" && 
+        (targetView.mode === "user" || targetView.mode === "user+crew");
+      
+      // Check for unsaved registration form changes
+      const hasUnsavedRegistrationChanges = 
+        (view.mode === "registerUser" || 
+         view.mode === "registerUser+crew" || 
+         view.mode === "registerBoth") && 
+        isRegistrationFormDirty && 
+        isRegistrationFormDirty();
+      
+      // Import to check registration state if available
+      const needsConfirmation = 
+        (view.mode === "user" && 
+         "userId" in view && 
+         isUserEditStateDirty && 
+         isUserEditStateDirty(view.userId)) ||
+        (hasDirtyCrewEdits && !isCrewToUserView) ||
+        hasUnsavedRegistrationChanges;
+      
+      // Check if we need to show a confirmation dialog
+      if (needsConfirmation && setNextView && setIsDiscardChangesModalOpen) {
+        setNextView(isSameUser ? { mode: "default" } : targetView);
+        setIsDiscardChangesModalOpen(true);
       } else {
+        // No unsaved changes or switching from crew to user view, proceed with view change
         setView(isSameUser ? { mode: "default" } : targetView);
       }
     },
-    [view, setView, isUserEditStateDirty]
+    [view, setView, isCrewEditStateDirty, isUserEditStateDirty, isRegistrationFormDirty, setNextView, setIsDiscardChangesModalOpen]
   );
 
   const handleCrewLeadToggle = useCallback(

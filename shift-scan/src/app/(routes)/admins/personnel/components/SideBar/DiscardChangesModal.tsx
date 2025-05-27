@@ -4,18 +4,39 @@ import { Holds } from "@/components/(reusable)/holds";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { PersonnelView } from "../types/personnel";
 
 interface DiscardChangesModalProps {
   isOpen: boolean;
   confirmDiscardChanges: () => void;
   cancelDiscard: () => void;
+  view?: PersonnelView; // Current view to determine what's being edited
 }
 
 const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
   isOpen,
   confirmDiscardChanges,
   cancelDiscard,
+  view,
 }) => {
+  // Determine what's being edited based on the view
+  let changeType = "changes";
+  if (view) {
+    if (view.mode === "user") {
+      changeType = "user changes";
+    } else if (view.mode === "crew") {
+      changeType = "crew changes";
+    } else if (view.mode === "user+crew") {
+      changeType = "user and crew changes";
+    } else if (
+      view.mode === "registerUser" ||
+      view.mode === "registerUser+crew" ||
+      view.mode === "registerBoth"
+    ) {
+      changeType = "registration form changes";
+    }
+  }
+
   return (
     <NModals
       isOpen={isOpen}
@@ -27,7 +48,8 @@ const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
         <Contents width="section" className="h-full">
           <Holds className="flex h-1/2">
             <Texts size="p5">
-              You have unsaved changes. Are you sure you want to discard them?
+              You have unsaved {changeType}. Are you sure you want to discard
+              them?
             </Texts>
           </Holds>
           <Holds className="flex justify-center items-center gap-4 h-1/2">
