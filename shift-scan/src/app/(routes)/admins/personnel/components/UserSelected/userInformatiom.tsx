@@ -127,12 +127,14 @@ export default function UserInformation({
                   field.name === "emergencyContact" ||
                   field.name === "emergencyContactNumber"
                 ) {
+                  const contactField =
+                    field.name as keyof typeof originalUser.Contact;
                   updateEditState({
                     user: {
                       ...user,
                       Contact: {
                         ...user.Contact,
-                        [field.name]: (originalUser.Contact as any)[field.name],
+                        [field.name]: originalUser.Contact[contactField],
                       },
                     },
                     edited: {
@@ -141,10 +143,11 @@ export default function UserInformation({
                     },
                   });
                 } else {
+                  const userField = field.name as keyof UserData;
                   updateEditState({
                     user: {
                       ...user,
-                      [field.name]: (originalUser as any)[field.name],
+                      [field.name]: originalUser[userField],
                     },
                     edited: {
                       ...edited,

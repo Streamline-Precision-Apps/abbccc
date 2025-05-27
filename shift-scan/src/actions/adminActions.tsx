@@ -84,7 +84,6 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
         email,
         DOB: dateOfBirth,
         permission: permissionLevel as Permission,
-        activeEmployee: employmentStatus.toLowerCase() === "active",
         truckView: truckingView,
         tascoView: tascoView,
         mechanicView: engineerView,
@@ -821,16 +820,13 @@ export async function reactivatePersonnel(formData: FormData) {
     console.log("Archiving personnel...");
     console.log(formData);
     const id = formData.get("userId") as string;
-    const activeEmployee = formData.get("active") === "true";
 
     const result = await prisma.user.update({
       where: { id },
       data: {
-        activeEmployee: activeEmployee,
         terminationDate: null,
       },
     });
-    console.log(result.activeEmployee);
 
     revalidatePath(`/admins/personnel/${id}`);
     return true;
@@ -872,11 +868,9 @@ export async function archivePersonnel(formData: FormData) {
     const result = await prisma.user.update({
       where: { id },
       data: {
-        activeEmployee: activeEmployee,
         terminationDate: new Date().toISOString(),
       },
     });
-    console.log(result.activeEmployee);
 
     revalidatePath(`/admins/personnel/${id}`);
     return true;
