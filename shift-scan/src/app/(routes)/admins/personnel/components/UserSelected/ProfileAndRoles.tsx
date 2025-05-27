@@ -6,6 +6,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { user } from "@nextui-org/theme";
 import { UserData } from "../types/personnel";
 import { NModals } from "@/components/(reusable)/newmodals";
+import { Contents } from "@/components/(reusable)/contents";
 import { useState } from "react";
 import { Anton } from "next/font/google";
 import { RemoveUserProfilePicture } from "@/actions/PersonnelActions";
@@ -222,41 +223,39 @@ export default function ProfileAndRoles({
       <NModals
         isOpen={isModalOpen}
         handleClose={() => setIsModalOpen(false)}
-        size="xs"
+        size="sm"
         background={"noOpacity"}
       >
-        <Holds className="w-full h-full justify-center items-center p-2">
-          <Texts size="p7" className="">
-            Are you sure you want to remove
-            <span
-              className={anton.className + " text-sm font-bold text-black"}
-            >{`  ${user.firstName} ${user.lastName}'s  `}</span>
-            profile picture? This will revert it back to the default image.
-          </Texts>
-          <Holds className="gap-3  w-full h-full pt-6 justify-center items-center">
-            <Buttons
-              background={"lightBlue"}
-              shadow="none"
-              type="button"
-              className="py-2 border-none"
-              onClick={() => handleRemoveProfilePicture()}
-            >
-              <Titles size="h6" className="">
-                Yes, Continue.
-              </Titles>
-            </Buttons>
-            <Buttons
-              background={"red"}
-              shadow="none"
-              type="button"
-              className="py-2 border-none"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <Titles size="h6" className="">
-                No, go back!
-              </Titles>
-            </Buttons>
-          </Holds>
+        <Holds className="w-full h-full items-center justify-center text-center pt-3">
+          <Contents width="section" className="h-full">
+            <Holds className="flex h-1/2">
+              <Texts size="p5">
+                Are you sure you want to remove
+                <span
+                  className={anton.className + " text-sm font-bold text-black"}
+                >{`  ${user.firstName} ${user.lastName}'s  `}</span>
+                profile picture? This will revert it back to the default image.
+              </Texts>
+            </Holds>
+            <Holds className="flex justify-center items-center gap-4 h-1/2">
+              <Buttons
+                shadow="none"
+                background="lightBlue"
+                className="w-full p-2"
+                onClick={() => handleRemoveProfilePicture()}
+              >
+                <Titles size="h5">Yes, continue.</Titles>
+              </Buttons>
+              <Buttons
+                background="red"
+                shadow="none"
+                className="w-full p-2"
+                onClick={() => setIsModalOpen(false)}
+              >
+                <Titles size="h5">No, go back!</Titles>
+              </Buttons>
+            </Holds>
+          </Contents>
         </Holds>
       </NModals>
     </>
