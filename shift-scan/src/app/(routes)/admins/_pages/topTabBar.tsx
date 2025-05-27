@@ -54,6 +54,7 @@ const TopTabBar = () => {
               {userImage ? (
                 <img
                   src={userImage}
+                  alt="Profile Picture"
                   className="m-auto h-[40px] rounded-full border-2 border-black"
                 ></img>
               ) : (

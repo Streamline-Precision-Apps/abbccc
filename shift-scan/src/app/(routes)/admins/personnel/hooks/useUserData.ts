@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { editPersonnelInfo, deletePersonnel } from "@/actions/PersonnelActions";
-import { UseUserDataProps } from "../components/types/personnel";
+import { UseUserDataProps, UserData } from "../components/types/personnel";
 
 export const useUserData = ({
   userid,
@@ -80,7 +80,11 @@ export const useUserData = ({
         },
         edited: {
           ...editState.edited,
-          [name]: value !== (editState.originalUser?.Contact as any)?.[name],
+          [name]:
+            value !==
+            editState.originalUser?.Contact?.[
+              name as keyof typeof editState.originalUser.Contact
+            ],
         },
       });
       return;
@@ -109,7 +113,7 @@ export const useUserData = ({
       user: { ...editState.user, [name]: value },
       edited: {
         ...editState.edited,
-        [name]: value !== (editState.originalUser as any)?.[name],
+        [name]: value !== editState.originalUser?.[name as keyof UserData],
       },
     });
   };
@@ -204,8 +208,10 @@ export const useUserData = ({
         updateEditState({ loading: false });
         throw new Error("Failed to save changes");
       }
-    } catch (err: any) {
-      alert(err?.message || "Failed to save changes");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to save changes";
+      alert(errorMessage);
     }
   };
 
