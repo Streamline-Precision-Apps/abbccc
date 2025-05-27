@@ -64,21 +64,27 @@ export default function UserInformation({
           ) : field.name === "activeEmployee" ? (
             <Selects
               name="activeEmployee"
-              value={user.activeEmployee ? "Active" : "Inactive"}
+              value={user.terminationDate === null ? "Active" : "Inactive"}
               className={`w-full px-2 h-8 text-sm text-center ${
-                edited["activeEmployee"] ? "border-2 border-orange-400" : ""
+                edited["terminationDate"] ? "border-2 border-orange-400" : ""
               }`}
               onChange={(e) => {
                 const value = e.target.value;
+                const isActive = value === "Active";
+                const newTerminationDate = isActive
+                  ? null
+                  : new Date().toISOString();
+                const hasChanged =
+                  (originalUser?.terminationDate === null) !== isActive;
+
                 updateEditState({
                   user: {
                     ...user,
-                    activeEmployee: value === "Active",
+                    terminationDate: newTerminationDate,
                   },
                   edited: {
                     ...edited,
-                    activeEmployee:
-                      (value === "Active") !== originalUser?.activeEmployee,
+                    terminationDate: hasChanged,
                   },
                 });
               }}

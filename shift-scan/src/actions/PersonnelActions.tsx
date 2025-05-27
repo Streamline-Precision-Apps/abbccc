@@ -44,7 +44,6 @@ export async function editPersonnelInfo(formData: FormData) {
     const tascoView = formData.get("tascoView") === "true";
     const laborView = formData.get("laborView") === "true";
     const mechanicView = formData.get("mechanicView") === "true";
-    const activeEmployee = formData.get("activeEmployee") === "true";
     const phoneNumber = formData.get("phoneNumber") as string;
     const emergencyContact = formData.get("emergencyContact") as string;
     const emergencyContactNumber = formData.get(
@@ -54,7 +53,7 @@ export async function editPersonnelInfo(formData: FormData) {
       string,
       boolean
     >;
-    const terminationDate = formData.get("terminationDate") as string;
+    const terminationDate = formData.get("terminationDate") as string | null;
     const selectedCrews = JSON.parse(
       formData.get("selectedCrews") as string
     ) as string[];
@@ -74,8 +73,10 @@ export async function editPersonnelInfo(formData: FormData) {
           tascoView,
           laborView,
           mechanicView,
-          activeEmployee,
-          terminationDate,
+          terminationDate:
+            terminationDate && terminationDate !== ""
+              ? new Date(terminationDate)
+              : null, // Handle empty string case
         },
       });
 

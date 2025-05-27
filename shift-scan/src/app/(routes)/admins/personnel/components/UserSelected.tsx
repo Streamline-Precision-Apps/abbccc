@@ -43,6 +43,7 @@ const UserSelected = ({
   fetchAllData,
   setViewOption,
   viewOption,
+  isUserEditStateDirty,
 }: {
   setView: () => void;
   setRegistration: () => void;
@@ -65,6 +66,7 @@ const UserSelected = ({
   fetchAllData: () => void;
   setViewOption: Dispatch<SetStateAction<PersonnelView>>;
   viewOption: PersonnelView;
+  isUserEditStateDirty: (userId: string) => boolean;
 }) => {
   const {
     user,
