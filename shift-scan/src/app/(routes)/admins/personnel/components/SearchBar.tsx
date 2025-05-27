@@ -5,15 +5,21 @@ interface SearchBarProps {
   term: string;
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
+  disabled?: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   term,
   handleSearchChange,
   placeholder,
+  disabled = false,
 }) => {
   return (
-    <Holds background="white" position="row" className="w-full h-full">
+    <Holds
+      background={disabled ? "lightGray" : "white"}
+      position="row"
+      className="w-full h-full gap-x-3"
+    >
       <Holds size="10">
         <img src="/searchLeft.svg" alt="search" />
       </Holds>
@@ -22,6 +28,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         value={term}
         onChange={handleSearchChange}
+        disabled={disabled}
         className="border-none outline-none text-sm text-left w-full h-full rounded-md bg-white"
       />
     </Holds>
