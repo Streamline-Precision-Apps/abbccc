@@ -13,6 +13,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -279,22 +280,21 @@ const UserSelected = ({
       <NModals
         isOpen={deleteUserModalOpen}
         handleClose={() => setDeleteUserModalOpen(false)}
-        size="xs"
+        size="sm"
         background={"noOpacity"}
       >
-        <Holds className="w-full h-full justify-center items-center">
-          <Holds className="w-full h-full justify-center items-center ">
-            <Texts size={"p6"} className="italic">
-              Are you sure you want to delete this user?
-            </Texts>
-          </Holds>
-          <Holds className="w-full h-full justify-center items-center gap-3 mt-2 p-3">
-            <Holds className="w-full h-full ">
+        <Holds className="w-full h-full items-center justify-center text-center pt-3">
+          <Contents width="section" className="h-full">
+            <Holds className="flex h-1/2">
+              <Texts size="p5">
+                Are you sure you want to delete this user?
+              </Texts>
+            </Holds>
+            <Holds className="flex justify-center items-center gap-4 h-1/2">
               <Buttons
-                background={"lightBlue"}
                 shadow="none"
-                type="button"
-                className="w-full py-2 border-none"
+                background="lightBlue"
+                className="w-full p-2"
                 onClick={() => {
                   handleDelete(userid);
                   fetchAllData();
@@ -302,25 +302,18 @@ const UserSelected = ({
                   setDeleteUserModalOpen(false);
                 }}
               >
-                <Titles size="h6" className="">
-                  Yes, Continue
-                </Titles>
+                <Titles size="h5">Yes, continue.</Titles>
               </Buttons>
-            </Holds>
-            <Holds className="w-full">
               <Buttons
-                background={"red"}
+                background="red"
                 shadow="none"
-                type="button"
-                className="w-full py-2 border-none"
+                className="w-full p-2"
                 onClick={() => setDeleteUserModalOpen(false)}
               >
-                <Titles size="h6" className="">
-                  No, go back!
-                </Titles>
+                <Titles size="h5">No, go back!</Titles>
               </Buttons>
             </Holds>
-          </Holds>
+          </Contents>
         </Holds>
       </NModals>
     </>

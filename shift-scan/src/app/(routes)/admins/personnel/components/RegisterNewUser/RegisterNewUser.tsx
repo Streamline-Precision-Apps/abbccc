@@ -10,6 +10,7 @@ import CrewSelectList from "./CrewSelectList";
 import { PersonnelView, RegistrationState } from "../types/personnel";
 import { Dispatch, SetStateAction, useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
+import { Contents } from "@/components/(reusable)/contents";
 
 // Validation utilities
 const isValidEmail = (email: string) => {
@@ -458,46 +459,39 @@ export default function RegisterNewUser({
       <NModals
         isOpen={cancelRegistrationModalOpen}
         handleClose={() => setCancelRegistrationModalOpen(false)}
-        size="xs"
+        size="sm"
         background={"noOpacity"}
       >
-        <Holds className="w-full h-full justify-center items-center">
-          <Holds className="w-full h-full justify-center items-center ">
-            <Texts size={"p6"} className="italic">
-              Are you sure you want to cancel creating this user?
-            </Texts>
-          </Holds>
-          <Holds className="w-full h-full justify-center items-center gap-3 mt-2 p-3">
-            <Holds className="w-full h-full ">
+        <Holds className="w-full h-full items-center justify-center text-center pt-3">
+          <Contents width="section" className="h-full">
+            <Holds className="flex h-1/2">
+              <Texts size="p5">
+                You have unsaved registration form changes. Are you sure you
+                want to discard them?
+              </Texts>
+            </Holds>
+            <Holds className="flex justify-center items-center gap-4 h-1/2">
               <Buttons
-                background={"lightBlue"}
                 shadow="none"
-                type="button"
-                className="w-full py-2 border-none"
+                background="lightBlue"
+                className="w-full p-2"
                 onClick={() => {
                   cancelRegistration();
                   setCancelRegistrationModalOpen(false);
                 }}
               >
-                <Titles size="h6" className="">
-                  Yes, Continue
-                </Titles>
+                <Titles size="h5">Yes, continue.</Titles>
               </Buttons>
-            </Holds>
-            <Holds className="w-full">
               <Buttons
-                background={"red"}
+                background="red"
                 shadow="none"
-                type="button"
-                className="w-full py-2 border-none"
+                className="w-full p-2"
                 onClick={() => setCancelRegistrationModalOpen(false)}
               >
-                <Titles size="h6" className="">
-                  No, go back!
-                </Titles>
+                <Titles size="h5">No, go back!</Titles>
               </Buttons>
             </Holds>
-          </Holds>
+          </Contents>
         </Holds>
       </NModals>
     </>

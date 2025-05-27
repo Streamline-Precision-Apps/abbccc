@@ -3,6 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
 import React from "react";
 
 interface DeleteModalProps {
@@ -20,37 +21,35 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
     <NModals
       isOpen={isOpen}
       handleClose={onClose}
-      size="xs"
+      size="sm"
       background={"noOpacity"}
     >
-      <Holds className="w-full h-full justify-center items-center px-6">
-        <Holds className="w-full h-full justify-center items-center">
-          <Texts size={"p7"}>
-            Are you sure you want to delete this Crew? This cannot be undone.
-          </Texts>
-        </Holds>
-        <Holds className="mt-4 gap-2">
-          <Buttons
-            shadow={"none"}
-            background={"lightBlue"}
-            onClick={onDelete}
-            className="py-2 border-none"
-          >
-            <Titles size="h6" className="">
-              Yes, continue.
-            </Titles>
-          </Buttons>
-          <Buttons
-            shadow={"none"}
-            background={"red"}
-            onClick={onClose}
-            className="py-2 border-none"
-          >
-            <Titles size="h6" className="">
-              No, go back!
-            </Titles>
-          </Buttons>
-        </Holds>
+      <Holds className="w-full h-full items-center justify-center text-center pt-3">
+        <Contents width="section" className="h-full">
+          <Holds className="flex h-1/2">
+            <Texts size="p5">
+              Are you sure you want to delete this Crew? This cannot be undone.
+            </Texts>
+          </Holds>
+          <Holds className="flex justify-center items-center gap-4 h-1/2">
+            <Buttons
+              shadow="none"
+              background="lightBlue"
+              className="w-full p-2"
+              onClick={onDelete}
+            >
+              <Titles size="h5">Yes, continue.</Titles>
+            </Buttons>
+            <Buttons
+              background="red"
+              shadow="none"
+              className="w-full p-2"
+              onClick={onClose}
+            >
+              <Titles size="h5">No, go back!</Titles>
+            </Buttons>
+          </Holds>
+        </Contents>
       </Holds>
     </NModals>
   );
