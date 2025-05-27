@@ -32,6 +32,7 @@ export default function Personnel() {
     setRegistrationPending,
     setRegistrationSuccess,
     resetRegistrationState,
+    isRegistrationFormDirty,
   } = useRegistrationState();
 
   // crew creation state
@@ -176,6 +177,10 @@ export default function Personnel() {
             removeMembers={removeMembers}
             crewEditStates={crewEditStates}
             updateCrewEditState={updateCrewEditState}
+            isCrewEditStateDirty={isCrewEditStateDirty}
+            discardCrewEditChanges={discardCrewEditChanges}
+            isRegistrationFormDirty={isRegistrationFormDirty}
+            resetRegistrationState={resetRegistrationState}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}
