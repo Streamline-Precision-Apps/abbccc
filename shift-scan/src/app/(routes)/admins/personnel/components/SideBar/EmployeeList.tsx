@@ -53,6 +53,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
           onEmployeeClick={handleEmployeeClick}
           onCrewLeadToggle={handleCrewLeadToggle}
           onEmployeeCheck={handleEmployeeCheck}
+          view={view}
         />
       ))}
     </div>
