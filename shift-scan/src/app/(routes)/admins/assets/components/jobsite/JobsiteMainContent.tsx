@@ -33,29 +33,37 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   });
 
   return (
-    <Holds className="w-full h-full col-start-3 col-end-11">
+    <>
       {isRegistrationFormOpen ? (
-        <JobsiteRegistrationView
-          onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}
-          onCancel={() => setIsRegistrationFormOpen(false)}
-        />
+        <Holds className="w-full h-full col-start-3 col-end-7">
+          <JobsiteRegistrationView
+            onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}
+            onCancel={() => setIsRegistrationFormOpen(false)}
+          />
+        </Holds>
       ) : selectJobsite && jobsiteFormHook.formData ? (
-        <JobsiteFormView
-          formData={jobsiteFormHook.formData}
-          changedFields={jobsiteFormHook.changedFields}
-          onInputChange={jobsiteFormHook.handleInputChange}
-          onRevertField={jobsiteFormHook.handleRevertField}
-          onRegisterNew={() => setIsRegistrationFormOpen(true)}
-          onDiscardChanges={jobsiteFormHook.handleDiscardChanges}
-          onSaveChanges={jobsiteFormHook.handleSaveChanges}
-          hasUnsavedChanges={jobsiteFormHook.hasUnsavedChanges}
-          isSaving={jobsiteFormHook.isSaving}
-          successfullyUpdated={jobsiteFormHook.successfullyUpdated}
-        />
+        <Holds className="w-full h-full col-start-3 col-end-7">
+          <JobsiteFormView
+            formData={jobsiteFormHook.formData}
+            changedFields={jobsiteFormHook.changedFields}
+            onInputChange={jobsiteFormHook.handleInputChange}
+            onRevertField={jobsiteFormHook.handleRevertField}
+            onRegisterNew={() => setIsRegistrationFormOpen(true)}
+            onDiscardChanges={jobsiteFormHook.handleDiscardChanges}
+            onSaveChanges={jobsiteFormHook.handleSaveChanges}
+            hasUnsavedChanges={jobsiteFormHook.hasUnsavedChanges}
+            isSaving={jobsiteFormHook.isSaving}
+            successfullyUpdated={jobsiteFormHook.successfullyUpdated}
+          />
+        </Holds>
       ) : (
-        <JobsiteEmptyState />
+        <Holds className="w-full h-full col-start-3 col-end-11">
+          <JobsiteEmptyState
+            onRegisterNew={() => setIsRegistrationFormOpen(true)}
+          />
+        </Holds>
       )}
-    </Holds>
+    </>
   );
 };
 

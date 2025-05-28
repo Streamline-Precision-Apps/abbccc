@@ -38,9 +38,9 @@ export default function JobsiteFormView({
 }: JobsiteFormViewProps) {
   return (
     <Holds className="w-full h-full col-start-3 col-end-11">
-      <Grids rows="3" gap="4" className="w-full h-full">
+      <Grids gap="4" className="w-full h-full grid-rows-[40px_1fr]">
         {/* Header Actions */}
-        <Holds className="row-span-1">
+        <Holds className="row-span-1 h-full ">
           <JobsiteHeaderActions
             onRegisterNew={onRegisterNew}
             onDiscardChanges={onDiscardChanges}
@@ -52,18 +52,8 @@ export default function JobsiteFormView({
         </Holds>
 
         {/* Basic Information Section */}
-        <Holds className="row-span-1">
+        <Holds background={"white"} className="h-full row-span-1">
           <JobsiteBasicFields
-            formData={formData}
-            changedFields={changedFields}
-            onInputChange={onInputChange}
-            onRevertField={onRevertField}
-          />
-        </Holds>
-
-        {/* Location Information Section */}
-        <Holds className="row-span-1">
-          <JobsiteLocationFields
             formData={formData}
             changedFields={changedFields}
             onInputChange={onInputChange}

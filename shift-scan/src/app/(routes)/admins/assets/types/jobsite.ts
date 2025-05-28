@@ -2,6 +2,7 @@
 export type Jobsite = {
   CCTags: CCTag[];
   id: string;
+  Client: string;
   qrId: string;
   isActive: boolean;
   status: "PENDING" | "ACTIVE" | "INACTIVE"; // Adjust based on possible values
