@@ -26,6 +26,8 @@ export default function TimeCardTruckingMileage({
   truckingMileage,
   onDataChange,
 }: TimeCardTruckingMileageProps) {
+  const t = useTranslations("MyTeam.TimeCardTruckingMileage");
+
   // Use truckingMileage prop directly for rendering and updates
   const allTruckingLogs = truckingMileage
     .flatMap((item) => item.TruckingLogs)
@@ -51,7 +53,7 @@ export default function TimeCardTruckingMileage({
           return log;
         }).filter(
           (log): log is TruckingMileage =>
-            !!log && typeof log === 'object' && 'id' in log
+            !!log && typeof log === "object" && "id" in log
         );
         if (updatedLogs.length === 0) return null;
         // Use the id of the first log as the parent id (TruckingLog.id)

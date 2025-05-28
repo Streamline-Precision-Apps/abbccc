@@ -197,56 +197,65 @@ export async function updateTruckingHaulLogs(
   }
 }
 
+/**
+ * Update trucking material logs in the database.
+ * @param updates - Array of material log updates, each with strict typing.
+ * @returns Result object with success, updatedCount, and error (if any).
+ */
 export async function updateTruckingMaterialLogs(
-  updates: {
+  updates: Array<{
     id: string;
     name?: string;
     LocationOfMaterial?: string;
     materialWeight?: number | null;
     lightWeight?: number | null;
     grossWeight?: number | null;
-  }[]
+  }>
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking material logs:", updates);
+    console.log('[SERVER] Updating trucking material logs:', updates);
     const session = await auth();
-    if (!session) throw new Error("Unauthorized");
+    if (!session) throw new Error('Unauthorized');
+
+    // Validate updates
+    const validUpdates = updates.filter(
+      (update) => !!update.id && typeof update.id === 'string'
+    );
+    if (validUpdates.length === 0) {
+      return { success: false, error: 'No valid updates provided' };
+    }
 
     const result = await prisma.$transaction(async (tx) => {
-      const updatePromises = updates.map((update) =>
+      const updatePromises = validUpdates.map((update) =>
         tx.material.update({
           where: { id: update.id },
           data: {
             name: update.name,
             LocationOfMaterial: update.LocationOfMaterial,
-            materialWeight: update.materialWeight,
-            lightWeight: update.lightWeight,
-            grossWeight: update.grossWeight,
+            materialWeight:
+              update.materialWeight !== undefined ? update.materialWeight : null,
+            lightWeight:
+              update.lightWeight !== undefined ? update.lightWeight : null,
+            grossWeight:
+              update.grossWeight !== undefined ? update.grossWeight : null,
           },
         })
       );
-
       return await Promise.all(updatePromises);
     });
 
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "material logs"
-    );
-
-    revalidatePath("/dashboard/myTeam");
-    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
-
+    console.log('[SERVER] Successfully updated', result.length, 'material logs');
+    revalidatePath('/dashboard/myTeam');
+    revalidatePath('/dashboard/myTeam/[id]/employee/[employeeId]', 'page');
     return {
       success: true,
       updatedCount: result.length,
     };
   } catch (error) {
-    console.error("Error updating trucking material logs:", error);
+    console.error('[SERVER] Error updating trucking material logs:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }

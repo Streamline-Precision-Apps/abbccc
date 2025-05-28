@@ -985,3 +985,36 @@ export type TimesheetFilter =
   | "tascoRefuelLogs"
   | "equipmentLogs"
   | "equipmentRefuelLogs";
+
+// Helper: Flatten EquipmentLogsData to array of { id, startTime, endTime }
+export function flattenEquipmentLogs(logs: EquipmentLogsData): { id: string; startTime: Date; endTime: Date }[] {
+  return logs
+    .flatMap((item) => item.EmployeeEquipmentLogs)
+    .filter((log): log is EmployeeEquipmentLogData => !!log && typeof log.id === 'string')
+    .map((log) => ({
+      id: log.id,
+      startTime: log.startTime ? new Date(log.startTime) : null,
+      endTime: log.endTime ? new Date(log.endTime) : null,
+    }))
+    .filter((log) => log.startTime && log.endTime) as { id: string; startTime: Date; endTime: Date }[];
+}
+
+// Helper: Flatten EquipmentRefuelLogs to array of { id, gallonsRefueled }
+export function flattenEquipmentRefuelLogs(logs: EmployeeEquipmentLogWithRefuel[]): { id: string; gallonsRefueled: number | null }[] {
+  return logs.flatMap((log) =>
+    (log.RefuelLogs ?? []).map((refuel) => ({
+      id: refuel.id,
+      gallonsRefueled: typeof refuel.gallonsRefueled === 'number' ? refuel.gallonsRefueled : refuel.gallonsRefueled ? Number(refuel.gallonsRefueled) : null,
+    }))
+  );
+}
+
+// Type guard: is EquipmentLogsData
+export function isEquipmentLogsData(data: unknown): data is EquipmentLogsData {
+  return (
+    Array.isArray(data) &&
+    data.length > 0 &&
+    typeof data[0] === 'object' &&
+    'EmployeeEquipmentLogs' in data[0]
+  );
+}

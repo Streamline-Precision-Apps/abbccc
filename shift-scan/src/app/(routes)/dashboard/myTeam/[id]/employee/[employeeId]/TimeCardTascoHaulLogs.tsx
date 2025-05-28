@@ -22,7 +22,29 @@ type TimeCardTascoHaulLogsProps = {
   edit: boolean;
   manager: string;
   tascoHaulLogs: TascoHaulLogData;
-  onDataChange: (data: ProcessedTascoHaulLog[]) => void;
+  onDataChange: (data: TascoHaulLogData) => void;
+};
+
+// Helper to reconstruct the nested TascoHaulLogData structure
+const reconstructTascoHaulLogData = (
+  original: TascoHaulLogData,
+  updated: ProcessedTascoHaulLog[]
+): TascoHaulLogData => {
+  return original.map((item) => ({
+    ...item,
+    TascoLogs: (item.TascoLogs ?? []).map((log) => {
+      const found = updated.find((u) => u.id === log.id);
+      return found
+        ? {
+            ...log,
+            shiftType: found.shiftType,
+            equipmentId: found.equipmentId ?? "", // ensure string
+            materialType: found.materialType,
+            LoadQuantity: found.LoadQuantity ?? 0, // ensure number
+          }
+        : log;
+    }),
+  }));
 };
 
 export default function TimeCardTascoHaulLogs({
@@ -63,7 +85,6 @@ export default function TimeCardTascoHaulLogs({
         const materialTypesResponse = await fetch("/api/getMaterialTypes");
         const materialTypesData = await materialTypesResponse.json();
         setMaterialTypes(materialTypesData);
-        console.log("Material Types:", materialTypesData);
       } catch {
         console.error("Error fetching material types");
       }
@@ -100,9 +121,11 @@ export default function TimeCardTascoHaulLogs({
 
       setChangesWereMade(true);
       setEditedTascoHaulLogs(updatedLogs);
-      onDataChange(updatedLogs);
+      // Send the nested structure to the parent
+      const nested = reconstructTascoHaulLogData(tascoHaulLogs, updatedLogs);
+      onDataChange(nested);
     },
-    [editedTascoHaulLogs, onDataChange]
+    [editedTascoHaulLogs, onDataChange, tascoHaulLogs]
   );
 
   const isEmptyData = editedTascoHaulLogs.length === 0;

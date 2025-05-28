@@ -21,7 +21,28 @@ type TimeCardTascoRefuelLogsProps = {
   edit: boolean;
   manager: string;
   tascoRefuelLog: TascoRefuelLogData;
-  onDataChange: (data: FlattenedTascoRefuelLog[]) => void;
+  onDataChange: (data: TascoRefuelLogData) => void;
+};
+
+// Helper to reconstruct the nested TascoRefuelLogData structure
+const reconstructTascoRefuelLogData = (
+  original: TascoRefuelLogData,
+  updated: FlattenedTascoRefuelLog[]
+): TascoRefuelLogData => {
+  return original.map((item) => ({
+    ...item,
+    TascoLogs: (item.TascoLogs ?? []).map((log) => ({
+      ...log,
+      RefuelLogs: (log.RefuelLogs ?? []).map((refuel) => {
+        const found = updated.find(
+          (u) => u.id === refuel.id && u.tascoLogId === log.id
+        );
+        return found
+          ? { ...refuel, gallonsRefueled: found.gallonsRefueled ?? 0 }
+          : refuel;
+      }),
+    })),
+  }));
 };
 
 export default function TimeCardTascoRefuelLogs({
@@ -79,9 +100,11 @@ export default function TimeCardTascoRefuelLogs({
 
       setChangesWereMade(true);
       setEditedTascoRefuelLogs(updatedLogs);
-      onDataChange(updatedLogs);
+      // Send the nested structure to the parent
+      const nested = reconstructTascoRefuelLogData(tascoRefuelLog, updatedLogs);
+      onDataChange(nested);
     },
-    [editedTascoRefuelLogs, onDataChange]
+    [editedTascoRefuelLogs, onDataChange, tascoRefuelLog]
   );
 
   const isEmptyData = editedTascoRefuelLogs.length === 0;
