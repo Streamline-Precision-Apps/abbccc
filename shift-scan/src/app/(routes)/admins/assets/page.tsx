@@ -3,43 +3,59 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import React, { useEffect, useState } from "react";
 import { Selects } from "@/components/(reusable)/selects";
-import EquipmentSideBar from "./component/sidebar/EquipmentSideBar";
-import EquipmentMainContent from "./component/sidebar/EquipmentMainContent";
-type Equipment = {
-  id: string;
-  qrId: string;
-  name: string;
-  description?: string;
-  equipmentTag: string;
-  status?: string;
-  isActive: boolean;
-  inUse: boolean;
-  overWeight: boolean;
-  currentWeight: number;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
-  };
-};
-
-const Asset = [
-  { value: "Equipment", name: "Equipment" },
-  { value: "Jobsite", name: "Jobsite" },
-  { value: "CostCode", name: "Cost Codes" },
-  { value: "Tags", name: "Tags" },
-];
+import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
+import DiscardChangesModal from "./components/shared/DiscardChangesModal";
+import { Equipment, ASSET_TYPES, Jobsite } from "./types";
+import EquipmentMainContent from "./components/equipment/EquipmentMainContent";
+import JobsiteMainContent from "./components/jobsite/JobsiteMainContent";
+import JobsiteSideBar from "./components/jobsite/sidebar/JobsiteSideBar";
 
 export default function Assets() {
   const [assets, setAssets] = useState("Equipment");
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
+  const [jobsites, setJobsites] = useState<Jobsite[]>([]);
   const [selectEquipment, setSelectEquipment] = useState<Equipment | null>(
     null
   );
+  const [selectJobsite, setSelectJobsite] = useState<Jobsite | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showAssetChangeModal, setShowAssetChangeModal] = useState(false);
+  const [pendingAssetChange, setPendingAssetChange] = useState<string | null>(
+    null
+  );
+
+  // Handler for asset type change with unsaved changes check
+  const handleAssetChange = (newAssetType: string) => {
+    if (hasUnsavedChanges && newAssetType !== assets) {
+      // If there are unsaved changes, show confirmation modal
+      setPendingAssetChange(newAssetType);
+      setShowAssetChangeModal(true);
+    } else {
+      // Otherwise change asset type normally
+      setAssets(newAssetType);
+      setSelectEquipment(null); // Clear equipment selection when changing asset types
+      setSelectJobsite(null); // Clear jobsite selection when changing asset types
+    }
+  };
+
+  // Handle confirmation to discard changes and switch asset type
+  const handleConfirmAssetChange = () => {
+    if (pendingAssetChange) {
+      setAssets(pendingAssetChange);
+      setSelectEquipment(null); // Clear equipment selection
+      setSelectJobsite(null); // Clear jobsite selection
+      setHasUnsavedChanges(false); // Reset unsaved changes state
+    }
+    setShowAssetChangeModal(false);
+    setPendingAssetChange(null);
+  };
+
+  // Handle cancellation - stay on current asset type
+  const handleCancelAssetChange = () => {
+    setShowAssetChangeModal(false);
+    setPendingAssetChange(null);
+  };
 
   useEffect(() => {
     const fetchEquipments = async () => {
@@ -57,6 +73,22 @@ export default function Assets() {
     fetchEquipments();
   }, []);
 
+  useEffect(() => {
+    const fetchJobsites = async () => {
+      try {
+        const jobsiteData = await fetch(
+          "/api/getAllJobsites?filter=all" // Corrected path
+        ).then((res) => res.json());
+
+        setJobsites(jobsiteData);
+      } catch (error) {
+        console.error(`Failed to fetch jobsite data:`, error);
+      }
+    };
+
+    fetchJobsites();
+  }, []);
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -68,17 +100,17 @@ export default function Assets() {
           <Holds className="w-full h-full col-start-1 col-end-3">
             <Grids className="w-full h-full grid-rows-[40px_40px_40px_1fr] gap-4">
               <Selects
-                onChange={(e) => setAssets(e.target.value)}
+                onChange={(e) => handleAssetChange(e.target.value)}
                 value={assets}
                 className="w-full h-full text-center text-sm border-none outline outline-[3px] outline-black outline-offset-0"
               >
-                {Asset.map((asset) => (
+                {ASSET_TYPES.map((asset) => (
                   <option key={asset.value} value={asset.value}>
                     {asset.name}
                   </option>
                 ))}
               </Selects>
-              {assets === "Equipment" && (
+              {assets === "Equipment" ? (
                 <EquipmentSideBar
                   setAssets={setAssets}
                   assets={assets}
@@ -87,8 +119,24 @@ export default function Assets() {
                   setSelectEquipment={setSelectEquipment}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
+                  hasUnsavedChanges={hasUnsavedChanges}
                 />
-              )}
+              ) : assets === "Jobsite" ? (
+                <JobsiteSideBar
+                  assets={assets}
+                  setAssets={setAssets}
+                  jobsites={jobsites}
+                  setSelectJobsite={setSelectJobsite}
+                  selectJobsite={selectJobsite}
+                  isRegistrationFormOpen={isRegistrationFormOpen}
+                  setIsRegistrationFormOpen={setIsRegistrationFormOpen}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                />
+              ) : assets === "CostCode" ? (
+                <></>
+              ) : assets === "Tags" ? (
+                <></>
+              ) : null}
             </Grids>
           </Holds>
           {assets === "Equipment" ? (
@@ -98,9 +146,17 @@ export default function Assets() {
               isRegistrationFormOpen={isRegistrationFormOpen}
               setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectEquipment={setSelectEquipment}
+              onUnsavedChangesChange={setHasUnsavedChanges}
             />
           ) : assets === "Jobsite" ? (
-            <></>
+            <JobsiteMainContent
+              assets={assets}
+              selectJobsite={selectJobsite}
+              isRegistrationFormOpen={isRegistrationFormOpen}
+              setIsRegistrationFormOpen={setIsRegistrationFormOpen}
+              setSelectJobsite={setSelectJobsite}
+              onUnsavedChangesChange={setHasUnsavedChanges}
+            />
           ) : assets === "CostCode" ? (
             <></>
           ) : assets === "Tags" ? (
@@ -108,6 +164,14 @@ export default function Assets() {
           ) : null}
         </Grids>
       </Holds>
+
+      {/* Confirmation Modal for Asset Type Change */}
+      <DiscardChangesModal
+        isOpen={showAssetChangeModal}
+        confirmDiscardChanges={handleConfirmAssetChange}
+        cancelDiscard={handleCancelAssetChange}
+        message="You have unsaved equipment changes. Switching asset types will discard them. Are you sure you want to continue?"
+      />
     </Holds>
   );
 }
