@@ -9,12 +9,9 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
 import Spinner from "@/components/(animations)/spinner";
 import { useTranslations } from "next-intl";
-import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { TimeSheet } from "@/lib/types";
-import EmptyView from "@/components/(reusable)/emptyView";
 import { Images } from "@/components/(reusable)/images";
-import { formatTimeHHMM } from "@/utils/formatDateAmPm";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import TimesheetList from "./timesheetList";
@@ -24,11 +21,11 @@ type Props = {
 };
 
 export default function ViewTimesheets({ user }: Props) {
+  const t = useTranslations("TimeSheet");
   const [showTimesheets, setShowTimesheets] = useState(false);
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const t = useTranslations("Home");
 
   // Function to calculate duration
   const calculateDuration = (
@@ -100,9 +97,9 @@ export default function ViewTimesheets({ user }: Props) {
             position={"row"}
             className="w-full justify-center items-center gap-x-2"
           >
-            <Titles size={"h2"}>My Timecards</Titles>
+            <Titles size={"h2"}>{t("MyTimecards")}</Titles>
             <Images
-              titleImg={"/form.svg"}
+              titleImg={"/timecards.svg"}
               titleImgAlt={`${t("Title")}`}
               className="w-8 h-8"
             />
@@ -133,7 +130,7 @@ export default function ViewTimesheets({ user }: Props) {
                     background={"lightBlue"}
                     className="py-2"
                   >
-                    <Titles size={"h5"}>View Time Cards</Titles>
+                    <Titles size={"h5"}>{t("ViewTimecards")}</Titles>
                   </Buttons>
                 </Holds>
               </Grids>
@@ -160,7 +157,7 @@ export default function ViewTimesheets({ user }: Props) {
               >
                 <Spinner />
                 <Texts size={"p3"} className="mt-4">
-                  {t("Loading")}
+                  {t("LoadingTimecards")}
                 </Texts>
               </Holds>
             </Holds>
@@ -169,7 +166,7 @@ export default function ViewTimesheets({ user }: Props) {
               <Holds
                 background={"white"}
                 size={"full"}
-                className="h-full row-start-3 row-end-8 overflow-auto no-scrollbar p-2"
+                className="h-full row-start-3 row-end-8 overflow-auto no-scrollbar p-2 "
               >
                 {timesheetData.length > 0 ? (
                   timesheetData.map((timesheet) => (
@@ -186,7 +183,7 @@ export default function ViewTimesheets({ user }: Props) {
                     className="h-full justify-center items-center"
                   >
                     <Texts size={"p3"} className="text-gray-500 italic">
-                      No time cards found for this date
+                      {t("NoTimecardsFoundForTheDaySelected")}
                     </Texts>
                   </Holds>
                 )}

@@ -36,6 +36,11 @@ const TitleVariants = cva(
         h5: "text-base sm:text-med md:text-lg lg:text-xl",
         h6: "text-sm",
         h7: "text-xs",
+        xs: "text-xs",
+        sm: "text-sm",
+        md: "text-base",
+        lg: "text-lg",
+        xl: "text-xl",
       },
     },
     defaultVariants: {

@@ -17,7 +17,7 @@ import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default function ChangePassword({ userId }: { userId: string }) {
-  const t = useTranslations("Hamburger");
+  const t = useTranslations("Hamburger-ChangePassword");
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
   const [eightChar, setEightChar] = useState(false);
@@ -134,15 +134,25 @@ export default function ChangePassword({ userId }: { userId: string }) {
       <Holds
         background={"white"}
         size={"full"}
-        className="row-start-1 row-end-2 h-full"
+        className="row-start-1 row-end-2 h-full "
       >
+        {showBanner && (
+          <Holds
+            background="red"
+            position="absolute"
+            size="full"
+            className="rounded-none"
+          >
+            <Texts size="p7">{bannerMessage}</Texts>
+          </Holds>
+        )}
         <TitleBoxes>
-          <Holds position={"row"} className="w-full justify-center ">
-            <Titles size={"h2"}>Change Password</Titles>
+          <Holds position={"row"} className="w-full justify-center gap-x-2 ">
+            <Titles size={"h2"}>{t("ChangePassword")}</Titles>
             <Images
               titleImg="/key.svg"
-              titleImgAlt="Change Password Icon"
-              className=" w-8 h-8 pl-2"
+              titleImgAlt="Key Icon"
+              className=" max-w-8 h-auto object-contain"
             />
           </Holds>
         </TitleBoxes>
@@ -153,25 +163,14 @@ export default function ChangePassword({ userId }: { userId: string }) {
             onSubmit={handleSubmit}
             className="h-full flex flex-col items-center justify-between"
           >
-            {showBanner && (
-              <Holds
-                background="red"
-                position="absolute"
-                size="full"
-                className="rounded-none"
-              >
-                <Texts size="p6">{bannerMessage}</Texts>
-              </Holds>
-            )}
-
             {/* Start of grid container */}
             <Holds background={"white"} className="w-full h-full">
               <Contents width={"section"}>
-                <Grids rows={"7"} gap={"5"} className="h-full py-5">
+                <Grids rows={"7"} gap={"5"} className="h-full pt-3 pb-5">
                   {/* New password section */}
                   <Holds background={"darkBlue"} className="row-span-1 h-full">
                     <Texts position="left" text={"white"} size="p6">
-                      Password Strength Criteria:
+                      {t("PasswordRequirements")}
                     </Texts>
                     <Holds
                       background="white"
@@ -179,11 +178,17 @@ export default function ChangePassword({ userId }: { userId: string }) {
                     >
                       <Contents width={"section"}>
                         <Holds position="row" className="my-auto">
-                          <PasswordCriteria passed={oneNumber} label="123" />
-                          <PasswordCriteria passed={oneSymbol} label="Symbol" />
+                          <PasswordCriteria
+                            passed={oneNumber}
+                            label={t("NumberCriteriaLabel")}
+                          />
+                          <PasswordCriteria
+                            passed={oneSymbol}
+                            label={t("SpecialCharacterCriteriaLabel")}
+                          />
                           <PasswordCriteria
                             passed={eightChar}
-                            label="(8) Length"
+                            label={t("LengthCriteriaLabel")}
                           />
                         </Holds>
                       </Contents>

@@ -15,6 +15,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import SubmittedFormsApproval from "./_components/submittedApprovedForms";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 interface FormField {
   id: string;
@@ -59,7 +60,7 @@ type ManagerFormApprovalSchema = {
   updatedAt: string;
   submittedAt: string;
   status: FormStatus;
-  approvals: Array<{
+  Approvals: Array<{
     id: string;
     formSubmissionId: string;
     signedBy: string;
@@ -67,7 +68,7 @@ type ManagerFormApprovalSchema = {
     updatedAt: string;
     signature: string;
     comment: string;
-    approver: {
+    Approver: {
       firstName: string;
       lastName: string;
     };
@@ -82,6 +83,7 @@ enum FormStatus {
 
 export default function DynamicForm({ params }: { params: { id: string } }) {
   // Search params from URL
+  const t = useTranslations("Hamburger-Inbox");
   const formSubmissions = useSearchParams();
   const submissionId = formSubmissions.get("submissionId");
   const submissionStatus = formSubmissions.get("status");
@@ -267,9 +269,9 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     }));
   };
 
-  useEffect(() => {
-    console.log("Manager Form Approval Data:", managerFormApproval);
-  }, [managerFormApproval]);
+  // useEffect(() => {
+  //   console.log("Manager Form Approval Data:", managerFormApproval);
+  // }, [managerFormApproval]);
 
   // Loading state
   if (loading || !formData) {
@@ -286,7 +288,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                   router.back();
                 }}
               >
-                <Titles size={"h2"}>loading...</Titles>
+                <Titles size={"h2"}>{t("Loading")}</Titles>
               </TitleBoxes>
             </Holds>
             <Holds

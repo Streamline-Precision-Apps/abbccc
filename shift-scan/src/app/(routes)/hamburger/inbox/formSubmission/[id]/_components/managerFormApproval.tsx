@@ -7,13 +7,15 @@ import { useSession } from "next-auth/react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
 import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { format } from "date-fns";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { useTranslations } from "next-intl";
+import { Images } from "@/components/(reusable)/images";
 
 interface FormField {
   id: string;
@@ -61,7 +63,7 @@ type ManagerFormApprovalSchema = {
   updatedAt: string;
   submittedAt: string;
   status: FormStatus;
-  approvals: Array<{
+  Approvals: Array<{
     id: string;
     formSubmissionId: string;
     signedBy: string;
@@ -69,7 +71,7 @@ type ManagerFormApprovalSchema = {
     updatedAt: string;
     signature: string;
     comment: string;
-    approver: {
+    Approver: {
       firstName: string;
       lastName: string;
     };
@@ -106,6 +108,7 @@ export default function ManagerFormApproval({
   setFormTitle: Dispatch<SetStateAction<string>>;
   updateFormValues: (newValues: Record<string, string>) => void;
 }) {
+  const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
   const { data: session } = useSession();
   const managerName = session?.user.id;
@@ -113,9 +116,8 @@ export default function ManagerFormApproval({
   const [managerSignature, setManagerSignature] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [comment, setComment] = useState<string>(
-    managerFormApproval?.approvals?.[0]?.comment || ""
+    managerFormApproval?.Approvals?.[0]?.comment || ""
   );
-
   useEffect(() => {
     const fetchSignature = async () => {
       try {
@@ -145,12 +147,12 @@ export default function ManagerFormApproval({
     approval: FormStatus.APPROVED | FormStatus.DENIED
   ) => {
     if (!isSignatureShowing) {
-      setErrorMessage("Please provide a signature before approving.");
+      setErrorMessage(t("PleaseProvideASignatureBeforeApproving"));
       return;
     }
 
     if (!comment || comment.length === 0) {
-      setErrorMessage("Please add a comment before approving.");
+      setErrorMessage(t("PleaseAddACommentBeforeApproving"));
       return;
     }
 
@@ -161,12 +163,11 @@ export default function ManagerFormApproval({
     formData.append("comment", comment);
 
     try {
-      console.log("Submitting final approval with data:", formData);
       await createFormApproval(formData, approval);
       router.back();
     } catch (error) {
       console.error("Error during final approval:", error);
-      setErrorMessage("Failed to submit approval. Please try again.");
+      setErrorMessage(t("FailedToSubmitApprovalPleaseTryAgain"));
     }
   };
 
@@ -174,80 +175,60 @@ export default function ManagerFormApproval({
     <>
       <Holds
         background={"white"}
-        className="row-start-1 row-end-2 h-full justify-center px-3 "
+        className="row-start-1 row-end-2 w-full h-full"
       >
-        <Grids cols={"5"} rows={"2"} className="w-full h-full p-2">
-          <Holds className="col-span-1 row-span-2 flex items-center justify-center">
-            <Buttons
-              onClick={() => router.back()}
-              background={"none"}
-              position={"left"}
-            >
-              <Images
-                titleImg="/arrowBack.svg"
-                titleImgAlt={"Turn Back"}
-                className="max-w-8 h-auto object-contain"
-              />
-            </Buttons>
-          </Holds>
-
-          <Holds className="col-start-2 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-            <Titles size={"h4"}>{formTitle}</Titles>
-            <Titles size={"h6"}>{formData.name}</Titles>
-          </Holds>
-        </Grids>
+        <TitleBoxes onClick={() => router.back()}>
+          <Titles size={"h3"}>{formData.name}</Titles>
+        </TitleBoxes>
       </Holds>
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-5 px-5 "
-      >
-        <Holds className="overflow-y-auto no-scrollbar ">
-          {formData?.groupings?.map((group) => (
-            <Holds key={group.id} className="">
-              {group.title && <h3>{group.title || ""}</h3>}
-              {group.fields.map((field) => {
-                return (
-                  <Holds key={field.id} className="pb-3">
-                    <FormInput
-                      key={field.name}
-                      field={field}
-                      formValues={formValues}
-                      setFormValues={() => {}}
-                      readOnly={true}
-                    />
-                  </Holds>
-                );
-              })}
-            </Holds>
-          ))}
-          <Holds position={"row"} className="pb-3 w-full justify-between">
-            <Texts size={"p7"}>
-              {`Originally Submitted: ${format(
-                managerFormApproval?.submittedAt?.toString() ||
-                  new Date().toISOString(),
-                "M/dd/yy"
-              )}`}
-            </Texts>
-            <Texts size={"p7"}>
-              {`Last Edited: ${format(
-                managerFormApproval?.approvals?.[0]?.updatedAt?.toString() ||
-                  new Date().toISOString(),
-                "M/dd/yy"
-              )}`}
-            </Texts>
-          </Holds>
-        </Holds>
-      </Holds>
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-5 row-end-9 "
+        className="w-full h-full row-start-2 row-end-8 "
       >
         <Contents width={"section"}>
-          <Grids rows={"5"} gap={"5"} className="w-full h-full py-5 ">
-            <Holds className="row-start-1 row-end-3 relative">
+          <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 ">
+            {formData?.groupings?.map((group) => (
+              <Holds key={group.id} className="">
+                {group.title && <h3>{group.title || ""}</h3>}
+                {group.fields.map((field) => {
+                  return (
+                    <Holds key={field.id} className="pb-3">
+                      <FormInput
+                        key={field.name}
+                        field={field}
+                        formValues={formValues}
+                        setFormValues={() => {}}
+                        readOnly={true}
+                      />
+                    </Holds>
+                  );
+                })}
+              </Holds>
+            ))}
+            <Holds
+              position={"row"}
+              className="pb-3 w-full justify-between border-black border-opacity-5 border-b-2"
+            >
+              <Texts size={"p7"}>
+                {`${t("OriginallySubmitted")} ${format(
+                  managerFormApproval?.submittedAt?.toString() ||
+                    new Date().toISOString(),
+                  "M/dd/yy"
+                )}`}
+              </Texts>
+              <Texts size={"p7"}>
+                {`${t("LastEdited")} ${format(
+                  managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
+                    new Date().toISOString(),
+                  "M/dd/yy"
+                )}`}
+              </Texts>
+            </Holds>
+
+            <Holds className="py-3 w-full relative">
               <Labels size={"p5"} htmlFor="comment">
-                Manager Comments
+                {t("ManagerComments")}
               </Labels>
               <Holds position={"row"} className="w-full relative">
                 <TextAreas
@@ -256,6 +237,8 @@ export default function ManagerFormApproval({
                   value={comment}
                   onChange={handleCommentChange}
                   maxLength={40}
+                  rows={4}
+                  className="text-sm"
                 />
                 <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded text-sm text-gray-500">
                   {comment.length} / 40
@@ -264,32 +247,41 @@ export default function ManagerFormApproval({
             </Holds>
 
             {!isSignatureShowing ? (
-              <Holds className="row-start-3 row-end-5 h-full justify-center items-center">
+              <Holds className=" h-full pb-3 justify-center items-center">
                 <Buttons
-                  className="h-full shadow-none"
+                  className="py-3 shadow-none"
                   onClick={() => setIsSignatureShowing(true)}
                 >
-                  <Texts size={"p4"}>Tap to Sign</Texts>
+                  <Texts size={"p4"}>{t("TapToSign")}</Texts>
                 </Buttons>
               </Holds>
             ) : (
-              <Holds className="h-full row-start-3 row-end-5 justify-center items-center">
-                <Holds
-                  onClick={() => setIsSignatureShowing(false)}
-                  className="h-full w-full border-[3px] border-black rounded-[10px] justify-center items-center "
-                >
+              <Holds className="pb-3">
+                <Holds className=" w-full relative  border-[3px] border-black rounded-[10px] justify-center items-center ">
                   <img
-                    className="w-full h-full object-contain"
+                    className="w-1/2 h-auto object-contain"
                     src={managerSignature || ""}
                     alt="Signature"
                   />
+                  <Holds
+                    onClick={() => setIsSignatureShowing(false)}
+                    background={"orange"}
+                    className="w-10 h-10 p-1 border-[3px] border-black rounded-full absolute justify-center items-center top-1 right-1"
+                  >
+                    <Images
+                      className="max-w-8 h-auto object-contain"
+                      titleImg="/eraser.svg"
+                      titleImgAlt="eraser Icon"
+                    />
+                  </Holds>
                 </Holds>
               </Holds>
             )}
 
-            <Holds className="row-start-5 row-end-7 h-full">
-              <Holds position={"row"} className="gap-5">
+            <Holds className="pt-3 w-full h-full">
+              <Holds position={"row"} className="gap-x-3">
                 <Buttons
+                  shadow={"none"}
                   background={
                     isSignatureShowing && comment.length > 0
                       ? "red"
@@ -299,9 +291,10 @@ export default function ManagerFormApproval({
                   className="py-2"
                   onClick={() => handleApproveOrDeny(FormStatus.DENIED)}
                 >
-                  <Titles size={"h4"}>Deny</Titles>
+                  <Titles size={"h4"}>{t("Deny")}</Titles>
                 </Buttons>
                 <Buttons
+                  shadow={"none"}
                   background={
                     isSignatureShowing && comment.length > 0
                       ? "green"
@@ -311,7 +304,7 @@ export default function ManagerFormApproval({
                   onClick={() => handleApproveOrDeny(FormStatus.APPROVED)}
                   className="py-2"
                 >
-                  <Titles size={"h4"}>Approve</Titles>
+                  <Titles size={"h4"}>{t("Approve")}</Titles>
                 </Buttons>
               </Holds>
               {errorMessage && (
@@ -320,7 +313,7 @@ export default function ManagerFormApproval({
                 </Texts>
               )}
             </Holds>
-          </Grids>
+          </Holds>
         </Contents>
       </Holds>
     </>

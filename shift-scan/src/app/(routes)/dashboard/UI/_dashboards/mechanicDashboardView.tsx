@@ -12,14 +12,7 @@ import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function MechanicDashboardView({
   additionalButtonsType,
-  isModalOpen,
-  isModal2Open,
-  setIsModal2Open,
-  comment,
-  setComment,
-  handleCOButton3,
-  handleCloseModal,
-  handleShowManagerButtons,
+  verifyLogsCompletion,
   permission,
   logs,
   mechanicProjectID,
@@ -31,9 +24,7 @@ export default function MechanicDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton3: () => void;
-  handleCloseModal: () => void;
-  handleShowManagerButtons: () => void;
+  verifyLogsCompletion: () => void;
   permission: string;
   logs: LogItem[];
   mechanicProjectID: string;
@@ -48,7 +39,6 @@ export default function MechanicDashboardView({
             <MechanicBtn permission={permission} view={"mechanic"} />
             <SwitchJobsBtn
               {...modalState}
-              handleShowManagerButtons={handleShowManagerButtons}
               permission={permission}
               mechanicProjectID={mechanicProjectID}
               logs={logs}
@@ -63,7 +53,7 @@ export default function MechanicDashboardView({
             )}
 
             <ClockOutBtn
-              handleShowAdditionalButtons={handleCOButton3}
+              handleShowAdditionalButtons={verifyLogsCompletion}
               permission={permission}
               mechanicProjectID={mechanicProjectID}
               logs={logs}

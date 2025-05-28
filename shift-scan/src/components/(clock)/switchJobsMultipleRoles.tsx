@@ -218,10 +218,10 @@ export default function SwitchJobsMultiRoles({
                     {truckView === true && (
                       <>
                         <option value="truckDriver">{t("TruckDriver")}</option>
-                        <option value="truckEquipmentOperator">
+                        {/* <option value="truckEquipmentOperator">
                           {t("TruckEquipmentOperator")}
                         </option>
-                        <option value="truckLabor">{t("TruckLabor")}</option>
+                        <option value="truckLabor">{t("TruckLabor")}</option> */}
                       </>
                     )}
                     {mechanicView === true && (

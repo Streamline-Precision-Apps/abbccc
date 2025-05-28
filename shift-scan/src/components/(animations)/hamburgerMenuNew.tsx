@@ -34,20 +34,20 @@ export default function HamburgerMenuNew() {
       background={"white"}
       className="row-start-1 row-end-2 h-full p-2"
     >
-      <Holds size={"20"} className="h-full">
+      <Holds className="w-16 h-full justify-center">
         <Buttons
           href="/hamburger/profile?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="relative w-16 h-5/6"
+          className="relative w-16 h-full justify-center"
         >
           <img
             src={image ? image : "/profileEmpty.svg"}
             alt="profile"
             className={
               image
-                ? "mx-auto w-16  border-[2px] border-black rounded-full"
-                : "mx-auto w-16 h-full"
+                ? "mx-auto w-16 h-auto border-[2px] border-black rounded-full justify-center"
+                : "mx-auto w-16 h-auto"
             }
           />
 
@@ -59,7 +59,7 @@ export default function HamburgerMenuNew() {
         </Buttons>
       </Holds>
 
-      <Holds size={"60"} className="h-full">
+      <Holds className="w-full h-full justify-center">
         <Images
           titleImg="/logo.svg"
           titleImgAlt="logo"
@@ -68,17 +68,17 @@ export default function HamburgerMenuNew() {
         />
       </Holds>
 
-      <Holds size={"20"} className="h-full">
+      <Holds className="w-16 h-full justify-center">
         <Buttons
           href="/hamburger/inbox?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="w-16 h-full justify-center"
+          className=" w-16 h-auto justify-center"
         >
           <img
             src={"/form.svg"}
             alt={"inbox"}
-            className="relative  w-full mx-auto"
+            className="relative max-w-10 h-auto object-contain  mx-auto"
           />
         </Buttons>
       </Holds>

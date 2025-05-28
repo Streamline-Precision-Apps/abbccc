@@ -15,6 +15,9 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { format } from "date-fns";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { useTranslations } from "next-intl";
 
 interface FormField {
   id: string;
@@ -62,7 +65,7 @@ type ManagerFormApprovalSchema = {
   updatedAt: string;
   submittedAt: string;
   status: FormStatus;
-  approvals: Array<{
+  Approvals: Array<{
     id: string;
     formSubmissionId: string;
     signedBy: string;
@@ -70,7 +73,7 @@ type ManagerFormApprovalSchema = {
     updatedAt: string;
     signature: string;
     comment: string;
-    approver: {
+    Approver: {
       firstName: string;
       lastName: string;
     };
@@ -107,20 +110,19 @@ export default function ManagerFormEditApproval({
   setFormTitle: Dispatch<SetStateAction<string>>;
   updateFormValues: (newValues: Record<string, string>) => void;
 }) {
+  const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
   const [comment, setComment] = useState<string>(
-    managerFormApproval?.approvals?.[0]?.comment || ""
+    managerFormApproval?.Approvals?.[0]?.comment || ""
   );
   const [approvalStatus, setApprovalStatus] = useState<FormStatus>(
     managerFormApproval?.status || FormStatus.PENDING
   );
-
   // Handle comment change
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newComment = e.target.value;
     setComment(newComment);
   };
-
   // Handle approval status change
   const handleApprovalStatusChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -128,23 +130,19 @@ export default function ManagerFormEditApproval({
     const newStatus = e.target.value as FormStatus;
     setApprovalStatus(newStatus);
   };
-
   // Handle updating approval
   const handleAutoSave = async (data: {
     comment: string;
     approvalStatus: FormStatus;
   }) => {
     if (!submissionId || !managerFormApproval) return;
-
     const updatedData = new FormData();
-    updatedData.append("id", managerFormApproval.approvals[0].id);
+    updatedData.append("id", managerFormApproval.Approvals[0].id);
     updatedData.append("formSubmissionId", submissionId);
     updatedData.append("comment", data.comment);
-
     // Map approvalStatus to isApproved (boolean)
     const isApproved = data.approvalStatus === FormStatus.APPROVED;
     updatedData.append("isApproved", isApproved.toString()); // Convert boolean to string
-
     try {
       await updateFormApproval(updatedData);
     } catch (error) {
@@ -152,8 +150,7 @@ export default function ManagerFormEditApproval({
     }
   };
 
-  const debouncedAutoSave = useAutoSave(handleAutoSave, 1000);
-
+  const { autoSave: debouncedAutoSave } = useAutoSave(handleAutoSave, 500);
   useEffect(() => {
     debouncedAutoSave({ comment, approvalStatus });
   }, [comment, approvalStatus, debouncedAutoSave]);
@@ -162,94 +159,85 @@ export default function ManagerFormEditApproval({
     <>
       <Holds
         background={"white"}
-        className="row-start-1 row-end-2 h-full justify-center px-3 "
+        className="row-start-1 row-end-2 h-full justify-center"
       >
-        <Grids cols={"5"} rows={"2"} className="w-full h-full p-2">
-          <Holds className="col-span-1 row-span-2 flex items-center justify-center">
-            <Buttons
-              onClick={() => router.back()}
-              background={"none"}
-              position={"left"}
-            >
-              <Images
-                titleImg="/arrowBack.svg"
-                titleImgAlt={"Turn Back"}
-                className="max-w-8 h-auto object-contain"
-              />
-            </Buttons>
-          </Holds>
-
-          <Holds className="col-start-2 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-            <Titles size={"h4"}>{formTitle}</Titles>
-            <Titles size={"h6"}>{formData.name}</Titles>
-          </Holds>
-        </Grids>
+        <TitleBoxes onClick={() => router.back()}>
+          <Titles size={"h3"}>{formData.name}</Titles>
+        </TitleBoxes>
       </Holds>
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-5 px-5 "
-      >
-        <Holds className="overflow-y-auto no-scrollbar ">
-          {formData?.groupings?.map((group) => (
-            <Holds key={group.id} className="">
-              {group.title && <h3>{group.title || ""}</h3>}
-              {group.fields.map((field) => {
-                return (
-                  <Holds key={field.id} className="pb-1">
-                    <FormInput
-                      key={field.name}
-                      field={field}
-                      formValues={formValues}
-                      setFormValues={() => {}}
-                      readOnly={true}
-                    />
-                  </Holds>
-                );
-              })}
-            </Holds>
-          ))}
-          <Holds position={"row"} className="pb-3 w-full justify-between">
-            <Texts size={"p7"}>
-              {`Originally Submitted: ${format(
-                managerFormApproval?.submittedAt?.toString() ||
-                  new Date().toISOString(),
-                "M/dd/yy"
-              )}`}
-            </Texts>
-            <Texts size={"p7"}>
-              {`Last Edited: ${format(
-                managerFormApproval?.approvals?.[0]?.updatedAt?.toString() ||
-                  new Date().toISOString(),
-                "M/dd/yy"
-              )}`}
-            </Texts>
-          </Holds>
-        </Holds>
-      </Holds>
-
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-5 row-end-9 "
+        className="w-full h-full row-start-2 row-end-8 "
       >
         <Contents width={"section"}>
-          <Grids rows={"5"} gap={"5"} className="w-full h-full py-3 ">
-            <Holds className="row-start-1 row-end-2 h-full relative">
+          <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 ">
+            {formData?.groupings?.map((group) => (
+              <Holds key={group.id} className="">
+                {group.title && <h3>{group.title || ""}</h3>}
+                {group.fields.map((field) => {
+                  return (
+                    <Holds key={field.id} className="pb-1">
+                      <FormInput
+                        key={field.name}
+                        field={field}
+                        formValues={formValues}
+                        setFormValues={() => {}}
+                        readOnly={true}
+                      />
+                    </Holds>
+                  );
+                })}
+              </Holds>
+            ))}
+            <Holds
+              position={"row"}
+              className="py-3 w-full justify-between border-black border-opacity-5 border-b-2"
+            >
+              <Texts size={"p7"}>
+                {`${t("OriginallySubmitted")} ${format(
+                  managerFormApproval?.submittedAt?.toString() ||
+                    new Date().toISOString(),
+                  "M/dd/yy"
+                )}`}
+              </Texts>
+              <Texts size={"p7"}>
+                {`${t("LastEdited")} ${format(
+                  managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
+                    new Date().toISOString(),
+                  "M/dd/yy"
+                )}`}
+              </Texts>
+            </Holds>
+            <Holds className="relative pb-3">
+              <Labels size={"p5"} htmlFor="managerName">
+                {t("Manager")}
+              </Labels>
+              <Inputs
+                id="managerName"
+                name="managerName"
+                type="text"
+                value={`${managerFormApproval?.Approvals?.[0]?.Approver?.firstName} ${managerFormApproval?.Approvals?.[0]?.Approver?.lastName}`}
+                disabled
+                className="text-center text-base"
+              />
+            </Holds>
+            <Holds className="relative pb-3">
               <Labels size={"p5"} htmlFor="approvalStatus">
-                Approval Status
+                {t("ApprovalStatus")}
               </Labels>
               <Selects
                 id="approvalStatus"
                 value={approvalStatus}
                 onChange={handleApprovalStatusChange}
               >
-                <option value="APPROVED">Approved</option>
-                <option value="DENIED">Denied</option>
+                <option value="APPROVED">{t("Approved")}</option>
+                <option value="DENIED">{t("Denied")}</option>
               </Selects>
             </Holds>
-            <Holds className="row-start-2 row-end-3 h-full relative">
+            <Holds className="relative">
               <Labels size={"p5"} htmlFor="comment">
-                Manager Comments
+                {t("ManagerComments")}
               </Labels>
               <Holds className="w-full relative">
                 <TextAreas
@@ -264,14 +252,14 @@ export default function ManagerFormEditApproval({
                 </Texts>
               </Holds>
               <Texts position={"right"} size={"p7"}>
-                {`Approval Status Last Updated:  ${format(
+                {`${t("ApprovalStatusLastUpdated")} ${format(
                   managerFormApproval?.updatedAt?.toString() ||
                     new Date().toISOString(),
                   "M/dd/yy"
                 )}`}
               </Texts>
             </Holds>
-          </Grids>
+          </Holds>
         </Contents>
       </Holds>
     </>

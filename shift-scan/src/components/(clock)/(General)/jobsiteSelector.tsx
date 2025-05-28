@@ -5,6 +5,7 @@ import { useDBJobsite } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
+  id?: string;
   code: string;
   label: string;
 };
@@ -12,11 +13,13 @@ type Option = {
 type EquipmentSelectorProps = {
   onJobsiteSelect: (equipment: Option | null) => void;
   initialValue?: Option; // Optional initial value
+  useJobSiteId?: boolean; // Optional prop to use ID instead of code
 };
 
 export const JobsiteSelector = ({
   onJobsiteSelect,
   initialValue,
+  useJobSiteId = false,
 }: EquipmentSelectorProps) => {
   const [selectedJobsite, setSelectedJobsite] = useState<Option | null>(null);
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
@@ -24,7 +27,7 @@ export const JobsiteSelector = ({
   const t = useTranslations("Clock");
   useEffect(() => {
     const options = jobsiteResults.map((jobSite) => ({
-      code: jobSite.qrId,
+      code: useJobSiteId ? jobSite.id : jobSite.qrId,
       label: jobSite.name,
     }));
 

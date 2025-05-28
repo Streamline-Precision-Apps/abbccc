@@ -130,10 +130,6 @@ export default function MultipleRoles({
                           <option value="truckDriver">
                             {t("TruckDriver")}
                           </option>
-                          <option value="truckEquipmentOperator">
-                            {t("TruckEquipmentOperator")}
-                          </option>
-                          <option value="truckLabor">{t("TruckLabor")}</option>
                         </>
                       )}
                       {mechanicView === true && (
