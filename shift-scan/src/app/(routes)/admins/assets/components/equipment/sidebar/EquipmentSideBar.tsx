@@ -7,29 +7,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import SearchBar from "../../../personnel/components/SearchBar";
+import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
-
-type Equipment = {
-  id: string;
-  qrId: string;
-  name: string;
-  description?: string;
-  equipmentTag: string;
-  status?: string;
-  isActive: boolean;
-  inUse: boolean;
-  overWeight: boolean;
-  currentWeight: number;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
-  };
-};
+import EquipmentRow from "./EquipmentRow";
+import { Equipment } from "../../../types";
 
 export default function EquipmentSideBar({
   assets,
@@ -37,6 +18,7 @@ export default function EquipmentSideBar({
   equipments,
   setSelectEquipment,
   selectEquipment,
+  hasUnsavedChanges = false,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
@@ -45,8 +27,23 @@ export default function EquipmentSideBar({
   selectEquipment: Equipment | null;
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  hasUnsavedChanges?: boolean;
 }) {
   const [term, setTerm] = useState("");
+
+  // Handle equipment selection with toggle functionality
+  const handleEquipmentClick = useCallback(
+    (equipment: Equipment) => {
+      // If the clicked equipment is already selected, deselect it
+      if (selectEquipment?.id === equipment.id) {
+        setSelectEquipment(null);
+      } else {
+        // Otherwise, select the new equipment
+        setSelectEquipment(equipment);
+      }
+    },
+    [selectEquipment, setSelectEquipment]
+  );
 
   const filteredEquipments = useMemo(() => {
     // Create a sorted copy of the original array
@@ -90,15 +87,13 @@ export default function EquipmentSideBar({
         <Holds>
           {filteredEquipments.length > 0 ? (
             filteredEquipments.map((equipment) => (
-              <Holds
+              <EquipmentRow
                 key={equipment.id}
-                className="py-3 "
-                onClick={() => setSelectEquipment(equipment)}
-              >
-                <Texts position={"left"} className="pl-4" size="xs">
-                  {`${equipment.name.slice(0, 30)} (${equipment.id})`}
-                </Texts>
-              </Holds>
+                equipment={equipment}
+                isSelected={selectEquipment?.id === equipment.id}
+                onEquipmentClick={handleEquipmentClick}
+                hasUnsavedChanges={hasUnsavedChanges}
+              />
             ))
           ) : (
             <Texts size="p6" className="text-center">

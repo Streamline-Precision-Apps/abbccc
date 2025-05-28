@@ -1,49 +1,27 @@
-import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
-import { useState, useEffect } from "react";
-import EquipmentRegistrationForm from "../forms/EquipmentRegistrationForm";
+import { Equipment } from "../../types";
+import { useEquipmentForm } from "./hooks/useEquipmentForm";
 import {
-  updateEquipmentAsset,
-  registerEquipment,
-} from "@/actions/AssetActions";
-import Spinner from "@/components/(animations)/spinner";
-import { useSession } from "next-auth/react";
-
-type Equipment = {
-  id: string;
-  qrId: string;
-  name: string;
-  description?: string;
-  equipmentTag: string;
-  status?: string;
-  isActive: boolean;
-  inUse: boolean;
-  overWeight: boolean;
-  currentWeight: number;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
-  };
-};
+  EquipmentHeaderActions,
+  EquipmentFormView,
+  EquipmentEmptyState,
+  EquipmentRegistrationView,
+} from "./components";
 export default function EquipmentMainContent({
   assets,
   selectEquipment,
   isRegistrationFormOpen,
   setIsRegistrationFormOpen,
   setSelectEquipment,
+  onUnsavedChangesChange,
 }: {
   assets: string;
   selectEquipment: Equipment | null;
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectEquipment: React.Dispatch<React.SetStateAction<Equipment | null>>;
+  onUnsavedChangesChange?: (hasChanges: boolean) => void;
 }) {
   // State for form data and tracking changes
   const [formData, setFormData] = useState<Equipment | null>(null);
@@ -64,6 +42,11 @@ export default function EquipmentMainContent({
     }
   }, [selectEquipment]);
 
+  // Notify parent component when unsaved changes state changes
+  useEffect(() => {
+    onUnsavedChangesChange?.(hasUnsavedChanges);
+  }, [hasUnsavedChanges, onUnsavedChangesChange]);
+
   // Generic handler for input changes
   const handleInputChange = (
     fieldName: string,
@@ -71,7 +54,7 @@ export default function EquipmentMainContent({
   ) => {
     if (!formData || !selectEquipment) return;
 
-    setFormData((prev) => {
+    setFormData((prev: Equipment | null) => {
       if (!prev) return prev;
 
       // Handle nested vehicle info fields
@@ -302,7 +285,7 @@ export default function EquipmentMainContent({
   const handleRevertField = (fieldName: string) => {
     if (!selectEquipment || !formData) return;
 
-    setFormData((prev) => {
+    setFormData((prev: Equipment | null) => {
       if (!prev) return prev;
 
       // Handle nested vehicle info fields

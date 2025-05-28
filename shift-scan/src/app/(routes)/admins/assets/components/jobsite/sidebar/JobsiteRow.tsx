@@ -1,0 +1,64 @@
+"use client";
+import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
+import React, { useState } from "react";
+import { Jobsite } from "../../../types";
+import DiscardChangesModal from "../../shared/DiscardChangesModal";
+
+interface JobsiteRowProps {
+  jobsite: Jobsite;
+  isSelected?: boolean;
+  onClick: (jobsite: Jobsite) => void;
+  hasUnsavedChanges?: boolean;
+}
+
+/**
+ * Individual jobsite row component for the sidebar list
+ * Displays jobsite name and qrId with selection state
+ */
+export default function JobsiteRow({
+  jobsite,
+  isSelected = false,
+  onClick,
+  hasUnsavedChanges = false,
+}: JobsiteRowProps) {
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const handleJobsiteClick = () => {
+    if (hasUnsavedChanges) {
+      // If there are unsaved changes, show confirmation modal
+      setShowConfirmModal(true);
+    } else {
+      // Otherwise process click normally
+      onClick(jobsite);
+    }
+  };
+
+  const handleConfirmNavigation = () => {
+    setShowConfirmModal(false);
+    onClick(jobsite); // Process the click after confirmation
+  };
+  const handleCancelNavigation = () => {
+    setShowConfirmModal(false);
+  };
+  return (
+    <>
+      <Holds
+        background="lightGray"
+        className={`w-full h-[40px] justify-center flex  hover:opacity-80 cursor-pointer relative ${
+          isSelected && "outline outline-[2px] outline-black"
+        } rounded-[10px] my-1 px-4`}
+        onClick={handleJobsiteClick}
+      >
+        <Texts position="left" size="xs">
+          {jobsite.name}
+        </Texts>
+      </Holds>
+      <DiscardChangesModal
+        isOpen={showConfirmModal}
+        confirmDiscardChanges={handleConfirmNavigation}
+        cancelDiscard={handleCancelNavigation}
+      />
+    </>
+  );
+}
