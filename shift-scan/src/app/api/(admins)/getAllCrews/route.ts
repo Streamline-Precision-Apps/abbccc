@@ -11,23 +11,25 @@ export async function GET() {
       orderBy: {
         name: "asc",
       },
+      include: {
+        Users: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     if (!userCrewData || userCrewData.length === 0) {
-      return NextResponse.json(
-        { message: "No crews found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "No crews found" }, { status: 404 });
     }
 
     // Revalidate cache for crews
     revalidateTag("crews");
 
-    return NextResponse.json(userCrewData, {
-      headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
-      },
-    });
+    return NextResponse.json(userCrewData);
   } catch (error) {
     console.error("Error fetching crews:", error);
 
@@ -36,9 +38,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

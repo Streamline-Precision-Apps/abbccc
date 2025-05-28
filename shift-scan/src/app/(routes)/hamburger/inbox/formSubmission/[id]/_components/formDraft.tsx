@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useCallback, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { FormInput } from "./formInput";
 import { FormEvent } from "react";
-import { saveDraft } from "@/actions/hamburgerActions";
+import { deleteFormSubmission, saveDraft } from "@/actions/hamburgerActions";
 import { debounce } from "lodash";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -15,6 +15,7 @@ import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import Signature from "@/components/(reusable)/signature";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface FormField {
   id: string;
@@ -66,9 +67,11 @@ export default function FormDraft({
   submissionId: string;
 }) {
   type FormValues = Record<string, string>;
+  const t = useTranslations("Hamburger-Inbox");
   const [signature, setSignature] = useState<string | null>(null);
   const [showSignature, setShowSignature] = useState(false);
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchSignature = async () => {
@@ -96,7 +99,6 @@ export default function FormDraft({
           submissionId,
           title
         );
-        console.log("Draft saved successfully");
       } catch (error) {
         console.error("Error saving draft:", error);
       }
@@ -104,13 +106,14 @@ export default function FormDraft({
   };
 
   // Use the auto-save hook with the FormValues type
-  const autoSave = useAutoSave<{ values: FormValues; title: string }>(
-    (data) => saveDraftData(data.values, data.title),
-    2000
-  );
+  const { autoSave, cancel } = useAutoSave<{
+    values: FormValues;
+    title: string;
+  }>((data) => saveDraftData(data.values, data.title), 2000);
 
   // Trigger auto-save when formValues or formTitle changes
   useEffect(() => {
+    if (isSubmitting) return;
     autoSave({ values: formValues, title: formTitle });
   }, [formValues, formTitle, autoSave]);
 
@@ -129,110 +132,149 @@ export default function FormDraft({
     return true;
   };
 
+  const handleDeleteForm = async (id: string) => {
+    try {
+      await deleteFormSubmission(id);
+      router.back();
+    } catch (error) {
+      console.error("Error deleting form:", error);
+    }
+  };
+
   return (
     <>
       <Holds
         background={"white"}
-        className="row-span-1 h-full justify-center px-3 "
+        className="row-start-1 row-end-2 h-full justify-center"
       >
-        <TitleBoxes onClick={() => router.push("/dashboard")}>
-          <Holds position={"row"}>
-            <Titles size={"h1"}>{formData.name}</Titles>
-          </Holds>
+        <TitleBoxes onClick={() => router.push("/hamburger/inbox")}>
+          <Titles size={"h2"}>{formData.name}</Titles>
         </TitleBoxes>
       </Holds>
 
-      <Holds background={"white"} className="w-full h-full row-span-7  ">
-        <Contents width={"section"}>
-          <form onSubmit={handleSubmit} className="h-full">
-            <Grids rows={"6"} gap={"3"} className="h-full w-full my-5">
-              <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-auto no-scrollbar">
-                <Holds className="px-2">
-                  <Labels size={"p4"} htmlFor="title">
-                    Title (Optional)
-                  </Labels>
-                  <Inputs
-                    type="text"
-                    placeholder="Enter a title here"
-                    name="title"
-                    value={formTitle}
-                    className="text-center text-base"
-                    onChange={(e) => setFormTitle(e.target.value)}
-                  />
-                </Holds>
-                {formData?.groupings?.map((group) => (
-                  <Holds key={group.id} className="">
-                    {group.title && <h3>{group.title || ""}</h3>}
-                    {group.fields.map((field) => {
-                      return (
-                        <Holds key={field.id} className="px-2">
-                          <FormInput
-                            key={field.name} // Use field.name as the key
-                            field={field}
-                            formValues={formValues}
-                            setFormValues={updateFormValues}
-                          />
-                        </Holds>
-                      );
-                    })}
+      <Holds
+        background={"white"}
+        className="w-full h-full row-start-2 row-end-8 "
+      >
+        <form
+          onSubmit={async (e) => {
+            setIsSubmitting(true);
+            try {
+              cancel();
+              await handleSubmit(e);
+            } finally {
+              setIsSubmitting(false);
+            }
+          }}
+          className="h-full mt-3 mb-5"
+        >
+          <Grids rows={"8"} gap={"5"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-8 h-full w-full border-black border-opacity-5 border-b-2 ">
+              <div className="overflow-y-auto no-scrollbar">
+                <Contents width={"section"}>
+                  <Holds>
+                    <Labels size={"p4"} htmlFor="title">
+                      {t("TitleOptional")}
+                    </Labels>
+                    <Inputs
+                      type="text"
+                      placeholder={t("EnterATitleHere")}
+                      name="title"
+                      value={formTitle}
+                      className="text-center text-base"
+                      onChange={(e) => setFormTitle(e.target.value)}
+                    />
                   </Holds>
-                ))}
-                <Holds className="px-2">
-                  {formData.isSignatureRequired && (
-                    <Holds className="h-full w-full">
-                      <Labels size={"p5"} htmlFor="signature">
-                        Signature
-                      </Labels>
-                      {showSignature ? (
-                        <Holds
-                          onClick={() => setShowSignature(false)}
-                          className="w-full h-full border-[3px] rounded-[10px] border-black"
-                        >
-                          {signature && (
-                            <Holds className="w-full h-full">
-                              <img
-                                src={signature}
-                                alt="signature"
-                                className="h-20 w-full object-contain"
-                              />
-                            </Holds>
-                          )}
-                        </Holds>
-                      ) : (
-                        <Holds className="w-full h-full ">
-                          <Buttons
-                            onClick={() => setShowSignature(true)}
-                            type="button"
-                            className="shadow-none w-full h-20"
-                          >
-                            Tap to sign
-                          </Buttons>
-                        </Holds>
-                      )}
+                  {formData?.groupings?.map((group) => (
+                    <Holds key={group.id} className="">
+                      {group.title && <h3>{group.title || ""}</h3>}
+                      {group.fields.map((field) => {
+                        return (
+                          <Holds key={field.id}>
+                            <FormInput
+                              key={field.name} // Use field.name as the key
+                              field={field}
+                              formValues={formValues}
+                              setFormValues={updateFormValues}
+                            />
+                          </Holds>
+                        );
+                      })}
                     </Holds>
-                  )}
-                </Holds>
-              </Holds>
+                  ))}
+                  <Holds>
+                    {formData.isSignatureRequired && (
+                      <Holds className="h-full w-full">
+                        <Labels size={"p5"} htmlFor="signature">
+                          {t("Signature")}
+                        </Labels>
+                        {showSignature ? (
+                          <Holds
+                            onClick={() => setShowSignature(false)}
+                            className="w-full h-full border-[3px] rounded-[10px] border-black"
+                          >
+                            {signature && (
+                              <Holds className="w-full h-full">
+                                <img
+                                  src={signature}
+                                  alt="signature"
+                                  className="h-20 w-full object-contain"
+                                />
+                              </Holds>
+                            )}
+                          </Holds>
+                        ) : (
+                          <Holds className="w-full h-full ">
+                            <Buttons
+                              onClick={() => setShowSignature(true)}
+                              type="button"
+                              className="shadow-none w-full h-20"
+                            >
+                              {t("TapToSign")}
+                            </Buttons>
+                          </Holds>
+                        )}
+                      </Holds>
+                    )}
+                  </Holds>
+                </Contents>
+              </div>
+            </Holds>
 
-              <Holds className="row-start-6 row-end-7 h-full w-full">
-                <Buttons
-                  type="submit"
-                  background={
-                    !validateForm(formValues, formData) || !showSignature
-                      ? "darkGray"
-                      : "green"
-                  }
-                  disabled={
-                    !validateForm(formValues, formData) || !showSignature
-                  }
-                  className="w-full h-[50px]"
-                >
-                  <Titles size={"h3"}>Submit Request</Titles>
-                </Buttons>
-              </Holds>
-            </Grids>
-          </form>
-        </Contents>
+            <Holds className="row-start-8 row-end-9 h-full w-full">
+              <Contents width={"section"}>
+                <Holds position={"row"} className="w-full h-full gap-x-3">
+                  <Buttons
+                    type="submit"
+                    background={
+                      !validateForm(formValues, formData) || !showSignature
+                        ? "darkGray"
+                        : "green"
+                    }
+                    disabled={
+                      !validateForm(formValues, formData) ||
+                      !showSignature ||
+                      isSubmitting
+                    }
+                    className="w-full"
+                  >
+                    <Titles size={"h4"}>
+                      {isSubmitting ? t("Submitting") : t("SubmitRequest")}
+                    </Titles>
+                  </Buttons>
+                  <Buttons
+                    type="button"
+                    background={"red"}
+                    onClick={() => handleDeleteForm(submissionId)}
+                    className="w-full"
+                  >
+                    <Titles size={"h4"}>{t("DeleteDraft")}</Titles>
+                  </Buttons>
+                </Holds>
+              </Contents>
+            </Holds>
+          </Grids>
+        </form>
       </Holds>
     </>
   );

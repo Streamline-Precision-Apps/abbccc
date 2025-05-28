@@ -13,14 +13,7 @@ import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function TruckDriverDashboardView({
   additionalButtonsType,
-  isModalOpen,
-  isModal2Open,
-  setIsModal2Open,
-  comment,
-  setComment,
-  handleCOButton3,
-  handleCloseModal,
-  handleShowManagerButtons,
+  verifyLogsCompletion,
   permission,
   logs,
   laborType,
@@ -32,9 +25,8 @@ export default function TruckDriverDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton3: () => void;
   handleCloseModal: () => void;
-  handleShowManagerButtons: () => void;
+  verifyLogsCompletion: () => void;
   permission: string;
   logs: LogItem[];
   laborType: string;
@@ -57,7 +49,6 @@ export default function TruckDriverDashboardView({
 
             <SwitchJobsBtn
               {...modalState}
-              handleShowManagerButtons={handleShowManagerButtons}
               permission={permission}
               logs={logs}
               laborType={laborType}
@@ -75,7 +66,7 @@ export default function TruckDriverDashboardView({
             )}
 
             <ClockOutBtn
-              handleShowAdditionalButtons={handleCOButton3}
+              handleShowAdditionalButtons={verifyLogsCompletion}
               permission={permission}
               mechanicProjectID={mechanicProjectID}
               logs={logs}

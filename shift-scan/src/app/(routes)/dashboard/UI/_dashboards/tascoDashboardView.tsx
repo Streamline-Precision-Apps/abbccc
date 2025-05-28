@@ -12,14 +12,7 @@ import { useModalState } from "@/hooks/(dashboard)/useModalState";
 
 export default function TascoDashboardView({
   additionalButtonsType,
-  isModalOpen,
-  isModal2Open,
-  setIsModal2Open,
-  comment,
-  setComment,
-  handleCOButton3,
-  handleCloseModal,
-  handleShowManagerButtons,
+  verifyLogsCompletion,
   permission,
   logs,
   laborType,
@@ -31,9 +24,8 @@ export default function TascoDashboardView({
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  handleCOButton3: () => void;
   handleCloseModal: () => void;
-  handleShowManagerButtons: () => void;
+  verifyLogsCompletion: () => void;
   permission: string;
   currentView: string | null;
   logs: LogItem[];
@@ -58,7 +50,6 @@ export default function TascoDashboardView({
               />
               <SwitchJobsBtn
                 {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
                 permission={permission}
                 logs={logs}
                 laborType={laborType}
@@ -72,7 +63,7 @@ export default function TascoDashboardView({
               )}
 
               <ClockOutBtn
-                handleShowAdditionalButtons={handleCOButton3}
+                handleShowAdditionalButtons={verifyLogsCompletion}
                 permission={permission}
                 logs={logs}
                 mechanicProjectID={mechanicProjectID}
@@ -97,7 +88,6 @@ export default function TascoDashboardView({
               />
               <SwitchJobsBtn
                 {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
                 permission={permission}
                 logs={logs}
                 laborType={laborType}
@@ -111,7 +101,7 @@ export default function TascoDashboardView({
               )}
 
               <ClockOutBtn
-                handleShowAdditionalButtons={handleCOButton3}
+                handleShowAdditionalButtons={verifyLogsCompletion}
                 permission={permission}
                 laborType={laborType}
                 mechanicProjectID={mechanicProjectID}

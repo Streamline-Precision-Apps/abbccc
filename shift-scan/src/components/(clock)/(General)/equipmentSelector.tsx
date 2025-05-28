@@ -12,11 +12,13 @@ type Option = {
 type EquipmentSelectorProps = {
   onEquipmentSelect: (equipment: Option | null) => void;
   initialValue?: Option; // Optional initial value
+  useEquipmentId?: boolean;
 };
 
 export const EquipmentSelector = ({
   onEquipmentSelect,
   initialValue,
+  useEquipmentId = false,
 }: EquipmentSelectorProps) => {
   const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
     null
@@ -26,21 +28,26 @@ export const EquipmentSelector = ({
   const { equipmentResults } = useDBEquipment();
 
   useEffect(() => {
-    const options = equipmentResults.map((costcode) => ({
-      code: costcode.name,
-      label: costcode.name,
+    const options = equipmentResults.map((equipment) => ({
+      code: useEquipmentId ? equipment.id : equipment.qrId,
+      label: equipment.name,
     }));
     setEquipmentOptions(options);
   }, [equipmentResults]);
 
   // Initialize with the passed initialValue
   useEffect(() => {
-    if (initialValue && equipmentOptions.length > 0) {
-      const foundOption = equipmentOptions.find(
-        (opt) => opt.code === initialValue.code
-      );
-      if (foundOption) {
-        setSelectedEquipment(foundOption);
+    if (initialValue) {
+      // If options are available, find the matching one
+      if (equipmentOptions.length > 0) {
+        const foundOption = equipmentOptions.find(
+          (opt) => opt.code === initialValue.code
+        );
+        setSelectedEquipment(foundOption || null);
+      }
+      // If options aren't loaded yet, set the initial value directly
+      else if (initialValue.code && initialValue.label) {
+        setSelectedEquipment(initialValue);
       }
     }
   }, [initialValue, equipmentOptions]);

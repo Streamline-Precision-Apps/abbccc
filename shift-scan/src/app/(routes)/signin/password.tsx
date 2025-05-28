@@ -67,7 +67,7 @@ export default function SignInForm() {
         <Holds position={"row"}>
           <Labels>{t("Password")}</Labels>
           <Images
-            titleImg={viewSecret ? "/eye.svg" : "/eye-slash.svg"}
+            titleImg={viewSecret ? "/eye.svg" : "/eyeSlash.svg"}
             titleImgAlt="eye"
             background="none"
             size="10"

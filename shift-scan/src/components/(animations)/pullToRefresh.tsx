@@ -1,6 +1,7 @@
 import Spinner from "./spinner";
 import React from "react";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import { Holds } from "../(reusable)/holds";
 
 interface PullToRefreshProps {
   children: React.ReactNode;
@@ -21,6 +22,11 @@ export function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
   return (
     <div className="relative h-full overflow-y-auto no-scrollbar">
       {/* Fixed spinner at the top */}
+      {isRefreshing && (
+        <div className="space-2 mt-2">
+          <Spinner />
+        </div>
+      )}
       <div
         className={refreshIndicatorStyle}
         style={{

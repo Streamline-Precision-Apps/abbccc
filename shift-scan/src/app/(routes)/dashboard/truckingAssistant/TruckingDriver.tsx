@@ -33,11 +33,13 @@ type EquipmentHauled = {
   createdAt: Date;
   jobSiteId: string | null;
   Equipment: {
-    name: string | null;
-  };
+    id: string;
+    name: string;
+  } | null;
   JobSite: {
-    name: string | null;
-  };
+    id: string;
+    name: string;
+  } | null;
 };
 
 type Material = {
@@ -116,6 +118,7 @@ export default function TruckDriver() {
           )
       ),
     });
+    console.log("Hauling Logs", isComplete.haulingLogsTab);
   };
 
   useEffect(() => {
@@ -161,7 +164,11 @@ export default function TruckDriver() {
         setNotes(data[1] || "");
         setRefuelLogs(data[2]);
         setStateMileage(data[3]);
-        setMaterial(data[4]);
+        if (data[4] === Error) {
+          setMaterial([]);
+        } else {
+          setMaterial(data[4]);
+        }
         setEquipmentHauled(data[5]);
         setLaborType(data[6]);
       } catch (error) {
@@ -181,12 +188,7 @@ export default function TruckDriver() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isLoading={isLoading}
-          isComplete={{
-            haulingLogsTab: isComplete.haulingLogsTab,
-            notesTab: isComplete.notesTab,
-            stateMileageTab: isComplete.stateMileageTab,
-            refuelLogsTab: isComplete.refuelLogsTab,
-          }}
+          isComplete={isComplete}
         />
       </Holds>
       <Holds className={"w-full h-full rounded-t-none row-start-2 row-end-11"}>

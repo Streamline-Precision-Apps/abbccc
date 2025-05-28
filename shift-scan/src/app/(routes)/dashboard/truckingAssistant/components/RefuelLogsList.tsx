@@ -6,6 +6,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
+import { Texts } from "@/components/(reusable)/texts";
 
 type Refueled = {
   id: string;
@@ -60,6 +61,16 @@ export default function RefuelLogsList({
   return (
     <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
       <div className=" row-span-1 h-full ">
+        {editedRefuel.length === 0 && (
+          <Holds className="px-10 mt-4">
+            <Texts size={"p5"} text={"gray"} className="italic">
+              No Refuel Logs Recorded
+            </Texts>
+            <Texts size={"p7"} text={"gray"}>
+              {`(Tap the plus icon to add a log.)`}
+            </Texts>
+          </Holds>
+        )}
         {editedRefuel.map((rL, index) => (
           <SlidingDiv key={rL.id} onSwipeLeft={() => handleDelete(rL.id)}>
             <Holds

@@ -78,6 +78,18 @@ export async function GET(req: Request) {
           status: true,
           isActive: true,
           inUse: true,
+          overWeight: true,
+          currentWeight: true,
+          equipmentVehicleInfo: {
+            select: {
+              make: true,
+              model: true,
+              year: true,
+              licensePlate: true,
+              registrationExpiration: true,
+              mileage: true,
+            },
+          },
         },
       });
     }

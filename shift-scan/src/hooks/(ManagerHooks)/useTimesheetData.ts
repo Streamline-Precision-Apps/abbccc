@@ -1,12 +1,39 @@
-import { useState, useEffect, useCallback } from "react";
-import { TimesheetFilter } from "@/lib/types";
+import { useState, useEffect } from "react";
+import {
+  TimesheetFilter,
+  TimesheetHighlights,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
+  TruckingMaterialHaulLogData,
+  TruckingRefuelLogData,
+  TruckingStateLogData,
+  TascoHaulLogData,
+  TascoRefuelLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
+} from "@/lib/types";
+
+// Union type for all possible timesheet data
+export type TimesheetDataUnion =
+  | TimesheetHighlights[]
+  | TruckingMileageData
+  | TruckingEquipmentHaulLogData
+  | TruckingMaterialHaulLogData
+  | TruckingRefuelLogData
+  | TruckingStateLogData
+  | TascoHaulLogData
+  | TascoRefuelLogData
+  | EquipmentLogsData
+  | EmployeeEquipmentLogWithRefuel[]
+  | null;
 
 interface TimesheetDataResponse {
-  data: any;
+  data: TimesheetDataUnion;
+  setData: (data: TimesheetDataUnion) => void;
   loading: boolean;
-  error: string | null; // Consider a more specific error type
-  updateDate: (newDate: string) => void;
-  updateFilter: (newFilter: TimesheetFilter) => void;
+  error: string | null;
+  updateDate: (newDate: string) => Promise<void>;
+  updateFilter: (newFilter: TimesheetFilter) => Promise<void>;
 }
 
 export const useTimesheetData = (
@@ -14,13 +41,13 @@ export const useTimesheetData = (
   initialDate: string,
   initialFilter: TimesheetFilter
 ): TimesheetDataResponse => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<TimesheetDataUnion>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [currentFilter, setCurrentFilter] = useState<TimesheetFilter>(initialFilter);
 
-  const fetchTimesheets = useCallback(async () => {
+  const fetchTimesheets = async () => {
     if (!employeeId) return;
 
     setLoading(true);
@@ -38,29 +65,32 @@ export const useTimesheetData = (
       const result = await response.json();
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+      setError(`Failed to fetch timesheets: ${err}`);
     } finally {
       setLoading(false);
     }
-  }, [employeeId, currentDate, currentFilter]);
+  };
+
+  const fetchTimesheetsForDate = async (newDate: string) => {
+    setCurrentDate(newDate);
+    // fetchTimesheets will be triggered by useEffect when currentDate changes
+  };
+
+  const updateFilter = async (newFilter: TimesheetFilter) => {
+    setCurrentFilter(newFilter);
+    // fetchTimesheets will be triggered by useEffect when currentFilter changes
+  };
 
   useEffect(() => {
     fetchTimesheets();
-  }, [fetchTimesheets]);
-
-  const updateDate = useCallback((newDate: string) => {
-    setCurrentDate(newDate);
-  }, []);
-
-  const updateFilter = useCallback((newFilter: TimesheetFilter) => {
-    setCurrentFilter(newFilter);
-  }, []);
+  }, [employeeId, currentDate, currentFilter]);
 
   return {
     data,
+    setData,
     loading,
     error,
-    updateDate,
+    updateDate: fetchTimesheetsForDate,
     updateFilter,
   };
 };

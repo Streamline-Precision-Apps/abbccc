@@ -2,7 +2,7 @@
 
 import { useNotification } from "@/app/context/NotificationContext";
 import { Holds } from "@/components/(reusable)/holds";
-import { Titles } from "../(reusable)/titles";
+import { Texts } from "../(reusable)/texts";
 
 export const NotificationComponent = () => {
   const { notification, type } = useNotification(); // Access both `notification` and `type`
@@ -18,11 +18,11 @@ export const NotificationComponent = () => {
   return (
     <Holds
       background={backgroundColor as "red" | "green" | "orange"}
-      className="w-full fixed top-[0%] left-1/2 -translate-x-1/2 z-50 rounded-none "
+      className="h-full absolute top-0 right-0 z-50 justify-center items-center rounded-[10px] px-3 py-1"
     >
-      <Titles text={"black"} size={"h5"} className="text-center">
+      <Texts size={"p7"} className="text-center italic">
         {notification}
-      </Titles>
+      </Texts>
     </Holds>
   );
 };
