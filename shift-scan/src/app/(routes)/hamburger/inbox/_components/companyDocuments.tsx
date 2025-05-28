@@ -11,8 +11,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Images } from "@/components/(reusable)/images";
 import EqScannerModal from "./eqScannerModal";
-import { NewTab } from "@/components/(reusable)/newTabs";
 import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 
 type documentType = {
   id: string;
@@ -39,15 +39,8 @@ export type equipmentType = {
   }[];
 };
 
-export default function CompanyDocuments({
-  setActiveTab,
-  activeTab,
-  isManager,
-}: {
-  setActiveTab: React.Dispatch<React.SetStateAction<number>>;
-  activeTab: number;
-  isManager: boolean;
-}) {
+export default function CompanyDocuments() {
+  const t = useTranslations("Hamburger-Inbox");
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [documents, setDocuments] = useState<documentType[]>([]);
@@ -166,236 +159,99 @@ export default function CompanyDocuments({
           )
         );
 
-  if (loading) {
-    return (
-      <Holds className=" h-full w-full ">
-        <Grids rows={"7"} gap={"5"} className="h-full w-full">
-          <Holds className="row-start-1 row-end-8 h-full ">
-            <Holds className=" h-full w-full">
-              <Holds position={"row"} className="gap-x-1 h-fit">
-                <NewTab
-                  onClick={() => setActiveTab(1)}
-                  isActive={activeTab === 1}
-                  isComplete={true}
-                  titleImage={"/formInspect.svg"}
-                  titleImageAlt={""}
-                  animatePulse={loading}
-                >
-                  <Titles size={"h5"}>Form Selection</Titles>
-                </NewTab>
-                <NewTab
-                  onClick={() => setActiveTab(2)}
-                  isActive={activeTab === 2}
-                  isComplete={true}
-                  titleImage={"/formApproval.svg"}
-                  titleImageAlt={""}
-                  animatePulse={loading}
-                >
-                  <Titles size={"h5"}>Submitted Forms</Titles>
-                </NewTab>
-                {isManager && (
-                  <NewTab
-                    onClick={() => setActiveTab(3)}
-                    isActive={activeTab === 3}
-                    isComplete={true}
-                    titleImage={"/formSent.svg"}
-                    titleImageAlt={""}
-                    animatePulse={loading}
-                  >
-                    <Titles size={"h5"}>Pending Forms</Titles>
-                  </NewTab>
-                )}
-
-                <NewTab
-                  onClick={() => setActiveTab(4)}
-                  isActive={activeTab === 4}
-                  isComplete={true}
-                  titleImage={"/formSent.svg"}
-                  titleImageAlt={""}
-                  animatePulse={loading}
-                >
-                  <Titles size={"h5"}>Company Documents</Titles>
-                </NewTab>
-              </Holds>
-              <Holds
-                background={"white"}
-                className={`h-full rounded-t-none animate-pulse`}
-              >
-                <Grids rows={"9"} className="h-full w-full">
-                  <Holds className="row-start-1 row-end-2">
-                    <Contents width={"section"}>
-                      <Holds position={"row"} className="h-full w-full gap-x-4">
-                        <Holds className="w-fit ">
-                          <Buttons
-                            background={"green"}
-                            onClick={() => setModalOpen(true)}
-                            className="w-12 h-full"
-                          >
-                            <Holds className="p-2">
-                              <Images
-                                titleImg={"/qrCode.svg"}
-                                titleImgAlt={"QR"}
-                                className="w-6 h-6 items-center"
-                              />
-                            </Holds>
-                          </Buttons>
-                        </Holds>
-                        <Holds className="w-full h-full ">
-                          <Selects
-                            value={selectedFilter}
-                            onChange={(e) => setSelectedFilter(e.target.value)}
-                            className="text-center justify-center h-full"
-                            disabled
-                          >
-                            <option value="all">Loading tags...</option>
-                          </Selects>
-                        </Holds>
-                      </Holds>
-                    </Contents>
-                  </Holds>
-                  <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center">
-                    <Spinner size={50} />
-                  </Holds>
-                </Grids>
-              </Holds>
-            </Holds>
-          </Holds>
-        </Grids>
-      </Holds>
-    );
-  }
-
   return (
-    <Holds className=" h-full w-full ">
-      <Grids rows={"7"} gap={"5"} className="h-full w-full">
-        <Holds className="row-start-1 row-end-8 h-full ">
-          <Holds position={"row"} className="gap-x-1 h-fit">
-            <NewTab
-              onClick={() => setActiveTab(1)}
-              isActive={activeTab === 1}
-              isComplete={true}
-              titleImage={"/formInspect.svg"}
-              titleImageAlt={""}
-              animatePulse={loading}
+    <Contents width={"section"}>
+      <Grids rows={"9"} gap={"5"} className="h-full w-full pt-3 pb-5">
+        <Holds
+          position={"row"}
+          className="row-start-1 row-end-2 h-full gap-x-3"
+        >
+          <Holds className="w-12 h-full">
+            <Buttons
+              shadow={"none"}
+              background={"green"}
+              onClick={() => setModalOpen(true)}
+              className="w-12 h-full"
             >
-              <Titles size={"h5"}>Form Selection</Titles>
-            </NewTab>
-            <NewTab
-              onClick={() => setActiveTab(2)}
-              isActive={activeTab === 2}
-              isComplete={true}
-              titleImage={"/formApproval.svg"}
-              titleImageAlt={""}
-              animatePulse={loading}
-            >
-              <Titles size={"h5"}>Submitted Forms</Titles>
-            </NewTab>
-            {isManager && (
-              <NewTab
-                onClick={() => setActiveTab(3)}
-                isActive={activeTab === 3}
-                isComplete={true}
-                titleImage={"/formSent.svg"}
-                titleImageAlt={""}
-                animatePulse={loading}
-              >
-                <Titles size={"h5"}>Pending Forms</Titles>
-              </NewTab>
-            )}
-
-            <NewTab
-              onClick={() => setActiveTab(4)}
-              isActive={activeTab === 4}
-              isComplete={true}
-              titleImage={"/formSent.svg"}
-              titleImageAlt={""}
-              animatePulse={loading}
-            >
-              <Titles size={"h5"}>Company Documents</Titles>
-            </NewTab>
-          </Holds>
-          <Holds background={"white"} className={`h-full rounded-t-none`}>
-            <Grids rows={"9"} className="h-full w-full  pb-5">
-              <Holds className="row-start-1 row-end-2">
-                <Contents width={"section"}>
-                  <Holds position={"row"} className="h-full w-full gap-x-4">
-                    <Holds className="w-fit ">
-                      <Buttons
-                        background={"green"}
-                        onClick={() => setModalOpen(true)}
-                        className="w-12 h-full"
-                      >
-                        <Holds className="p-2">
-                          <Images
-                            titleImg={"/qrCode.svg"}
-                            titleImgAlt={"QR"}
-                            className="w-6 h-6 items-center"
-                          />
-                        </Holds>
-                      </Buttons>
-                    </Holds>
-                    <Holds className="w-full h-full ">
-                      <Selects
-                        value={selectedFilter}
-                        onChange={(e) => {
-                          setSelectedFilter(e.target.value);
-                          setScanned(null);
-                        }}
-                        className="text-center justify-center h-full"
-                      >
-                        <option value="all">All Documents</option>
-                        {tags.map((tag) => (
-                          <option
-                            key={tag.id}
-                            value={tag.tagName.toLowerCase()}
-                          >
-                            {tag.tagName}
-                          </option>
-                        ))}
-                        {scanned &&
-                          equipment.find((eq) => eq.qrId === scanned) && (
-                            <option
-                              value={
-                                equipment.find((eq) => eq.qrId === scanned)!
-                                  .name
-                              }
-                              selected
-                            >
-                              {
-                                equipment.find((eq) => eq.qrId === scanned)!
-                                  .name
-                              }
-                            </option>
-                          )}
-                      </Selects>
-                    </Holds>
-                  </Holds>
-                </Contents>
+              <Holds className="p-2">
+                <Images
+                  titleImg={"/qrCode.svg"}
+                  titleImgAlt={"QR"}
+                  className="w-6 h-6 items-center"
+                />
               </Holds>
-
-              {filteredDocuments.length === 0 ? (
-                <Holds className="row-start-2 row-end-9 h-full w-full ">
-                  <Contents width={"section"}>
-                    <Holds className="w-full h-full flex justify-center items-center">
-                      <Texts size={"p6"} className="italic text-gray-500">
-                        {selectedFilter === "all"
-                          ? "No documents found"
-                          : equipmentTags.length > 0
-                          ? `No documents found for equipment ${selectedFilter}`
-                          : `No documents found for ${selectedFilter}`}
-                      </Texts>
-                    </Holds>
-                  </Contents>
+            </Buttons>
+          </Holds>
+          {loading ? (
+            <Selects
+              value={selectedFilter}
+              onChange={(e) => setSelectedFilter(e.target.value)}
+              className="text-center justify-center h-full"
+              disabled
+            >
+              <option value="all">{t("LoadingTags")}</option>
+            </Selects>
+          ) : (
+            <Selects
+              value={selectedFilter}
+              onChange={(e) => {
+                setSelectedFilter(e.target.value);
+                setScanned(null);
+              }}
+              className="text-center h-full w-full "
+            >
+              <option value="all">{t("AllDocuments")}</option>
+              {tags.map((tag) => (
+                <option key={tag.id} value={tag.tagName.toLowerCase()}>
+                  {tag.tagName}
+                </option>
+              ))}
+              {scanned && equipment.find((eq) => eq.qrId === scanned) && (
+                <option
+                  value={equipment.find((eq) => eq.qrId === scanned)!.name}
+                  selected
+                >
+                  {equipment.find((eq) => eq.qrId === scanned)!.name}
+                </option>
+              )}
+            </Selects>
+          )}
+        </Holds>
+        {loading ? (
+          <Holds className="row-start-2 row-end-10 h-full w-full flex justify-center items-center">
+            <Spinner size={50} />
+          </Holds>
+        ) : (
+          <Holds className="row-start-2 row-end-10 h-full w-full flex justify-center items-center">
+            {filteredDocuments.length === 0 ? (
+              <Holds className="row-start-2 row-end-10 h-full w-full ">
+                <Holds className="w-full h-full flex ">
+                  <Texts size={"p5"} className="italic text-gray-500">
+                    {selectedFilter === "all"
+                      ? t("NoDocumentsFound")
+                      : equipmentTags.length > 0
+                      ? `${t("NoDocumentsFoundForEquipment")} ${selectedFilter}`
+                      : `${t("NoDocumentsFoundFor")} ${selectedFilter}`}
+                  </Texts>
+                  <Holds className="w-3/4 flex justify-center items-center ">
+                    <Texts size={"p7"} text={"gray"}>
+                      {t("TryScanningAnotherEquipmentOrChangingTheFilter")}
+                    </Texts>
+                  </Holds>
                 </Holds>
-              ) : (
-                <>
-                  <Holds className="row-start-2 row-end-9 py-3 h-full w-full overflow-y-scroll no-scrollbar">
-                    <Contents width={"section"}>
-                      <Holds background={"darkBlue"} className="w-full h-full ">
-                        {filteredDocuments.map((document) => (
-                          <Holds key={document.id} className="px-2 pb-5">
+              </Holds>
+            ) : (
+              <Holds className="row-start-2 row-end-10 h-full w-full flex justify-center items-center">
+                <Grids rows={"8"} gap={"5"} className="h-full w-full">
+                  <Holds className="row-start-1 row-end-8 h-full w-full overflow-y-scroll no-scrollbar">
+                    <Holds background={"darkBlue"} className="w-full h-full">
+                      <Contents>
+                        <Holds className="w-full space-y-3 overflow-y-auto no-scrollbar">
+                          {filteredDocuments.map((document) => (
                             <Buttons
-                              className={`py-0.5 relative w-full`}
+                              key={document.id}
+                              shadow={"none"}
+                              className={`py-3 relative w-full`}
                               background={
                                 selectedDocument?.id === document.id
                                   ? "green"
@@ -403,9 +259,12 @@ export default function CompanyDocuments({
                               }
                               onClick={() => handleDocumentClick(document)}
                             >
-                              <div className="flex flex-col w-full p-1">
-                                <div className="flex justify-between items-center w-full">
-                                  <Titles size={"h4"} text={"black"}>
+                              <Holds className="flex flex-col w-full px-2 py-">
+                                <Holds
+                                  position={"row"}
+                                  className="flex justify-between items-center w-full"
+                                >
+                                  <Titles size={"h5"} text={"black"}>
                                     {document.fileName}
                                   </Titles>
                                   {document.DocumentTags.length > 0 && (
@@ -413,71 +272,66 @@ export default function CompanyDocuments({
                                       {document.DocumentTags[0].tagName}
                                     </span>
                                   )}
-                                </div>
+                                </Holds>
                                 {selectedDocument?.id === document.id &&
                                   document.description && (
-                                    <div className="text-left text-sm mt-2 text-black">
+                                    <Holds className="text-left text-sm mt-2 text-black">
                                       {document.description}
-                                    </div>
+                                    </Holds>
                                   )}
-                              </div>
+                              </Holds>
                             </Buttons>
-                          </Holds>
-                        ))}
+                          ))}
+                        </Holds>
+                      </Contents>
+                    </Holds>
+                  </Holds>
+                  <Holds className="row-start-8 row-end-9 h-full w-full  ">
+                    <Grids cols={"2"} gap={"4"} className="w-full h-full">
+                      <Holds className="col-start-1 col-end-2  ">
+                        <Buttons
+                          background={selectedDocument ? "orange" : "darkGray"}
+                          onClick={handleDownload}
+                          className="w-full py-3 "
+                          disabled={!selectedDocument}
+                        >
+                          <Titles size={"h5"}>{t("Download")}</Titles>
+                        </Buttons>
                       </Holds>
-                    </Contents>
+                      <Holds className="col-start-2 col-end-3  ">
+                        <Buttons
+                          background={selectedDocument ? "orange" : "darkGray"}
+                          onClick={() => {}}
+                          className="w-full py-3"
+                          disabled={!selectedDocument}
+                        >
+                          <Titles size={"h5"}>{t("View")}</Titles>
+                        </Buttons>
+                      </Holds>
+                    </Grids>
                   </Holds>
-                  <Holds className="row-start-9 row-end-10  ">
-                    <Contents width={"section"}>
-                      <Grids cols={"2"} gap={"4"} className="w-full h-full">
-                        <Holds className="col-start-1 col-end-2  ">
-                          <Buttons
-                            background={
-                              selectedDocument ? "orange" : "darkGray"
-                            }
-                            onClick={handleDownload}
-                            className="w-full py-3 "
-                            disabled={!selectedDocument}
-                          >
-                            <Titles size={"h5"}>Download</Titles>
-                          </Buttons>
-                        </Holds>
-                        <Holds className="col-start-2 col-end-3  ">
-                          <Buttons
-                            background={
-                              selectedDocument ? "orange" : "darkGray"
-                            }
-                            onClick={() => {}}
-                            className="w-full py-3"
-                            disabled={!selectedDocument}
-                          >
-                            <Titles size={"h5"}>View</Titles>
-                          </Buttons>
-                        </Holds>
-                      </Grids>
-                    </Contents>
-                  </Holds>
-                </>
-              )}
-              <NModals
-                size="screen"
-                background="takeABreak"
-                isOpen={modalOpen}
-                handleClose={() => {
-                  setModalOpen(false);
-                }}
-              >
-                <EqScannerModal
-                  setModalOpen={setModalOpen}
-                  scanned={scanned}
-                  setScanned={setScanned}
-                  equipment={equipment}
-                />
-              </NModals>
-            </Grids>
+                </Grids>
+              </Holds>
+            )}
           </Holds>
-        </Holds>
+        )}
+
+        <NModals
+          size="screen"
+          background="takeABreak"
+          isOpen={modalOpen}
+          handleClose={() => {
+            setModalOpen(false);
+          }}
+        >
+          <EqScannerModal
+            setModalOpen={setModalOpen}
+            scanned={scanned}
+            setScanned={setScanned}
+            equipment={equipment}
+          />
+        </NModals>
       </Grids>
-    </Holds>
+    </Contents>
   );
 }

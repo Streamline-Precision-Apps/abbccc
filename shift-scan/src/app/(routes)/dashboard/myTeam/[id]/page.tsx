@@ -40,6 +40,7 @@ export default function Content() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("rPath");
+  const timeCard = searchParams.get("timecard");
   const params = useParams();
   const { id } = params;
 
@@ -129,15 +130,19 @@ export default function Content() {
                             background="lightBlue"
                             className="w-full h-full py-2 relative"
                           >
-                            <Holds position={"row"}>
+                            <Holds position={"row"} className="w-full gap-x-4">
                               <Holds size={"20"} className="relative">
                                 <Images
                                   titleImg={
-                                    member.image || "/profile-default.svg"
+                                    member.image || "/profileFilled.svg"
                                   }
-                                  titleImgAlt="profile picture"
+                                  titleImgAlt="profileFilled"
                                   loading="lazy"
-                                  className="rounded-full border-[3px] border-black"
+                                  className={`rounded-full max-w-12 h-auto object-contain ${
+                                    member.image
+                                      ? "border-[3px] border-black"
+                                      : ""
+                                  } `}
                                 />
                                 <Holds
                                   background={
@@ -147,11 +152,7 @@ export default function Content() {
                                 />
                               </Holds>
                               <Holds size={"80"}>
-                                <Titles
-                                  position={"left"}
-                                  size="h3"
-                                  className="ml-4"
-                                >
+                                <Titles position={"left"} size="h4">
                                   {member.firstName} {member.lastName}
                                 </Titles>
                               </Holds>

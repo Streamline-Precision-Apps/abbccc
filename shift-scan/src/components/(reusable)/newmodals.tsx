@@ -11,13 +11,15 @@ const NModalVariants = cva("", {
     background: {
       default: "bg-white opacity-90 rounded-2xl p-1",
       takeABreak:
-        "bg-gradient-to-b from-app-dark-blue to-app-blue pb-3 pt-7 px-2",
+        "bg-gradient-to-b from-app-dark-blue to-app-blue pb-7 pt-7 px-4",
       white: "bg-white rounded-2xl p-1",
+      noOpacity: "bg-white rounded-2xl p-1 opacity-none",
     },
     position: {
       center: "relative",
     },
     size: {
+      xs: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[350px] h-[200px]",
       sm: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
       med: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
       medW: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/3",

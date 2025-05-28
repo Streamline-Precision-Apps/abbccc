@@ -86,6 +86,16 @@ export default function MaterialList({
     <>
       <Contents width={"section"} className="overflow-y-auto no-scrollbar">
         <Holds>
+          {editedMaterials.length === 0 && (
+            <Holds className="px-10 mt-4">
+              <Texts size={"p5"} text={"gray"} className="italic">
+                No Materials Hauled recorded
+              </Texts>
+              <Texts size={"p7"} text={"gray"}>
+                {`(Tap the plus icon to add a log.)`}
+              </Texts>
+            </Holds>
+          )}
           {editedMaterials.map((mat, index) => (
             <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
               <Holds
@@ -110,22 +120,6 @@ export default function MaterialList({
           ))}
         </Holds>
       </Contents>
-      {/* <SelectableModal
-        isOpen={isLocationOpen}
-        handleClose={handleCancel}
-        handleCancel={handleCancel}
-        options={jobsiteResults.map((jobsite) => ({
-          id: jobsite.id,
-          name: jobsite.name,
-          qrId: jobsite.qrId,
-        }))}
-        onSelect={(option) => {
-          setTempLocation(option.name);
-        }}
-        selectedValue={tempLocation}
-        placeholder={t("TypeHere")}
-        handleSave={handleSubmit}
-      /> */}
     </>
   );
 }

@@ -44,6 +44,7 @@ export async function GET() {
         formTemplateId: true,
         User: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
           },

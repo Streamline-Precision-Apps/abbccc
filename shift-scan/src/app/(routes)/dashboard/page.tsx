@@ -3,8 +3,6 @@ import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
 import { redirect } from "next/navigation";
 import DbWidgetSection from "./dbWidgetSection";
 import { Grids } from "@/components/(reusable)/grids";
@@ -38,7 +36,7 @@ export default async function Dashboard() {
       <Contents>
         <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
-          <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full  justify-center items-center rounded-[10px]">
+          <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
             <BannerRotating />
           </Holds>
           <Holds background={"white"} className="row-start-4 row-end-9 h-full">
@@ -53,20 +51,4 @@ export default async function Dashboard() {
       </Contents>
     </Bases>
   );
-}
-{
-  /* <Holds position={"row"} background={"white"} className="row-span-1">
-            <Holds size={"30"}>
-              <Images
-                titleImg="/logo.svg"
-                titleImgAlt="logo"
-                position={"left"}
-                size={"full"}
-                className="m-2"
-              />
-            </Holds>
-            <Holds size={"70"}>
-              <AnimatedHamburgerButton />
-            </Holds>
-          </Holds> */
 }

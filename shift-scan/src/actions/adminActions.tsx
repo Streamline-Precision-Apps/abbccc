@@ -7,6 +7,187 @@ import {
   WorkType,
 } from "@/lib/types";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { z } from "zod";
+
+interface NewEmployeeFormData {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth: Date | string;
+  permissionLevel: string; // or more specific type like 'admin' | 'manager' | 'employee'
+  employmentStatus: string;
+  crews: string[];
+  phoneNumber: string;
+  emergencyContact: string;
+  emergencyContactNumber: string;
+  truckingView?: boolean;
+  tascoView?: boolean;
+  engineerView?: boolean;
+  generalView?: boolean;
+}
+
+const newUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  phoneNumber: z.string(),
+  email: z.string().email(),
+  emergencyContact: z.string(),
+  emergencyContactNumber: z.string(),
+  dateOfBirth: z.string(),
+  permissionLevel: z.string(),
+  employmentStatus: z.string(),
+  crews: z.array(z.string()),
+  truckingView: z.boolean().optional(),
+  tascoView: z.boolean().optional(),
+  engineerView: z.boolean().optional(),
+  generalView: z.boolean().optional(),
+});
+
+export async function submitNewEmployee(formData: NewEmployeeFormData) {
+  const parsed = newUserSchema.safeParse(formData);
+  if (!parsed.success) {
+    throw new Error("Invalid form data");
+  }
+
+  const {
+    username,
+    password,
+    firstName,
+    lastName,
+    email,
+    dateOfBirth,
+    permissionLevel,
+    employmentStatus,
+    crews,
+    phoneNumber,
+    emergencyContact,
+    emergencyContactNumber,
+    truckingView = false,
+    tascoView = false,
+    engineerView = false,
+    generalView = false,
+  } = parsed.data;
+
+  // Use a transaction to ensure both operations succeed or fail together
+  const result = await prisma.$transaction(async (prisma) => {
+    // Create the user
+    const user = await prisma.user.create({
+      data: {
+        username,
+        password,
+        firstName,
+        lastName,
+        email,
+        DOB: dateOfBirth,
+        permission: permissionLevel as Permission,
+        truckView: truckingView,
+        tascoView: tascoView,
+        mechanicView: engineerView,
+        laborView: generalView,
+        clockedIn: false,
+        accountSetup: false,
+        startDate: new Date(),
+        Crews: {
+          connect: crews.map((crewId: string) => ({ id: crewId })),
+        },
+        Contact: {
+          create: {
+            phoneNumber,
+            emergencyContact,
+            emergencyContactNumber,
+          },
+        },
+        Company: { connect: { id: "1" } },
+      },
+    });
+
+    // Create user settings
+    await prisma.userSettings.create({
+      data: {
+        userId: user.id,
+        language: "en",
+        generalReminders: false,
+        personalReminders: false,
+        cameraAccess: false,
+        locationAccess: false,
+      },
+    });
+
+    revalidatePath("/admins/personnel");
+    return { success: true, userId: user.id };
+  });
+
+  return result;
+}
+
+// Update an existing employee's info and contact details (for UserSelected save)
+export async function updateEmployeeAndContact(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    if (!id) throw new Error("Missing user id");
+
+    // User fields
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const email = formData.get("email") as string;
+    const DOB = formData.get("DOB") as string;
+    const permission = formData.get("permission") as string;
+    const truckView = formData.get("truckView") === "true";
+    const tascoView = formData.get("tascoView") === "true";
+    const laborView = formData.get("laborView") === "true";
+    const mechanicView = formData.get("mechanicView") === "true";
+
+    // Contact fields
+    const phoneNumber = formData.get("phoneNumber") as string;
+    const emergencyContact = formData.get("emergencyContact") as string;
+    const emergencyContactNumber = formData.get(
+      "emergencyContactNumber"
+    ) as string;
+
+    // Update user
+    await prisma.user.update({
+      where: { id },
+      data: {
+        firstName,
+        lastName,
+        email,
+        DOB,
+        permission: permission as Permission,
+        truckView,
+        tascoView,
+        laborView,
+        mechanicView,
+      },
+    });
+
+    // Update contact info (if present)
+    if (phoneNumber || emergencyContact || emergencyContactNumber) {
+      await prisma.contacts.update({
+        where: { userId: id },
+        data: {
+          phoneNumber,
+          emergencyContact,
+          emergencyContactNumber,
+        },
+      });
+    }
+
+    // Optionally: handle crews or other relations here if needed
+
+    revalidatePath(`/admins/personnel/${id}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating employee and contact info:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
 
 export async function CreateLeaveRequest(formData: FormData) {
   try {
@@ -639,16 +820,13 @@ export async function reactivatePersonnel(formData: FormData) {
     console.log("Archiving personnel...");
     console.log(formData);
     const id = formData.get("userId") as string;
-    const activeEmployee = formData.get("active") === "true";
 
     const result = await prisma.user.update({
       where: { id },
       data: {
-        activeEmployee: activeEmployee,
         terminationDate: null,
       },
     });
-    console.log(result.activeEmployee);
 
     revalidatePath(`/admins/personnel/${id}`);
     return true;
@@ -690,11 +868,9 @@ export async function archivePersonnel(formData: FormData) {
     const result = await prisma.user.update({
       where: { id },
       data: {
-        activeEmployee: activeEmployee,
         terminationDate: new Date().toISOString(),
       },
     });
-    console.log(result.activeEmployee);
 
     revalidatePath(`/admins/personnel/${id}`);
     return true;
@@ -705,104 +881,6 @@ export async function archivePersonnel(formData: FormData) {
 }
 
 // Completed: Test
-export async function editPersonnelInfo(formData: FormData) {
-  try {
-    console.log("Editing personnel info...");
-    console.log(formData);
-
-    const id = formData.get("id") as string;
-
-    const firstName = formData.get("firstName") as string;
-
-    const lastName = formData.get("lastName") as string;
-
-    const email = formData.get("email") as string;
-
-    const DOB = formData.get("DOB") as string;
-
-    const permission = formData.get("permission") as string;
-
-    const truckBool = formData.get("truckView") as string;
-    const truckView = Boolean(truckBool === "true");
-
-    const tascoBool = formData.get("tascoView") as string;
-    const tascoView = Boolean(tascoBool === "true");
-
-    const laborBool = formData.get("laborView") as string;
-    const laborView = Boolean(laborBool === "true");
-
-    const mechanicBool = formData.get("mechanicView") as string;
-    const mechanicView = Boolean(mechanicBool === "true");
-
-    console.log(truckView, tascoView, laborView, mechanicView);
-
-    await prisma.user.update({
-      where: { id: id },
-      data: {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        DOB: DOB,
-        permission: permission as Permission,
-        truckView: truckView,
-        tascoView: tascoView,
-        laborView: laborView,
-        mechanicView: mechanicView,
-      },
-    });
-
-    const phoneNumber = formData.get("phoneNumber") as string;
-    const emergencyContact = formData.get("emergencyContact") as string;
-    const emergencyContactNumber = formData.get(
-      "emergencyContactNumber"
-    ) as string;
-
-    await prisma.contacts.update({
-      where: { userId: id },
-      data: {
-        phoneNumber: phoneNumber,
-        emergencyContact: emergencyContact,
-        emergencyContactNumber: emergencyContactNumber,
-      },
-    });
-
-    return true;
-  } catch (error) {
-    console.error("Error editing personnel info:", error);
-    return new Response("Error", { status: 500 });
-  }
-}
-
-// Create jobsite admin
-export async function createJobsite(formData: FormData) {
-  try {
-    console.log("Creating jobsite...");
-    console.log(formData);
-
-    await prisma.jobsite.create({
-      data: {
-        name: formData.get("name") as string,
-        address: formData.get("address") as string,
-        city: formData.get("city") as string,
-        state: formData.get("state") as string,
-        zipCode: formData.get("zip") as string,
-        country: formData.get("country") as string,
-        description: formData.get("description") as string,
-        comment: (formData.get("jobsite_comment") as string) || null,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-    console.log("Jobsite created successfully.");
-
-    // Revalidate the path
-    revalidatePath(`/admin/assets`);
-  } catch (error) {
-    console.error("Error creating jobsite:", error);
-    throw error;
-  }
-}
 
 export async function updateJobsite(formData: FormData) {
   try {

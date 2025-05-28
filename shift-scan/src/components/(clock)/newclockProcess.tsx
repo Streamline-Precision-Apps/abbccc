@@ -5,7 +5,6 @@ import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import VerificationStep from "./verification-step";
 import TruckClockInForm from "./(Truck)/truckClockInForm";
-import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -99,8 +98,6 @@ export default function NewClockProcess({
   const [shiftType, setShiftType] = useState<string>("");
   const [returnPathUsed, setReturnPathUsed] = useState(false);
 
-
-
   useEffect(() => {
     setStep(0);
     return () => {
@@ -175,7 +172,10 @@ export default function NewClockProcess({
 
       if (response) {
         // Set basic information from previous timesheet
-        setJobsite({ label: response.Jobsite.name, code: response.Jobsite.qrId });
+        setJobsite({
+          label: response.Jobsite.name,
+          code: response.Jobsite.qrId,
+        });
         setCC({ label: response.CostCode.name, code: response.CostCode.name });
 
         // Determine the role from previous work type
@@ -302,59 +302,59 @@ export default function NewClockProcess({
     return router.push(returnpath);
   };
 
-  /* ================  Equipment Clock process */
-  if (type === "equipment") {
-    return (
-      <>
-        {step === 0 && (
-          <>
-            <ClockLoadingPage handleReturnPath={handleReturnPath} />
-          </>
-        )}
-        {step === 1 && (
-          <>
-            <EquipmentQRStep
-              option="equipment"
-              type="equipment"
-              handleAlternativePath={handleAlternativePathEQ}
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              url="/dashboard/equipment"
-              handleReturnPath={handleReturnPath}
-              clockInRole={""}
-              setClockInRole={() => {}}
-              setScanned={setScanned}
-              setClockInRoleTypes={setClockInRoleTypes}
-              clockInRoleTypes={clockInRoleTypes}
-              setJobsite={setJobsite}
-            />
-          </>
-        )}
+  // /* ================  Equipment Clock process */
+  // if (type === "equipment") {
+  //   return (
+  //     <>
+  //       {step === 0 && (
+  //         <>
+  //           <ClockLoadingPage handleReturnPath={handleReturnPath} />
+  //         </>
+  //       )}
+  //       {step === 1 && (
+  //         <>
+  //           <EquipmentQRStep
+  //             option="equipment"
+  //             type="equipment"
+  //             handleAlternativePath={handleAlternativePathEQ}
+  //             handleNextStep={handleNextStep}
+  //             handlePrevStep={handlePrevStep}
+  //             url="/dashboard/equipment"
+  //             handleReturnPath={handleReturnPath}
+  //             clockInRole={""}
+  //             setClockInRole={() => {}}
+  //             setScanned={setScanned}
+  //             setClockInRoleTypes={setClockInRoleTypes}
+  //             clockInRoleTypes={clockInRoleTypes}
+  //             setJobsite={setJobsite}
+  //           />
+  //         </>
+  //       )}
 
-        {step === 2 && (
-          <VerificationEQStep
-            handleNextStep={handleNextStep}
-            handlePrevStep={handlePrevStep}
-            handleScannedPrevStep={handleScannedPrevStep}
-            scanned={scanned}
-          />
-        )}
-        {step === 3 && (
-          <>
-            <Titles size={"h1"} className="bg-red-500">
-              {t("Confirmation-eq-message-1")}
-            </Titles>
-            <Titles size={"h4"}>{t("Confirmation-eq-message-2")}</Titles>
+  //       {step === 2 && (
+  //         <VerificationEQStep
+  //           handleNextStep={handleNextStep}
+  //           handlePrevStep={handlePrevStep}
+  //           handleScannedPrevStep={handleScannedPrevStep}
+  //           scanned={scanned}
+  //         />
+  //       )}
+  //       {step === 3 && (
+  //         <>
+  //           <Titles size={"h1"} className="bg-red-500">
+  //             {t("Confirmation-eq-message-1")}
+  //           </Titles>
+  //           <Titles size={"h4"}>{t("Confirmation-eq-message-2")}</Titles>
 
-            {/* In Order for bug to be overcome, the refresh must occur otherwise the unmounted qr code wont work*
-                best solution for now is this because at least it does it behind the modal*/}
-          </>
-        )}
-      </>
-    );
-  }
+  //           {/* In Order for bug to be overcome, the refresh must occur otherwise the unmounted qr code wont work*
+  //               best solution for now is this because at least it does it behind the modal*/}
+  //         </>
+  //       )}
+  //     </>
+  //   );
+  // }
 
-  /* ================= Clock In Process method */
+  // /* ================= Clock In Process method */
   return (
     <>
       {step === 0 && (

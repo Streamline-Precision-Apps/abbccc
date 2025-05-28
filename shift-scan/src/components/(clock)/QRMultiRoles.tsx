@@ -144,12 +144,12 @@ export default function QRMultiRoles({
                               <option value="truckDriver">
                                 {t("TruckDriver")}
                               </option>
-                              <option value="truckEquipmentOperator">
+                              {/* <option value="truckEquipmentOperator">
                                 {t("TruckEquipmentOperator")}
                               </option>
                               <option value="truckLabor">
                                 {t("TruckLabor")}
-                              </option>
+                              </option> */}
                             </>
                           )}
                           {mechanicView === true && (
