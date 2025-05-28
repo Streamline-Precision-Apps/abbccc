@@ -20,7 +20,7 @@ type props = {
   laborType: string;
 };
 
-// Extracted custom hook for fetching logs
+// Verifies if there are any unSubmitted logs
 const useFetchLogs = (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setLogs: React.Dispatch<React.SetStateAction<LogItem[]>>
@@ -63,16 +63,7 @@ export default function DbWidgetSection({
   useFetchLogs(setLoading, setLogs);
   const modalState = useModalState();
 
-  const handleShowManagerButtons = useCallback(
-    () => setAdditionalButtonsType(null),
-    []
-  );
-  const handleShowAdditionalButtons = useCallback(
-    (type: string) => setAdditionalButtonsType(type),
-    []
-  );
-
-  const handleCOButton3 = useCallback(() => {
+  const verifyLogsCompletion = useCallback(() => {
     if (logs.length === 0) {
       router.push("/dashboard/clock-out");
     } else {
@@ -92,8 +83,7 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton3={handleCOButton3}
-          handleShowManagerButtons={handleShowManagerButtons}
+          verifyLogsCompletion={verifyLogsCompletion}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
@@ -108,8 +98,7 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton3={handleCOButton3}
-          handleShowManagerButtons={handleShowManagerButtons}
+          verifyLogsCompletion={verifyLogsCompletion}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
@@ -123,8 +112,7 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton3={handleCOButton3}
-          handleShowManagerButtons={handleShowManagerButtons}
+          verifyLogsCompletion={verifyLogsCompletion}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
@@ -138,9 +126,7 @@ export default function DbWidgetSection({
           {...modalState}
           comment={comment}
           setComment={setComment}
-          handleCOButton3={handleCOButton3}
-          handleShowManagerButtons={handleShowManagerButtons}
-          handleShowAdditionalButtons={handleShowAdditionalButtons}
+          verifyLogsCompletion={verifyLogsCompletion}
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           mechanicProjectID={mechanicProjectID}

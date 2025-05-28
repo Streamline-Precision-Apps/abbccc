@@ -3,9 +3,9 @@ import { useState, ChangeEvent, FC } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import SearchBar from "@/components/(search)/searchbar";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "./images";
 
 type Option = {
   id: string;
@@ -42,49 +42,100 @@ const SelectableModal: FC<SelectableModalProps> = ({
       option.qrId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value.toUpperCase()); // Convert to uppercase
+  };
+
   return (
-    <NModals size={"xlW"} isOpen={isOpen} handleClose={handleClose}>
-      <Grids rows={"8"} gap={"3"} className="h-full">
-        <Holds className="row-start-1 row-end-2 h-full">
-          <SearchBar
-            searchTerm={searchTerm}
-            onSearchChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setSearchTerm(e.target.value)
-            }
-            placeholder={placeholder}
-            selected={!!selectedValue}
-            clearSelection={handleCancel}
-            selectTerm={selectedValue}
-          />
-        </Holds>
-        <Holds className="row-start-2 row-end-8 border-black border-[3px] rounded-[10px] h-full">
-          <Holds className="overflow-y-auto no-scrollbar p-4">
+    <NModals
+      size={"xlW"}
+      background={"noOpacity"}
+      isOpen={isOpen}
+      handleClose={handleClose}
+    >
+      <Holds background={"white"} className="w-full h-full">
+        <Grids rows={"8"} className="h-full">
+          <Holds className="row-span-1 h-full">
+            <SearchBar
+              searchTerm={searchTerm}
+              onSearchChange={handleSearchChange}
+              placeholder={placeholder}
+              label={""}
+            />
+          </Holds>
+          <Holds
+            background={"darkBlue"}
+            className="row-start-2 row-end-8 h-full border-[3px] border-black rounded-[10px] rounded-t-none overflow-y-auto no-scrollbar"
+          >
             {filteredOptions.map((option) => (
-              <Buttons
-                background={
-                  selectedValue === option.name ? "green" : "lightBlue"
-                }
-                key={option.qrId}
-                onClick={() => onSelect(option)}
-                className="w-full p-3 mb-4 text-left"
-              >
-                <Titles size={"h6"}>
-                  {option.name} - ({option.qrId})
-                </Titles>
-              </Buttons>
+              <Holds key={option.qrId} className="p-2">
+                <Buttons
+                  background={
+                    selectedValue === option.name ? "green" : "lightBlue"
+                  }
+                  shadow={"none"}
+                  key={option.qrId}
+                  onClick={() => onSelect(option)}
+                  className="w-full p-3 mb-4 text-left"
+                >
+                  <Titles size={"h6"}>
+                    {option.name} - ({option.qrId})
+                  </Titles>
+                </Buttons>
+              </Holds>
             ))}
           </Holds>
-        </Holds>
-        <Holds position={"row"} className="row-start-8 row-end-9 py-2 gap-4">
-          <Buttons background={"green"} onClick={() => handleSave()}>
-            Save
-          </Buttons>
-          <Buttons background={"red"} onClick={() => handleClose()}>
-            Close
-          </Buttons>
-        </Holds>
-      </Grids>
+          <Holds position={"row"} className="row-start-8 row-end-9 py-2 gap-4">
+            <Buttons background={"green"} onClick={() => handleSave()}>
+              Save
+            </Buttons>
+            <Buttons background={"red"} onClick={() => handleClose()}>
+              Close
+            </Buttons>
+          </Holds>
+        </Grids>
+      </Holds>
     </NModals>
+  );
+};
+
+const SearchBar = ({
+  searchTerm,
+  onSearchChange,
+  placeholder,
+  label,
+}: {
+  searchTerm: string;
+  onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  label?: string;
+}) => {
+  return (
+    <Holds
+      position={"row"}
+      className="px-4 border-[3px] border-black rounded-[10px] rounded-b-none h-full"
+    >
+      <Holds position={"row"} className="h-full w-full">
+        <Holds size={"10"}>
+          <Images
+            titleImg="/searchRight.svg"
+            titleImgAlt="search"
+            size={"full"}
+          />
+        </Holds>
+        <Holds size={"80"} className="pl-4 text-xl">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={onSearchChange}
+            placeholder={placeholder}
+            className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px] "
+            aria-label={label}
+          />
+        </Holds>
+        <Holds size={"10"}></Holds>
+      </Holds>
+    </Holds>
   );
 };
 

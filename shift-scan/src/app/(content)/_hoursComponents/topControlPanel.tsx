@@ -19,7 +19,7 @@ export default function TopControlPanel({ returnToMain }: Props) {
           <Images
             titleImg={"/arrowBack.svg"}
             titleImgAlt="return"
-            className="mx-auto p-2"
+            className="mx-auto w-8 h-auto object-contain"
           />
         </Buttons>
       </Holds>

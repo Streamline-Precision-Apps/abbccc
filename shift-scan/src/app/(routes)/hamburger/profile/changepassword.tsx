@@ -16,7 +16,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 
 export default function ChangePassword({ userId }: { userId: string }) {
-  const t = useTranslations("Hamburger");
+  const t = useTranslations("Hamburger-Profile");
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
   const [eightChar, setEightChar] = useState(false);

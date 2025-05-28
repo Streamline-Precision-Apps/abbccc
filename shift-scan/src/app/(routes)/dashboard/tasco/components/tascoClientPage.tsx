@@ -86,7 +86,7 @@ export default function TascoEQClientPage() {
   // Trigger auto-save when formValues or formTitle changes
   useEffect(() => {
     if (!tascoLogId) return;
-    autoSave({ values: { tascoLogId, loadCount } });
+    autoSave.autoSave({ values: { tascoLogId, loadCount } });
   }, [loadCount]);
 
   return (

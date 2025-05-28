@@ -39,7 +39,7 @@ export async function GET(
   } else if (status === "denied") {
     whereClause = { ...whereClause, status: FormStatus.DENIED };
   } else if (status === "all") {
-    whereClause = { ...whereClause, status: { not: FormStatus.DRAFT } };
+    whereClause = { ...whereClause };
   }
 
   try {
@@ -58,6 +58,14 @@ export async function GET(
       orderBy: {
         createdAt: "desc", // Sort by submission date (newest first)
       },
+    });
+
+    forms.sort((a, b) => {
+      if (a.status === FormStatus.DRAFT && b.status !== FormStatus.DRAFT)
+        return -1;
+      if (a.status !== FormStatus.DRAFT && b.status === FormStatus.DRAFT)
+        return 1;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
     return NextResponse.json(forms);

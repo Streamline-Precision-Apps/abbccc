@@ -9,6 +9,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
+import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
 
@@ -84,6 +85,16 @@ export default function StateMileageList({
   return (
     <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
       <div className=" row-start-1 row-end-2 h-full ">
+        {editedStateMileage.length === 0 && (
+          <Holds className="px-10 mt-4">
+            <Texts size={"p5"} text={"gray"} className="italic">
+              No State Mileage Logs Recorded
+            </Texts>
+            <Texts size={"p7"} text={"gray"}>
+              {`(Tap the plus icon to add a log.)`}
+            </Texts>
+          </Holds>
+        )}
         {editedStateMileage.map((sm, index) => (
           <SlidingDiv key={sm.id} onSwipeLeft={() => handleDelete(sm.id)}>
             <Holds

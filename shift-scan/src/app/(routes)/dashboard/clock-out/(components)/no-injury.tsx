@@ -7,6 +7,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 
@@ -29,58 +30,31 @@ export const PreInjuryReport = ({
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"8"} gap={"5"}>
-              <Holds className="row-start-1 row-end-2 h-full w-full justify-center">
-                <Grids
-                  rows={"2"}
-                  cols={"5"}
-                  gap={"3"}
-                  className=" h-full w-full"
-                >
-                  <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
-                    <Images
-                      titleImg="/arrowBack.svg"
-                      titleImgAlt="back"
-                      position={"left"}
-                      onClick={prevStep}
-                    />
-                  </Holds>
-
-                  <Holds
-                    position={"row"}
-                    className="row-start-2 row-end-3 col-start-1 col-end-6 h-full w-full justify-center gap-4"
-                  >
-                    <Titles size={"h2"}>{t("InjuryVerification")}</Titles>
+        <Holds background={"white"} className="h-full ">
+          <Grids rows={"8"} gap={"5"}>
+            <Holds className="row-start-1 row-end-2 h-full w-full ">
+              <TitleBoxes onClick={prevStep}>
+                <Holds className="h-full justify-end items-end">
+                  <Holds position={"row"} className="justify-center gap-2">
+                    <Titles size={"h2"}>{t("EndWorkDay")}</Titles>
                     <Images
                       titleImg="/endDay.svg"
-                      titleImgAlt="logo"
-                      className="w-10 h-10"
+                      titleImgAlt="end work day"
+                      className="max-w-8 h-auto"
                     />
                   </Holds>
-                </Grids>
-              </Holds>
-              <Holds className="row-start-3 row-end-4">
-                <Texts size={"p3"}>{t("SignBelow")}</Texts>
-              </Holds>
-              <Holds position={"row"} className="row-start-5 row-end-6">
-                <Holds size={"70"}>
-                  <Titles size={"h3"} position={"left"}>
-                    {t("SignatureVerify")}
-                  </Titles>
                 </Holds>
-                <Holds size={"30"}>
-                  <CheckBox
-                    id="injury-checkbox"
-                    name="injury-verify"
-                    onChange={handleCheckboxChange}
-                    checked={checked}
-                    size={3}
-                  />
-                </Holds>
-              </Holds>
-              <Holds className="row-start-6 row-end-8 h-full ">
+              </TitleBoxes>
+            </Holds>
+
+            <Holds className="row-start-2 row-end-3 h-full">
+              <Contents width={"section"}>
+                <Texts size={"p5"}>{t("SignatureAcknowledgement")}</Texts>
+              </Contents>
+            </Holds>
+
+            <Holds className="row-start-3 row-end-5 h-full ">
+              <Contents width={"section"}>
                 <Holds className="border-[3px] border-black rounded-[10px] h-full">
                   {loading ? (
                     <Holds className="my-auto">
@@ -102,21 +76,44 @@ export const PreInjuryReport = ({
                     </Holds>
                   )}
                 </Holds>
-              </Holds>
+              </Contents>
+            </Holds>
+            <Holds className="row-start-5 row-end-6">
+              <Contents width={"section"}>
+                <Holds position={"row"}>
+                  <Holds className="w-fit pr-6">
+                    <CheckBox
+                      id="injury-checkbox"
+                      name="injury-verify"
+                      onChange={handleCheckboxChange}
+                      checked={checked}
+                      size={2.5}
+                    />
+                  </Holds>
+                  <Holds className="w-full">
+                    <Texts size={"p3"} position={"left"}>
+                      {t("ThisIsMySignature")}
+                    </Texts>
+                  </Holds>
+                </Holds>
+              </Contents>
+            </Holds>
 
-              <Holds className="row-start-8 row-end-9 h-full ">
+            <Holds className="row-start-8 row-end-9 h-full pb-5 ">
+              <Contents width={"section"} className="h-full">
                 <Buttons
-                  background={checked ? "green" : "red"}
+                  background={checked ? "orange" : "red"}
                   onClick={handleNextStepAndSubmit}
                   disabled={loading}
+                  className="w-full h-full "
                 >
-                  <Titles size={"h3"}>
+                  <Titles size={"h2"}>
                     {checked ? t("Continue") : t("ReportInjury")}
                   </Titles>
                 </Buttons>
-              </Holds>
-            </Grids>
-          </Contents>
+              </Contents>
+            </Holds>
+          </Grids>
         </Holds>
       </Contents>
     </Bases>

@@ -129,6 +129,7 @@ export type UserTraining = {
   isCompleted: boolean;
 };
 
+// moved to searchUser.ts
 export type SearchUser = {
   id: string;
   firstName: string;
@@ -144,10 +145,11 @@ export type SearchUser = {
   terminationDate: Date | null;
 };
 
+// moved to personnel.ts
 export type SearchCrew = {
   id: string;
   name: string;
-  description: string;
+  leadId: string;
 };
 
 export type CustomSession = {
@@ -409,6 +411,7 @@ export type TruckingRefuelLog = {
 
 export type TruckingRefuel = {
   id: string;
+  truckingLogId: string;
   gallonsRefueled: number;
   milesAtFueling: number;
 };
@@ -423,6 +426,7 @@ export type StateMileageLog = {
   stateLineMileage: number;
 };
 export type TruckingStateLog = {
+  id: string;
   Equipment: {
     id: string;
     name: string;
@@ -435,22 +439,21 @@ export type TruckingStateLogItem = {
 export type TruckingStateLogData = TruckingStateLogItem[];
 
 //--------------------------------------
-export type TruckingMileageData = TruckingMileageItem[];
+// export type TruckingMileageData = TruckingMileageItem[];
 
 export type TruckingMileageItem = {
   TruckingLogs: TruckingMileage[];
 };
-export type TruckingMileage = {
-  id: string;
-  timeSheetId: string | null;
-  equipmentId: string | null;
-  Equipment: {
-    name: string;
-  };
-  startingMileage: number;
-  endingMileage: number | null;
-};
-
+// export type TruckingMileage = {
+//   id: string;
+//   timeSheetId: string | null;
+//   equipmentId: string | null;
+//   Equipment: {
+//     name: string;
+//   };
+//   startingMileage: number;
+//   endingMileage: number | null;
+// };
 //--------------------------------------
 
 export type TimesheetHighlights = {
@@ -912,6 +915,64 @@ export interface DeleteRefuelLogParams {
   type: RefuelLogType;
   id: string;
 }
+
+export interface EmployeeEquipmentLogWithEquipment
+  extends Omit<EmployeeEquipmentLog, "startTime" | "endTime"> {
+  Equipment: {
+    id: string;
+    name: string;
+    // Include other Equipment properties you need
+  };
+  startTime: Date; // Matching the base type
+  endTime: Date; // Matching the base type
+  Jobsite?: {
+    id?: string;
+    name?: string;
+    // Include other Jobsite properties you need
+  } | null;
+  // Include any other properties you need from EmployeeEquipmentLog
+}
+
+export type TimesheetUpdate = {
+  id: string;
+  startTime?: string;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
+
+export type TruckingMileage = {
+  id: string;
+  timeSheetId: string | null;
+  equipmentId: string | null;
+  Equipment: {
+    name: string;
+  };
+  startingMileage: number;
+  endingMileage: number | null;
+};
+
+export type TruckingMileageUpdate = {
+  id: string;
+  startingMileage?: number;
+  endingMileage?: number | null;
+};
+
+export type TruckingMileageData = {
+  TruckingLogs: TruckingMileage[];
+}[];
+
+export interface TruckingEquipmentHaulUpdate {
+  id: string;
+  equipmentId?: string | null;
+  jobSiteId?: string | null;
+  editedByUserId?: string | null;
+}
+
+export type MaterialType = {
+  id: number;
+  name: string;
+};
 
 export type TimesheetFilter =
   | "timesheetHighlights"

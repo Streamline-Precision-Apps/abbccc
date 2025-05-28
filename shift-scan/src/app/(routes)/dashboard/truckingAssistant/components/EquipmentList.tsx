@@ -8,10 +8,18 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import SlidingDiv from "@/components/(animations)/slideDelete";
-import { useDBEquipment, useDBJobsite } from "@/app/context/dbCodeContext";
-import SelectableModal from "@/components/(reusable)/selectableModal";
 import { Contents } from "@/components/(reusable)/contents";
 import { useTranslations } from "next-intl";
+import { Texts } from "@/components/(reusable)/texts";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { on } from "events";
+import { Grids } from "@/components/(reusable)/grids";
+import { Titles } from "@/components/(reusable)/titles";
+import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
+import Spinner from "@/components/(animations)/spinner";
+import { set } from "date-fns";
 
 type EquipmentHauled = {
   id: string;
@@ -20,17 +28,18 @@ type EquipmentHauled = {
   createdAt: Date;
   jobSiteId: string | null;
   Equipment: {
-    name: string | null;
-  };
+    id: string;
+    name: string;
+  } | null;
   JobSite: {
-    name: string | null;
-  };
+    id: string;
+    name: string;
+  } | null;
 };
 
 type Option = {
-  id: string;
-  name: string;
-  qrId: string;
+  label: string;
+  code: string;
 };
 
 export default function EquipmentList({
@@ -43,220 +52,309 @@ export default function EquipmentList({
   truckingLog: string;
 }) {
   const t = useTranslations("TruckingAssistant");
-  const { equipmentResults } = useDBEquipment();
-  const { jobsiteResults } = useDBJobsite();
-  const [editedEquipmentHauled, setEditedEquipmentHauled] =
-    useState<EquipmentHauled[]>(equipmentHauled);
-  // manageState and Modals
   const [isEquipmentOpen, setIsEquipmentOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
-  const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
-    null
-  );
-  const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<Option>({
+    label: "",
+    code: "",
+  });
+  const [equipmentLoading, setEquipmentLoading] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Option>({
+    label: "",
+    code: "",
+  });
+  const [locationLoading, setLocationLoading] = useState(false);
 
-  // handle select and update
-  const handleSelectEquipment = (option: Option) => {
-    setSelectedEquipment(option);
+  // Equipment update
 
-    if (selectedIndex) {
-      const index = editedEquipmentHauled.findIndex(
-        (item) => item.id === selectedIndex
-      );
+  //--------------------------------------------------------------------------
+  const handleUpdateEquipment = async (equipment: Option | null) => {
+    if (!selectedIndex || !equipment) return;
+    setEquipmentLoading(true);
 
-      if (index !== -1) {
-        const updatedHauled = [...editedEquipmentHauled];
-        updatedHauled[index] = {
-          ...updatedHauled[index],
-          equipmentId: option.id,
-          Equipment: {
-            name: option.name, // Update the name here
-          },
-        };
-
-        setEditedEquipmentHauled(updatedHauled);
-        setEquipmentHauled(updatedHauled);
-      }
-    }
-  };
-
-  const handleSelectLocation = (option: Option) => {
-    setSelectedLocation(option);
-
-    if (selectedIndex) {
-      const index = editedEquipmentHauled.findIndex(
-        (item) => item.id === selectedIndex
-      );
-
-      if (index !== -1) {
-        const updatedHauled = [...editedEquipmentHauled];
-        updatedHauled[index] = {
-          ...updatedHauled[index],
-          jobSiteId: option.id,
-          JobSite: {
-            name: option.name, // Update the name here
-          },
-        };
-        setEditedEquipmentHauled(updatedHauled);
-        setEquipmentHauled(updatedHauled);
-      }
-    }
-  };
-
-  // handle delete, update, and create
-  //delete
-  const handleDelete = async (id: string) => {
-    const updatedMaterials = editedEquipmentHauled.filter(
-      (mat: EquipmentHauled) => mat.id !== id
-    );
-    setEditedEquipmentHauled(updatedMaterials);
-    setEquipmentHauled(updatedMaterials);
-
-    const isDeleted = await deleteEquipmentHauled(id);
-
-    if (!isDeleted) {
-      console.error(t("FailedToDeletePleaseTryAgain"));
-      setEditedEquipmentHauled(equipmentHauled || []);
-      setEquipmentHauled(equipmentHauled);
-    }
-  };
-
-  const handleUpdateEquipment = async () => {
     try {
-      // Create a FormData object
       const formData = new FormData();
-      formData.append("id", selectedIndex?.toString() || "");
+      formData.append("id", selectedIndex);
       formData.append("truckingLogId", truckingLog);
-      formData.append(
-        "equipmentId",
-        selectedEquipment?.id || editedEquipmentHauled[0].equipmentId || ""
-      );
-      // Wait for the database update to complete
+      formData.append("equipmentId", equipment.code); // equipment Id
+      formData.append("equipmentName", equipment.label); // equipment Name
+
       await updateEquipmentLogsEquipment(formData);
-      // Clear selections after successful submission
-      setSelectedEquipment(null);
-      setSelectedLocation(null);
-      setSelectedIndex(null);
-    } catch (error) {
-      console.error(t("ErrorSubmittingData"), error);
-    }
-  };
 
-  const handleUpdateLocation = async () => {
-    try {
-      // Create a FormData object
-      const formData = new FormData();
-      formData.append("id", selectedIndex?.toString() || "");
-      formData.append("truckingLogId", truckingLog);
-      formData.append(
-        "jobSiteId",
-        selectedLocation?.id || editedEquipmentHauled[0].jobSiteId || ""
+      // Update local state
+      setEquipmentHauled((prev) =>
+        prev
+          ? prev.map((item) =>
+              item.id === selectedIndex
+                ? {
+                    ...item,
+                    equipmentId: equipment.code,
+                    Equipment: {
+                      ...item.Equipment,
+                      id: equipment.code,
+                      name: equipment.label,
+                    },
+                  }
+                : item
+            )
+          : []
       );
 
-      // Wait for the database update to complete
-      await updateEquipmentLogsLocation(formData);
-      // Clear selections after successful submission
-      setSelectedEquipment(null);
-      setSelectedLocation(null);
+      setIsEquipmentOpen(false);
       setSelectedIndex(null);
+      setSelectedEquipment({ label: "", code: "" });
     } catch (error) {
       console.error(t("ErrorSubmittingData"), error);
+    } finally {
+      setEquipmentLoading(false);
     }
   };
 
-  // reloads the sliding div
-  useEffect(() => {
-    setEditedEquipmentHauled(equipmentHauled || []);
-  }, [equipmentHauled]);
+  //--------------------------------------------------------------------------
+  // Location update
+  const handleUpdateLocation = async (location: Option | null) => {
+    if (!selectedIndex || !location) return;
+
+    setLocationLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("id", selectedIndex);
+      formData.append("truckingLogId", truckingLog);
+      formData.append("jobSiteId", location.code); // equipment Id
+      formData.append("jobSiteName", location.label); // equipment Name
+
+      await updateEquipmentLogsLocation(formData);
+
+      // Update local state
+      setEquipmentHauled((prev) =>
+        prev
+          ? prev.map((item) =>
+              item.id === selectedIndex
+                ? {
+                    ...item,
+                    jobSiteId: location.code,
+                    JobSite: {
+                      ...item.JobSite,
+                      id: location.code,
+                      name: location.label,
+                    },
+                  }
+                : item
+            )
+          : []
+      );
+
+      setIsEquipmentOpen(false);
+      setSelectedIndex(null);
+      setSelectedEquipment({ label: "", code: "" });
+    } catch (error) {
+      console.error(t("ErrorSubmittingData"), error);
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+  //--------------------------------------------------------------------------
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEquipmentHauled(id);
+      setEquipmentHauled(
+        (prevLogs) => prevLogs?.filter((log) => log.id !== id) ?? []
+      );
+    } catch (error) {
+      console.error("Error deleting equipment log:", error);
+    }
+  };
 
   return (
     <>
       <Contents className="overflow-y-auto no-scrollbar">
-        {editedEquipmentHauled.map((mat: EquipmentHauled) => (
-          <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
-            <Holds
-              key={mat.id}
-              position={"row"}
-              background={"white"}
-              className={`w-full h-full  border-[3px] rounded-[10px] mb-3 border-black`}
-            >
+        {equipmentHauled.length === 0 && (
+          <Holds className="px-10 mt-4">
+            <Texts size={"p5"} text={"gray"} className="italic">
+              No Equipment Hauled Recorded
+            </Texts>
+            <Texts size={"p7"} text={"gray"}>
+              {`(Tap the plus icon to add a log.)`}
+            </Texts>
+          </Holds>
+        )}
+        {equipmentHauled.map((mat: EquipmentHauled) => (
+          <Holds key={mat.id}>
+            <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
               <Holds
+                key={mat.id}
+                position={"row"}
                 background={"white"}
-                className="w-1/2  h-full justify-center  px-2 border-black rounded-r-none"
+                className={`w-full h-full border-[3px] rounded-[10px] mb-3 border-black`}
               >
-                <Inputs
-                  type="text"
-                  placeholder="Equipment"
-                  value={
-                    selectedIndex === mat.id && selectedEquipment
-                      ? selectedEquipment.name
-                      : mat.Equipment?.name || ""
-                  }
-                  onClick={() => {
-                    setIsEquipmentOpen(true);
-                    setSelectedIndex(mat.id);
-                  }}
-                  className={`border-none text-xs focus:outline-none cursor-pointer ${
-                    mat.equipmentId === null && "placeholder:text-app-red"
-                  } `}
-                  readOnly
-                />
-              </Holds>
+                <Holds
+                  background={"white"}
+                  className="w-1/2 h-full justify-center px-2 border-black rounded-r-none"
+                >
+                  {equipmentLoading && selectedIndex === mat.id ? (
+                    <Spinner size={20} />
+                  ) : (
+                    <Inputs
+                      type="text"
+                      placeholder="Equipment"
+                      value={mat.Equipment?.name || ""}
+                      onClick={() => {
+                        setSelectedEquipment({
+                          label: mat.Equipment?.name || "",
+                          code: mat.Equipment?.id || "",
+                        });
 
-              <Holds
-                background={"white"}
-                className={`w-1/2 h-full justify-center px-2 rounded-l-none  border-l-[3px] border-black
-                `}
-              >
-                <Inputs
-                  type="text"
-                  placeholder="Location"
-                  value={
-                    selectedIndex === mat.id && selectedLocation
-                      ? selectedLocation.name
-                      : mat.JobSite?.name || ""
+                        setIsEquipmentOpen(true);
+                        setSelectedIndex(mat.id);
+                      }}
+                      className={`border-none text-xs focus:outline-none cursor-pointer ${
+                        mat.equipmentId === null && "placeholder:text-app-red"
+                      }`}
+                      readOnly
+                    />
+                  )}
+                </Holds>
+
+                <Holds
+                  background={"white"}
+                  className={`w-1/2 h-full justify-center px-2 rounded-l-none border-l-[3px] border-black`}
+                >
+                  {locationLoading && selectedIndex === mat.id ? (
+                    <Spinner size={20} />
+                  ) : (
+                    <Inputs
+                      type="text"
+                      placeholder="Location"
+                      value={mat.JobSite?.name || ""}
+                      onClick={() => {
+                        setSelectedLocation({
+                          label: mat.JobSite?.name || "",
+                          code: mat.JobSite?.id || "",
+                        });
+                        console.log(selectedLocation);
+                        setIsLocationOpen(true);
+                        setSelectedIndex(mat.id);
+                      }}
+                      className={`border-none text-xs focus:outline-none cursor-pointer ${
+                        mat.jobSiteId === null && "placeholder:text-app-red"
+                      }`}
+                      readOnly
+                    />
+                  )}
+                </Holds>
+              </Holds>
+            </SlidingDiv>
+          </Holds>
+        ))}
+
+        <NModals
+          size={"xlW"}
+          background={"noOpacity"}
+          isOpen={isEquipmentOpen}
+          handleClose={() => setIsEquipmentOpen(false)}
+        >
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="h-full w-full row-start-1 row-end-7">
+              <EquipmentSelector
+                onEquipmentSelect={(equipment) => {
+                  if (equipment) {
+                    setSelectedEquipment(equipment); // Update the equipment state with the full Option object
+                  } else {
+                    setSelectedEquipment({ code: "", label: "" }); // Reset if null
                   }
+                }}
+                initialValue={selectedEquipment}
+              />
+            </Holds>
+            <Holds
+              position={"row"}
+              className="h-full w-full row-start-7 row-end-8 gap-x-3"
+            >
+              <Holds>
+                <Buttons
+                  background={"green"}
+                  shadow={"none"}
                   onClick={() => {
-                    setIsLocationOpen(true);
-                    setSelectedIndex(mat.id);
+                    handleUpdateEquipment(selectedEquipment);
+                    setIsEquipmentOpen(false);
                   }}
-                  className={`border-none text-xs focus:outline-none cursor-pointer ${
-                    mat.jobSiteId === null && "placeholder:text-app-red"
-                  } `}
-                  readOnly
-                />
+                  className="py-3"
+                >
+                  <Titles size={"h3"}>Select </Titles>
+                </Buttons>
+              </Holds>
+              <Holds>
+                <Buttons
+                  background={"red"}
+                  shadow={"none"}
+                  onClick={() => {
+                    setSelectedEquipment({ code: "", label: "" });
+                    setIsEquipmentOpen(false);
+                  }}
+                  className="py-3"
+                >
+                  <Titles size={"h3"}>Cancel</Titles>
+                </Buttons>
               </Holds>
             </Holds>
-          </SlidingDiv>
-        ))}
-        <SelectableModal
-          isOpen={isEquipmentOpen}
-          handleSave={() => {
-            handleUpdateEquipment();
-            setIsEquipmentOpen(false);
-          }}
-          handleClose={() => setIsEquipmentOpen(false)}
-          handleCancel={() => setSelectedEquipment(null)}
-          selectedValue={selectedEquipment ? selectedEquipment.name : ""}
-          options={equipmentResults}
-          onSelect={handleSelectEquipment}
-          placeholder={t("SearchEquipment")}
-        />
+          </Grids>
+        </NModals>
 
-        <SelectableModal
+        <NModals
+          size={"xlW"}
+          background={"noOpacity"}
           isOpen={isLocationOpen}
-          handleSave={() => {
-            handleUpdateLocation();
-            setIsLocationOpen(false);
-          }}
-          handleCancel={() => setSelectedLocation(null)}
           handleClose={() => setIsLocationOpen(false)}
-          selectedValue={selectedLocation ? selectedLocation.name : ""}
-          options={jobsiteResults}
-          onSelect={handleSelectLocation}
-          placeholder={t("SearchEquipment")}
-        />
+        >
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="h-full w-full row-start-1 row-end-7">
+              <JobsiteSelector
+                onJobsiteSelect={(jobSite) => {
+                  if (jobSite) {
+                    setSelectedLocation(jobSite); // Update the equipment state with the full Option object
+                  } else {
+                    setSelectedLocation({ code: "", label: "" }); // Reset if null
+                  }
+                }}
+                initialValue={selectedLocation}
+              />
+            </Holds>
+            <Holds
+              position={"row"}
+              className="h-full w-full row-start-7 row-end-8 gap-x-3"
+            >
+              <Holds>
+                <Buttons
+                  background={"green"}
+                  shadow={"none"}
+                  onClick={() => {
+                    handleUpdateLocation(selectedLocation);
+                    setIsLocationOpen(false);
+                  }}
+                  className="py-3"
+                >
+                  <Titles size={"h3"}>Select</Titles>
+                </Buttons>
+              </Holds>
+              <Holds>
+                <Buttons
+                  background={"red"}
+                  shadow={"none"}
+                  onClick={() => {
+                    setSelectedLocation({ code: "", label: "" });
+                    setIsLocationOpen(false);
+                  }}
+                  className="py-3"
+                >
+                  <Titles size={"h3"}>Cancel</Titles>
+                </Buttons>
+              </Holds>
+            </Holds>
+          </Grids>
+        </NModals>
       </Contents>
     </>
   );

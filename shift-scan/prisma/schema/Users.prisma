@@ -13,7 +13,6 @@ model User {
   mechanicView         Boolean
   permission           Permission             @default(USER)
   image                String?
-  activeEmployee       Boolean                @default(true)
   startDate            DateTime?              @default(now())
   terminationDate      DateTime?
   accountSetup         Boolean                @default(false)

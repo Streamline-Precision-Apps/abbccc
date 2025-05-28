@@ -45,7 +45,7 @@ export default function SettingSelections({
   handleLocationAccessChange,
 }: Props) {
   const router = useRouter();
-  const t = useTranslations("Hamburger");
+  const t = useTranslations("Hamburger-Profile");
   const [language, setLanguage] = useState<string>();
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
   useEffect(() => {
@@ -150,7 +150,7 @@ export default function SettingSelections({
               <Holds position="row">
                 <Holds size="70">
                   <Texts size={"p5"} position="left">
-                    {t("CameraAccess")}
+                    {t("Camera")}
                   </Texts>
                 </Holds>
                 <Holds size="30">
@@ -169,7 +169,7 @@ export default function SettingSelections({
               <Holds position="row">
                 <Holds size="70">
                   <Texts size={"p5"} position="left">
-                    {t("LocationAccess")}
+                    {t("Location")}
                   </Texts>
                 </Holds>
                 <Holds size="30">

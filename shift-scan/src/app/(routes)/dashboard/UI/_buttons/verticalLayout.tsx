@@ -36,8 +36,8 @@ export default function VerticalLayout({
   const t = useTranslations("Widgets");
   return (
     <Buttons background={color} onClick={handleEvent} className="h-full w-full">
-      <Grids rows={"3"} gap={"4"} className="h-full w-full p-5">
-        <Holds className="row-span-2 h-full p-1 ">
+      <Grids rows={"2"} gap={"0"} className="h-full w-full p-5">
+        <Holds className="row-span-2 h-full pb-0.5 ">
           <Images
             titleImg={titleImg}
             titleImgAlt={titleImgAlt}
