@@ -2,6 +2,7 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import React from "react";
 
@@ -27,56 +28,63 @@ export default function JobsiteHeaderActions({
   successfullyUpdated,
 }: JobsiteHeaderActionsProps) {
   return (
-    <Holds className="w-full h-full col-start-3 col-end-11">
-      <Grids cols="6" gap="3" className="w-full h-full">
-        <Holds className="col-start-1 col-end-3">
-          <Buttons
-            background="green"
-            onClick={onRegisterNew}
-            className="w-full h-full flex items-center justify-center"
-          >
-            <Titles size="h4" className="text-white">
-              Register New Jobsite
-            </Titles>
-          </Buttons>
-        </Holds>
+    <Holds
+      background="white"
+      position="row"
+      className="w-full h-full justify-between rounded-[10px] px-4"
+    >
+      <Holds className="">
+        <Texts
+          position="left"
+          text={hasUnsavedChanges ? "gray" : "link"}
+          size="sm"
+          onClick={hasUnsavedChanges ? undefined : onRegisterNew}
+          style={{
+            pointerEvents: hasUnsavedChanges ? "none" : "auto",
+            opacity: hasUnsavedChanges ? 0.5 : 1,
+            cursor: hasUnsavedChanges ? "not-allowed" : "pointer",
+          }}
+        >
+          Register New Jobsite
+        </Texts>
+      </Holds>
 
-        <Holds className="col-start-4 col-end-5">
-          <Buttons
-            background={hasUnsavedChanges ? "red" : "darkGray"}
-            onClick={onDiscardChanges}
-            disabled={!hasUnsavedChanges}
-            className="w-full h-full flex items-center justify-center"
-          >
-            <Titles size="h4" className="text-white">
-              Discard Changes
-            </Titles>
-          </Buttons>
-        </Holds>
+      <Holds
+        position="row"
+        className="h-full flex items-center justify-between"
+      >
+        <Texts
+          onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
+          position="left"
+          text={hasUnsavedChanges ? "link" : "gray"}
+          size="sm"
+          style={{
+            pointerEvents: hasUnsavedChanges ? "auto" : "none",
+            opacity: hasUnsavedChanges ? 1 : 0.5,
+            cursor: hasUnsavedChanges ? "pointer" : "not-allowed",
+          }}
+        >
+          Discard Changes
+        </Texts>
 
-        <Holds className="col-start-5 col-end-7">
-          <Buttons
-            background={
-              successfullyUpdated
-                ? "green"
-                : hasUnsavedChanges
-                ? "lightBlue"
-                : "darkGray"
-            }
-            onClick={onSaveChanges}
-            disabled={!hasUnsavedChanges || isSaving}
-            className="w-full h-full flex items-center justify-center"
-          >
-            <Titles size="h4" className="text-white">
-              {isSaving
-                ? "Saving..."
-                : successfullyUpdated
-                ? "Saved!"
-                : "Save Changes"}
-            </Titles>
-          </Buttons>
-        </Holds>
-      </Grids>
+        <Texts
+          position="right"
+          text={!hasUnsavedChanges || isSaving ? "gray" : "link"}
+          size="sm"
+          onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
+          style={{
+            pointerEvents: !hasUnsavedChanges || isSaving ? "none" : "auto",
+            opacity: !hasUnsavedChanges || isSaving ? 0.5 : 1,
+            cursor: !hasUnsavedChanges || isSaving ? "not-allowed" : "pointer",
+          }}
+        >
+          {isSaving
+            ? "Saving..."
+            : successfullyUpdated
+            ? "Saved!"
+            : "Save Changes"}
+        </Texts>
+      </Holds>
     </Holds>
   );
 }
