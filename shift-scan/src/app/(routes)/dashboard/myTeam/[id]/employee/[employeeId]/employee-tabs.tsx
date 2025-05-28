@@ -18,6 +18,15 @@ import {
   TimesheetFilter,
   TruckingMileageUpdate,
   TruckingEquipmentHaulLog,
+  TruckingMaterialHaulLogData,
+  TruckingRefuelLogData,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
+  TruckingStateLogData,
+  TascoHaulLogData,
+  TascoRefuelLogData,
+  EquipmentLogsData,
+  EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
 import {
   updateTruckingHaulLogs,
@@ -31,7 +40,32 @@ import {
   updateEquipmentRefuelLogs,
   updateTruckingMileage,
 } from "@/actions/myTeamsActions";
+import { flattenMaterialLogs } from "./TimeCardTruckingMaterialLogs";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
+
+// Helper to flatten nested refuel logs for server submission
+const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
+  const result: {
+    id: string;
+    gallonsRefueled?: number | null;
+    milesAtFueling?: number | null;
+  }[] = [];
+  logs.forEach((item) => {
+    (item.TruckingLogs ?? []).forEach((log) => {
+      if (!log) return;
+      (log.RefuelLogs ?? []).forEach((refuel) => {
+        if (refuel && refuel.id) {
+          result.push({
+            id: refuel.id,
+            gallonsRefueled: refuel.gallonsRefueled,
+            milesAtFueling: refuel.milesAtFueling,
+          });
+        }
+      });
+    });
+  });
+  return result;
+};
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -139,7 +173,8 @@ export default function EmployeeTabs() {
         | TimesheetHighlights
         | TruckingMileageUpdate[]
         | TruckingEquipmentHaulLog[]
-        | TruckingMaterialHaulLog[]
+        | TruckingMaterialHaulLogData
+        | TruckingRefuelLogData
         | {
             id: string;
             gallonsRefueled?: number | null;
@@ -155,6 +190,7 @@ export default function EmployeeTabs() {
           }[]
         | { id: string; gallonsRefueled?: number | null }[]
         | EquipmentLogChange[]
+        | TruckingMileageData
     ) => {
       try {
         switch (timeSheetFilter) {
@@ -218,15 +254,32 @@ export default function EmployeeTabs() {
           }
 
           case "truckingEquipmentHaulLogs": {
-            const haulLogChanges = changes as TruckingEquipmentHaulLog[];
-            const updates = haulLogChanges.flatMap(
-              (log) =>
-                log.EquipmentHauled?.map((hauledItem) => ({
+            // Only proceed if changes is an array and has the expected structure
+            if (
+              !Array.isArray(changes) ||
+              !changes.every(
+                (item) => typeof item === "object" && "TruckingLogs" in item
+              )
+            ) {
+              console.warn("No valid haul log changes to send");
+              return;
+            }
+            const haulLogChanges = changes as Array<{ TruckingLogs: any[] }>;
+
+            const updates = haulLogChanges.flatMap((item) =>
+              (item.TruckingLogs || []).flatMap((log: any) =>
+                (log.EquipmentHauled || []).map((hauledItem: any) => ({
                   id: hauledItem.id,
                   equipmentId: hauledItem.Equipment?.id,
                   jobSiteId: hauledItem.JobSite?.id,
-                })) || []
+                }))
+              )
             );
+
+            if (updates.length === 0) {
+              console.warn("No haul log updates to send");
+              return;
+            }
 
             const haulingResult = await updateTruckingHaulLogs(updates);
             if (haulingResult?.success) {
@@ -240,57 +293,49 @@ export default function EmployeeTabs() {
           }
 
           case "truckingMaterialHaulLogs": {
-            const materialChanges = changes as TruckingMaterialHaulLog[];
-            if (materialChanges.length > 0) {
-              const formattedChanges = materialChanges.map((change) => ({
-                id: change.id,
-                name: change.name,
-                LocationOfMaterial: change.LocationOfMaterial,
-                materialWeight: change.materialWeight,
-                lightWeight: change.lightWeight,
-                grossWeight: change.grossWeight,
-              }));
+            // Accept both flat and nested structure
+            let formattedChanges: any[] = [];
+            if (
+              Array.isArray(changes) &&
+              changes.length > 0 &&
+              "TruckingLogs" in changes[0]
+            ) {
+              formattedChanges = flattenMaterialLogs(
+                changes as TruckingMaterialHaulLogData
+              );
+            } else if (Array.isArray(changes)) {
+              formattedChanges = changes;
+            }
+            if (
+              Array.isArray(formattedChanges) &&
+              formattedChanges.length > 0
+            ) {
               await updateTruckingMaterialLogs(formattedChanges);
             }
             break;
           }
-
-          case "truckingRefuelLogs":
+          case "truckingRefuelLogs": {
+            // Accept both flat and nested structure
+            let formattedChanges: any[] = [];
             if (
-              changes &&
               Array.isArray(changes) &&
-              changes.every(
-                (change) =>
-                  "id" in change &&
-                  ("gallonsRefueled" in change || "milesAtFueling" in change)
-              )
+              changes.length > 0 &&
+              "TruckingLogs" in changes[0]
             ) {
-              await updateTruckingRefuelLogs(
-                changes as {
-                  id: string;
-                  gallonsRefueled?: number | null;
-                  milesAtFueling?: number | null;
-                }[]
+              formattedChanges = flattenRefuelLogs(
+                changes as TruckingRefuelLogData
               );
-            } else {
-              console.error("Invalid changes type");
+            } else if (Array.isArray(changes)) {
+              formattedChanges = changes;
             }
-            break;
-
-          case "truckingStateLogs":
             if (
-              Array.isArray(changes) &&
-              changes.every(
-                (change) =>
-                  "id" in change &&
-                  ("state" in change || "stateLineMileage" in change)
-              )
+              Array.isArray(formattedChanges) &&
+              formattedChanges.length > 0
             ) {
-              await updateTruckingStateLogs(changes);
-            } else {
-              console.error("Invalid changes type");
+              await updateTruckingRefuelLogs(formattedChanges);
             }
             break;
+          }
 
           case "tascoHaulLogs":
             if (
@@ -336,19 +381,31 @@ export default function EmployeeTabs() {
             }
             break;
 
-          case "equipmentLogs":
-            if (Array.isArray(changes) && changes.every(isEquipmentLogChange)) {
-              await updateEquipmentLogs(
-                changes.map((change) => ({
-                  id: change.id,
-                  startTime: change.startTime,
-                  endTime: change.endTime,
-                }))
+          case "equipmentLogs": {
+            if (
+              Array.isArray(changes) &&
+              changes.length > 0 &&
+              typeof changes[0] === "object" &&
+              "startTime" in changes[0] &&
+              "endTime" in changes[0]
+            ) {
+              const validChanges = (changes as EquipmentLogChange[]).filter(
+                (change) => change.id && change.startTime && change.endTime
               );
+              if (validChanges.length > 0) {
+                await updateEquipmentLogs(
+                  validChanges.map((change) => ({
+                    id: change.id,
+                    startTime: change.startTime,
+                    endTime: change.endTime,
+                  }))
+                );
+              }
             } else {
-              console.error("Invalid changes type");
+              console.error("Invalid changes type for equipmentLogs");
             }
             break;
+          }
 
           case "equipmentRefuelLogs":
             if (
@@ -496,7 +553,8 @@ export interface EmployeeTimeSheetsProps {
       | TimesheetHighlights
       | TruckingMileageUpdate[]
       | TruckingEquipmentHaulLog[]
-      | TruckingMaterialHaulLog[]
+      | TruckingMaterialHaulLogData
+      | TruckingRefuelLogData
       | {
           id: string;
           gallonsRefueled?: number | null;

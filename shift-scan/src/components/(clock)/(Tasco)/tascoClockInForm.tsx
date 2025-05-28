@@ -68,6 +68,10 @@ export default function TascoClockInForm({
     fetchMaterialTypes();
   }, []);
 
+  useEffect(() => {
+    console.log("equipment: ", equipment);
+  }, [equipment]);
+
   return (
     <Holds
       background={"white"}
@@ -100,13 +104,9 @@ export default function TascoClockInForm({
               {clockInRoleTypes === "tascoEEquipment" ? (
                 <Holds className="row-start-1 row-end-7 h-full w-full">
                   <EquipmentSelector
-                    onEquipmentSelect={(equipment) => {
-                      if (equipment) {
-                        setEquipment(equipment); // Update the equipment state with the full Option object
-                      } else {
-                        setEquipment({ code: "", label: "" }); // Reset if null
-                      }
-                    }}
+                    onEquipmentSelect={(equipment) =>
+                      setEquipment(equipment ?? { code: "", label: "" })
+                    }
                     initialValue={equipment}
                   />
                 </Holds>
@@ -131,13 +131,9 @@ export default function TascoClockInForm({
                     </Holds>
                     <Holds className="row-start-2 row-end-11 h-full w-full">
                       <EquipmentSelector
-                        onEquipmentSelect={(equipment) => {
-                          if (equipment) {
-                            setEquipment(equipment); // Update the equipment state with the full Option object
-                          } else {
-                            setEquipment({ code: "", label: "" }); // Reset if null
-                          }
-                        }}
+                        onEquipmentSelect={(equipment) =>
+                          setEquipment(equipment ?? { code: "", label: "" })
+                        }
                         initialValue={equipment}
                       />
                     </Holds>

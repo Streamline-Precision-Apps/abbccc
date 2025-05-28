@@ -14,7 +14,7 @@ type TimeCardTruckingStateMileageLogsProps = {
   edit: boolean;
   manager: string;
   truckingStateLogs: TruckingStateLogData;
-  onDataChange: (data: ProcessedStateMileage[]) => void;
+  onDataChange: (data: TruckingStateLogData) => void;
 };
 
 type ProcessedStateMileage = {
@@ -89,12 +89,33 @@ export default function TimeCardTruckingStateMileageLogs({
         }
         return item;
       });
-
       setChangesWereMade(true);
       setEditedStateMileages(updated);
-      onDataChange(updated);
+      // Convert the flat array back to the nested TruckingStateLogData structure
+      const nested: TruckingStateLogData = truckingStateLogs.map((item) => ({
+        ...item,
+        TruckingLogs: (item.TruckingLogs ?? []).map((log) => {
+          if (!log) return log;
+          return {
+            ...log,
+            StateMileages: (log.StateMileages ?? []).map((mileage) => {
+              const found = updated.find(
+                (u) => u.id === mileage.id && u.truckingLogId === log.id
+              );
+              return found
+                ? {
+                    ...mileage,
+                    state: found.state,
+                    stateLineMileage: found.stateLineMileage,
+                  }
+                : mileage;
+            }),
+          };
+        }),
+      }));
+      onDataChange(nested);
     },
-    [editedStateMileages, onDataChange]
+    [editedStateMileages, onDataChange, truckingStateLogs]
   );
 
   const isEmptyData = editedStateMileages.length === 0;

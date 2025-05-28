@@ -33,6 +33,15 @@ import {
 } from "@/lib/types";
 import TimeSheetRenderer from "./timeSheetRenderer";
 import { set } from "date-fns";
+import { flattenMaterialLogs } from "./TimeCardTruckingMaterialLogs";
+import { updateTruckingMaterialLogs } from "@/actions/myTeamsActions";
+import { updateTruckingRefuelLogs } from "@/actions/myTeamsActions";
+import { updateTruckingStateLogs } from "@/actions/myTeamsActions";
+import { updateTascoHaulLogs } from "@/actions/myTeamsActions";
+import { updateTascoRefuelLogs } from "@/actions/myTeamsActions";
+import { updateEquipmentRefuelLogs } from "@/actions/myTeamsActions";
+import { flattenEquipmentLogs, isEquipmentLogsData } from "@/lib/types";
+import { flattenEquipmentRefuelLogs } from "@/lib/types";
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -78,6 +87,9 @@ export interface EmployeeTimeSheetsProps {
       | TimesheetHighlights[]
       | TimesheetHighlights
       | TruckingMaterialHaulLog[]
+      | TruckingMaterialHaulLogData // <-- allow nested structure
+      | TruckingRefuelLogData // <-- allow nested structure
+      | EquipmentLogChange[]
       | {
           id: string;
           gallonsRefueled?: number | null;
@@ -92,7 +104,7 @@ export interface EmployeeTimeSheetsProps {
           LoadQuantity?: number | null;
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
-      | EquipmentLogChange[]
+      | TruckingMileageData
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
@@ -119,6 +131,8 @@ export const EmployeeTimeSheets = ({
   const [changes, setChanges] = useState<
     | TimesheetHighlights[]
     | TruckingMaterialHaulLog[]
+    | TruckingMaterialHaulLogData
+    | TruckingRefuelLogData
     | EquipmentLogChange[]
     | {
         id: string;
@@ -134,6 +148,7 @@ export const EmployeeTimeSheets = ({
         LoadQuantity?: number | null;
       }[]
     | { id: string; gallonsRefueled?: number | null }[]
+    | TruckingMileageData
   >([]);
   // Two sources of truth: originalData and newData
   const [originalData, setOriginalData] = useState<typeof data | null>(
@@ -149,10 +164,6 @@ export const EmployeeTimeSheets = ({
   const [lastLoadedDate, setLastLoadedDate] = useState<string>(date);
   const [lastLoadedFilter, setLastLoadedFilter] =
     useState<TimesheetFilter>(timeSheetFilter);
-
-  useEffect(() => {
-    console.log("Data: ", data);
-  }, [data]);
 
   useEffect(() => {
     console.log("newData: ", newData);
@@ -195,6 +206,192 @@ export const EmployeeTimeSheets = ({
   const handleSave = useCallback(async () => {
     try {
       setIsSaving(true);
+      if (timeSheetFilter === "truckingMaterialHaulLogs") {
+        // changes is the full nested structure
+        const flattened = flattenMaterialLogs(
+          changes as TruckingMaterialHaulLogData
+        );
+        const updates = flattened.filter(
+          (mat) =>
+            mat &&
+            mat.id &&
+            (mat.name ||
+              mat.LocationOfMaterial ||
+              mat.materialWeight !== null ||
+              mat.lightWeight !== null ||
+              mat.grossWeight !== null)
+        );
+        if (updates.length === 0) {
+          console.warn("No valid material logs to update.");
+          return;
+        }
+        const result = await updateTruckingMaterialLogs(updates);
+        console.log("Material log update result:", result);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
+      if (timeSheetFilter === "truckingRefuelLogs") {
+        // changes is the full nested structure
+        const flattened = flattenRefuelLogs(changes as TruckingRefuelLogData);
+        const updates = flattened.filter(
+          (refuel) =>
+            refuel &&
+            refuel.id &&
+            refuel.gallonsRefueled !== null &&
+            refuel.gallonsRefueled !== undefined
+        );
+        if (updates.length === 0) {
+          console.warn("No valid refuel logs to update.");
+          return;
+        }
+        // Call the server action for refuel logs
+        const result = await updateTruckingRefuelLogs(updates);
+        console.log("Refuel log update result:", result);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
+      if (timeSheetFilter === "truckingStateLogs") {
+        const flattened = flattenStateMileageLogs(
+          changes as TruckingStateLogData
+        );
+        const updates = flattened.filter(
+          (mileage) =>
+            mileage &&
+            mileage.id &&
+            mileage.state &&
+            mileage.stateLineMileage !== null &&
+            mileage.stateLineMileage !== undefined
+        );
+        if (updates.length === 0) {
+          console.warn("No valid state mileage logs to update.");
+          return;
+        }
+        const result = await updateTruckingStateLogs(updates);
+        console.log("State mileage log update result:", result);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
+      // Type guard for TascoHaulLogData
+      const isTascoHaulLogData = (data: unknown): data is TascoHaulLogData => {
+        return (
+          Array.isArray(data) &&
+          data.length > 0 &&
+          typeof data[0] === "object" &&
+          data[0] !== null &&
+          "TascoLogs" in data[0]
+        );
+      };
+      if (timeSheetFilter === "tascoHaulLogs") {
+        if (!isTascoHaulLogData(changes)) {
+          console.warn("Invalid changes type for tascoHaulLogs");
+          return;
+        }
+        const flattened = flattenTascoHaulLogs(changes);
+        const updates = flattened.filter(
+          (log) =>
+            log &&
+            log.id &&
+            log.shiftType &&
+            log.materialType &&
+            log.LoadQuantity !== null &&
+            log.LoadQuantity !== undefined
+        );
+        if (updates.length === 0) {
+          console.warn("No valid tasco haul logs to update.");
+          return;
+        }
+        const result = await updateTascoHaulLogs(updates);
+        console.log("Tasco haul log update result:", result);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
+      const isTascoRefuelLogData = (
+        data: unknown
+      ): data is TascoRefuelLogData => {
+        return (
+          Array.isArray(data) &&
+          data.length > 0 &&
+          typeof data[0] === "object" &&
+          data[0] !== null &&
+          "TascoLogs" in data[0]
+        );
+      };
+      if (timeSheetFilter === "tascoRefuelLogs") {
+        if (!isTascoRefuelLogData(changes)) {
+          console.warn("Invalid changes type for tascoRefuelLogs");
+          return;
+        }
+        const flattened = flattenTascoRefuelLogs(changes);
+        const updates = flattened.filter(
+          (log) =>
+            log &&
+            log.id &&
+            log.gallonsRefueled !== null &&
+            log.gallonsRefueled !== undefined
+        );
+        if (updates.length === 0) {
+          console.warn("No valid tasco refuel logs to update.");
+          return;
+        }
+        const result = await updateTascoRefuelLogs(updates);
+        console.log("Tasco refuel log update result:", result);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
+      if (timeSheetFilter === "equipmentLogs") {
+        if (!isEquipmentLogsData(changes)) {
+          console.warn("Invalid changes type for equipmentLogs");
+          return;
+        }
+        const flattened = flattenEquipmentLogs(changes);
+        const updates = flattened.filter(
+          (log) => log && log.id && log.startTime && log.endTime
+        );
+        if (updates.length === 0) {
+          console.warn("No valid equipment logs to update.");
+          return;
+        }
+        // Call the parent save handler with the flattened updates
+        const result = await parentOnSaveChanges(updates);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
+      if (timeSheetFilter === "equipmentRefuelLogs") {
+        // changes is the full nested structure (EmployeeEquipmentLogWithRefuel[])
+        const flattened: { id: string; gallonsRefueled: number | null }[] =
+          flattenEquipmentRefuelLogs(
+            changes as EmployeeEquipmentLogWithRefuel[]
+          );
+        const updates = flattened.filter(
+          (log: { id: string; gallonsRefueled: number | null }) =>
+            log &&
+            log.id &&
+            log.gallonsRefueled !== null &&
+            log.gallonsRefueled !== undefined
+        );
+        if (updates.length === 0) {
+          console.warn("No valid equipment refuel logs to update.");
+          return;
+        }
+        const result = await updateEquipmentRefuelLogs(updates);
+        console.log("Equipment refuel log update result:", result);
+        setOriginalData(JSON.parse(JSON.stringify(newData)));
+        setChanges([]);
+        setEdit(false);
+        return;
+      }
       if (!Array.isArray(changes) || changes.length === 0) {
         console.log("No changes to save");
         return;
@@ -210,7 +407,7 @@ export const EmployeeTimeSheets = ({
     } finally {
       setIsSaving(false);
     }
-  }, [changes, parentOnSaveChanges]);
+  }, [changes, parentOnSaveChanges, timeSheetFilter, newData, setEdit]);
 
   const handleCancel = () => {
     onCancelEdits();
@@ -225,7 +422,8 @@ export const EmployeeTimeSheets = ({
     updatedData:
       | TimesheetHighlights[]
       | TimesheetHighlights
-      | TruckingMaterialHaulLog[]
+      | TruckingMaterialHaulLogData
+      | TruckingRefuelLogData
       | EquipmentLogChange[]
       | {
           id: string;
@@ -243,6 +441,18 @@ export const EmployeeTimeSheets = ({
       | { id: string; gallonsRefueled?: number | null }[]
       | TruckingMileageData
   ) => {
+    // For material logs, always set changes to the full nested structure
+    if (timeSheetFilter === "truckingMaterialHaulLogs") {
+      setChanges(updatedData as TruckingMaterialHaulLogData);
+      setNewData(updatedData as TruckingMaterialHaulLogData);
+      return;
+    }
+    // For refuel logs, always set changes to the full nested structure
+    if (timeSheetFilter === "truckingRefuelLogs") {
+      setChanges(updatedData as TruckingRefuelLogData);
+      setNewData(updatedData as TruckingRefuelLogData);
+      return;
+    }
     // Always ensure we're working with an array
     const changesArray = Array.isArray(updatedData)
       ? updatedData
@@ -265,6 +475,149 @@ export const EmployeeTimeSheets = ({
       // Default: just use the new changes
       return newChanges as typeof prevData;
     });
+  };
+
+  // Helper type guard for string
+  const isString = (val: unknown): val is string => typeof val === "string";
+
+  // Helper to safely convert to number or null (no 'unknown' type)
+  const toNumberOrNull = (
+    val: string | number | null | undefined
+  ): number | null => {
+    if (typeof val === "number") return val;
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      return trimmed === "" ? null : parseFloat(trimmed);
+    }
+    return null;
+  };
+
+  // Helper to flatten nested refuel logs for server submission
+  const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
+    const result: {
+      id: string;
+      gallonsRefueled?: number | null;
+      milesAtFueling?: number | null;
+    }[] = [];
+    logs.forEach((item) => {
+      (item.TruckingLogs ?? []).forEach((log) => {
+        if (!log) return;
+        (log.RefuelLogs ?? []).forEach((refuel) => {
+          if (refuel && refuel.id) {
+            const gallons = toNumberOrNull(refuel.gallonsRefueled);
+            const miles = toNumberOrNull(refuel.milesAtFueling);
+            result.push({
+              id: refuel.id,
+              gallonsRefueled: gallons,
+              milesAtFueling: miles,
+            });
+          }
+        });
+      });
+    });
+    return result;
+  };
+
+  // Helper to flatten nested state mileage logs for server submission
+  const flattenStateMileageLogs = (logs: TruckingStateLogData) => {
+    const result: { id: string; state: string; stateLineMileage: number }[] =
+      [];
+    logs.forEach((item) => {
+      (item.TruckingLogs ?? []).forEach((log) => {
+        if (!log) return;
+        (log.StateMileages ?? []).forEach((mileage) => {
+          if (mileage && mileage.id) {
+            result.push({
+              id: mileage.id,
+              state: mileage.state,
+              stateLineMileage: mileage.stateLineMileage,
+            });
+          }
+        });
+      });
+    });
+    return result;
+  };
+
+  // Helper to flatten nested tasco haul logs for server submission
+  const flattenTascoHaulLogs = (logs: TascoHaulLogData) => {
+    const result: {
+      id: string;
+      shiftType: string;
+      equipmentId: string | null;
+      materialType: string;
+      LoadQuantity: number;
+    }[] = [];
+    logs.forEach((item) => {
+      (item.TascoLogs ?? []).forEach((log) => {
+        if (log && log.id) {
+          result.push({
+            id: log.id,
+            shiftType: log.shiftType,
+            equipmentId:
+              !log.equipmentId || log.equipmentId === ""
+                ? null
+                : log.equipmentId,
+            materialType: log.materialType,
+            LoadQuantity: log.LoadQuantity ?? 0,
+          });
+        }
+      });
+    });
+    return result;
+  };
+
+  // Helper to flatten nested tasco refuel logs for server submission
+  const flattenTascoRefuelLogs = (logs: TascoRefuelLogData) => {
+    const result: { id: string; gallonsRefueled: number | null }[] = [];
+    logs.forEach((item) => {
+      (item.TascoLogs ?? []).forEach((log) => {
+        (log.RefuelLogs ?? []).forEach((refuel) => {
+          if (refuel && refuel.id) {
+            result.push({
+              id: refuel.id,
+              gallonsRefueled:
+                typeof refuel.gallonsRefueled === "number"
+                  ? refuel.gallonsRefueled
+                  : refuel.gallonsRefueled
+                  ? Number(refuel.gallonsRefueled)
+                  : null,
+            });
+          }
+        });
+      });
+    });
+    return result;
+  };
+
+  // In your save handler, before sending to the server:
+  /**
+   * Save all material logs, including all changes from all logs.
+   * Flattens the entire nested structure and filters out empty/invalid logs.
+   */
+  const handleSaveMaterialLogs = async (
+    nestedMaterialLogs: TruckingMaterialHaulLogData
+  ) => {
+    // Always flatten the entire nested structure, not just the changed logs
+    const flattened = flattenMaterialLogs(nestedMaterialLogs);
+    console.log("Flattened material logs:", flattened);
+    // Only send updates for materials that actually exist (have an id and at least one field to update)
+    const updates = flattened.filter(
+      (mat) =>
+        mat &&
+        mat.id &&
+        (mat.name ||
+          mat.LocationOfMaterial ||
+          mat.materialWeight !== null ||
+          mat.lightWeight !== null ||
+          mat.grossWeight !== null)
+    );
+    if (updates.length === 0) {
+      console.warn("No valid material logs to update.");
+      return;
+    }
+    const result = await updateTruckingMaterialLogs(updates);
+    console.log("Material log update result:", result);
   };
 
   return (
