@@ -14,7 +14,9 @@ interface EditableFieldsProps
   disable?: boolean;
   placeholder?: string;
   onChange?: (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => void;
   isChanged: boolean;
   onRevert?: () => void;
@@ -25,12 +27,13 @@ interface EditableFieldsProps
   pattern?: string;
   name?: string;
   readonly?: boolean;
-  formDatatype?: "input" | "select";
+  formDatatype?: "input" | "select" | "textarea";
   options?: { label: string; value: string }[]; // Added options prop for select type
+  rows?: number; // Added rows prop for textarea
 }
 
 const EditableFieldsVariants = cva(
-  "flex items-center rounded-[10px] overflow-hidden", // Added overflow-hidden
+  "flex items-start rounded-[10px] overflow-hidden", // Changed items-center to items-start for textarea compatibility
   {
     variants: {
       variant: {
@@ -41,9 +44,9 @@ const EditableFieldsVariants = cva(
         noFrames: "border-none rounded-none",
       },
       size: {
-        default: "h-10 text-base",
-        sm: "h-8 text-sm",
-        lg: "h-12 text-lg",
+        default: "min-h-10 text-base", // Changed h-10 to min-h-10 for textarea
+        sm: "min-h-8 text-sm", // Changed h-8 to min-h-8 for textarea
+        lg: "min-h-12 text-lg", // Changed h-12 to min-h-12 for textarea
       },
     },
     defaultVariants: {
@@ -74,6 +77,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
   readonly = false, // Added readonly prop
   formDatatype = "input", // Added formDatatype prop
   options = [], // Added options prop for select type
+  rows = 3, // Added rows prop for textarea
 }) => {
   if (formDatatype === "input") {
     return (
@@ -116,6 +120,45 @@ const EditableFields: FC<EditableFieldsProps> = ({
       </div>
     );
   }
+
+  if (formDatatype === "textarea") {
+    return (
+      <div
+        className={cn(
+          EditableFieldsVariants({ variant, size, className }),
+          "w-full"
+        )}
+      >
+        {/* Textarea container with flex-1 to take available space */}
+        <div className="flex-1 min-h-full">
+          <textarea
+            value={value}
+            name={name}
+            disabled={disable}
+            onChange={onChange}
+            placeholder={placeholder || ""}
+            className="h-full w-full min-h-[100px] border-none focus:outline-none px-3 py-2 bg-transparent disabled:bg-app-gray resize-none"
+            readOnly={readonly}
+            rows={rows}
+          />
+        </div>
+
+        {/* Revert button - only appears when needed */}
+        {isChanged && onRevert && (
+          <button
+            type="button"
+            className="w-10 flex-shrink-0 flex items-start justify-center pt-2 transition-colors"
+            title="Revert changes"
+            onClick={onRevert}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element*/}
+            <img src={iconSrc} alt={iconAlt} className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
   if (formDatatype === "select") {
     return (
       <div
