@@ -18,7 +18,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     <Holds
       background={disabled ? "lightGray" : "white"}
       position="row"
-      className="w-full h-full gap-x-3"
+      className="px-2 w-full h-full gap-x-3"
     >
       <Holds size="10">
         <img src="/searchLeft.svg" alt="search" />
