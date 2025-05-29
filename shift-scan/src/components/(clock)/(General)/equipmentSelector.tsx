@@ -44,13 +44,17 @@ export const EquipmentSelector = ({
           (opt) => opt.code === initialValue.code
         );
         setSelectedEquipment(foundOption || null);
+        onEquipmentSelect(foundOption || null); // Keep parent in sync
       }
       // If options aren't loaded yet, set the initial value directly
       else if (initialValue.code && initialValue.label) {
         setSelectedEquipment(initialValue);
+        onEquipmentSelect(initialValue); // Keep parent in sync
       }
     }
   }, [initialValue, equipmentOptions]);
+
+  console.log("Selected Equipment:", selectedEquipment);
 
   // Handle selection changes and notify parent
   const handleSelect = (option: Option | null) => {

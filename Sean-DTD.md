@@ -178,4 +178,20 @@
 
 # May 16, 2025 - Friday
 ### built/created
-- Debugging the server actions and types for the my teams section. (6 hours)
+- Debugging the server actions and types for the my teams section. Fix build errors. (6 hours)
+
+# May 19, 2025 - Monday
+### testing/debugging
+- Going through everything on android to see if there are any bugs. Fix various bugs with different sections of app (10 hours)
+
+# May 21, 2025 - Tuesday
+### testing/debugging
+- fixing issues with save and discard in my teams section. (6 hours)
+
+# May 22, 2025 - Wednesday
+### built/created
+- building new step for clock out section. and fixing/adjusting my teams to work with it. (6 hours)
+
+# May 23, 2025 - Thursday
+### built/created
+- 

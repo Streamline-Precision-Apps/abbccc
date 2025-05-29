@@ -8,8 +8,9 @@ import { Titles } from "@/components/(reusable)/titles";
 import {
   TruckingEquipmentHaulLog,
   TruckingEquipmentHaulLogData,
+  EquipmentHauledItem,
 } from "@/lib/types";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
@@ -19,7 +20,7 @@ type TimeCardTruckingHaulLogsProps = {
   edit: boolean;
   manager: string;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData;
-  onDataChange: (data: TruckingEquipmentHaulLog[]) => void;
+  onDataChange: (data: TruckingEquipmentHaulLogData) => void; // FIX: expects nested structure
 };
 
 export default function TimeCardTruckingHaulLogs({
@@ -29,179 +30,94 @@ export default function TimeCardTruckingHaulLogs({
   onDataChange,
 }: TimeCardTruckingHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingHaulLogs");
-  // Extract all TruckingLogs with their EquipmentHauled items
-  const allTruckingLogs = truckingEquipmentHaulLogs
-    .flatMap((item) => item.TruckingLogs)
-    .filter((log) => log?.id && log.EquipmentHauled?.length > 0);
 
-  const [editedTruckingHaulLogs, setEditedTruckingHaulLogs] =
-    useState<TruckingEquipmentHaulLog[]>(allTruckingLogs);
-  const [pendingChanges, setPendingChanges] = useState<
-    Record<string, TruckingEquipmentHaulLog>
-  >({});
-  const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
+  // Handler to update the TruckingEquipmentHaulLogData structure
+  const handleHaulLogChange = (
+    itemIndex: number,
+    logId: string,
+    field: keyof TruckingEquipmentHaulLog,
+    value: any
+  ) => {
+    const updated = truckingEquipmentHaulLogs.map((item, idx) => {
+      if (idx === itemIndex) {
+        return {
+          ...item,
+          TruckingLogs: item.TruckingLogs.map((log) => {
+            if (log && log.id === logId) {
+              // Only update fields that exist on TruckingEquipmentHaulLog
+              if (field in log) {
+                return { ...log, [field]: value };
+              }
+            }
+            return log;
+          }),
+        };
+      }
+      return item;
+    });
+    onDataChange(updated);
+  };
+
+  // When updating a job site or equipment, update the correct EquipmentHauled item inside the EquipmentHauled array of the TruckingEquipmentHaulLog.
+  // Do not use 'JobSite' as a field for handleHaulLogChange. Instead, write a handler like:
+  const handleEquipmentHauledChange = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number,
+    field: keyof EquipmentHauledItem,
+    value: any
+  ) => {
+    const updated = truckingEquipmentHaulLogs.map((item, i) => {
+      if (i !== itemIdx) return item;
+      return {
+        ...item,
+        TruckingLogs: item.TruckingLogs.map((log, j) => {
+          if (!log || j !== logIdx) return log;
+          return {
+            ...log,
+            EquipmentHauled: log.EquipmentHauled.map((hauled, k) => {
+              if (k !== hauledIdx) return hauled;
+              return {
+                ...hauled,
+                [field]: value,
+              };
+            }),
+          };
+        }),
+      };
+    });
+    onDataChange(updated);
+  };
+
   const [equipmentModalOpen, setEquipmentModalOpen] = useState(false);
+  const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
   const [currentEditingLog, setCurrentEditingLog] = useState<{
-    logId: string;
-    equipmentIndex: number;
+    itemIdx: number;
+    logIdx: number;
+    hauledIdx: number;
+  } | null>(null);
+  const [tempEquipment, setTempEquipment] = useState<{
+    code: string;
+    label: string;
   } | null>(null);
 
-  // Reset when edit mode is turned off or when new data comes in
-  useEffect(() => {
-    setEditedTruckingHaulLogs(allTruckingLogs);
-    setPendingChanges({});
-  }, [truckingEquipmentHaulLogs]);
-
-  const handleHaulLogChange = useCallback(
-    (
-      logId: string,
-      equipmentIndex: number,
-      field: keyof TruckingEquipmentHaulLog["EquipmentHauled"][0],
-      value: string | { id: string; name: string }
-    ) => {
-      setEditedTruckingHaulLogs((prevLogs) =>
-        prevLogs.map((log) => {
-          if (log.id === logId) {
-            const updatedEquipment = [...log.EquipmentHauled];
-            updatedEquipment[equipmentIndex] = {
-              ...updatedEquipment[equipmentIndex],
-              [field]:
-                typeof value === "object" && value !== null
-                  ? { ...value }
-                  : value,
-            };
-
-            return {
-              ...log,
-              EquipmentHauled: updatedEquipment,
-            };
-          }
-          return log;
-        })
-      );
-
-      // Update pending changes - use a Map to prevent duplicates
-      setPendingChanges((prev) => {
-        const newChanges = new Map(Object.entries(prev));
-        const logKey = logId;
-
-        if (!newChanges.has(logKey)) {
-          newChanges.set(logKey, {
-            id: logId,
-            Equipment: allTruckingLogs.find((l) => l.id === logId)!.Equipment,
-            EquipmentHauled: [
-              ...allTruckingLogs.find((l) => l.id === logId)!.EquipmentHauled,
-            ],
-          });
-        }
-
-        const logEntry = newChanges.get(logKey)!;
-        logEntry.EquipmentHauled[equipmentIndex] = {
-          ...logEntry.EquipmentHauled[equipmentIndex],
-          [field]: value,
-        };
-
-        return Object.fromEntries(newChanges);
-      });
-    },
-    [allTruckingLogs]
-  );
-
-  const handleJobsiteChange = useCallback(
-    (
-      logId: string,
-      equipmentIndex: number,
-      jobsiteId: string,
-      jobsiteName: string
-    ) => {
-      handleHaulLogChange(logId, equipmentIndex, "JobSite", {
-        id: jobsiteId,
-        name: jobsiteName,
-      });
-
-      // Update the jobsite name in the local state for display
-      setEditedTruckingHaulLogs((prevLogs) =>
-        prevLogs.map((log) => {
-          if (log.id === logId) {
-            const updatedEquipment = [...log.EquipmentHauled];
-            updatedEquipment[equipmentIndex] = {
-              ...updatedEquipment[equipmentIndex],
-              JobSite: {
-                ...updatedEquipment[equipmentIndex].JobSite,
-                id: jobsiteId,
-                name: jobsiteName,
-              },
-            };
-
-            return {
-              ...log,
-              EquipmentHauled: updatedEquipment,
-            };
-          }
-          return log;
-        })
-      );
-    },
-    [handleHaulLogChange]
-  );
-
-  const handleEquipmentChange = useCallback(
-    (
-      logId: string,
-      equipmentIndex: number,
-      equipmentId: string,
-      equipmentName: string
-    ) => {
-      handleHaulLogChange(logId, equipmentIndex, "Equipment", {
-        id: equipmentId,
-        name: equipmentName,
-      });
-
-      // Update the equipment name in the local state for display
-      setEditedTruckingHaulLogs((prevLogs) =>
-        prevLogs.map((log) => {
-          if (log.id === logId) {
-            const updatedEquipment = [...log.EquipmentHauled];
-            updatedEquipment[equipmentIndex] = {
-              ...updatedEquipment[equipmentIndex],
-              Equipment: {
-                ...updatedEquipment[equipmentIndex].Equipment,
-                id: equipmentId,
-                name: equipmentName,
-              },
-            };
-
-            return {
-              ...log,
-              EquipmentHauled: updatedEquipment,
-            };
-          }
-          return log;
-        })
-      );
-    },
-    [handleHaulLogChange]
-  );
-
-  // Notify parent of all changes when pendingChanges updates
-  useEffect(() => {
-    console.log("Pending changes:", pendingChanges);
-    if (Object.keys(pendingChanges).length > 0) {
-      const changesArray = Object.values(pendingChanges);
-      console.log("Sending to parent:", changesArray);
-      onDataChange(changesArray);
-    }
-  }, [pendingChanges]);
-
-  const openJobsiteModal = (logId: string, equipmentIndex: number) => {
+  const openJobsiteModal = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number = 0
+  ) => {
     if (!edit) return;
-    setCurrentEditingLog({ logId, equipmentIndex });
+    setCurrentEditingLog({ itemIdx, logIdx, hauledIdx });
     setJobsiteModalOpen(true);
   };
 
-  const openEquipmentModal = (logId: string, equipmentIndex: number) => {
+  const openEquipmentModal = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number = 0
+  ) => {
     if (!edit) return;
-    setCurrentEditingLog({ logId, equipmentIndex });
+    setCurrentEditingLog({ itemIdx, logIdx, hauledIdx });
     setEquipmentModalOpen(true);
   };
 
@@ -209,11 +125,15 @@ export default function TimeCardTruckingHaulLogs({
     jobsite: { code: string; label: string } | null
   ) => {
     if (currentEditingLog && jobsite) {
-      handleJobsiteChange(
-        currentEditingLog.logId,
-        currentEditingLog.equipmentIndex,
-        jobsite.code,
-        jobsite.label
+      handleEquipmentHauledChange(
+        currentEditingLog.itemIdx,
+        currentEditingLog.logIdx,
+        currentEditingLog.hauledIdx,
+        "JobSite",
+        {
+          id: jobsite.code,
+          name: jobsite.label,
+        }
       );
     }
     setJobsiteModalOpen(false);
@@ -223,17 +143,37 @@ export default function TimeCardTruckingHaulLogs({
     equipment: { code: string; label: string } | null
   ) => {
     if (currentEditingLog && equipment) {
-      handleEquipmentChange(
-        currentEditingLog.logId,
-        currentEditingLog.equipmentIndex,
-        equipment.code,
-        equipment.label
+      handleEquipmentHauledChange(
+        currentEditingLog.itemIdx,
+        currentEditingLog.logIdx,
+        currentEditingLog.hauledIdx,
+        "Equipment",
+        {
+          id: equipment.code,
+          name: equipment.label,
+        }
+      );
+    }
+  };
+
+  const handleConfirmEquipment = () => {
+    if (currentEditingLog && tempEquipment) {
+      handleEquipmentHauledChange(
+        currentEditingLog.itemIdx,
+        currentEditingLog.logIdx,
+        currentEditingLog.hauledIdx,
+        "Equipment",
+        {
+          id: tempEquipment.code,
+          name: tempEquipment.label,
+        }
       );
     }
     setEquipmentModalOpen(false);
+    setTempEquipment(null);
   };
 
-  const isEmptyData = editedTruckingHaulLogs.length === 0;
+  const isEmptyData = truckingEquipmentHaulLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
@@ -259,51 +199,63 @@ export default function TimeCardTruckingHaulLogs({
                 </Holds>
               </Grids>
 
-              {editedTruckingHaulLogs.map((log) =>
-                log.EquipmentHauled.map((hauledItem, index) => (
-                  <Holds
-                    key={`${log.id}-${index}`}
-                    className="border-black border-[3px] rounded-lg bg-white mb-2"
-                  >
-                    <Buttons
-                      shadow={"none"}
-                      background={"none"}
-                      className="w-full h-full text-left"
+              {truckingEquipmentHaulLogs.map((item, itemIdx) =>
+                item.TruckingLogs.map((log, logIdx) => {
+                  if (!log) return null;
+
+                  return (
+                    <Holds
+                      key={`${log.id}-${logIdx}`}
+                      className="border-black border-[3px] rounded-lg bg-white mb-2"
                     >
-                      <Grids cols={"3"} className="w-full h-full">
-                        <Holds className="col-start-1 col-end-2">
-                          <Inputs
-                            type={"text"}
-                            value={log.Equipment?.name || ""}
-                            className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
-                            disabled={true}
-                            readOnly
-                          />
-                        </Holds>
-                        <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
-                          <Inputs
-                            type={"text"}
-                            value={hauledItem.Equipment?.name || ""}
-                            className="text-xs border-none h-full rounded-none justify-center text-center"
-                            onClick={() => openEquipmentModal(log.id, index)}
-                            disabled={!edit}
-                            readOnly
-                          />
-                        </Holds>
-                        <Holds className="col-start-3 col-end-4 h-full">
-                          <Inputs
-                            type={"text"}
-                            value={hauledItem.JobSite?.name || ""}
-                            className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
-                            onClick={() => openJobsiteModal(log.id, index)}
-                            disabled={!edit}
-                            readOnly
-                          />
-                        </Holds>
-                      </Grids>
-                    </Buttons>
-                  </Holds>
-                ))
+                      <Buttons
+                        shadow={"none"}
+                        background={"none"}
+                        className="w-full h-full text-left"
+                      >
+                        <Grids cols={"3"} className="w-full h-full">
+                          <Holds className="col-start-1 col-end-2">
+                            <Inputs
+                              type={"text"}
+                              value={log.Equipment?.name || ""}
+                              className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
+                              disabled={true}
+                              readOnly
+                            />
+                          </Holds>
+                          <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
+                            <Inputs
+                              type={"text"}
+                              value={
+                                log.EquipmentHauled?.[0]?.Equipment?.name || ""
+                              }
+                              className="text-xs border-none h-full rounded-none justify-center text-center"
+                              onClick={() =>
+                                openEquipmentModal(itemIdx, logIdx, 0)
+                              }
+                              disabled={!edit}
+                              readOnly
+                            />
+                          </Holds>
+                          <Holds className="col-start-3 col-end-4 h-full">
+                            <Inputs
+                              type={"text"}
+                              value={
+                                log.EquipmentHauled?.[0]?.JobSite?.name || ""
+                              }
+                              className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
+                              onClick={() =>
+                                openJobsiteModal(itemIdx, logIdx, 0)
+                              }
+                              disabled={!edit}
+                              readOnly
+                            />
+                          </Holds>
+                        </Grids>
+                      </Buttons>
+                    </Holds>
+                  );
+                })
               )}
             </>
           ) : (
@@ -331,15 +283,13 @@ export default function TimeCardTruckingHaulLogs({
               currentEditingLog
                 ? {
                     code:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.JobSite?.id || "",
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        .TruckingLogs[currentEditingLog.logIdx]
+                        .EquipmentHauled?.[0]?.JobSite?.id || "",
                     label:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.JobSite?.name || "",
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        .TruckingLogs[currentEditingLog.logIdx]
+                        .EquipmentHauled?.[0]?.JobSite?.name || "",
                   }
                 : undefined
             }
@@ -355,25 +305,57 @@ export default function TimeCardTruckingHaulLogs({
         handleClose={() => setEquipmentModalOpen(false)}
       >
         <Holds background={"white"} className="w-full h-full p-2">
-          <EquipmentSelector
-            onEquipmentSelect={handleEquipmentSelect}
-            initialValue={
-              currentEditingLog
-                ? {
-                    code:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.Equipment?.id || "",
-                    label:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.Equipment?.name || "",
-                  }
-                : undefined
-            }
-          />
+          <Grids rows={"8"} className="w-full h-full">
+            <Holds
+              position={"row"}
+              className={"row-start-1 row-end-8 h-full gap-1"}
+            >
+              <EquipmentSelector
+                onEquipmentSelect={setTempEquipment}
+                initialValue={
+                  tempEquipment ||
+                  (currentEditingLog
+                    ? {
+                        code:
+                          truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                            .TruckingLogs[currentEditingLog.logIdx].Equipment &&
+                          (
+                            truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                              .TruckingLogs[currentEditingLog.logIdx]
+                              .Equipment as {
+                              id?: string;
+                            }
+                          ).id
+                            ? (
+                                truckingEquipmentHaulLogs[
+                                  currentEditingLog.itemIdx
+                                ].TruckingLogs[currentEditingLog.logIdx]
+                                  .Equipment as { id?: string }
+                              ).id ?? ""
+                            : "",
+                        label:
+                          truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                            .TruckingLogs[currentEditingLog.logIdx].Equipment
+                            ?.name || "",
+                      }
+                    : undefined)
+                }
+              />
+            </Holds>
+            <Holds
+              position={"row"}
+              className={"row-start-8 row-end-9 h-full gap-1"}
+            >
+              <Buttons
+                background={"green"}
+                className="w-full mt-4"
+                onClick={handleConfirmEquipment}
+                disabled={!tempEquipment}
+              >
+                {t("Confirm")}
+              </Buttons>
+            </Holds>
+          </Grids>
         </Holds>
       </NModals>
     </Holds>

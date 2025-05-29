@@ -10,7 +10,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import CodeFinder from "@/components/(search)/newCodeFinder";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 type Option = {
   label: string;

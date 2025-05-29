@@ -93,15 +93,28 @@ interface TimeSheetRendererProps {
     | EquipmentLogsData
     | EmployeeEquipmentLogWithRefuel[]
     | null;
+  setData?: (
+    data:
+      | TimesheetHighlights[]
+      | TruckingMileageData
+      | TruckingEquipmentHaulLogData
+      | TruckingMaterialHaulLogData
+      | TruckingRefuelLogData
+      | TruckingStateLogData
+      | TascoHaulLogData
+      | TascoRefuelLogData
+      | EquipmentLogsData
+      | EmployeeEquipmentLogWithRefuel[]
+  ) => void;
   edit: boolean;
   manager: string;
   onDataChange:
     | ((data: TimesheetHighlights[]) => void)
     | ((data: import("@/lib/types").TruckingMileageUpdate[]) => void)
-    | ((data: import("@/lib/types").TruckingEquipmentHaulLog[]) => void)
-    | ((data: ProcessedMaterialLog[]) => void)
-    | ((data: ExtendedTruckingRefuel[]) => void)
-    | ((data: ProcessedStateMileage[]) => void)
+    | ((data: import("@/lib/types").TruckingEquipmentHaulLogData) => void)
+    | ((data: TruckingMaterialHaulLogData) => void)
+    | ((data: TruckingRefuelLogData) => void)
+    | ((data: TruckingStateLogData) => void)
     | ((data: ProcessedTascoHaulLog[]) => void)
     | ((data: FlattenedTascoRefuelLog[]) => void)
     | ((data: EquipmentLogUpdate[]) => void)
@@ -109,9 +122,18 @@ interface TimeSheetRendererProps {
   date: string;
 }
 
+const getTypedOnDataChange = <T,>(
+  handler: unknown
+): ((data: T) => void) | undefined => {
+  return typeof handler === "function"
+    ? (handler as (data: T) => void)
+    : undefined;
+};
+
 export default function TimeSheetRenderer({
   filter,
   data,
+  setData,
   edit,
   manager,
   onDataChange,
@@ -138,7 +160,9 @@ export default function TimeSheetRenderer({
             highlightTimesheet={data as TimesheetHighlights[]}
             edit={edit}
             manager={manager}
-            onDataChange={onDataChange as (data: TimesheetHighlights[]) => void}
+            onDataChange={
+              getTypedOnDataChange<TimesheetHighlights[]>(onDataChange)!
+            }
             date={date}
           />
         );
@@ -149,9 +173,7 @@ export default function TimeSheetRenderer({
             edit={edit}
             manager={manager}
             onDataChange={
-              onDataChange as (
-                data: import("@/lib/types").TruckingMileageUpdate[]
-              ) => void
+              getTypedOnDataChange<TruckingMileageData>(onDataChange)!
             }
           />
         );
@@ -162,9 +184,7 @@ export default function TimeSheetRenderer({
             edit={edit}
             manager={manager}
             onDataChange={
-              onDataChange as (
-                data: import("@/lib/types").TruckingEquipmentHaulLog[]
-              ) => void
+              getTypedOnDataChange<TruckingEquipmentHaulLogData>(onDataChange)!
             }
           />
         );
@@ -175,7 +195,7 @@ export default function TimeSheetRenderer({
             edit={edit}
             manager={manager}
             onDataChange={
-              onDataChange as (data: ProcessedMaterialLog[]) => void
+              getTypedOnDataChange<TruckingMaterialHaulLogData>(onDataChange)!
             }
           />
         );
@@ -186,7 +206,7 @@ export default function TimeSheetRenderer({
             edit={edit}
             manager={manager}
             onDataChange={
-              onDataChange as (data: ExtendedTruckingRefuel[]) => void
+              getTypedOnDataChange<TruckingRefuelLogData>(onDataChange)!
             }
           />
         );
@@ -197,21 +217,20 @@ export default function TimeSheetRenderer({
             edit={edit}
             manager={manager}
             onDataChange={
-              onDataChange as (data: ProcessedStateMileage[]) => void
+              getTypedOnDataChange<TruckingStateLogData>(onDataChange)!
             }
           />
         );
-      case "tascoHaulLogs":
+      case "tascoHaulLogs": {
         return (
           <TimeCardTascoHaulLogs
-            tascoHaulLogs={data as TascoHaulLogData}
             edit={edit}
             manager={manager}
-            onDataChange={
-              onDataChange as (data: ProcessedTascoHaulLog[]) => void
-            }
+            tascoHaulLogs={data as TascoHaulLogData}
+            onDataChange={getTypedOnDataChange<TascoHaulLogData>(onDataChange)!}
           />
         );
+      }
       case "tascoRefuelLogs":
         return (
           <TimeCardTascoRefuelLogs
@@ -219,7 +238,7 @@ export default function TimeSheetRenderer({
             edit={edit}
             manager={manager}
             onDataChange={
-              onDataChange as (data: FlattenedTascoRefuelLog[]) => void
+              getTypedOnDataChange<TascoRefuelLogData>(onDataChange)!
             }
           />
         );
@@ -229,7 +248,9 @@ export default function TimeSheetRenderer({
             equipmentLogs={data as EquipmentLogsData}
             edit={edit}
             manager={manager}
-            onDataChange={onDataChange as (data: EquipmentLogUpdate[]) => void}
+            onDataChange={
+              getTypedOnDataChange<EquipmentLogUpdate[]>(onDataChange)!
+            }
           />
         );
       case "equipmentRefuelLogs":
@@ -238,7 +259,9 @@ export default function TimeSheetRenderer({
             equipmentRefuelLogs={data as EmployeeEquipmentLogWithRefuel[]}
             edit={edit}
             manager={manager}
-            onDataChange={onDataChange as (data: EquipmentRefuelLog[]) => void}
+            onDataChange={
+              getTypedOnDataChange<EquipmentRefuelLog[]>(onDataChange)!
+            }
           />
         );
       default:
