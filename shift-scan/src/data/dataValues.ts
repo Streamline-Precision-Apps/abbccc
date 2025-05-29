@@ -1750,11 +1750,13 @@ export const initialCreationLogs: Prisma.CreationLogsCreateInput[] = [
     User: { connect: { id: "1" } },
     comment: "Created equipment eq1",
     createdByOffice: false,
+    updatedAt: new Date(),
   },
   {
     Jobsite: { connect: { id: "1" } },
     User: { connect: { id: "1" } },
     comment: "Created jobsite 1",
     createdByOffice: false,
+    updatedAt: new Date(),
   },
 ];
