@@ -7,12 +7,14 @@ import {
 } from "react";
 import { useSession } from "next-auth/react";
 import { Jobsite } from "../../../types";
+import { updateJobsite, createJobsiteFromObject } from "@/actions/AssetActions";
 
 export interface UseJobsiteFormProps {
   selectJobsite: Jobsite | null;
   setSelectJobsite: React.Dispatch<React.SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
   setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+  refreshJobsites?: () => Promise<void>;
 }
 
 export interface UseJobsiteFormReturn {
@@ -40,6 +42,7 @@ export const useJobsiteForm = ({
   setSelectJobsite,
   onUnsavedChangesChange,
   setIsRegistrationFormOpen,
+  refreshJobsites,
 }: UseJobsiteFormProps): UseJobsiteFormReturn => {
   const [formData, setFormData] = useState<Jobsite | null>(null);
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -108,28 +111,45 @@ export const useJobsiteForm = ({
       formDataToSend.append("city", formData.city || "");
       formDataToSend.append("state", formData.state || "");
       formDataToSend.append("zipCode", formData.zipCode || "");
-      formDataToSend.append("country", formData.country || "");
+      formDataToSend.append("country", formData.country || "US");
+      formDataToSend.append("comment", formData.comment || "");
       formDataToSend.append("isActive", formData.isActive.toString());
+      formDataToSend.append("client", formData.Client || "");
 
-      // TODO: Replace with actual jobsite update action when available
-      // const result = await updateJobsiteAsset(formDataToSend);
+      // Call the actual update jobsite server action
+      const result = await updateJobsite(formDataToSend);
 
-      console.log("Jobsite form data to save:", formDataToSend);
+      if (result.success && result.data) {
+        // Update the selected jobsite with the returned data
+        // Type assertion is safe here since we know the structure matches
+        setSelectJobsite(result.data as unknown as Jobsite);
+        setChangedFields(new Set());
+        setHasUnsavedChanges(false);
+        setSuccessfullyUpdated(true);
 
-      // Simulated success for now
-      setSelectJobsite(formData);
-      setChangedFields(new Set());
-      setHasUnsavedChanges(false);
-      setSuccessfullyUpdated(true);
+        // Refresh the jobsite list to show updated data
+        if (refreshJobsites) {
+          await refreshJobsites();
+        }
 
-      // Reset success state after 3 seconds
-      setTimeout(() => setSuccessfullyUpdated(false), 3000);
+        // Reset success state after 3 seconds
+        setTimeout(() => setSuccessfullyUpdated(false), 3000);
+      } else {
+        throw new Error(result.error || "Failed to update jobsite");
+      }
     } catch (error) {
       console.error("Error saving jobsite:", error);
+      // TODO: Add toast notification for error
     } finally {
       setIsSaving(false);
     }
-  }, [formData, hasUnsavedChanges, isSaving, setSelectJobsite]);
+  }, [
+    formData,
+    hasUnsavedChanges,
+    isSaving,
+    setSelectJobsite,
+    refreshJobsites,
+  ]);
 
   /**
    * Discard all changes and reset to original data
@@ -169,20 +189,46 @@ export const useJobsiteForm = ({
   const handleNewJobsiteSubmit = useCallback(
     async (newJobsite: any) => {
       try {
-        // TODO: Replace with actual jobsite registration action when available
-        // const result = await registerJobsite(newJobsite);
+        // Validate required fields
+        if (!newJobsite.name?.trim()) {
+          throw new Error("Jobsite name is required");
+        }
 
-        console.log("New jobsite to register:", newJobsite);
+        if (!newJobsite.description?.trim()) {
+          throw new Error("Jobsite description is required");
+        }
 
-        // Simulated success for now
-        setIsRegistrationFormOpen(false);
+        // Call the actual create jobsite server action
+        const result = await createJobsiteFromObject({
+          name: newJobsite.name,
+          description: newJobsite.description,
+          address: newJobsite.address || "",
+          city: newJobsite.city || "",
+          state: newJobsite.state || "",
+          zipCode: newJobsite.zipCode || "",
+          country: newJobsite.country || "US",
+          comment: newJobsite.comment || "",
+          isActive: newJobsite.isActive ?? true,
+          client: newJobsite.client || "",
+        });
 
-        // TODO: Refresh jobsite list after registration
+        if (result.success) {
+          console.log("Jobsite created successfully:", result.data);
+          setIsRegistrationFormOpen(false);
+
+          // Refresh jobsite list after registration
+          if (refreshJobsites) {
+            await refreshJobsites();
+          }
+        } else {
+          throw new Error(result.error || "Failed to create jobsite");
+        }
       } catch (error) {
         console.error("Error registering new jobsite:", error);
+        // TODO: Add toast notification for error
       }
     },
-    [setIsRegistrationFormOpen]
+    [setIsRegistrationFormOpen, refreshJobsites]
   );
 
   return {

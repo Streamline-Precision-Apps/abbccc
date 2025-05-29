@@ -17,6 +17,7 @@ interface UseEquipmentFormProps {
   setSelectEquipment: React.Dispatch<React.SetStateAction<Equipment | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
   setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+  refreshEquipments?: () => Promise<void>;
 }
 
 interface UseEquipmentFormReturn {
@@ -43,6 +44,8 @@ export const useEquipmentForm = ({
   selectEquipment,
   setSelectEquipment,
   onUnsavedChangesChange,
+  setIsRegistrationFormOpen,
+  refreshEquipments,
 }: UseEquipmentFormProps): UseEquipmentFormReturn => {
   const [formData, setFormData] = useState<Equipment | null>(null);
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -189,6 +192,12 @@ export const useEquipmentForm = ({
       }
 
       setSuccessfullyUpdated(true);
+
+      // Refresh the equipment list to show updated data
+      if (refreshEquipments) {
+        await refreshEquipments();
+      }
+
       setTimeout(() => setSuccessfullyUpdated(false), 3000);
     } catch (error) {
       console.error("Error saving equipment:", error);
@@ -198,7 +207,13 @@ export const useEquipmentForm = ({
     } finally {
       setIsSaving(false);
     }
-  }, [formData, hasUnsavedChanges, isSaving, setSelectEquipment]);
+  }, [
+    formData,
+    hasUnsavedChanges,
+    isSaving,
+    setSelectEquipment,
+    refreshEquipments,
+  ]);
 
   /**
    * Discard all changes and revert to original data
@@ -294,6 +309,12 @@ export const useEquipmentForm = ({
               (result.data as any).equipmentVehicleInfo || undefined,
           };
           setSelectEquipment(equipmentToSelect);
+          setIsRegistrationFormOpen(false);
+
+          // Refresh equipment list after registration
+          if (refreshEquipments) {
+            await refreshEquipments();
+          }
 
           setSuccessfullyUpdated(true);
           setTimeout(() => setSuccessfullyUpdated(false), 3000);
@@ -308,7 +329,7 @@ export const useEquipmentForm = ({
         setIsSaving(false);
       }
     },
-    [session, setSelectEquipment]
+    [session, setSelectEquipment, setIsRegistrationFormOpen, refreshEquipments]
   );
 
   return {
