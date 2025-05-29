@@ -31,7 +31,7 @@ model CreationLogs {
   comment         String?
   createdByOffice Boolean    @default(false)
   createdAt       DateTime   @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime   @updatedAt
   User            User?      @relation(fields: [createdById], references: [id])
   Equipment       Equipment? @relation(fields: [equipmentId], references: [id])
   Jobsite         Jobsite?   @relation(fields: [jobsiteId], references: [id])
