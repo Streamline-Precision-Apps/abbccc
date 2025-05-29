@@ -36,13 +36,17 @@ async function main() {
   console.log("Seeding...");
 
   try {
-    // 1. Insert Companies
+    // 1. Upsert Companies
     for (const company of initialCompany) {
       try {
-        const newCompany = await prisma.company.create({ data: company });
-        console.log("Created company with id:", newCompany.id);
+        const upsertedCompany = await prisma.company.upsert({
+          where: { id: company.id },
+          update: company,
+          create: company,
+        });
+        console.log('Upserted company with id:', upsertedCompany.id);
       } catch (error) {
-        console.log("Error creating company:", error);
+        console.log('Error upserting company:', error);
         continue;
       }
     }
@@ -51,42 +55,44 @@ async function main() {
     for (const formTemplate of initialFormTemplates) {
       try {
         const newTemplate = await prisma.formTemplate.create({ data: formTemplate });
-        console.log("Created form template with id:", newTemplate.id);
+        console.log('Created form template with id:', newTemplate.id);
       } catch (error) {
-        console.log("Error creating form template:", error);
+        console.log('Error creating form template:', error);
         continue;
       }
     }
 
-    // 3. Insert Users
+    // 3. Upsert Users
     for (const user of initialUsers) {
       try {
-        const newUser = await prisma.user.create({ data: user });
-        console.log("Created user with id:", newUser.id);
+        const upsertedUser = await prisma.user.upsert({
+          where: { id: user.id },
+          update: user,
+          create: user,
+        });
+        console.log('Upserted user with id:', upsertedUser.id);
       } catch (error) {
-        console.log("Error creating user:", error);
+        console.log('Error upserting user:', error);
         continue;
       }
     }
 
-    // 3.5. Insert Contacts
+    // 3.5. Upsert Contacts
     for (const contact of initialContacts) {
-      try {
-        const newContact = await prisma.contacts.create({ data: contact });
-        console.log("Created contact with id:", newContact.id);
-      } catch (error) {
-        console.log("Error creating contact:", error);
+      const userId = contact.User?.connect?.id;
+      if (!userId) {
+        console.log('Skipping contact: missing userId');
         continue;
       }
-    }
-
-
-    for (const user of initialUsers) {
       try {
-        const newUser = await prisma.user.create({ data: user });
-        console.log("Created user with id:", newUser.id);
+        const upsertedContact = await prisma.contacts.upsert({
+          where: { userId },
+          update: contact,
+          create: contact,
+        });
+        console.log('Upserted contact for user id:', userId);
       } catch (error) {
-        console.log("Error creating user:", error);
+        console.log('Error upserting contact:', error);
         continue;
       }
     }
