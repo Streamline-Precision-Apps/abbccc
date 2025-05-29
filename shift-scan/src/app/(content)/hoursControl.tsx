@@ -19,13 +19,20 @@ function isPlaceholderData(
 }
 
 // ----------------------------------------
+// Custom interface for scroll container to store scroll timeout
+// ----------------------------------------
+interface ScrollTimeoutDiv extends HTMLDivElement {
+  _scrollTimeout?: ReturnType<typeof setTimeout>;
+}
+
+// ----------------------------------------
 // Main Component: Controls the hourly scrollable view with navigation and center focus behavior
 // ----------------------------------------
 export default function ControlComponent({ toggle }: { toggle: (toggle: boolean) => void }) {
   const [currentIndex, setCurrentIndex] = useState(1); // tracks which panel is currently centered
   const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(null); // caching calculated hours
   const calculateDailyHours = useCalculateDailyHours(); // hook to calculate work hours per day
-  const containerRef = useRef<HTMLDivElement>(null); // ref to the scrolling container
+  const containerRef = useRef<ScrollTimeoutDiv>(null); // ref to the scrolling container
   const wasProgrammaticScroll = useRef(false); // flag to distinguish between user and programmatic scroll
 
   // ----------------------------------------
@@ -165,8 +172,8 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
           style={{ overscrollBehaviorX: "contain" }}
           onScroll={() => {
             if (containerRef.current) {
-              clearTimeout((containerRef.current as any)._scrollTimeout);
-              (containerRef.current as any)._scrollTimeout = setTimeout(onScrollEnd, 100);
+              clearTimeout(containerRef.current._scrollTimeout);
+              containerRef.current._scrollTimeout = setTimeout(onScrollEnd, 100);
             }
           }}
         >

@@ -9,6 +9,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import Capitalize from "@/utils/captitalize";
 import CapitalizeAll from "@/utils/capitalizeAll";
 import { Titles } from "@/components/(reusable)/titles";
+import { motion, AnimatePresence } from "framer-motion";
 
 type ViewComponentProps = {
   scrollLeft: () => void;
@@ -67,12 +68,23 @@ export default function ViewComponent({
         size={"80"}
         className="h-full mx-2 justify-center rounded-[10px]"
       >
-        <Titles size={"h3"} className="">
-          {zonedCurrentDate.toDateString() === todayZoned.toDateString()
-            ? `${t("DA-Today")}, ${Capitalize(Weekday)}`
-            : Capitalize(Weekday)}
-        </Titles>
-        <Texts size={"p5"}>{CapitalizeAll(dateToday)}</Texts>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={currentDate}
+            initial={{ x: 40, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -40, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="w-full"
+          >
+            <Titles size={"h3"} className="">
+              {zonedCurrentDate.toDateString() === todayZoned.toDateString()
+                ? `${t("DA-Today")}, ${Capitalize(Weekday)}`
+                : Capitalize(Weekday)}
+            </Titles>
+            <Texts size={"p5"}>{CapitalizeAll(dateToday)}</Texts>
+          </motion.div>
+        </AnimatePresence>
       </Holds>
 
       <Buttons onClick={scrollRight} className="shadow-none w-[60px]">
