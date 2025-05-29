@@ -15,6 +15,7 @@ interface JobsiteMainContentProps {
   setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange: (hasChanges: boolean) => void;
+  refreshJobsites: () => Promise<void>;
 }
 
 const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
@@ -24,12 +25,14 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   setIsRegistrationFormOpen,
   setSelectJobsite,
   onUnsavedChangesChange,
+  refreshJobsites,
 }) => {
   const jobsiteFormHook = useJobsiteForm({
     selectJobsite,
     setSelectJobsite,
     onUnsavedChangesChange,
     setIsRegistrationFormOpen,
+    refreshJobsites,
   });
 
   return (

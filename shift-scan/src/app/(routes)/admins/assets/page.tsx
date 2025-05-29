@@ -57,35 +57,37 @@ export default function Assets() {
     setPendingAssetChange(null);
   };
 
+  // Equipment fetch function extracted for reuse
+  const fetchEquipments = async () => {
+    try {
+      const equipmentsData = await fetch("/api/getAllEquipment?filter=all", {
+        next: { tags: ["equipment"] },
+      }).then((res) => res.json());
+
+      setEquipments(equipmentsData);
+    } catch (error) {
+      console.error(`Failed to fetch equipment data:`, error);
+    }
+  };
+
   useEffect(() => {
-    const fetchEquipments = async () => {
-      try {
-        const equipmentsData = await fetch(
-          "/api/getAllEquipment?filter=all" // Corrected path
-        ).then((res) => res.json());
-
-        setEquipments(equipmentsData);
-      } catch (error) {
-        console.error(`Failed to fetch equipment data:`, error);
-      }
-    };
-
     fetchEquipments();
   }, []);
 
+  // Jobsite fetch function extracted for reuse
+  const fetchJobsites = async () => {
+    try {
+      const jobsiteData = await fetch("/api/getAllJobsites?filter=all", {
+        next: { tags: ["jobsites"] },
+      }).then((res) => res.json());
+
+      setJobsites(jobsiteData);
+    } catch (error) {
+      console.error(`Failed to fetch jobsite data:`, error);
+    }
+  };
+
   useEffect(() => {
-    const fetchJobsites = async () => {
-      try {
-        const jobsiteData = await fetch(
-          "/api/getAllJobsites?filter=all" // Corrected path
-        ).then((res) => res.json());
-
-        setJobsites(jobsiteData);
-      } catch (error) {
-        console.error(`Failed to fetch jobsite data:`, error);
-      }
-    };
-
     fetchJobsites();
   }, []);
 
@@ -147,6 +149,7 @@ export default function Assets() {
               setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectEquipment={setSelectEquipment}
               onUnsavedChangesChange={setHasUnsavedChanges}
+              refreshEquipments={fetchEquipments}
             />
           ) : assets === "Jobsite" ? (
             <JobsiteMainContent
@@ -156,6 +159,7 @@ export default function Assets() {
               setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectJobsite={setSelectJobsite}
               onUnsavedChangesChange={setHasUnsavedChanges}
+              refreshJobsites={fetchJobsites}
             />
           ) : assets === "CostCode" ? (
             <></>

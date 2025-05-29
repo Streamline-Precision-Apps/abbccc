@@ -182,7 +182,6 @@ export default function JobsiteBasicFields({
               <EditableFields
                 formDatatype="select"
                 name="status"
-                disable={true}
                 value={formData.isActive ? "active" : "inactive"}
                 onChange={(e) =>
                   onInputChange("isActive", e.target.value === "active")

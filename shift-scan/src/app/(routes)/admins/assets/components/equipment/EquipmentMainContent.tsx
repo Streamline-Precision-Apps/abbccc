@@ -23,6 +23,8 @@ interface EquipmentMainContentProps {
   setSelectEquipment: React.Dispatch<React.SetStateAction<Equipment | null>>;
   /** Callback when unsaved changes state changes */
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
+  /** Function to refresh equipment list */
+  refreshEquipments?: () => Promise<void>;
 }
 
 /**
@@ -42,6 +44,7 @@ export default function EquipmentMainContent({
   setIsRegistrationFormOpen,
   setSelectEquipment,
   onUnsavedChangesChange,
+  refreshEquipments,
 }: EquipmentMainContentProps) {
   const {
     formData,
@@ -59,6 +62,7 @@ export default function EquipmentMainContent({
     setSelectEquipment,
     setIsRegistrationFormOpen,
     onUnsavedChangesChange,
+    refreshEquipments,
   });
 
   // Handle opening registration form
