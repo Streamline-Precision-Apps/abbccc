@@ -152,6 +152,7 @@ export async function createEquipment(formData: FormData) {
                 createdById,
                 comment,
                 jobsiteId,
+                updatedAt: new Date(),
               },
             },
           },
@@ -183,6 +184,7 @@ export async function createEquipment(formData: FormData) {
                 createdById,
                 comment,
                 jobsiteId,
+                updatedAt: new Date(),
               },
             },
           },
@@ -243,7 +245,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       // 1. Check if related records exist
       const [employee, equipment, jobsite] = await Promise.all([
         tx.user.findUnique({ where: { id: employeeId } }),
-        tx.equipment.findUnique({ where: { id: equipmentQRId } }),
+        tx.equipment.findUnique({ where: { qrId: equipmentQRId } }),
         tx.jobsite.findUnique({ where: { qrId: jobsiteId } }),
       ]);
 

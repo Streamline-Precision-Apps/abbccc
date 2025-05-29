@@ -379,6 +379,7 @@
       "Truck": "Truck",
       "HauledEQ": "Hauled EQ",
       "JobSite": "Job Site",
+      "Confirm": "Confirm",
       "NoHaulLogsAvailable": "No Haul Logs Available"
     },
     "TimeCardTruckingMaterialLogs": {
@@ -427,8 +428,7 @@
     "TimeCardEquipmentRefuelLogs": {
       "EquipmentID": "Equipment ID",
       "GallonsRefueled": "Gallons Refueled",
-      "NoEquipmentRefuelLogsAvailable": "No Equipment Refuel Logs Available"
-    },
+      "NoEquipmentRefuelLogsAvailable": "No Equipment Refuel Logs Available"    },
     "Edit": "Edit",
     "Delete": "Delete",
     "NoEquipmentLogs": "No logs found for the day selected.",

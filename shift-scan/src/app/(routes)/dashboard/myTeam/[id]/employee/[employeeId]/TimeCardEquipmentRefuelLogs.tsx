@@ -31,7 +31,7 @@ export default function TimeCardEquipmentRefuelLogs({
   equipmentRefuelLogs,
   onDataChange,
 }: TimeCardEquipmentRefuelLogsProps) {
-  const t = useTranslations("MyTeam.TimeCardEquipmentLogs");
+  const t = useTranslations("MyTeam.TimeCardEquipmentRefuelLogs");
   // Flatten the logs to pair each RefuelLog with its Equipment
   const flattenRefuelLogs = useCallback(
     (logs: EmployeeEquipmentLogWithRefuel[]): EquipmentRefuelLog[] => {
@@ -69,6 +69,30 @@ export default function TimeCardEquipmentRefuelLogs({
     }
   }, [equipmentRefuelLogs, flattenRefuelLogs]);
 
+  useEffect(() => {
+    // Flatten the logs to pair each RefuelLog with its Equipment
+    // If you use local state, sync it here
+    // setEditedEquipmentRefuelLogs(equipmentRefuelLogs ?? []);
+  }, [equipmentRefuelLogs]);
+
+  // Helper to reconstruct the nested structure with updated gallons
+  const reconstructEquipmentRefuelLogs = (
+    original: EmployeeEquipmentLogWithRefuel[],
+    updated: EquipmentRefuelLog[]
+  ): EmployeeEquipmentLogWithRefuel[] => {
+    return original.map((log) => ({
+      ...log,
+      RefuelLogs: log.RefuelLogs.map((refuel) => {
+        const found = updated.find(
+          (u) => u.id === refuel.id && u.employeeEquipmentLogId === log.id
+        );
+        return found && typeof found.gallonsRefueled === "number" && found.gallonsRefueled !== null
+          ? { ...refuel, gallonsRefueled: found.gallonsRefueled }
+          : refuel;
+      }),
+    }));
+  };
+
   const handleRefuelChange = useCallback(
     (id: string, employeeEquipmentLogId: string, value: string) => {
       const updatedLogs = flattenedLogs.map((log) => {
@@ -86,9 +110,16 @@ export default function TimeCardEquipmentRefuelLogs({
 
       setChangesWereMade(true);
       setFlattenedLogs(updatedLogs);
-      onDataChange(updatedLogs);
+      // Reconstruct the nested structure and send to parent
+      if (equipmentRefuelLogs) {
+        const updatedNested = reconstructEquipmentRefuelLogs(
+          equipmentRefuelLogs,
+          updatedLogs
+        );
+        onDataChange(updatedNested as any); // Cast if needed for prop type
+      }
     },
-    [flattenedLogs, onDataChange]
+    [flattenedLogs, onDataChange, equipmentRefuelLogs]
   );
 
   const isEmptyData = flattenedLogs.length === 0;

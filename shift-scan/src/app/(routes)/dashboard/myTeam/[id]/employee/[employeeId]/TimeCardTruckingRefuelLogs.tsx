@@ -10,8 +10,8 @@ import {
   TruckingRefuelLog,
   TruckingRefuelLogData,
 } from "@/lib/types";
-import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 
 // Define a type that extends TruckingRefuel with our additional properties
 type ExtendedTruckingRefuel = TruckingRefuel & {
@@ -23,7 +23,7 @@ type TimeCardTruckingRefuelLogsProps = {
   edit: boolean;
   manager: string;
   truckingRefuelLogs: TruckingRefuelLogData;
-  onDataChange: (data: ExtendedTruckingRefuel[]) => void;
+  onDataChange: (data: TruckingRefuelLogData) => void;
 };
 
 export default function TimeCardTruckingRefuelLogs({
@@ -43,7 +43,7 @@ export default function TimeCardTruckingRefuelLogs({
     .flatMap((log) =>
       log.RefuelLogs.map((refuel) => ({
         ...refuel,
-        truckName: log.Equipment?.name || "Unknown",
+        truckName: log.Equipment?.name || t("NoEquipmentFound"),
         truckingLogId: log.id,
       }))
     );
@@ -58,34 +58,34 @@ export default function TimeCardTruckingRefuelLogs({
     setChangesWereMade(false);
   }, [truckingRefuelLogs]);
 
-  const handleRefuelChange = useCallback(
-    (
-      id: string,
-      truckingLogId: string,
-      field: keyof ExtendedTruckingRefuel,
-      value: string | number | null
-    ) => {
-      const updatedLogs = editedRefuelLogs.map((log) => {
-        if (log.id === id && log.truckingLogId === truckingLogId) {
-          return {
-            ...log,
-            [field]:
-              field === "gallonsRefueled" || field === "milesAtFueling"
-                ? value
-                  ? Number(value)
-                  : null
-                : value,
-          };
-        }
-        return log;
-      });
+  // Fix: Use the flat array for UI state, but update the nested structure for parent
+  const handleRefuelChange = (
+    truckingLogId: string,
+    refuelId: string,
+    field: string,
+    value: any
+  ) => {
+    // Update the flat UI state
+    setEditedRefuelLogs((prev) =>
+      prev.map((rl) => (rl.id === refuelId ? { ...rl, [field]: value } : rl))
+    );
+    setChangesWereMade(true);
 
-      setChangesWereMade(true);
-      setEditedRefuelLogs(updatedLogs);
-      onDataChange(updatedLogs);
-    },
-    [editedRefuelLogs, onDataChange]
-  );
+    // Update the nested structure for parent
+    const updated = truckingRefuelLogs.map((item) => ({
+      ...item,
+      TruckingLogs: item.TruckingLogs.map((log) => {
+        if (!log || log.id !== truckingLogId) return log;
+        return {
+          ...log,
+          RefuelLogs: log.RefuelLogs.map((refuel) =>
+            refuel.id === refuelId ? { ...refuel, [field]: value } : refuel
+          ),
+        };
+      }),
+    }));
+    onDataChange(updated);
+  };
 
   const isEmptyData = allTruckingLogs.length === 0;
 
@@ -140,8 +140,8 @@ export default function TimeCardTruckingRefuelLogs({
                           value={rl.gallonsRefueled?.toString() || ""}
                           onChange={(e) =>
                             handleRefuelChange(
-                              rl.id,
                               rl.truckingLogId,
+                              rl.id,
                               "gallonsRefueled",
                               e.target.value
                             )
@@ -156,8 +156,8 @@ export default function TimeCardTruckingRefuelLogs({
                           value={rl.milesAtFueling?.toString() || ""}
                           onChange={(e) =>
                             handleRefuelChange(
-                              rl.id,
                               rl.truckingLogId,
+                              rl.id,
                               "milesAtFueling",
                               e.target.value
                             )
