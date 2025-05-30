@@ -27,6 +27,7 @@ import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Texts } from "../(reusable)/texts";
 
 type Options = {
+  id: string;
   label: string;
   code: string;
 };
@@ -92,7 +93,7 @@ export default function VerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
