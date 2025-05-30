@@ -295,59 +295,6 @@ export default function NewClockProcess({
     return router.push(returnpath);
   };
 
-  // /* ================  Equipment Clock process */
-  // if (type === "equipment") {
-  //   return (
-  //     <>
-  //       {step === 0 && (
-  //         <>
-  //           <ClockLoadingPage handleReturnPath={handleReturnPath} />
-  //         </>
-  //       )}
-  //       {step === 1 && (
-  //         <>
-  //           <EquipmentQRStep
-  //             option="equipment"
-  //             type="equipment"
-  //             handleAlternativePath={handleAlternativePathEQ}
-  //             handleNextStep={handleNextStep}
-  //             handlePrevStep={handlePrevStep}
-  //             url="/dashboard/equipment"
-  //             handleReturnPath={handleReturnPath}
-  //             clockInRole={""}
-  //             setClockInRole={() => {}}
-  //             setScanned={setScanned}
-  //             setClockInRoleTypes={setClockInRoleTypes}
-  //             clockInRoleTypes={clockInRoleTypes}
-  //             setJobsite={setJobsite}
-  //           />
-  //         </>
-  //       )}
-
-  //       {step === 2 && (
-  //         <VerificationEQStep
-  //           handleNextStep={handleNextStep}
-  //           handlePrevStep={handlePrevStep}
-  //           handleScannedPrevStep={handleScannedPrevStep}
-  //           scanned={scanned}
-  //         />
-  //       )}
-  //       {step === 3 && (
-  //         <>
-  //           <Titles size={"h1"} className="bg-red-500">
-  //             {t("Confirmation-eq-message-1")}
-  //           </Titles>
-  //           <Titles size={"h4"}>{t("Confirmation-eq-message-2")}</Titles>
-
-  //           {/* In Order for bug to be overcome, the refresh must occur otherwise the unmounted qr code wont work*
-  //               best solution for now is this because at least it does it behind the modal*/}
-  //         </>
-  //       )}
-  //     </>
-  //   );
-  // }
-
-  // /* ================= Clock In Process method */
   return (
     <>
       {step === 0 && (
