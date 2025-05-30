@@ -165,7 +165,7 @@ export async function createJobsite(formData: FormData) {
     console.log("Creating jobsite...");
     console.log(formData);
 
-    await prisma.jobsite.create({
+    const newJobsite = await prisma.jobsite.create({
       data: {
         name: formData.get("name") as string,
         address: formData.get("address") as string,
@@ -178,6 +178,17 @@ export async function createJobsite(formData: FormData) {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        Client: { connect: { id: formData.get("clientId") as string } },
+      },
+    });
+    // Create PendingApproval for the new jobsite
+    await prisma.pendingApproval.create({
+      data: {
+        entityType: "JOBSITE",
+        jobsiteId: newJobsite.id,
+        createdById: formData.get("createdById") as string,
+        approvalStatus: "PENDING",
+        comment: (formData.get("jobsite_comment") as string) || null,
       },
     });
     console.log("Jobsite created successfully.");
@@ -225,5 +236,48 @@ export async function RemoveUserProfilePicture(userId: string) {
   } catch (error) {
     console.error("Error removing user profile picture:", error);
     throw new Error("Failed to remove profile picture");
+  }
+}
+
+// When archiving/reactivating personnel, use terminationDate
+export async function reactivatePersonnel(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+
+    // Update the user record, setting terminationDate to null
+    await prisma.user.update({
+      where: { id },
+      data: {
+        terminationDate: null,
+      },
+    });
+
+    revalidateTag("employees");
+    revalidatePath("/admins/personnel");
+    return true;
+  } catch (error) {
+    console.error("Error reactivating personnel:", error);
+    throw new Error("Failed to reactivate personnel");
+  }
+}
+
+export async function archivePersonnel(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+
+    // Update the user record, setting terminationDate to the current date
+    await prisma.user.update({
+      where: { id },
+      data: {
+        terminationDate: new Date().toISOString(),
+      },
+    });
+
+    revalidateTag("employees");
+    revalidatePath("/admins/personnel");
+    return true;
+  } catch (error) {
+    console.error("Error archiving personnel:", error);
+    throw new Error("Failed to archive personnel");
   }
 }

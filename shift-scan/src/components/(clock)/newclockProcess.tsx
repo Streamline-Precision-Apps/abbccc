@@ -15,7 +15,6 @@ import { useSession } from "next-auth/react";
 import QRMultiRoles from "./QRMultiRoles";
 import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
-import EquipmentQRStep from "./qr-equipment-handler";
 import StepButtons from "./step-buttons";
 import { Grids } from "../(reusable)/grids";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
@@ -43,6 +42,7 @@ type NewClockProcessProps = {
   switchLaborType?: string | undefined;
 };
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -73,21 +73,25 @@ export default function NewClockProcess({
 
   // Truck states
   const [truck, setTruck] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
   // Equipment state
   const [equipment, setEquipment] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
   // JobSite state
   const [jobsite, setJobsite] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
   // CostCode state
   const [cc, setCC] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
@@ -160,7 +164,6 @@ export default function NewClockProcess({
   const handleReturn = async () => {
     try {
       // setting the cookies below to fetch the prev TimeSheet
-
       const fetchRecentTimeSheetId = await fetch(
         "/api/getRecentTimecardReturn"
       ).then((res) => res.json());
@@ -173,10 +176,15 @@ export default function NewClockProcess({
       if (response) {
         // Set basic information from previous timesheet
         setJobsite({
+          id: response.Jobsite.id,
           label: response.Jobsite.name,
           code: response.Jobsite.qrId,
         });
-        setCC({ label: response.CostCode.name, code: response.CostCode.name });
+        setCC({
+          id: response.CostCode.id,
+          label: response.CostCode.name,
+          code: response.CostCode.name,
+        });
 
         // Determine the role from previous work type
         const prevWorkRole =
@@ -196,30 +204,26 @@ export default function NewClockProcess({
         if (response.TascoLogs && response.TascoLogs.length > 0) {
           const firstTascoLog = response.TascoLogs[0];
 
-          // Set labor type if exists
           if (firstTascoLog.laborType) {
             setClockInRoleTypes(firstTascoLog.laborType);
           }
           if (firstTascoLog.Equipment) {
             setEquipment({
+              id: firstTascoLog.Equipment.qrId, // Use qrId as id
               label: firstTascoLog.Equipment.name,
               code: firstTascoLog.Equipment.qrId,
             });
           }
 
-          // Set material type if exists
           if (firstTascoLog.materialType) {
             setMaterialType(firstTascoLog.materialType);
           }
 
-          // Set shift type if exists
           if (firstTascoLog.shiftType) {
             setShiftType(firstTascoLog.shiftType);
           }
 
-          // Combine all relevant types for role types
           const workTypes = response.TascoLogs.map((log) => log.laborType);
-
           setClockInRoleTypes(workTypes.toString());
         }
 
@@ -227,21 +231,18 @@ export default function NewClockProcess({
         if (response.TruckingLogs && response.TruckingLogs.length > 0) {
           const firstTruckLog = response.TruckingLogs[0];
 
-          // Set labor type if exists
           if (firstTruckLog.laborType) {
             setLaborType(firstTruckLog.laborType);
           }
 
-          // Set equipment (truck) if exists
           if (firstTruckLog.Equipment) {
-            setEquipment({
+            const equipment = {
+              id: firstTruckLog.Equipment.qrId, // Use qrId as id
               label: firstTruckLog.Equipment.name,
               code: firstTruckLog.Equipment.qrId,
-            });
-            setTruck({
-              label: firstTruckLog.Equipment.name,
-              code: firstTruckLog.Equipment.qrId,
-            });
+            };
+            setEquipment(equipment);
+            setTruck(equipment);
           }
 
           const workTypes = response.TruckingLogs.map(
@@ -250,21 +251,13 @@ export default function NewClockProcess({
           setClockInRoleTypes(workTypes.toString());
         }
 
-        // Navigate to the correct verification step based on role
+        // Make step navigation consistent
         switch (prevWorkRole) {
           case "general":
-            setStep(5); // General verification step
-
-            break;
           case "mechanic":
-            setStep(4); // Mechanic verification step
-
-            break;
           case "tasco":
-            setStep(5); // Tasco verification step
-            break;
           case "truck":
-            setStep(5); // Truck verification step
+            setStep(4); // All roles should start at step 4 for verification
             break;
           default:
             throw new Error("Unknown work type");
@@ -454,7 +447,7 @@ export default function NewClockProcess({
                         if (jobsite) {
                           setJobsite(jobsite); // Update the equipment state with the full Option object
                         } else {
-                          setJobsite({ code: "", label: "" }); // Reset if null
+                          setJobsite({ id: "", code: "", label: "" }); // Reset if null
                         }
                       }}
                       initialValue={jobsite}
@@ -509,7 +502,7 @@ export default function NewClockProcess({
                         if (costCode) {
                           setCC(costCode); // Update the equipment state with the full Option object
                         } else {
-                          setCC({ code: "", label: "" }); // Reset if null
+                          setCC({ id: "", code: "", label: "" }); // Reset if null
                         }
                       }}
                       initialValue={cc}
@@ -582,7 +575,7 @@ export default function NewClockProcess({
                         if (costCode) {
                           setCC(costCode); // Update the equipment state with the full Option object
                         } else {
-                          setCC({ code: "", label: "" }); // Reset if null
+                          setCC({ id: "", code: "", label: "" }); // Reset if null
                         }
                       }}
                       initialValue={cc}
@@ -658,7 +651,7 @@ export default function NewClockProcess({
                         if (costCode) {
                           setCC(costCode); // Update the equipment state with the full Option object
                         } else {
-                          setCC({ code: "", label: "" }); // Reset if null
+                          setCC({ id: "", code: "", label: "" }); // Reset if null
                         }
                       }}
                       initialValue={cc}

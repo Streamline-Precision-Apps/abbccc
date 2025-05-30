@@ -20,7 +20,7 @@ const EquipmentContext = createContext<EquipmentContextType>({
   equipmentListResults: [],
   setEquipmentListResults: () => {},
 });
-// schema should not pull everything because it will be too large
+// Updated to align with EmployeeEquipmentLog changes
 const EquipmentSchema = z.array(
   z.object({
     id: z.string(),
@@ -37,6 +37,18 @@ const EquipmentSchema = z.array(
     mileage: z.number().nullable().optional(),
     isActive: z.boolean(),
     inUse: z.boolean(),
+    employeeLogs: z
+      .array(
+        z.object({
+          employeeId: z.string(),
+          startTime: z.string().nullable(),
+          endTime: z.string().nullable(),
+          comment: z.string().optional(),
+          status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
+          workType: z.enum(["GENERAL", "MAINTENANCE", "REFUEL"]),
+        })
+      )
+      .optional(),
   })
 );
 

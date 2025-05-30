@@ -130,19 +130,24 @@ export type UserTraining = {
 };
 
 // moved to searchUser.ts
+/**
+ * User search result type for API responses.
+ * Dates are always returned as ISO strings or null.
+ */
 export type SearchUser = {
   id: string;
   firstName: string;
   lastName: string;
   username: string;
   permission: Permission;
-  DOB: string;
+  DOB: string | null;
   truckView: boolean;
   mechanicView: boolean;
   laborView: boolean;
   tascoView: boolean;
   image: string | null;
-  terminationDate: Date | null;
+  terminationDate: string | null;
+  accountSetup: boolean;
 };
 
 // moved to personnel.ts

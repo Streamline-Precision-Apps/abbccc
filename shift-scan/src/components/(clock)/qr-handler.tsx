@@ -12,6 +12,7 @@ import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };

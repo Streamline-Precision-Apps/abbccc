@@ -9,9 +9,23 @@ import { Selects } from "@/components/(reusable)/selects";
 import React, { useState } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
+import { Jobsite } from "@/app/(routes)/admins/assets/types/jobsite";
+
+interface JobsiteRegistrationFormData {
+  name: string;
+  clientId: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  description: string;
+  isActive: boolean;
+  approvalStatus: string;
+}
 
 interface JobsiteRegistrationViewProps {
-  onSubmit: (newJobsite: any) => void;
+  onSubmit: (newJobsite: JobsiteRegistrationFormData) => void;
   onCancel: () => void;
 }
 
@@ -25,7 +39,7 @@ export default function JobsiteRegistrationView({
 }: JobsiteRegistrationViewProps) {
   const [formData, setFormData] = useState({
     name: "",
-    client: "",
+    clientId: "",
     address: "",
     city: "",
     state: "",
@@ -33,6 +47,7 @@ export default function JobsiteRegistrationView({
     country: "US",
     description: "",
     isActive: true,
+    approvalStatus: "PENDING",
   });
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -104,15 +119,15 @@ export default function JobsiteRegistrationView({
                     required
                     className="text-sm mb-3"
                   />
-                  <label htmlFor="clientName" className="text-xs font-medium">
+                  <label htmlFor="clientId" className="text-xs font-medium">
                     Client
                   </label>
                   <Inputs
-                    name="clientName"
+                    name="clientId"
                     type="text"
-                    value={formData.client}
+                    value={formData.clientId}
                     onChange={(e) =>
-                      handleInputChange("client", e.target.value)
+                      handleInputChange("clientId", e.target.value)
                     }
                     required
                     className="text-sm mb-3"
@@ -201,21 +216,19 @@ export default function JobsiteRegistrationView({
                     required
                     className="text-sm mb-3"
                   />
-                  <label htmlFor="status" className="text-xs font-medium">
-                    Status
-                  </label>
-                  <Selects
-                    name="status"
-                    disabled={true}
-                    value={formData.isActive ? "active" : "inactive"}
-                    onChange={(e) =>
-                      handleInputChange("isActive", e.target.value === "active")
-                    }
-                    className="text-sm "
+                  <label
+                    htmlFor="approvalStatus"
+                    className="text-xs font-medium"
                   >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </Selects>
+                    Approval Status
+                  </label>
+                  <Inputs
+                    type="text"
+                    name="approvalStatus"
+                    value={formData.approvalStatus}
+                    readOnly
+                    className="mb-3 text-gray-500 bg-gray-100"
+                  />
                 </Holds>
               </Holds>
 
