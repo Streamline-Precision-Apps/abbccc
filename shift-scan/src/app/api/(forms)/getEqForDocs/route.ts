@@ -1,6 +1,9 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+// Mark route as dynamic to prevent static generation
+export const dynamic = "force-dynamic";
 
 /**
  * Fetch equipment list with their associated document tags
@@ -10,7 +13,7 @@ export async function GET() {
   try {
     const session = await auth();
     const userId = session?.user?.id;
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -18,7 +21,7 @@ export async function GET() {
     const equipment = await prisma.equipment.findMany({
       where: {
         isDisabledByAdmin: false,
-        approvalStatus: 'APPROVED',
+        approvalStatus: "APPROVED",
       },
       select: {
         id: true,
@@ -29,12 +32,12 @@ export async function GET() {
           select: {
             id: true,
             tagName: true,
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: "asc",
+      },
     });
 
     if (!equipment || equipment.length === 0) {
@@ -47,7 +50,10 @@ export async function GET() {
     return NextResponse.json(equipment);
   } catch (error) {
     console.error("Error fetching equipment:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to fetch document equipment";
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch document equipment";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
