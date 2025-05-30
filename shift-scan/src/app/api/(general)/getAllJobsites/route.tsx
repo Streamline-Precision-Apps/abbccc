@@ -20,6 +20,7 @@ export async function GET(req: Request) {
 
     const selectFields = {
       CCTags: true,
+      Client: true,
       id: true,
       qrId: true,
       isActive: true,
@@ -28,6 +29,7 @@ export async function GET(req: Request) {
       address: true,
       city: true,
       state: true,
+      zipCode: true,
       country: true,
       description: true,
       comment: true,

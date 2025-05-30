@@ -8,43 +8,23 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
 import { EquipmentStatus } from "@/lib/types";
-import { z } from "zod";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
 import { Titles } from "@/components/(reusable)/titles";
 import { useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
-
-const maintenanceSchema = z.object({
-  id: z.string().optional(),
-  equipmentIssue: z.string().nullable(),
-  additionalInfo: z.string().nullable(), // assuming this might be null
-});
-
-const EquipmentLogSchema = z.object({
-  id: z.string(),
-  equipmentId: z.string(),
-  employeeId: z.string(),
-  startTime: z.string(),
-  endTime: z.string(),
-  comment: z.string().optional(),
-  isFinished: z.boolean(),
-  equipment: z.object({
-    name: z.string(),
-    status: z.string().optional(),
-  }),
-  maintenanceId: maintenanceSchema.nullable(),
-  fullyOperational: z.boolean(),
-});
-
-type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
+import { useNotification } from "@/app/context/NotificationContext";
+import { EquipmentLog, MaintenanceFormData, Priority } from "../types";
+import { Title } from "../../../mechanic/_components/Title";
+import { EquipmentState } from "@prisma/client";
+import { form } from "@nextui-org/theme";
 
 interface MaintenanceLogEquipmentProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentStatus | null
+    value: string | number | boolean | EquipmentState | null
   ) => void;
   t: (key: string) => string;
   hasChanged: boolean | undefined;
@@ -56,13 +36,34 @@ export default function MaintenanceLogEquipment({
   formState,
   hasChanged,
 }: MaintenanceLogEquipmentProps) {
-  const [isOpened, setIsOpened] = useState(false);
+  const { setNotification } = useNotification();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (formState.maintenanceId?.id) {
+        await deleteMaintenanceInEquipment(formState.maintenanceId.id);
+        handleFieldChange("maintenanceId", null);
+        handleFieldChange("equipment.status", "AVAILABLE");
+        setNotification(t("MaintenanceRequestWithdrawn"), "success");
+      }
+    } catch (error) {
+      console.error("Error deleting maintenance request:", error);
+      setNotification(t("ErrorDeletingMaintenanceRequest"), "error");
+    }
+    setShowConfirmDialog(false);
+  };
+
+  const handleDeleteRequest = () => {
+    setShowConfirmDialog(true);
+  };
 
   return (
     <Holds className="w-full h-full py-5">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full w-full">
-          {formState.fullyOperational ? (
+          {formState.equipment.status === "AVAILABLE" &&
+          formState.fullyOperational ? (
             <Holds className="row-start-1 row-end-8 h-full">
               <Holds className="flex justify-center items-center h-full w-full">
                 <Titles size="h3">Equipment Marked as Fully Operational</Titles>
@@ -70,24 +71,35 @@ export default function MaintenanceLogEquipment({
             </Holds>
           ) : (
             <Holds className="row-start-1 row-end-8 h-full">
+              <Holds>
+                <Texts size="p6" text={"italic"} className="mb-2">
+                  {"To make a request please update the following fields:"}
+                </Texts>
+              </Holds>
               <Holds className="relative">
-                <Labels size="p6">Equipment Status *</Labels>
+                <Labels size="p6">
+                  Equipment Status <span className="text-red-500">*</span>
+                </Labels>
                 <Selects
                   value={formState.equipment.status}
                   onChange={(e) =>
                     handleFieldChange(
-                      "Equipment.status",
-                      e.target.value as EquipmentStatus
+                      "equipment.status",
+                      e.target.value as EquipmentState
                     )
                   }
+                  className="w-full text-base text-center"
                 >
-                  <option value={"OPERATIONAL"}>Operational</option>
-                  <option value={"NEEDS_REPAIR"}>Needs Repair</option>
-                  <option value={"NEEDS_MAINTENANCE"}>Needs Maintenance</option>
+                  <option value="AVAILABLE">Select a Status</option>
+                  <option value="MAINTENANCE">Maintenance Required</option>
+                  <option value="NEEDS_REPAIR">Needs Repair</option>
                 </Selects>
               </Holds>
+
               <Holds className="relative">
-                <Labels size="p6">Equipment Issue *</Labels>
+                <Labels size="p6">
+                  Equipment Issue <span className="text-red-500">*</span>
+                </Labels>
                 <TextAreas
                   maxLength={40}
                   placeholder="Describe the equipment issue..."
@@ -98,13 +110,16 @@ export default function MaintenanceLogEquipment({
                       e.target.value
                     )
                   }
+                  rows={4}
                   required
+                  className="w-full text-sm"
+                  style={{ resize: "none" }}
                 />
                 <Texts
                   size="p3"
                   className="text-gray-500 absolute bottom-4 right-2"
                 >
-                  {formState.maintenanceId?.equipmentIssue?.length}/40
+                  {formState.maintenanceId?.equipmentIssue?.length || 0}/40
                 </Texts>
               </Holds>
 
@@ -120,66 +135,73 @@ export default function MaintenanceLogEquipment({
                       e.target.value
                     )
                   }
+                  rows={4}
+                  required
+                  className="w-full text-sm"
+                  style={{ resize: "none" }}
                 />
                 <Texts
                   size="p3"
                   className="text-gray-500 absolute bottom-4 right-2"
                 >
-                  {formState.maintenanceId?.additionalInfo?.length}/40
+                  {formState.maintenanceId?.additionalInfo?.length || 0}/40
                 </Texts>
               </Holds>
 
-              {formState.isFinished && formState.maintenanceId?.id && (
-                <Buttons
-                  onClick={() => {
-                    if (formState.maintenanceId?.id) {
-                      setIsOpened(true);
-                    }
-                  }}
-                >
-                  Delete Maintenance Request
-                </Buttons>
-              )}
-              <NModals
-                isOpen={isOpened}
-                handleClose={() => setIsOpened(false)}
-                size={"medWW"}
-              >
-                <Holds background={"white"} className="w-full h-full">
-                  <Grids rows={"4"} gap={"5"} className="h-full w-full">
-                    <Holds className="row-start-1 row-end-4">
-                      <Texts>
-                        Are you sure you want to delete this maintenance
-                        request?
-                      </Texts>
+              <Holds className="relative">
+                {formState.maintenanceId?.id && (
+                  <Buttons
+                    background="red"
+                    onClick={handleDeleteRequest}
+                    className="mt-4 py-2"
+                  >
+                    <Holds className="flex  items-center justify-center">
+                      <Titles size="h6">{"Withdraw  Request"}</Titles>
                     </Holds>
-                    <Holds
-                      position={"row"}
-                      className="row-start-4 row-end-5 gap-5"
-                    >
-                      <Buttons onClick={() => setIsOpened(false)}>
-                        Cancel
-                      </Buttons>
-                      <Buttons
-                        background={"red"}
-                        onClick={() => {
-                          if (formState.maintenanceId?.id) {
-                            deleteMaintenanceInEquipment(formState.id);
-                            handleFieldChange("maintenanceId", null);
-                            setIsOpened(false);
-                          }
-                        }}
-                      >
-                        Delete
-                      </Buttons>
-                    </Holds>
-                  </Grids>
-                </Holds>
-              </NModals>
+                  </Buttons>
+                )}
+              </Holds>
             </Holds>
           )}
         </Grids>
       </Contents>
+
+      <NModals
+        isOpen={showConfirmDialog}
+        handleClose={() => setShowConfirmDialog(false)}
+        size={"xlWS"}
+        background="noOpacity"
+      >
+        <Holds className="w-full h-full items-center justify-center text-center px-4">
+          <Titles size="h3" className="mb-4">
+            {"Are you sure you want to withdraw this maintenance request?"}
+          </Titles>
+          <Holds className="flex flex-col gap-4 p-4">
+            <Holds className="flex gap-4 justify-center">
+              <Buttons
+                shadow="none"
+                className="py-2"
+                background="red"
+                onClick={handleConfirmDelete}
+              >
+                <Holds>
+                  <Titles size="h5">{"yes, withdraw"}</Titles>
+                </Holds>
+              </Buttons>
+              <Buttons
+                shadow="none"
+                className="py-2"
+                background="lightBlue"
+                onClick={() => setShowConfirmDialog(false)}
+              >
+                <Holds>
+                  <Titles size="h5">{"no, cancel"}</Titles>
+                </Holds>
+              </Buttons>
+            </Holds>
+          </Holds>
+        </Holds>
+      </NModals>
     </Holds>
   );
 }

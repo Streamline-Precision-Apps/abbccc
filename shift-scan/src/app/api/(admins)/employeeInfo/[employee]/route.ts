@@ -44,9 +44,22 @@ export async function GET(
         laborView: true,
         mechanicView: true,
         permission: true,
-        activeEmployee: true,
         startDate: true,
         terminationDate: true,
+        Contact: {
+          select: {
+            phoneNumber: true,
+            emergencyContact: true,
+            emergencyContactNumber: true,
+          },
+        },
+        Crews: {
+          select: {
+            id: true,
+            name: true,
+            leadId: true,
+          },
+        },
       },
     });
 
@@ -59,7 +72,8 @@ export async function GET(
 
     return NextResponse.json(EmployeeData, {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (error) {
@@ -70,9 +84,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

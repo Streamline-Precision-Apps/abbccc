@@ -3,12 +3,17 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
+/**
+ * Get equipment details by ID
+ * @param request - The incoming request
+ * @param params - Route parameters containing the equipment ID
+ * @returns Equipment details or error response
+ */
 export async function GET(
   request: Request,
   { params }: { params: { equipment: string } }
 ) {
   try {
-    // Authenticate the user
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -16,7 +21,6 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Validate equipment ID
     const equipmentId = params.equipment;
     if (!equipmentId) {
       return NextResponse.json(
@@ -25,7 +29,6 @@ export async function GET(
       );
     }
 
-    // Fetch equipment details
     const equipment = await prisma.equipment.findUnique({
       where: { id: equipmentId },
       select: {
@@ -34,9 +37,21 @@ export async function GET(
         name: true,
         description: true,
         equipmentTag: true,
-        status: true,
-        isActive: true,
-        inUse: true,
+        state: true,
+        isDisabledByAdmin: true,
+        approvalStatus: true,
+        overWeight: true,
+        currentWeight: true,
+        equipmentVehicleInfo: {
+          select: {
+            make: true,
+            model: true,
+            year: true,
+            licensePlate: true,
+            registrationExpiration: true,
+            mileage: true,
+          },
+        },
       },
     });
 
@@ -51,14 +66,8 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching equipment data:", error);
 
-    let errorMessage = "Failed to fetch equipment data";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch equipment data";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

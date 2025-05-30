@@ -330,6 +330,11 @@ export default function TimeCardTruckingHaulLogs({
             initialValue={
               currentEditingLog
                 ? {
+                    id:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.JobSite?.id || "",
                     code:
                       editedTruckingHaulLogs.find(
                         (log) => log.id === currentEditingLog.logId
@@ -360,6 +365,11 @@ export default function TimeCardTruckingHaulLogs({
             initialValue={
               currentEditingLog
                 ? {
+                    id:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.Equipment?.id || "",
                     code:
                       editedTruckingHaulLogs.find(
                         (log) => log.id === currentEditingLog.logId

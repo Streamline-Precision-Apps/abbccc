@@ -9,7 +9,7 @@ import { Texts } from "../(reusable)/texts";
 import { Images } from "../(reusable)/images";
 
 type Option = {
-  id?: string;
+  id: string;
   code: string;
   label: string;
 };

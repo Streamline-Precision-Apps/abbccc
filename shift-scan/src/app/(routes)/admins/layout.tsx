@@ -7,6 +7,9 @@ import LeftSidebar from "@/app/(routes)/admins/_pages/leftSideBar";
 import TopTabBar from "./_pages/topTabBar";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
+import { User } from "@nextui-org/react";
+import { UserEditProvider } from "@/app/context/(admin)/UserEditContext";
+import { CrewEditProvider } from "@/app/context/(admin)/CrewEditContext";
 
 export default async function RootLayout({
   children,
@@ -19,25 +22,33 @@ export default async function RootLayout({
   return (
     <Bases size={"screen"}>
       <NextIntlClientProvider messages={messages}>
-        <Providers>
-          <Contents width={"100"} className="">
-            {/* Top bar */}
-            <Holds className="h-[60px]">
-              <TopTabBar />
-            </Holds>
-            {/* Main layout: sidebar + scrollable content */}
-            <Holds position={"row"} className="h-[calc(100dvh-60px)] min-h-0 w-full">
-              {/* Sidebar */}
-              <Holds position={"test"} className="h-full w-[60px] flex-shrink-0">
-                <LeftSidebar />
+        <UserEditProvider>
+          <CrewEditProvider>
+            <Contents width={"100"} className="">
+              {/* Top bar */}
+              <Holds className="h-[60px]">
+                <TopTabBar />
               </Holds>
-              {/* Scrollable content area */}
-              <Holds className="flex-1 min-h-0 h-full p-3 overflow-y-auto no-scrollbar">
-                {children}
+              {/* Main layout: sidebar + scrollable content */}
+              <Holds
+                position={"row"}
+                className="h-[calc(100dvh-60px)] min-h-0 w-full"
+              >
+                {/* Sidebar */}
+                <Holds
+                  position={"test"}
+                  className="h-full w-[60px] flex-shrink-0"
+                >
+                  <LeftSidebar />
+                </Holds>
+                {/* Scrollable content area */}
+                <Holds className="flex-1 min-h-0 h-full p-3 overflow-y-auto no-scrollbar">
+                  {children}
+                </Holds>
               </Holds>
-            </Holds>
-          </Contents>
-        </Providers>
+            </Contents>
+          </CrewEditProvider>
+        </UserEditProvider>
       </NextIntlClientProvider>
     </Bases>
   );
