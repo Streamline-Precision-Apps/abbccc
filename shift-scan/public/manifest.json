@@ -1,6 +1,7 @@
 {
   "name": "Shift Scan powered by streamline LLC",
   "short_name": "Shift Scan",
+  "permissions": ["camera", "geolocation"],
   "icons": [
     {
       "src": "/icon-192x192.png",
