@@ -3,6 +3,29 @@ import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
 
+type VehicleInfo = {
+  make: string | null;
+  model: string | null;
+  year: string | null;
+  licensePlate: string | null;
+  registrationExpiration: Date | null;
+  mileage: number;
+};
+
+interface EquipmentUpdateData {
+  name: string | undefined;
+  description: string;
+  equipmentTag: EquipmentTags;
+  currentWeight: number;
+  overWeight: boolean;
+  updatedAt: Date;
+  equipmentVehicleInfo?: {
+    create?: VehicleInfo;
+    update?: VehicleInfo;
+    delete?: boolean;
+  };
+}
+
 /**
  * Utility function to validate jobsite input data
  */
@@ -58,7 +81,7 @@ export async function updateEquipmentAsset(formData: FormData) {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
-    const status = formData.get("status") as EquipmentStatus;
+    // const status = formData.get("status") as EquipmentStatus;
     const currentWeight =
       parseFloat(formData.get("currentWeight") as string) || 0;
     const overWeight = formData.get("overWeight") === "true";
@@ -78,11 +101,10 @@ export async function updateEquipmentAsset(formData: FormData) {
     }
 
     // Prepare update data
-    const updateData: any = {
+    const updateData: EquipmentUpdateData = {
       name: name?.trim(),
       description: description?.trim() || "",
       equipmentTag: equipmentTag,
-      status: status,
       currentWeight: currentWeight,
       overWeight: overWeight,
       updatedAt: new Date(),
@@ -169,9 +191,6 @@ export async function registerEquipment(
     name: string;
     description?: string;
     equipmentTag: string;
-    status?: string;
-    isActive: boolean;
-    inUse: boolean;
     overWeight: boolean | null;
     currentWeight: number;
     equipmentVehicleInfo?: {
@@ -226,9 +245,6 @@ export async function registerEquipment(
             name: equipmentData.name,
             description: equipmentData.description || "",
             equipmentTag: equipmentData.equipmentTag as EquipmentTags,
-            status: (equipmentData.status as EquipmentStatus) || "OPERATIONAL",
-            isActive: equipmentData.isActive,
-            inUse: equipmentData.inUse,
             overWeight: equipmentData.overWeight || false,
             currentWeight: equipmentData.currentWeight || 0,
             equipmentVehicleInfo: {
@@ -255,9 +271,6 @@ export async function registerEquipment(
             name: equipmentData.name,
             description: equipmentData.description || "",
             equipmentTag: equipmentData.equipmentTag as EquipmentTags,
-            status: (equipmentData.status as EquipmentStatus) || "OPERATIONAL",
-            isActive: equipmentData.isActive,
-            inUse: equipmentData.inUse,
             overWeight: equipmentData.overWeight || false,
             currentWeight: equipmentData.currentWeight || 0,
           },
@@ -355,7 +368,7 @@ export async function updateJobsite(formData: FormData) {
           country: country?.trim() || "US",
           comment: comment?.trim() || null,
           isActive: isActive,
-          Client: client?.trim() || null,
+          Client: { connect: { id: client } },
           updatedAt: new Date(),
         },
         include: {
@@ -444,7 +457,7 @@ export async function createJobsiteFromObject(jobsiteData: {
           country: jobsiteData.country?.trim() || "US",
           comment: jobsiteData.comment?.trim() || null,
           isActive: jobsiteData.isActive ?? true,
-          Client: jobsiteData.client?.trim() || null,
+          Client: { connect: { id: jobsiteData.client } },
         },
         include: {
           CCTags: true,
@@ -468,6 +481,19 @@ export async function createJobsiteFromObject(jobsiteData: {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
+  }
+}
+
+export async function deleteJobsite(id: string) {
+  console.log("Deleting jobsite with ID:", id);
+  try {
+    await prisma.jobsite.delete({
+      where: { id },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error creating jobsite:", error);
+    throw error;
   }
 }
 

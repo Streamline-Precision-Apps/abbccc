@@ -21,10 +21,19 @@ export default function EquipmentBasicFields({
   onInputChange,
   onRevertField,
 }: EquipmentBasicFieldsProps) {
-  const statusOptions = [
-    { label: "Operational", value: "OPERATIONAL" },
+  const stateOptions = [
+    { label: "Available", value: "AVAILABLE" },
+    { label: "In Use", value: "IN_USE" },
+    { label: "Maintenance", value: "MAINTENANCE" },
     { label: "Needs Repair", value: "NEEDS_REPAIR" },
-    { label: "Needs Maintenance", value: "NEEDS_MAINTENANCE" },
+    { label: "Retired", value: "RETIRED" },
+  ];
+
+  const approvalStatusOptions = [
+    { label: "Pending", value: "PENDING" },
+    { label: "Approved", value: "APPROVED" },
+    { label: "Rejected", value: "REJECTED" },
+    { label: "Changes Requested", value: "CHANGES_REQUESTED" },
   ];
 
   const overWeightOptions = [
@@ -55,6 +64,7 @@ export default function EquipmentBasicFields({
       <EditableFields
         type="text"
         name="EquipmentCode"
+        onChange={(e) => onInputChange("qrId", e.target.value)}
         value={formData?.qrId || ""}
         isChanged={false}
         readonly={true}
@@ -63,19 +73,34 @@ export default function EquipmentBasicFields({
         size="sm"
       />
 
-      <label htmlFor="EquipmentStatus" className="text-sm">
-        Equipment Status
+      <label htmlFor="EquipmentState" className="text-sm">
+        Equipment State
       </label>
       <EditableFields
         formDatatype="select"
-        name="EquipmentStatus"
-        value={formData?.status || ""}
-        onChange={(e) => onInputChange("status", e.target.value)}
-        isChanged={changedFields.has("status")}
-        onRevert={() => onRevertField("status")}
-        variant={changedFields.has("status") ? "edited" : "default"}
+        name="EquipmentState"
+        value={formData?.state || ""}
+        onChange={(e) => onInputChange("state", e.target.value)}
+        isChanged={changedFields.has("state")}
+        onRevert={() => onRevertField("state")}
+        variant={changedFields.has("state") ? "edited" : "default"}
         size="sm"
-        options={statusOptions}
+        options={stateOptions}
+      />
+
+      <label htmlFor="EquipmentApprovalStatus" className="text-sm">
+        Approval Status
+      </label>
+      <EditableFields
+        formDatatype="select"
+        name="EquipmentApprovalStatus"
+        value={formData?.approvalStatus || ""}
+        onChange={(e) => onInputChange("approvalStatus", e.target.value)}
+        isChanged={changedFields.has("approvalStatus")}
+        onRevert={() => onRevertField("approvalStatus")}
+        variant={changedFields.has("approvalStatus") ? "edited" : "default"}
+        size="sm"
+        options={approvalStatusOptions}
       />
 
       <label htmlFor="CurrentWeight" className="text-sm">

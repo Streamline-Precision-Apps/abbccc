@@ -20,6 +20,22 @@ interface UseEquipmentFormProps {
   refreshEquipments?: () => Promise<void>;
 }
 
+interface NewEquipmentData {
+  name: string;
+  description?: string;
+  equipmentTag: string;
+  overWeight: boolean | null;
+  currentWeight: number;
+  equipmentVehicleInfo?: {
+    make: string | null;
+    model: string | null;
+    year: string | null;
+    licensePlate: string | null;
+    registrationExpiration: Date | null;
+    mileage: number | null;
+  };
+}
+
 interface UseEquipmentFormReturn {
   formData: Equipment | null;
   changedFields: Set<string>;
@@ -33,7 +49,7 @@ interface UseEquipmentFormReturn {
   handleSaveChanges: () => Promise<void>;
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
-  handleNewEquipmentSubmit: (newEquipment: any) => Promise<void>;
+  handleNewEquipmentSubmit: (newEquipment: NewEquipmentData) => Promise<void>;
 }
 
 /**
@@ -140,7 +156,12 @@ export const useEquipmentForm = ({
       formDataToSend.append("name", formData.name);
       formDataToSend.append("description", formData.description || "");
       formDataToSend.append("equipmentTag", formData.equipmentTag);
-      formDataToSend.append("status", formData.status || "");
+      formDataToSend.append("approvalStatus", formData.approvalStatus);
+      formDataToSend.append("state", formData.state);
+      formDataToSend.append(
+        "isDisabledByAdmin",
+        String(formData.isDisabledByAdmin)
+      );
       formDataToSend.append("currentWeight", formData.currentWeight.toString());
       formDataToSend.append("overWeight", formData.overWeight.toString());
 
@@ -179,9 +200,9 @@ export const useEquipmentForm = ({
           name: result.data.name,
           description: result.data.description || "",
           equipmentTag: result.data.equipmentTag,
-          status: result.data.status || "",
-          isActive: result.data.isActive ?? true,
-          inUse: result.data.inUse ?? false,
+          approvalStatus: result.data.approvalStatus,
+          state: result.data.state,
+          isDisabledByAdmin: result.data.isDisabledByAdmin,
           overWeight: result.data.overWeight ?? false,
           currentWeight: result.data.currentWeight ?? 0,
           equipmentVehicleInfo: result.data.equipmentVehicleInfo || undefined,
@@ -282,7 +303,7 @@ export const useEquipmentForm = ({
    * Handle registration of new equipment
    */
   const handleNewEquipmentSubmit = useCallback(
-    async (newEquipment: any) => {
+    async (newEquipment: NewEquipmentData) => {
       if (!session?.user?.id) {
         console.error("User session not found");
         alert("Please log in to register equipment.");
@@ -300,13 +321,13 @@ export const useEquipmentForm = ({
             name: result.data.name,
             description: result.data.description,
             equipmentTag: result.data.equipmentTag,
-            status: result.data.status,
-            isActive: result.data.isActive,
-            inUse: result.data.inUse,
+            approvalStatus: result.data.approvalStatus,
+            state: result.data.state,
+            isDisabledByAdmin: result.data.isDisabledByAdmin,
             overWeight: result.data.overWeight || false,
             currentWeight: result.data.currentWeight || 0,
             equipmentVehicleInfo:
-              (result.data as any).equipmentVehicleInfo || undefined,
+              (result.data as Equipment).equipmentVehicleInfo || undefined,
           };
           setSelectEquipment(equipmentToSelect);
           setIsRegistrationFormOpen(false);

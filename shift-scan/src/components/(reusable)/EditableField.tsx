@@ -13,8 +13,8 @@ interface EditableFieldsProps
   checked?: boolean;
   disable?: boolean;
   placeholder?: string;
-  onChange?: (
-    event: React.ChangeEvent<
+  onChange: (
+    e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => void;

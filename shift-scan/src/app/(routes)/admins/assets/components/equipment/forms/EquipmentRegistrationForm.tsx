@@ -55,7 +55,10 @@ export default function EquipmentRegistrationForm({
 
   const [hasVehicleInfo, setHasVehicleInfo] = useState(false);
 
-  const handleInputChange = (fieldName: string, value: any) => {
+  const handleInputChange = (
+    fieldName: string,
+    value: string | number | boolean | Date
+  ) => {
     setFormData((prev) => {
       // Handle nested vehicle info fields
       if (fieldName.startsWith("vehicle.")) {

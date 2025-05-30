@@ -4,6 +4,7 @@ import {
   initialFormTemplates,
   initialUsers,
   initialContacts,
+  initialClients,
   initialJobsites,
   initialCostCodes,
   initialCCTags,
@@ -27,8 +28,10 @@ import {
   // New seed arrays for the new models:
   initialDocumentTags,
   initialPdfDocuments,
-  initialCreationLogs
-} from "@/data/dataValues";
+  // Replacement for CreationLogs:
+  initialPendingApprovals,
+  initialAuditLogs,
+} from "../src/data/dataValues";
 
 const prisma = new PrismaClient();
 
@@ -50,7 +53,9 @@ async function main() {
     // 2. Insert Form Templates
     for (const formTemplate of initialFormTemplates) {
       try {
-        const newTemplate = await prisma.formTemplate.create({ data: formTemplate });
+        const newTemplate = await prisma.formTemplate.create({
+          data: formTemplate,
+        });
         console.log("Created form template with id:", newTemplate.id);
       } catch (error) {
         console.log("Error creating form template:", error);
@@ -80,13 +85,13 @@ async function main() {
       }
     }
 
-
-    for (const user of initialUsers) {
+    // 3.6. Insert Clients
+    for (const client of initialClients) {
       try {
-        const newUser = await prisma.user.create({ data: user });
-        console.log("Created user with id:", newUser.id);
+        const newClient = await prisma.client.create({ data: client });
+        console.log("Created client with id:", newClient.id);
       } catch (error) {
-        console.log("Error creating user:", error);
+        console.log("Error creating client:", error);
         continue;
       }
     }
@@ -127,7 +132,9 @@ async function main() {
     // 7. Insert Document Tags (new model)
     for (const documentTag of initialDocumentTags) {
       try {
-        const newDocTag = await prisma.documentTag.create({ data: documentTag });
+        const newDocTag = await prisma.documentTag.create({
+          data: documentTag,
+        });
         console.log("Created document tag with id:", newDocTag.id);
       } catch (error) {
         console.log("Error creating document tag:", error);
@@ -138,7 +145,9 @@ async function main() {
     // 8. Insert PDF Documents (new model)
     for (const pdfDocument of initialPdfDocuments) {
       try {
-        const newPdfDoc = await prisma.pdfDocument.create({ data: pdfDocument });
+        const newPdfDoc = await prisma.pdfDocument.create({
+          data: pdfDocument,
+        });
         console.log("Created PDF document with id:", newPdfDoc.id);
       } catch (error) {
         console.log("Error creating PDF document:", error);
@@ -157,18 +166,7 @@ async function main() {
       }
     }
 
-    // 10. Insert Creation Logs (new model)
-    for (const creationLog of initialCreationLogs) {
-      try {
-        const newCreationLog = await prisma.creationLogs.create({ data: creationLog });
-        console.log("Created creation log with id:", newCreationLog.id);
-      } catch (error) {
-        console.log("Error creating creation log:", error);
-        continue;
-      }
-    }
-
-    // 11. Insert Crews
+    // 10. Insert Crews
     for (const crew of initialCrews) {
       try {
         const newCrew = await prisma.crew.create({ data: crew });
@@ -179,10 +177,12 @@ async function main() {
       }
     }
 
-    // 12. Insert User Settings
+    // 11. Insert User Settings
     for (const settings of initialUserSettings) {
       try {
-        const newSettings = await prisma.userSettings.create({ data: settings });
+        const newSettings = await prisma.userSettings.create({
+          data: settings,
+        });
         console.log("Created user settings with id:", newSettings.id);
       } catch (error) {
         console.log("Error creating user settings:", error);
@@ -190,7 +190,7 @@ async function main() {
       }
     }
 
-    // 13. Insert TimeSheets
+    // 12. Insert TimeSheets
     for (const timesheet of initialTimeSheets) {
       try {
         const newTimeSheet = await prisma.timeSheet.create({ data: timesheet });
@@ -201,10 +201,12 @@ async function main() {
       }
     }
 
-    // 14. Insert Trucking Logs
+    // 13. Insert Trucking Logs
     for (const truckingLog of initialTruckingLogs) {
       try {
-        const newTruckingLog = await prisma.truckingLog.create({ data: truckingLog });
+        const newTruckingLog = await prisma.truckingLog.create({
+          data: truckingLog,
+        });
         console.log("Created trucking log with id:", newTruckingLog.id);
       } catch (error) {
         console.log("Error creating trucking log:", error);
@@ -212,7 +214,7 @@ async function main() {
       }
     }
 
-    // 15. Insert Employee Equipment Logs
+    // 14. Insert Employee Equipment Logs
     for (const log of initialEmployeeEquipmentLogs) {
       try {
         const newLog = await prisma.employeeEquipmentLog.create({ data: log });
@@ -223,10 +225,12 @@ async function main() {
       }
     }
 
-    // 16. Insert Equipment Hauled
+    // 15. Insert Equipment Hauled
     for (const equipmentHauled of initialEquipmentHauled) {
       try {
-        const newEquipmentHauled = await prisma.equipmentHauled.create({ data: equipmentHauled });
+        const newEquipmentHauled = await prisma.equipmentHauled.create({
+          data: equipmentHauled,
+        });
         console.log("Created equipment hauled with id:", newEquipmentHauled.id);
       } catch (error) {
         console.log("Error creating equipment hauled:", error);
@@ -234,7 +238,7 @@ async function main() {
       }
     }
 
-    // 17. Insert Errors
+    // 16. Insert Errors
     for (const errorRecord of initialErrors) {
       try {
         const newError = await prisma.error.create({ data: errorRecord });
@@ -245,10 +249,12 @@ async function main() {
       }
     }
 
-    // 18. Insert Form Submissions
+    // 17. Insert Form Submissions
     for (const submission of initialFormSubmissions) {
       try {
-        const newSubmission = await prisma.formSubmission.create({ data: submission });
+        const newSubmission = await prisma.formSubmission.create({
+          data: submission,
+        });
         console.log("Created form submission with id:", newSubmission.id);
       } catch (error) {
         console.log("Error creating form submission:", error);
@@ -256,10 +262,12 @@ async function main() {
       }
     }
 
-    // 19. Insert Form Approvals
+    // 18. Insert Form Approvals
     for (const approval of initialFormApprovals) {
       try {
-        const newApproval = await prisma.formApproval.create({ data: approval });
+        const newApproval = await prisma.formApproval.create({
+          data: approval,
+        });
         console.log("Created form approval with id:", newApproval.id);
       } catch (error) {
         console.log("Error creating form approval:", error);
@@ -267,10 +275,12 @@ async function main() {
       }
     }
 
-    // 20. Insert Maintenances
+    // 19. Insert Maintenances
     for (const maintenance of initialMaintenances) {
       try {
-        const newMaintenance = await prisma.maintenance.create({ data: maintenance });
+        const newMaintenance = await prisma.maintenance.create({
+          data: maintenance,
+        });
         console.log("Created maintenance with id:", newMaintenance.id);
       } catch (error) {
         console.log("Error creating maintenance:", error);
@@ -278,10 +288,12 @@ async function main() {
       }
     }
 
-    // 21. Insert Maintenance Logs
+    // 20. Insert Maintenance Logs
     for (const maintenanceLog of initialMaintenanceLogs) {
       try {
-        const newMaintenanceLog = await prisma.maintenanceLog.create({ data: maintenanceLog });
+        const newMaintenanceLog = await prisma.maintenanceLog.create({
+          data: maintenanceLog,
+        });
         console.log("Created maintenance log with id:", newMaintenanceLog.id);
       } catch (error) {
         console.log("Error creating maintenance log:", error);
@@ -289,10 +301,12 @@ async function main() {
       }
     }
 
-    // 22. Insert Tasco Material Types
+    // 21. Insert Tasco Material Types
     for (const tascoType of initialTascoMaterialTypes) {
       try {
-        const newTascoType = await prisma.tascoMaterialTypes.create({ data: tascoType });
+        const newTascoType = await prisma.tascoMaterialTypes.create({
+          data: tascoType,
+        });
         console.log("Created Tasco Material Type with id:", newTascoType.id);
       } catch (error) {
         console.log("Error creating Tasco Material Type:", error);
@@ -300,7 +314,7 @@ async function main() {
       }
     }
 
-    // 23. Insert Tasco Logs
+    // 22. Insert Tasco Logs
     for (const tascoLog of initialTascoLogs) {
       try {
         const newTascoLog = await prisma.tascoLog.create({ data: tascoLog });
@@ -311,7 +325,7 @@ async function main() {
       }
     }
 
-    // 24. Insert Materials
+    // 23. Insert Materials
     for (const material of initialMaterials) {
       try {
         const newMaterial = await prisma.material.create({ data: material });
@@ -322,7 +336,7 @@ async function main() {
       }
     }
 
-    // 25. Insert Refuel Logs
+    // 24. Insert Refuel Logs
     for (const refuel of initialRefueled) {
       try {
         const newRefuel = await prisma.refuelLog.create({ data: refuel });
@@ -333,13 +347,99 @@ async function main() {
       }
     }
 
-    // 26. Insert State Mileage
+    // 25. Insert State Mileage
     for (const stateMileage of initialStateMileage) {
       try {
-        const newStateMileage = await prisma.stateMileage.create({ data: stateMileage });
+        const newStateMileage = await prisma.stateMileage.create({
+          data: stateMileage,
+        });
         console.log("Created state mileage with id:", newStateMileage.id);
       } catch (error) {
         console.log("Error creating state mileage:", error);
+        continue;
+      }
+    }
+
+    // 26. Insert Pending Approvals (with foreign key checks for nested relations)
+    for (const pendingApproval of initialPendingApprovals) {
+      try {
+        // Check CreatedBy
+        let createdByOk = true;
+        if (
+          pendingApproval.CreatedBy &&
+          pendingApproval.CreatedBy.connect &&
+          pendingApproval.CreatedBy.connect.id
+        ) {
+          createdByOk = !!(await prisma.user.findUnique({
+            where: { id: pendingApproval.CreatedBy.connect.id },
+          }));
+        }
+        // Check ApprovedBy
+        let approvedByOk = true;
+        if (
+          pendingApproval.ApprovedBy &&
+          pendingApproval.ApprovedBy.connect &&
+          pendingApproval.ApprovedBy.connect.id
+        ) {
+          approvedByOk = !!(await prisma.user.findUnique({
+            where: { id: pendingApproval.ApprovedBy.connect.id },
+          }));
+        }
+        // Check entity relation (Equipment, Jobsite) and ensure only one is set
+        let entityOk = false;
+        let entityType = pendingApproval.entityType;
+        if (
+          entityType === "EQUIPMENT" &&
+          pendingApproval.Equipment &&
+          pendingApproval.Equipment.connect &&
+          pendingApproval.Equipment.connect.id
+        ) {
+          entityOk = !!(await prisma.equipment.findUnique({
+            where: { id: pendingApproval.Equipment.connect.id },
+          }));
+        } else if (
+          entityType === "JOBSITE" &&
+          pendingApproval.Jobsite &&
+          pendingApproval.Jobsite.connect &&
+          pendingApproval.Jobsite.connect.id
+        ) {
+          entityOk = !!(await prisma.jobsite.findUnique({
+            where: { id: pendingApproval.Jobsite.connect.id },
+          }));
+        }
+        if (!createdByOk || !approvedByOk || !entityOk) {
+          console.warn(
+            "Skipping pending approval due to missing or mismatched foreign key:",
+            pendingApproval
+          );
+          continue;
+        }
+        // Remove the unused relation to avoid setting both Equipment and Jobsite
+        let data = { ...pendingApproval };
+        if (entityType === "EQUIPMENT") {
+          delete data.Jobsite;
+        } else if (entityType === "JOBSITE") {
+          delete data.Equipment;
+        }
+        const newPendingApproval = await prisma.pendingApproval.create({
+          data,
+        });
+        console.log("Created pending approval with id:", newPendingApproval.id);
+      } catch (error) {
+        console.log("Error creating pending approval:", error);
+        continue;
+      }
+    }
+
+    // 27. Insert Audit Logs (with foreign key checks for nested relations)
+    for (const auditLog of initialAuditLogs) {
+      try {
+        const newAuditLog = await prisma.auditLog.create({
+          data: auditLog,
+        });
+        console.log("Created audit log with id:", newAuditLog.id);
+      } catch (error) {
+        console.log("Error creating audit log:", error);
         continue;
       }
     }

@@ -56,18 +56,18 @@ export default function JobsiteBasicFields({
                 className="mb-3"
               />
 
-              <label htmlFor="clientName" className="text-xs font-medium mb-1">
+              <label htmlFor="clientId" className="text-xs font-medium mb-1">
                 Client
               </label>
               <EditableFields
                 formDatatype="input"
-                name="clientName"
+                name="clientId"
                 type="text"
-                value={formData.Client || ""}
-                onChange={(e) => onInputChange("client", e.target.value)}
-                isChanged={isFieldChanged("client")}
-                onRevert={() => onRevertField("client")}
-                variant={isFieldChanged("client") ? "edited" : "default"}
+                value={formData.Client?.name || formData.clientId || ""}
+                onChange={(e) => onInputChange("clientId", e.target.value)}
+                isChanged={isFieldChanged("clientId")}
+                onRevert={() => onRevertField("clientId")}
+                variant={isFieldChanged("clientId") ? "edited" : "default"}
                 size="sm"
                 className="mb-3"
               />
@@ -176,25 +176,19 @@ export default function JobsiteBasicFields({
                 className="mb-3"
               />
 
-              <label htmlFor="status" className="text-xs font-medium mb-1">
-                Status
+              {/* Optionally display approval status (read-only) */}
+              <label
+                htmlFor="approvalStatus"
+                className="text-xs font-medium mb-1"
+              >
+                Approval Status
               </label>
-              <EditableFields
-                formDatatype="select"
-                name="status"
-                value={formData.isActive ? "active" : "inactive"}
-                onChange={(e) =>
-                  onInputChange("isActive", e.target.value === "active")
-                }
-                isChanged={isFieldChanged("isActive")}
-                onRevert={() => onRevertField("isActive")}
-                variant={isFieldChanged("isActive") ? "edited" : "default"}
-                size="sm"
-                options={[
-                  { label: "Active", value: "active" },
-                  { label: "Inactive", value: "inactive" },
-                ]}
-                className="mb-3"
+              <Inputs
+                type="text"
+                name="approvalStatus"
+                value={formData.approvalStatus}
+                readOnly
+                className="mb-3 text-gray-500 bg-gray-100"
               />
             </Holds>
           </Holds>

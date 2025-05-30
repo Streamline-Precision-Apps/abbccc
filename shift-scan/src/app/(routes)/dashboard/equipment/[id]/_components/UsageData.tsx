@@ -1,70 +1,34 @@
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import RefuelEquipmentLogsList from "../RefuelEquipmentLogsList";
-import { Titles } from "@/components/(reusable)/titles";
-import { differenceInSeconds, format, parseISO } from "date-fns";
-
+import { format, parseISO } from "date-fns";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
 import { EquipmentStatus } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
-
-type Refueled = {
-  id: string;
-  employeeEquipmentLogId: string | null;
-  truckingLogId: string | null;
-  gallonsRefueled: number | null;
-  milesAtFueling: number | null;
-  tascoLogId: string | null;
-};
-
-const maintenanceSchema = z.object({
-  id: z.string().optional(),
-  equipmentIssue: z.string().nullable(),
-  additionalInfo: z.string().nullable(), // assuming this might be null
-});
-const EquipmentLogSchema = z.object({
-  id: z.string(),
-  equipmentId: z.string(),
-  employeeId: z.string(),
-  startTime: z.string(),
-  endTime: z.string(),
-  comment: z.string().optional(),
-  isFinished: z.boolean(),
-  equipment: z.object({
-    name: z.string(),
-    status: z.string().optional(),
-  }),
-  maintenanceId: maintenanceSchema.nullable(),
-  fullyOperational: z.boolean(),
-});
-type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
+import { EquipmentLog, RefuelLogData } from "../types";
+import { Images } from "@/components/(reusable)/images";
 
 interface UsageDataProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentStatus | Refueled
+    value: string | number | boolean | EquipmentStatus | RefuelLogData | null
   ) => void;
   formattedTime: string;
-  refueledLogs: boolean | undefined;
   handleChangeRefueled: () => void;
-  AddRefuelLog: () => void;
-  deleteLog: () => void;
-  saveEdits: () => void;
   handleFullOperational: () => void;
+  AddRefuelLog: (gallons: number, existingLogId?: string) => void;
+  refuelLog: RefuelLogData | null;
+  setRefuelLog: Dispatch<SetStateAction<RefuelLogData | null>>;
   t: (key: string) => string;
+  isRefueled: boolean;
+  deleteLog: () => Promise<void>;
+  saveEdits: () => Promise<void>;
   isFormValid: () => boolean | "" | null | undefined;
-  refuelLog: Refueled[];
-  setRefuelLog: Dispatch<SetStateAction<Refueled[]>>;
 }
 
 export default function UsageData({
@@ -77,63 +41,144 @@ export default function UsageData({
   refuelLog,
   setRefuelLog,
   t,
+  isRefueled,
+  deleteLog,
+  saveEdits,
+  isFormValid,
 }: UsageDataProps) {
+  const [newRefuelGallons, setNewRefuelGallons] = useState<string>("");
+  const [showRefuelInput, setShowRefuelInput] = useState<boolean>(false);
+  const { setNotification } = useNotification();
+
+  const handleRefuelCheckboxChange = () => {
+    if (!isRefueled) {
+      // Show input when checking the box
+      setShowRefuelInput(true);
+    } else {
+      // If there's an existing log, don't allow unchecking
+      setNotification("Delete refuel log first to uncheck", "error");
+    }
+  };
+
+  const handleCreateRefuel = () => {
+    const gallons = parseFloat(newRefuelGallons);
+    if (!newRefuelGallons || isNaN(gallons) || gallons <= 0) {
+      setNotification("Please enter a valid number of gallons", "error");
+      return;
+    }
+
+    // Create new refuel log with temp ID
+    const newRefuelLog = {
+      id: "temp-" + Date.now(),
+      gallonsRefueled: gallons,
+    };
+
+    setRefuelLog(newRefuelLog);
+    handleChangeRefueled(); // Mark as refueled
+    setShowRefuelInput(false);
+
+    setNotification(
+      "Changes will be saved when you click Finish Logs",
+      "success"
+    );
+  };
+
+  const handleUpdateRefuel = () => {
+    const gallons = parseFloat(newRefuelGallons);
+    if (!newRefuelGallons || isNaN(gallons) || gallons <= 0) {
+      setNotification("Please enter a valid number of gallons", "error");
+      return;
+    }
+
+    if (!refuelLog) {
+      setNotification("No refuel log to update", "error");
+      return;
+    }
+
+    // Update existing refuel log gallons only
+    const updatedRefuelLog = {
+      ...refuelLog,
+      gallonsRefueled: gallons,
+    };
+
+    setRefuelLog(updatedRefuelLog);
+    setShowRefuelInput(false);
+
+    setNotification(
+      "Changes will be saved when you click Finish Logs",
+      "success"
+    );
+  };
+
+  const handleDeleteRefuelLog = () => {
+    if (refuelLog) {
+      setRefuelLog(null);
+      handleChangeRefueled(); // Update parent state
+      setShowRefuelInput(false);
+      setNewRefuelGallons("");
+      setNotification(
+        "Refuel log removed. Changes will be saved when you click Finish Logs",
+        "success"
+      );
+    }
+  };
+
   return (
-    <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar  ">
-      <Labels size="p5">Total Usage</Labels>
-      <Inputs
-        type="text"
-        disabled
-        value={formattedTime}
-        className="border-[3px] border-black p-1 w-full text-center"
-      />
-      <Holds position={"row"} className="w-full ">
-        <Holds className="w-full">
-          <Labels size="p5">Start Time</Labels>
-          <Inputs
-            type="time"
-            value={
-              formState.startTime
-                ? format(new Date(formState.startTime), "HH:mm")
-                : ""
-            }
-            className="w-full border-[3px] border-r-[1.5px] border-black p-1 rounded-[10px] rounded-r-none"
-            onChange={(e) => {
-              const newTime = e.target.value;
-              const currentDate = new Date(formState.startTime || new Date());
-              const [newHours, newMinutes] = newTime.split(":").map(Number);
-              currentDate.setHours(newHours, newMinutes, 0, 0);
-              handleFieldChange("startTime", currentDate.toISOString());
-            }}
-          />
+    <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar">
+      <Holds className="w-full">
+        <Holds position={"row"} className="w-full">
+          <Holds className="w-full">
+            <Labels size="p5">Start Time</Labels>
+            <Inputs
+              type="time"
+              value={
+                formState.startTime
+                  ? format(new Date(formState.startTime), "HH:mm")
+                  : ""
+              }
+              className="w-full border-[3px] border-r-[1.5px] border-black p-1 rounded-[10px] rounded-r-none"
+              onChange={(e) => {
+                const newTime = e.target.value;
+                const currentDate = new Date(formState.startTime || new Date());
+                const [newHours, newMinutes] = newTime.split(":").map(Number);
+                currentDate.setHours(newHours, newMinutes, 0, 0);
+                handleFieldChange("startTime", currentDate.toISOString());
+              }}
+            />
+          </Holds>
+          <Holds className="w-full">
+            <Labels size="p5">End Time</Labels>
+            <Inputs
+              type="time"
+              value={
+                formState.endTime
+                  ? format(new Date(parseISO(formState.endTime)), "HH:mm")
+                  : ""
+              }
+              className="w-full border-[3px] border-l-[1.5px] border-black p-1 rounded-[10px] rounded-l-none"
+              onChange={(e) => {
+                const newTime = e.target.value;
+                const currentDate = new Date(formState.endTime || new Date());
+                const [newHours, newMinutes] = newTime.split(":").map(Number);
+                currentDate.setHours(newHours, newMinutes, 0, 0);
+                handleFieldChange("endTime", currentDate.toISOString());
+              }}
+            />
+          </Holds>
         </Holds>
-        <Holds className="w-full">
-          <Labels size="p5">End Time</Labels>
-          <Inputs
-            type="time"
-            value={
-              formState.endTime
-                ? format(new Date(parseISO(formState.endTime)), "HH:mm")
-                : ""
-            }
-            className="w-full border-[3px] border-l-[1.5px] border-black p-1 rounded-[10px] rounded-l-none"
-            onChange={(e) => {
-              const newTime = e.target.value;
-              const currentDate = new Date(formState.endTime || new Date());
-              const [newHours, newMinutes] = newTime.split(":").map(Number);
-              currentDate.setHours(newHours, newMinutes, 0, 0);
-              handleFieldChange("endTime", currentDate.toISOString());
-            }}
-          />
-        </Holds>
+        <Texts position={"right"} size="p6">
+          <span className="italic mr-1">Duration:</span> {formattedTime}
+        </Texts>
       </Holds>
-      <Holds background="white" className="w-full  relative">
+
+      <Holds background="white" className="w-full relative">
         <Labels size="p5">{t("Comment")}</Labels>
         <TextAreas
           maxLength={40}
           placeholder="Enter comments here..."
           value={formState.comment || ""}
           onChange={(e) => handleFieldChange("comment", e.target.value)}
+          className="text-sm"
         />
         <Texts
           size="p3"
@@ -149,52 +194,117 @@ export default function UsageData({
           }/40`}
         </Texts>
       </Holds>
-      <Holds position={"row"} className="w-full pb-4">
-        <Holds size={"90"} className="h-full justify-center">
-          <Texts position={"left"} size="p5">
+
+      <Holds position={"row"} className="w-full pb-3">
+        <Holds size={"20"} className="h-full justify-center relative">
+          <CheckBox
+            shadow={false}
+            id="fullyOperational"
+            name="fullyOperational"
+            width={40}
+            height={40}
+            checked={formState.fullyOperational}
+            onChange={handleFullOperational}
+          />
+        </Holds>
+        <Holds size={"80"} className="h-full justify-center">
+          <Texts position={"left"} size="p3">
             Fully Operational? <span className="text-red-500">*</span>
           </Texts>
         </Holds>
-        <Holds size={"20"} className="h-full  justify-center relative">
-          <CheckBox
-            id="fullyOperational"
-            name="fullyOperational"
-            size={2}
-            checked={formState.fullyOperational}
-            onChange={() => handleFullOperational()}
-          />
-        </Holds>
       </Holds>
-      <Holds position={"row"} className="w-full pb-4">
-        <Holds size={"70"} className="h-full justify-center">
-          <Texts position={"left"} size="p5">
-            Did you refuel?
-          </Texts>
-        </Holds>
 
-        <Holds size={"30"} className="h-full justify-center">
-          <Holds position={"left"} className="p-2">
-            <Buttons
-              background={"green"}
-              className="py-1.5"
-              onClick={() => {
-                AddRefuelLog();
-              }}
-            >
-              +
-            </Buttons>
+      <Holds className="w-full pb-4">
+        <Holds position={"row"} className="w-full pb-3">
+          <Holds size={"20"} className="h-full justify-center relative">
+            <CheckBox
+              shadow={false}
+              id="refueled"
+              name="refueled"
+              width={40}
+              height={40}
+              checked={isRefueled}
+              onChange={handleRefuelCheckboxChange}
+            />
+          </Holds>
+          <Holds size={"80"} className="h-full justify-center">
+            <Texts position={"left"} size="p3">
+              Equipment Refueled?
+            </Texts>
           </Holds>
         </Holds>
+
+        {showRefuelInput && (
+          <Holds background="white" className=" mb-3">
+            <Labels size="p5">Gallons Refueled</Labels>
+            <Inputs
+              type="number"
+              step="0.1"
+              min="0"
+              placeholder="Enter gallons refueled"
+              value={newRefuelGallons}
+              onChange={(e) => setNewRefuelGallons(e.target.value)}
+              className="border border-gray-300 mb-2"
+            />
+            <Holds position="row" className="w-full gap-4">
+              <Buttons
+                shadow="none"
+                background="green"
+                className="w-full"
+                onClick={refuelLog ? handleUpdateRefuel : handleCreateRefuel}
+              >
+                {refuelLog ? "Update" : "Save"}
+              </Buttons>
+              <Buttons
+                shadow="none"
+                background="red"
+                className="w-full"
+                onClick={() => {
+                  if (refuelLog) {
+                    handleDeleteRefuelLog();
+                  } else {
+                    setShowRefuelInput(false);
+                    setNewRefuelGallons("");
+                  }
+                }}
+              >
+                {refuelLog ? "Delete" : "Cancel"}
+              </Buttons>
+            </Holds>
+          </Holds>
+        )}
+
+        {isRefueled && !showRefuelInput && (
+          <Holds className="p-3 border border-solid border-green-500 rounded-lg bg-green-50">
+            <Holds
+              position="row"
+              className="w-full h-full justify-center items-center"
+            >
+              <Texts size="p5" className="text-green-700">
+                {refuelLog?.gallonsRefueled || 0} gallons refueled
+              </Texts>
+
+              <Buttons
+                shadow={"none"}
+                background={"none"}
+                className="text-xs w-12 h-full"
+                onClick={() => {
+                  setNewRefuelGallons(
+                    refuelLog?.gallonsRefueled?.toString() || ""
+                  );
+                  setShowRefuelInput(true);
+                }}
+              >
+                <Images
+                  className="w-5 h-5 mx-auto"
+                  titleImg={"/eraser.svg"}
+                  titleImgAlt={"Edit"}
+                />
+              </Buttons>
+            </Holds>
+          </Holds>
+        )}
       </Holds>
-      {refuelLog && refuelLog.length > 0 && (
-        <Holds>
-          <RefuelEquipmentLogsList
-            refuelLogs={refuelLog as Refueled[]}
-            setRefuelLogs={setRefuelLog}
-            mileage={false}
-          />
-        </Holds>
-      )}
     </Holds>
   );
 }

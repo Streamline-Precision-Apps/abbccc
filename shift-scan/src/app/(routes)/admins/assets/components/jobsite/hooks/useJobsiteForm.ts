@@ -30,7 +30,18 @@ export interface UseJobsiteFormReturn {
   handleSaveChanges: () => Promise<void>;
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
-  handleNewJobsiteSubmit: (newJobsite: any) => Promise<void>;
+  handleNewJobsiteSubmit: (newJobsite: {
+    name: string;
+    clientId: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    description: string;
+    isActive: boolean;
+    approvalStatus: string;
+  }) => Promise<void>;
 }
 
 /**
@@ -114,7 +125,7 @@ export const useJobsiteForm = ({
       formDataToSend.append("country", formData.country || "US");
       formDataToSend.append("comment", formData.comment || "");
       formDataToSend.append("isActive", formData.isActive.toString());
-      formDataToSend.append("client", formData.Client || "");
+      formDataToSend.append("client", formData.clientId || "");
 
       // Call the actual update jobsite server action
       const result = await updateJobsite(formDataToSend);
@@ -187,7 +198,18 @@ export const useJobsiteForm = ({
    * Handle new jobsite registration
    */
   const handleNewJobsiteSubmit = useCallback(
-    async (newJobsite: any) => {
+    async (newJobsite: {
+      name: string;
+      description: string;
+      address?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
+      comment?: string;
+      isActive?: boolean;
+      client?: string;
+    }) => {
       try {
         // Validate required fields
         if (!newJobsite.name?.trim()) {

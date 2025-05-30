@@ -21,7 +21,9 @@ export default function UserInformation({
     [key: string]: boolean;
   };
   handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => void;
   updateEditState: (
     updates: Partial<{

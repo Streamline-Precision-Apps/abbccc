@@ -2,36 +2,52 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from "@/auth";
 
+/**
+ * Fetch equipment list with their associated document tags
+ * Only returns active (not disabled) equipment to maintain data relevance
+ */
 export async function GET() {
-  const session = await auth();
-  const userId = session?.user.id;
-  
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const equipment = await prisma.equipment.findMany({
+      where: {
+        isDisabledByAdmin: false,
+        approvalStatus: 'APPROVED',
+      },
       select: {
         id: true,
         qrId: true,
         name: true,
-        DocumentTags: {  // Include the DocumentTags relation
+        equipmentTag: true,
+        DocumentTags: {
           select: {
-            tagName: true
+            id: true,
+            tagName: true,
           }
         }
       },
-      where: {
-        isActive: true  // Optional: only fetch active equipment
+      orderBy: {
+        name: 'asc'
       }
     });
+
+    if (!equipment || equipment.length === 0) {
+      return NextResponse.json(
+        { message: "No equipment found" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(equipment);
   } catch (error) {
     console.error("Error fetching equipment:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch document equipment" },
-      { status: 500 }
-    );
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch document equipment";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
