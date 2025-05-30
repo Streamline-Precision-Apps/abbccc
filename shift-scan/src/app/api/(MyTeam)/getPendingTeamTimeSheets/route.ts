@@ -1,7 +1,9 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+// Force this route to be dynamic
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {

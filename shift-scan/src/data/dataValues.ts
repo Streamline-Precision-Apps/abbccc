@@ -33,7 +33,6 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
     id: "ft1",
     name: "Leave Request Form",
     formType: "Leave Request",
-    isActive: true,
     isSignatureRequired: true,
     Company: { connect: { id: "1" } },
     FormGrouping: {
@@ -90,7 +89,6 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   {
     name: "Injury Report Form",
     formType: "Injury Report",
-    isActive: true,
     isSignatureRequired: true,
     Company: { connect: { id: "1" } },
     FormGrouping: {
@@ -143,7 +141,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comments for Jobsite 1",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -160,7 +159,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "67890",
     country: "Country",
     comment: "Comments for Jobsite 2",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -176,7 +176,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comments for Jobsite 3",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -192,7 +193,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comments for Jobsite 4",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -208,7 +210,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comments for Jobsite 5",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -224,7 +227,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comments for Jobsite 1",
-    isActive: true,
+    Client: { connect: { id: "client2" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -240,7 +244,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comment for Mechanic Jobsite",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -256,7 +261,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     zipCode: "12345",
     country: "Country",
     comment: "Comment for Truck Jobsite",
-    isActive: true,
+    Client: { connect: { id: "client1" } },
+    Company: { connect: { id: "1" } },
     EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
@@ -280,6 +286,38 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
   },
 ];
 
+/* CLIENTS */
+export const initialClients: Prisma.ClientCreateInput[] = [
+  {
+    id: "client1",
+    name: "ABC Construction",
+    description: "Primary construction client",
+    address: "789 Industrial Blvd",
+    city: "Burley",
+    state: "ID",
+    zipCode: "83318",
+    country: "US",
+    phone: "555-0101",
+    email: "contact@abcconstruction.com",
+    contactPerson: "John Smith",
+    Company: { connect: { id: "1" } },
+  },
+  {
+    id: "client2",
+    name: "Tasco Industries",
+    description: "Secondary industrial client",
+    address: "456 Factory Road",
+    city: "Burley",
+    state: "ID",
+    zipCode: "83318",
+    country: "US",
+    phone: "555-0202",
+    email: "contact@tascoindustries.com",
+    contactPerson: "Jane Johnson",
+    Company: { connect: { id: "1" } },
+  },
+];
+
 /* USERS */
 export const initialUsers: Prisma.UserCreateInput[] = [
   {
@@ -289,7 +327,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "adminLabor",
     email: "test01@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: false,
     tascoView: false,
     laborView: true,
@@ -305,7 +343,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "userLabor",
     email: "test02@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: false,
     tascoView: false,
     laborView: true,
@@ -321,7 +359,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "userMechanic",
     email: "test03@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: false,
     tascoView: false,
     laborView: false,
@@ -337,7 +375,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "userTruck",
     email: "test04@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: true,
     tascoView: false,
     laborView: false,
@@ -353,7 +391,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "userTasco",
     email: "test05@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: false,
     tascoView: true,
     laborView: false,
@@ -369,7 +407,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "adminTruck",
     email: "test06@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: true,
     tascoView: false,
     laborView: true,
@@ -385,7 +423,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "devunfox",
     email: "devunfox15@gmail.com",
     password: "securepassword",
-    DOB: "07-08-1999",
+    DOB: new Date("1999-07-08"),
     truckView: true,
     tascoView: true,
     laborView: true,
@@ -401,7 +439,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "zrobker",
     email: "test08@gmail.com",
     password: "securepassword",
-    DOB: "12-22-1996",
+    DOB: new Date("1996-12-22"),
     truckView: true,
     tascoView: true,
     laborView: true,
@@ -417,7 +455,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "seanwalk",
     email: "test09@gmail.com",
     password: "securepassword",
-    DOB: "06-15-2000",
+    DOB: new Date("2000-06-15"),
     truckView: true,
     tascoView: true,
     laborView: true,
@@ -433,7 +471,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "adminTasco",
     email: "test10@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: false,
     tascoView: true,
     laborView: true,
@@ -449,7 +487,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "adminMechanic",
     email: "test11@gmail.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: false,
     tascoView: false,
     laborView: true,
@@ -465,7 +503,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "zanegillette",
     email: "zane@streamlineprecision.com",
     password: "securepassword",
-    DOB: "01-01-2000",
+    DOB: new Date("2000-01-01"),
     truckView: true,
     tascoView: true,
     laborView: true,
@@ -702,6 +740,10 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 /* DOCUMENT TAGS (new) */
 export const initialDocumentTags: Prisma.DocumentTagCreateInput[] = [
   {
+    id: "dt1",
+    tagName: "Equipment",
+  },
+  {
     id: "dt2",
     tagName: "Policies",
   },
@@ -799,9 +841,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-007 Kenworth W900",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -821,9 +861,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-9",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -842,9 +880,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-015 International",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -863,9 +899,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-16 Gray Truck",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -884,9 +918,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-017 Kenworth T2000",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -905,9 +937,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-019 International",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -926,9 +956,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-20 Kenworth T880",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -947,9 +975,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-21 Kenworth T880",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -968,9 +994,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-22 Kenworth T880",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -989,9 +1013,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-78 Kenworth T800",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1010,9 +1032,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-3010",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1031,9 +1051,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "Rented Truck",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1052,9 +1070,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-18 Kenworth 2015",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1073,9 +1089,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-50",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1094,9 +1108,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-51",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1115,9 +1127,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-52",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1136,9 +1146,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-53",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1157,9 +1165,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-54",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1178,9 +1184,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-55",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1199,9 +1203,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-56",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1220,9 +1222,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-57",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1241,9 +1241,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CTRK-58",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1262,9 +1260,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "PTI(Pump TRK)",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1283,9 +1279,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-AT-1-ARMY TRK GREEN",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1304,9 +1298,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-AT-2-ARMY TRK TAN",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1325,9 +1317,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "TRK-AT-3-ARMY TRK CAMO",
     description: "",
     equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     equipmentVehicleInfo: {
       create: {
@@ -1346,9 +1336,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CABLE PLOW",
     description: "",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     // No vehicle info needed for non-truck equipment.
     DocumentTags: { connect: [{ id: "dt1" }] },
@@ -1359,9 +1347,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CablePlo - Cable Plow Case",
     description: "",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1371,9 +1357,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "Case International Chisel Dyker",
     description: "Case International Chisel Dyker",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1383,9 +1367,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CATTRACK",
     description: "CAT TRACK TRACTOR CH65",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1395,9 +1377,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CEMENT FORMS",
     description: "CEMENT FORMS",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1407,9 +1387,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CEMENT MIXER HYDRAULIC",
     description: "CEMENT MIXER HYDRAULIC",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1419,9 +1397,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CHAMP LIFT",
     description: "CHAMP LIFT",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1431,9 +1407,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CHISEL PLOW",
     description: "CHISEL PLOW",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1443,9 +1417,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CONCRETE FORMS",
     description: "CONCRETE FORMS",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1455,9 +1427,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "CONCRETE MIXER#1",
     description: "CONCRETE MIXER#1",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1468,9 +1438,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "Trailer TX200",
     description: "Utility trailer for transporting equipment",
     equipmentTag: "TRAILER",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     // No vehicle info for trailers
     DocumentTags: { connect: [{ id: "dt1" }] },
@@ -1482,9 +1450,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "Bulldozer B450",
     description: "Powerful bulldozer for heavy-duty tasks",
     equipmentTag: "VEHICLE",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1494,9 +1460,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     name: "Excavator 3000",
     description: "Heavy-duty excavator for construction sites",
     equipmentTag: "EQUIPMENT",
-    status: "OPERATIONAL",
-    isActive: true,
-    inUse: false,
+    state: "AVAILABLE",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1599,6 +1563,24 @@ export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
     id: "ts2",
     date: new Date(),
     User: { connect: { id: "1" } },
+    Jobsite: { connect: { qrId: "j123" } },
+    CostCode: { connect: { name: "#01.20 Engineering Labor" } },
+    nu: "nu",
+    Fp: "fp",
+    startTime: new Date(now.getTime() - 7200000),
+    endTime: new Date(),
+    comment: "Timesheet test entry",
+    statusComment: "Approved by manager",
+    location: "Site A",
+    status: FormStatus.APPROVED,
+    workType: WorkType.LABOR,
+    createdByAdmin: false,
+    createdAt: new Date(),
+  },
+  {
+    id: "ts3",
+    date: new Date(),
+    User: { connect: { id: "8" } },
     Jobsite: { connect: { qrId: "j123" } },
     CostCode: { connect: { name: "#01.20 Engineering Labor" } },
     nu: "nu",
@@ -1743,18 +1725,77 @@ export const initialTascoLogs: Prisma.TascoLogCreateInput[] = [
   },
 ];
 
-/* CREATION LOGS (new) */
-export const initialCreationLogs: Prisma.CreationLogsCreateInput[] = [
+/* PENDING APPROVALS (replacement for CreationLogs) */
+export const initialPendingApprovals: Prisma.PendingApprovalCreateInput[] = [
   {
+    entityType: "EQUIPMENT",
+    comment: "Field manager created new equipment eq1",
+    proposedChanges: {
+      name: "TRK-007 Kenworth W900",
+      description: "Field-created truck",
+      equipmentTag: "TRUCK",
+    },
+    approvalStatus: "APPROVED",
+    approvalComment: "Approved by office admin",
+    approvedAt: new Date(),
+    CreatedBy: { connect: { id: "1" } },
+    ApprovedBy: { connect: { id: "7" } },
     Equipment: { connect: { id: "eq1" } },
-    User: { connect: { id: "1" } },
-    comment: "Created equipment eq1",
-    createdByOffice: false,
   },
   {
+    entityType: "JOBSITE",
+    comment: "Field manager created new jobsite",
+    proposedChanges: {
+      name: "Jobsite 1",
+      address: "123 Main St",
+      city: "City",
+    },
+    approvalStatus: "PENDING",
+    CreatedBy: { connect: { id: "1" } },
     Jobsite: { connect: { id: "1" } },
+  },
+];
+
+/* AUDIT LOGS (replacement for CreationLogs) */
+export const initialAuditLogs: Prisma.AuditLogCreateInput[] = [
+  {
+    entityType: "EQUIPMENT",
+    action: "CREATED",
+    changes: {
+      before: null,
+      after: {
+        name: "TRK-007 Kenworth W900",
+        state: "OPERATIONAL",
+        equipmentTag: "TRUCK",
+      },
+    },
+    comment: "Equipment created by field manager",
     User: { connect: { id: "1" } },
-    comment: "Created jobsite 1",
-    createdByOffice: false,
+    Equipment: { connect: { id: "eq1" } },
+  },
+  {
+    entityType: "EQUIPMENT",
+    action: "APPROVED",
+    changes: {
+      before: { approvalStatus: "PENDING" },
+      after: { approvalStatus: "APPROVED" },
+    },
+    comment: "Equipment approved by office admin",
+    User: { connect: { id: "7" } },
+    Equipment: { connect: { id: "eq1" } },
+  },
+  {
+    entityType: "JOBSITE",
+    action: "CREATED",
+    changes: {
+      before: null,
+      after: {
+        name: "Jobsite 1",
+        address: "123 Main St",
+      },
+    },
+    comment: "Jobsite created by field manager",
+    User: { connect: { id: "1" } },
+    Jobsite: { connect: { id: "1" } },
   },
 ];

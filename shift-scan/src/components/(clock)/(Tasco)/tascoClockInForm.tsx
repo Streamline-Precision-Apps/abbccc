@@ -28,6 +28,7 @@ type TascoClockInFormProps = {
 };
 
 type Option = {
+  id: string;
   code: string;
   label: string;
 };
@@ -104,7 +105,7 @@ export default function TascoClockInForm({
                       if (equipment) {
                         setEquipment(equipment); // Update the equipment state with the full Option object
                       } else {
-                        setEquipment({ code: "", label: "" }); // Reset if null
+                        setEquipment({ id: "", code: "", label: "" }); // Reset if null
                       }
                     }}
                     initialValue={equipment}
@@ -135,7 +136,7 @@ export default function TascoClockInForm({
                           if (equipment) {
                             setEquipment(equipment); // Update the equipment state with the full Option object
                           } else {
-                            setEquipment({ code: "", label: "" }); // Reset if null
+                            setEquipment({ id: "", code: "", label: "" }); // Reset if null
                           }
                         }}
                         initialValue={equipment}

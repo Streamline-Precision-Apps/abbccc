@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { EquipmentTags } from "@prisma/client"; // Importing EquipmentTags from Prisma
+import { EquipmentState, EquipmentTags } from "@prisma/client";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -17,68 +17,53 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const filter = url.searchParams.get("filter");
 
-    let equipment = [];
-
-    if (filter === "temporary") {
-      equipment = await prisma.equipment.findMany({
-        where: { isActive: false },
+    const baseSelect = {
+      id: true,
+      qrId: true,
+      name: true,
+      description: true,
+      equipmentTag: true,
+      state: true,
+      isDisabledByAdmin: true,
+      approvalStatus: true,
+      overWeight: true,
+      currentWeight: true,
+      equipmentVehicleInfo: {
         select: {
-          id: true,
-          qrId: true,
-          name: true,
-          description: true,
-          equipmentTag: true,
-          status: true,
-          isActive: true,
-          inUse: true,
+          make: true,
+          model: true,
+          year: true,
+          licensePlate: true,
+          registrationExpiration: true,
+          mileage: true,
         },
+      },
+    } as const;
+
+    let equipment;
+
+    if (filter === "inactive") {
+      equipment = await prisma.equipment.findMany({
+        where: { isDisabledByAdmin: true },
+        select: baseSelect,
       });
     } else if (filter === "needsRepair") {
       equipment = await prisma.equipment.findMany({
-        where: { status: "NEEDS_REPAIR" },
-        select: {
-          id: true,
-          qrId: true,
-          name: true,
-          description: true,
-          equipmentTag: true,
-          status: true,
-          isActive: true,
-          inUse: true,
-        },
+        where: { state: EquipmentState.NEEDS_REPAIR },
+        select: baseSelect,
       });
     } else if (
       filter &&
-      ["TRUCK", "TRAILER", "EQUIPMENT", "VEHICLE"].includes(
-        filter.toUpperCase()
-      )
+      Object.values(EquipmentTags).includes(filter as EquipmentTags)
     ) {
       equipment = await prisma.equipment.findMany({
-        where: { equipmentTag: filter.toUpperCase() as EquipmentTags }, // Explicit type assertion
-        select: {
-          id: true,
-          qrId: true,
-          name: true,
-          description: true,
-          equipmentTag: true,
-          status: true,
-          isActive: true,
-          inUse: true,
-        },
+        where: { equipmentTag: filter as EquipmentTags },
+        select: baseSelect,
       });
     } else {
       // Default: fetch all equipment
       equipment = await prisma.equipment.findMany({
-        select: {
-          id: true,
-          qrId: true,
-          name: true,
-          description: true,
-          equipmentTag: true,
-          status: true,
-          isActive: true,
-          inUse: true,
-        },
+        select: baseSelect,
       });
     }
 
@@ -93,11 +78,8 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Error fetching equipment data:", error);
 
-    let errorMessage = "Failed to fetch equipment data";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch equipment data";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

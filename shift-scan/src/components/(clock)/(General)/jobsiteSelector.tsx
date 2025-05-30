@@ -5,7 +5,7 @@ import { useDBJobsite } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
-  id?: string;
+  id: string;
   code: string;
   label: string;
 };
@@ -27,7 +27,8 @@ export const JobsiteSelector = ({
   const t = useTranslations("Clock");
   useEffect(() => {
     const options = jobsiteResults.map((jobSite) => ({
-      code: useJobSiteId ? jobSite.id : jobSite.qrId,
+      id: jobSite.id,
+      code: jobSite.qrId,
       label: jobSite.name,
     }));
 
