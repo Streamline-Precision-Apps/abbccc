@@ -3,6 +3,7 @@ model Jobsite {
   qrId                  String                 @unique @default(uuid())
   name                  String
   description           String
+  approvalStatus        ApprovalStatus         @default(APPROVED) // Fields-created in admin are Approved
   isActive              Boolean                @default(true)
   address               String
   city                  String
