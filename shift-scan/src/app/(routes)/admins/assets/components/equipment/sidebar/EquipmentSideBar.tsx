@@ -10,7 +10,7 @@ import {
 import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
 import EquipmentRow from "./EquipmentRow";
-import { Equipment } from "../../../types";
+import { Equipment, EquipmentSummary } from "../../../types";
 
 export default function EquipmentSideBar({
   assets,
@@ -22,8 +22,8 @@ export default function EquipmentSideBar({
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
-  equipments: Equipment[];
-  setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
+  equipments: EquipmentSummary[];
+  setSelectEquipment: (equipment: EquipmentSummary | null) => void;
   selectEquipment: Equipment | null;
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,7 +33,7 @@ export default function EquipmentSideBar({
 
   // Handle equipment selection with toggle functionality
   const handleEquipmentClick = useCallback(
-    (equipment: Equipment) => {
+    (equipment: EquipmentSummary) => {
       // If the clicked equipment is already selected, deselect it
       if (selectEquipment?.id === equipment.id) {
         setSelectEquipment(null);

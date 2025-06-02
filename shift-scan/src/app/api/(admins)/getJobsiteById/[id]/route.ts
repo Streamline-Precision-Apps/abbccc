@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
@@ -32,13 +31,18 @@ export async function GET(
       where: { id: jobsiteId },
       include: {
         PendingApprovals: true,
-        AuditLogs: true,
-        EmployeeEquipmentLogs: true,
-        EquipmentHauled: true,
-        Client: true,
-        Company: true,
-        TimeSheets: true,
-        CCTags: true,
+        Client: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        CCTags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

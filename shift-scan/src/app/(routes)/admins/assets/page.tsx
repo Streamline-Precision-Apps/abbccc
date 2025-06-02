@@ -5,7 +5,17 @@ import React, { useEffect, useState } from "react";
 import { Selects } from "@/components/(reusable)/selects";
 import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
 import DiscardChangesModal from "./components/shared/DiscardChangesModal";
-import { Equipment, ASSET_TYPES, Jobsite } from "./types";
+import {
+  Equipment,
+  ASSET_TYPES,
+  Jobsite,
+  CostCode,
+  Tag,
+  EquipmentSummary,
+  JobsiteSummary,
+  CostCodeSummary,
+  TagSummary,
+} from "./types";
 import EquipmentMainContent from "./components/equipment/EquipmentMainContent";
 import JobsiteMainContent from "./components/jobsite/JobsiteMainContent";
 import JobsiteSideBar from "./components/jobsite/sidebar/JobsiteSideBar";
@@ -13,17 +23,34 @@ import JobsiteSideBar from "./components/jobsite/sidebar/JobsiteSideBar";
 export default function Assets() {
   const [assets, setAssets] = useState("Equipment");
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
-  const [equipments, setEquipments] = useState<Equipment[]>([]);
-  const [jobsites, setJobsites] = useState<Jobsite[]>([]);
+
+  // Summary state (for sidebar lists)
+  const [equipmentSummaries, setEquipmentSummaries] = useState<
+    EquipmentSummary[]
+  >([]);
+  const [jobsiteSummaries, setJobsiteSummaries] = useState<JobsiteSummary[]>(
+    []
+  );
+  const [costCodeSummaries, setCostCodeSummaries] = useState<CostCodeSummary[]>(
+    []
+  );
+  const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
+
+  // Detailed state (for selected items)
   const [selectEquipment, setSelectEquipment] = useState<Equipment | null>(
     null
   );
   const [selectJobsite, setSelectJobsite] = useState<Jobsite | null>(null);
+  const [selectCostCode, setSelectCostCode] = useState<CostCode | null>(null);
+  const [selectTag, setSelectTag] = useState<Tag | null>(null);
+
+  // UI state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showAssetChangeModal, setShowAssetChangeModal] = useState(false);
   const [pendingAssetChange, setPendingAssetChange] = useState<string | null>(
     null
   );
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Handler for asset type change with unsaved changes check
   const handleAssetChange = (newAssetType: string) => {
@@ -34,8 +61,11 @@ export default function Assets() {
     } else {
       // Otherwise change asset type normally
       setAssets(newAssetType);
-      setSelectEquipment(null); // Clear equipment selection when changing asset types
-      setSelectJobsite(null); // Clear jobsite selection when changing asset types
+      // Clear all selections when changing asset types
+      setSelectEquipment(null);
+      setSelectJobsite(null);
+      setSelectCostCode(null);
+      setSelectTag(null);
     }
   };
 
@@ -43,8 +73,11 @@ export default function Assets() {
   const handleConfirmAssetChange = () => {
     if (pendingAssetChange) {
       setAssets(pendingAssetChange);
-      setSelectEquipment(null); // Clear equipment selection
-      setSelectJobsite(null); // Clear jobsite selection
+      // Clear all selections
+      setSelectEquipment(null);
+      setSelectJobsite(null);
+      setSelectCostCode(null);
+      setSelectTag(null);
       setHasUnsavedChanges(false); // Reset unsaved changes state
     }
     setShowAssetChangeModal(false);
@@ -57,38 +90,158 @@ export default function Assets() {
     setPendingAssetChange(null);
   };
 
-  // Equipment fetch function extracted for reuse
-  const fetchEquipments = async () => {
+  // Equipment summary fetch function
+  const fetchEquipmentSummaries = async () => {
     try {
-      const equipmentsData = await fetch("/api/getAllEquipment?filter=all", {
-        next: { tags: ["equipment"] },
-      }).then((res) => res.json());
-
-      setEquipments(equipmentsData);
+      const response = await fetch("/api/getEquipmentSummary");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setEquipmentSummaries(data);
     } catch (error) {
-      console.error(`Failed to fetch equipment data:`, error);
+      console.error(`Failed to fetch equipment summaries:`, error);
     }
   };
 
-  useEffect(() => {
-    fetchEquipments();
-  }, []);
-
-  // Jobsite fetch function extracted for reuse
-  const fetchJobsites = async () => {
+  // Jobsite summary fetch function
+  const fetchJobsiteSummaries = async () => {
     try {
-      const jobsiteData = await fetch("/api/getAllJobsites?filter=all", {
-        next: { tags: ["jobsites"] },
-      }).then((res) => res.json());
-
-      setJobsites(jobsiteData);
+      const response = await fetch("/api/getJobsiteSummary");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setJobsiteSummaries(data);
     } catch (error) {
-      console.error(`Failed to fetch jobsite data:`, error);
+      console.error(`Failed to fetch jobsite summaries:`, error);
     }
   };
 
+  // Cost code summary fetch function
+  const fetchCostCodeSummaries = async () => {
+    try {
+      const response = await fetch("/api/getCostCodeSummary");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setCostCodeSummaries(data);
+    } catch (error) {
+      console.error(`Failed to fetch cost code summaries:`, error);
+    }
+  };
+
+  // Tag summary fetch function
+  const fetchTagSummaries = async () => {
+    try {
+      const response = await fetch("/api/getTagSummary");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setTagSummaries(data);
+    } catch (error) {
+      console.error(`Failed to fetch tag summaries:`, error);
+    }
+  };
+
+  // Fetch detailed equipment data when an equipment is selected
+  const fetchEquipmentDetails = async (equipmentId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/getEquipmentByEquipmentId/${equipmentId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setSelectEquipment(data);
+    } catch (error) {
+      console.error(`Failed to fetch equipment details:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch detailed jobsite data when a jobsite is selected
+  const fetchJobsiteDetails = async (jobsiteId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/getJobsiteById/${jobsiteId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setSelectJobsite(data);
+    } catch (error) {
+      console.error(`Failed to fetch jobsite details:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch detailed cost code data when a cost code is selected
+  const fetchCostCodeDetails = async (costCodeId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/getCostCodeById/${costCodeId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setSelectCostCode(data);
+    } catch (error) {
+      console.error(`Failed to fetch cost code details:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch detailed tag data when a tag is selected
+  const fetchTagDetails = async (tagId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/getTagById/${tagId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      setSelectTag(data);
+    } catch (error) {
+      console.error(`Failed to fetch tag details:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler for equipment selection
+  const handleEquipmentSelect = (equipmentId: string) => {
+    fetchEquipmentDetails(equipmentId);
+  };
+
+  // Handler for jobsite selection
+  const handleJobsiteSelect = (jobsiteId: string) => {
+    fetchJobsiteDetails(jobsiteId);
+  };
+
+  // Handler for cost code selection
+  const handleCostCodeSelect = (costCodeId: string) => {
+    fetchCostCodeDetails(costCodeId);
+  };
+
+  // Handler for tag selection
+  const handleTagSelect = (tagId: string) => {
+    fetchTagDetails(tagId);
+  };
+
+  // Fetch all summaries on component mount
   useEffect(() => {
-    fetchJobsites();
+    fetchEquipmentSummaries();
+    fetchJobsiteSummaries();
+    fetchCostCodeSummaries();
+    fetchTagSummaries();
   }, []);
 
   return (
@@ -116,9 +269,15 @@ export default function Assets() {
                 <EquipmentSideBar
                   setAssets={setAssets}
                   assets={assets}
-                  equipments={equipments}
+                  equipments={equipmentSummaries}
                   selectEquipment={selectEquipment}
-                  setSelectEquipment={setSelectEquipment}
+                  setSelectEquipment={(equipment) => {
+                    if (equipment) {
+                      handleEquipmentSelect(equipment.id);
+                    } else {
+                      setSelectEquipment(null);
+                    }
+                  }}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
@@ -127,17 +286,23 @@ export default function Assets() {
                 <JobsiteSideBar
                   assets={assets}
                   setAssets={setAssets}
-                  jobsites={jobsites}
-                  setSelectJobsite={setSelectJobsite}
+                  jobsites={jobsiteSummaries}
+                  setSelectJobsite={(jobsite) => {
+                    if (jobsite) {
+                      handleJobsiteSelect(jobsite.id);
+                    } else {
+                      setSelectJobsite(null);
+                    }
+                  }}
                   selectJobsite={selectJobsite}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
                 />
               ) : assets === "CostCode" ? (
-                <></>
+                <>{/* TODO: Implement CostCodeSideBar component */}</>
               ) : assets === "Tags" ? (
-                <></>
+                <>{/* TODO: Implement TagsSideBar component */}</>
               ) : null}
             </Grids>
           </Holds>
@@ -149,7 +314,8 @@ export default function Assets() {
               setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectEquipment={setSelectEquipment}
               onUnsavedChangesChange={setHasUnsavedChanges}
-              refreshEquipments={fetchEquipments}
+              refreshEquipments={fetchEquipmentSummaries}
+              loading={loading}
             />
           ) : assets === "Jobsite" ? (
             <JobsiteMainContent
@@ -159,12 +325,13 @@ export default function Assets() {
               setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectJobsite={setSelectJobsite}
               onUnsavedChangesChange={setHasUnsavedChanges}
-              refreshJobsites={fetchJobsites}
+              refreshJobsites={fetchJobsiteSummaries}
+              loading={loading}
             />
           ) : assets === "CostCode" ? (
-            <></>
+            <>{/* TODO: Implement CostCodeMainContent component */}</>
           ) : assets === "Tags" ? (
-            <></>
+            <>{/* TODO: Implement TagMainContent component */}</>
           ) : null}
         </Grids>
       </Holds>
@@ -174,7 +341,7 @@ export default function Assets() {
         isOpen={showAssetChangeModal}
         confirmDiscardChanges={handleConfirmAssetChange}
         cancelDiscard={handleCancelAssetChange}
-        message="You have unsaved equipment changes. Switching asset types will discard them. Are you sure you want to continue?"
+        message="You have unsaved changes. Switching asset types will discard them. Are you sure you want to continue?"
       />
     </Holds>
   );

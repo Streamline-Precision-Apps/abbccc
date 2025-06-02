@@ -1,8 +1,8 @@
 // Main types export file for assets
-export type { Equipment } from "./equipment";
-export type { Jobsite } from "./jobsite";
-export type { CostCode } from "./costcode";
-export type { Tag } from "./tags";
+export type { Equipment, EquipmentSummary } from "./equipment";
+export type { Jobsite, JobsiteSummary } from "./jobsite";
+export type { CostCode, CostCodeSummary } from "./costcode";
+export type { Tag, TagSummary } from "./tags";
 
 // Asset type configuration
 export const ASSET_TYPES = [

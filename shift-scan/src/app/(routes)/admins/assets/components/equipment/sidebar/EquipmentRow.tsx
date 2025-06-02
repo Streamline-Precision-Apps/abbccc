@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
-import { Equipment } from "../../../types";
+import { Equipment, EquipmentSummary } from "../../../types";
 
 interface EquipmentRowProps {
-  equipment: Equipment;
+  equipment: EquipmentSummary;
   isSelected: boolean;
-  onEquipmentClick: (equipment: Equipment) => void;
+  onEquipmentClick: (equipment: EquipmentSummary) => void;
   hasUnsavedChanges?: boolean;
 }
 

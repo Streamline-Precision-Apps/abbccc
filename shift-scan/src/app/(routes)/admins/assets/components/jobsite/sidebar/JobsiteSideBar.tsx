@@ -10,7 +10,7 @@ import {
 import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
 import JobsiteRow from "./JobsiteRow";
-import { Jobsite } from "../../../types";
+import { Jobsite, JobsiteSummary } from "../../../types";
 
 export default function JobsiteSideBar({
   assets,
@@ -22,8 +22,8 @@ export default function JobsiteSideBar({
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
-  jobsites: Jobsite[];
-  setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
+  jobsites: JobsiteSummary[];
+  setSelectJobsite: (jobsite: JobsiteSummary | null) => void;
   selectJobsite: Jobsite | null;
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,7 +33,7 @@ export default function JobsiteSideBar({
 
   // Handle jobsite selection with toggle functionality
   const handleJobsiteClick = useCallback(
-    (jobsite: Jobsite) => {
+    (jobsite: JobsiteSummary) => {
       // If the clicked jobsite is already selected, deselect it
       if (selectJobsite?.id === jobsite.id) {
         setSelectJobsite(null);
@@ -56,13 +56,8 @@ export default function JobsiteSideBar({
     }
 
     const searchTerm = term.toLowerCase();
-    return sortedJobsites.filter(
-      (jobsite) =>
-        jobsite.name.toLowerCase().includes(searchTerm) ||
-        jobsite.qrId.toLowerCase().includes(searchTerm) ||
-        jobsite.description?.toLowerCase().includes(searchTerm) ||
-        jobsite.city?.toLowerCase().includes(searchTerm) ||
-        jobsite.state?.toLowerCase().includes(searchTerm)
+    return sortedJobsites.filter((jobsite) =>
+      jobsite.name.toLowerCase().includes(searchTerm)
     );
   }, [jobsites, term]);
 

@@ -25,6 +25,8 @@ interface EquipmentMainContentProps {
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
   /** Function to refresh equipment list */
   refreshEquipments?: () => Promise<void>;
+  /** Loading state */
+  loading?: boolean;
 }
 
 /**
@@ -45,6 +47,7 @@ export default function EquipmentMainContent({
   setSelectEquipment,
   onUnsavedChangesChange,
   refreshEquipments,
+  loading = false,
 }: EquipmentMainContentProps) {
   const {
     formData,
@@ -75,7 +78,16 @@ export default function EquipmentMainContent({
     setIsRegistrationFormOpen(false);
   };
 
-  // Show registration view when registration form is open and no equipment is selected
+  // Show loading indicator when data is being fetched
+  if (loading) {
+    return (
+      <Holds className="w-full h-full col-span-8 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </Holds>
+    );
+  }
+
+  // Show registration view when registration form is open
   if (isRegistrationFormOpen) {
     return (
       <EquipmentRegistrationView
