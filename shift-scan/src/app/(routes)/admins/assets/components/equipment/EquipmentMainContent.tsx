@@ -76,7 +76,7 @@ export default function EquipmentMainContent({
   };
 
   // Show registration view when registration form is open and no equipment is selected
-  if (!selectEquipment && isRegistrationFormOpen) {
+  if (isRegistrationFormOpen) {
     return (
       <EquipmentRegistrationView
         onSubmit={handleNewEquipmentSubmit}

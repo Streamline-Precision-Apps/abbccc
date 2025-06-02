@@ -4,7 +4,9 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
+import { Texts } from "@/components/(reusable)/texts";
 import { useState } from "react";
+import SafetyDocumentsAndPolicies from "./SafetyDocumentsAndPolicies";
 
 type NewEquipment = {
   name: string;
@@ -281,7 +283,14 @@ export default function EquipmentRegistrationForm({
             )}
         </Holds>
 
-        <Holds className="w-full h-full"></Holds>
+        <Holds className="w-full h-full">
+          <Texts position={"left"} size={"sm"} className="font-bold">
+            Safety Documents & Policies
+          </Texts>
+          <Holds className="w-full h-full border-[3px] rounded-[10px] border-black">
+            <SafetyDocumentsAndPolicies />
+          </Holds>
+        </Holds>
       </Grids>
     </Holds>
   );
