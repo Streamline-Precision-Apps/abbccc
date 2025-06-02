@@ -10,7 +10,8 @@ import {
 import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
 import CostCodeRow from "./CostCodeRow";
-import { CostCode, CostCodeSummary } from "../../../types";
+import { CostCode, CostCodeSummary, Tag, TagSummary } from "../../../types";
+import { Selects } from "@/components/(reusable)/selects";
 
 export default function CostCodeSideBar({
   assets,
@@ -19,6 +20,9 @@ export default function CostCodeSideBar({
   setSelectCostCode,
   selectCostCode,
   hasUnsavedChanges = false,
+  tagSummaries,
+  setSelectTag,
+  selectTag,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
@@ -28,6 +32,9 @@ export default function CostCodeSideBar({
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
+  tagSummaries: TagSummary[];
+  selectTag: Tag | null;
+  setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
 }) {
   const [term, setTerm] = useState("");
 
@@ -71,6 +78,16 @@ export default function CostCodeSideBar({
 
   return (
     <>
+      <Holds>
+        <Selects className="w-full text-center text-sm">
+          <option>Select A Group</option>
+          {tagSummaries.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </Selects>
+      </Holds>
       <SearchBar
         term={term}
         handleSearchChange={(e) => setTerm(e.target.value)}
@@ -80,7 +97,7 @@ export default function CostCodeSideBar({
 
       <Holds
         background={"white"}
-        className="w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar"
+        className="w-full h-full row-span-1 rounded-[10px] p-3 overflow-y-auto no-scrollbar"
       >
         <Holds>
           {filteredCostCodes.length > 0 ? (

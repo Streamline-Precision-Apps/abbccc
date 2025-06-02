@@ -1,7 +1,7 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { CostCode } from "../../types";
+import { CostCode, Tag } from "../../types";
 import Spinner from "@/components/(animations)/spinner";
 import CostCodeEmptyState from "./components/CostCodeEmptyState";
 import CostCodeFormView from "./components/CostCodeFormView";
@@ -20,6 +20,8 @@ interface CostCodeMainContentProps {
   refreshCostCodes: () => Promise<void>;
   loading?: boolean;
   onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
+  selectTag: Tag | null;
+  setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
 }
 
 /**

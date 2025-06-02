@@ -321,6 +321,9 @@ export default function Assets() {
                       setSelectCostCode(null);
                     }
                   }}
+                  tagSummaries={tagSummaries}
+                  setSelectTag={setSelectTag}
+                  selectTag={selectTag}
                   selectCostCode={selectCostCode}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
@@ -328,8 +331,6 @@ export default function Assets() {
                     hasUnsavedChanges || hasRegistrationFormChanges
                   }
                 />
-              ) : assets === "Tags" ? (
-                <>{/* TODO: Implement TagsSideBar component */}</>
               ) : null}
             </Grids>
           </Holds>
@@ -370,9 +371,9 @@ export default function Assets() {
               isRegistrationGroupFormOpen={isRegistrationGroupFormOpen}
               setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
               onRegistrationFormChangesChange={setHasRegistrationFormChanges}
+              selectTag={selectTag}
+              setSelectTag={setSelectTag}
             />
-          ) : assets === "Tags" ? (
-            <>{/* TODO: Implement TagMainContent component */}</>
           ) : null}
         </Grids>
       </Holds>
