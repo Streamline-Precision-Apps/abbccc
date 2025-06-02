@@ -11,10 +11,14 @@ import CapitalizeAll from "@/utils/capitalizeAll";
 import { Titles } from "@/components/(reusable)/titles";
 import { motion, AnimatePresence } from "framer-motion";
 
-type ViewComponentProps = {
+export type ViewComponentProps = {
   scrollLeft: () => void;
   scrollRight: () => void;
   currentDate: string;
+  /**
+   * If true, disables animation on initial render (for instant load on current date)
+   */
+  disableInitialAnimation?: boolean;
 };
 
 /**
@@ -24,6 +28,7 @@ export default function ViewComponent({
   scrollLeft,
   scrollRight,
   currentDate,
+  disableInitialAnimation = false,
 }: ViewComponentProps) {
   const [locale, setLocale] = useState("en-US"); // Default to 'en-US'
 
@@ -54,7 +59,11 @@ export default function ViewComponent({
   });
 
   return (
-    <Holds background={"white"} position={"row"} className="h-full w-full p-2">
+    <Holds
+      background={"white"}
+      position={"row"}
+      className="border-[3px] border-black h-full w-full p-2 shadow-[8px_8px_0px_rgba(0,0,0,0.45)] rounded-[10px]"
+    >
       <Buttons onClick={scrollLeft} className="shadow-none w-[60px]">
         <Images
           titleImg={"/arrowLeftSymbol.svg"}
@@ -62,13 +71,12 @@ export default function ViewComponent({
           className="mx-auto h-5 w-5"
         />
       </Buttons>
-
       <Holds
         background={"white"}
         size={"80"}
         className="h-full mx-2 justify-center rounded-[10px]"
       >
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait" initial={!disableInitialAnimation}>
           <motion.div
             key={currentDate}
             initial={{ x: 40, opacity: 0 }}
@@ -86,7 +94,6 @@ export default function ViewComponent({
           </motion.div>
         </AnimatePresence>
       </Holds>
-
       <Buttons onClick={scrollRight} className="shadow-none w-[60px]">
         <Images
           titleImg={"/arrowRightSymbol.svg"}
