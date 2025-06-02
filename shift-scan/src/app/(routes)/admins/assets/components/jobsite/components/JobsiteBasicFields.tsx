@@ -301,18 +301,25 @@ export default function JobsiteBasicFields({
               />
 
               {/* Optionally display approval status (read-only) */}
-              <label
-                htmlFor="approvalStatus"
-                className="text-xs font-medium mb-1"
-              >
-                Approval Status
+              <label htmlFor="isActive" className="text-xs font-medium mb-1">
+                Job Site Status
               </label>
-              <Inputs
-                type="text"
-                name="approvalStatus"
-                value={formData.approvalStatus}
-                readOnly
-                className="mb-3 text-gray-500 bg-gray-100"
+              <EditableFields
+                formDatatype="select"
+                name="isActive"
+                value={formData.isActive ? "Active" : "Inactive"}
+                onChange={(e) =>
+                  onInputChange("isActive", e.target.value === "Active")
+                }
+                isChanged={isFieldChanged("isActive")}
+                onRevert={() => onRevertField("isActive")}
+                variant={isFieldChanged("isActive") ? "edited" : "default"}
+                size="sm"
+                options={[
+                  { label: "Online", value: "Active" },
+                  { label: "Offline", value: "Inactive" },
+                ]}
+                className="mb-3"
               />
             </Holds>
           </Holds>
