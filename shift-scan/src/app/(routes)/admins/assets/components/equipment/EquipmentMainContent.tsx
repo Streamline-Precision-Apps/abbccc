@@ -1,4 +1,5 @@
-// filepath: /Users/devunfox/abbccc/shift-scan/src/app/(routes)/admins/assets/components/equipment/EquipmentMainContent.tsx
+"use client";
+import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Equipment } from "../../types";
@@ -28,6 +29,8 @@ interface EquipmentMainContentProps {
   refreshEquipments?: () => Promise<void>;
   /** Loading state */
   loading?: boolean;
+  /** Callback when registration form changes state changes */
+  onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
 }
 
 /**
@@ -49,7 +52,10 @@ export default function EquipmentMainContent({
   onUnsavedChangesChange,
   refreshEquipments,
   loading = false,
+  onRegistrationFormChangesChange,
 }: EquipmentMainContentProps) {
+  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
+    useState(false);
   const {
     formData,
     changedFields,
@@ -69,15 +75,35 @@ export default function EquipmentMainContent({
     refreshEquipments,
   });
 
+  // Handle registration form unsaved changes
+  const handleRegistrationFormChanges = useCallback(
+    (hasChanges: boolean) => {
+      setHasRegistrationFormChanges(hasChanges);
+      onRegistrationFormChangesChange?.(hasChanges);
+    },
+    [onRegistrationFormChangesChange]
+  );
+
   // Handle opening registration form
   const handleOpenRegistration = () => {
     setIsRegistrationFormOpen(true);
   };
 
-  // Handle canceling registration
-  const handleCancelRegistration = () => {
-    setIsRegistrationFormOpen(false);
-  };
+  // Handle cancel registration with unsaved changes check
+  const handleCancelRegistration = useCallback(() => {
+    if (hasRegistrationFormChanges) {
+      if (
+        confirm(
+          "You have unsaved registration form changes. Are you sure you want to discard them?"
+        )
+      ) {
+        setIsRegistrationFormOpen(false);
+        setHasRegistrationFormChanges(false);
+      }
+    } else {
+      setIsRegistrationFormOpen(false);
+    }
+  }, [hasRegistrationFormChanges, setIsRegistrationFormOpen]);
 
   // Show loading indicator when data is being fetched
   if (loading) {
@@ -97,6 +123,7 @@ export default function EquipmentMainContent({
       <EquipmentRegistrationView
         onSubmit={handleNewEquipmentSubmit}
         onCancel={handleCancelRegistration}
+        onUnsavedChangesChange={handleRegistrationFormChanges}
       />
     );
   }

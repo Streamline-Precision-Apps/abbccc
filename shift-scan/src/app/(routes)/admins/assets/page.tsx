@@ -19,10 +19,14 @@ import {
 import EquipmentMainContent from "./components/equipment/EquipmentMainContent";
 import JobsiteMainContent from "./components/jobsite/JobsiteMainContent";
 import JobsiteSideBar from "./components/jobsite/sidebar/JobsiteSideBar";
+import CostCodeSideBar from "./components/costcode/sidebar/CostCodeSideBar";
+import CostCodeMainContent from "./components/costcode/CostCodeMainContent";
 
 export default function Assets() {
   const [assets, setAssets] = useState("Equipment");
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
+  const [isRegistrationGroupFormOpen, setIsRegistrationGroupFormOpen] =
+    useState(false);
 
   // Summary state (for sidebar lists)
   const [equipmentSummaries, setEquipmentSummaries] = useState<
@@ -46,6 +50,8 @@ export default function Assets() {
 
   // UI state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
+    useState(false);
   const [showAssetChangeModal, setShowAssetChangeModal] = useState(false);
   const [pendingAssetChange, setPendingAssetChange] = useState<string | null>(
     null
@@ -54,7 +60,8 @@ export default function Assets() {
 
   // Handler for asset type change with unsaved changes check
   const handleAssetChange = (newAssetType: string) => {
-    if (hasUnsavedChanges && newAssetType !== assets) {
+    const totalUnsavedChanges = hasUnsavedChanges || hasRegistrationFormChanges;
+    if (totalUnsavedChanges && newAssetType !== assets) {
       // If there are unsaved changes, show confirmation modal
       setPendingAssetChange(newAssetType);
       setShowAssetChangeModal(true);
@@ -79,6 +86,7 @@ export default function Assets() {
       setSelectCostCode(null);
       setSelectTag(null);
       setHasUnsavedChanges(false); // Reset unsaved changes state
+      setHasRegistrationFormChanges(false); // Reset registration form changes state
     }
     setShowAssetChangeModal(false);
     setPendingAssetChange(null);
@@ -297,10 +305,29 @@ export default function Assets() {
                   selectJobsite={selectJobsite}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
-                  hasUnsavedChanges={hasUnsavedChanges}
+                  hasUnsavedChanges={
+                    hasUnsavedChanges || hasRegistrationFormChanges
+                  }
                 />
               ) : assets === "CostCode" ? (
-                <>{/* TODO: Implement CostCodeSideBar component */}</>
+                <CostCodeSideBar
+                  assets={assets}
+                  setAssets={setAssets}
+                  costCodes={costCodeSummaries}
+                  setSelectCostCode={(costCode) => {
+                    if (costCode) {
+                      handleCostCodeSelect(costCode.id);
+                    } else {
+                      setSelectCostCode(null);
+                    }
+                  }}
+                  selectCostCode={selectCostCode}
+                  isRegistrationFormOpen={isRegistrationFormOpen}
+                  setIsRegistrationFormOpen={setIsRegistrationFormOpen}
+                  hasUnsavedChanges={
+                    hasUnsavedChanges || hasRegistrationFormChanges
+                  }
+                />
               ) : assets === "Tags" ? (
                 <>{/* TODO: Implement TagsSideBar component */}</>
               ) : null}
@@ -316,6 +343,7 @@ export default function Assets() {
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshEquipments={fetchEquipmentSummaries}
               loading={loading}
+              onRegistrationFormChangesChange={setHasRegistrationFormChanges}
             />
           ) : assets === "Jobsite" ? (
             <JobsiteMainContent
@@ -327,9 +355,22 @@ export default function Assets() {
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshJobsites={fetchJobsiteSummaries}
               loading={loading}
+              onRegistrationFormChangesChange={setHasRegistrationFormChanges}
             />
           ) : assets === "CostCode" ? (
-            <>{/* TODO: Implement CostCodeMainContent component */}</>
+            <CostCodeMainContent
+              assets={assets}
+              selectCostCode={selectCostCode}
+              isRegistrationFormOpen={isRegistrationFormOpen}
+              setIsRegistrationFormOpen={setIsRegistrationFormOpen}
+              setSelectCostCode={setSelectCostCode}
+              onUnsavedChangesChange={setHasUnsavedChanges}
+              refreshCostCodes={fetchCostCodeSummaries}
+              loading={loading}
+              isRegistrationGroupFormOpen={isRegistrationGroupFormOpen}
+              setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
+              onRegistrationFormChangesChange={setHasRegistrationFormChanges}
+            />
           ) : assets === "Tags" ? (
             <>{/* TODO: Implement TagMainContent component */}</>
           ) : null}

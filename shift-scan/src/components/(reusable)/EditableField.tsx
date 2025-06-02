@@ -45,7 +45,7 @@ const EditableFieldsVariants = cva(
       },
       size: {
         default: "min-h-10 text-base", // Changed h-10 to min-h-10 for textarea
-        sm: "min-h-8 text-sm", // Changed h-8 to min-h-8 for textarea
+        sm: "min-h-8 text-xs", // Changed h-8 to min-h-8 for textarea
         lg: "min-h-12 text-lg", // Changed h-12 to min-h-12 for textarea
       },
     },

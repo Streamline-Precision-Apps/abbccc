@@ -26,6 +26,8 @@ interface EquipmentRegistrationViewProps {
   }) => Promise<void>;
   /** Handler to cancel registration */
   onCancel: () => void;
+  /** Handler for tracking unsaved changes */
+  onUnsavedChangesChange?: (hasChanges: boolean) => void;
 }
 
 /**
@@ -38,6 +40,7 @@ interface EquipmentRegistrationViewProps {
 export default function EquipmentRegistrationView({
   onSubmit,
   onCancel,
+  onUnsavedChangesChange,
 }: EquipmentRegistrationViewProps) {
   return (
     <Holds className="w-full h-full col-span-4">
@@ -84,6 +87,7 @@ export default function EquipmentRegistrationView({
               <EquipmentRegistrationForm
                 onSubmit={onSubmit}
                 onCancel={onCancel}
+                onUnsavedChangesChange={onUnsavedChangesChange}
               />
             </Holds>
           </Grids>

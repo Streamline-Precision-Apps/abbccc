@@ -51,7 +51,10 @@ export default function JobsiteFormView({
         </Holds>
 
         {/* Basic Information Section */}
-        <Holds background={"white"} className="h-full row-span-1">
+        <Holds
+          background={"white"}
+          className="h-full row-span-1 overflow-auto no-scrollbar"
+        >
           <JobsiteBasicFields
             formData={formData}
             changedFields={changedFields}

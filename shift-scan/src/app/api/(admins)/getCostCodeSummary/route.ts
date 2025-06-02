@@ -23,6 +23,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
+        isActive: true,
       },
       orderBy: {
         name: "asc",

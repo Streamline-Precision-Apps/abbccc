@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import {
   JobsiteFormView,
@@ -16,6 +16,7 @@ interface JobsiteMainContentProps {
   setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange: (hasChanges: boolean) => void;
+  onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
   refreshJobsites: () => Promise<void>;
   loading?: boolean;
 }
@@ -27,6 +28,7 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   setIsRegistrationFormOpen,
   setSelectJobsite,
   onUnsavedChangesChange,
+  onRegistrationFormChangesChange,
   refreshJobsites,
   loading = false,
 }) => {
@@ -37,6 +39,23 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
     setIsRegistrationFormOpen,
     refreshJobsites,
   });
+
+  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
+    useState(false);
+
+  const handleRegistrationFormChanges = (hasChanges: boolean) => {
+    setHasRegistrationFormChanges(hasChanges);
+    onRegistrationFormChangesChange?.(hasChanges);
+  };
+
+  const handleCancelRegistration = () => {
+    if (hasRegistrationFormChanges) {
+      // Let parent handle the confirmation modal
+      onRegistrationFormChangesChange?.(true);
+      return;
+    }
+    setIsRegistrationFormOpen(false);
+  };
 
   return (
     <>
@@ -51,7 +70,8 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteRegistrationView
             onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}
-            onCancel={() => setIsRegistrationFormOpen(false)}
+            onCancel={handleCancelRegistration}
+            onUnsavedChangesChange={handleRegistrationFormChanges}
           />
         </Holds>
       ) : selectJobsite && jobsiteFormHook.formData ? (

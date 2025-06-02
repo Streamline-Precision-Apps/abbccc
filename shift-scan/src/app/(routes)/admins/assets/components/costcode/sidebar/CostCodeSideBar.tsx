@@ -1,0 +1,107 @@
+"use client";
+import { Holds } from "@/components/(reusable)/holds";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
+import SearchBar from "../../../../personnel/components/SearchBar";
+import { Texts } from "@/components/(reusable)/texts";
+import CostCodeRow from "./CostCodeRow";
+import { CostCode, CostCodeSummary } from "../../../types";
+
+export default function CostCodeSideBar({
+  assets,
+  setAssets,
+  costCodes,
+  setSelectCostCode,
+  selectCostCode,
+  hasUnsavedChanges = false,
+}: {
+  assets: string;
+  setAssets: Dispatch<SetStateAction<string>>;
+  costCodes: CostCodeSummary[];
+  setSelectCostCode: (costCode: CostCodeSummary | null) => void;
+  selectCostCode: CostCode | null;
+  isRegistrationFormOpen: boolean;
+  setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  hasUnsavedChanges?: boolean;
+}) {
+  const [term, setTerm] = useState("");
+
+  // Handle cost code selection with toggle functionality
+  const handleCostCodeClick = useCallback(
+    (costCode: CostCodeSummary) => {
+      // If the clicked cost code is already selected, deselect it
+      if (selectCostCode?.id === costCode.id) {
+        setSelectCostCode(null);
+      } else {
+        // Otherwise, select the new cost code
+        setSelectCostCode(costCode);
+      }
+    },
+    [selectCostCode, setSelectCostCode]
+  );
+
+  const filteredCostCodes = useMemo(() => {
+    // Create a sorted copy of the original array with inactive items first
+    const sortedCostCodes = [...costCodes].sort((a, b) => {
+      // First sort by active status (inactive first)
+      if (!a.isActive && b.isActive) {
+        return -1; // a comes before b
+      } else if (a.isActive && !b.isActive) {
+        return 1; // b comes before a
+      }
+
+      // Then sort alphabetically by name
+      return a.name.localeCompare(b.name);
+    });
+
+    if (!term.trim()) {
+      return sortedCostCodes;
+    }
+
+    const searchTerm = term.toLowerCase();
+    return sortedCostCodes.filter((costCode) =>
+      costCode.name.toLowerCase().includes(searchTerm)
+    );
+  }, [costCodes, term]);
+
+  return (
+    <>
+      <SearchBar
+        term={term}
+        handleSearchChange={(e) => setTerm(e.target.value)}
+        placeholder="Search cost codes..."
+        disabled={hasUnsavedChanges}
+      />
+
+      <Holds
+        background={"white"}
+        className="w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar"
+      >
+        <Holds>
+          {filteredCostCodes.length > 0 ? (
+            filteredCostCodes.map((costCode) => (
+              <CostCodeRow
+                key={costCode.id}
+                costCode={costCode}
+                isSelected={selectCostCode?.id === costCode.id}
+                onClick={handleCostCodeClick}
+                hasUnsavedChanges={hasUnsavedChanges}
+              />
+            ))
+          ) : (
+            <Texts size="p6" className="text-center">
+              {term.trim()
+                ? "No cost codes found matching your search"
+                : "No cost codes available"}
+            </Texts>
+          )}
+        </Holds>
+      </Holds>
+    </>
+  );
+}
