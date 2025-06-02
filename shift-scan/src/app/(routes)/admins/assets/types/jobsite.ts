@@ -40,4 +40,5 @@ type CCTag = {
 export type JobsiteSummary = {
   id: string;
   name: string;
+  approvalStatus: ApprovalStatus;
 };

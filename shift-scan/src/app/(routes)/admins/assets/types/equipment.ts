@@ -23,9 +23,15 @@ export type Equipment = {
     mileage: number | null;
   };
 };
+export type ApprovalStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "CHANGES_REQUESTED";
 
 // Summary type for equipment listing
 export type EquipmentSummary = {
   id: string;
   name: string;
+  approvalStatus: ApprovalStatus;
 };

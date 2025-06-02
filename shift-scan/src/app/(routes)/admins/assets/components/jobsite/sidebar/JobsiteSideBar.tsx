@@ -46,10 +46,21 @@ export default function JobsiteSideBar({
   );
 
   const filteredJobsites = useMemo(() => {
-    // Create a sorted copy of the original array
-    const sortedJobsites = [...jobsites].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    // Create a sorted copy of the original array with PENDING items first
+    const sortedJobsites = [...jobsites].sort((a, b) => {
+      // First sort by approval status (PENDING first)
+      if (a.approvalStatus === "PENDING" && b.approvalStatus !== "PENDING") {
+        return -1; // a comes before b
+      } else if (
+        a.approvalStatus !== "PENDING" &&
+        b.approvalStatus === "PENDING"
+      ) {
+        return 1; // b comes before a
+      }
+
+      // Then sort alphabetically by name
+      return a.name.localeCompare(b.name);
+    });
 
     if (!term.trim()) {
       return sortedJobsites;
