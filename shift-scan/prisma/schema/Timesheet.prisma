@@ -1,6 +1,6 @@
 model TimeSheet {
   id                    String                 @id @default(uuid())
-  date                  DateTime               @db.Date
+  date                  DateTime               @default(now())
   userId                String
   jobsiteId             String
   costcode              String

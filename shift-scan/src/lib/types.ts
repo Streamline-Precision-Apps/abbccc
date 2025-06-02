@@ -1018,3 +1018,10 @@ export function isEquipmentLogsData(data: unknown): data is EquipmentLogsData {
     'EmployeeEquipmentLogs' in data[0]
   );
 }
+
+export type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};

@@ -49,6 +49,23 @@ export default function MaterialItem({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [currentMaterial, setCurrentMaterial] = useState<Material | null>(null);
+  const [materialTypes, setMaterialTypes] = useState<
+    { id: string; name: string }[]
+  >([]);
+
+  // Fetch material types (same as TimeCardTascoHaulLogs)
+  useEffect(() => {
+    const fetchMaterialTypes = async () => {
+      try {
+        const materialTypesResponse = await fetch("/api/getMaterialTypes");
+        const materialTypesData = await materialTypesResponse.json();
+        setMaterialTypes(materialTypesData);
+      } catch {
+        console.error("Error fetching material types");
+      }
+    };
+    fetchMaterialTypes();
+  }, []);
 
   // Find the selected material when selectedItemId changes
   useEffect(() => {
@@ -150,13 +167,18 @@ export default function MaterialItem({
               {t("MaterialName")}
               <span className="text-red-500 pl-0.5">*</span>
             </label>
-            <Inputs
-              type="text"
+            <Selects
               value={currentMaterial.name || ""}
-              placeholder={t("Material")}
               onChange={(e) => handleChange("name", e.target.value)}
-              className="w-full text-base pl-2"
-            />
+              className="w-full pl-2 text-base"
+            >
+              <option value="">{t("SelectMaterial")}</option>
+              {materialTypes.map((material) => (
+                <option key={material.id} value={material.name}>
+                  {material.name}
+                </option>
+              ))}
+            </Selects>
           </Holds>
 
           <Holds className="mb-2">

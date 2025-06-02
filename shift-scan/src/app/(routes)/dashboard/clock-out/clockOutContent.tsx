@@ -10,6 +10,8 @@ import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockO
 import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
 import ReviewYourTeam from "./(components)/reviewYourTeam";
+import EditTeamTimeSheet from "./(components)/editTeamTimeSheet";
+import { TimesheetFilter } from "@/lib/types";
 
 export type TimeSheet = {
   submitDate: string;
@@ -41,6 +43,36 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
   const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
   const [reviewYourTeam, setReviewYourTeam] = useState<boolean>(false);
   const [pendingTimeSheets, setPendingTimeSheets] = useState<TimeSheet>();
+  const [editFilter, setEditFilter] = useState<TimesheetFilter | null>(null);
+  const [editDate, setEditDate] = useState<string>("");
+  const [focusIds, setFocusIds] = useState<string[]>([]);
+  const [employeeId, setEmployeeId] = useState<string>("");
+  const [teamUsers, setTeamUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    console.log("currentStep: ", step);
+  }, [step]);
+
+  useEffect(() => {
+    console.log("reviewYourTeam: ", reviewYourTeam);
+  }, [reviewYourTeam]);
+
+  useEffect(() => {
+    console.log("path: ", path);
+  }, [path]);
+
+  useEffect(() => {
+    console.log("editFilter: ", editFilter);
+  }, [editFilter]);
+  useEffect(() => {
+    console.log("editDate: ", editDate);
+  }, [editDate]);
+  useEffect(() => {
+    console.log("focusIds: ", focusIds);
+  }, [focusIds]);
+  useEffect(() => {
+    console.log("focus employeeId: ", employeeId);
+  }, [employeeId]);
 
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
@@ -105,6 +137,22 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
     fetchTimesheets();
   }, []);
 
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await fetch("/api/getMyTeamsUsers");
+        const data = await response.json();
+        setTeamUsers(data);
+        if (data.length > 0) {
+          setReviewYourTeam(true);
+        }
+      } catch (error) {
+        console.error("Error fetching timesheets:", error);
+      }
+    };
+    fetchTeamMembers();
+  }, []);
+
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
   };
@@ -160,7 +208,6 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         prevStep={prevStep}
         loading={loading}
         timesheets={timesheets}
-        manager={false} // Pass the manager prop once team is implemented
         setReviewYourTeam={setReviewYourTeam}
       />
     );
@@ -171,12 +218,34 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         handleClick={handleNextStep}
         prevStep={prevStep}
         loading={loading}
-        manager={manager}
+        manager={typeof manager === "string" ? manager : "Manager"}
+        setEditDate={setEditDate}
+        editFilter={editFilter}
+        setEditFilter={setEditFilter}
+        focusIds={focusIds}
+        setFocusIds={setFocusIds}
+        setEmployeeId={setEmployeeId}
+        crewMembers={teamUsers}
       />
     );
   }
 
-  if (step === 2) {
+  if (step === 2 && editFilter !== null) {
+    return (
+      <EditTeamTimeSheet
+        handleProceed={() => 
+          handleNextStep()
+        }
+        prevStep={prevStep}
+        employeeId={employeeId}
+        editDate={editDate}
+        setEditDate={setEditDate}
+        editFilter={editFilter}
+        setEditFilter={setEditFilter}
+        focusIds={focusIds}
+      />
+    );
+  } else if (step === 2) {
     return (
       <PreInjuryReport
         handleCheckboxChange={handleCheckboxChange}

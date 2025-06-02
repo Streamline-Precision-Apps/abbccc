@@ -130,6 +130,13 @@ const getTypedOnDataChange = <T,>(
     : undefined;
 };
 
+const renderValueOrNA = (value: any) => {
+  if (value === null || value === undefined || value === "") {
+    return "N/A";
+  }
+  return value;
+};
+
 export default function TimeSheetRenderer({
   filter,
   data,
@@ -153,19 +160,31 @@ export default function TimeSheetRenderer({
       );
     }
 
+    if (filter === "timesheetHighlights") {
+      // Wrap the TimeCardHighlights with a proxy to render N/A for missing fields
+      return (
+        <TimeCardHighlights
+          highlightTimesheet={
+            (data as TimesheetHighlights[]).map((item) => ({
+              ...item,
+              startTime: renderValueOrNA(item.startTime),
+              endTime: renderValueOrNA(item.endTime),
+              costcode: renderValueOrNA(item.costcode),
+              Jobsite: {
+                ...item.Jobsite,
+                name: renderValueOrNA(item.Jobsite?.name),
+              },
+            }))
+          }
+          edit={edit}
+          manager={manager}
+          onDataChange={getTypedOnDataChange<TimesheetHighlights[]>(onDataChange)!}
+          date={date}
+        />
+      );
+    }
+
     switch (filter) {
-      case "timesheetHighlights":
-        return (
-          <TimeCardHighlights
-            highlightTimesheet={data as TimesheetHighlights[]}
-            edit={edit}
-            manager={manager}
-            onDataChange={
-              getTypedOnDataChange<TimesheetHighlights[]>(onDataChange)!
-            }
-            date={date}
-          />
-        );
       case "truckingMileage":
         return (
           <TimeCardTruckingMileage

@@ -702,6 +702,10 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 /* DOCUMENT TAGS (new) */
 export const initialDocumentTags: Prisma.DocumentTagCreateInput[] = [
   {
+    id: "dt1",
+    tagName: "General",
+  },
+  {
     id: "dt2",
     tagName: "Policies",
   },
@@ -794,26 +798,26 @@ export const initialPdfDocuments: Prisma.PdfDocumentCreateInput[] = [
 */
 export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
   {
-    id: "eq1",
-    qrId: "TRK-007 Kenworth W900",
-    name: "TRK-007 Kenworth W900",
-    description: "",
-    equipmentTag: "TRUCK",
-    status: "OPERATIONAL",
+    id: 'eq1',
+    qrId: 'TRK-007 Kenworth W900',
+    name: 'Kenworth W900',
+    description: 'Truck for hauling',
+    equipmentTag: 'TRUCK',
+    status: 'OPERATIONAL',
     isActive: true,
     inUse: false,
     currentWeight: 0,
+    DocumentTags: { connect: [{ id: 'dt1' }] },
     equipmentVehicleInfo: {
       create: {
-        make: "Kenworth",
-        model: "W900",
-        year: "2020",
-        licensePlate: "ABC123",
-        registrationExpiration: new Date("2025-01-01"),
-        mileage: 50000,
+        make: 'Kenworth',
+        model: 'W900',
+        year: '2015',
+        licensePlate: 'KW900',
+        registrationExpiration: new Date('2025-12-31'),
+        mileage: 100000,
       },
     },
-    DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
     id: "eq2",
@@ -1663,11 +1667,11 @@ export const initialTascoMaterialTypes: Prisma.TascoMaterialTypesCreateInput[] =
 /* TRUCKING LOGS */
 export const initialTruckingLogs: Prisma.TruckingLogCreateInput[] = [
   {
-    id: "tl1",
-    TimeSheet: { connect: { id: "ts1" } },
-    laborType: "TRUCK_DRIVER",
-    taskName: "Deliver Material",
-    Equipment: { connect: { qrId: "TRK-007 Kenworth W900" } },
+    id: 'tl1',
+    TimeSheet: { connect: { id: 'ts1' } },
+    laborType: 'TRUCK_DRIVER',
+    taskName: 'Deliver Material',
+    Equipment: { connect: { qrId: 'TRK-007 Kenworth W900' } },
     startingMileage: 1000,
     endingMileage: 1200,
   },
@@ -1727,18 +1731,18 @@ export const initialStateMileage: Prisma.StateMileageCreateInput[] = [
 /* TASCO LOGS */
 export const initialTascoLogs: Prisma.TascoLogCreateInput[] = [
   {
-    id: "tlTasco1",
-    TimeSheet: { connect: { id: "ts1" } },
-    shiftType: "Loading",
-    Equipment: { connect: { qrId: "TRK-007 Kenworth W900" } },
-    laborType: "Manual Labor",
+    id: 'tlTasco1',
+    TimeSheet: { connect: { id: 'ts1' } },
+    shiftType: 'Loading',
+    Equipment: { connect: { qrId: 'TRK-007 Kenworth W900' } },
+    laborType: 'Manual Labor',
     LoadQuantity: 10,
   },
   {
-    TimeSheet: { connect: { id: "ts2" } },
-    shiftType: "Unloading",
-    Equipment: { connect: { qrId: "TRK-9" } },
-    laborType: "Truck Driver",
+    TimeSheet: { connect: { id: 'ts2' } },
+    shiftType: 'Unloading',
+    Equipment: { connect: { qrId: 'TRK-9' } },
+    laborType: 'Truck Driver',
     LoadQuantity: 5,
   },
 ];
@@ -1746,16 +1750,16 @@ export const initialTascoLogs: Prisma.TascoLogCreateInput[] = [
 /* CREATION LOGS (new) */
 export const initialCreationLogs: Prisma.CreationLogsCreateInput[] = [
   {
-    Equipment: { connect: { id: "eq1" } },
-    User: { connect: { id: "1" } },
-    comment: "Created equipment eq1",
+    Equipment: { connect: { id: 'eq1' } },
+    User: { connect: { id: '1' } },
+    comment: 'Created equipment eq1',
     createdByOffice: false,
     updatedAt: new Date(),
   },
   {
-    Jobsite: { connect: { id: "1" } },
-    User: { connect: { id: "1" } },
-    comment: "Created jobsite 1",
+    Jobsite: { connect: { id: '1' } },
+    User: { connect: { id: '1' } },
+    comment: 'Created jobsite 1',
     createdByOffice: false,
     updatedAt: new Date(),
   },
