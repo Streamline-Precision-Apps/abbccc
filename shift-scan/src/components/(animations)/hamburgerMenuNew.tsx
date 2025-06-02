@@ -57,7 +57,6 @@ export default function HamburgerMenuNew() {
               alt={"settings"}
               className="w-7 h-7 absolute right-[-10px] bottom-0"
             />
-            <PermissionsBadge />
           </div>
         </Buttons>
       </Holds>
