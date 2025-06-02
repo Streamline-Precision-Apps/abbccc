@@ -5,10 +5,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { EditableFields } from "@/components/(reusable)/EditableField";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Jobsite } from "../../../types";
 import { COUNTRIES } from "../../../constants/countries";
 import { Titles } from "@/components/(reusable)/titles";
+import { Tooltips } from "@/components/(reusable)/tooltip";
+import QRCode from "qrcode";
 
 interface JobsiteBasicFieldsProps {
   formData: Jobsite;
@@ -28,15 +30,137 @@ export default function JobsiteBasicFields({
   onRevertField,
 }: JobsiteBasicFieldsProps) {
   const isFieldChanged = (fieldName: string) => changedFields.has(fieldName);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  useEffect(() => {
+    const generateQrCode = async () => {
+      try {
+        const url = await QRCode.toDataURL(formData.qrId || "");
+        setQrCodeUrl(url);
+      } catch (error) {
+        console.error("Error generating QR code:", error);
+      }
+    };
+    generateQrCode();
+  }, [formData, formData.qrId]);
+
+  const printQRCode = () => {
+    if (!qrCodeUrl) return;
+
+    // Open a new window for printing
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to print the QR code");
+      return;
+    }
+
+    // Write HTML content to the new window
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Print QR Code - ${formData?.name || "Jobsite"}</title>
+        <style>
+          body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+          }
+          .qr-code-container {
+            text-align: center;
+          }
+          .qr-code {
+            width: 300px;
+            height: 300px;
+            border: 4px solid black;
+            border-radius: 10px;
+            margin-bottom: 20px;
+          }
+          .equipment-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .equipment-id {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+          }
+          .equipment-description {
+            font-size: 16px;
+            color: #555;
+            max-width: 350px;
+            padding: 0 20px;
+            line-height: 1.4;
+            margin-top: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+          }
+          @media print {
+            body {
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="qr-code-container">
+          <div class="equipment-name">${formData?.name || "N/A"}</div>
+          <img src="${qrCodeUrl}" alt="QR Code" class="qr-code" />
+          <div class="equipment-id">ID: ${formData.qrId || "N/A"}</div>
+          <div class="equipment-description">${
+            formData.description
+              ? `Brief Description:\n${formData.description}`
+              : ""
+          }</div>
+        </div>
+        <script>
+          // Print and close window when loaded
+          window.onload = function() {
+            window.print();
+            // Close after printing is done or canceled
+            setTimeout(() => window.close(), 500);
+          };
+        </script>
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+  };
 
   return (
     <Holds background="white" className="w-full h-full rounded-[10px] p-4">
       <Grids className="w-full h-full grid-rows-[50px_1fr]">
-        <Holds className="w-full h-full flex justify-center">
-          <Titles position={"left"} size="h4" className="">
-            {formData.name}
-          </Titles>
+        <Holds position={"row"} className="w-full h-full justify-between">
+          <Holds className="w-full">
+            <Titles position={"left"} size={"xl"} className="font-bold">
+              {formData?.name || "N/A"}
+            </Titles>
+          </Holds>
+          <Holds className="w-full h-full">
+            <Holds
+              position={"right"}
+              className={`w-[50px] h-[50px] border-[3px] border-black rounded-[10px] cursor-pointer hover:opacity-80 hover:border-blue-900 transition-opacity`}
+              onClick={printQRCode}
+            >
+              <Tooltips content="Click to print QR code" delay={0}>
+                <img
+                  src={qrCodeUrl}
+                  alt="QR Code"
+                  className="w-full h-full object-cover rounded-[10px]"
+                />
+              </Tooltips>
+            </Holds>
+          </Holds>
         </Holds>
+
         <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4">
           <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
             <Holds>

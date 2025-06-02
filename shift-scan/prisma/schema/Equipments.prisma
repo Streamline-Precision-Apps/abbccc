@@ -26,7 +26,8 @@ model Equipment {
   @@index([approvalStatus])
 }
 
-// Replace CreationLogs with comprehensive approval system
+// Major changes done to a jobsite, equipment, or other entity that require approval not done by the admin
+
 model PendingApproval {
   id              String         @id @default(uuid())
   entityType      EntityType
