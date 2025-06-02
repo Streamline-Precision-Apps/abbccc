@@ -6,7 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Selects } from "@/components/(reusable)/selects";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
 import { Jobsite } from "@/app/(routes)/admins/assets/types/jobsite";
@@ -27,6 +27,7 @@ interface JobsiteRegistrationFormData {
 interface JobsiteRegistrationViewProps {
   onSubmit: (newJobsite: JobsiteRegistrationFormData) => void;
   onCancel: () => void;
+  onUnsavedChangesChange?: (hasChanges: boolean) => void;
 }
 
 /**
@@ -36,6 +37,7 @@ interface JobsiteRegistrationViewProps {
 export default function JobsiteRegistrationView({
   onSubmit,
   onCancel,
+  onUnsavedChangesChange,
 }: JobsiteRegistrationViewProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -49,6 +51,22 @@ export default function JobsiteRegistrationView({
     isActive: true,
     approvalStatus: "PENDING",
   });
+
+  // Track if form has unsaved changes
+  const hasUnsavedChanges =
+    formData.name.trim() !== "" ||
+    formData.clientId.trim() !== "" ||
+    formData.address.trim() !== "" ||
+    formData.city.trim() !== "" ||
+    formData.state.trim() !== "" ||
+    formData.zipCode.trim() !== "" ||
+    formData.country !== "US" ||
+    formData.description.trim() !== "";
+
+  // Notify parent component when unsaved changes state changes
+  useEffect(() => {
+    onUnsavedChangesChange?.(hasUnsavedChanges);
+  }, [hasUnsavedChanges, onUnsavedChangesChange]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({

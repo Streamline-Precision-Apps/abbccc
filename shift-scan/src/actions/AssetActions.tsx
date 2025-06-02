@@ -497,6 +497,186 @@ export async function deleteJobsite(id: string) {
   }
 }
 
+/**
+ * Server action to create a new cost code
+ */
+export async function createCostCode(costCodeData: {
+  name: string;
+  isActive: boolean;
+}) {
+  console.log("Creating new cost code...");
+
+  try {
+    // Validate required fields
+    if (!costCodeData.name?.trim()) {
+      throw new Error("Cost code name is required");
+    }
+
+    // Check if cost code with the same name already exists
+    const existingCostCode = await prisma.costCode.findUnique({
+      where: { name: costCodeData.name.trim() },
+    });
+
+    if (existingCostCode) {
+      throw new Error("A cost code with this name already exists");
+    }
+
+    // Create the new cost code
+    const newCostCode = await prisma.costCode.create({
+      data: {
+        name: costCodeData.name.trim(),
+        isActive: costCodeData.isActive,
+      },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("costcodes");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return {
+      success: true,
+      data: newCostCode,
+      message: "Cost code created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating cost code:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Server action to update an existing cost code
+ */
+export async function updateCostCode(
+  id: string,
+  costCodeData: Partial<{
+    name: string;
+    isActive: boolean;
+  }>
+) {
+  console.log("Updating cost code...");
+
+  try {
+    // Validate cost code exists
+    const existingCostCode = await prisma.costCode.findUnique({
+      where: { id },
+    });
+
+    if (!existingCostCode) {
+      throw new Error("Cost code not found");
+    }
+
+    // If name is being updated, check for duplicates
+    if (costCodeData.name && costCodeData.name !== existingCostCode.name) {
+      const duplicateName = await prisma.costCode.findUnique({
+        where: {
+          name: costCodeData.name.trim(),
+          NOT: { id },
+        },
+      });
+
+      if (duplicateName) {
+        throw new Error("A cost code with this name already exists");
+      }
+    }
+
+    // Update the cost code
+    const updatedCostCode = await prisma.costCode.update({
+      where: { id },
+      data: {
+        ...(costCodeData.name && { name: costCodeData.name.trim() }),
+        ...(costCodeData.isActive !== undefined && {
+          isActive: costCodeData.isActive,
+        }),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("costcodes");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return {
+      success: true,
+      data: updatedCostCode,
+      message: "Cost code updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating cost code:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Server action to delete a cost code
+ */
+export async function deleteCostCode(id: string) {
+  console.log("Deleting cost code with ID:", id);
+
+  try {
+    // Check for related records before deletion
+    const costCodeWithRelations = await prisma.costCode.findUnique({
+      where: { id },
+      include: {
+        Timesheets: true,
+        CCTags: true,
+      },
+    });
+
+    if (!costCodeWithRelations) {
+      throw new Error("Cost code not found");
+    }
+
+    // Check if cost code is in use
+    if (costCodeWithRelations.Timesheets.length > 0) {
+      throw new Error("Cannot delete cost code that is used in timesheets");
+    }
+
+    // Disconnect any related CCTags before deletion
+    if (costCodeWithRelations.CCTags.length > 0) {
+      await prisma.costCode.update({
+        where: { id },
+        data: {
+          CCTags: {
+            disconnect: costCodeWithRelations.CCTags.map((tag) => ({
+              id: tag.id,
+            })),
+          },
+        },
+      });
+    }
+
+    // Delete the cost code
+    await prisma.costCode.delete({
+      where: { id },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("costcodes");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return {
+      success: true,
+      message: "Cost code deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting cost code:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 /** Layout for server actions 
 export async function (formData: FormData) {
   try {

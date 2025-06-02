@@ -2,6 +2,7 @@
 export type CostCode = {
   id: string;
   name: string;
+  isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   Timesheets?: any[]; // Using any[] as placeholder, replace with TimeSheet type when needed
@@ -12,4 +13,5 @@ export type CostCode = {
 export type CostCodeSummary = {
   id: string;
   name: string;
+  isActive: boolean;
 };

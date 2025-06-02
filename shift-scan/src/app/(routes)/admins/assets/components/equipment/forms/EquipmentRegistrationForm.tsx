@@ -5,7 +5,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SafetyDocumentsAndPolicies from "./SafetyDocumentsAndPolicies";
 
 type NewEquipment = {
@@ -30,11 +30,13 @@ type NewEquipment = {
 interface EquipmentRegistrationFormProps {
   onSubmit: (equipment: NewEquipment) => void;
   onCancel: () => void;
+  onUnsavedChangesChange?: (hasChanges: boolean) => void;
 }
 
 export default function EquipmentRegistrationForm({
   onSubmit,
   onCancel,
+  onUnsavedChangesChange,
 }: EquipmentRegistrationFormProps) {
   const [formData, setFormData] = useState<NewEquipment>({
     name: "",
@@ -56,6 +58,25 @@ export default function EquipmentRegistrationForm({
   });
 
   const [hasVehicleInfo, setHasVehicleInfo] = useState(false);
+
+  // Track if form has unsaved changes
+  const hasUnsavedChanges =
+    formData.name.trim() !== "" ||
+    (formData.description?.trim() || "") !== "" ||
+    formData.equipmentTag !== "" ||
+    formData.currentWeight !== 0 ||
+    formData.overWeight !== null ||
+    (formData.equipmentVehicleInfo?.make?.trim() || "") !== "" ||
+    (formData.equipmentVehicleInfo?.model?.trim() || "") !== "" ||
+    (formData.equipmentVehicleInfo?.year?.trim() || "") !== "" ||
+    (formData.equipmentVehicleInfo?.licensePlate?.trim() || "") !== "" ||
+    formData.equipmentVehicleInfo?.registrationExpiration !== null ||
+    (formData.equipmentVehicleInfo?.mileage || 0) > 0;
+
+  // Notify parent component when unsaved changes state changes
+  useEffect(() => {
+    onUnsavedChangesChange?.(hasUnsavedChanges);
+  }, [hasUnsavedChanges, onUnsavedChangesChange]);
 
   const handleInputChange = (
     fieldName: string,
