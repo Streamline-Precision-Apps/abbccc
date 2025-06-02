@@ -9,6 +9,7 @@ import {
   EquipmentEmptyState,
   EquipmentRegistrationView,
 } from "./components";
+import Spinner from "@/components/(animations)/spinner";
 
 interface EquipmentMainContentProps {
   /** Assets data */
@@ -81,8 +82,11 @@ export default function EquipmentMainContent({
   // Show loading indicator when data is being fetched
   if (loading) {
     return (
-      <Holds className="w-full h-full col-span-8 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <Holds
+        background={"white"}
+        className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
+      >
+        <Spinner size={50} />
       </Holds>
     );
   }

@@ -7,6 +7,7 @@ import {
   useJobsiteForm,
 } from "./index";
 import { Jobsite } from "../../types";
+import Spinner from "@/components/(animations)/spinner";
 
 interface JobsiteMainContentProps {
   assets: string;
@@ -40,8 +41,11 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   return (
     <>
       {loading ? (
-        <Holds className="w-full h-full col-start-3 col-end-11 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        <Holds
+          background={"white"}
+          className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
+        >
+          <Spinner size={50} />
         </Holds>
       ) : isRegistrationFormOpen ? (
         <Holds className="w-full h-full col-start-3 col-end-7">

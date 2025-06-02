@@ -4,8 +4,6 @@ model Jobsite {
   name                  String
   description           String
   isActive              Boolean                @default(true)
-  status                FormStatus             @default(PENDING)
-  approvalStatus        ApprovalStatus         @default(APPROVED) // Field-created jobsites start PENDING
   address               String
   city                  String
   state                 String
@@ -28,6 +26,5 @@ model Jobsite {
 
   @@unique([name, address, city, state])
   @@index([qrId])
-  @@index([approvalStatus])
   @@index([clientId, companyId])
 }
