@@ -24,11 +24,9 @@ export default function Panel({
    */
   distanceFromCenter?: number;
 }) {
-  const maxBarHeight = 200;
-
   if (isPlaceholderData(data)) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-w-[33.3333%] snap-center">
+      <div className="flex flex-col items-center justify-center h-full min-w-[32%] snap-center">
         <div className="w-16 h-16 rounded-full bg-white border-2 border-gray-400 flex items-center justify-center text-xs text-gray-500 text-center px-1">
           {data.date}
         </div>
@@ -51,14 +49,12 @@ export default function Panel({
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={data.date}
-        initial={{ scale: 0.95 }}
-        animate={{
-          scale
-        }}
-        exit={{ scale: 0.95 }}
-        transition={{ duration: 0.35, ease: 'easeInOut' }}
-        className="flex flex-col items-center justify-end h-full min-w-[33.3333%] snap-center"
-        style={{ willChange: 'scale' }}
+        initial={{ x: 40, opacity: 0, scale: 1 }}
+        animate={{ x: 0, opacity: 1, scale }}
+        exit={{ x: -40, opacity: 0, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
+        className="flex flex-col items-center justify-end h-full min-w-[36%] snap-center"
+        style={{ willChange: 'transform, opacity' }}
       >
         <motion.div
           layout
@@ -68,26 +64,28 @@ export default function Panel({
             scale: isCenter ? 1 : 0.95,
             opacity: contentOpacity
           }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
           className="relative w-11/12 h-full p-4 flex items-end justify-center"
         >
-          {/* Only render the vertical bar, remove the horizontal bar */}
           <motion.div
-            initial={{ height: 0 }}
+            initial={false}
             animate={{
-              height: Math.min(((data.hours ?? 0) / 12) * maxBarHeight, maxBarHeight),
+              height: `${(Math.min(data.hours ?? 0, 12) / 12) * 100}%`,
               opacity: contentOpacity
             }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
-            className={`w-5/6 rounded-md ${isToday ? 'bg-[#FF8800]' : isCenter ? 'bg-green-500' : distanceFromCenter === 1 || distanceFromCenter === -1 ? 'bg-blue-500' : 'bg-blue-500'}`}
+            transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
+            className={`w-44 rounded-[10px] ${data.hours ? 'border-[3px] border-black' : ''} ${isToday ? 'bg-[#FF8800]' : isCenter ? 'bg-green-500' : distanceFromCenter === 1 || distanceFromCenter === -1 ? 'bg-blue-500' : 'bg-blue-500'}`}
           />
         </motion.div>
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: contentOpacity, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
+          layout
+          initial={false}
+          animate={{
+            scale: isCenter ? 1.15 : 0.85
+          }}
+          transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
           className="text-lg font-bold text-center text-white"
+          style={{ willChange: 'transform' }}
         >
           {Math.floor((data.hours ?? 0) * 10) / 10} hrs
         </motion.p>

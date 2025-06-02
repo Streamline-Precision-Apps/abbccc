@@ -27,7 +27,6 @@ import {
   // New seed arrays for the new models:
   initialDocumentTags,
   initialPdfDocuments,
-  initialCreationLogs
 } from "@/data/dataValues";
 
 const prisma = new PrismaClient();
@@ -157,16 +156,16 @@ async function main() {
       }
     }
 
-    // 10. Insert Creation Logs (new model)
-    for (const creationLog of initialCreationLogs) {
-      try {
-        const newCreationLog = await prisma.creationLogs.create({ data: creationLog });
-        console.log("Created creation log with id:", newCreationLog.id);
-      } catch (error) {
-        console.log("Error creating creation log:", error);
-        continue;
-      }
-    }
+    // // 10. Insert Creation Logs (new model)
+    // for (const creationLog of initialCreationLogs) {
+    //   try {
+    //     const newCreationLog = await prisma.creationLogs.create({ data: creationLog });
+    //     console.log("Created creation log with id:", newCreationLog.id);
+    //   } catch (error) {
+    //     console.log("Error creating creation log:", error);
+    //     continue;
+    //   }
+    // }
 
     // 11. Insert Crews
     for (const crew of initialCrews) {
