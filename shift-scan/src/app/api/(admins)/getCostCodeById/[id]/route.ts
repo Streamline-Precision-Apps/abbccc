@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
+
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
@@ -18,13 +20,20 @@ export async function GET(
 
     // Validate the ID parameter
     if (!params.id) {
-      return NextResponse.json({ error: "Missing cost code ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing cost code ID" },
+        { status: 400 }
+      );
     }
 
-    // Fetch cost code data
+    // Fetch complete cost code data with all relationships
     const costcodeData = await prisma.costCode.findUnique({
       where: {
         id: params.id,
+      },
+      include: {
+        Timesheets: true,
+        CCTags: true,
       },
     });
 
@@ -44,9 +53,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

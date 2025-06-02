@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-interface TooltipProps {
+interface TooltipsProps {
   /** The content that will be displayed in the tooltip */
   content: string;
   /** The element that the tooltip will be attached to */
@@ -21,13 +21,13 @@ interface TooltipProps {
  *   <button>Print QR</button>
  * </Tooltip>
  */
-export function Tooltip({
+export function Tooltips({
   content,
   children,
   position = "top",
   className = "",
   delay = 0,
-}: TooltipProps) {
+}: TooltipsProps) {
   // Base styling for all tooltips
   const baseClasses =
     "absolute bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap z-10 opacity-0 group-hover:opacity-100";

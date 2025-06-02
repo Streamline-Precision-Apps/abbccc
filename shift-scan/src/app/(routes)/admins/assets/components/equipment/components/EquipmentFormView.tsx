@@ -6,11 +6,9 @@ import { Equipment } from "../../../types";
 import EquipmentBasicFields from "./EquipmentBasicFields";
 import VehicleInformationFields from "./VehicleInformationFields";
 import EquipmentDescriptionFields from "./EquipmentDescriptionFields";
-import { Images } from "@/components/(reusable)/images";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
-import { Texts } from "@/components/(reusable)/texts";
-import { Tooltip } from "@/components/(reusable)/tooltip";
+import { Tooltips } from "@/components/(reusable)/tooltip";
 
 interface EquipmentFormViewProps {
   /** Current equipment being edited */
@@ -178,13 +176,13 @@ export default function EquipmentFormView({
               className={`w-[50px] h-[50px] border-[3px] border-black rounded-[10px] cursor-pointer hover:opacity-80 hover:border-blue-900 transition-opacity`}
               onClick={printQRCode}
             >
-              <Tooltip content="Click to print QR code" delay={0}>
+              <Tooltips content="Click to print QR code" delay={0}>
                 <img
                   src={qrCodeUrl}
                   alt="QR Code"
                   className="w-full h-full object-cover rounded-[10px]"
                 />
-              </Tooltip>
+              </Tooltips>
             </Holds>
           </Holds>
         </Holds>

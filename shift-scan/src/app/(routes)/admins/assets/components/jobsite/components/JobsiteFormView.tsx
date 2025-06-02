@@ -3,7 +3,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import React from "react";
 import JobsiteBasicFields from "./JobsiteBasicFields";
-import JobsiteLocationFields from "./JobsiteLocationFields";
 import JobsiteHeaderActions from "./JobsiteHeaderActions";
 import { Jobsite } from "../../../types";
 
