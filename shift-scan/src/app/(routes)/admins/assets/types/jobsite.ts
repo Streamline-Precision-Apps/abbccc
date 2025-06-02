@@ -35,3 +35,9 @@ type CCTag = {
   id: string;
   name: string;
 };
+
+// Summary type for jobsite listing
+export type JobsiteSummary = {
+  id: string;
+  name: string;
+};

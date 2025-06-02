@@ -2,13 +2,13 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import React, { useState } from "react";
-import { Jobsite } from "../../../types";
+import { Jobsite, JobsiteSummary } from "../../../types";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
 
 interface JobsiteRowProps {
-  jobsite: Jobsite;
+  jobsite: JobsiteSummary;
   isSelected?: boolean;
-  onClick: (jobsite: Jobsite) => void;
+  onClick: (jobsite: JobsiteSummary) => void;
   hasUnsavedChanges?: boolean;
 }
 

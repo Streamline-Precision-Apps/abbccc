@@ -16,6 +16,7 @@ interface JobsiteMainContentProps {
   setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange: (hasChanges: boolean) => void;
   refreshJobsites: () => Promise<void>;
+  loading?: boolean;
 }
 
 const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
@@ -26,6 +27,7 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   setSelectJobsite,
   onUnsavedChangesChange,
   refreshJobsites,
+  loading = false,
 }) => {
   const jobsiteFormHook = useJobsiteForm({
     selectJobsite,
@@ -37,7 +39,11 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
 
   return (
     <>
-      {isRegistrationFormOpen ? (
+      {loading ? (
+        <Holds className="w-full h-full col-start-3 col-end-11 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        </Holds>
+      ) : isRegistrationFormOpen ? (
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteRegistrationView
             onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}

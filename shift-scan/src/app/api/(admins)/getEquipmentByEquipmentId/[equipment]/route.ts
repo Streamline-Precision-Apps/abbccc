@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
@@ -36,14 +35,9 @@ export async function GET(
       where: { id: equipmentId },
       include: {
         equipmentVehicleInfo: true,
-        Maintenances: true,
-        EmployeeEquipmentLogs: true,
-        EquipmentHauled: true,
-        TascoLogs: true,
         TruckingLogs: true,
         DocumentTags: true,
         PendingApprovals: true,
-        AuditLogs: true,
       },
     });
 

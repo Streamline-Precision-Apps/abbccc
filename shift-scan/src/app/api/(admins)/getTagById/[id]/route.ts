@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -23,8 +22,19 @@ export async function GET(
         id: String(id), // Ensure that the id is a string
       },
       include: {
-        Jobsites: true,
-        CostCodes: true,
+        Jobsites: {
+          select: {
+            id: true,
+            name: true,
+            qrId: true,
+          },
+        },
+        CostCodes: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

@@ -23,3 +23,9 @@ export type Equipment = {
     mileage: number | null;
   };
 };
+
+// Summary type for equipment listing
+export type EquipmentSummary = {
+  id: string;
+  name: string;
+};
