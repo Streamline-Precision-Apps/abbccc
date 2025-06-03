@@ -163,7 +163,7 @@ export default function JobsiteBasicFields({
       <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4">
         <Holds className="w-full h-full col-span-1 overflow-y-auto no-scrollbar">
           <label htmlFor="name" className="text-xs font-sm">
-            Jobsite Name *
+            Jobsite Name
           </label>
           <EditableFields
             formDatatype="input"
@@ -175,10 +175,9 @@ export default function JobsiteBasicFields({
             onRevert={() => onRevertField("name")}
             variant={isFieldChanged("name") ? "edited" : "default"}
             size="sm"
-            className="mb-3"
           />
 
-          <label htmlFor="clientId" className="text-xs ">
+          <label htmlFor="clientId" className="text-xs pt-2 ">
             Client
           </label>
           <EditableFields
@@ -191,10 +190,9 @@ export default function JobsiteBasicFields({
             onRevert={() => onRevertField("clientId")}
             variant={isFieldChanged("clientId") ? "edited" : "default"}
             size="sm"
-            className="mb-3"
           />
 
-          <label htmlFor="address" className="text-xs ">
+          <label htmlFor="address" className="text-xs pt-2 ">
             Street Address
           </label>
           <EditableFields
@@ -208,10 +206,9 @@ export default function JobsiteBasicFields({
             onRevert={() => onRevertField("address")}
             variant={isFieldChanged("address") ? "edited" : "default"}
             size="sm"
-            className="mb-3"
           />
 
-          <label htmlFor="city" className="text-xs ">
+          <label htmlFor="city" className="text-xs pt-2 ">
             City
           </label>
           <EditableFields
@@ -225,10 +222,9 @@ export default function JobsiteBasicFields({
             onRevert={() => onRevertField("city")}
             variant={isFieldChanged("city") ? "edited" : "default"}
             size="sm"
-            className="mb-3"
           />
 
-          <label htmlFor="state" className="text-xs ">
+          <label htmlFor="state" className="text-xs pt-2 ">
             State
           </label>
           <EditableFields
@@ -242,10 +238,9 @@ export default function JobsiteBasicFields({
             onRevert={() => onRevertField("state")}
             variant={isFieldChanged("state") ? "edited" : "default"}
             size="sm"
-            className="mb-3"
           />
 
-          <label htmlFor="zipCode" className="text-xs ">
+          <label htmlFor="zipCode" className="text-xs pt-2 ">
             Zip Code
           </label>
           <EditableFields
@@ -259,10 +254,9 @@ export default function JobsiteBasicFields({
             onRevert={() => onRevertField("zipCode")}
             variant={isFieldChanged("zipCode") ? "edited" : "default"}
             size="sm"
-            className="mb-3"
           />
 
-          <label htmlFor="country" className="text-xs ">
+          <label htmlFor="country" className="text-xs pt-2 ">
             Country
           </label>
           <EditableFields
@@ -278,11 +272,10 @@ export default function JobsiteBasicFields({
               label: country.name,
               value: country.code,
             }))}
-            className="mb-3"
           />
 
-          <label htmlFor="description" className="text-xs ">
-            Jobsite Description *
+          <label htmlFor="description" className="text-xs pt-2 ">
+            Jobsite Description
           </label>
           <EditableFields
             formDatatype="textarea"
@@ -295,11 +288,10 @@ export default function JobsiteBasicFields({
             variant={isFieldChanged("description") ? "edited" : "default"}
             size="sm"
             rows={3}
-            className="mb-3"
           />
 
           {/* Optionally display approval status (read-only) */}
-          <label htmlFor="isActive" className="text-xs">
+          <label htmlFor="isActive" className="text-xs pt-2">
             Job Site Status
           </label>
           <EditableFields
@@ -314,14 +306,13 @@ export default function JobsiteBasicFields({
             variant={isFieldChanged("isActive") ? "edited" : "default"}
             size="sm"
             options={[
-              { label: "Online", value: "Active" },
-              { label: "Offline", value: "Inactive" },
+              { label: "Active", value: "Active" },
+              { label: "Inactive", value: "Inactive" },
             ]}
-            className="mb-3"
           />
         </Holds>
         {/* Jobsite Name */}
-        <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
+        <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar pb-5">
           <label htmlFor="costCodeGroups" className="text-xs font-medium">
             Cost Code Groups
           </label>
