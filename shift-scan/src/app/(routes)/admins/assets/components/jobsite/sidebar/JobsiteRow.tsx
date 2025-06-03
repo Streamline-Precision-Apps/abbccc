@@ -26,18 +26,17 @@ export default function JobsiteRow({
 
   const handleJobsiteClick = () => {
     if (hasUnsavedChanges) {
-      // If there are unsaved changes, show confirmation modal
       setShowConfirmModal(true);
     } else {
-      // Otherwise process click normally
       onClick(jobsite);
     }
   };
 
   const handleConfirmNavigation = () => {
     setShowConfirmModal(false);
-    onClick(jobsite); // Process the click after confirmation
+    onClick(jobsite);
   };
+
   const handleCancelNavigation = () => {
     setShowConfirmModal(false);
   };
