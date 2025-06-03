@@ -60,8 +60,6 @@ export default function Assets() {
 
   // UI state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
-    useState(false);
   const [showAssetChangeModal, setShowAssetChangeModal] = useState(false);
   const [pendingAssetChange, setPendingAssetChange] = useState<string | null>(
     null
@@ -69,7 +67,7 @@ export default function Assets() {
 
   // Handler for asset type change with unsaved changes check
   const handleAssetChange = (newAssetType: string) => {
-    const totalUnsavedChanges = hasUnsavedChanges || hasRegistrationFormChanges;
+    const totalUnsavedChanges = hasUnsavedChanges;
     if (totalUnsavedChanges && newAssetType !== assets) {
       // If there are unsaved changes, show confirmation modal
       setPendingAssetChange(newAssetType);
@@ -89,7 +87,6 @@ export default function Assets() {
       // Clear all selections using the utility function from useAssets
       clearAllSelections();
       setHasUnsavedChanges(false); // Reset unsaved changes state
-      setHasRegistrationFormChanges(false); // Reset registration form changes state
     }
     setShowAssetChangeModal(false);
     setPendingAssetChange(null);
@@ -114,7 +111,7 @@ export default function Assets() {
               <Selects
                 onChange={(e) => handleAssetChange(e.target.value)}
                 value={assets}
-                className="w-full h-full text-center text-sm border-none outline outline-[3px] outline-black outline-offset-0"
+                className="w-full h-full text-center text-sm border-[2px] outline outline-[1px] outline-black outline-offset-0"
               >
                 {ASSET_TYPES.map((asset) => (
                   <option key={asset.value} value={asset.value}>
@@ -154,9 +151,7 @@ export default function Assets() {
                   selectJobsite={selectJobsite}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
-                  hasUnsavedChanges={
-                    hasUnsavedChanges || hasRegistrationFormChanges
-                  }
+                  hasUnsavedChanges={hasUnsavedChanges}
                 />
               ) : assets === "CostCode" ? (
                 <CostCodeSideBar
@@ -176,9 +171,7 @@ export default function Assets() {
                   selectCostCode={selectCostCode}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
-                  hasUnsavedChanges={
-                    hasUnsavedChanges || hasRegistrationFormChanges
-                  }
+                  hasUnsavedChanges={hasUnsavedChanges}
                 />
               ) : null}
             </Grids>
@@ -193,7 +186,6 @@ export default function Assets() {
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshEquipments={fetchEquipmentSummaries}
               loading={loading}
-              onRegistrationFormChangesChange={setHasRegistrationFormChanges}
             />
           ) : assets === "Jobsite" ? (
             <JobsiteMainContent
@@ -205,7 +197,6 @@ export default function Assets() {
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshJobsites={fetchJobsiteSummaries}
               loading={loading}
-              onRegistrationFormChangesChange={setHasRegistrationFormChanges}
             />
           ) : assets === "CostCode" ? (
             <CostCodeMainContent
@@ -214,12 +205,11 @@ export default function Assets() {
               isRegistrationFormOpen={isRegistrationFormOpen}
               setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectCostCode={setSelectCostCode}
-              onUnsavedChangesChange={setHasUnsavedChanges}
+              setHasUnsavedChanges={setHasUnsavedChanges}
               refreshCostCodes={fetchCostCodeSummaries}
               loading={loading}
               isRegistrationGroupFormOpen={isRegistrationGroupFormOpen}
               setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
-              onRegistrationFormChangesChange={setHasRegistrationFormChanges}
               selectTag={selectTag}
               setSelectTag={setSelectTag}
             />

@@ -6,7 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 
 interface CostCodeRegistrationViewProps {
   onSubmit: (formData: {
@@ -15,11 +15,13 @@ interface CostCodeRegistrationViewProps {
     isActive: boolean;
   }) => Promise<boolean>;
   onCancel: () => void;
+  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function CostCodeRegistrationView({
   onSubmit,
   onCancel,
+  setHasUnsavedChanges,
 }: CostCodeRegistrationViewProps) {
   const [formData, setFormData] = useState({
     cCNumber: "#",
@@ -35,6 +37,14 @@ export default function CostCodeRegistrationView({
     (formData.cCNumber.trim() !== "#" && formData.cCNumber.trim() !== "") ||
     formData.cCName.trim() !== "" ||
     formData.isActive !== true;
+
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      setHasUnsavedChanges(true);
+    } else {
+      setHasUnsavedChanges(false);
+    }
+  }, [hasUnsavedChanges]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

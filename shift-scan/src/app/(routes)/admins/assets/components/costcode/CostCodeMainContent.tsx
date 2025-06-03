@@ -17,12 +17,11 @@ interface CostCodeMainContentProps {
   isRegistrationGroupFormOpen: boolean;
   setIsRegistrationGroupFormOpen: Dispatch<SetStateAction<boolean>>;
   setSelectCostCode: Dispatch<SetStateAction<CostCode | null>>;
-  onUnsavedChangesChange: (hasChanges: boolean) => void;
   refreshCostCodes: () => Promise<void>;
   loading?: boolean;
-  onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
   selectTag: Tag | null;
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
+  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -35,17 +34,16 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   isRegistrationFormOpen,
   setIsRegistrationFormOpen,
   setSelectCostCode,
-  onUnsavedChangesChange,
   refreshCostCodes,
   loading = false,
   isRegistrationGroupFormOpen,
   setIsRegistrationGroupFormOpen,
-  onRegistrationFormChangesChange,
+  setHasUnsavedChanges,
 }) => {
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
     setSelectCostCode,
-    onUnsavedChangesChange,
+    setHasUnsavedChanges,
     setIsRegistrationFormOpen,
     refreshCostCodes,
   });
@@ -55,28 +53,32 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
       {loading ? (
         <Holds
           background={"white"}
-          className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
+          className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7 flex justify-center items-center animate-pulse"
         >
           <Spinner size={50} />
         </Holds>
       ) : isRegistrationFormOpen ? (
-        <Holds className="w-full h-full col-start-3 col-end-7">
+        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <CostCodeRegistrationView
             onSubmit={costCodeFormHook.handleNewCostCodeSubmit}
             onCancel={() => {
               setIsRegistrationFormOpen(false);
-              onUnsavedChangesChange(false);
+              setHasUnsavedChanges(false);
             }}
+            setHasUnsavedChanges={setHasUnsavedChanges}
           />
         </Holds>
       ) : selectCostCode && costCodeFormHook.formData ? (
-        <Holds className="w-full h-full col-start-3 col-end-7">
+        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <CostCodeFormView
             formData={costCodeFormHook.formData}
             changedFields={costCodeFormHook.changedFields}
             onInputChange={costCodeFormHook.handleInputChange}
             onRevertField={costCodeFormHook.handleRevertField}
-            onRegisterNew={() => setIsRegistrationFormOpen(true)}
+            onRegisterNew={() => {
+              setIsRegistrationFormOpen(true);
+              setSelectCostCode(null);
+            }}
             onDiscardChanges={costCodeFormHook.handleDiscardChanges}
             onSaveChanges={costCodeFormHook.handleSaveChanges}
             hasUnsavedChanges={costCodeFormHook.hasUnsavedChanges}

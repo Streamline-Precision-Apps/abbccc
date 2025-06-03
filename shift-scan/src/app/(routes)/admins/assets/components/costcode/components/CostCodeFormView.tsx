@@ -8,6 +8,7 @@ import CostCodeBasicFields from "./CostCodeBasicFields";
 import DeleteCostCodeModal from "./DeleteCostCodeModal";
 import { CostCode } from "../../../types";
 import { Titles } from "@/components/(reusable)/titles";
+import { form } from "@nextui-org/theme";
 
 interface CostCodeFormViewProps {
   formData: CostCode;
@@ -68,18 +69,49 @@ export default function CostCodeFormView({
       <Holds
         position={"row"}
         background={"white"}
-        className="w-full h-full gap-4 px-4 "
+        className="w-full h-full gap-4 px-[5%] relative"
       >
-        <Holds position={"row"} className="justify-between">
+        <Holds position={"row"} className="w-full justify-between">
           <Buttons
             background={"none"}
             shadow={"none"}
             onClick={onRegisterNew}
             disabled={hasUnsavedChanges}
-            className="w-full h-auto px-2 "
+            className="w-fit h-auto "
           >
-            <Texts position={"left"} size="xs" text="link">
+            <Texts size="xs" text="link">
               Register New
+            </Texts>
+          </Buttons>
+
+          <Buttons
+            background={"none"}
+            shadow={"none"}
+            onClick={onSaveChanges}
+            disabled={isSaving || !hasUnsavedChanges}
+            className="w-fit h-auto "
+          >
+            <Texts
+              size="xs"
+              text="link"
+              className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
+            >
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Texts>
+          </Buttons>
+          <Buttons
+            background={"none"}
+            shadow={"none"}
+            onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
+            disabled={isSaving || !hasUnsavedChanges}
+            className="w-fit h-auto "
+          >
+            <Texts
+              size="xs"
+              text="link"
+              className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
+            >
+              {"Discard Changes"}
             </Texts>
           </Buttons>
           <Buttons
@@ -87,35 +119,10 @@ export default function CostCodeFormView({
             shadow={"none"}
             onClick={handleDeleteClick}
             disabled={hasUnsavedChanges || isDeleting}
-            className="w-full h-auto px-2 "
+            className="w-fit h-auto "
           >
-            <Texts position={"left"} size="xs" text="red">
+            <Texts size="xs" text="link">
               {isDeleting ? "Deleting..." : "Delete"}
-            </Texts>
-          </Buttons>
-        </Holds>
-        {/* {hasUnsavedChanges && ( */}
-        <Holds position={"row"} className="justify-between">
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={onDiscardChanges}
-            disabled={isSaving}
-            className="w-fit h-auto px-2"
-          >
-            <Texts size="xs" text="link">
-              Discard Changes
-            </Texts>
-          </Buttons>
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={onSaveChanges}
-            disabled={isSaving}
-            className="w-fit h-auto px-2"
-          >
-            <Texts size="xs" text="link">
-              Save Changes
             </Texts>
           </Buttons>
         </Holds>

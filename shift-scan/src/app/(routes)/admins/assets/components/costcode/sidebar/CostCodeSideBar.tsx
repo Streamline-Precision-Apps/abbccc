@@ -78,16 +78,15 @@ export default function CostCodeSideBar({
 
   return (
     <>
-      <Holds>
-        <Selects className="w-full text-center text-sm">
-          <option>Select A Group</option>
-          {tagSummaries.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.name}
-            </option>
-          ))}
-        </Selects>
-      </Holds>
+      <Selects className="w-full h-full text-center text-sm p-0">
+        <option>Select A Group</option>
+        {tagSummaries.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        ))}
+      </Selects>
+
       <SearchBar
         term={term}
         handleSearchChange={(e) => setTerm(e.target.value)}
