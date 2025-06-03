@@ -92,6 +92,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             successfullyUpdated={costCodeFormHook.successfullyUpdated}
             isDeleting={costCodeFormHook.isDeleting}
             onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
+            error={costCodeFormHook.error}
           />
         </Holds>
       ) : (
