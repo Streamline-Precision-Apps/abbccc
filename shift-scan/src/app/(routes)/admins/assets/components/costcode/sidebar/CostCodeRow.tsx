@@ -53,7 +53,10 @@ export default function CostCodeRow({
         onClick={handleCostCodeClick}
       >
         <Texts position="left" size="xs">
-          {`${costCode.name} ${!costCode.isActive ? "(inactive)" : ""}`}
+          {`${costCode.name.split(" ")[0]} - ${costCode.name
+            .split(" ")
+            .slice(1)
+            .join(" ")} ${!costCode.isActive ? "(inactive)" : ""}`}
         </Texts>
       </Holds>
       <DiscardChangesModal

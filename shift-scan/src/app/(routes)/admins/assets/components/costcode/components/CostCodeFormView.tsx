@@ -1,9 +1,11 @@
 "use client";
+import { useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import CostCodeBasicFields from "./CostCodeBasicFields";
+import DeleteCostCodeModal from "./DeleteCostCodeModal";
 import { CostCode } from "../../../types";
 import { Titles } from "@/components/(reusable)/titles";
 
@@ -15,8 +17,10 @@ interface CostCodeFormViewProps {
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
+  onDeleteCostCode: () => Promise<{ success: boolean; error?: string }>;
   hasUnsavedChanges: boolean;
   isSaving: boolean;
+  isDeleting: boolean;
   successfullyUpdated: boolean;
 }
 
@@ -32,10 +36,33 @@ export default function CostCodeFormView({
   onRegisterNew,
   onDiscardChanges,
   onSaveChanges,
+  onDeleteCostCode,
   hasUnsavedChanges,
   isSaving,
+  isDeleting,
   successfullyUpdated,
 }: CostCodeFormViewProps) {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDeleteClick = () => {
+    setDeleteError(null);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    const result = await onDeleteCostCode();
+    if (!result.success) {
+      setDeleteError(result.error || "Failed to delete cost code");
+    } else {
+      setShowDeleteModal(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setDeleteError(null);
+  };
   return (
     <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4 ">
       <Holds
@@ -43,7 +70,7 @@ export default function CostCodeFormView({
         background={"white"}
         className="w-full h-full gap-4 px-4 "
       >
-        <Holds className="w-full">
+        <Holds position={"row"} className="justify-between">
           <Buttons
             background={"none"}
             shadow={"none"}
@@ -53,6 +80,17 @@ export default function CostCodeFormView({
           >
             <Texts position={"left"} size="xs" text="link">
               Register New
+            </Texts>
+          </Buttons>
+          <Buttons
+            background={"none"}
+            shadow={"none"}
+            onClick={handleDeleteClick}
+            disabled={hasUnsavedChanges || isDeleting}
+            className="w-full h-auto px-2 "
+          >
+            <Texts position={"left"} size="xs" text="red">
+              {isDeleting ? "Deleting..." : "Delete"}
             </Texts>
           </Buttons>
         </Holds>
@@ -86,7 +124,12 @@ export default function CostCodeFormView({
         <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
           <Holds className="w-full h-full">
             <Titles position="left" size="h5" className="font-bold mb-2">
-              {formData.name || "Cost Code Information"}
+              {formData.name
+                ? `${formData.name.split(" ")[0]} - ${formData.name
+                    .split(" ")
+                    .slice(1)
+                    .join(" ")}`
+                : "Cost Code Information"}
             </Titles>
           </Holds>
 
@@ -122,6 +165,22 @@ export default function CostCodeFormView({
           </Texts>
         </Holds>
       )}
+
+      {deleteError && (
+        <Holds className="mt-4 bg-red-100 p-2 rounded-md">
+          <Texts size="xs" text="red">
+            {deleteError}
+          </Texts>
+        </Holds>
+      )}
+
+      <DeleteCostCodeModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onDelete={handleDeleteConfirm}
+        costCodeName={formData.name}
+        isDeleting={isDeleting}
+      />
     </Grids>
   );
 }

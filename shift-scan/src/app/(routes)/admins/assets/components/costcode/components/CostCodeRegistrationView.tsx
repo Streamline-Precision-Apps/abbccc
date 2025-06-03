@@ -9,41 +9,55 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useState, useEffect } from "react";
 
 interface CostCodeRegistrationViewProps {
-  onSubmit: (formData: { name: string; isActive: boolean }) => void;
+  onSubmit: (formData: {
+    cCNumber: string;
+    cCName: string;
+    isActive: boolean;
+  }) => Promise<boolean>;
   onCancel: () => void;
-  onUnsavedChangesChange?: (hasChanges: boolean) => void;
 }
 
-/**
- * Registration form for new cost codes
- */
 export default function CostCodeRegistrationView({
   onSubmit,
   onCancel,
-  onUnsavedChangesChange,
 }: CostCodeRegistrationViewProps) {
   const [formData, setFormData] = useState({
-    name: "",
+    cCNumber: "#",
+    cCName: "",
     isActive: true,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Track if form has unsaved changes
+  const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
+  // Track if form has meaningful unsaved changes
+  // Only consider it a change if user has entered actual content beyond the initial "#"
   const hasUnsavedChanges =
-    formData.name.trim() !== "" || formData.isActive !== true;
-
-  // Notify parent component when unsaved changes state changes
-  useEffect(() => {
-    onUnsavedChangesChange?.(hasUnsavedChanges);
-  }, [hasUnsavedChanges, onUnsavedChangesChange]);
+    (formData.cCNumber.trim() !== "#" && formData.cCNumber.trim() !== "") ||
+    formData.cCName.trim() !== "" ||
+    formData.isActive !== true;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
 
-    if (name === "isActive") {
+    if (name === "cCNumber") {
+      // Format cCNumber to always start with # and only allow numbers and periods
+      let formattedValue = value;
+
+      // If user tries to delete the #, add it back
+      if (!formattedValue.startsWith("#")) {
+        formattedValue = "#" + formattedValue.replace(/^#+/, "");
+      }
+
+      // Remove any characters that aren't numbers, periods, or the initial #
+      formattedValue = "#" + formattedValue.slice(1).replace(/[^\d.]/g, "");
+
+      setFormData({
+        ...formData,
+        [name]: formattedValue,
+      });
+    } else if (name === "isActive") {
       setFormData({
         ...formData,
         [name]: value === "Active",
@@ -56,9 +70,31 @@ export default function CostCodeRegistrationView({
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    onSubmit(formData);
+    try {
+      const success = await onSubmit(formData);
+
+      if (success) {
+        setSuccessfullyRegistered(true);
+        setFormData({
+          cCNumber: "#",
+          cCName: "",
+          isActive: true,
+        });
+
+        // Hide the success message after 3 seconds
+        setTimeout(() => {
+          setSuccessfullyRegistered(false);
+          setIsSubmitting(false);
+        }, 3000);
+      } else {
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Error submitting cost code:", error);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -66,8 +102,16 @@ export default function CostCodeRegistrationView({
       <Holds
         position={"row"}
         background={"white"}
-        className="w-full h-full gap-4 px-4"
+        className="w-full h-full gap-4 px-4 relative"
       >
+        {successfullyRegistered && (
+          <Holds
+            background={"green"}
+            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px]"
+          >
+            <Texts size="sm">Successfully registered new cost code!</Texts>
+          </Holds>
+        )}
         <Holds className="w-full">
           <Buttons
             background={"none"}
@@ -76,7 +120,7 @@ export default function CostCodeRegistrationView({
             disabled={isSubmitting}
             className="w-full h-auto px-2"
           >
-            <Texts position={"left"} size="xs" text="link">
+            <Texts position={"left"} size="sm" text="link">
               Cancel Registration
             </Texts>
           </Buttons>
@@ -86,11 +130,15 @@ export default function CostCodeRegistrationView({
             background={"none"}
             shadow={"none"}
             onClick={handleSubmit}
-            disabled={isSubmitting || !formData.name.trim()}
+            disabled={
+              isSubmitting ||
+              !formData.cCName.trim() ||
+              formData.cCNumber.trim() === "#"
+            }
             className="w-fit h-auto px-2"
           >
-            <Texts size="xs" text="link">
-              Register Cost Code
+            <Texts size="sm" text="link">
+              {isSubmitting ? "Registering..." : "Register Cost Code"}
             </Texts>
           </Buttons>
         </Holds>
@@ -110,16 +158,45 @@ export default function CostCodeRegistrationView({
             className="w-full h-full bg-white rounded-[10px]"
           >
             <Holds className="col-span-1 h-full">
-              <label htmlFor="name" className="text-sm">
+              {/* Preview of how the cost code will appear */}
+              <Holds background={"lightGray"} className="mb-3 rounded-[10px] ">
+                <Texts
+                  position={"left"}
+                  size="xs"
+                  className="text-app-dark-gray"
+                >
+                  Preview:
+                </Texts>
+                {formData.cCNumber.trim() !== "#" && formData.cCName.trim() && (
+                  <>
+                    <Texts size="md" className="font-medium">
+                      {`${formData.cCNumber} - ${formData.cCName}`}
+                    </Texts>
+                  </>
+                )}
+              </Holds>
+              <label htmlFor="cCNumber" className="text-sm">
+                Cost Code Number<span className="text-red-500">*</span>
+              </label>
+              <Inputs
+                type="text"
+                name="cCNumber"
+                value={formData.cCNumber}
+                onChange={handleInputChange}
+                required
+                className=" w-full text-sm"
+              />
+
+              <label htmlFor="cCName" className="text-sm">
                 Cost Code Name*
               </label>
               <Inputs
                 type="text"
-                name="name"
-                value={formData.name}
+                name="cCName"
+                value={formData.cCName}
                 onChange={handleInputChange}
                 required
-                className="mb-4 w-full text-sm"
+                className="w-full text-sm"
               />
 
               <label htmlFor="isActive" className="text-sm ">
