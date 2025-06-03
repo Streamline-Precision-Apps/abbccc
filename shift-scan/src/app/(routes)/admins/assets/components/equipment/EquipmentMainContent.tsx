@@ -11,6 +11,7 @@ import {
   EquipmentRegistrationView,
 } from "./components";
 import Spinner from "@/components/(animations)/spinner";
+import DiscardChangesModal from "../shared/DiscardChangesModal";
 
 interface EquipmentMainContentProps {
   /** Assets data */
@@ -31,6 +32,11 @@ interface EquipmentMainContentProps {
   loading?: boolean;
   /** Callback when registration form changes state changes */
   onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
+  setEquipmentUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
+  equipmentUIState: "idle" | "creating" | "editing";
+  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -53,9 +59,12 @@ export default function EquipmentMainContent({
   refreshEquipments,
   loading = false,
   onRegistrationFormChangesChange,
+  setEquipmentUIState,
+  equipmentUIState,
 }: EquipmentMainContentProps) {
   const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
     useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const {
     formData,
     changedFields,
@@ -79,31 +88,47 @@ export default function EquipmentMainContent({
   const handleRegistrationFormChanges = useCallback(
     (hasChanges: boolean) => {
       setHasRegistrationFormChanges(hasChanges);
-      onRegistrationFormChangesChange?.(hasChanges);
+      if (onRegistrationFormChangesChange) {
+        onRegistrationFormChangesChange(hasChanges);
+      }
+      // Notify parent component about unsaved changes
+      if (onUnsavedChangesChange) {
+        onUnsavedChangesChange(hasChanges);
+      }
     },
-    [onRegistrationFormChangesChange]
+    [
+      onRegistrationFormChangesChange,
+      onUnsavedChangesChange,
+      setHasRegistrationFormChanges,
+    ]
   );
 
   // Handle opening registration form
   const handleOpenRegistration = () => {
-    setIsRegistrationFormOpen(true);
+    setEquipmentUIState("creating");
+    setSelectEquipment(null);
   };
 
   // Handle cancel registration with unsaved changes check
   const handleCancelRegistration = useCallback(() => {
+    // Show confirmation modal if there are unsaved changes
     if (hasRegistrationFormChanges) {
-      if (
-        confirm(
-          "You have unsaved registration form changes. Are you sure you want to discard them?"
-        )
-      ) {
-        setIsRegistrationFormOpen(false);
-        setHasRegistrationFormChanges(false);
-      }
+      setShowConfirmModal(true);
     } else {
-      setIsRegistrationFormOpen(false);
+      setEquipmentUIState("idle");
     }
-  }, [hasRegistrationFormChanges, setIsRegistrationFormOpen]);
+  }, [hasRegistrationFormChanges, setEquipmentUIState]);
+
+  // Modal confirmation handlers
+  const handleConfirmDiscard = () => {
+    setShowConfirmModal(false);
+    setEquipmentUIState("idle");
+    setHasRegistrationFormChanges(false);
+  };
+
+  const handleCancelDiscard = () => {
+    setShowConfirmModal(false);
+  };
 
   // Show loading indicator when data is being fetched
   if (loading) {
@@ -117,45 +142,46 @@ export default function EquipmentMainContent({
     );
   }
 
-  // Show registration view when registration form is open
-  if (isRegistrationFormOpen) {
-    return (
-      <EquipmentRegistrationView
-        onSubmit={handleNewEquipmentSubmit}
-        onCancel={handleCancelRegistration}
-        onUnsavedChangesChange={handleRegistrationFormChanges}
-      />
-    );
-  }
-
-  // Show empty state when no equipment is selected and registration form is closed
-  if (!selectEquipment) {
-    return <EquipmentEmptyState onOpenRegistration={handleOpenRegistration} />;
-  }
-
-  // Show equipment form view when equipment is selected
   return (
-    <Holds className="w-full h-full col-span-4">
-      <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
-        <EquipmentHeaderActions
-          hasUnsavedChanges={hasUnsavedChanges}
-          isSaving={isSaving}
-          successfullyUpdated={successfullyUpdated}
-          onRegisterNew={handleOpenRegistration}
-          onDiscardChanges={handleDiscardChanges}
-          onSaveChanges={handleSaveChanges}
-          changedFieldsCount={changedFields.size}
+    <>
+      {equipmentUIState === "creating" ? (
+        <EquipmentRegistrationView
+          onSubmit={handleNewEquipmentSubmit}
+          onCancel={handleCancelRegistration}
+          onUnsavedChangesChange={handleRegistrationFormChanges}
         />
+      ) : equipmentUIState === "editing" && selectEquipment && formData ? (
+        <Holds className="w-full h-full col-span-4">
+          <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
+            <EquipmentHeaderActions
+              hasUnsavedChanges={hasUnsavedChanges}
+              isSaving={isSaving}
+              successfullyUpdated={successfullyUpdated}
+              onRegisterNew={handleOpenRegistration}
+              onDiscardChanges={handleDiscardChanges}
+              onSaveChanges={handleSaveChanges}
+              changedFieldsCount={changedFields.size}
+            />
 
-        <EquipmentFormView
-          equipment={selectEquipment}
-          formData={formData!}
-          changedFields={changedFields}
-          onInputChange={handleInputChange}
-          onRevertField={handleRevertField}
-          isSaving={isSaving}
-        />
-      </Grids>
-    </Holds>
+            <EquipmentFormView
+              equipment={selectEquipment}
+              formData={formData!}
+              changedFields={changedFields}
+              onInputChange={handleInputChange}
+              onRevertField={handleRevertField}
+              isSaving={isSaving}
+            />
+          </Grids>
+        </Holds>
+      ) : equipmentUIState === "idle" ? (
+        <EquipmentEmptyState onOpenRegistration={handleOpenRegistration} />
+      ) : null}
+      <DiscardChangesModal
+        isOpen={showConfirmModal}
+        confirmDiscardChanges={handleConfirmDiscard}
+        cancelDiscard={handleCancelDiscard}
+        message="You have unsaved changes. Are you sure you want to discard them?"
+      />
+    </>
   );
 }

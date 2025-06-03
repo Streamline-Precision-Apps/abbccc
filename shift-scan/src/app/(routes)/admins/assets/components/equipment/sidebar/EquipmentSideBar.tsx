@@ -11,6 +11,7 @@ import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
 import EquipmentRow from "./EquipmentRow";
 import { Equipment, EquipmentSummary } from "../../../types";
+import DiscardChangesModal from "../../shared/DiscardChangesModal";
 
 export default function EquipmentSideBar({
   assets,
@@ -19,6 +20,9 @@ export default function EquipmentSideBar({
   setSelectEquipment,
   selectEquipment,
   hasUnsavedChanges = false,
+  setEquipmentUIState,
+  equipmentUIState,
+  setHasUnsavedChanges,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
@@ -28,6 +32,11 @@ export default function EquipmentSideBar({
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
+  setEquipmentUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
+  equipmentUIState: "idle" | "creating" | "editing";
+  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [term, setTerm] = useState("");
 
@@ -37,12 +46,14 @@ export default function EquipmentSideBar({
       // If the clicked equipment is already selected, deselect it
       if (selectEquipment?.id === equipment.id) {
         setSelectEquipment(null);
+        setEquipmentUIState("idle");
       } else {
         // Otherwise, select the new equipment
         setSelectEquipment(equipment);
+        setEquipmentUIState("editing");
       }
     },
-    [selectEquipment, setSelectEquipment]
+    [selectEquipment, setSelectEquipment, setEquipmentUIState]
   );
 
   const filteredEquipments = useMemo(() => {
