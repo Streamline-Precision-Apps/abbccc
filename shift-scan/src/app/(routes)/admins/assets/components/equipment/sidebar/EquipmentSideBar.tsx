@@ -1,6 +1,7 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
 import {
+  ChangeEvent,
   Dispatch,
   SetStateAction,
   useCallback,
@@ -30,13 +31,13 @@ export default function EquipmentSideBar({
   setSelectEquipment: (equipment: EquipmentSummary | null) => void;
   selectEquipment: Equipment | null;
   isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
-  setEquipmentUIState: React.Dispatch<
-    React.SetStateAction<"idle" | "creating" | "editing">
+  setEquipmentUIState: Dispatch<
+    SetStateAction<"idle" | "creating" | "editing">
   >;
   equipmentUIState: "idle" | "creating" | "editing";
-  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  setHasUnsavedChanges: Dispatch<SetStateAction<boolean>>;
 }) {
   const [term, setTerm] = useState("");
 
@@ -86,12 +87,9 @@ export default function EquipmentSideBar({
     });
   }, [term, equipments]);
 
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTerm(e.target.value);
-    },
-    []
-  );
+  const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setTerm(e.target.value);
+  }, []);
 
   return (
     <>

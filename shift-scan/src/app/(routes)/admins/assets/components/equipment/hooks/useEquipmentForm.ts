@@ -14,7 +14,7 @@ import { Equipment } from "../../../types";
 
 interface UseEquipmentFormProps {
   selectEquipment: Equipment | null;
-  setSelectEquipment: React.Dispatch<React.SetStateAction<Equipment | null>>;
+  setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
   setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   refreshEquipments?: () => Promise<void>;

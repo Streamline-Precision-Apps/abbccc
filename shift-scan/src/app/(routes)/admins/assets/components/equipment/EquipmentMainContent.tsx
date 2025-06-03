@@ -21,9 +21,9 @@ interface EquipmentMainContentProps {
   /** Whether the registration form is open */
   isRegistrationFormOpen: boolean;
   /** Handler to set registration form state */
-  setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   /** Handler to set selected equipment */
-  setSelectEquipment: React.Dispatch<React.SetStateAction<Equipment | null>>;
+  setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
   /** Callback when unsaved changes state changes */
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
   /** Function to refresh equipment list */
@@ -32,11 +32,11 @@ interface EquipmentMainContentProps {
   loading?: boolean;
   /** Callback when registration form changes state changes */
   onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
-  setEquipmentUIState: React.Dispatch<
-    React.SetStateAction<"idle" | "creating" | "editing">
+  setEquipmentUIState: Dispatch<
+    SetStateAction<"idle" | "creating" | "editing">
   >;
   equipmentUIState: "idle" | "creating" | "editing";
-  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  setHasUnsavedChanges: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
