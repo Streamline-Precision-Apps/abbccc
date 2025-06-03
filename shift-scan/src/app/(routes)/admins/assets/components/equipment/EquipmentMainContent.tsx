@@ -12,6 +12,7 @@ import {
 } from "./components";
 import Spinner from "@/components/(animations)/spinner";
 import DiscardChangesModal from "../shared/DiscardChangesModal";
+import DeleteConfirmationModal from "../shared/DeleteConfirmationModal";
 
 interface EquipmentMainContentProps {
   /** Assets data */
@@ -71,11 +72,15 @@ export default function EquipmentMainContent({
     hasUnsavedChanges,
     isSaving,
     successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleNewEquipmentSubmit,
     handleRevertField,
+    handleDeleteEquipment,
+    confirmDeleteEquipment,
   } = useEquipmentForm({
     selectEquipment,
     setSelectEquipment,
@@ -160,6 +165,7 @@ export default function EquipmentMainContent({
               onRegisterNew={handleOpenRegistration}
               onDiscardChanges={handleDiscardChanges}
               onSaveChanges={handleSaveChanges}
+              onDeleteEquipment={handleDeleteEquipment}
               changedFieldsCount={changedFields.size}
             />
 
@@ -181,6 +187,13 @@ export default function EquipmentMainContent({
         confirmDiscardChanges={handleConfirmDiscard}
         cancelDiscard={handleCancelDiscard}
         message="You have unsaved changes. Are you sure you want to discard them?"
+      />
+      <DeleteConfirmationModal
+        isOpen={showDeleteConfirmModal}
+        itemName={formData?.name || ""}
+        itemType="equipment"
+        onConfirm={confirmDeleteEquipment}
+        onCancel={() => setShowDeleteConfirmModal(false)}
       />
     </>
   );

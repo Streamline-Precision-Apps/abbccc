@@ -490,10 +490,57 @@ export async function deleteJobsite(id: string) {
     await prisma.jobsite.delete({
       where: { id },
     });
-    return true;
+
+    // Revalidate relevant paths and tags
+    revalidateTag("jobsites");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return { success: true, message: "Jobsite deleted successfully" };
   } catch (error) {
-    console.error("Error creating jobsite:", error);
-    throw error;
+    console.error("Error deleting jobsite:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Server action to delete an equipment asset
+ * @param id The ID of the equipment to delete
+ * @returns Success status and message
+ */
+export async function deleteEquipment(id: string) {
+  console.log("Deleting equipment with ID:", id);
+  try {
+    // Check if equipment exists
+    const existingEquipment = await prisma.equipment.findUnique({
+      where: { id },
+      include: { equipmentVehicleInfo: true },
+    });
+
+    if (!existingEquipment) {
+      throw new Error("Equipment not found");
+    }
+
+    // Delete the equipment (this will cascade to related records like equipmentVehicleInfo)
+    await prisma.equipment.delete({
+      where: { id },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("equipment");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return { success: true, message: "Equipment deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting equipment:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
   }
 }
 

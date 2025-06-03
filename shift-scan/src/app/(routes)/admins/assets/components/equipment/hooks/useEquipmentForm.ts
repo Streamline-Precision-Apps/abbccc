@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import {
   updateEquipmentAsset,
   registerEquipment,
+  deleteEquipment,
 } from "@/actions/AssetActions";
 import { Equipment } from "../../../types";
 
@@ -42,6 +43,8 @@ interface UseEquipmentFormReturn {
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  showDeleteConfirmModal: boolean;
+  setShowDeleteConfirmModal: (show: boolean) => void;
   handleInputChange: (
     fieldName: string,
     value: string | number | boolean | Date
@@ -50,6 +53,8 @@ interface UseEquipmentFormReturn {
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
   handleNewEquipmentSubmit: (newEquipment: NewEquipmentData) => Promise<void>;
+  handleDeleteEquipment: () => void;
+  confirmDeleteEquipment: () => Promise<void>;
 }
 
 /**
@@ -353,16 +358,71 @@ export const useEquipmentForm = ({
     [session, setSelectEquipment, setIsRegistrationFormOpen, refreshEquipments]
   );
 
+  /**
+   * Tracks the state of the delete confirmation modal
+   */
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+
+  /**
+   * Opens the delete confirmation modal
+   */
+  const handleDeleteEquipment = useCallback(() => {
+    if (!formData) return;
+    setShowDeleteConfirmModal(true);
+  }, [formData]);
+
+  /**
+   * Performs the actual equipment deletion after confirmation
+   */
+  const confirmDeleteEquipment = useCallback(async () => {
+    if (!formData) return;
+
+    setIsSaving(true);
+    setShowDeleteConfirmModal(false);
+
+    try {
+      const result = await deleteEquipment(formData.id);
+
+      if (result.success) {
+        // Reset selection and UI state
+        setSelectEquipment(null);
+
+        // Refresh equipment list after deletion
+        if (refreshEquipments) {
+          await refreshEquipments();
+        }
+
+        // Show a success message (could be replaced with a toast notification)
+        alert("Equipment deleted successfully");
+      } else {
+        throw new Error(result.error || "Failed to delete equipment");
+      }
+    } catch (error) {
+      console.error("Error deleting equipment:", error);
+      alert(
+        `Failed to delete equipment: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }, [formData, setSelectEquipment, refreshEquipments]);
+
   return {
     formData,
     changedFields,
     hasUnsavedChanges,
     isSaving,
     successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleRevertField,
     handleNewEquipmentSubmit,
+    handleDeleteEquipment,
+    confirmDeleteEquipment,
   };
 };

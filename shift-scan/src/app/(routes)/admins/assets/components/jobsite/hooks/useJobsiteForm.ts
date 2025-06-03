@@ -7,7 +7,11 @@ import {
 } from "react";
 import { useSession } from "next-auth/react";
 import { Jobsite } from "../../../types";
-import { updateJobsite, createJobsiteFromObject } from "@/actions/AssetActions";
+import {
+  updateJobsite,
+  createJobsiteFromObject,
+  deleteJobsite,
+} from "@/actions/AssetActions";
 
 export interface UseJobsiteFormProps {
   selectJobsite: Jobsite | null;
@@ -25,6 +29,8 @@ export interface UseJobsiteFormReturn {
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  showDeleteConfirmModal: boolean;
+  setShowDeleteConfirmModal: (show: boolean) => void;
   handleInputChange: (
     fieldName: string,
     value: string | number | boolean | Date
@@ -32,7 +38,8 @@ export interface UseJobsiteFormReturn {
   handleSaveChanges: () => Promise<void>;
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
-
+  handleDeleteJobsite: () => void;
+  confirmDeleteJobsite: () => Promise<void>;
   handleNewJobsiteSubmit: (newJobsite: {
     name: string;
     clientId: string;
@@ -256,16 +263,72 @@ export const useJobsiteForm = ({
     [setJobsiteUIState, refreshJobsites]
   );
 
+  /**
+   * Tracks the state of the delete confirmation modal
+   */
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+
+  /**
+   * Opens the delete confirmation modal
+   */
+  const handleDeleteJobsite = useCallback(() => {
+    if (!formData) return;
+    setShowDeleteConfirmModal(true);
+  }, [formData]);
+
+  /**
+   * Performs the actual jobsite deletion after confirmation
+   */
+  const confirmDeleteJobsite = useCallback(async () => {
+    if (!formData) return;
+
+    setIsSaving(true);
+    setShowDeleteConfirmModal(false);
+
+    try {
+      const result = await deleteJobsite(formData.id);
+
+      if (result.success) {
+        // Reset selection and UI state
+        setSelectJobsite(null);
+        setJobsiteUIState("idle");
+
+        // Refresh jobsite list after deletion
+        if (refreshJobsites) {
+          await refreshJobsites();
+        }
+
+        // Show a success message (could be replaced with a toast notification)
+        alert("Jobsite deleted successfully");
+      } else {
+        throw new Error(result.error || "Failed to delete jobsite");
+      }
+    } catch (error) {
+      console.error("Error deleting jobsite:", error);
+      alert(
+        `Failed to delete jobsite: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }, [formData, setSelectJobsite, setJobsiteUIState, refreshJobsites]);
+
   return {
     formData,
     changedFields,
     hasUnsavedChanges,
     isSaving,
     successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleRevertField,
     handleNewJobsiteSubmit,
+    handleDeleteJobsite,
+    confirmDeleteJobsite,
   };
 };

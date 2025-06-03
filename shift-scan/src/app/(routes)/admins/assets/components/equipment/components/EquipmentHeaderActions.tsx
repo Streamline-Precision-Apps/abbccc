@@ -1,3 +1,4 @@
+import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 
@@ -9,6 +10,7 @@ interface EquipmentHeaderActionsProps {
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
+  onDeleteEquipment: () => void;
 }
 
 /**
@@ -23,6 +25,7 @@ export default function EquipmentHeaderActions({
   onRegisterNew,
   onDiscardChanges,
   onSaveChanges,
+  onDeleteEquipment,
 }: EquipmentHeaderActionsProps) {
   return (
     <Holds
@@ -30,52 +33,61 @@ export default function EquipmentHeaderActions({
       position="row"
       className="w-full h-full rounded-[10px] justify-between px-4 relative"
     >
-      <Holds className="w-full h-full flex justify-center">
-        <Texts
-          position="left"
-          size="sm"
-          text="link"
-          className={`cursor-pointer ${
-            hasUnsavedChanges
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:underline"
-          }`}
-          onClick={hasUnsavedChanges ? undefined : onRegisterNew}
-        >
-          Register New Equipment
-        </Texts>
-      </Holds>
-
-      <Holds
-        position="row"
-        className="h-full flex items-center justify-between"
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges ? undefined : onRegisterNew}
+        className="w-fit h-auto "
       >
         <Texts
           size="sm"
-          text="link"
-          className={`cursor-pointer ${
-            !hasUnsavedChanges
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:underline"
-          }`}
-          onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
+          text={"link"}
+          className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
+        >
+          Register New Equipment
+        </Texts>
+      </Buttons>
+
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
+        className="w-fit h-auto "
+      >
+        <Texts
+          size="sm"
+          text={"link"}
+          className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
         >
           Discard All Changes {hasUnsavedChanges && `(${changedFieldsCount})`}
         </Texts>
+      </Buttons>
 
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges && !isSaving ? onSaveChanges : undefined}
+        className="w-fit h-auto "
+      >
         <Texts
           size="sm"
-          text="link"
-          className={`cursor-pointer ${
-            !hasUnsavedChanges || isSaving
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:underline font-semibold"
-          }`}
-          onClick={hasUnsavedChanges && !isSaving ? onSaveChanges : undefined}
+          text={"link"}
+          className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
         >
           {isSaving ? "Saving..." : "Save changes"}
         </Texts>
-      </Holds>
+      </Buttons>
+
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges ? undefined : onDeleteEquipment}
+        className="w-fit h-auto "
+      >
+        <Texts size="sm" text={"link"}>
+          Delete Equipment
+        </Texts>
+      </Buttons>
 
       {successfullyUpdated && (
         <Holds
