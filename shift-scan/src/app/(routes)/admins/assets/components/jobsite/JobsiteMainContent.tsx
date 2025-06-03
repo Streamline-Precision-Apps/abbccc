@@ -75,16 +75,21 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
     setSelectJobsite(null);
   }, [setJobsiteUIState, setHasUnsavedChanges, setSelectJobsite]);
 
+  // Show loading indicator when data is being fetched
+  if (loading) {
+    return (
+      <Holds
+        background={"white"}
+        className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
+      >
+        <Spinner size={50} />
+      </Holds>
+    );
+  }
+
   return (
     <>
-      {loading ? (
-        <Holds
-          background={"white"}
-          className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
-        >
-          <Spinner size={50} />
-        </Holds>
-      ) : jobsiteUIState === "creating" ? (
+      {jobsiteUIState === "creating" ? (
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteRegistrationView
             onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}

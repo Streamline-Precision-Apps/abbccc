@@ -3,7 +3,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import React, { useState, useCallback } from "react";
 import { Selects } from "@/components/(reusable)/selects";
-import { CostCodeSummary, JobsiteSummary } from "./types";
+import { CostCodeSummary, EquipmentSummary, JobsiteSummary } from "./types";
 import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
 import DiscardChangesModal from "./components/shared/DiscardChangesModal";
 import { ASSET_TYPES } from "./types";
@@ -21,6 +21,9 @@ export default function Assets() {
   >("idle");
 
   const [jobsiteUIState, setJobsiteUIState] = useState<
+    "idle" | "creating" | "editing"
+  >("idle");
+  const [equipmentUIState, setEquipmentUIState] = useState<
     "idle" | "creating" | "editing"
   >("idle");
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
@@ -130,6 +133,18 @@ export default function Assets() {
     [handleJobsiteSelect, setSelectJobsite]
   );
 
+  // Memoized handler for equipment selection
+  const handleEquipmentSelection = useCallback(
+    (equipment: EquipmentSummary | null) => {
+      if (equipment) {
+        handleEquipmentSelect(equipment.id);
+      } else {
+        setSelectEquipment(null);
+      }
+    },
+    [handleEquipmentSelect, setSelectEquipment]
+  );
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -157,16 +172,13 @@ export default function Assets() {
                   assets={assets}
                   equipments={equipmentSummaries}
                   selectEquipment={selectEquipment}
-                  setSelectEquipment={(equipment) => {
-                    if (equipment) {
-                      handleEquipmentSelect(equipment.id);
-                    } else {
-                      setSelectEquipment(null);
-                    }
-                  }}
+                  setSelectEquipment={handleEquipmentSelection}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
+                  setHasUnsavedChanges={setHasUnsavedChanges}
+                  setEquipmentUIState={setEquipmentUIState}
+                  equipmentUIState={equipmentUIState}
                 />
               ) : assets === "Jobsite" ? (
                 <JobsiteSideBar
@@ -210,6 +222,9 @@ export default function Assets() {
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshEquipments={fetchEquipmentSummaries}
               loading={loading}
+              setEquipmentUIState={setEquipmentUIState}
+              equipmentUIState={equipmentUIState}
+              setHasUnsavedChanges={setHasUnsavedChanges}
             />
           ) : assets === "Jobsite" ? (
             <JobsiteMainContent

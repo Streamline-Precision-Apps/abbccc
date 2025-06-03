@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
-import { Equipment, EquipmentSummary } from "../../../types";
+import { EquipmentSummary } from "../../../types";
 
 interface EquipmentRowProps {
   equipment: EquipmentSummary;
