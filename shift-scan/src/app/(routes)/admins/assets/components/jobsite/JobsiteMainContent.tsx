@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import {
   JobsiteFormView,
@@ -8,7 +8,9 @@ import {
 } from "./index";
 import { Jobsite } from "../../types";
 import Spinner from "@/components/(animations)/spinner";
-import { set } from "date-fns";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Texts } from "@/components/(reusable)/texts";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 interface JobsiteMainContentProps {
   assets: string;
@@ -22,13 +24,13 @@ interface JobsiteMainContentProps {
   loading?: boolean;
   jobsiteUIState: "idle" | "creating" | "editing";
   setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
+  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  hasUnsavedChanges: boolean;
 }
 
 const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   assets,
   selectJobsite,
-  isRegistrationFormOpen,
-  setIsRegistrationFormOpen,
   setSelectJobsite,
   onUnsavedChangesChange,
   onRegistrationFormChangesChange,
@@ -36,6 +38,8 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   loading = false,
   jobsiteUIState,
   setJobsiteUIState,
+  hasUnsavedChanges,
+  setHasUnsavedChanges,
 }) => {
   const jobsiteFormHook = useJobsiteForm({
     selectJobsite,
@@ -45,22 +49,31 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
     refreshJobsites,
   });
 
-  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
-    useState(false);
+  const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
 
   const handleRegistrationFormChanges = (hasChanges: boolean) => {
-    setHasRegistrationFormChanges(hasChanges);
+    setHasUnsavedChanges(hasChanges);
     onRegistrationFormChangesChange?.(hasChanges);
   };
 
   const handleCancelRegistration = () => {
-    if (hasRegistrationFormChanges) {
-      // Let parent handle the confirmation modal
-      onRegistrationFormChangesChange?.(true);
-      return;
+    if (hasUnsavedChanges) {
+      setShowUnsavedChangesModal(true); // Show the modal instead of directly calling the parent callback
+    } else {
+      setJobsiteUIState("idle"); // Reset the UI state to idle if no unsaved changes
     }
-    setJobsiteUIState("idle");
   };
+
+  const cancelNavigation = () => {
+    setShowUnsavedChangesModal(false);
+  };
+
+  const confirmNavigation = useCallback(() => {
+    setShowUnsavedChangesModal(false);
+    setJobsiteUIState("idle");
+    setHasUnsavedChanges(false);
+    setSelectJobsite(null);
+  }, [setJobsiteUIState, setHasUnsavedChanges, setSelectJobsite]);
 
   return (
     <>
@@ -75,7 +88,10 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteRegistrationView
             onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}
-            onCancel={handleCancelRegistration}
+            onCancel={() => {
+              handleCancelRegistration();
+              setSelectJobsite(null);
+            }}
             onUnsavedChangesChange={handleRegistrationFormChanges}
           />
         </Holds>
@@ -108,6 +124,37 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
           />
         </Holds>
       ) : null}
+
+      <NModals
+        isOpen={showUnsavedChangesModal}
+        handleClose={cancelNavigation}
+        size="sm"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full items-center justify-center text-center pt-3">
+          <Texts size="p5">
+            You have unsaved changes. Are you sure you want to discard them?
+          </Texts>
+          <Holds className="flex justify-center items-center gap-4 mt-4">
+            <Buttons
+              background="red"
+              shadow="none"
+              className="w-full p-2"
+              onClick={confirmNavigation}
+            >
+              <Texts size="sm">Yes, discard changes</Texts>
+            </Buttons>
+            <Buttons
+              background="lightBlue"
+              shadow="none"
+              className="w-full p-2"
+              onClick={cancelNavigation}
+            >
+              <Texts size="sm">No, go back</Texts>
+            </Buttons>
+          </Holds>
+        </Holds>
+      </NModals>
     </>
   );
 };
