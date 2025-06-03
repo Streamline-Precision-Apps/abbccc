@@ -10,7 +10,7 @@ import {
 interface UseCostCodeFormProps {
   selectCostCode: CostCode | null;
   setSelectCostCode: React.Dispatch<React.SetStateAction<CostCode | null>>;
-  onUnsavedChangesChange?: (hasChanges: boolean) => void;
+  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   refreshCostCodes?: () => Promise<void>;
 }
@@ -22,7 +22,7 @@ interface UseCostCodeFormProps {
 export function useCostCodeForm({
   selectCostCode,
   setSelectCostCode,
-  onUnsavedChangesChange,
+  setHasUnsavedChanges,
   setIsRegistrationFormOpen,
   refreshCostCodes,
 }: UseCostCodeFormProps) {
@@ -58,8 +58,8 @@ export function useCostCodeForm({
   );
 
   useEffect(() => {
-    onUnsavedChangesChange?.(hasUnsavedChanges);
-  }, [hasUnsavedChanges, onUnsavedChangesChange]);
+    setHasUnsavedChanges?.(hasUnsavedChanges);
+  }, [hasUnsavedChanges, setHasUnsavedChanges]);
 
   // Handler for input changes
   const handleInputChange = (

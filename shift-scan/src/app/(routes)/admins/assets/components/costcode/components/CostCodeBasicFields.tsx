@@ -32,13 +32,31 @@ export default function CostCodeBasicFields({
         type="text"
         name="CostCodeNumber"
         value={formData?.name ? formData.name.split(" ")[0] : ""}
-        onChange={() => {}} // Read-only display
-        isChanged={false}
-        onRevert={() => {}}
-        variant="default"
+        onChange={(e) => {
+          // Preserve the name part and update only the number part
+          const namePart = formData?.name
+            ? formData.name.split(" ").slice(1).join(" ")
+            : "";
+
+          // Format cost code number with validation
+          let formattedValue = e.target.value;
+
+          // If user tries to delete the #, add it back
+          if (!formattedValue.startsWith("#")) {
+            formattedValue = "#" + formattedValue.replace(/^#+/, "");
+          }
+
+          // Remove any characters that aren't numbers, periods, or the initial #
+          formattedValue = "#" + formattedValue.slice(1).replace(/[^\d.]/g, "");
+
+          const newFullName = `${formattedValue} ${namePart}`;
+          onInputChange("name", newFullName);
+        }}
+        isChanged={isFieldChanged("name")}
+        onRevert={() => onRevertField("name")}
+        variant={isFieldChanged("name") ? "edited" : "default"}
         size="sm"
         className="mb-2"
-        disable={true}
       />
 
       <label htmlFor="CostCodeName" className="text-sm">
