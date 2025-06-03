@@ -1,7 +1,11 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { CostCode } from "../../../types";
-import { createCostCode, updateCostCode } from "@/actions/AssetActions";
+import {
+  createCostCode,
+  updateCostCode,
+  deleteCostCode,
+} from "@/actions/AssetActions";
 
 interface UseCostCodeFormProps {
   selectCostCode: CostCode | null;
@@ -29,6 +33,7 @@ export function useCostCodeForm({
     new Set()
   );
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [successfullyUpdated, setSuccessfullyUpdated] =
     useState<boolean>(false);
 
@@ -161,9 +166,10 @@ export function useCostCodeForm({
 
   // Create a new cost code
   const handleNewCostCodeSubmit = async (newCostCode: {
-    name: string;
+    cCNumber: string;
+    cCName: string;
     isActive: boolean;
-  }) => {
+  }): Promise<boolean> => {
     setIsSaving(true);
     try {
       // Call the server action to create a new cost code
@@ -173,23 +179,62 @@ export function useCostCodeForm({
         throw new Error(result.error || "Failed to create cost code");
       }
 
-      const createdCostCode = result.data;
-
-      // Close the registration form and select the newly created cost code
-      setIsRegistrationFormOpen(false);
+      setSelectCostCode(null);
+      setFormData(null);
+      setOriginalData(null);
+      setChangedFields(new Set());
 
       // Refresh the cost codes list
       if (refreshCostCodes) {
         await refreshCostCodes();
-        // After refreshing, select the newly created cost code
-        if (createdCostCode) {
-          setSelectCostCode(createdCostCode);
-        }
       }
+
+      return true; // Return success
     } catch (error) {
       console.error("Failed to create cost code:", error);
+      return false; // Return failure
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Delete cost code
+  const handleDeleteCostCode = async (): Promise<{
+    success: boolean;
+    error?: string;
+  }> => {
+    if (!formData) {
+      return { success: false, error: "No cost code selected" };
+    }
+
+    setIsDeleting(true);
+    try {
+      // Call the server action to delete the cost code
+      const result = await deleteCostCode(formData.id);
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete cost code");
+      }
+
+      // Clear the selected cost code and refresh the list
+      setSelectCostCode(null);
+      setFormData(null);
+      setOriginalData(null);
+      setChangedFields(new Set());
+
+      // Refresh the cost codes list
+      if (refreshCostCodes) {
+        await refreshCostCodes();
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to delete cost code:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -198,11 +243,13 @@ export function useCostCodeForm({
     changedFields,
     hasUnsavedChanges,
     isSaving,
+    isDeleting,
     successfullyUpdated,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleNewCostCodeSubmit,
     handleRevertField,
+    handleDeleteCostCode,
   };
 }

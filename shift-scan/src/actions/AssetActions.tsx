@@ -501,20 +501,23 @@ export async function deleteJobsite(id: string) {
  * Server action to create a new cost code
  */
 export async function createCostCode(costCodeData: {
-  name: string;
+  cCNumber: string;
+  cCName: string;
   isActive: boolean;
 }) {
   console.log("Creating new cost code...");
 
   try {
     // Validate required fields
-    if (!costCodeData.name?.trim()) {
+    if (!costCodeData.cCName?.trim()) {
       throw new Error("Cost code name is required");
     }
 
     // Check if cost code with the same name already exists
     const existingCostCode = await prisma.costCode.findUnique({
-      where: { name: costCodeData.name.trim() },
+      where: {
+        name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
+      },
     });
 
     if (existingCostCode) {
@@ -524,7 +527,7 @@ export async function createCostCode(costCodeData: {
     // Create the new cost code
     const newCostCode = await prisma.costCode.create({
       data: {
-        name: costCodeData.name.trim(),
+        name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
         isActive: costCodeData.isActive,
       },
     });

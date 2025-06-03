@@ -6,6 +6,7 @@ import Spinner from "@/components/(animations)/spinner";
 import CostCodeEmptyState from "./components/CostCodeEmptyState";
 import CostCodeFormView from "./components/CostCodeFormView";
 import CostCodeRegistrationView from "./components/CostCodeRegistrationView";
+import DiscardChangesModal from "../shared/DiscardChangesModal";
 import { useCostCodeForm } from "./hooks/useCostCodeForm";
 
 interface CostCodeMainContentProps {
@@ -41,9 +42,6 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   setIsRegistrationGroupFormOpen,
   onRegistrationFormChangesChange,
 }) => {
-  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
-    useState(false);
-
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
     setSelectCostCode,
@@ -51,31 +49,6 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
     setIsRegistrationFormOpen,
     refreshCostCodes,
   });
-
-  // Handle registration form unsaved changes
-  const handleRegistrationFormChanges = useCallback(
-    (hasChanges: boolean) => {
-      setHasRegistrationFormChanges(hasChanges);
-      onRegistrationFormChangesChange?.(hasChanges);
-    },
-    [onRegistrationFormChangesChange]
-  );
-
-  // Handle cancel registration with unsaved changes check
-  const handleCancelRegistration = useCallback(() => {
-    if (hasRegistrationFormChanges) {
-      if (
-        confirm(
-          "You have unsaved registration form changes. Are you sure you want to discard them?"
-        )
-      ) {
-        setIsRegistrationFormOpen(false);
-        setHasRegistrationFormChanges(false);
-      }
-    } else {
-      setIsRegistrationFormOpen(false);
-    }
-  }, [hasRegistrationFormChanges, setIsRegistrationFormOpen]);
 
   return (
     <>
@@ -90,8 +63,10 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
         <Holds className="w-full h-full col-start-3 col-end-7">
           <CostCodeRegistrationView
             onSubmit={costCodeFormHook.handleNewCostCodeSubmit}
-            onCancel={handleCancelRegistration}
-            onUnsavedChangesChange={handleRegistrationFormChanges}
+            onCancel={() => {
+              setIsRegistrationFormOpen(false);
+              onUnsavedChangesChange(false);
+            }}
           />
         </Holds>
       ) : selectCostCode && costCodeFormHook.formData ? (
@@ -107,6 +82,8 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             hasUnsavedChanges={costCodeFormHook.hasUnsavedChanges}
             isSaving={costCodeFormHook.isSaving}
             successfullyUpdated={costCodeFormHook.successfullyUpdated}
+            isDeleting={costCodeFormHook.isDeleting}
+            onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
           />
         </Holds>
       ) : (
@@ -117,6 +94,14 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
           />
         </Holds>
       )}
+
+      {/* Discard Registration Changes Modal */}
+      {/* <DiscardChangesModal
+        isOpen={showDiscardRegistrationModal}
+        confirmDiscardChanges={handleConfirmDiscardRegistration}
+        cancelDiscard={handleCancelDiscardRegistration}
+        message="You have unsaved registration form changes. Are you sure you want to discard them?"
+      /> */}
     </>
   );
 };

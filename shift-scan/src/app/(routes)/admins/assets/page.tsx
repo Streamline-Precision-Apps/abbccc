@@ -1,26 +1,17 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Selects } from "@/components/(reusable)/selects";
 import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
 import DiscardChangesModal from "./components/shared/DiscardChangesModal";
-import {
-  Equipment,
-  ASSET_TYPES,
-  Jobsite,
-  CostCode,
-  Tag,
-  EquipmentSummary,
-  JobsiteSummary,
-  CostCodeSummary,
-  TagSummary,
-} from "./types";
+import { ASSET_TYPES } from "./types";
 import EquipmentMainContent from "./components/equipment/EquipmentMainContent";
 import JobsiteMainContent from "./components/jobsite/JobsiteMainContent";
 import JobsiteSideBar from "./components/jobsite/sidebar/JobsiteSideBar";
 import CostCodeSideBar from "./components/costcode/sidebar/CostCodeSideBar";
 import CostCodeMainContent from "./components/costcode/CostCodeMainContent";
+import { useAssets } from "./hooks/useAssets";
 
 export default function Assets() {
   const [assets, setAssets] = useState("Equipment");
@@ -28,25 +19,44 @@ export default function Assets() {
   const [isRegistrationGroupFormOpen, setIsRegistrationGroupFormOpen] =
     useState(false);
 
-  // Summary state (for sidebar lists)
-  const [equipmentSummaries, setEquipmentSummaries] = useState<
-    EquipmentSummary[]
-  >([]);
-  const [jobsiteSummaries, setJobsiteSummaries] = useState<JobsiteSummary[]>(
-    []
-  );
-  const [costCodeSummaries, setCostCodeSummaries] = useState<CostCodeSummary[]>(
-    []
-  );
-  const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
+  // Use the assets hook for data fetching and state management
+  const {
+    // Summary data
+    equipmentSummaries,
+    jobsiteSummaries,
+    costCodeSummaries,
+    tagSummaries,
 
-  // Detailed state (for selected items)
-  const [selectEquipment, setSelectEquipment] = useState<Equipment | null>(
-    null
-  );
-  const [selectJobsite, setSelectJobsite] = useState<Jobsite | null>(null);
-  const [selectCostCode, setSelectCostCode] = useState<CostCode | null>(null);
-  const [selectTag, setSelectTag] = useState<Tag | null>(null);
+    // Selected data
+    selectEquipment,
+    selectJobsite,
+    selectCostCode,
+    selectTag,
+
+    // Loading state
+    loading,
+
+    // Setters
+    setSelectEquipment,
+    setSelectJobsite,
+    setSelectCostCode,
+    setSelectTag,
+
+    // Fetch functions
+    fetchEquipmentSummaries,
+    fetchJobsiteSummaries,
+    fetchCostCodeSummaries,
+    fetchTagSummaries,
+
+    // Selection handlers
+    handleEquipmentSelect,
+    handleJobsiteSelect,
+    handleCostCodeSelect,
+    handleTagSelect,
+
+    // Utility functions
+    clearAllSelections,
+  } = useAssets();
 
   // UI state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -56,7 +66,6 @@ export default function Assets() {
   const [pendingAssetChange, setPendingAssetChange] = useState<string | null>(
     null
   );
-  const [loading, setLoading] = useState<boolean>(false);
 
   // Handler for asset type change with unsaved changes check
   const handleAssetChange = (newAssetType: string) => {
@@ -69,10 +78,7 @@ export default function Assets() {
       // Otherwise change asset type normally
       setAssets(newAssetType);
       // Clear all selections when changing asset types
-      setSelectEquipment(null);
-      setSelectJobsite(null);
-      setSelectCostCode(null);
-      setSelectTag(null);
+      clearAllSelections();
     }
   };
 
@@ -80,11 +86,8 @@ export default function Assets() {
   const handleConfirmAssetChange = () => {
     if (pendingAssetChange) {
       setAssets(pendingAssetChange);
-      // Clear all selections
-      setSelectEquipment(null);
-      setSelectJobsite(null);
-      setSelectCostCode(null);
-      setSelectTag(null);
+      // Clear all selections using the utility function from useAssets
+      clearAllSelections();
       setHasUnsavedChanges(false); // Reset unsaved changes state
       setHasRegistrationFormChanges(false); // Reset registration form changes state
     }
@@ -97,160 +100,6 @@ export default function Assets() {
     setShowAssetChangeModal(false);
     setPendingAssetChange(null);
   };
-
-  // Equipment summary fetch function
-  const fetchEquipmentSummaries = async () => {
-    try {
-      const response = await fetch("/api/getEquipmentSummary");
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setEquipmentSummaries(data);
-    } catch (error) {
-      console.error(`Failed to fetch equipment summaries:`, error);
-    }
-  };
-
-  // Jobsite summary fetch function
-  const fetchJobsiteSummaries = async () => {
-    try {
-      const response = await fetch("/api/getJobsiteSummary");
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setJobsiteSummaries(data);
-    } catch (error) {
-      console.error(`Failed to fetch jobsite summaries:`, error);
-    }
-  };
-
-  // Cost code summary fetch function
-  const fetchCostCodeSummaries = async () => {
-    try {
-      const response = await fetch("/api/getCostCodeSummary");
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setCostCodeSummaries(data);
-    } catch (error) {
-      console.error(`Failed to fetch cost code summaries:`, error);
-    }
-  };
-
-  // Tag summary fetch function
-  const fetchTagSummaries = async () => {
-    try {
-      const response = await fetch("/api/getTagSummary");
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setTagSummaries(data);
-    } catch (error) {
-      console.error(`Failed to fetch tag summaries:`, error);
-    }
-  };
-
-  // Fetch detailed equipment data when an equipment is selected
-  const fetchEquipmentDetails = async (equipmentId: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `/api/getEquipmentByEquipmentId/${equipmentId}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setSelectEquipment(data);
-    } catch (error) {
-      console.error(`Failed to fetch equipment details:`, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch detailed jobsite data when a jobsite is selected
-  const fetchJobsiteDetails = async (jobsiteId: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/getJobsiteById/${jobsiteId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setSelectJobsite(data);
-    } catch (error) {
-      console.error(`Failed to fetch jobsite details:`, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch detailed cost code data when a cost code is selected
-  const fetchCostCodeDetails = async (costCodeId: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/getCostCodeById/${costCodeId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setSelectCostCode(data);
-    } catch (error) {
-      console.error(`Failed to fetch cost code details:`, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch detailed tag data when a tag is selected
-  const fetchTagDetails = async (tagId: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/getTagById/${tagId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      setSelectTag(data);
-    } catch (error) {
-      console.error(`Failed to fetch tag details:`, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handler for equipment selection
-  const handleEquipmentSelect = (equipmentId: string) => {
-    fetchEquipmentDetails(equipmentId);
-  };
-
-  // Handler for jobsite selection
-  const handleJobsiteSelect = (jobsiteId: string) => {
-    fetchJobsiteDetails(jobsiteId);
-  };
-
-  // Handler for cost code selection
-  const handleCostCodeSelect = (costCodeId: string) => {
-    fetchCostCodeDetails(costCodeId);
-  };
-
-  // Handler for tag selection
-  const handleTagSelect = (tagId: string) => {
-    fetchTagDetails(tagId);
-  };
-
-  // Fetch all summaries on component mount
-  useEffect(() => {
-    fetchEquipmentSummaries();
-    fetchJobsiteSummaries();
-    fetchCostCodeSummaries();
-    fetchTagSummaries();
-  }, []);
 
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">

@@ -25,14 +25,37 @@ export default function CostCodeBasicFields({
 
   return (
     <Holds className="w-full">
+      <label htmlFor="CostCodeNumber" className="text-sm">
+        Cost Code Number
+      </label>
+      <EditableFields
+        type="text"
+        name="CostCodeNumber"
+        value={formData?.name ? formData.name.split(" ")[0] : ""}
+        onChange={() => {}} // Read-only display
+        isChanged={false}
+        onRevert={() => {}}
+        variant="default"
+        size="sm"
+        className="mb-2"
+        disable={true}
+      />
+
       <label htmlFor="CostCodeName" className="text-sm">
         Cost Code Name
       </label>
       <EditableFields
         type="text"
         name="CostCodeName"
-        value={formData?.name || ""}
-        onChange={(e) => onInputChange("name", e.target.value)}
+        value={
+          formData?.name ? formData.name.split(" ").slice(1).join(" ") : ""
+        }
+        onChange={(e) => {
+          // Reconstruct the full name with the number part
+          const numberPart = formData?.name ? formData.name.split(" ")[0] : "#";
+          const newFullName = `${numberPart} ${e.target.value}`;
+          onInputChange("name", newFullName);
+        }}
         isChanged={isFieldChanged("name")}
         onRevert={() => onRevertField("name")}
         variant={isFieldChanged("name") ? "edited" : "default"}
