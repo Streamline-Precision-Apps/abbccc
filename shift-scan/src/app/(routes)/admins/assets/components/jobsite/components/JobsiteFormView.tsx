@@ -14,6 +14,7 @@ interface JobsiteFormViewProps {
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
+  onDeleteJobsite: () => void;
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
@@ -34,6 +35,7 @@ export default function JobsiteFormView({
   onRegisterNew,
   onDiscardChanges,
   onSaveChanges,
+  onDeleteJobsite,
   hasUnsavedChanges,
   isSaving,
   successfullyUpdated,
@@ -47,6 +49,7 @@ export default function JobsiteFormView({
             onRegisterNew={onRegisterNew}
             onDiscardChanges={onDiscardChanges}
             onSaveChanges={onSaveChanges}
+            onDeleteJobsite={onDeleteJobsite}
             hasUnsavedChanges={hasUnsavedChanges}
             isSaving={isSaving}
             successfullyUpdated={successfullyUpdated}

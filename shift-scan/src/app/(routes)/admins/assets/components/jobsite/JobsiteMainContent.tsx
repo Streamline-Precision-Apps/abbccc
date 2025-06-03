@@ -11,6 +11,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
+import DeleteConfirmationModal from "../shared/DeleteConfirmationModal";
 
 interface JobsiteMainContentProps {
   assets: string;
@@ -41,7 +42,21 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   hasUnsavedChanges,
   setHasUnsavedChanges,
 }) => {
-  const jobsiteFormHook = useJobsiteForm({
+  const {
+    formData,
+    changedFields,
+    isSaving,
+    successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
+    handleInputChange,
+    handleSaveChanges,
+    handleDiscardChanges,
+    handleRevertField,
+    handleNewJobsiteSubmit,
+    handleDeleteJobsite,
+    confirmDeleteJobsite,
+  } = useJobsiteForm({
     selectJobsite,
     setSelectJobsite,
     onUnsavedChangesChange,
@@ -92,7 +107,7 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
       {jobsiteUIState === "creating" ? (
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteRegistrationView
-            onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}
+            onSubmit={handleNewJobsiteSubmit}
             onCancel={() => {
               handleCancelRegistration();
               setSelectJobsite(null);
@@ -100,23 +115,24 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
             onUnsavedChangesChange={handleRegistrationFormChanges}
           />
         </Holds>
-      ) : jobsiteUIState === "editing" && jobsiteFormHook.formData ? (
+      ) : jobsiteUIState === "editing" && formData ? (
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteFormView
-            formData={jobsiteFormHook.formData}
-            changedFields={jobsiteFormHook.changedFields}
-            onInputChange={jobsiteFormHook.handleInputChange}
-            onRevertField={jobsiteFormHook.handleRevertField}
+            formData={formData}
+            changedFields={changedFields}
+            onInputChange={handleInputChange}
+            onRevertField={handleRevertField}
             onRegisterNew={() => {
               setJobsiteUIState("creating");
               setSelectJobsite(null);
             }}
-            onDiscardChanges={jobsiteFormHook.handleDiscardChanges}
-            onSaveChanges={jobsiteFormHook.handleSaveChanges}
-            hasUnsavedChanges={jobsiteFormHook.hasUnsavedChanges}
-            isSaving={jobsiteFormHook.isSaving}
-            successfullyUpdated={jobsiteFormHook.successfullyUpdated}
+            onDiscardChanges={handleDiscardChanges}
+            onSaveChanges={handleSaveChanges}
+            hasUnsavedChanges={hasUnsavedChanges}
+            isSaving={isSaving}
+            successfullyUpdated={successfullyUpdated}
             setJobsiteUIState={setJobsiteUIState}
+            onDeleteJobsite={handleDeleteJobsite}
           />
         </Holds>
       ) : jobsiteUIState === "idle" ? (
@@ -160,6 +176,14 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
           </Holds>
         </Holds>
       </NModals>
+
+      <DeleteConfirmationModal
+        isOpen={showDeleteConfirmModal}
+        itemName={formData?.name || ""}
+        itemType="jobsite"
+        onConfirm={confirmDeleteJobsite}
+        onCancel={() => setShowDeleteConfirmModal(false)}
+      />
     </>
   );
 };

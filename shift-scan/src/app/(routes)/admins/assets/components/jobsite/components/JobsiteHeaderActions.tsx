@@ -10,6 +10,7 @@ interface JobsiteHeaderActionsProps {
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
+  onDeleteJobsite: () => void;
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
@@ -26,6 +27,7 @@ export default function JobsiteHeaderActions({
   hasUnsavedChanges,
   isSaving,
   successfullyUpdated,
+  onDeleteJobsite,
 }: JobsiteHeaderActionsProps) {
   return (
     <Holds
@@ -33,57 +35,75 @@ export default function JobsiteHeaderActions({
       position="row"
       className="w-full h-full justify-between rounded-[10px] px-4"
     >
-      <Holds className="">
-        <Texts
-          position="left"
-          text={hasUnsavedChanges ? "gray" : "link"}
-          size="sm"
-          onClick={hasUnsavedChanges ? undefined : onRegisterNew}
-          style={{
-            pointerEvents: hasUnsavedChanges ? "none" : "auto",
-            opacity: hasUnsavedChanges ? 0.5 : 1,
-            cursor: hasUnsavedChanges ? "not-allowed" : "pointer",
-          }}
-        >
-          Register New Jobsite
-        </Texts>
-      </Holds>
-
       <Holds
         position="row"
         className="h-full flex items-center justify-between"
       >
-        <Texts
-          onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
-          position="left"
-          text={hasUnsavedChanges ? "link" : "gray"}
-          size="sm"
-          style={{
-            pointerEvents: hasUnsavedChanges ? "auto" : "none",
-            opacity: hasUnsavedChanges ? 1 : 0.5,
-            cursor: hasUnsavedChanges ? "pointer" : "not-allowed",
-          }}
+        <Buttons
+          background={"none"}
+          shadow={"none"}
+          onClick={hasUnsavedChanges ? undefined : onRegisterNew}
+          className="w-fit h-auto "
         >
-          Discard Changes
-        </Texts>
+          <Texts
+            size="sm"
+            text={"link"}
+            className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
+          >
+            Register New Jobsite
+          </Texts>
+        </Buttons>
 
-        <Texts
-          position="right"
-          text={!hasUnsavedChanges || isSaving ? "gray" : "link"}
-          size="sm"
-          onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
-          style={{
-            pointerEvents: !hasUnsavedChanges || isSaving ? "none" : "auto",
-            opacity: !hasUnsavedChanges || isSaving ? 0.5 : 1,
-            cursor: !hasUnsavedChanges || isSaving ? "not-allowed" : "pointer",
-          }}
+        <Buttons
+          background={"none"}
+          shadow={"none"}
+          onClick={
+            hasUnsavedChanges && !isSaving ? onDiscardChanges : undefined
+          }
+          className="w-fit h-auto "
         >
-          {isSaving
-            ? "Saving..."
-            : successfullyUpdated
-            ? "Saved!"
-            : "Save Changes"}
-        </Texts>
+          <Texts
+            size="sm"
+            text={"link"}
+            className={
+              !hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""
+            }
+          >
+            Discard Changes
+          </Texts>
+        </Buttons>
+
+        <Buttons
+          background={"none"}
+          shadow={"none"}
+          onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
+          className="w-fit h-auto "
+        >
+          <Texts
+            size="sm"
+            text={"link"}
+            className={
+              !hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""
+            }
+          >
+            {isSaving
+              ? "Saving..."
+              : successfullyUpdated
+              ? "Saved!"
+              : "Save Changes"}
+          </Texts>
+        </Buttons>
+
+        <Buttons
+          background={"none"}
+          shadow={"none"}
+          onClick={onDeleteJobsite}
+          className="w-fit h-auto "
+        >
+          <Texts size="sm" text="link">
+            Delete Jobsite
+          </Texts>
+        </Buttons>
       </Holds>
     </Holds>
   );
