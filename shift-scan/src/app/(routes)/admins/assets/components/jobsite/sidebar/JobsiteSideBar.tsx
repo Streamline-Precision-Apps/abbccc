@@ -12,14 +12,10 @@ import { Texts } from "@/components/(reusable)/texts";
 import JobsiteRow from "./JobsiteRow";
 import { Jobsite, JobsiteSummary } from "../../../types";
 
-export default function JobsiteSideBar({
-  assets,
-  setAssets,
-  jobsites,
-  setSelectJobsite,
-  selectJobsite,
-  hasUnsavedChanges = false,
-}: {
+/**
+ * Props for the JobsiteSideBar component.
+ */
+interface JobsiteSideBarProps {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
   jobsites: JobsiteSummary[];
@@ -28,7 +24,24 @@ export default function JobsiteSideBar({
   isRegistrationFormOpen: boolean;
   setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
-}) {
+  jobsiteUIState: "idle" | "creating" | "editing";
+  setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
+}
+
+/**
+ * Sidebar component for jobsite management.
+ * Displays a searchable list of jobsites and handles selection.
+ */
+export default function JobsiteSideBar({
+  assets,
+  setAssets,
+  jobsites,
+  setSelectJobsite,
+  selectJobsite,
+  hasUnsavedChanges = false,
+  jobsiteUIState,
+  setJobsiteUIState,
+}: JobsiteSideBarProps) {
   const [term, setTerm] = useState("");
 
   // Handle jobsite selection with toggle functionality
@@ -37,12 +50,14 @@ export default function JobsiteSideBar({
       // If the clicked jobsite is already selected, deselect it
       if (selectJobsite?.id === jobsite.id) {
         setSelectJobsite(null);
+        setJobsiteUIState("idle");
       } else {
         // Otherwise, select the new jobsite
         setSelectJobsite(jobsite);
+        setJobsiteUIState("editing");
       }
     },
-    [selectJobsite, setSelectJobsite]
+    [selectJobsite, setSelectJobsite, setJobsiteUIState]
   );
 
   const filteredJobsites = useMemo(() => {

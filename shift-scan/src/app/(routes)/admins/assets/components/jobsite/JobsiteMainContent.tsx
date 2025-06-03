@@ -8,6 +8,7 @@ import {
 } from "./index";
 import { Jobsite } from "../../types";
 import Spinner from "@/components/(animations)/spinner";
+import { set } from "date-fns";
 
 interface JobsiteMainContentProps {
   assets: string;
@@ -19,6 +20,8 @@ interface JobsiteMainContentProps {
   onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
   refreshJobsites: () => Promise<void>;
   loading?: boolean;
+  jobsiteUIState: "idle" | "creating" | "editing";
+  setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
 }
 
 const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
@@ -31,12 +34,14 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   onRegistrationFormChangesChange,
   refreshJobsites,
   loading = false,
+  jobsiteUIState,
+  setJobsiteUIState,
 }) => {
   const jobsiteFormHook = useJobsiteForm({
     selectJobsite,
     setSelectJobsite,
     onUnsavedChangesChange,
-    setIsRegistrationFormOpen,
+    setJobsiteUIState,
     refreshJobsites,
   });
 
@@ -54,7 +59,7 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
       onRegistrationFormChangesChange?.(true);
       return;
     }
-    setIsRegistrationFormOpen(false);
+    setJobsiteUIState("idle");
   };
 
   return (
@@ -66,7 +71,7 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
         >
           <Spinner size={50} />
         </Holds>
-      ) : isRegistrationFormOpen ? (
+      ) : jobsiteUIState === "creating" ? (
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteRegistrationView
             onSubmit={jobsiteFormHook.handleNewJobsiteSubmit}
@@ -74,28 +79,35 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
             onUnsavedChangesChange={handleRegistrationFormChanges}
           />
         </Holds>
-      ) : selectJobsite && jobsiteFormHook.formData ? (
+      ) : jobsiteUIState === "editing" && jobsiteFormHook.formData ? (
         <Holds className="w-full h-full col-start-3 col-end-7">
           <JobsiteFormView
             formData={jobsiteFormHook.formData}
             changedFields={jobsiteFormHook.changedFields}
             onInputChange={jobsiteFormHook.handleInputChange}
             onRevertField={jobsiteFormHook.handleRevertField}
-            onRegisterNew={() => setIsRegistrationFormOpen(true)}
+            onRegisterNew={() => {
+              setJobsiteUIState("creating");
+              setSelectJobsite(null);
+            }}
             onDiscardChanges={jobsiteFormHook.handleDiscardChanges}
             onSaveChanges={jobsiteFormHook.handleSaveChanges}
             hasUnsavedChanges={jobsiteFormHook.hasUnsavedChanges}
             isSaving={jobsiteFormHook.isSaving}
             successfullyUpdated={jobsiteFormHook.successfullyUpdated}
+            setJobsiteUIState={setJobsiteUIState}
           />
         </Holds>
-      ) : (
+      ) : jobsiteUIState === "idle" ? (
         <Holds className="w-full h-full col-start-3 col-end-11">
           <JobsiteEmptyState
-            onRegisterNew={() => setIsRegistrationFormOpen(true)}
+            onRegisterNew={() => {
+              setJobsiteUIState("creating");
+              setSelectJobsite(null);
+            }}
           />
         </Holds>
-      )}
+      ) : null}
     </>
   );
 };
