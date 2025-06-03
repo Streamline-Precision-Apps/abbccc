@@ -15,6 +15,9 @@ import { useAssets } from "./hooks/useAssets";
 
 export default function Assets() {
   const [assets, setAssets] = useState("Equipment");
+  const [costCodeUIState, setCostCodeUIState] = useState<
+    "idle" | "creating" | "editing"
+  >("idle");
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
   const [isRegistrationGroupFormOpen, setIsRegistrationGroupFormOpen] =
     useState(false);
@@ -172,6 +175,8 @@ export default function Assets() {
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
+                  costCodeUIState={costCodeUIState}
+                  setCostCodeUIState={setCostCodeUIState}
                 />
               ) : null}
             </Grids>
@@ -212,6 +217,8 @@ export default function Assets() {
               setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
               selectTag={selectTag}
               setSelectTag={setSelectTag}
+              costCodeUIState={costCodeUIState}
+              setCostCodeUIState={setCostCodeUIState}
             />
           ) : null}
         </Grids>

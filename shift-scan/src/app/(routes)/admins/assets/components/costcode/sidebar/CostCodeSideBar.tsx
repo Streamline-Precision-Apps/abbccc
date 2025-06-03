@@ -23,6 +23,7 @@ export default function CostCodeSideBar({
   tagSummaries,
   setSelectTag,
   selectTag,
+  setCostCodeUIState,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
@@ -35,6 +36,10 @@ export default function CostCodeSideBar({
   tagSummaries: TagSummary[];
   selectTag: Tag | null;
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
+  costCodeUIState: "idle" | "creating" | "editing";
+  setCostCodeUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
 }) {
   const [term, setTerm] = useState("");
 
@@ -44,9 +49,11 @@ export default function CostCodeSideBar({
       // If the clicked cost code is already selected, deselect it
       if (selectCostCode?.id === costCode.id) {
         setSelectCostCode(null);
+        setCostCodeUIState("idle");
       } else {
         // Otherwise, select the new cost code
         setSelectCostCode(costCode);
+        setCostCodeUIState("editing");
       }
     },
     [selectCostCode, setSelectCostCode]

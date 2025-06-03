@@ -22,6 +22,10 @@ interface CostCodeMainContentProps {
   selectTag: Tag | null;
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  costCodeUIState: "idle" | "creating" | "editing";
+  setCostCodeUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
 }
 
 /**
@@ -39,6 +43,8 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   isRegistrationGroupFormOpen,
   setIsRegistrationGroupFormOpen,
   setHasUnsavedChanges,
+  costCodeUIState,
+  setCostCodeUIState,
 }) => {
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
@@ -57,18 +63,18 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
         >
           <Spinner size={50} />
         </Holds>
-      ) : isRegistrationFormOpen ? (
+      ) : costCodeUIState === "creating" ? (
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <CostCodeRegistrationView
             onSubmit={costCodeFormHook.handleNewCostCodeSubmit}
             onCancel={() => {
-              setIsRegistrationFormOpen(false);
+              setCostCodeUIState("idle");
               setHasUnsavedChanges(false);
             }}
             setHasUnsavedChanges={setHasUnsavedChanges}
           />
         </Holds>
-      ) : selectCostCode && costCodeFormHook.formData ? (
+      ) : costCodeUIState === "editing" && costCodeFormHook.formData ? (
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <CostCodeFormView
             formData={costCodeFormHook.formData}
@@ -76,7 +82,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             onInputChange={costCodeFormHook.handleInputChange}
             onRevertField={costCodeFormHook.handleRevertField}
             onRegisterNew={() => {
-              setIsRegistrationFormOpen(true);
+              setCostCodeUIState("creating");
               setSelectCostCode(null);
             }}
             onDiscardChanges={costCodeFormHook.handleDiscardChanges}
@@ -89,12 +95,14 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
           />
         </Holds>
       ) : (
-        <Holds className="w-full h-full col-start-3 col-end-11">
-          <CostCodeEmptyState
-            onRegisterNew={() => setIsRegistrationFormOpen(true)}
-            onRegisterNewGroup={() => setIsRegistrationGroupFormOpen(true)}
-          />
-        </Holds>
+        costCodeUIState === "idle" && (
+          <Holds className="w-full h-full col-start-3 col-end-11">
+            <CostCodeEmptyState
+              onRegisterNew={() => setCostCodeUIState("creating")}
+              onRegisterNewGroup={() => setIsRegistrationGroupFormOpen(true)}
+            />
+          </Holds>
+        )
       )}
 
       {/* Discard Registration Changes Modal */}
