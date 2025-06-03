@@ -1,27 +1,102 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
 import { EditableFields } from "@/components/(reusable)/EditableField";
+import React, { useCallback, useMemo, ChangeEvent } from "react";
+import { CostCodeBasicFieldsProps } from "../types";
 import { CostCode } from "../../../types";
-
-interface CostCodeBasicFieldsProps {
-  formData: CostCode;
-  changedFields: Set<keyof CostCode>;
-  onInputChange: (fieldName: keyof CostCode, value: string | boolean) => void;
-  onRevertField: (fieldName: keyof CostCode) => void;
-}
+import {
+  getCostCodeNumber,
+  getCostCodeDescription,
+  combineCostCodeName,
+} from "../utils/formatters";
 
 /**
  * Basic cost code information fields component
  * Handles name and active status
+ *
+ * @param props The component props from CostCodeBasicFieldsProps interface
+ * @returns A form component for cost code basic fields
  */
-export default function CostCodeBasicFields({
+function CostCodeBasicFields({
   formData,
   changedFields,
   onInputChange,
   onRevertField,
 }: CostCodeBasicFieldsProps) {
-  const isFieldChanged = (fieldName: keyof CostCode) =>
-    changedFields.has(fieldName);
+  // Memoize helper function to check if a field has been changed
+  const isFieldChanged = useCallback(
+    (fieldName: keyof CostCode) => changedFields.has(fieldName),
+    [changedFields]
+  );
+
+  // Use utility functions to extract number and name parts
+  const numberPart = useMemo(
+    () => getCostCodeNumber(formData?.name),
+    [formData?.name]
+  );
+
+  const namePart = useMemo(
+    () => getCostCodeDescription(formData?.name),
+    [formData?.name]
+  );
+
+  // Memoize handlers for the cost code number input
+  const handleCostCodeNumberChange = useCallback(
+    (
+      e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+      // Format cost code number with validation
+      let formattedValue = e.target.value;
+
+      // If user tries to delete the #, add it back
+      if (!formattedValue.startsWith("#")) {
+        formattedValue = "#" + formattedValue.replace(/^#+/, "");
+      }
+
+      // Remove any characters that aren't numbers, periods, or the initial #
+      formattedValue = "#" + formattedValue.slice(1).replace(/[^\d.]/g, "");
+
+      // Use utility function to combine parts
+      const newFullName = combineCostCodeName(formattedValue, namePart);
+      onInputChange("name", newFullName);
+    },
+    [namePart, onInputChange]
+  );
+
+  // Memoize handlers for the cost code name input
+  const handleCostCodeNameChange = useCallback(
+    (
+      e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+      // Use utility function to combine parts
+      const newFullName = combineCostCodeName(numberPart, e.target.value);
+      onInputChange("name", newFullName);
+    },
+    [numberPart, onInputChange]
+  );
+
+  // Memoize handlers for the status select
+  const handleStatusChange = useCallback(
+    (
+      e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+      onInputChange("isActive", e.target.value === "Active");
+    },
+    [onInputChange]
+  );
+
+  // Memoize the revert handler
+  const handleRevertName = useCallback(() => {
+    onRevertField("name");
+  }, [onRevertField]);
+
+  const handleRevertStatus = useCallback(() => {
+    onRevertField("isActive");
+  }, [onRevertField]);
+
+  // Determine field variants based on changed state
+  const nameVariant = isFieldChanged("name") ? "edited" : "default";
+  const statusVariant = isFieldChanged("isActive") ? "edited" : "default";
 
   return (
     <Holds className="w-full">
@@ -31,30 +106,11 @@ export default function CostCodeBasicFields({
       <EditableFields
         type="text"
         name="CostCodeNumber"
-        value={formData?.name ? formData.name.split(" ")[0] : ""}
-        onChange={(e) => {
-          // Preserve the name part and update only the number part
-          const namePart = formData?.name
-            ? formData.name.split(" ").slice(1).join(" ")
-            : "";
-
-          // Format cost code number with validation
-          let formattedValue = e.target.value;
-
-          // If user tries to delete the #, add it back
-          if (!formattedValue.startsWith("#")) {
-            formattedValue = "#" + formattedValue.replace(/^#+/, "");
-          }
-
-          // Remove any characters that aren't numbers, periods, or the initial #
-          formattedValue = "#" + formattedValue.slice(1).replace(/[^\d.]/g, "");
-
-          const newFullName = `${formattedValue} ${namePart}`;
-          onInputChange("name", newFullName);
-        }}
+        value={numberPart}
+        onChange={handleCostCodeNumberChange}
         isChanged={isFieldChanged("name")}
-        onRevert={() => onRevertField("name")}
-        variant={isFieldChanged("name") ? "edited" : "default"}
+        onRevert={handleRevertName}
+        variant={nameVariant}
         size="sm"
         className="mb-2"
       />
@@ -65,18 +121,11 @@ export default function CostCodeBasicFields({
       <EditableFields
         type="text"
         name="CostCodeName"
-        value={
-          formData?.name ? formData.name.split(" ").slice(1).join(" ") : ""
-        }
-        onChange={(e) => {
-          // Reconstruct the full name with the number part
-          const numberPart = formData?.name ? formData.name.split(" ")[0] : "#";
-          const newFullName = `${numberPart} ${e.target.value}`;
-          onInputChange("name", newFullName);
-        }}
+        value={namePart}
+        onChange={handleCostCodeNameChange}
         isChanged={isFieldChanged("name")}
-        onRevert={() => onRevertField("name")}
-        variant={isFieldChanged("name") ? "edited" : "default"}
+        onRevert={handleRevertName}
+        variant={nameVariant}
         size="sm"
         className="mb-2"
       />
@@ -88,10 +137,10 @@ export default function CostCodeBasicFields({
         formDatatype="select"
         name="isActive"
         value={formData.isActive ? "Active" : "Inactive"}
-        onChange={(e) => onInputChange("isActive", e.target.value === "Active")}
+        onChange={handleStatusChange}
         isChanged={isFieldChanged("isActive")}
-        onRevert={() => onRevertField("isActive")}
-        variant={isFieldChanged("isActive") ? "edited" : "default"}
+        onRevert={handleRevertStatus}
+        variant={statusVariant}
         size="sm"
         options={[
           { label: "Active", value: "Active" },
@@ -102,3 +151,6 @@ export default function CostCodeBasicFields({
     </Holds>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default React.memo(CostCodeBasicFields);

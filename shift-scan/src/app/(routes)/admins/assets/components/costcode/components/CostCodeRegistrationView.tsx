@@ -1,4 +1,11 @@
 "use client";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  ChangeEvent,
+} from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -6,27 +13,16 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { useState, useEffect } from "react";
+import { CostCodeRegistrationViewProps } from "../types";
+import { formatCostCodeName, combineCostCodeName } from "../utils/formatters";
 
 /**
- * Type definition for the result of cost code registration
+ * Component for registering a new cost code
+ *
+ * @param props The component props from CostCodeRegistrationViewProps interface
+ * @returns A form component for cost code registration
  */
-interface RegistrationResult {
-  success: boolean;
-  error?: string;
-}
-
-interface CostCodeRegistrationViewProps {
-  onSubmit: (formData: {
-    cCNumber: string;
-    cCName: string;
-    isActive: boolean;
-  }) => Promise<RegistrationResult>;
-  onCancel: () => void;
-  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function CostCodeRegistrationView({
+function CostCodeRegistrationView({
   onSubmit,
   onCancel,
   setHasUnsavedChanges,
@@ -45,54 +41,67 @@ export default function CostCodeRegistrationView({
 
   // Track if form has meaningful unsaved changes
   // Only consider it a change if user has entered actual content beyond the initial "#"
-  const hasUnsavedChanges =
-    (formData.cCNumber.trim() !== "#" && formData.cCNumber.trim() !== "") ||
-    formData.cCName.trim() !== "" ||
-    formData.isActive !== true;
+  const hasUnsavedChanges = useMemo(() => {
+    return (
+      (formData.cCNumber.trim() !== "#" && formData.cCNumber.trim() !== "") ||
+      formData.cCName.trim() !== "" ||
+      formData.isActive !== true
+    );
+  }, [formData.cCName, formData.cCNumber, formData.isActive]);
 
+  // Update parent component with changes state
   useEffect(() => {
-    if (hasUnsavedChanges) {
-      setHasUnsavedChanges(true);
-    } else {
-      setHasUnsavedChanges(false);
+    setHasUnsavedChanges(hasUnsavedChanges);
+  }, [hasUnsavedChanges, setHasUnsavedChanges]);
+
+  // Format the preview text for display using utility function
+  const previewText = useMemo(() => {
+    if (formData.cCNumber.trim() !== "#" && formData.cCName.trim()) {
+      return formatCostCodeName(
+        combineCostCodeName(formData.cCNumber, formData.cCName)
+      );
     }
-  }, [hasUnsavedChanges]);
+    return null;
+  }, [formData.cCNumber, formData.cCName]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+  // Memoized handler for input changes
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
 
-    if (name === "cCNumber") {
-      // Format cCNumber to always start with # and only allow numbers and periods
-      let formattedValue = value;
+      if (name === "cCNumber") {
+        // Format cCNumber to always start with # and only allow numbers and periods
+        let formattedValue = value;
 
-      // If user tries to delete the #, add it back
-      if (!formattedValue.startsWith("#")) {
-        formattedValue = "#" + formattedValue.replace(/^#+/, "");
+        // If user tries to delete the #, add it back
+        if (!formattedValue.startsWith("#")) {
+          formattedValue = "#" + formattedValue.replace(/^#+/, "");
+        }
+
+        // Remove any characters that aren't numbers, periods, or the initial #
+        formattedValue = "#" + formattedValue.slice(1).replace(/[^\d.]/g, "");
+
+        setFormData((prev) => ({
+          ...prev,
+          [name]: formattedValue,
+        }));
+      } else if (name === "isActive") {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value === "Active",
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
       }
+    },
+    []
+  );
 
-      // Remove any characters that aren't numbers, periods, or the initial #
-      formattedValue = "#" + formattedValue.slice(1).replace(/[^\d.]/g, "");
-
-      setFormData({
-        ...formData,
-        [name]: formattedValue,
-      });
-    } else if (name === "isActive") {
-      setFormData({
-        ...formData,
-        [name]: value === "Active",
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
-  };
-
-  const handleSubmit = async () => {
+  // Memoized submit handler
+  const handleSubmit = useCallback(async () => {
     // Clear any existing notifications
     setSuccessfullyRegistered(false);
     setRegistrationError(null);
@@ -141,7 +150,16 @@ export default function CostCodeRegistrationView({
         setRegistrationError(null);
       }, 5000);
     }
-  };
+  }, [formData, onSubmit]);
+
+  // Determine if submit button should be disabled
+  const isSubmitDisabled = useMemo(() => {
+    return (
+      isSubmitting ||
+      !formData.cCName.trim() ||
+      formData.cCNumber.trim() === "#"
+    );
+  }, [isSubmitting, formData.cCName, formData.cCNumber]);
 
   return (
     <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
@@ -191,11 +209,7 @@ export default function CostCodeRegistrationView({
             background={"none"}
             shadow={"none"}
             onClick={handleSubmit}
-            disabled={
-              isSubmitting ||
-              !formData.cCName.trim() ||
-              formData.cCNumber.trim() === "#"
-            }
+            disabled={isSubmitDisabled}
             className="w-fit h-auto px-2"
           >
             <Texts size="sm" text="link">
@@ -228,12 +242,10 @@ export default function CostCodeRegistrationView({
                 >
                   Preview:
                 </Texts>
-                {formData.cCNumber.trim() !== "#" && formData.cCName.trim() && (
-                  <>
-                    <Texts size="md" className="font-medium">
-                      {`${formData.cCNumber} - ${formData.cCName}`}
-                    </Texts>
-                  </>
+                {previewText && (
+                  <Texts size="md" className="font-medium">
+                    {previewText}
+                  </Texts>
                 )}
               </Holds>
               <label htmlFor="cCNumber" className="text-sm">
@@ -291,3 +303,6 @@ export default function CostCodeRegistrationView({
     </Grids>
   );
 }
+
+// Export as memoized component to prevent unnecessary re-renders
+export default React.memo(CostCodeRegistrationView);

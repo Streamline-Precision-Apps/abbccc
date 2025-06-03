@@ -1,8 +1,9 @@
 "use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Selects } from "@/components/(reusable)/selects";
+import { CostCodeSummary } from "./types";
 import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
 import DiscardChangesModal from "./components/shared/DiscardChangesModal";
 import { ASSET_TYPES } from "./types";
@@ -101,6 +102,18 @@ export default function Assets() {
     setPendingAssetChange(null);
   };
 
+  // Memoized handler for cost code selection
+  const handleCostCodeSelection = useCallback(
+    (costCode: CostCodeSummary | null) => {
+      if (costCode) {
+        handleCostCodeSelect(costCode.id);
+      } else {
+        setSelectCostCode(null);
+      }
+    },
+    [handleCostCodeSelect, setSelectCostCode]
+  );
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -161,13 +174,7 @@ export default function Assets() {
                   assets={assets}
                   setAssets={setAssets}
                   costCodes={costCodeSummaries}
-                  setSelectCostCode={(costCode) => {
-                    if (costCode) {
-                      handleCostCodeSelect(costCode.id);
-                    } else {
-                      setSelectCostCode(null);
-                    }
-                  }}
+                  setSelectCostCode={handleCostCodeSelection}
                   tagSummaries={tagSummaries}
                   setSelectTag={setSelectTag}
                   selectTag={selectTag}
