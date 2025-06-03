@@ -103,6 +103,7 @@ export default function CostCodeRegistrationView({
 
       if (result.success) {
         setSuccessfullyRegistered(true);
+        // Reset form data
         setFormData({
           cCNumber: "#",
           cCName: "",
@@ -115,7 +116,7 @@ export default function CostCodeRegistrationView({
           setIsSubmitting(false);
         }, 3000);
       } else {
-        // Display the error message
+        // Display specific error message
         setRegistrationError(
           result.error || "Registration failed. Please try again."
         );
@@ -128,7 +129,11 @@ export default function CostCodeRegistrationView({
       }
     } catch (error) {
       console.error("Error submitting cost code:", error);
-      setRegistrationError("An unexpected error occurred. Please try again.");
+      setRegistrationError(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred. Please try again."
+      );
       setIsSubmitting(false);
 
       // Auto-dismiss error after 5 seconds
@@ -149,10 +154,10 @@ export default function CostCodeRegistrationView({
         {successfullyRegistered && (
           <Holds
             background={"green"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-10"
+            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
           >
             <Texts size="sm" className="text-white">
-              Successfully registered new cost code!
+              Cost Code successfully registered!
             </Texts>
           </Holds>
         )}
@@ -161,10 +166,10 @@ export default function CostCodeRegistrationView({
         {registrationError && (
           <Holds
             background={"red"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-10"
+            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
           >
             <Texts size="sm" className="text-white flex-1 text-center">
-              {registrationError}!
+              {registrationError}
             </Texts>
           </Holds>
         )}

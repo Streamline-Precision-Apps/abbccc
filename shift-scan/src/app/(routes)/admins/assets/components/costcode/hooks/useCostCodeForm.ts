@@ -36,6 +36,7 @@ export function useCostCodeForm({
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [successfullyUpdated, setSuccessfullyUpdated] =
     useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Initialize form data when selected cost code changes
   useEffect(() => {
@@ -109,8 +110,12 @@ export function useCostCodeForm({
   };
 
   // Save changes to cost code
-  const handleSaveChanges = async () => {
-    if (!formData || !hasUnsavedChanges) return;
+  const handleSaveChanges = async (): Promise<{
+    success: boolean;
+    error?: string;
+  }> => {
+    if (!formData || !hasUnsavedChanges)
+      return { success: false, error: "No changes to save" };
 
     setIsSaving(true);
     try {
@@ -132,7 +137,11 @@ export function useCostCodeForm({
       const result = await updateCostCode(formData.id, changedData);
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to update cost code");
+        setError(result.error || "Failed to update cost code");
+        return {
+          success: false,
+          error: result.error || "Failed to update cost code",
+        };
       }
 
       // Update the form data with the response
@@ -149,10 +158,20 @@ export function useCostCodeForm({
           await refreshCostCodes();
         }
       }
+
+      return { success: true };
     } catch (error) {
       console.error("Failed to save cost code changes:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save changes";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setIsSaving(false);
+      setTimeout(() => {
+        setSuccessfullyUpdated(false);
+        setError(null);
+      }, 4000);
     }
   };
 
@@ -250,6 +269,7 @@ export function useCostCodeForm({
     formData,
     changedFields,
     hasUnsavedChanges,
+    error,
     isSaving,
     isDeleting,
     successfullyUpdated,
