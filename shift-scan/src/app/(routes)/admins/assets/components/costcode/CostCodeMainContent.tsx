@@ -95,16 +95,14 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             error={costCodeFormHook.error}
           />
         </Holds>
-      ) : (
-        costCodeUIState === "idle" && (
-          <Holds className="w-full h-full col-start-3 col-end-11">
-            <CostCodeEmptyState
-              onRegisterNew={() => setCostCodeUIState("creating")}
-              onRegisterNewGroup={() => setIsRegistrationGroupFormOpen(true)}
-            />
-          </Holds>
-        )
-      )}
+      ) : costCodeUIState === "idle" ? (
+        <Holds className="w-full h-full col-start-3 col-end-11">
+          <CostCodeEmptyState
+            onRegisterNew={() => setCostCodeUIState("creating")}
+            onRegisterNewGroup={() => setIsRegistrationGroupFormOpen(true)}
+          />
+        </Holds>
+      ) : null}
     </>
   );
 };
