@@ -13,7 +13,9 @@ export interface UseJobsiteFormProps {
   selectJobsite: Jobsite | null;
   setSelectJobsite: React.Dispatch<React.SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+  setJobsiteUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
   refreshJobsites?: () => Promise<void>;
 }
 
@@ -30,6 +32,7 @@ export interface UseJobsiteFormReturn {
   handleSaveChanges: () => Promise<void>;
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
+
   handleNewJobsiteSubmit: (newJobsite: {
     name: string;
     clientId: string;
@@ -52,7 +55,7 @@ export const useJobsiteForm = ({
   selectJobsite,
   setSelectJobsite,
   onUnsavedChangesChange,
-  setIsRegistrationFormOpen,
+  setJobsiteUIState,
   refreshJobsites,
 }: UseJobsiteFormProps): UseJobsiteFormReturn => {
   const [formData, setFormData] = useState<Jobsite | null>(null);
@@ -236,7 +239,7 @@ export const useJobsiteForm = ({
 
         if (result.success) {
           console.log("Jobsite created successfully:", result.data);
-          setIsRegistrationFormOpen(false);
+          setJobsiteUIState("idle");
 
           // Refresh jobsite list after registration
           if (refreshJobsites) {
@@ -250,7 +253,7 @@ export const useJobsiteForm = ({
         // TODO: Add toast notification for error
       }
     },
-    [setIsRegistrationFormOpen, refreshJobsites]
+    [setJobsiteUIState, refreshJobsites]
   );
 
   return {

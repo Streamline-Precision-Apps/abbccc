@@ -3,7 +3,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import React, { useState, useCallback } from "react";
 import { Selects } from "@/components/(reusable)/selects";
-import { CostCodeSummary } from "./types";
+import { CostCodeSummary, JobsiteSummary } from "./types";
 import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
 import DiscardChangesModal from "./components/shared/DiscardChangesModal";
 import { ASSET_TYPES } from "./types";
@@ -17,6 +17,10 @@ import { useAssets } from "./hooks/useAssets";
 export default function Assets() {
   const [assets, setAssets] = useState("Equipment");
   const [costCodeUIState, setCostCodeUIState] = useState<
+    "idle" | "creating" | "editing"
+  >("idle");
+
+  const [jobsiteUIState, setJobsiteUIState] = useState<
     "idle" | "creating" | "editing"
   >("idle");
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
@@ -114,6 +118,18 @@ export default function Assets() {
     [handleCostCodeSelect, setSelectCostCode]
   );
 
+  // Memoized handler for jobsite selection
+  const handleJobsiteSelection = useCallback(
+    (jobsite: JobsiteSummary | null) => {
+      if (jobsite) {
+        handleJobsiteSelect(jobsite.id);
+      } else {
+        setSelectJobsite(null);
+      }
+    },
+    [handleJobsiteSelect, setSelectJobsite]
+  );
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -157,17 +173,13 @@ export default function Assets() {
                   assets={assets}
                   setAssets={setAssets}
                   jobsites={jobsiteSummaries}
-                  setSelectJobsite={(jobsite) => {
-                    if (jobsite) {
-                      handleJobsiteSelect(jobsite.id);
-                    } else {
-                      setSelectJobsite(null);
-                    }
-                  }}
+                  setSelectJobsite={handleJobsiteSelection}
                   selectJobsite={selectJobsite}
                   isRegistrationFormOpen={isRegistrationFormOpen}
                   setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
+                  jobsiteUIState={jobsiteUIState}
+                  setJobsiteUIState={setJobsiteUIState}
                 />
               ) : assets === "CostCode" ? (
                 <CostCodeSideBar
@@ -209,6 +221,8 @@ export default function Assets() {
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshJobsites={fetchJobsiteSummaries}
               loading={loading}
+              jobsiteUIState={jobsiteUIState}
+              setJobsiteUIState={setJobsiteUIState}
             />
           ) : assets === "CostCode" ? (
             <CostCodeMainContent

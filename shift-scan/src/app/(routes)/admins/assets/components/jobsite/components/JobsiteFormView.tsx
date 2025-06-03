@@ -17,6 +17,9 @@ interface JobsiteFormViewProps {
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  setJobsiteUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
 }
 
 /**
