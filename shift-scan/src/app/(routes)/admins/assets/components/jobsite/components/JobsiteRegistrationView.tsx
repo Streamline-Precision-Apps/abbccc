@@ -3,13 +3,11 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Selects } from "@/components/(reusable)/selects";
 import React, { useState, useEffect } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
-import { Jobsite } from "@/app/(routes)/admins/assets/types/jobsite";
 
 interface JobsiteRegistrationFormData {
   name: string;
@@ -49,7 +47,7 @@ export default function JobsiteRegistrationView({
     country: "US",
     description: "",
     isActive: true,
-    approvalStatus: "PENDING",
+    approvalStatus: "",
   });
 
   // Track if form has unsaved changes
@@ -127,7 +125,7 @@ export default function JobsiteRegistrationView({
               <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
                 <Holds>
                   <label htmlFor="name" className="text-xs font-medium">
-                    Jobsite Name *
+                    Jobsite Name <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     type="text"
@@ -135,10 +133,10 @@ export default function JobsiteRegistrationView({
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
                     required
-                    className="text-sm mb-3"
+                    className="text-sm"
                   />
                   <label htmlFor="clientId" className="text-xs font-medium">
-                    Client
+                    Client <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     name="clientId"
@@ -148,11 +146,11 @@ export default function JobsiteRegistrationView({
                       handleInputChange("clientId", e.target.value)
                     }
                     required
-                    className="text-sm mb-3"
+                    className="text-sm"
                   />
 
                   <label htmlFor="address" className="text-xs font-medium">
-                    Street Address
+                    Street Address <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     type="text"
@@ -162,11 +160,11 @@ export default function JobsiteRegistrationView({
                       handleInputChange("address", e.target.value)
                     }
                     placeholder="Enter street address"
-                    className="text-sm mb-3"
+                    className="text-sm "
                   />
 
                   <label htmlFor="city" className="text-xs font-medium">
-                    City
+                    City <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     type="text"
@@ -174,11 +172,11 @@ export default function JobsiteRegistrationView({
                     value={formData.city}
                     onChange={(e) => handleInputChange("city", e.target.value)}
                     placeholder="Enter city"
-                    className="text-sm mb-3"
+                    className="text-sm"
                   />
 
                   <label htmlFor="state" className="text-xs font-medium">
-                    State
+                    State <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     type="text"
@@ -186,11 +184,11 @@ export default function JobsiteRegistrationView({
                     value={formData.state}
                     onChange={(e) => handleInputChange("state", e.target.value)}
                     placeholder="Enter state"
-                    className="text-sm mb-3"
+                    className="text-sm "
                   />
 
                   <label htmlFor="zipCode" className="text-xs font-medium">
-                    Zip Code
+                    Zip Code <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     type="text"
@@ -200,11 +198,11 @@ export default function JobsiteRegistrationView({
                       handleInputChange("zipCode", e.target.value)
                     }
                     placeholder="Enter zip code"
-                    className="text-sm mb-3"
+                    className="text-sm "
                   />
 
                   <label htmlFor="country" className="text-xs font-medium">
-                    Country
+                    Country <span className="text-red-500">*</span>
                   </label>
                   <Selects
                     name="country"
@@ -212,7 +210,7 @@ export default function JobsiteRegistrationView({
                     onChange={(e) =>
                       handleInputChange("country", e.target.value)
                     }
-                    className="mb-3 text-sm"
+                    className="text-sm"
                   >
                     {COUNTRIES.map((country) => (
                       <option key={country.code} value={country.code}>
@@ -221,7 +219,7 @@ export default function JobsiteRegistrationView({
                     ))}
                   </Selects>
                   <label htmlFor="description" className="text-xs font-medium">
-                    Jobsite Description *
+                    Jobsite Description <span className="text-red-500">*</span>
                   </label>
                   <Inputs
                     type="text"
@@ -232,21 +230,22 @@ export default function JobsiteRegistrationView({
                     }
                     placeholder="Enter jobsite description"
                     required
-                    className="text-sm mb-3"
+                    className="text-sm"
                   />
                   <label
                     htmlFor="approvalStatus"
                     className="text-xs font-medium"
                   >
-                    Approval Status
+                    Jobsite Status <span className="text-red-500">*</span>
                   </label>
-                  <Inputs
-                    type="text"
+                  <Selects
                     name="approvalStatus"
-                    value={formData.approvalStatus}
-                    readOnly
-                    className="mb-3 text-gray-500 bg-gray-100"
-                  />
+                    value={formData.isActive ? "Active" : "Inactive"}
+                    className="text-center"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </Selects>
                 </Holds>
               </Holds>
 
