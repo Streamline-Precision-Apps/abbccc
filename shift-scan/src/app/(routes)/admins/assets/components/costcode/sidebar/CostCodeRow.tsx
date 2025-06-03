@@ -1,22 +1,19 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import React, { useState } from "react";
-import { CostCodeSummary } from "../../../types";
+import React, { useCallback, useMemo, useState } from "react";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
-
-interface CostCodeRowProps {
-  costCode: CostCodeSummary;
-  isSelected?: boolean;
-  onClick: (costCode: CostCodeSummary) => void;
-  hasUnsavedChanges?: boolean;
-}
+import { CostCodeRowProps } from "../types";
+import { formatCostCodeName } from "../utils/formatters";
 
 /**
  * Individual cost code row component for the sidebar list
  * Displays cost code name with selection state and active status
+ *
+ * @param props The component props
+ * @returns A memoized row component for cost codes
  */
-export default function CostCodeRow({
+function CostCodeRow({
   costCode,
   isSelected = false,
   onClick,
@@ -24,7 +21,15 @@ export default function CostCodeRow({
 }: CostCodeRowProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const handleCostCodeClick = () => {
+  // Format the cost code name for display using utility function
+  const formattedName = useMemo(() => {
+    const formatted = formatCostCodeName(costCode.name);
+    // Add inactive status if needed
+    return costCode.isActive ? formatted : `${formatted} (inactive)`;
+  }, [costCode.name, costCode.isActive]);
+
+  // Memoized handlers to avoid unnecessary re-renders
+  const handleCostCodeClick = useCallback(() => {
     if (hasUnsavedChanges) {
       // If there are unsaved changes, show confirmation modal
       setShowConfirmModal(true);
@@ -32,31 +37,31 @@ export default function CostCodeRow({
       // Otherwise process click normally
       onClick(costCode);
     }
-  };
+  }, [costCode, hasUnsavedChanges, onClick]);
 
-  const handleConfirmNavigation = () => {
+  const handleConfirmNavigation = useCallback(() => {
     setShowConfirmModal(false);
     onClick(costCode); // Process the click after confirmation
-  };
+  }, [costCode, onClick]);
 
-  const handleCancelNavigation = () => {
+  const handleCancelNavigation = useCallback(() => {
     setShowConfirmModal(false);
-  };
+  }, []);
+
+  // Compute background color based on active status
+  const rowBackgroundColor = costCode.isActive ? "lightGray" : "orange";
 
   return (
     <>
       <Holds
-        background={!costCode.isActive ? "orange" : "lightGray"}
+        background={rowBackgroundColor}
         className={`w-full h-[40px] justify-center flex hover:opacity-80 cursor-pointer relative ${
           isSelected && "outline outline-[2px] outline-black"
         } rounded-[10px] my-1 px-4`}
         onClick={handleCostCodeClick}
       >
         <Texts position="left" size="xs">
-          {`${costCode.name.split(" ")[0]} - ${costCode.name
-            .split(" ")
-            .slice(1)
-            .join(" ")} ${!costCode.isActive ? "(inactive)" : ""}`}
+          {formattedName}
         </Texts>
       </Holds>
       <DiscardChangesModal
@@ -68,3 +73,6 @@ export default function CostCodeRow({
     </>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default React.memo(CostCodeRow);

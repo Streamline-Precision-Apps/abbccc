@@ -1,35 +1,23 @@
 "use client";
-import { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import CostCodeBasicFields from "./CostCodeBasicFields";
 import DeleteCostCodeModal from "./DeleteCostCodeModal";
-import { CostCode } from "../../../types";
 import { Titles } from "@/components/(reusable)/titles";
-
-interface CostCodeFormViewProps {
-  formData: CostCode;
-  changedFields: Set<keyof CostCode>;
-  onInputChange: (fieldName: keyof CostCode, value: string | boolean) => void;
-  onRevertField: (fieldName: keyof CostCode) => void;
-  onRegisterNew: () => void;
-  onDiscardChanges: () => void;
-  onSaveChanges: () => Promise<{ success: boolean; error?: string }>;
-  onDeleteCostCode: () => Promise<{ success: boolean; error?: string }>;
-  hasUnsavedChanges: boolean;
-  isSaving: boolean;
-  isDeleting: boolean;
-  successfullyUpdated: boolean;
-  error?: string | null;
-}
+import { CostCodeFormViewProps } from "../types";
+import { formatCostCodeName } from "../utils/formatters";
 
 /**
  * Main form view for cost code editing
  * Includes all form sections and action buttons
+ *
+ * @param props The component props from CostCodeFormViewProps interface
+ * @returns A form view component for cost code editing
  */
-export default function CostCodeFormView({
+function CostCodeFormView({
   formData,
   changedFields,
   onInputChange,
@@ -48,29 +36,36 @@ export default function CostCodeFormView({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const handleDeleteClick = () => {
+  // Format the cost code display name using utility function
+  const formattedCostCodeName = useMemo(() => {
+    if (!formData.name) return "Cost Code Information";
+    return formatCostCodeName(formData.name);
+  }, [formData.name]);
+
+  // Memoized handlers to avoid unnecessary re-renders
+  const handleDeleteClick = useCallback(() => {
     setDeleteError(null);
     setShowDeleteModal(true);
-  };
+  }, []);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     const result = await onDeleteCostCode();
     if (!result.success) {
       setDeleteError(result.error || "Failed to delete cost code");
     } else {
       setShowDeleteModal(false);
     }
-  };
+  }, [onDeleteCostCode]);
 
-  const handleDeleteCancel = () => {
+  const handleDeleteCancel = useCallback(() => {
     setShowDeleteModal(false);
     setDeleteError(null);
-  };
+  }, []);
 
   /**
    * Handles the save changes operation with proper error handling
    */
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = useCallback(async () => {
     try {
       const result = await onSaveChanges();
       if (!result.success) {
@@ -83,7 +78,7 @@ export default function CostCodeFormView({
       console.error("Error saving cost code:", error);
       setSuccessfullyEdited(false);
     }
-  };
+  }, [onSaveChanges]);
 
   return (
     <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4 ">
@@ -173,12 +168,7 @@ export default function CostCodeFormView({
         <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
           <Holds className="w-full h-full">
             <Titles position="left" size="h5" className="font-bold mb-2">
-              {formData.name
-                ? `${formData.name.split(" ")[0]} - ${formData.name
-                    .split(" ")
-                    .slice(1)
-                    .join(" ")}`
-                : "Cost Code Information"}
+              {formattedCostCodeName}
             </Titles>
           </Holds>
 
@@ -233,3 +223,6 @@ export default function CostCodeFormView({
     </Grids>
   );
 }
+
+// Export as memoized component to prevent unnecessary re-renders
+export default React.memo(CostCodeFormView);

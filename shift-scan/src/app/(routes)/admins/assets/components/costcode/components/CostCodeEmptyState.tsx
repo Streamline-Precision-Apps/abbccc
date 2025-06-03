@@ -1,21 +1,30 @@
 "use client";
+import React, { useCallback } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-
-interface CostCodeEmptyStateProps {
-  onRegisterNew: () => void;
-  onRegisterNewGroup: () => void;
-}
+import { CostCodeEmptyStateProps } from "../types";
 
 /**
  * Empty state view when no cost code is selected
+ *
+ * @param props Component props from CostCodeEmptyStateProps interface
+ * @returns An empty state component with action buttons
  */
-export default function CostCodeEmptyState({
+function CostCodeEmptyState({
   onRegisterNew,
   onRegisterNewGroup,
 }: CostCodeEmptyStateProps) {
+  // Memoize click handlers to prevent unnecessary re-renders
+  const handleRegisterNew = useCallback(() => {
+    onRegisterNew();
+  }, [onRegisterNew]);
+
+  const handleRegisterNewGroup = useCallback(() => {
+    onRegisterNewGroup();
+  }, [onRegisterNewGroup]);
+
   return (
     <Holds className="w-full h-full flex flex-col justify-center items-center">
       <Grids className="w-full h-full grid-rows-[40px_1fr]">
@@ -27,7 +36,7 @@ export default function CostCodeEmptyState({
           <Buttons
             background={"none"}
             shadow={"none"}
-            onClick={onRegisterNew}
+            onClick={handleRegisterNew}
             className="w-fit px-2"
           >
             <Texts size="xs" text="link">
@@ -37,7 +46,7 @@ export default function CostCodeEmptyState({
           <Buttons
             background={"none"}
             shadow={"none"}
-            onClick={onRegisterNewGroup}
+            onClick={handleRegisterNewGroup}
             className="w-fit px-2"
           >
             <Texts size="xs" text="link">
@@ -49,3 +58,6 @@ export default function CostCodeEmptyState({
     </Holds>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default React.memo(CostCodeEmptyState);

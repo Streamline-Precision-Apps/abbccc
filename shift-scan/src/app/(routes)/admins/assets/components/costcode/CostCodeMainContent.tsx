@@ -105,14 +105,6 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
           </Holds>
         )
       )}
-
-      {/* Discard Registration Changes Modal */}
-      {/* <DiscardChangesModal
-        isOpen={showDiscardRegistrationModal}
-        confirmDiscardChanges={handleConfirmDiscardRegistration}
-        cancelDiscard={handleCancelDiscardRegistration}
-        message="You have unsaved registration form changes. Are you sure you want to discard them?"
-      /> */}
     </>
   );
 };

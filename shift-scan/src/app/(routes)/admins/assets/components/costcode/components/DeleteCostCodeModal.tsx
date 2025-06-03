@@ -4,16 +4,15 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
-import React from "react";
+import React, { useCallback } from "react";
+import { DeleteCostCodeModalProps } from "../types";
 
-interface DeleteCostCodeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onDelete: () => void;
-  costCodeName?: string;
-  isDeleting?: boolean;
-}
-
+/**
+ * Modal for confirming cost code deletion
+ *
+ * @param props DeleteCostCodeModalProps interface from types.ts
+ * @returns A modal component for confirming deletion of a cost code
+ */
 const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
   isOpen,
   onClose,
@@ -21,6 +20,15 @@ const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
   costCodeName,
   isDeleting = false,
 }) => {
+  // Use memoized handlers for callbacks
+  const handleDelete = useCallback(() => {
+    onDelete();
+  }, [onDelete]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
   return (
     <NModals
       isOpen={isOpen}
@@ -48,7 +56,7 @@ const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
               shadow="none"
               background="red"
               className="w-full p-2"
-              onClick={onDelete}
+              onClick={handleDelete}
               disabled={isDeleting}
             >
               <Titles size="h5">
@@ -59,7 +67,7 @@ const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
               background="lightBlue"
               shadow="none"
               className="w-full p-2"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={isDeleting}
             >
               <Titles size="h5">No, keep it</Titles>
@@ -71,4 +79,5 @@ const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
   );
 };
 
-export default DeleteCostCodeModal;
+// Memoize the modal component to prevent unnecessary re-renders
+export default React.memo(DeleteCostCodeModal);
