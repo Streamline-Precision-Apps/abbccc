@@ -6,14 +6,22 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
+
+/**
+ * Type definition for the result of cost code registration
+ */
+interface RegistrationResult {
+  success: boolean;
+  error?: string;
+}
 
 interface CostCodeRegistrationViewProps {
   onSubmit: (formData: {
     cCNumber: string;
     cCName: string;
     isActive: boolean;
-  }) => Promise<boolean>;
+  }) => Promise<RegistrationResult>;
   onCancel: () => void;
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -31,6 +39,10 @@ export default function CostCodeRegistrationView({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
+  const [registrationError, setRegistrationError] = useState<string | null>(
+    null
+  );
+
   // Track if form has meaningful unsaved changes
   // Only consider it a change if user has entered actual content beyond the initial "#"
   const hasUnsavedChanges =
@@ -81,11 +93,15 @@ export default function CostCodeRegistrationView({
   };
 
   const handleSubmit = async () => {
+    // Clear any existing notifications
+    setSuccessfullyRegistered(false);
+    setRegistrationError(null);
     setIsSubmitting(true);
-    try {
-      const success = await onSubmit(formData);
 
-      if (success) {
+    try {
+      const result = await onSubmit(formData);
+
+      if (result.success) {
         setSuccessfullyRegistered(true);
         setFormData({
           cCNumber: "#",
@@ -99,11 +115,26 @@ export default function CostCodeRegistrationView({
           setIsSubmitting(false);
         }, 3000);
       } else {
+        // Display the error message
+        setRegistrationError(
+          result.error || "Registration failed. Please try again."
+        );
         setIsSubmitting(false);
+
+        // Auto-dismiss error after 5 seconds
+        setTimeout(() => {
+          setRegistrationError(null);
+        }, 5000);
       }
     } catch (error) {
       console.error("Error submitting cost code:", error);
+      setRegistrationError("An unexpected error occurred. Please try again.");
       setIsSubmitting(false);
+
+      // Auto-dismiss error after 5 seconds
+      setTimeout(() => {
+        setRegistrationError(null);
+      }, 5000);
     }
   };
 
@@ -114,12 +145,27 @@ export default function CostCodeRegistrationView({
         background={"white"}
         className="w-full h-full gap-4 px-4 relative"
       >
+        {/* Success notification */}
         {successfullyRegistered && (
           <Holds
             background={"green"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px]"
+            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-10"
           >
-            <Texts size="sm">Successfully registered new cost code!</Texts>
+            <Texts size="sm" className="text-white">
+              Successfully registered new cost code!
+            </Texts>
+          </Holds>
+        )}
+
+        {/* Error notification */}
+        {registrationError && (
+          <Holds
+            background={"red"}
+            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-10"
+          >
+            <Texts size="sm" className="text-white flex-1 text-center">
+              {registrationError}!
+            </Texts>
           </Holds>
         )}
         <Holds className="w-full">

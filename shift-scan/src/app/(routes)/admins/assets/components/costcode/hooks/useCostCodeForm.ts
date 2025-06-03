@@ -169,14 +169,17 @@ export function useCostCodeForm({
     cCNumber: string;
     cCName: string;
     isActive: boolean;
-  }): Promise<boolean> => {
+  }): Promise<{ success: boolean; error?: string }> => {
     setIsSaving(true);
     try {
       // Call the server action to create a new cost code
       const result = await createCostCode(newCostCode);
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to create cost code");
+        return {
+          success: false,
+          error: result.error || "Failed to create cost code",
+        };
       }
 
       setSelectCostCode(null);
@@ -189,10 +192,15 @@ export function useCostCodeForm({
         await refreshCostCodes();
       }
 
-      return true; // Return success
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error("Failed to create cost code:", error);
-      return false; // Return failure
+      return {
+        success: false,
+        error:
+          error?.message ||
+          "An unexpected error occurred while creating the cost code",
+      };
     } finally {
       setIsSaving(false);
     }
