@@ -61,7 +61,7 @@ export interface UseCostCodeFormReturn {
   /** Function to handle input changes */
   handleInputChange: (
     fieldName: keyof CostCode,
-    value: string | boolean
+    value: string | boolean | Array<{ id: string; name: string }>
   ) => void;
   /** Function to save changes */
   handleSaveChanges: () => Promise<CostCodeOperationResult>;
@@ -132,10 +132,13 @@ export function useCostCodeForm({
    * Updates form data when a field is changed and tracks the change
    *
    * @param fieldName - The name of the field being changed
-   * @param value - The new value for the field
+   * @param value - The new value for the field (string, boolean, or array of tag objects)
    */
   const handleInputChange = useCallback(
-    (fieldName: keyof CostCode, value: string | boolean): void => {
+    (
+      fieldName: keyof CostCode,
+      value: string | boolean | Array<{ id: string; name: string }>
+    ): void => {
       setSuccessfullyUpdated(false);
 
       if (!formData || !originalData) return;
@@ -148,7 +151,29 @@ export function useCostCodeForm({
 
       // Handle deep equality comparison for different field types
       let hasChanged = false;
-      if (
+
+      if (fieldName === "CCTags") {
+        // Handle array comparisons for tags
+        const originalTags = (originalData[fieldName] || []) as Array<{
+          id: string;
+          name: string;
+        }>;
+        const newTags = (value || []) as Array<{ id: string; name: string }>;
+
+        // Compare arrays by checking if they have the same elements
+        if (originalTags.length !== newTags.length) {
+          hasChanged = true;
+        } else {
+          // Check if all tags in the original are present in the new array
+          const originalIds = new Set(originalTags.map((tag) => tag.id));
+          const newIds = new Set(newTags.map((tag) => tag.id));
+
+          // Compare sets of IDs
+          hasChanged =
+            originalIds.size !== newIds.size ||
+            [...originalIds].some((id) => !newIds.has(id));
+        }
+      } else if (
         typeof value === "boolean" &&
         typeof originalData[fieldName] === "boolean"
       ) {
@@ -200,7 +225,9 @@ export function useCostCodeForm({
       setIsSaving(true);
       try {
         // Extract only the changed fields to send to the server action
-        const changedData: Partial<Pick<CostCode, "name" | "isActive">> = {};
+        const changedData: Partial<
+          Pick<CostCode, "name" | "isActive" | "CCTags">
+        > = {};
 
         changedFields.forEach((fieldName) => {
           if (fieldName === "name" && formData.name !== undefined) {
@@ -210,6 +237,8 @@ export function useCostCodeForm({
             formData.isActive !== undefined
           ) {
             changedData.isActive = formData.isActive;
+          } else if (fieldName === "CCTags" && formData.CCTags !== undefined) {
+            changedData.CCTags = formData.CCTags;
           }
         });
 

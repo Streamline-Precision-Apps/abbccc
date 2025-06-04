@@ -67,6 +67,37 @@ function CostCodeFormView({
   }, []);
 
   /**
+   * Handles toggling a tag for the cost code
+   *
+   * @param tagId The ID of the tag to toggle
+   * @param tagName The name of the tag (for creating the tag object)
+   */
+  const handleTagToggle = useCallback(
+    (tagId: string, tagName: string) => {
+      // Get the current CCTags array or initialize empty if undefined
+      const currentTags = formData.CCTags || [];
+
+      // Check if the tag is already assigned
+      const tagIndex = currentTags.findIndex((tag) => tag.id === tagId);
+
+      // Create a new array of tags based on the toggle action
+      const newTags =
+        tagIndex >= 0
+          ? // Remove the tag if it exists
+            [
+              ...currentTags.slice(0, tagIndex),
+              ...currentTags.slice(tagIndex + 1),
+            ]
+          : // Add the tag if it doesn't exist
+            [...currentTags, { id: tagId, name: tagName }];
+
+      // Update the form data with the new tags array
+      onInputChange("CCTags", newTags);
+    },
+    [formData.CCTags, onInputChange]
+  );
+
+  /**
    * Handles the save changes operation with proper error handling
    */
   const handleSaveChanges = useCallback(async () => {
@@ -208,10 +239,12 @@ function CostCodeFormView({
                     <Holds className="w-fit h-fit justify-center items-center">
                       <CheckBox
                         shadow={false}
-                        checked={formData.CCTags?.some(
-                          (cc) => cc.id === tag.id
-                        )}
-                        onChange={() => {}}
+                        checked={
+                          Array.isArray(formData.CCTags)
+                            ? formData.CCTags.some((cc) => cc.id === tag.id)
+                            : false
+                        }
+                        onChange={() => handleTagToggle(tag.id, tag.name)}
                         id={tag.id}
                         name={tag.name}
                         height={35}
