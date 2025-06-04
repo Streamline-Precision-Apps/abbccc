@@ -12,6 +12,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import CostCodeRow from "./CostCodeRow";
 import { CostCode, CostCodeSummary, Tag, TagSummary } from "../../../types";
 import { Selects } from "@/components/(reusable)/selects";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function CostCodeSideBar({
   assets,
@@ -24,6 +25,7 @@ export default function CostCodeSideBar({
   setSelectTag,
   selectTag,
   setCostCodeUIState,
+  loading,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
@@ -40,6 +42,7 @@ export default function CostCodeSideBar({
   setCostCodeUIState: React.Dispatch<
     React.SetStateAction<"idle" | "creating" | "editing">
   >;
+  loading: boolean;
 }) {
   const [term, setTerm] = useState("");
 
@@ -85,7 +88,10 @@ export default function CostCodeSideBar({
 
   return (
     <>
-      <Selects className="w-full h-full text-center text-sm p-0">
+      <Selects
+        disabled={loading}
+        className="w-full h-full text-center text-sm p-0"
+      >
         <option>Select A Group</option>
         {tagSummaries.map((option) => (
           <option key={option.id} value={option.id}>
@@ -98,32 +104,40 @@ export default function CostCodeSideBar({
         term={term}
         handleSearchChange={(e) => setTerm(e.target.value)}
         placeholder="Search cost codes..."
-        disabled={hasUnsavedChanges}
+        disabled={loading}
       />
 
       <Holds
         background={"white"}
-        className="w-full h-full row-span-1 rounded-[10px] p-3 overflow-y-auto no-scrollbar"
+        className={`${
+          loading && "animate-pulse"
+        } w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar`}
       >
-        <Holds>
-          {filteredCostCodes.length > 0 ? (
-            filteredCostCodes.map((costCode) => (
-              <CostCodeRow
-                key={costCode.id}
-                costCode={costCode}
-                isSelected={selectCostCode?.id === costCode.id}
-                onClick={handleCostCodeClick}
-                hasUnsavedChanges={hasUnsavedChanges}
-              />
-            ))
-          ) : (
-            <Texts size="p6" className="text-center">
-              {term.trim()
-                ? "No cost codes found matching your search"
-                : "No cost codes available"}
-            </Texts>
-          )}
-        </Holds>
+        {loading ? (
+          <Holds className="h-full w-full justify-center items-center">
+            <Spinner />
+          </Holds>
+        ) : (
+          <Holds>
+            {filteredCostCodes.length > 0 ? (
+              filteredCostCodes.map((costCode) => (
+                <CostCodeRow
+                  key={costCode.id}
+                  costCode={costCode}
+                  isSelected={selectCostCode?.id === costCode.id}
+                  onClick={handleCostCodeClick}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                />
+              ))
+            ) : (
+              <Texts size="p6" className="text-center">
+                {term.trim()
+                  ? "No cost codes found matching your search"
+                  : "No cost codes available"}
+              </Texts>
+            )}
+          </Holds>
+        )}
       </Holds>
     </>
   );

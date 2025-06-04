@@ -13,6 +13,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import EquipmentRow from "./EquipmentRow";
 import { Equipment, EquipmentSummary } from "../../../types";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function EquipmentSideBar({
   assets,
@@ -24,6 +25,7 @@ export default function EquipmentSideBar({
   setEquipmentUIState,
   equipmentUIState,
   setHasUnsavedChanges,
+  loading,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<string>>;
@@ -38,6 +40,7 @@ export default function EquipmentSideBar({
   >;
   equipmentUIState: "idle" | "creating" | "editing";
   setHasUnsavedChanges: Dispatch<SetStateAction<boolean>>;
+  loading: boolean;
 }) {
   const [term, setTerm] = useState("");
 
@@ -98,29 +101,38 @@ export default function EquipmentSideBar({
         handleSearchChange={(e) => {
           handleSearchChange(e);
         }}
+        disabled={loading}
         placeholder={"Search for equipment here..."}
       />
       <Holds
         background={"white"}
-        className="w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar"
+        className={`${
+          loading && "animate-pulse"
+        } w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar`}
       >
-        <Holds>
-          {filteredEquipments.length > 0 ? (
-            filteredEquipments.map((equipment) => (
-              <EquipmentRow
-                key={equipment.id}
-                equipment={equipment}
-                isSelected={selectEquipment?.id === equipment.id}
-                onEquipmentClick={handleEquipmentClick}
-                hasUnsavedChanges={hasUnsavedChanges}
-              />
-            ))
-          ) : (
-            <Texts size="p6" className="text-center">
-              No equipment found
-            </Texts>
-          )}
-        </Holds>
+        {loading ? (
+          <Holds className="h-full w-full justify-center items-center">
+            <Spinner />
+          </Holds>
+        ) : (
+          <Holds>
+            {filteredEquipments.length > 0 ? (
+              filteredEquipments.map((equipment) => (
+                <EquipmentRow
+                  key={equipment.id}
+                  equipment={equipment}
+                  isSelected={selectEquipment?.id === equipment.id}
+                  onEquipmentClick={handleEquipmentClick}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                />
+              ))
+            ) : (
+              <Texts size="p6" className="text-center">
+                No equipment found
+              </Texts>
+            )}
+          </Holds>
+        )}
       </Holds>
     </>
   );
