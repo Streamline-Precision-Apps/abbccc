@@ -5,8 +5,8 @@ export type CostCode = {
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
-  Timesheets?: any[]; // Using any[] as placeholder, replace with TimeSheet type when needed
-  CCTags?: { id: string; name: string }[]; // Simple version to avoid circular reference
+  Timesheets?: Array<{ id: string }>; // Simplified TimeSheet reference
+  CCTags?: Array<{ id: string; name: string }>; // Simple version to avoid circular reference
 };
 
 // Summary type (used for listing)

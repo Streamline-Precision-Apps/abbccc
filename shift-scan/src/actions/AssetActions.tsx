@@ -606,14 +606,18 @@ export async function updateCostCode(
   costCodeData: Partial<{
     name: string;
     isActive: boolean;
+    CCTags?: { id: string; name: string }[];
   }>
 ) {
-  console.log("Updating cost code...");
+  console.log("Updating cost code...", id, costCodeData);
 
   try {
     // Validate cost code exists
     const existingCostCode = await prisma.costCode.findUnique({
       where: { id },
+      include: {
+        CCTags: true,
+      },
     });
 
     if (!existingCostCode) {
@@ -634,15 +638,60 @@ export async function updateCostCode(
       }
     }
 
+    // Prepare update data with proper typing
+    type UpdateData = {
+      name?: string;
+      isActive?: boolean;
+      updatedAt: Date;
+      CCTags?: {
+        connect?: Array<{ id: string }>;
+        disconnect?: Array<{ id: string }>;
+      };
+    };
+
+    const updateData: UpdateData = {
+      ...(costCodeData.name && { name: costCodeData.name.trim() }),
+      ...(costCodeData.isActive !== undefined && {
+        isActive: costCodeData.isActive,
+      }),
+      updatedAt: new Date(),
+    };
+
+    // Handle tags update if provided
+    if (costCodeData.CCTags !== undefined) {
+      // Get the current tag IDs from the database
+      const currentTagIds = new Set(
+        existingCostCode.CCTags.map((tag) => tag.id)
+      );
+
+      // Get the new tag IDs from the form data
+      const newTagIds = new Set(costCodeData.CCTags.map((tag) => tag.id));
+
+      // Determine which tags to connect (add) and disconnect (remove)
+      const tagsToConnect = costCodeData.CCTags.filter(
+        (tag) => !currentTagIds.has(tag.id)
+      ).map((tag) => ({ id: tag.id }));
+
+      const tagsToDisconnect = existingCostCode.CCTags.filter(
+        (tag) => !newTagIds.has(tag.id)
+      ).map((tag) => ({ id: tag.id }));
+
+      // Add tag connection/disconnection operations to update data
+      updateData.CCTags = {};
+      if (tagsToConnect.length > 0) {
+        updateData.CCTags.connect = tagsToConnect;
+      }
+      if (tagsToDisconnect.length > 0) {
+        updateData.CCTags.disconnect = tagsToDisconnect;
+      }
+    }
+
     // Update the cost code
     const updatedCostCode = await prisma.costCode.update({
       where: { id },
-      data: {
-        ...(costCodeData.name && { name: costCodeData.name.trim() }),
-        ...(costCodeData.isActive !== undefined && {
-          isActive: costCodeData.isActive,
-        }),
-        updatedAt: new Date(),
+      data: updateData,
+      include: {
+        CCTags: true, // Include tags in the returned data
       },
     });
 

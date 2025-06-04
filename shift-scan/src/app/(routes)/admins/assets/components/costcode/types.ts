@@ -60,7 +60,10 @@ export interface CostCodeRowProps {
 export interface CostCodeFormViewProps {
   formData: CostCode;
   changedFields: Set<keyof CostCode>;
-  onInputChange: (fieldName: keyof CostCode, value: string | boolean) => void;
+  onInputChange: (
+    fieldName: keyof CostCode,
+    value: string | boolean | Array<{ id: string; name: string }>
+  ) => void;
   onRevertField: (fieldName: keyof CostCode) => void;
   onRegisterNew: () => void;
   onDiscardChanges: () => void;

@@ -2,8 +2,8 @@
 export type Tag = {
   id: string;
   name: string;
-  CostCodes?: { id: string; name: string }[]; // Using any[] as placeholder, reference to CostCode type
-  Jobsites?: { id: string; name: string; qrId: string }[]; // Using any[] as placeholder, reference to Jobsite type
+  CostCodes?: Array<{ id: string; name: string }>; // Reference to CostCode type
+  Jobsites?: Array<{ id: string; name: string; qrId: string }>; // Reference to Jobsite type
 };
 
 // Summary type (used for listing)
