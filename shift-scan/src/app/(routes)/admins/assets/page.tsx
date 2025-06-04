@@ -15,7 +15,9 @@ import CostCodeMainContent from "./components/costcode/CostCodeMainContent";
 import { useAssets } from "./hooks/useAssets";
 
 export default function Assets() {
-  const [assets, setAssets] = useState("Equipment");
+  const [assets, setAssets] = useState<"Equipment" | "CostCode" | "Jobsite">(
+    "Equipment"
+  );
   const [costCodeUIState, setCostCodeUIState] = useState<
     "idle" | "creating" | "editing"
   >("idle");
@@ -67,17 +69,19 @@ export default function Assets() {
 
     // Utility functions
     clearAllSelections,
-  } = useAssets();
+  } = useAssets({ assets });
 
   // UI state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showAssetChangeModal, setShowAssetChangeModal] = useState(false);
-  const [pendingAssetChange, setPendingAssetChange] = useState<string | null>(
-    null
-  );
+  const [pendingAssetChange, setPendingAssetChange] = useState<
+    "Equipment" | "CostCode" | "Jobsite" | null
+  >(null);
 
   // Handler for asset type change with unsaved changes check
-  const handleAssetChange = (newAssetType: string) => {
+  const handleAssetChange = (
+    newAssetType: "Equipment" | "CostCode" | "Jobsite"
+  ) => {
     const totalUnsavedChanges = hasUnsavedChanges;
     if (totalUnsavedChanges && newAssetType !== assets) {
       // If there are unsaved changes, show confirmation modal
@@ -156,7 +160,11 @@ export default function Assets() {
           <Holds className="w-full h-full col-start-1 col-end-3">
             <Grids className="w-full h-full grid-rows-[40px_40px_40px_1fr] gap-4">
               <Selects
-                onChange={(e) => handleAssetChange(e.target.value)}
+                onChange={(e) =>
+                  handleAssetChange(
+                    e.target.value as "Equipment" | "CostCode" | "Jobsite"
+                  )
+                }
                 value={assets}
                 className="w-full h-full text-center text-sm border-[2px] outline outline-[1px] outline-black outline-offset-0"
               >
@@ -256,6 +264,7 @@ export default function Assets() {
               loading={loadingStates.costCodeDetails}
               isRegistrationGroupFormOpen={isRegistrationGroupFormOpen}
               setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
+              tagSummaries={tagSummaries}
               selectTag={selectTag}
               setSelectTag={setSelectTag}
               costCodeUIState={costCodeUIState}

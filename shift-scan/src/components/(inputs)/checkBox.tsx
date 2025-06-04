@@ -37,7 +37,7 @@ export const CheckBox = ({
     <div className="w-full flex">
       <input
         className={`
-        peer relative appearance-none shrink-0 border-[3px] border-black mt-1 
+        peer relative appearance-none shrink-0 border-[3px] border-black  
          ${shadow ? "shadow-[8px_8px_0px_grey]" : ""}
         focus:outline-none focus:ring-offset-0 focus:ring-1
         checked:bg-app-green checked:border-[3px] rounded-[10px]
@@ -52,7 +52,7 @@ export const CheckBox = ({
         style={{ width: dimensions.width, height: dimensions.height }}
       />
       <svg
-        className="absolute pointer-events-none hidden peer-checked:block stroke-black mt-1 outline-none animate-wave"
+        className="absolute pointer-events-none hidden peer-checked:block stroke-black  outline-none animate-wave"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 32 32"
         fill="none"
@@ -60,10 +60,10 @@ export const CheckBox = ({
         strokeWidth="6"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ 
-          width: dimensions.width, 
+        style={{
+          width: dimensions.width,
           height: dimensions.height,
-          padding: '4px' // Add padding to make checkmark smaller relative to container
+          padding: "4px", // Add padding to make checkmark smaller relative to container
         }}
       >
         <polyline points="26 10 13 23 6 16"></polyline>

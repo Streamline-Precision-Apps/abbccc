@@ -18,12 +18,12 @@ import Spinner from "@/components/(animations)/spinner";
  */
 interface JobsiteSideBarProps {
   assets: string;
-  setAssets: Dispatch<SetStateAction<string>>;
+  setAssets: Dispatch<SetStateAction<"Equipment" | "CostCode" | "Jobsite">>;
   jobsites: JobsiteSummary[];
   setSelectJobsite: (jobsite: JobsiteSummary | null) => void;
   selectJobsite: Jobsite | null;
   isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
   jobsiteUIState: "idle" | "creating" | "editing";
   setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;

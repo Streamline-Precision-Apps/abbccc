@@ -39,8 +39,8 @@ function CostCodeEmptyState({
             onClick={handleRegisterNew}
             className="w-fit px-2"
           >
-            <Texts size="xs" text="link">
-              Register New Cost Code
+            <Texts size="sm" text="link">
+              Create New Cost Code
             </Texts>
           </Buttons>
           <Buttons
@@ -49,7 +49,7 @@ function CostCodeEmptyState({
             onClick={handleRegisterNewGroup}
             className="w-fit px-2"
           >
-            <Texts size="xs" text="link">
+            <Texts size="sm" text="link">
               Create New Group
             </Texts>
           </Buttons>

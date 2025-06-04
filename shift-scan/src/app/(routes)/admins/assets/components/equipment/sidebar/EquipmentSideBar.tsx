@@ -28,7 +28,9 @@ export default function EquipmentSideBar({
   loading,
 }: {
   assets: string;
-  setAssets: Dispatch<SetStateAction<string>>;
+  setAssets: React.Dispatch<
+    React.SetStateAction<"Equipment" | "CostCode" | "Jobsite">
+  >;
   equipments: EquipmentSummary[];
   setSelectEquipment: (equipment: EquipmentSummary | null) => void;
   selectEquipment: Equipment | null;

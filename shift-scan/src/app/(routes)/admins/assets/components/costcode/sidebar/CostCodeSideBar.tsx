@@ -28,20 +28,18 @@ export default function CostCodeSideBar({
   loading,
 }: {
   assets: string;
-  setAssets: Dispatch<SetStateAction<string>>;
+  setAssets: Dispatch<SetStateAction<"Equipment" | "CostCode" | "Jobsite">>;
   costCodes: CostCodeSummary[];
   setSelectCostCode: (costCode: CostCodeSummary | null) => void;
   selectCostCode: CostCode | null;
   isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
   tagSummaries: TagSummary[];
   selectTag: Tag | null;
-  setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
+  setSelectTag: Dispatch<SetStateAction<Tag | null>>;
   costCodeUIState: "idle" | "creating" | "editing";
-  setCostCodeUIState: React.Dispatch<
-    React.SetStateAction<"idle" | "creating" | "editing">
-  >;
+  setCostCodeUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
   loading: boolean;
 }) {
   const [term, setTerm] = useState("");

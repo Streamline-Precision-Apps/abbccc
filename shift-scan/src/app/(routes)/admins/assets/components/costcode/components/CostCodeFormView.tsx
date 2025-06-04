@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -9,6 +9,9 @@ import DeleteCostCodeModal from "./DeleteCostCodeModal";
 import { Titles } from "@/components/(reusable)/titles";
 import { CostCodeFormViewProps } from "../types";
 import { formatCostCodeName } from "../utils/formatters";
+import { CheckBox } from "@/components/(inputs)/checkBox";
+import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
+import { Tag, TagSummary } from "../../../types";
 
 /**
  * Main form view for cost code editing
@@ -31,6 +34,7 @@ function CostCodeFormView({
   isDeleting,
   successfullyUpdated,
   error,
+  tagSummaries,
 }: CostCodeFormViewProps) {
   const [successfullyEdited, setSuccessfullyEdited] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -191,7 +195,32 @@ function CostCodeFormView({
               <Texts position={"left"} size="xs" className="font-bold mb-2">
                 Cost Code Groups
               </Texts>
-              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] mb-3"></Holds>
+              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] mb-3">
+                {tagSummaries.map((tag, index) => (
+                  <Holds position={"row"} key={index} className="w-full gap-3">
+                    <Holds
+                      background={"lightBlue"}
+                      className="w-full h-[40px]  rounded-[10px] flex items-center justify-center"
+                    >
+                      <Titles size="lg">{tag.name}</Titles>
+                    </Holds>
+
+                    <Holds className="w-fit h-fit justify-center items-center">
+                      <CheckBox
+                        shadow={false}
+                        checked={formData.CCTags?.some(
+                          (cc) => cc.id === tag.id
+                        )}
+                        onChange={() => {}}
+                        id={tag.id}
+                        name={tag.name}
+                        height={35}
+                        width={35}
+                      />
+                    </Holds>
+                  </Holds>
+                ))}
+              </Holds>
             </Holds>
           </Grids>
         </Grids>

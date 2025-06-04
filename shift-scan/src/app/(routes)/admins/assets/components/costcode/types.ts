@@ -71,6 +71,7 @@ export interface CostCodeFormViewProps {
   isDeleting: boolean;
   successfullyUpdated: boolean;
   error?: string | null;
+  tagSummaries: TagSummary[];
 }
 
 /**
