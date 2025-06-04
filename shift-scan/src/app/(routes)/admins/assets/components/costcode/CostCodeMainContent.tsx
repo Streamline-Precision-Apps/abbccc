@@ -1,7 +1,7 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { CostCode, Tag } from "../../types";
+import { CostCode, Tag, TagSummary } from "../../types";
 import Spinner from "@/components/(animations)/spinner";
 import CostCodeEmptyState from "./components/CostCodeEmptyState";
 import CostCodeFormView from "./components/CostCodeFormView";
@@ -26,6 +26,7 @@ interface CostCodeMainContentProps {
   setCostCodeUIState: React.Dispatch<
     React.SetStateAction<"idle" | "creating" | "editing">
   >;
+  tagSummaries: TagSummary[];
 }
 
 /**
@@ -45,6 +46,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   setHasUnsavedChanges,
   costCodeUIState,
   setCostCodeUIState,
+  tagSummaries,
 }) => {
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
@@ -93,6 +95,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             isDeleting={costCodeFormHook.isDeleting}
             onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
             error={costCodeFormHook.error}
+            tagSummaries={tagSummaries}
           />
         </Holds>
       ) : costCodeUIState === "idle" ? (

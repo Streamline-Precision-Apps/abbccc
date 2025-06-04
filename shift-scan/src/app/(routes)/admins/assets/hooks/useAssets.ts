@@ -15,7 +15,11 @@ import {
  * Custom hook for managing asset data fetching and state
  * Handles all API calls for summaries and detailed asset data
  */
-export const useAssets = () => {
+export const useAssets = ({
+  assets,
+}: {
+  assets: "Equipment" | "CostCode" | "Jobsite";
+}) => {
   // Summary state (for sidebar lists)
   const [equipmentSummaries, setEquipmentSummaries] = useState<
     EquipmentSummary[]
