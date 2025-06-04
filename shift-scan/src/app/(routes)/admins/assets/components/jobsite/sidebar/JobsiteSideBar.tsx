@@ -11,6 +11,7 @@ import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
 import JobsiteRow from "./JobsiteRow";
 import { Jobsite, JobsiteSummary } from "../../../types";
+import Spinner from "@/components/(animations)/spinner";
 
 /**
  * Props for the JobsiteSideBar component.
@@ -26,6 +27,7 @@ interface JobsiteSideBarProps {
   hasUnsavedChanges?: boolean;
   jobsiteUIState: "idle" | "creating" | "editing";
   setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
+  loading: boolean;
 }
 
 /**
@@ -41,6 +43,7 @@ export default function JobsiteSideBar({
   hasUnsavedChanges = false,
   jobsiteUIState,
   setJobsiteUIState,
+  loading,
 }: JobsiteSideBarProps) {
   const [term, setTerm] = useState("");
 
@@ -92,33 +95,41 @@ export default function JobsiteSideBar({
       <SearchBar
         term={term}
         handleSearchChange={(e) => setTerm(e.target.value)}
-        placeholder="Search jobsites..."
-        disabled={hasUnsavedChanges}
+        placeholder="Search for jobsites here..."
+        disabled={loading}
       />
 
       <Holds
         background={"white"}
-        className="w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar"
+        className={`${
+          loading && "animate-pulse"
+        } w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar`}
       >
-        <Holds>
-          {filteredJobsites.length > 0 ? (
-            filteredJobsites.map((jobsite) => (
-              <JobsiteRow
-                key={jobsite.id}
-                jobsite={jobsite}
-                isSelected={selectJobsite?.id === jobsite.id}
-                onClick={handleJobsiteClick}
-                hasUnsavedChanges={hasUnsavedChanges}
-              />
-            ))
-          ) : (
-            <Texts size="p6" className="text-center">
-              {term.trim()
-                ? "No jobsites found matching your search"
-                : "No jobsites available"}
-            </Texts>
-          )}
-        </Holds>
+        {loading ? (
+          <Holds className="h-full w-full justify-center items-center">
+            <Spinner />
+          </Holds>
+        ) : (
+          <Holds>
+            {filteredJobsites.length > 0 ? (
+              filteredJobsites.map((jobsite) => (
+                <JobsiteRow
+                  key={jobsite.id}
+                  jobsite={jobsite}
+                  isSelected={selectJobsite?.id === jobsite.id}
+                  onClick={handleJobsiteClick}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                />
+              ))
+            ) : (
+              <Texts size="p6" className="text-center">
+                {term.trim()
+                  ? "No jobsites found matching your search"
+                  : "No jobsites available"}
+              </Texts>
+            )}
+          </Holds>
+        )}
       </Holds>
     </>
   );

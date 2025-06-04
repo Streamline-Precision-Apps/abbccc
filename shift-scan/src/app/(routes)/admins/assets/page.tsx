@@ -45,7 +45,7 @@ export default function Assets() {
     selectTag,
 
     // Loading state
-    loading,
+    loadingStates,
 
     // Setters
     setSelectEquipment,
@@ -179,6 +179,7 @@ export default function Assets() {
                   setHasUnsavedChanges={setHasUnsavedChanges}
                   setEquipmentUIState={setEquipmentUIState}
                   equipmentUIState={equipmentUIState}
+                  loading={loadingStates.equipmentSummary}
                 />
               ) : assets === "Jobsite" ? (
                 <JobsiteSideBar
@@ -192,6 +193,7 @@ export default function Assets() {
                   hasUnsavedChanges={hasUnsavedChanges}
                   jobsiteUIState={jobsiteUIState}
                   setJobsiteUIState={setJobsiteUIState}
+                  loading={loadingStates.jobsiteSummary}
                 />
               ) : assets === "CostCode" ? (
                 <CostCodeSideBar
@@ -208,6 +210,7 @@ export default function Assets() {
                   hasUnsavedChanges={hasUnsavedChanges}
                   costCodeUIState={costCodeUIState}
                   setCostCodeUIState={setCostCodeUIState}
+                  loading={loadingStates.costCodeSummary}
                 />
               ) : null}
             </Grids>
@@ -221,7 +224,7 @@ export default function Assets() {
               setSelectEquipment={setSelectEquipment}
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshEquipments={fetchEquipmentSummaries}
-              loading={loading}
+              loading={loadingStates.equipmentDetails}
               setEquipmentUIState={setEquipmentUIState}
               equipmentUIState={equipmentUIState}
               setHasUnsavedChanges={setHasUnsavedChanges}
@@ -235,7 +238,7 @@ export default function Assets() {
               setSelectJobsite={setSelectJobsite}
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshJobsites={fetchJobsiteSummaries}
-              loading={loading}
+              loading={loadingStates.jobsiteDetails}
               jobsiteUIState={jobsiteUIState}
               setJobsiteUIState={setJobsiteUIState}
               hasUnsavedChanges={hasUnsavedChanges}
@@ -250,7 +253,7 @@ export default function Assets() {
               setSelectCostCode={setSelectCostCode}
               setHasUnsavedChanges={setHasUnsavedChanges}
               refreshCostCodes={fetchCostCodeSummaries}
-              loading={loading}
+              loading={loadingStates.costCodeDetails}
               isRegistrationGroupFormOpen={isRegistrationGroupFormOpen}
               setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
               selectTag={selectTag}

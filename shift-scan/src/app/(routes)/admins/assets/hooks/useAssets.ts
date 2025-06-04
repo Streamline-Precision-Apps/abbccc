@@ -37,15 +37,30 @@ export const useAssets = () => {
   const [selectTag, setSelectTag] = useState<Tag | null>(null);
 
   // Loading state
-  const [loading, setLoading] = useState<boolean>(false);
+  // Granular loading states
+  const [loadingStates, setLoadingStates] = useState({
+    equipmentSummary: false,
+    jobsiteSummary: false,
+    costCodeSummary: false,
+    tagSummary: false,
+    equipmentDetails: false,
+    jobsiteDetails: false,
+    costCodeDetails: false,
+    tagDetails: false,
+  });
 
   // Generic fetch helper to reduce code duplication
   const fetchData = async <T>(
     url: string,
     errorMessage: string,
-    setData?: (data: T) => void
+    setData?: (data: T) => void,
+    loadingKey?: keyof typeof loadingStates
   ): Promise<T | null> => {
     try {
+      if (loadingKey) {
+        setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
+      }
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
@@ -58,6 +73,10 @@ export const useAssets = () => {
     } catch (error) {
       console.error(errorMessage, error);
       return null;
+    } finally {
+      if (loadingKey) {
+        setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
+      }
     }
   };
 
@@ -66,7 +85,8 @@ export const useAssets = () => {
     await fetchData<EquipmentSummary[]>(
       "/api/getEquipmentSummary",
       "Failed to fetch equipment summaries:",
-      setEquipmentSummaries
+      setEquipmentSummaries,
+      "equipmentSummary"
     );
   }, []);
 
@@ -74,7 +94,8 @@ export const useAssets = () => {
     await fetchData<JobsiteSummary[]>(
       "/api/getJobsiteSummary",
       "Failed to fetch jobsite summaries:",
-      setJobsiteSummaries
+      setJobsiteSummaries,
+      "jobsiteSummary"
     );
   }, []);
 
@@ -82,7 +103,8 @@ export const useAssets = () => {
     await fetchData<CostCodeSummary[]>(
       "/api/getCostCodeSummary",
       "Failed to fetch cost code summaries:",
-      setCostCodeSummaries
+      setCostCodeSummaries,
+      "costCodeSummary"
     );
   }, []);
 
@@ -90,69 +112,46 @@ export const useAssets = () => {
     await fetchData<TagSummary[]>(
       "/api/getTagSummary",
       "Failed to fetch tag summaries:",
-      setTagSummaries
+      setTagSummaries,
+      "tagSummary"
     );
   }, []);
 
   // Detailed data fetch functions with loading state
   const fetchEquipmentDetails = useCallback(async (equipmentId: string) => {
-    setLoading(true);
-    try {
-      const data = await fetchData<Equipment>(
-        `/api/getEquipmentByEquipmentId/${equipmentId}`,
-        "Failed to fetch equipment details:"
-      );
-      if (data) {
-        setSelectEquipment(data);
-      }
-    } finally {
-      setLoading(false);
-    }
+    await fetchData<Equipment>(
+      `/api/getEquipmentByEquipmentId/${equipmentId}`,
+      "Failed to fetch equipment details:",
+      setSelectEquipment,
+      "equipmentDetails"
+    );
   }, []);
 
   const fetchJobsiteDetails = useCallback(async (jobsiteId: string) => {
-    setLoading(true);
-    try {
-      const data = await fetchData<Jobsite>(
-        `/api/getJobsiteById/${jobsiteId}`,
-        "Failed to fetch jobsite details:"
-      );
-      if (data) {
-        setSelectJobsite(data);
-      }
-    } finally {
-      setLoading(false);
-    }
+    await fetchData<Jobsite>(
+      `/api/getJobsiteById/${jobsiteId}`,
+      "Failed to fetch jobsite details:",
+      setSelectJobsite,
+      "jobsiteDetails"
+    );
   }, []);
 
   const fetchCostCodeDetails = useCallback(async (costCodeId: string) => {
-    setLoading(true);
-    try {
-      const data = await fetchData<CostCode>(
-        `/api/getCostCodeById/${costCodeId}`,
-        "Failed to fetch cost code details:"
-      );
-      if (data) {
-        setSelectCostCode(data);
-      }
-    } finally {
-      setLoading(false);
-    }
+    await fetchData<CostCode>(
+      `/api/getCostCodeById/${costCodeId}`,
+      "Failed to fetch cost code details:",
+      setSelectCostCode,
+      "costCodeDetails"
+    );
   }, []);
 
   const fetchTagDetails = useCallback(async (tagId: string) => {
-    setLoading(true);
-    try {
-      const data = await fetchData<Tag>(
-        `/api/getTagById/${tagId}`,
-        "Failed to fetch tag details:"
-      );
-      if (data) {
-        setSelectTag(data);
-      }
-    } finally {
-      setLoading(false);
-    }
+    await fetchData<Tag>(
+      `/api/getTagById/${tagId}`,
+      "Failed to fetch tag details:",
+      setSelectTag,
+      "tagDetails"
+    );
   }, []);
 
   // Selection handlers
@@ -192,12 +191,25 @@ export const useAssets = () => {
     setSelectTag(null);
   }, []);
 
-  // Fetch all summaries on hook initialization
+  // Update the initial fetch effect
   useEffect(() => {
-    fetchEquipmentSummaries();
-    fetchJobsiteSummaries();
-    fetchCostCodeSummaries();
-    fetchTagSummaries();
+    const fetchAllSummaries = async () => {
+      try {
+        setLoadingStates((prev) => ({ ...prev, initialLoad: true }));
+        await Promise.all([
+          fetchEquipmentSummaries(),
+          fetchJobsiteSummaries(),
+          fetchCostCodeSummaries(),
+          fetchTagSummaries(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching initial summaries:", error);
+      } finally {
+        setLoadingStates((prev) => ({ ...prev, initialLoad: false }));
+      }
+    };
+
+    fetchAllSummaries();
   }, [
     fetchEquipmentSummaries,
     fetchJobsiteSummaries,
@@ -219,7 +231,7 @@ export const useAssets = () => {
     selectTag,
 
     // Loading state
-    loading,
+    loadingStates,
 
     // Setters for direct manipulation when needed
     setSelectEquipment,
