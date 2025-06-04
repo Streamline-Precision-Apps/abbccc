@@ -2,6 +2,7 @@
 export type Tag = {
   id: string;
   name: string;
+  description: string;
   CostCodes?: Array<{ id: string; name: string }>; // Reference to CostCode type
   Jobsites?: Array<{ id: string; name: string; qrId: string }>; // Reference to Jobsite type
 };

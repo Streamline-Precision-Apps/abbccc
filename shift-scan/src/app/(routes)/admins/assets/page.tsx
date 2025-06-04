@@ -157,12 +157,12 @@ export default function Assets() {
   const handleTagSelection = useCallback(
     (tag: TagSummary | null) => {
       if (tag) {
-        setSelectTag(tag);
+        handleTagSelect(tag.id);
       } else {
         setSelectTag(null);
       }
     },
-    [setSelectTag]
+    [handleTagSelect, setSelectTag]
   );
 
   return (

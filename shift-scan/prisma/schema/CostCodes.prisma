@@ -9,8 +9,9 @@ model CostCode {
 }
 
 model CCTag {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  CostCodes CostCode[] @relation("CCTagToCostCode")
-  Jobsites  Jobsite[]  @relation("CCTagToJobsite")
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  CostCodes   CostCode[] @relation("CCTagToCostCode")
+  Jobsites    Jobsite[]  @relation("CCTagToJobsite")
 }
