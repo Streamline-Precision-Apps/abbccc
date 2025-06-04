@@ -3,7 +3,12 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import React, { useState, useCallback } from "react";
 import { Selects } from "@/components/(reusable)/selects";
-import { CostCodeSummary, EquipmentSummary, JobsiteSummary } from "./types";
+import {
+  CostCodeSummary,
+  EquipmentSummary,
+  JobsiteSummary,
+  TagSummary,
+} from "./types";
 import EquipmentSideBar from "./components/equipment/sidebar/EquipmentSideBar";
 import DiscardChangesModal from "./components/shared/DiscardChangesModal";
 import { ASSET_TYPES } from "./types";
@@ -19,7 +24,7 @@ export default function Assets() {
     "Equipment"
   );
   const [costCodeUIState, setCostCodeUIState] = useState<
-    "idle" | "creating" | "editing"
+    "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
   >("idle");
 
   const [jobsiteUIState, setJobsiteUIState] = useState<
@@ -149,6 +154,17 @@ export default function Assets() {
     [handleEquipmentSelect, setSelectEquipment]
   );
 
+  const handleTagSelection = useCallback(
+    (tag: TagSummary | null) => {
+      if (tag) {
+        setSelectTag(tag);
+      } else {
+        setSelectTag(null);
+      }
+    },
+    [setSelectTag]
+  );
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -210,7 +226,6 @@ export default function Assets() {
                   costCodes={costCodeSummaries}
                   setSelectCostCode={handleCostCodeSelection}
                   tagSummaries={tagSummaries}
-                  setSelectTag={setSelectTag}
                   selectTag={selectTag}
                   selectCostCode={selectCostCode}
                   isRegistrationFormOpen={isRegistrationFormOpen}
@@ -219,6 +234,7 @@ export default function Assets() {
                   costCodeUIState={costCodeUIState}
                   setCostCodeUIState={setCostCodeUIState}
                   loading={loadingStates.costCodeSummary}
+                  setSelectTag={handleTagSelection}
                 />
               ) : null}
             </Grids>

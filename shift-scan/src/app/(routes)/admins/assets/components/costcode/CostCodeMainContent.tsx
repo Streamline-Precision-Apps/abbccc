@@ -8,6 +8,7 @@ import CostCodeFormView from "./components/CostCodeFormView";
 import CostCodeRegistrationView from "./components/CostCodeRegistrationView";
 import DiscardChangesModal from "../shared/DiscardChangesModal";
 import { useCostCodeForm } from "./hooks/useCostCodeForm";
+import TagsFormView from "./components/TagsFormView";
 
 interface CostCodeMainContentProps {
   assets: string;
@@ -22,9 +23,16 @@ interface CostCodeMainContentProps {
   selectTag: Tag | null;
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
-  costCodeUIState: "idle" | "creating" | "editing";
+  costCodeUIState:
+    | "idle"
+    | "creating"
+    | "editing"
+    | "editingGroups"
+    | "creatingGroups";
   setCostCodeUIState: React.Dispatch<
-    React.SetStateAction<"idle" | "creating" | "editing">
+    React.SetStateAction<
+      "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
+    >
   >;
   tagSummaries: TagSummary[];
 }
@@ -105,6 +113,12 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             onRegisterNewGroup={() => setIsRegistrationGroupFormOpen(true)}
           />
         </Holds>
+      ) : costCodeUIState === "editingGroups" ? (
+        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
+          <TagsFormView />
+        </Holds>
+      ) : costCodeUIState === "creatingGroups" ? (
+        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7"></Holds>
       ) : null}
     </>
   );

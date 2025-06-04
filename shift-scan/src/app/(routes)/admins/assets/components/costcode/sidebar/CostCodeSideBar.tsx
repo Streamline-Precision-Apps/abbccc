@@ -13,6 +13,7 @@ import CostCodeRow from "./CostCodeRow";
 import { CostCode, CostCodeSummary, Tag, TagSummary } from "../../../types";
 import { Selects } from "@/components/(reusable)/selects";
 import Spinner from "@/components/(animations)/spinner";
+import { set } from "date-fns";
 
 export default function CostCodeSideBar({
   assets,
@@ -37,9 +38,18 @@ export default function CostCodeSideBar({
   hasUnsavedChanges?: boolean;
   tagSummaries: TagSummary[];
   selectTag: Tag | null;
-  setSelectTag: Dispatch<SetStateAction<Tag | null>>;
-  costCodeUIState: "idle" | "creating" | "editing";
-  setCostCodeUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
+  setSelectTag: (tag: TagSummary | null) => void;
+  costCodeUIState:
+    | "idle"
+    | "creating"
+    | "editing"
+    | "editingGroups"
+    | "creatingGroups";
+  setCostCodeUIState: Dispatch<
+    SetStateAction<
+      "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
+    >
+  >;
   loading: boolean;
 }) {
   const [term, setTerm] = useState("");
@@ -88,6 +98,26 @@ export default function CostCodeSideBar({
     <>
       <Selects
         disabled={loading}
+        onChange={(event) => {
+          // Set UI state to editing groups
+          setCostCodeUIState("editingGroups");
+
+          // Find the selected tag by ID from the tagSummaries array
+          const selectedTagId = event.target.value;
+          if (selectedTagId === "Select A Group") {
+            setSelectTag(null);
+            setSelectCostCode(null);
+          } else {
+            setSelectTag(
+              tagSummaries.find((tag) => tag.id === selectedTagId) || null
+            );
+          }
+        }}
+        value={
+          selectTag
+            ? selectTag.id
+            : "Select A Group" /* Default value when no tag is selected */
+        }
         className="w-full h-full text-center text-sm p-0"
       >
         <option>Select A Group</option>
