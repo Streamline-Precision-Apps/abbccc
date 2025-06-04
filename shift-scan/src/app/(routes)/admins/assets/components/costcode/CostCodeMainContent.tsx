@@ -9,6 +9,7 @@ import CostCodeRegistrationView from "./components/CostCodeRegistrationView";
 import DiscardChangesModal from "../shared/DiscardChangesModal";
 import { useCostCodeForm } from "./hooks/useCostCodeForm";
 import TagsFormView from "./components/TagsFormView";
+import TagsRegistrationView from "./components/TagRegistrationView";
 
 interface CostCodeMainContentProps {
   assets: string;
@@ -55,6 +56,8 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   costCodeUIState,
   setCostCodeUIState,
   tagSummaries,
+  selectTag,
+  setSelectTag,
 }) => {
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
@@ -115,10 +118,29 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
         </Holds>
       ) : costCodeUIState === "editingGroups" ? (
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
-          <TagsFormView />
+          <TagsFormView
+            formData={selectTag}
+            onCreateNewGroup={() => setCostCodeUIState("creatingGroups")}
+            onDeleteGroup={async () => ({ success: true })} // Implement with your tag deletion logic
+            onDiscardChanges={() => {
+              setCostCodeUIState("idle");
+              setSelectTag(null);
+            }}
+            onSaveChanges={async () => ({ success: true })} // Implement with your tag saving logic
+            onToggleCostCode={(costCodeId, costCodeName) => {
+              // Implement cost code toggle logic
+              console.log("Toggle cost code", costCodeId, costCodeName);
+            }}
+            onInputChange={(fieldName, value) => {
+              // Implement input change logic
+              console.log("Input change", fieldName, value);
+            }}
+          />
         </Holds>
       ) : costCodeUIState === "creatingGroups" ? (
-        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7"></Holds>
+        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
+          <TagsRegistrationView />
+        </Holds>
       ) : null}
     </>
   );
