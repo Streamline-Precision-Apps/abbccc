@@ -202,17 +202,19 @@ export function useTagCreation({
       } else {
         // Handle server action error
         setError(result.error || "Failed to create tag");
+        // Auto-hide error message after 5 seconds
         setTimeout(() => {
           setError(null);
-        }, 3000);
+        }, 5000);
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create tag";
       setError(errorMessage);
+      // Auto-hide error message after 5 seconds
       setTimeout(() => {
         setError(null);
-      }, 3000);
+      }, 5000);
     } finally {
       setIsSubmitting(false);
     }

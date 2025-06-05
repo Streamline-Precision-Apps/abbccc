@@ -17,6 +17,8 @@ export interface UseTagsFormProps {
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
   /** Function to refresh the list of tags */
   refreshTags?: () => Promise<void>;
+  /** Callback for deletion success */
+  onDeletionSuccess?: (message: string) => void;
 }
 
 /**
@@ -73,6 +75,7 @@ export function useTagsForm({
   setSelectTag,
   setHasUnsavedChanges,
   refreshTags,
+  onDeletionSuccess,
 }: UseTagsFormProps): UseTagsFormReturn {
   const [formData, setFormData] = useState<Tag | null>(null);
   const [originalData, setOriginalData] = useState<Tag | null>(null);
@@ -398,6 +401,11 @@ export function useTagsForm({
       setOriginalData(null);
       setChangedFields(new Set());
       setSuccessfullyUpdated(false);
+
+      // Call deletion success callback if provided
+      if (onDeletionSuccess) {
+        onDeletionSuccess(result.message || "Group deleted successfully");
+      }
 
       return { success: true };
     } catch (error) {

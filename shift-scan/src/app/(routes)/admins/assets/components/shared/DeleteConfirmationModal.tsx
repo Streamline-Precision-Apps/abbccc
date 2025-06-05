@@ -35,7 +35,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           <Texts size="lg">
             Are you sure you want to delete {itemType}{" "}
             <span className=" italic ">{itemName}</span> ?
-            <span className="text-red-500 italic text-xs">
+            <br />
+            <span className="text-red-500 italic ">
               This action cannot be undone.
             </span>
           </Texts>

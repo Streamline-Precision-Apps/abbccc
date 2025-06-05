@@ -91,6 +91,11 @@ export default function Assets() {
     "Equipment" | "CostCode" | "Jobsite" | null
   >(null);
 
+  // State for deletion success messages
+  const [deletionSuccessMessage, setDeletionSuccessMessage] = useState<
+    string | null
+  >(null);
+
   // Handler for asset type change with unsaved changes check
   const handleAssetChange = (
     newAssetType: "Equipment" | "CostCode" | "Jobsite"
@@ -173,11 +178,21 @@ export default function Assets() {
     [handleTagSelect, setSelectTag]
   );
 
+  // Handler for deletion success
+  const handleDeletionSuccess = useCallback((message: string) => {
+    setDeletionSuccessMessage(message);
+    // Auto-clear success message after 3 seconds
+    setTimeout(() => {
+      setDeletionSuccessMessage(null);
+    }, 4000);
+  }, []);
+
   const tagFormHook = useTagsForm({
     selectTag,
     setSelectTag,
     setHasUnsavedChanges,
     refreshTags: fetchTagSummaries,
+    onDeletionSuccess: handleDeletionSuccess,
   });
 
   return (
@@ -319,6 +334,7 @@ export default function Assets() {
               setCostCodeUIState={setCostCodeUIState}
               tagFormHook={tagFormHook}
               onCreationHandlersReady={setCreationHandlers}
+              deletionSuccessMessage={deletionSuccessMessage}
             />
           ) : null}
         </Grids>

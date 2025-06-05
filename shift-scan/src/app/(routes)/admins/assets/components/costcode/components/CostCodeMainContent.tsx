@@ -44,6 +44,8 @@ interface CostCodeMainContentProps {
     ) => void;
     formData: { costCodes: Array<{ id: string; name: string }> };
   }) => void;
+  /** Success message from tag deletion */
+  deletionSuccessMessage: string | null;
 }
 
 /**
@@ -64,6 +66,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   setSelectTag,
   tagFormHook,
   onCreationHandlersReady,
+  deletionSuccessMessage,
 }) => {
   // State to store creation handlers when in creation mode
   const [creationHandlers, setCreationHandlers] = useState<{
@@ -131,8 +134,6 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
               setHasUnsavedChanges(false);
             }}
             setHasUnsavedChanges={setHasUnsavedChanges}
-            error={tagCreation.error}
-            successMessage={tagCreation.successMessage}
           />
         </Holds>
       ) : costCodeUIState === "editing" && costCodeFormHook.formData ? (
@@ -162,6 +163,8 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
           <CostCodeEmptyState
             onRegisterNew={() => setCostCodeUIState("creating")}
             onRegisterNewGroup={() => setCostCodeUIState("creatingGroups")}
+            error={tagCreation.error}
+            successMessage={deletionSuccessMessage || null}
           />
         </Holds>
       ) : costCodeUIState === "editingGroups" ? (

@@ -26,8 +26,6 @@ function CostCodeRegistrationView({
   onSubmit,
   onCancel,
   setHasUnsavedChanges,
-  error,
-  successMessage,
 }: CostCodeRegistrationViewProps) {
   const [formData, setFormData] = useState({
     cCNumber: "#",
@@ -181,16 +179,6 @@ function CostCodeRegistrationView({
             </Texts>
           </Holds>
         )}
-        {successMessage && (
-          <Holds
-            background={"green"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
-          >
-            <Texts size="sm" className="text-white">
-              {successMessage}
-            </Texts>
-          </Holds>
-        )}
 
         {/* Error notification */}
         {registrationError && (
@@ -200,16 +188,6 @@ function CostCodeRegistrationView({
           >
             <Texts size="sm" className="text-white flex-1 text-center">
               {registrationError}
-            </Texts>
-          </Holds>
-        )}
-        {error && (
-          <Holds
-            background={"red"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
-          >
-            <Texts size="sm" className="text-white flex-1 text-center">
-              {error}
             </Texts>
           </Holds>
         )}

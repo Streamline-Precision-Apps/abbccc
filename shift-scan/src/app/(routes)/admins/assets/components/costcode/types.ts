@@ -98,6 +98,8 @@ export interface CostCodeBasicFieldsProps {
  * Props for the CostCodeEmptyState component
  */
 export interface CostCodeEmptyStateProps {
+  error: string | null;
+  successMessage: string | null;
   onRegisterNew: () => void;
   onRegisterNewGroup: () => void;
 }
@@ -114,8 +116,6 @@ export interface RegistrationResult {
  * Props for the CostCodeRegistrationView component
  */
 export interface CostCodeRegistrationViewProps {
-  error: string | null;
-  successMessage: string | null;
   onSubmit: (formData: {
     cCNumber: string;
     cCName: string;
