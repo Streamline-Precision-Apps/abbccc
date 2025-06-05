@@ -884,13 +884,33 @@ export async function updateTags(
 }
 
 /**
- * Server action to delete a cost code
+ * Server action to delete a tag
+ *
+ * @param id - The ID of the tag to delete
+ * @returns Results object with success status and optional error message
  */
 export async function deleteTag(id: string) {
   console.log("Deleting Tag with ID:", id);
 
   try {
-    // Delete the cost code
+    // Check if the tag exists before attempting to delete
+    const existingTag = await prisma.cCTag.findUnique({
+      where: { id },
+      include: {
+        CostCodes: {
+          select: { id: true },
+        },
+      },
+    });
+
+    if (!existingTag) {
+      return {
+        success: false,
+        error: "Tag not found",
+      };
+    }
+
+    // Delete the tag
     await prisma.cCTag.delete({
       where: { id },
     });
@@ -902,10 +922,10 @@ export async function deleteTag(id: string) {
 
     return {
       success: true,
-      message: "Cost code deleted successfully",
+      message: "Tag deleted successfully",
     };
   } catch (error) {
-    console.error("Error deleting cost code:", error);
+    console.error("Error deleting tag:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",

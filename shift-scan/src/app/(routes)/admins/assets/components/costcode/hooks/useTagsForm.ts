@@ -318,6 +318,9 @@ export function useTagsForm({
 
   /**
    * Deletes the selected tag
+   * Calls the deleteTag server action and handles state updates
+   *
+   * @returns Promise with the result of the operation
    */
   const handleDeleteTag = useCallback(async (): Promise<TagOperationResult> => {
     try {
@@ -331,7 +334,7 @@ export function useTagsForm({
       const result = await deleteTag(formData.id);
 
       if (!result || !result.success) {
-        const errorMessage = result?.error || "Failed to update tag";
+        const errorMessage = result?.error || "Failed to delete tag";
         setError(errorMessage);
         return {
           success: false,
@@ -344,17 +347,24 @@ export function useTagsForm({
         await refreshTags();
       }
 
+      // Clear selections and form state after successful deletion
       setSelectTag(null);
-      setIsDeleting(false);
+      setFormData(null);
+      setOriginalData(null);
+      setChangedFields(new Set());
+      setSuccessfullyUpdated(false);
+
       return { success: true };
     } catch (error) {
-      setIsDeleting(false);
+      console.error("Error deleting tag:", error);
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
       setError(errorMessage);
       return { success: false, error: errorMessage };
+    } finally {
+      setIsDeleting(false);
     }
-  }, [formData, refreshTags, setSelectTag]);
+  }, [formData, refreshTags, setSelectTag, setFormData, setOriginalData]);
 
   /**
    * Creates a new tag
