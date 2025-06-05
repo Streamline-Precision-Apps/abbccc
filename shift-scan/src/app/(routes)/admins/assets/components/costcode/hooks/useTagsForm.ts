@@ -226,8 +226,19 @@ export function useTagsForm({
 
       // Update the form data
       handleInputChange("CostCodes", newCostCodes);
+
+      // Update selectTag state to immediately reflect the UI change without saving
+      if (selectTag) {
+        // Create a new tag object with the updated CostCodes array
+        const updatedTag = {
+          ...selectTag,
+          CostCodes: newCostCodes,
+        };
+        // Update the tag in state to trigger re-render of the sidebar
+        setSelectTag(updatedTag);
+      }
     },
-    [formData, handleInputChange]
+    [formData, handleInputChange, selectTag, setSelectTag]
   );
 
   /**

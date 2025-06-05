@@ -27,6 +27,8 @@ export default function CostCodeSideBar({
   selectTag,
   setCostCodeUIState,
   loading,
+  costCodeUIState,
+  onCostCodeToggle,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<"Equipment" | "CostCode" | "Jobsite">>;
@@ -51,23 +53,25 @@ export default function CostCodeSideBar({
     >
   >;
   loading: boolean;
+  onCostCodeToggle?: (costCodeId: string, costCodeName: string) => void;
 }) {
   const [term, setTerm] = useState("");
 
   // Handle cost code selection with toggle functionality
   const handleCostCodeClick = useCallback(
     (costCode: CostCodeSummary) => {
-      // If the clicked cost code is already selected, deselect it
       if (selectCostCode?.id === costCode.id) {
         setSelectCostCode(null);
+        setSelectTag(null);
         setCostCodeUIState("idle");
       } else {
         // Otherwise, select the new cost code
         setSelectCostCode(costCode);
+        setSelectTag(null);
         setCostCodeUIState("editing");
       }
     },
-    [selectCostCode, setSelectCostCode]
+    [selectCostCode, setSelectCostCode, costCodeUIState, onCostCodeToggle]
   );
 
   const filteredCostCodes = useMemo(() => {
@@ -149,15 +153,30 @@ export default function CostCodeSideBar({
         ) : (
           <Holds>
             {filteredCostCodes.length > 0 ? (
-              filteredCostCodes.map((costCode) => (
-                <CostCodeRow
-                  key={costCode.id}
-                  costCode={costCode}
-                  isSelected={selectCostCode?.id === costCode.id}
-                  onClick={handleCostCodeClick}
-                  hasUnsavedChanges={hasUnsavedChanges}
-                />
-              ))
+              filteredCostCodes.map((costCode) => {
+                // For group modes, check if this cost code is already in the tag
+                const isInGroup =
+                  costCodeUIState === "editingGroups" && selectTag?.CostCodes
+                    ? selectTag.CostCodes.some((cc) => cc.id === costCode.id)
+                    : false;
+
+                return (
+                  <CostCodeRow
+                    key={costCode.id}
+                    costCode={costCode}
+                    isSelected={
+                      costCodeUIState === "editingGroups" ||
+                      costCodeUIState === "creatingGroups"
+                        ? isInGroup
+                        : selectCostCode?.id === costCode.id
+                    }
+                    onClick={handleCostCodeClick}
+                    hasUnsavedChanges={hasUnsavedChanges}
+                    costCodeUIState={costCodeUIState}
+                    onToggleCostCode={onCostCodeToggle}
+                  />
+                );
+              })
             ) : (
               <Texts size="p6" className="text-center">
                 {term.trim()
