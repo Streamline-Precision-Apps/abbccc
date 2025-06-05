@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { CostCode, Tag } from "../../../types";
+import { CostCode, CostCodeSummary, Tag } from "../../../types";
 import { form } from "@nextui-org/theme";
 import { set } from "date-fns";
 import { deleteTag, updateTags } from "@/actions/AssetActions";
@@ -56,6 +56,10 @@ export interface UseTagsFormReturn {
   handleRevertField: (fieldName: keyof Tag) => void;
   handleDeleteTag: () => Promise<TagOperationResult>;
   handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+  handleCostCodeToggleAll: (
+    costCodes: CostCodeSummary[],
+    selectAll: boolean
+  ) => void;
 }
 
 /**
@@ -235,6 +239,51 @@ export function useTagsForm({
           CostCodes: newCostCodes,
         };
         // Update the tag in state to trigger re-render of the sidebar
+        setSelectTag(updatedTag);
+      }
+    },
+    [formData, handleInputChange, selectTag, setSelectTag]
+  );
+
+  /**
+   * Toggles all cost codes on or off for the tag
+   *
+   * @param costCodes - The array of all available cost codes
+   * @param selectAll - Whether to select all (true) or deselect all (false)
+   */
+  const handleCostCodeToggleAll = useCallback(
+    (costCodes: CostCodeSummary[], selectAll: boolean) => {
+      if (!formData) return;
+
+      let newCostCodes: Array<{ id: string; name: string }> = [];
+
+      if (selectAll) {
+        // Add all cost codes (filtering out any that might already be in the list)
+        const currentCostCodeIds = new Set(
+          (formData.CostCodes || []).map((cc) => cc.id)
+        );
+
+        // Create a new array with all cost codes
+        newCostCodes = [
+          ...(formData.CostCodes || []), // Keep existing ones
+          ...costCodes
+            .filter((cc) => !currentCostCodeIds.has(cc.id)) // Only add ones not already in the list
+            .map((cc) => ({ id: cc.id, name: cc.name })),
+        ];
+      } else {
+        // Remove all cost codes (empty array)
+        newCostCodes = [];
+      }
+
+      // Update the form data
+      handleInputChange("CostCodes", newCostCodes);
+
+      // Update selectTag state to immediately reflect the UI change without saving
+      if (selectTag) {
+        const updatedTag = {
+          ...selectTag,
+          CostCodes: newCostCodes,
+        };
         setSelectTag(updatedTag);
       }
     },
@@ -424,5 +473,6 @@ export function useTagsForm({
     handleNewTagSubmit,
     handleDeleteTag,
     handleCostCodeToggle,
+    handleCostCodeToggleAll,
   };
 }

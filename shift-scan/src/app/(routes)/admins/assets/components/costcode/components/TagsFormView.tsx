@@ -204,19 +204,6 @@ export default function TagsFormView({
                         {costCode.name}
                       </Texts>
                     </Holds>
-                    <Buttons
-                      shadow="none"
-                      background={"none"}
-                      className="w-fit h-auto text-red-500"
-                      onClick={() =>
-                        onToggleCostCode &&
-                        onToggleCostCode(costCode.id, costCode.name)
-                      }
-                    >
-                      <Texts size="p6" className="text-red-500">
-                        Remove
-                      </Texts>
-                    </Buttons>
                   </Holds>
                 ))
               ) : (

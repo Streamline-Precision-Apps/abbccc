@@ -51,8 +51,6 @@ function CostCodeRow({
     setShowConfirmModal(false);
   }, []);
 
-  // Compute background color based on active status
-  const rowBackgroundColor = costCode.isActive ? "lightGray" : "orange";
   const showCheckBox =
     costCodeUIState === "creatingGroups" || costCodeUIState === "editingGroups";
   return (
@@ -60,10 +58,10 @@ function CostCodeRow({
       <Holds
         key={costCode.id}
         position={"row"}
-        className="w-full h-[40px] justify-center flex gap-2 mb-2"
+        className="w-full h-[40px] justify-center flex gap-2 mb-3"
       >
         <Holds
-          background={rowBackgroundColor}
+          background={showCheckBox && isSelected ? "lightBlue" : "gray"}
           className={`w-full h-[40px] justify-center flex hover:opacity-80 cursor-pointer relative ${
             isSelected && "outline outline-[2px] outline-black"
           } rounded-[10px] my-1 px-4`}
