@@ -1,27 +1,23 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { CostCode, Tag, TagSummary } from "../../types";
+import { CostCode, Tag, TagSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
-import CostCodeEmptyState from "./components/CostCodeEmptyState";
-import CostCodeFormView from "./components/CostCodeFormView";
-import CostCodeRegistrationView from "./components/CostCodeRegistrationView";
-import DiscardChangesModal from "../shared/DiscardChangesModal";
-import { useCostCodeForm } from "./hooks/useCostCodeForm";
-import TagsFormView from "./components/TagsFormView";
-import TagsRegistrationView from "./components/TagRegistrationView";
+import CostCodeEmptyState from "./CostCodeEmptyState";
+import CostCodeFormView from "./CostCodeFormView";
+import CostCodeRegistrationView from "./CostCodeRegistrationView";
+import { useCostCodeForm } from "../hooks/useCostCodeForm";
+import TagsFormView from "./TagsFormView";
+import TagsRegistrationView from "./TagRegistrationView";
+import { useTagsForm } from "../hooks/useTagsForm";
 
 interface CostCodeMainContentProps {
   assets: string;
   selectCostCode: CostCode | null;
-  isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
-  isRegistrationGroupFormOpen: boolean;
-  setIsRegistrationGroupFormOpen: Dispatch<SetStateAction<boolean>>;
   setSelectCostCode: Dispatch<SetStateAction<CostCode | null>>;
   refreshCostCodes: () => Promise<void>;
-  loading?: boolean;
-  selectTag: Tag | null;
+  CostCodeLoading: boolean;
+  TagLoading: boolean;
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
   costCodeUIState:
@@ -36,6 +32,7 @@ interface CostCodeMainContentProps {
     >
   >;
   tagSummaries: TagSummary[];
+  tagFormHook: ReturnType<typeof useTagsForm>;
 }
 
 /**
@@ -43,33 +40,28 @@ interface CostCodeMainContentProps {
  * Handles cost code viewing, editing, and registration.
  */
 const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
-  assets,
   selectCostCode,
-  isRegistrationFormOpen,
-  setIsRegistrationFormOpen,
   setSelectCostCode,
   refreshCostCodes,
-  loading = false,
-  isRegistrationGroupFormOpen,
-  setIsRegistrationGroupFormOpen,
+  CostCodeLoading,
+  TagLoading,
   setHasUnsavedChanges,
   costCodeUIState,
   setCostCodeUIState,
   tagSummaries,
-  selectTag,
   setSelectTag,
+  tagFormHook,
 }) => {
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
     setSelectCostCode,
     setHasUnsavedChanges,
-    setIsRegistrationFormOpen,
     refreshCostCodes,
   });
 
   return (
     <>
-      {loading ? (
+      {CostCodeLoading || TagLoading ? (
         <Holds
           background={"white"}
           className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7 flex justify-center items-center animate-pulse"
@@ -113,28 +105,29 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
         <Holds className="w-full h-full col-start-3 col-end-11">
           <CostCodeEmptyState
             onRegisterNew={() => setCostCodeUIState("creating")}
-            onRegisterNewGroup={() => setIsRegistrationGroupFormOpen(true)}
+            onRegisterNewGroup={() => setCostCodeUIState("creatingGroups")}
           />
         </Holds>
       ) : costCodeUIState === "editingGroups" ? (
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <TagsFormView
-            formData={selectTag}
-            onCreateNewGroup={() => setCostCodeUIState("creatingGroups")}
-            onDeleteGroup={async () => ({ success: true })} // Implement with your tag deletion logic
-            onDiscardChanges={() => {
-              setCostCodeUIState("idle");
+            formData={tagFormHook.formData}
+            onDeleteCostCode={tagFormHook.handleDeleteTag}
+            onSaveChanges={tagFormHook.handleSaveChanges}
+            onDiscardChanges={tagFormHook.handleDiscardChanges}
+            onRevertField={tagFormHook.handleRevertField}
+            onInputChange={tagFormHook.handleInputChange}
+            hasUnsavedChanges={tagFormHook.hasUnsavedChanges}
+            changedFields={tagFormHook.changedFields}
+            isSaving={tagFormHook.isSaving}
+            successfullyUpdated={tagFormHook.successfullyUpdated}
+            isDeleting={tagFormHook.isDeleting}
+            error={tagFormHook.error}
+            onRegisterNew={() => {
+              setCostCodeUIState("creatingGroups");
               setSelectTag(null);
             }}
-            onSaveChanges={async () => ({ success: true })} // Implement with your tag saving logic
-            onToggleCostCode={(costCodeId, costCodeName) => {
-              // Implement cost code toggle logic
-              console.log("Toggle cost code", costCodeId, costCodeName);
-            }}
-            onInputChange={(fieldName, value) => {
-              // Implement input change logic
-              console.log("Input change", fieldName, value);
-            }}
+            tagSummaries={tagSummaries}
           />
         </Holds>
       ) : costCodeUIState === "creatingGroups" ? (

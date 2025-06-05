@@ -13,6 +13,7 @@ import CostCodeRow from "./CostCodeRow";
 import { CostCode, CostCodeSummary, Tag, TagSummary } from "../../../types";
 import { Selects } from "@/components/(reusable)/selects";
 import Spinner from "@/components/(animations)/spinner";
+import { set } from "date-fns";
 
 export default function CostCodeSideBar({
   assets,
@@ -103,9 +104,10 @@ export default function CostCodeSideBar({
 
           // Find the selected tag by ID from the tagSummaries array
           const selectedTagId = event.target.value;
-          if (selectedTagId === "Select A Group") {
+          if (selectedTagId === "") {
             setSelectTag(null);
             setSelectCostCode(null);
+            setCostCodeUIState("idle");
           } else {
             setSelectTag(
               tagSummaries.find((tag) => tag.id === selectedTagId) || null
@@ -119,7 +121,7 @@ export default function CostCodeSideBar({
         }
         className="w-full h-full text-center text-sm p-0"
       >
-        <option>Select A Group</option>
+        <option value="">Select A Group</option>
         {tagSummaries.map((option) => (
           <option key={option.id} value={option.id}>
             {option.name}
@@ -130,7 +132,7 @@ export default function CostCodeSideBar({
       <SearchBar
         term={term}
         handleSearchChange={(e) => setTerm(e.target.value)}
-        placeholder="Search cost codes..."
+        placeholder="Search cost codes here..."
         disabled={loading}
       />
 

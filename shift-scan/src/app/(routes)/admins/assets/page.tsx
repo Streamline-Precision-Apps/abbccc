@@ -16,8 +16,9 @@ import EquipmentMainContent from "./components/equipment/EquipmentMainContent";
 import JobsiteMainContent from "./components/jobsite/JobsiteMainContent";
 import JobsiteSideBar from "./components/jobsite/sidebar/JobsiteSideBar";
 import CostCodeSideBar from "./components/costcode/sidebar/CostCodeSideBar";
-import CostCodeMainContent from "./components/costcode/CostCodeMainContent";
+import CostCodeMainContent from "./components/costcode/components/CostCodeMainContent";
 import { useAssets } from "./hooks/useAssets";
+import { useTagsForm } from "./components/costcode/hooks/useTagsForm";
 
 export default function Assets() {
   const [assets, setAssets] = useState<"Equipment" | "CostCode" | "Jobsite">(
@@ -165,6 +166,13 @@ export default function Assets() {
     [handleTagSelect, setSelectTag]
   );
 
+  const tagFormHook = useTagsForm({
+    selectTag,
+    setSelectTag,
+    setHasUnsavedChanges,
+    refreshTags: fetchTagSummaries,
+  });
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -272,19 +280,16 @@ export default function Assets() {
             <CostCodeMainContent
               assets={assets}
               selectCostCode={selectCostCode}
-              isRegistrationFormOpen={isRegistrationFormOpen}
-              setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectCostCode={setSelectCostCode}
               setHasUnsavedChanges={setHasUnsavedChanges}
               refreshCostCodes={fetchCostCodeSummaries}
-              loading={loadingStates.costCodeDetails}
-              isRegistrationGroupFormOpen={isRegistrationGroupFormOpen}
-              setIsRegistrationGroupFormOpen={setIsRegistrationGroupFormOpen}
+              CostCodeLoading={loadingStates.costCodeDetails}
+              TagLoading={loadingStates.tagDetails}
               tagSummaries={tagSummaries}
-              selectTag={selectTag}
               setSelectTag={setSelectTag}
               costCodeUIState={costCodeUIState}
               setCostCodeUIState={setCostCodeUIState}
+              tagFormHook={tagFormHook}
             />
           ) : null}
         </Grids>

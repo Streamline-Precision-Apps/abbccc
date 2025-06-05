@@ -6,36 +6,41 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
-import { CheckBox } from "@/components/(inputs)/checkBox";
-import { useTagsForm } from "../hooks/useTagsForm";
-import { CostCode, Tag } from "../../../types";
+import { CostCode, Tag, TagSummary } from "../../../types";
 import DeleteConfirmationModal from "../../shared/DeleteConfirmationModal";
 import Spinner from "@/components/(animations)/spinner";
-import { form } from "@nextui-org/theme";
+import { TagOperationResult } from "../hooks/useTagsForm";
 
 interface TagsFormViewProps {
   formData?: Tag | null;
   costCodes?: CostCode[];
-  onCreateNewGroup?: () => void;
   onDeleteGroup?: () => Promise<{ success: boolean; error?: string }>;
   onDiscardChanges?: () => void;
   onSaveChanges?: () => Promise<{ success: boolean; error?: string }>;
   onToggleCostCode?: (costCodeId: string, costCodeName: string) => void;
-  onInputChange?: (
+  onInputChange: (
     fieldName: keyof Tag,
     value: string | Array<{ id: string; name: string }>
   ) => void;
+  changedFields: Set<keyof Tag>;
+  onRevertField: (fieldName: keyof Tag) => void;
+  onRegisterNew: () => void;
+  hasUnsavedChanges: boolean;
+  isSaving: boolean;
+  successfullyUpdated: boolean;
+  isDeleting: boolean;
+  error: string | null;
+  onDeleteCostCode: () => Promise<TagOperationResult>;
+  tagSummaries: TagSummary[];
 }
 
 export default function TagsFormView({
   formData,
-  onCreateNewGroup,
   onDeleteGroup,
   onDiscardChanges,
   onSaveChanges,
-  onToggleCostCode,
   onInputChange,
+  onRegisterNew,
 }: TagsFormViewProps) {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -103,7 +108,7 @@ export default function TagsFormView({
             shadow="none"
             background={"none"}
             className="w-fit h-auto"
-            onClick={onCreateNewGroup}
+            onClick={onRegisterNew}
           >
             <Texts size="sm" text="link">
               Create New Group
@@ -153,9 +158,7 @@ export default function TagsFormView({
               id="name"
               name="name"
               value={formData?.name || ""}
-              onChange={(e) =>
-                onInputChange && onInputChange("name", e.target.value)
-              }
+              onChange={(e) => onInputChange("name", e.target.value)}
               className="w-full text-sm"
             />
           </Holds>
@@ -168,9 +171,7 @@ export default function TagsFormView({
               id="description"
               name="description"
               value={formData?.description || ""}
-              onChange={(e) =>
-                onInputChange && onInputChange("description", e.target.value)
-              }
+              onChange={(e) => onInputChange("description", e.target.value)}
               className="w-full text-sm"
               style={{ resize: "none" }}
             />

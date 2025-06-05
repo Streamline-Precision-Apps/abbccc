@@ -1,5 +1,12 @@
 "use client";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { CostCode } from "../../../types";
 import {
   createCostCode,
@@ -14,11 +21,9 @@ export interface UseCostCodeFormProps {
   /** The currently selected cost code or null if none is selected */
   selectCostCode: CostCode | null;
   /** Function to update the selected cost code */
-  setSelectCostCode: React.Dispatch<React.SetStateAction<CostCode | null>>;
+  setSelectCostCode: Dispatch<SetStateAction<CostCode | null>>;
   /** Function to update whether there are unsaved changes */
-  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
-  /** Function to update whether the registration form is open */
-  setIsRegistrationFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setHasUnsavedChanges: Dispatch<SetStateAction<boolean>>;
   /** Function to refresh the list of cost codes */
   refreshCostCodes?: () => Promise<void>;
 }
@@ -88,7 +93,6 @@ export function useCostCodeForm({
   selectCostCode,
   setSelectCostCode,
   setHasUnsavedChanges,
-  setIsRegistrationFormOpen,
   refreshCostCodes,
 }: UseCostCodeFormProps): UseCostCodeFormReturn {
   // Form state
