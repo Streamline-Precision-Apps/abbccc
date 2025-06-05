@@ -243,6 +243,7 @@ export default function Assets() {
                   setCostCodeUIState={setCostCodeUIState}
                   loading={loadingStates.costCodeSummary}
                   setSelectTag={handleTagSelection}
+                  onCostCodeToggle={tagFormHook.handleCostCodeToggle}
                 />
               ) : null}
             </Grids>

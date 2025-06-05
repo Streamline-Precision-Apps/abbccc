@@ -117,6 +117,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             onDiscardChanges={tagFormHook.handleDiscardChanges}
             onRevertField={tagFormHook.handleRevertField}
             onInputChange={tagFormHook.handleInputChange}
+            onToggleCostCode={tagFormHook.handleCostCodeToggle}
             hasUnsavedChanges={tagFormHook.hasUnsavedChanges}
             changedFields={tagFormHook.changedFields}
             isSaving={tagFormHook.isSaving}

@@ -5,6 +5,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
 import { CostCodeRowProps } from "../types";
 import { formatCostCodeName } from "../utils/formatters";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 /**
  * Individual cost code row component for the sidebar list
@@ -17,7 +18,9 @@ function CostCodeRow({
   costCode,
   isSelected = false,
   onClick,
-  hasUnsavedChanges = false,
+  hasUnsavedChanges,
+  costCodeUIState,
+  onToggleCostCode,
 }: CostCodeRowProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -50,19 +53,41 @@ function CostCodeRow({
 
   // Compute background color based on active status
   const rowBackgroundColor = costCode.isActive ? "lightGray" : "orange";
-
+  const showCheckBox =
+    costCodeUIState === "creatingGroups" || costCodeUIState === "editingGroups";
   return (
     <>
       <Holds
-        background={rowBackgroundColor}
-        className={`w-full h-[40px] justify-center flex hover:opacity-80 cursor-pointer relative ${
-          isSelected && "outline outline-[2px] outline-black"
-        } rounded-[10px] my-1 px-4`}
-        onClick={handleCostCodeClick}
+        key={costCode.id}
+        position={"row"}
+        className="w-full h-[40px] justify-center flex gap-2 mb-2"
       >
-        <Texts position="left" size="xs">
-          {formattedName}
-        </Texts>
+        <Holds
+          background={rowBackgroundColor}
+          className={`w-full h-[40px] justify-center flex hover:opacity-80 cursor-pointer relative ${
+            isSelected && "outline outline-[2px] outline-black"
+          } rounded-[10px] my-1 px-4`}
+          onClick={handleCostCodeClick}
+        >
+          <Texts position="left" size="xs">
+            {formattedName}
+          </Texts>
+        </Holds>
+        {showCheckBox && (
+          <Holds className="w-fit h-[40px] justify-center flex relative">
+            <CheckBox
+              id={costCode.id}
+              name={costCode.name}
+              checked={isSelected}
+              onChange={() => {
+                onToggleCostCode?.(costCode.id, costCode.name);
+              }}
+              height={30}
+              width={30}
+              shadow={false}
+            />
+          </Holds>
+        )}
       </Holds>
       <DiscardChangesModal
         isOpen={showConfirmModal}

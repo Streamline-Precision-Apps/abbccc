@@ -52,6 +52,16 @@ export interface CostCodeRowProps {
   isSelected?: boolean;
   onClick: (costCode: CostCodeSummary) => void;
   hasUnsavedChanges?: boolean;
+  costCodeUIState:
+    | "idle"
+    | "creating"
+    | "editing"
+    | "editingGroups"
+    | "creatingGroups";
+
+  onToggleCostCode:
+    | ((costCodeId: string, costCodeName: string) => void)
+    | undefined;
 }
 
 /**
