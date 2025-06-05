@@ -58,10 +58,7 @@ export interface CostCodeRowProps {
     | "editing"
     | "editingGroups"
     | "creatingGroups";
-
-  onToggleCostCode:
-    | ((costCodeId: string, costCodeName: string) => void)
-    | undefined;
+  onToggleCostCode?: (costCodeId: string, costCodeName: string) => void;
 }
 
 /**
