@@ -9,7 +9,7 @@ export { default as CostCodeFormView } from "./components/CostCodeFormView";
 export { default as CostCodeEmptyState } from "./components/CostCodeEmptyState";
 export { default as CostCodeRegistrationView } from "./components/CostCodeRegistrationView";
 export { default as DeleteCostCodeModal } from "./components/DeleteCostCodeModal";
-export { default as CostCodeMainContent } from "./CostCodeMainContent";
+export { default as CostCodeMainContent } from "./components/CostCodeMainContent";
 export { default as CostCodeSideBar } from "./sidebar/CostCodeSideBar";
 export { default as CostCodeRow } from "./sidebar/CostCodeRow";
 

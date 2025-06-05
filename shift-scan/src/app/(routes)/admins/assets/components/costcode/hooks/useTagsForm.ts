@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { CostCode, Tag, TagSummary } from "../../../types";
+import { CostCode, Tag } from "../../../types";
 
 /**
  * Props for the useTagsForm hook
@@ -12,12 +12,8 @@ export interface UseTagsFormProps {
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
   /** Function to update whether there are unsaved changes */
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
-  /** Function to update whether the registration form is open */
-  setIsRegistrationGroupFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /** Function to refresh the list of tags */
   refreshTags?: () => Promise<void>;
-  /** List of available cost codes */
-  costCodes: CostCode[];
 }
 
 /**
@@ -27,27 +23,51 @@ export interface TagOperationResult {
   success: boolean;
   error?: string;
 }
-
 /**
- * Data structure for new tag submission
+ * Data structure for creating a new tag
  */
 export interface NewTagData {
   name: string;
   description: string;
-  costCodes: Array<{ id: string; name: string }>;
+  CostCodes?: Array<{ id: string; name: string }>;
 }
 
 /**
  * Custom hook for managing tag form data and operations
  */
-export const useTagsForm = ({
+export interface UseTagsFormReturn {
+  formData: Tag | null;
+  changedFields: Set<keyof Tag>;
+  hasUnsavedChanges: boolean;
+  error: string | null;
+  isSaving: boolean;
+  isDeleting: boolean;
+  successfullyUpdated: boolean;
+  handleInputChange: (
+    fieldName: keyof Tag,
+    value: string | Array<{ id: string; name: string }>
+  ) => void;
+  handleSaveChanges: () => Promise<TagOperationResult>;
+  handleDiscardChanges: () => void;
+  handleNewTagSubmit: (newTag: NewTagData) => Promise<TagOperationResult>;
+  handleRevertField: (fieldName: keyof Tag) => void;
+  handleDeleteTag: () => Promise<TagOperationResult>;
+  handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+}
+
+/**
+ * Custom hook for managing tag form state
+ * Handles form data, changes tracking, saving, and reverting
+ *
+ * @param props - Configuration props for the hook
+ * @returns Object containing form state and handler functions
+ */
+export function useTagsForm({
   selectTag,
   setSelectTag,
   setHasUnsavedChanges,
-  setIsRegistrationGroupFormOpen,
   refreshTags,
-  costCodes,
-}: UseTagsFormProps) => {
+}: UseTagsFormProps): UseTagsFormReturn {
   const [formData, setFormData] = useState<Tag | null>(null);
   const [originalData, setOriginalData] = useState<Tag | null>(null);
   const [changedFields, setChangedFields] = useState<Set<keyof Tag>>(new Set());
@@ -56,7 +76,6 @@ export const useTagsForm = ({
   const [successfullyUpdated, setSuccessfullyUpdated] =
     useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [description, setDescription] = useState<string>("");
 
   // Initialize form data when selected tag changes
   useEffect(() => {
@@ -82,7 +101,6 @@ export const useTagsForm = ({
   useEffect(() => {
     setHasUnsavedChanges(hasUnsavedChanges);
   }, [hasUnsavedChanges, setHasUnsavedChanges]);
-
   /**
    * Updates form data when a field is changed and tracks the change
    *
@@ -94,57 +112,27 @@ export const useTagsForm = ({
       fieldName: keyof Tag,
       value: string | Array<{ id: string; name: string }>
     ): void => {
+      console.log("handleInputChange", fieldName, value);
       setSuccessfullyUpdated(false);
 
-      if (!formData || !originalData) return;
+      setFormData((prevData) => {
+        if (!prevData) return null;
 
-      const newFormData = { ...formData, [fieldName]: value };
-      setFormData(newFormData);
+        return {
+          ...prevData,
+          [fieldName]: value,
+        };
+      });
+      console.log("Updated formData:", formData);
 
-      // Track changed fields by comparing with original data
-      const newChangedFields = new Set(changedFields);
-
-      let hasChanged = false;
-
-      if (fieldName === "CostCodes") {
-        // Handle array comparisons for cost codes
-        const originalCostCodes = (originalData[fieldName] || []) as Array<{
-          id: string;
-          name: string;
-        }>;
-        const newCostCodes = (value || []) as Array<{
-          id: string;
-          name: string;
-        }>;
-
-        // Compare arrays by checking if they have the same elements
-        if (originalCostCodes.length !== newCostCodes.length) {
-          hasChanged = true;
-        } else {
-          // Check if all cost codes in the original are present in the new array
-          const originalIds = new Set(originalCostCodes.map((code) => code.id));
-          const newIds = new Set(newCostCodes.map((code) => code.id));
-
-          // Compare sets of IDs
-          hasChanged =
-            originalIds.size !== newIds.size ||
-            [...originalIds].some((id) => !newIds.has(id));
-        }
-      } else {
-        hasChanged = String(value) !== String(originalData[fieldName]);
-      }
-
-      if (hasChanged) {
+      setChangedFields((prevChangedFields) => {
+        const newChangedFields = new Set(prevChangedFields);
         newChangedFields.add(fieldName);
-      } else {
-        newChangedFields.delete(fieldName);
-      }
-
-      setChangedFields(newChangedFields);
+        return newChangedFields;
+      });
     },
-    [formData, originalData, changedFields]
+    [] // Empty dependency array since we don't use any external values
   );
-
   /**
    * Reverts a field to its original value
    *
@@ -226,15 +214,6 @@ export const useTagsForm = ({
         setIsSaving(true);
         setError(null);
 
-        // Prepare the data to send for update
-        const changedData: Partial<Tag> = {};
-        changedFields.forEach((field) => {
-          changedData[field] = formData[field];
-        });
-
-        // Mock API call - replace with actual implementation
-        // const result = await updateTag(formData.id, changedData);
-
         // Simulate a successful update for now
         // In a real implementation, you'd call an actual API
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -259,40 +238,6 @@ export const useTagsForm = ({
         return { success: false, error: errorMessage };
       }
     }, [formData, changedFields, refreshTags]);
-
-  /**
-   * Creates a new tag
-   */
-  const handleNewTagSubmit = useCallback(
-    async (newTagData: NewTagData): Promise<TagOperationResult> => {
-      try {
-        setIsSaving(true);
-        setError(null);
-
-        // Mock API call - replace with actual implementation
-        // const result = await createTag(newTagData);
-
-        // Simulate a successful creation
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Refresh the list of tags
-        if (refreshTags) {
-          await refreshTags();
-        }
-
-        setIsRegistrationGroupFormOpen(false);
-        setIsSaving(false);
-        return { success: true };
-      } catch (error) {
-        setIsSaving(false);
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-    },
-    [refreshTags, setIsRegistrationGroupFormOpen]
-  );
 
   /**
    * Deletes the selected tag
@@ -329,6 +274,38 @@ export const useTagsForm = ({
     }
   }, [formData, refreshTags, setSelectTag]);
 
+  /**
+   * Creates a new tag
+   */
+  const handleNewTagSubmit = useCallback(
+    async (newTagData: NewTagData): Promise<TagOperationResult> => {
+      try {
+        setIsSaving(true);
+        setError(null);
+
+        // Mock API call - replace with actual implementation
+        // const result = await createTag(newTagData);
+
+        // Simulate a successful creation
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Refresh the list of tags
+        if (refreshTags) {
+          await refreshTags();
+        }
+        setIsSaving(false);
+        return { success: true };
+      } catch (error) {
+        setIsSaving(false);
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      }
+    },
+    [refreshTags]
+  );
+
   return {
     formData,
     changedFields,
@@ -344,7 +321,5 @@ export const useTagsForm = ({
     handleNewTagSubmit,
     handleDeleteTag,
     handleCostCodeToggle,
-    description,
-    setDescription,
   };
-};
+}

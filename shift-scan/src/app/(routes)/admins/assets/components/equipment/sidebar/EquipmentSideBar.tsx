@@ -12,7 +12,6 @@ import SearchBar from "../../../../personnel/components/SearchBar";
 import { Texts } from "@/components/(reusable)/texts";
 import EquipmentRow from "./EquipmentRow";
 import { Equipment, EquipmentSummary } from "../../../types";
-import DiscardChangesModal from "../../shared/DiscardChangesModal";
 import Spinner from "@/components/(animations)/spinner";
 
 export default function EquipmentSideBar({
