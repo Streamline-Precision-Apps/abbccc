@@ -1,7 +1,7 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { CostCode, Tag, TagSummary } from "../../../types";
+import { CostCode, Tag, TagSummary, CostCodeSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
 import CostCodeEmptyState from "./CostCodeEmptyState";
 import CostCodeFormView from "./CostCodeFormView";
@@ -16,6 +16,7 @@ interface CostCodeMainContentProps {
   selectCostCode: CostCode | null;
   setSelectCostCode: Dispatch<SetStateAction<CostCode | null>>;
   refreshCostCodes: () => Promise<void>;
+  refreshTags?: () => Promise<void>;
   CostCodeLoading: boolean;
   TagLoading: boolean;
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
@@ -33,6 +34,15 @@ interface CostCodeMainContentProps {
   >;
   tagSummaries: TagSummary[];
   tagFormHook: ReturnType<typeof useTagsForm>;
+  /** Callback to get creation handlers when in creation mode */
+  onCreationHandlersReady?: (handlers: {
+    handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+    handleCostCodeToggleAll: (
+      costCodes: CostCodeSummary[],
+      selectAll: boolean
+    ) => void;
+    formData: { costCodes: Array<{ id: string; name: string }> };
+  }) => void;
 }
 
 /**
@@ -43,6 +53,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   selectCostCode,
   setSelectCostCode,
   refreshCostCodes,
+  refreshTags,
   CostCodeLoading,
   TagLoading,
   setHasUnsavedChanges,
@@ -51,7 +62,35 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   tagSummaries,
   setSelectTag,
   tagFormHook,
+  onCreationHandlersReady,
 }) => {
+  // State to store creation handlers when in creation mode
+  const [creationHandlers, setCreationHandlers] = useState<{
+    handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+    handleCostCodeToggleAll: (
+      costCodes: CostCodeSummary[],
+      selectAll: boolean
+    ) => void;
+    formData: { costCodes: Array<{ id: string; name: string }> };
+  } | null>(null);
+
+  // Handle creation hook readiness
+  const handleCreationHookReady = useCallback(
+    (handlers: {
+      handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+      handleCostCodeToggleAll: (
+        costCodes: CostCodeSummary[],
+        selectAll: boolean
+      ) => void;
+      formData: { costCodes: Array<{ id: string; name: string }> };
+    }) => {
+      setCreationHandlers(handlers);
+      if (onCreationHandlersReady) {
+        onCreationHandlersReady(handlers);
+      }
+    },
+    [onCreationHandlersReady]
+  );
   const costCodeFormHook = useCostCodeForm({
     selectCostCode,
     setSelectCostCode,
@@ -133,7 +172,14 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
         </Holds>
       ) : costCodeUIState === "creatingGroups" ? (
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
-          <TagsRegistrationView />
+          <TagsRegistrationView
+            refreshTags={refreshTags}
+            onCancel={() => {
+              setCostCodeUIState("idle");
+              setSelectTag(null);
+            }}
+            onCreationHookReady={handleCreationHookReady}
+          />
         </Holds>
       ) : null}
     </>

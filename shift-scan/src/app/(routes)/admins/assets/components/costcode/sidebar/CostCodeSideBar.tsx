@@ -242,7 +242,8 @@ export default function CostCodeSideBar({
                 filteredCostCodes.map((costCode) => {
                   // For group modes, check if this cost code is already in the tag form data
                   const isInGroup =
-                    costCodeUIState === "editingGroups" &&
+                    (costCodeUIState === "editingGroups" ||
+                      costCodeUIState === "creatingGroups") &&
                     tagFormData?.CostCodes
                       ? tagFormData.CostCodes.some(
                           (cc) => cc.id === costCode.id

@@ -16,7 +16,7 @@ import { CheckBox } from "@/components/(inputs)/checkBox";
  */
 function CostCodeRow({
   costCode,
-  isSelected = false,
+  isSelected,
   onClick,
   hasUnsavedChanges,
   costCodeUIState,

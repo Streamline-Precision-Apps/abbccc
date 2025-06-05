@@ -80,6 +80,13 @@ export default function Assets() {
   // UI state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showAssetChangeModal, setShowAssetChangeModal] = useState(false);
+
+  // State for creation mode
+  const [creationHandlers, setCreationHandlers] = useState<{
+    handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+    handleCostCodeToggleAll: (costCodes: any[], selectAll: boolean) => void;
+    formData: { costCodes: Array<{ id: string; name: string }> };
+  } | null>(null);
   const [pendingAssetChange, setPendingAssetChange] = useState<
     "Equipment" | "CostCode" | "Jobsite" | null
   >(null);
@@ -173,6 +180,18 @@ export default function Assets() {
     refreshTags: fetchTagSummaries,
   });
 
+  // Handle creation handlers ready callback
+  const handleCreationHandlersReady = useCallback(
+    (handlers: {
+      handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
+      handleCostCodeToggleAll: (costCodes: any[], selectAll: boolean) => void;
+      formData: { costCodes: Array<{ id: string; name: string }> };
+    }) => {
+      setCreationHandlers(handlers);
+    },
+    []
+  );
+
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
@@ -243,9 +262,26 @@ export default function Assets() {
                   setCostCodeUIState={setCostCodeUIState}
                   loading={loadingStates.costCodeSummary}
                   setSelectTag={handleTagSelection}
-                  onCostCodeToggle={tagFormHook.handleCostCodeToggle}
-                  onCostCodeToggleAll={tagFormHook.handleCostCodeToggleAll}
-                  tagFormData={tagFormHook.formData}
+                  onCostCodeToggle={
+                    costCodeUIState === "creatingGroups" && creationHandlers
+                      ? creationHandlers.handleCostCodeToggle
+                      : tagFormHook.handleCostCodeToggle
+                  }
+                  onCostCodeToggleAll={
+                    costCodeUIState === "creatingGroups" && creationHandlers
+                      ? creationHandlers.handleCostCodeToggleAll
+                      : tagFormHook.handleCostCodeToggleAll
+                  }
+                  tagFormData={
+                    costCodeUIState === "creatingGroups" && creationHandlers
+                      ? {
+                          id: "temp-creation",
+                          name: "Creating New Group",
+                          description: "Temporary creation object",
+                          CostCodes: creationHandlers.formData.costCodes,
+                        }
+                      : tagFormHook.formData
+                  }
                 />
               ) : null}
             </Grids>
@@ -286,6 +322,7 @@ export default function Assets() {
               setSelectCostCode={setSelectCostCode}
               setHasUnsavedChanges={setHasUnsavedChanges}
               refreshCostCodes={fetchCostCodeSummaries}
+              refreshTags={fetchTagSummaries}
               CostCodeLoading={loadingStates.costCodeDetails}
               TagLoading={loadingStates.tagDetails}
               tagSummaries={tagSummaries}
@@ -293,6 +330,7 @@ export default function Assets() {
               costCodeUIState={costCodeUIState}
               setCostCodeUIState={setCostCodeUIState}
               tagFormHook={tagFormHook}
+              onCreationHandlersReady={setCreationHandlers}
             />
           ) : null}
         </Grids>
