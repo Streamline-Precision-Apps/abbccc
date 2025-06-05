@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { CostCode, Tag } from "../../../types";
+import { form } from "@nextui-org/theme";
+import { set } from "date-fns";
+import { deleteTag, updateTags } from "@/actions/AssetActions";
 
 /**
  * Props for the useTagsForm hook
@@ -101,6 +104,7 @@ export function useTagsForm({
   useEffect(() => {
     setHasUnsavedChanges(hasUnsavedChanges);
   }, [hasUnsavedChanges, setHasUnsavedChanges]);
+
   /**
    * Updates form data when a field is changed and tracks the change
    *
@@ -112,26 +116,55 @@ export function useTagsForm({
       fieldName: keyof Tag,
       value: string | Array<{ id: string; name: string }>
     ): void => {
-      console.log("handleInputChange", fieldName, value);
       setSuccessfullyUpdated(false);
 
-      setFormData((prevData) => {
-        if (!prevData) return null;
+      if (!formData || !originalData) return;
 
-        return {
-          ...prevData,
-          [fieldName]: value,
-        };
-      });
-      console.log("Updated formData:", formData);
+      const newFormData = { ...formData, [fieldName]: value };
+      setFormData(newFormData);
 
-      setChangedFields((prevChangedFields) => {
-        const newChangedFields = new Set(prevChangedFields);
+      // Track changed fields by comparing with original data
+      const newChangedFields = new Set(changedFields);
+
+      let hasChanged = false;
+
+      if (fieldName === "CostCodes") {
+        const originalCostCodes = (originalData.CostCodes || []) as Array<{
+          id: string;
+          name: string;
+        }>;
+        const newCostCodes = (value || []) as Array<{
+          id: string;
+          name: string;
+        }>;
+
+        if (originalCostCodes.length !== newCostCodes.length) {
+          hasChanged = true;
+        } else {
+          const originalIds = new Set(originalCostCodes.map((tag) => tag.id));
+          const newIds = new Set(newCostCodes.map((tag) => tag.id));
+
+          hasChanged =
+            originalIds.size !== newIds.size ||
+            [...originalIds].some((id) => !newIds.has(id));
+        }
+      } else if (
+        typeof value === "boolean" &&
+        typeof originalData[fieldName] === "boolean"
+      ) {
+        hasChanged = value !== originalData[fieldName];
+      } else {
+        hasChanged = String(value) !== String(originalData[fieldName]);
+      }
+
+      if (hasChanged) {
         newChangedFields.add(fieldName);
-        return newChangedFields;
-      });
+      } else {
+        newChangedFields.delete(fieldName);
+      }
+      setChangedFields(newChangedFields);
     },
-    [] // Empty dependency array since we don't use any external values
+    [formData, originalData, changedFields] // Empty dependency array since we don't use any external values
   );
   /**
    * Reverts a field to its original value
@@ -142,13 +175,9 @@ export function useTagsForm({
     (fieldName: keyof Tag): void => {
       if (!formData || !originalData) return;
 
-      // Reset the field to its original value
-      setFormData({
-        ...formData,
-        [fieldName]: originalData[fieldName],
-      });
+      const newFormData = { ...formData, [fieldName]: originalData[fieldName] };
+      setFormData(newFormData);
 
-      // Remove the field from the set of changed fields
       const newChangedFields = new Set(changedFields);
       newChangedFields.delete(fieldName);
       setChangedFields(newChangedFields);
@@ -206,21 +235,64 @@ export function useTagsForm({
    */
   const handleSaveChanges =
     useCallback(async (): Promise<TagOperationResult> => {
+      if (!formData || !formData.id || changedFields.size === 0) {
+        return { success: false, error: "No changes to save" };
+      }
+      setError(null);
+      setIsSaving(true);
       try {
-        if (!formData || !formData.id || changedFields.size === 0) {
-          return { success: false, error: "No changes to save" };
+        const changedData: Partial<
+          Pick<Tag, "name" | "description" | "CostCodes">
+        > = {};
+
+        // Collect all changed fields into the update payload
+        changedFields.forEach((fieldName) => {
+          if (fieldName === "name" && formData.name !== undefined) {
+            changedData.name = formData.name;
+          } else if (
+            fieldName === "description" &&
+            formData.description !== undefined
+          ) {
+            changedData.description = formData.description;
+          } else if (
+            fieldName === "CostCodes" &&
+            formData.CostCodes !== undefined
+          ) {
+            // For CostCodes, we always send the complete array to let
+            // the server correctly determine which to connect/disconnect
+            changedData.CostCodes = formData.CostCodes;
+          }
+        });
+
+        // Call the server action with the updated data
+        const result = await updateTags(formData.id, changedData);
+
+        // Handle failure response
+        if (!result || !result.success) {
+          const errorMessage = result?.error || "Failed to update tag";
+          setError(errorMessage);
+          return {
+            success: false,
+            error: errorMessage,
+          };
         }
 
-        setIsSaving(true);
-        setError(null);
+        // Ensure we have valid data in the response
+        if (!result.data) {
+          setError("Server returned success but no tag data");
+          return {
+            success: false,
+            error: "Server returned success but no tag data",
+          };
+        }
 
-        // Simulate a successful update for now
-        // In a real implementation, you'd call an actual API
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const updatedTag = result.data as Tag;
 
-        // Update the original data to reflect the saved changes
-        setOriginalData({ ...formData });
+        // Update local state with server response
+        setFormData(updatedTag);
+        setOriginalData(updatedTag);
         setChangedFields(new Set());
+        setSelectTag(updatedTag);
         setSuccessfullyUpdated(true);
 
         // Refresh the list of tags
@@ -228,16 +300,21 @@ export function useTagsForm({
           await refreshTags();
         }
 
-        setIsSaving(false);
         return { success: true };
       } catch (error) {
-        setIsSaving(false);
+        console.error("Error saving tag changes:", error);
         const errorMessage =
           error instanceof Error ? error.message : "An unknown error occurred";
         setError(errorMessage);
         return { success: false, error: errorMessage };
+      } finally {
+        setIsSaving(false);
+        setTimeout(() => {
+          setSuccessfullyUpdated(false);
+          setError(null);
+        }, 4000);
       }
-    }, [formData, changedFields, refreshTags]);
+    }, [formData, changedFields, refreshTags, setSelectTag]);
 
   /**
    * Deletes the selected tag
@@ -251,11 +328,16 @@ export function useTagsForm({
       setIsDeleting(true);
       setError(null);
 
-      // Mock API call - replace with actual implementation
-      // const result = await deleteTag(formData.id);
+      const result = await deleteTag(formData.id);
 
-      // Simulate a successful deletion
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!result || !result.success) {
+        const errorMessage = result?.error || "Failed to update tag";
+        setError(errorMessage);
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
 
       // Refresh the list of tags and reset selection
       if (refreshTags) {

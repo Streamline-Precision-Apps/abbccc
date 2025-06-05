@@ -776,6 +776,143 @@ export async function deleteCostCode(id: string) {
   }
 }
 
+export async function updateTags(
+  id: string,
+  tagData: Partial<{
+    name: string;
+    description: string;
+    CostCodes?: { id: string; name: string }[];
+  }>
+) {
+  console.log("Updating tag...", id, tagData);
+
+  try {
+    // Validate tag exists
+    const existingTag = await prisma.cCTag.findUnique({
+      where: { id },
+      include: {
+        CostCodes: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!existingTag) {
+      throw new Error("Tag not found");
+    }
+
+    // Prepare update data
+    const updateData: Partial<{
+      name: string;
+      description: string;
+      CostCodes: {
+        connect?: { id: string }[];
+        disconnect?: { id: string }[];
+      };
+    }> = {
+      ...(tagData.name && { name: tagData.name.trim() }),
+      ...(tagData.description !== undefined && {
+        description: tagData.description,
+      }),
+    };
+
+    // Handle CostCodes updates if provided
+    if (tagData.CostCodes !== undefined) {
+      // Get current cost code IDs
+      const currentCostCodeIds = new Set(
+        existingTag.CostCodes.map((costCode) => costCode.id)
+      );
+
+      // Get new cost code IDs
+      const newCostCodeIds = new Set(
+        tagData.CostCodes.map((costCode) => costCode.id)
+      );
+
+      // Determine which cost codes to connect (add) and disconnect (remove)
+      const costCodesToConnect = tagData.CostCodes.filter(
+        (costCode) => !currentCostCodeIds.has(costCode.id)
+      ).map((costCode) => ({ id: costCode.id }));
+
+      const costCodesToDisconnect = existingTag.CostCodes.filter(
+        (costCode) => !newCostCodeIds.has(costCode.id)
+      ).map((costCode) => ({ id: costCode.id }));
+
+      // Add cost code connection/disconnection operations to update data
+      updateData.CostCodes = {};
+      if (costCodesToConnect.length > 0) {
+        updateData.CostCodes.connect = costCodesToConnect;
+      }
+      if (costCodesToDisconnect.length > 0) {
+        updateData.CostCodes.disconnect = costCodesToDisconnect;
+      }
+    }
+
+    // Update the tag
+    const updatedTag = await prisma.cCTag.update({
+      where: { id },
+      data: updateData,
+      include: {
+        CostCodes: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("costcodes");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return {
+      success: true,
+      data: updatedTag,
+      message: "Tag updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating tag:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Server action to delete a cost code
+ */
+export async function deleteTag(id: string) {
+  console.log("Deleting Tag with ID:", id);
+
+  try {
+    // Delete the cost code
+    await prisma.cCTag.delete({
+      where: { id },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("costcodes");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return {
+      success: true,
+      message: "Cost code deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting cost code:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 /** Layout for server actions 
 export async function (formData: FormData) {
   try {
