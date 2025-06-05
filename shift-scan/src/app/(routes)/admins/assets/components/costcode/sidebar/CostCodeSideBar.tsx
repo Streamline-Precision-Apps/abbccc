@@ -32,6 +32,7 @@ export default function CostCodeSideBar({
   costCodeUIState,
   onCostCodeToggle,
   onCostCodeToggleAll,
+  tagFormData,
 }: {
   assets: string;
   setAssets: Dispatch<SetStateAction<"Equipment" | "CostCode" | "Jobsite">>;
@@ -61,6 +62,7 @@ export default function CostCodeSideBar({
     costCodes: CostCodeSummary[],
     selectAll: boolean
   ) => void;
+  tagFormData?: Tag | null;
 }) {
   const [term, setTerm] = useState("");
 
@@ -100,13 +102,13 @@ export default function CostCodeSideBar({
     return filtered.sort((a, b) => {
       // First priority: selected status (selected codes first)
       const aIsSelected =
-        isGroupMode && selectTag?.CostCodes
-          ? selectTag.CostCodes.some((cc) => cc.id === a.id)
+        isGroupMode && tagFormData?.CostCodes
+          ? tagFormData.CostCodes.some((cc) => cc.id === a.id)
           : selectCostCode?.id === a.id;
 
       const bIsSelected =
-        isGroupMode && selectTag?.CostCodes
-          ? selectTag.CostCodes.some((cc) => cc.id === b.id)
+        isGroupMode && tagFormData?.CostCodes
+          ? tagFormData.CostCodes.some((cc) => cc.id === b.id)
           : selectCostCode?.id === b.id;
 
       if (aIsSelected && !bIsSelected) {
@@ -125,13 +127,13 @@ export default function CostCodeSideBar({
       // Last priority: alphabetical order by name
       return a.name.localeCompare(b.name);
     });
-  }, [costCodes, term, costCodeUIState, selectTag, selectCostCode]);
+  }, [costCodes, term, costCodeUIState, tagFormData, selectCostCode]);
 
   const allCostCodesSelected =
-    selectTag &&
+    tagFormData &&
     filteredCostCodes.length > 0 &&
     filteredCostCodes.every(
-      (cc) => selectTag?.CostCodes?.some((c) => c.id === cc.id) || false
+      (cc) => tagFormData?.CostCodes?.some((c) => c.id === cc.id) || false
     );
 
   return (
@@ -193,7 +195,7 @@ export default function CostCodeSideBar({
               <Holds position={"row"} className="w-full h-[40px]  gap-2 mb-2">
                 <Holds className="w-full h-full justify-center ">
                   <Texts size="sm" position={"right"} className="">
-                    {allCostCodesSelected ? "Deselect All" : "Select All"}
+                    {allCostCodesSelected ? "Unselect All" : "Select All"}
                   </Texts>
                 </Holds>
                 <Holds className="w-fit h-full relative">
@@ -221,7 +223,7 @@ export default function CostCodeSideBar({
                         // Fallback to toggling one by one if toggleAll is not available
                         filteredCostCodes.forEach((costCode) => {
                           const isSelected =
-                            selectTag?.CostCodes?.some(
+                            tagFormData?.CostCodes?.some(
                               (c) => c.id === costCode.id
                             ) || false;
                           // Only toggle if the selection state doesn't match our target selection state
@@ -238,10 +240,13 @@ export default function CostCodeSideBar({
             <Holds className="w-full h-fit ">
               {filteredCostCodes.length > 0 ? (
                 filteredCostCodes.map((costCode) => {
-                  // For group modes, check if this cost code is already in the tag
+                  // For group modes, check if this cost code is already in the tag form data
                   const isInGroup =
-                    costCodeUIState === "editingGroups" && selectTag?.CostCodes
-                      ? selectTag.CostCodes.some((cc) => cc.id === costCode.id)
+                    costCodeUIState === "editingGroups" &&
+                    tagFormData?.CostCodes
+                      ? tagFormData.CostCodes.some(
+                          (cc) => cc.id === costCode.id
+                        )
                       : false;
 
                   return (

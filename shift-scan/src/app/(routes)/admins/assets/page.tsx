@@ -245,6 +245,7 @@ export default function Assets() {
                   setSelectTag={handleTagSelection}
                   onCostCodeToggle={tagFormHook.handleCostCodeToggle}
                   onCostCodeToggleAll={tagFormHook.handleCostCodeToggleAll}
+                  tagFormData={tagFormHook.formData}
                 />
               ) : null}
             </Grids>
