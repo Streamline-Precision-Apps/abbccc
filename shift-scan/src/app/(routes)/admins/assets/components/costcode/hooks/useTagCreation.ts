@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { CostCodeSummary } from "../../../types";
+import { createTag } from "@/actions/AssetActions";
 
 /**
  * Props for the useTagCreation hook
@@ -178,35 +179,40 @@ export function useTagCreation({
       setIsSubmitting(true);
       setError(null);
 
-      // TODO: Replace with actual API call
-      // const result = await createTag({
-      //   name: formData.name,
-      //   description: formData.description,
-      //   CostCodes: formData.costCodes,
-      // });
+      const result = await createTag({
+        name: formData.name,
+        description: formData.description,
+        CostCodes: formData.costCodes,
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (result.success) {
+        // Clear the form on success
+        clearForm();
+        setSuccessMessage(result.message || "Tag created successfully");
 
-      // Show success message
-      setSuccessMessage("Tag created successfully!");
+        // Refresh tags list
+        if (refreshTags) {
+          await refreshTags();
+        }
 
-      // Clear the form
-      clearForm();
-
-      // Refresh tags list
-      if (refreshTags) {
-        await refreshTags();
+        // Auto-hide success message after 3 seconds
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 3000);
+      } else {
+        // Handle server action error
+        setError(result.error || "Failed to create tag");
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
       }
-
-      // Auto-hide success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create tag";
       setError(errorMessage);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     } finally {
       setIsSubmitting(false);
     }

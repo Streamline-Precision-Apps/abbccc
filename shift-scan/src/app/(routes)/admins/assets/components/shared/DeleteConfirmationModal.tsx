@@ -32,22 +32,22 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     >
       <Holds className="w-full h-full items-center justify-center text-center px-4">
         <Holds className="w-[90%] flex h-1/2">
-          <Texts size="p5">
+          <Texts size="lg">
             Are you sure you want to delete {itemType}{" "}
-            <strong>{itemName}</strong>?
-            <br />
-            <br />
-            <span className="text-red-500">This action cannot be undone.</span>
+            <span className=" italic ">{itemName}</span> ?
+            <span className="text-red-500 italic text-xs">
+              This action cannot be undone.
+            </span>
           </Texts>
         </Holds>
-        <Holds className="w-[80%] flex justify-center items-center gap-4 h-1/2">
+        <Holds className="w-[90%] flex justify-center items-center gap-4 h-1/2">
           <Buttons
             background="red"
             shadow="none"
             className="w-full p-1"
             onClick={onConfirm}
           >
-            <Titles size="sm">Yes, delete it</Titles>
+            <Titles size="md">Yes, delete it</Titles>
           </Buttons>
           <Buttons
             background="lightBlue"
@@ -55,7 +55,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             className="w-full p-1"
             onClick={onCancel}
           >
-            <Titles size="sm">Cancel</Titles>
+            <Titles size="md">Cancel</Titles>
           </Buttons>
         </Holds>
       </Holds>

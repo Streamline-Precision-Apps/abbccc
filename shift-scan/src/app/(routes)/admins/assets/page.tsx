@@ -180,18 +180,6 @@ export default function Assets() {
     refreshTags: fetchTagSummaries,
   });
 
-  // Handle creation handlers ready callback
-  const handleCreationHandlersReady = useCallback(
-    (handlers: {
-      handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
-      handleCostCodeToggleAll: (costCodes: any[], selectAll: boolean) => void;
-      formData: { costCodes: Array<{ id: string; name: string }> };
-    }) => {
-      setCreationHandlers(handlers);
-    },
-    []
-  );
-
   return (
     <Holds background={"white"} className="h-full w-full rounded-[10px]">
       <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">

@@ -52,7 +52,6 @@ export interface UseTagsFormReturn {
   ) => void;
   handleSaveChanges: () => Promise<TagOperationResult>;
   handleDiscardChanges: () => void;
-  handleNewTagSubmit: (newTag: NewTagData) => Promise<TagOperationResult>;
   handleRevertField: (fieldName: keyof Tag) => void;
   handleDeleteTag: () => Promise<TagOperationResult>;
   handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
@@ -412,38 +411,6 @@ export function useTagsForm({
     }
   }, [formData, refreshTags, setSelectTag, setFormData, setOriginalData]);
 
-  /**
-   * Creates a new tag
-   */
-  const handleNewTagSubmit = useCallback(
-    async (newTagData: NewTagData): Promise<TagOperationResult> => {
-      try {
-        setIsSaving(true);
-        setError(null);
-
-        // Mock API call - replace with actual implementation
-        // const result = await createTag(newTagData);
-
-        // Simulate a successful creation
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Refresh the list of tags
-        if (refreshTags) {
-          await refreshTags();
-        }
-        setIsSaving(false);
-        return { success: true };
-      } catch (error) {
-        setIsSaving(false);
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-    },
-    [refreshTags]
-  );
-
   return {
     formData,
     changedFields,
@@ -456,7 +423,6 @@ export function useTagsForm({
     handleRevertField,
     handleDiscardChanges,
     handleSaveChanges,
-    handleNewTagSubmit,
     handleDeleteTag,
     handleCostCodeToggle,
     handleCostCodeToggleAll,
