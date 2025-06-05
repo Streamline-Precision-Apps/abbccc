@@ -120,7 +120,7 @@ function CostCodeFormView({
       <Holds
         position={"row"}
         background={"white"}
-        className="w-full h-full gap-4 px-[5%] relative"
+        className="w-full h-full gap-4 px-4 relative"
       >
         {successfullyEdited && (
           <Holds

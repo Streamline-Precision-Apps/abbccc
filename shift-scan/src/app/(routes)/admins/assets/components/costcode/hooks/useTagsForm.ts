@@ -228,21 +228,13 @@ export function useTagsForm({
           : // Add if it doesn't exist
             [...currentCostCodes, { id: costCodeId, name: costCodeName }];
 
-      // Update the form data
+      // Update the form data - this will track the change for saving
       handleInputChange("CostCodes", newCostCodes);
 
-      // Update selectTag state to immediately reflect the UI change without saving
-      if (selectTag) {
-        // Create a new tag object with the updated CostCodes array
-        const updatedTag = {
-          ...selectTag,
-          CostCodes: newCostCodes,
-        };
-        // Update the tag in state to trigger re-render of the sidebar
-        setSelectTag(updatedTag);
-      }
+      // Note: Do NOT update selectTag here as it will trigger useEffect and reset formData
+      // The UI should use formData for display, not selectTag
     },
-    [formData, handleInputChange, selectTag, setSelectTag]
+    [formData, handleInputChange]
   );
 
   /**
@@ -275,19 +267,13 @@ export function useTagsForm({
         newCostCodes = [];
       }
 
-      // Update the form data
+      // Update the form data - this will track the change for saving
       handleInputChange("CostCodes", newCostCodes);
 
-      // Update selectTag state to immediately reflect the UI change without saving
-      if (selectTag) {
-        const updatedTag = {
-          ...selectTag,
-          CostCodes: newCostCodes,
-        };
-        setSelectTag(updatedTag);
-      }
+      // Note: Do NOT update selectTag here as it will trigger useEffect and reset formData
+      // The UI should use formData for display, not selectTag
     },
-    [formData, handleInputChange, selectTag, setSelectTag]
+    [formData, handleInputChange]
   );
 
   /**

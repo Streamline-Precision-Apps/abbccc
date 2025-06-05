@@ -48,6 +48,7 @@ export default function TagsFormView({
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const numberOfCostCodes = formData?.CostCodes?.length || 0;
 
@@ -90,6 +91,11 @@ export default function TagsFormView({
       setSuccessMessage("Changes saved successfully!");
       setTimeout(() => setSuccessMessage(null), 3000);
     }
+    if (result.error) {
+      setError(result.error);
+      setTimeout(() => setError(null), 3000);
+      console.error("Error saving changes:", result.error);
+    }
   }, [onSaveChanges]);
 
   return (
@@ -101,8 +107,19 @@ export default function TagsFormView({
           className="w-full h-full flex justify-between p-4 items-center relative"
         >
           {successMessage && (
-            <Holds className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
+            <Holds
+              background={"green"}
+              className="absolute top-0 left-0 w-full h-full flex justify-center items-center"
+            >
               <Texts size="sm">{successMessage}</Texts>
+            </Holds>
+          )}
+          {error && (
+            <Holds
+              background={"red"}
+              className="w-full h-full justify-center absolute left-0 top-0 z-50"
+            >
+              <Texts size="sm">{error}</Texts>
             </Holds>
           )}
           <Buttons
