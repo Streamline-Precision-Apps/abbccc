@@ -15,6 +15,8 @@ import { CostCodeEmptyStateProps } from "../types";
 function CostCodeEmptyState({
   onRegisterNew,
   onRegisterNewGroup,
+  successMessage,
+  error,
 }: CostCodeEmptyStateProps) {
   // Memoize click handlers to prevent unnecessary re-renders
   const handleRegisterNew = useCallback(() => {
@@ -31,7 +33,7 @@ function CostCodeEmptyState({
         <Holds
           background={"white"}
           position={"row"}
-          className="w-full h-full gap-4 px-2 "
+          className="w-full h-full gap-4 px-2 relative"
         >
           <Buttons
             background={"none"}
@@ -53,6 +55,27 @@ function CostCodeEmptyState({
               Create New Group
             </Texts>
           </Buttons>
+          {/* Success and error messages */}
+          {successMessage && (
+            <Holds
+              background={"green"}
+              className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+            >
+              <Texts size="sm" className="text-white">
+                {successMessage}
+              </Texts>
+            </Holds>
+          )}
+          {error && (
+            <Holds
+              background={"red"}
+              className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+            >
+              <Texts size="sm" className="text-white flex-1 text-center">
+                {error}
+              </Texts>
+            </Holds>
+          )}
         </Holds>
       </Grids>
     </Holds>

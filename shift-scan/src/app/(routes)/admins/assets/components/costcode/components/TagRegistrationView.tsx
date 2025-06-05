@@ -92,18 +92,22 @@ export default function TagsRegistrationView({
           {tagCreation.successMessage && (
             <Holds
               background="green"
-              className="absolute top-0 left-0 w-full h-full rounded-[10px]"
+              className="absolute top-0 left-0 w-full h-full rounded-[10px] flex items-center justify-center z-10"
             >
-              <Texts size="sm">{tagCreation.successMessage}</Texts>
+              <Texts size="sm" className="text-white font-medium">
+                {tagCreation.successMessage}
+              </Texts>
             </Holds>
           )}
 
           {tagCreation.error && (
             <Holds
               background="red"
-              className="absolute top-0 left-0 w-full h-full rounded-[10px]"
+              className="absolute top-0 left-0 w-full h-full rounded-[10px] flex items-center justify-center z-10"
             >
-              <Texts size="sm">{tagCreation.error}</Texts>
+              <Texts size="sm" className="text-white font-medium">
+                {tagCreation.error}
+              </Texts>
             </Holds>
           )}
         </Holds>
