@@ -10,6 +10,7 @@ import { useCostCodeForm } from "../hooks/useCostCodeForm";
 import TagsFormView from "./TagsFormView";
 import TagsRegistrationView from "./TagRegistrationView";
 import { useTagsForm } from "../hooks/useTagsForm";
+import { useTagCreation } from "../hooks/useTagCreation";
 
 interface CostCodeMainContentProps {
   assets: string;
@@ -97,6 +98,20 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
     setHasUnsavedChanges,
     refreshCostCodes,
   });
+  const onCancel = useCallback(() => {
+    setCostCodeUIState("idle");
+    setSelectTag(null);
+  }, [
+    setCostCodeUIState,
+    setSelectCostCode,
+    setSelectTag,
+    setHasUnsavedChanges,
+  ]);
+
+  const tagCreation = useTagCreation({
+    refreshTags,
+    onCancel,
+  });
 
   return (
     <>
@@ -116,6 +131,8 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
               setHasUnsavedChanges(false);
             }}
             setHasUnsavedChanges={setHasUnsavedChanges}
+            error={tagCreation.error}
+            successMessage={tagCreation.successMessage}
           />
         </Holds>
       ) : costCodeUIState === "editing" && costCodeFormHook.formData ? (
@@ -151,7 +168,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <TagsFormView
             formData={tagFormHook.formData}
-            onDeleteCostCode={tagFormHook.handleDeleteTag}
+            onDeleteTag={tagFormHook.handleDeleteTag}
             onSaveChanges={tagFormHook.handleSaveChanges}
             onDiscardChanges={tagFormHook.handleDiscardChanges}
             onRevertField={tagFormHook.handleRevertField}
@@ -168,17 +185,14 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
               setSelectTag(null);
             }}
             tagSummaries={tagSummaries}
+            setCostCodeUIState={setCostCodeUIState}
           />
         </Holds>
       ) : costCodeUIState === "creatingGroups" ? (
         <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
           <TagsRegistrationView
-            refreshTags={refreshTags}
-            onCancel={() => {
-              setCostCodeUIState("idle");
-              setSelectTag(null);
-            }}
             onCreationHookReady={handleCreationHookReady}
+            tagCreation={tagCreation}
           />
         </Holds>
       ) : null}

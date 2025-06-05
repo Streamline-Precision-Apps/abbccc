@@ -933,6 +933,106 @@ export async function deleteTag(id: string) {
   }
 }
 
+export async function createTag({
+  name,
+  description,
+  CostCodes,
+}: {
+  name: string;
+  description: string;
+  CostCodes: {
+    id: string;
+    name: string;
+  }[];
+}) {
+  console.log("Creating new tag...", {
+    name,
+    description,
+    costCodesCount: CostCodes.length,
+  });
+
+  try {
+    // Validate required fields
+    if (!name?.trim()) {
+      throw new Error("Tag name is required");
+    }
+
+    if (!description?.trim()) {
+      throw new Error("Tag description is required");
+    }
+
+    if (!CostCodes || CostCodes.length === 0) {
+      throw new Error("At least one cost code must be selected");
+    }
+
+    // Check if tag with the same name already exists
+    const existingTag = await prisma.cCTag.findUnique({
+      where: {
+        name: name.trim(),
+      },
+    });
+
+    if (existingTag) {
+      throw new Error("A tag with this name already exists");
+    }
+
+    // Validate that all provided cost codes exist
+    const existingCostCodes = await prisma.costCode.findMany({
+      where: {
+        id: {
+          in: CostCodes.map((cc) => cc.id),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    if (existingCostCodes.length !== CostCodes.length) {
+      throw new Error("One or more selected cost codes do not exist");
+    }
+
+    // Create the new tag with associated cost codes
+    const newTag = await prisma.cCTag.create({
+      data: {
+        name: name.trim(),
+        description: description.trim(),
+        CostCodes: {
+          connect: CostCodes.map((cc) => ({ id: cc.id })),
+        },
+      },
+      include: {
+        CostCodes: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    console.log("Tag created successfully:", newTag.id);
+
+    // Revalidate relevant paths and tags
+    revalidateTag("costcodes");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+
+    return {
+      success: true,
+      data: newTag,
+      message: "Tag created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating tag:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 /** Layout for server actions 
 export async function (formData: FormData) {
   try {

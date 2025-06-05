@@ -14,7 +14,6 @@ import { TagOperationResult } from "../hooks/useTagsForm";
 interface TagsFormViewProps {
   formData?: Tag | null;
   costCodes?: CostCode[];
-  onDeleteGroup?: () => Promise<{ success: boolean; error?: string }>;
   onDiscardChanges?: () => void;
   onSaveChanges?: () => Promise<{ success: boolean; error?: string }>;
   onToggleCostCode?: (costCodeId: string, costCodeName: string) => void;
@@ -30,18 +29,24 @@ interface TagsFormViewProps {
   successfullyUpdated: boolean;
   isDeleting: boolean;
   error: string | null;
-  onDeleteCostCode: () => Promise<TagOperationResult>;
+  onDeleteTag: () => Promise<TagOperationResult>;
   tagSummaries: TagSummary[];
+  setCostCodeUIState: React.Dispatch<
+    React.SetStateAction<
+      "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
+    >
+  >;
 }
 
 export default function TagsFormView({
   formData,
-  onDeleteGroup,
+  onDeleteTag,
   onDiscardChanges,
   onSaveChanges,
   onInputChange,
   onRegisterNew,
   onToggleCostCode,
+  setCostCodeUIState,
 }: TagsFormViewProps) {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -60,18 +65,21 @@ export default function TagsFormView({
 
   // Handle confirming deletion
   const handleDeleteConfirm = useCallback(async () => {
-    if (!onDeleteGroup) return;
+    if (!onDeleteTag) return;
 
     setIsDeleting(true);
-    const result = await onDeleteGroup();
+    const result = await onDeleteTag();
     setIsDeleting(false);
 
     if (!result.success) {
-      setDeleteError(result.error || "Failed to delete group");
-    } else {
-      setShowDeleteModal(false);
+      setDeleteError(result.error || "Failed to delete Tag");
+      setTimeout(() => setDeleteError(null), 3000);
+      console.error("Error deleting Tag:", result.error);
+      return;
     }
-  }, [onDeleteGroup]);
+    setShowDeleteModal(false);
+    setCostCodeUIState("idle");
+  }, [onDeleteTag]);
 
   // Handle cancelling deletion
   const handleDeleteCancel = useCallback(() => {
@@ -89,7 +97,10 @@ export default function TagsFormView({
 
     if (result.success) {
       setSuccessMessage("Changes saved successfully!");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => {
+        setSuccessMessage(null);
+        setCostCodeUIState("idle");
+      }, 3000);
     }
     if (result.error) {
       setError(result.error);
@@ -177,7 +188,7 @@ export default function TagsFormView({
               name="name"
               value={formData?.name || ""}
               onChange={(e) => onInputChange("name", e.target.value)}
-              className="w-full text-sm"
+              className="w-1/2 text-sm"
             />
           </Holds>
 
@@ -224,9 +235,12 @@ export default function TagsFormView({
                   </Holds>
                 ))
               ) : (
-                <Holds className="w-full h-full flex justify-center items-center">
-                  <Texts size="p6" className="text-gray-500">
-                    No cost codes available
+                <Holds className="text-center justify-center items-center w-full h-full">
+                  <Texts size="md" className="text-gray-500">
+                    No cost codes selected
+                  </Texts>
+                  <Texts size="sm" className="text-gray-400 mt-2">
+                    Use the sidebar to select cost codes for this group
                   </Texts>
                 </Holds>
               )}
@@ -240,7 +254,7 @@ export default function TagsFormView({
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
         itemName={formData?.name || "this group"}
-        itemType="group"
+        itemType=""
       />
     </Holds>
   );

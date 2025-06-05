@@ -114,6 +114,8 @@ export interface RegistrationResult {
  * Props for the CostCodeRegistrationView component
  */
 export interface CostCodeRegistrationViewProps {
+  error: string | null;
+  successMessage: string | null;
   onSubmit: (formData: {
     cCNumber: string;
     cCName: string;
