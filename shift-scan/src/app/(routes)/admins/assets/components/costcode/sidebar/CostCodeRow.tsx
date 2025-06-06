@@ -23,7 +23,8 @@ function CostCodeRow({
   onToggleCostCode,
 }: CostCodeRowProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-
+  const showCheckBox =
+    costCodeUIState === "creatingGroups" || costCodeUIState === "editingGroups";
   // Format the cost code name for display using utility function
   const formattedName = useMemo(() => {
     const formatted = formatCostCodeName(costCode.name);
@@ -33,6 +34,11 @@ function CostCodeRow({
 
   // Memoized handlers to avoid unnecessary re-renders
   const handleCostCodeClick = useCallback(() => {
+    if (showCheckBox) {
+      // If checkboxes are shown, toggle the cost code selection
+      onToggleCostCode?.(costCode.id, costCode.name);
+      return;
+    }
     if (hasUnsavedChanges) {
       // If there are unsaved changes, show confirmation modal
       setShowConfirmModal(true);
@@ -51,8 +57,6 @@ function CostCodeRow({
     setShowConfirmModal(false);
   }, []);
 
-  const showCheckBox =
-    costCodeUIState === "creatingGroups" || costCodeUIState === "editingGroups";
   return (
     <>
       <Holds
