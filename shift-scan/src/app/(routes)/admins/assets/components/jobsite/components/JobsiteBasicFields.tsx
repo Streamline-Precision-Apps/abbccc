@@ -1,16 +1,13 @@
 "use client";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Selects } from "@/components/(reusable)/selects";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import React, { useEffect, useState } from "react";
 import { Jobsite } from "../../../types";
 import { COUNTRIES } from "../../../constants/countries";
 import { Titles } from "@/components/(reusable)/titles";
-import { Tooltips } from "@/components/(reusable)/tooltip";
 import QRCode from "qrcode";
+import { Tooltips } from "@/components/(reusable)/tooltip";
 
 interface JobsiteBasicFieldsProps {
   formData: Jobsite;
@@ -136,7 +133,7 @@ export default function JobsiteBasicFields({
   };
 
   return (
-    <Grids className="w-full h-full grid-rows-[40px_1fr] px-4 pt-2">
+    <Grids className="w-full h-full grid-rows-[50px_1fr] gap-2">
       <Holds position={"row"} className="w-full h-full justify-between">
         <Holds className="w-full">
           <Titles position={"left"} size={"xl"} className="font-bold">
@@ -146,14 +143,14 @@ export default function JobsiteBasicFields({
         <Holds className="w-full h-full">
           <Holds
             position={"right"}
-            className={`w-[40px] h-[40px] border-[3px] border-black rounded-[10px] cursor-pointer hover:opacity-80 hover:border-blue-900 transition-opacity`}
+            className={`w-[50px] h-[50px] border-[3px] border-black rounded-[10px] cursor-pointer hover:opacity-80 hover:border-blue-900 transition-opacity z-20`}
             onClick={printQRCode}
           >
             <Tooltips content="Click to print QR code" delay={0}>
               <img
                 src={qrCodeUrl}
                 alt="QR Code"
-                className="w-full h-full object-cover rounded-[10px]"
+                className="w-full h-full object-cover rounded-[6px]"
               />
             </Tooltips>
           </Holds>
