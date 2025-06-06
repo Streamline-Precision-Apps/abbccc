@@ -302,7 +302,6 @@ export default function Assets() {
               loading={loadingStates.jobsiteDetails}
               jobsiteUIState={jobsiteUIState}
               setJobsiteUIState={setJobsiteUIState}
-              hasUnsavedChanges={hasUnsavedChanges}
               setHasUnsavedChanges={setHasUnsavedChanges}
             />
           ) : assets === "CostCode" ? (

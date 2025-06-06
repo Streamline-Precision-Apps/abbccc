@@ -8,8 +8,9 @@ export { default as CostCodeBasicFields } from "./components/CostCodeBasicFields
 export { default as CostCodeFormView } from "./components/CostCodeFormView";
 export { default as CostCodeEmptyState } from "./components/CostCodeEmptyState";
 export { default as CostCodeRegistrationView } from "./components/CostCodeRegistrationView";
-export { default as DeleteCostCodeModal } from "./components/DeleteCostCodeModal";
+// Removed DeleteCostCodeModal in favor of shared DeleteConfirmationModal
 export { default as CostCodeMainContent } from "./components/CostCodeMainContent";
+export { default as CostCodeHeaderActions } from "./components/CostCodeHeaderActions";
 export { default as CostCodeSideBar } from "./sidebar/CostCodeSideBar";
 export { default as CostCodeRow } from "./sidebar/CostCodeRow";
 

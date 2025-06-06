@@ -5,7 +5,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import CostCodeBasicFields from "./CostCodeBasicFields";
-import DeleteCostCodeModal from "./DeleteCostCodeModal";
+import DeleteConfirmationModal from "../../shared/DeleteConfirmationModal";
 import { Titles } from "@/components/(reusable)/titles";
 import { CostCodeFormViewProps } from "../types";
 import { formatCostCodeName } from "../utils/formatters";
@@ -264,12 +264,12 @@ function CostCodeFormView({
         </Grids>
       </Holds>
 
-      <DeleteCostCodeModal
+      <DeleteConfirmationModal
         isOpen={showDeleteModal}
-        onClose={handleDeleteCancel}
-        onDelete={handleDeleteConfirm}
-        costCodeName={formData.name}
-        isDeleting={isDeleting}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        itemName={formData.name}
+        itemType="cost code"
       />
     </Grids>
   );
