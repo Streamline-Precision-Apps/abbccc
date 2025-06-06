@@ -1,49 +1,74 @@
+"use client";
 import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Texts } from "@/components/(reusable)/texts";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Jobsite } from "../../types";
 import {
+  JobsiteHeaderActions,
   JobsiteFormView,
   JobsiteRegistrationView,
   JobsiteEmptyState,
   useJobsiteForm,
 } from "./index";
-import { Jobsite } from "../../types";
 import Spinner from "@/components/(animations)/spinner";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { Texts } from "@/components/(reusable)/texts";
-import { Buttons } from "@/components/(reusable)/buttons";
+import DiscardChangesModal from "../shared/DiscardChangesModal";
 import DeleteConfirmationModal from "../shared/DeleteConfirmationModal";
 
 interface JobsiteMainContentProps {
+  /** Assets data */
   assets: string;
+  /** Currently selected jobsite */
   selectJobsite: Jobsite | null;
-
+  /** Handler to set selected jobsite */
   setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
-  onUnsavedChangesChange: (hasChanges: boolean) => void;
-  onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
-  refreshJobsites: () => Promise<void>;
+  /** Callback when unsaved changes state changes */
+  onUnsavedChangesChange?: (hasChanges: boolean) => void;
+  /** Function to refresh jobsite list */
+  refreshJobsites?: () => Promise<void>;
+  /** Loading state */
   loading?: boolean;
-  jobsiteUIState: "idle" | "creating" | "editing";
+  /** Callback when registration form changes state changes */
+  onRegistrationFormChangesChange?: (hasChanges: boolean) => void;
+  /** UI state setter */
   setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
+  /** Current UI state */
+  jobsiteUIState: "idle" | "creating" | "editing";
+  /** Setter for unsaved changes state */
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
-  hasUnsavedChanges: boolean;
 }
 
-const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
+/**
+ * Main content component for jobsite management.
+ * Handles jobsite viewing, editing, and registration using decomposed components.
+ *
+ * This component follows the pattern of EquipmentMainContent for consistency.
+ *
+ * @param props - The component props
+ * @returns JSX element containing the appropriate view based on current state
+ */
+export default function JobsiteMainContent({
   assets,
   selectJobsite,
   setSelectJobsite,
   onUnsavedChangesChange,
-  onRegistrationFormChangesChange,
   refreshJobsites,
   loading = false,
-  jobsiteUIState,
+  onRegistrationFormChangesChange,
   setJobsiteUIState,
-  hasUnsavedChanges,
+  jobsiteUIState,
   setHasUnsavedChanges,
-}) => {
+}: JobsiteMainContentProps) {
+  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
+    useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const {
     formData,
     changedFields,
+    hasUnsavedChanges,
     isSaving,
     successfullyUpdated,
     showDeleteConfirmModal,
@@ -59,35 +84,55 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
     selectJobsite,
     setSelectJobsite,
     onUnsavedChangesChange,
-    setJobsiteUIState,
     refreshJobsites,
+    setJobsiteUIState,
   });
 
-  const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
+  // Handle registration form unsaved changes
+  const handleRegistrationFormChanges = useCallback(
+    (hasChanges: boolean) => {
+      setHasRegistrationFormChanges(hasChanges);
+      if (onRegistrationFormChangesChange) {
+        onRegistrationFormChangesChange(hasChanges);
+      }
+      // Notify parent component about unsaved changes
+      if (onUnsavedChangesChange) {
+        onUnsavedChangesChange(hasChanges);
+      }
+    },
+    [
+      onRegistrationFormChangesChange,
+      onUnsavedChangesChange,
+      setHasRegistrationFormChanges,
+    ]
+  );
 
-  const handleRegistrationFormChanges = (hasChanges: boolean) => {
-    setHasUnsavedChanges(hasChanges);
-    onRegistrationFormChangesChange?.(hasChanges);
-  };
-
-  const handleCancelRegistration = () => {
-    if (hasUnsavedChanges) {
-      setShowUnsavedChangesModal(true); // Show the modal instead of directly calling the parent callback
-    } else {
-      setJobsiteUIState("idle"); // Reset the UI state to idle if no unsaved changes
-    }
-  };
-
-  const cancelNavigation = () => {
-    setShowUnsavedChangesModal(false);
-  };
-
-  const confirmNavigation = useCallback(() => {
-    setShowUnsavedChangesModal(false);
-    setJobsiteUIState("idle");
-    setHasUnsavedChanges(false);
+  // Handle opening registration form
+  const handleOpenRegistration = () => {
+    setJobsiteUIState("creating");
     setSelectJobsite(null);
-  }, [setJobsiteUIState, setHasUnsavedChanges, setSelectJobsite]);
+  };
+
+  // Handle cancel registration with unsaved changes check
+  const handleCancelRegistration = useCallback(() => {
+    // Show confirmation modal if there are unsaved changes
+    if (hasRegistrationFormChanges) {
+      setShowConfirmModal(true);
+    } else {
+      setJobsiteUIState("idle");
+    }
+  }, [hasRegistrationFormChanges, setJobsiteUIState]);
+
+  // Modal confirmation handlers
+  const handleConfirmDiscard = () => {
+    setShowConfirmModal(false);
+    setJobsiteUIState("idle");
+    setHasRegistrationFormChanges(false);
+  };
+
+  const handleCancelDiscard = () => {
+    setShowConfirmModal(false);
+  };
 
   // Show loading indicator when data is being fetched
   if (loading) {
@@ -104,77 +149,50 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
   return (
     <>
       {jobsiteUIState === "creating" ? (
-        <Holds className="w-full h-full col-start-3 col-end-7">
-          <JobsiteRegistrationView
-            onSubmit={handleNewJobsiteSubmit}
-            onCancel={() => {
-              handleCancelRegistration();
-              setSelectJobsite(null);
-            }}
-            onUnsavedChangesChange={handleRegistrationFormChanges}
-          />
-        </Holds>
-      ) : jobsiteUIState === "editing" && formData ? (
-        <Holds className="w-full h-full col-start-3 col-end-7">
-          <JobsiteFormView
-            formData={formData}
-            changedFields={changedFields}
-            onInputChange={handleInputChange}
-            onRevertField={handleRevertField}
-            onRegisterNew={() => {
-              setJobsiteUIState("creating");
-              setSelectJobsite(null);
-            }}
-            onDiscardChanges={handleDiscardChanges}
-            onSaveChanges={handleSaveChanges}
-            hasUnsavedChanges={hasUnsavedChanges}
-            isSaving={isSaving}
-            successfullyUpdated={successfullyUpdated}
-            setJobsiteUIState={setJobsiteUIState}
-            onDeleteJobsite={handleDeleteJobsite}
-          />
+        <JobsiteRegistrationView
+          onSubmit={handleNewJobsiteSubmit}
+          onCancel={handleCancelRegistration}
+          onUnsavedChangesChange={handleRegistrationFormChanges}
+        />
+      ) : jobsiteUIState === "editing" && selectJobsite && formData ? (
+        <Holds className="w-full h-full col-span-4">
+          <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
+            <JobsiteHeaderActions
+              hasUnsavedChanges={hasUnsavedChanges}
+              isSaving={isSaving}
+              successfullyUpdated={successfullyUpdated}
+              onRegisterNew={handleOpenRegistration}
+              onDiscardChanges={handleDiscardChanges}
+              onSaveChanges={handleSaveChanges}
+              onDeleteJobsite={handleDeleteJobsite}
+            />
+
+            <JobsiteFormView
+              formData={formData}
+              changedFields={changedFields}
+              onInputChange={handleInputChange}
+              onRevertField={handleRevertField}
+              onRegisterNew={handleOpenRegistration}
+              onDiscardChanges={handleDiscardChanges}
+              onSaveChanges={handleSaveChanges}
+              hasUnsavedChanges={hasUnsavedChanges}
+              isSaving={isSaving}
+              successfullyUpdated={successfullyUpdated}
+              setJobsiteUIState={setJobsiteUIState}
+              onDeleteJobsite={handleDeleteJobsite}
+            />
+          </Grids>
         </Holds>
       ) : jobsiteUIState === "idle" ? (
-        <Holds className="w-full h-full col-start-3 col-end-11">
-          <JobsiteEmptyState
-            onRegisterNew={() => {
-              setJobsiteUIState("creating");
-              setSelectJobsite(null);
-            }}
-          />
-        </Holds>
+        <JobsiteEmptyState onRegisterNew={handleOpenRegistration} />
       ) : null}
 
-      <NModals
-        isOpen={showUnsavedChangesModal}
-        handleClose={cancelNavigation}
-        size="sm"
-        background={"noOpacity"}
-      >
-        <Holds className="w-full h-full items-center justify-center text-center pt-3">
-          <Texts size="p5">
-            You have unsaved changes. Are you sure you want to discard them?
-          </Texts>
-          <Holds className="flex justify-center items-center gap-4 mt-4">
-            <Buttons
-              background="red"
-              shadow="none"
-              className="w-full p-2"
-              onClick={confirmNavigation}
-            >
-              <Texts size="sm">Yes, discard changes</Texts>
-            </Buttons>
-            <Buttons
-              background="lightBlue"
-              shadow="none"
-              className="w-full p-2"
-              onClick={cancelNavigation}
-            >
-              <Texts size="sm">No, go back</Texts>
-            </Buttons>
-          </Holds>
-        </Holds>
-      </NModals>
+      <DiscardChangesModal
+        isOpen={showConfirmModal}
+        confirmDiscardChanges={handleConfirmDiscard}
+        cancelDiscard={handleCancelDiscard}
+        message="You have unsaved changes. Are you sure you want to discard them?"
+      />
 
       <DeleteConfirmationModal
         isOpen={showDeleteConfirmModal}
@@ -185,6 +203,6 @@ const JobsiteMainContent: React.FC<JobsiteMainContentProps> = ({
       />
     </>
   );
-};
+}
 
-export default JobsiteMainContent;
+// Export removed - now using default export in the function declaration

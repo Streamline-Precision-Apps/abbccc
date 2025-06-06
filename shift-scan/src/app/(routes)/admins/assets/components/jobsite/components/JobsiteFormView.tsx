@@ -5,6 +5,7 @@ import React from "react";
 import JobsiteBasicFields from "./JobsiteBasicFields";
 import JobsiteHeaderActions from "./JobsiteHeaderActions";
 import { Jobsite } from "../../../types";
+import Spinner from "@/components/(animations)/spinner";
 
 interface JobsiteFormViewProps {
   formData: Jobsite;
@@ -32,43 +33,27 @@ export default function JobsiteFormView({
   changedFields,
   onInputChange,
   onRevertField,
-  onRegisterNew,
-  onDiscardChanges,
-  onSaveChanges,
-  onDeleteJobsite,
-  hasUnsavedChanges,
   isSaving,
-  successfullyUpdated,
 }: JobsiteFormViewProps) {
   return (
-    <Holds className="w-full h-full col-start-3 col-end-11">
-      <Grids gap="4" className="w-full h-full grid-rows-[40px_1fr]">
-        {/* Header Actions */}
-        <Holds className="row-span-1 h-full ">
-          <JobsiteHeaderActions
-            onRegisterNew={onRegisterNew}
-            onDiscardChanges={onDiscardChanges}
-            onSaveChanges={onSaveChanges}
-            onDeleteJobsite={onDeleteJobsite}
-            hasUnsavedChanges={hasUnsavedChanges}
-            isSaving={isSaving}
-            successfullyUpdated={successfullyUpdated}
-          />
+    <Holds
+      background={"white"}
+      className="w-full h-full rounded-[10px] p-3 px-5 relative"
+    >
+      {/* Loading overlay - only show when saving */}
+      {isSaving && (
+        <Holds className="w-full h-full justify-center items-center absolute left-0 top-0 z-50 bg-white bg-opacity-80 rounded-[10px]">
+          <Spinner size={80} />
         </Holds>
+      )}
 
-        {/* Basic Information Section */}
-        <Holds
-          background={"white"}
-          className="h-full row-span-1 overflow-auto no-scrollbar"
-        >
-          <JobsiteBasicFields
-            formData={formData}
-            changedFields={changedFields}
-            onInputChange={onInputChange}
-            onRevertField={onRevertField}
-          />
-        </Holds>
-      </Grids>
+      {/* Basic Information Section */}
+      <JobsiteBasicFields
+        formData={formData}
+        changedFields={changedFields}
+        onInputChange={onInputChange}
+        onRevertField={onRevertField}
+      />
     </Holds>
   );
 }
