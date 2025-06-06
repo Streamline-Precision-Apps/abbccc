@@ -100,8 +100,23 @@ export default function CostCodeSideBar({
 
     // Sort the filtered cost codes
     return filtered.sort((a, b) => {
-      // First priority: active status
-      // No longer prioritize selected items at the top
+      // Only prioritize selected items if in group mode
+      if (isGroupMode) {
+        // Check if cost codes are in the selected group
+        const aIsSelected =
+          tagFormData?.CostCodes?.some((cc) => cc.id === a.id) || false;
+        const bIsSelected =
+          tagFormData?.CostCodes?.some((cc) => cc.id === b.id) || false;
+
+        // Prioritize selected items at the top in group mode
+        if (aIsSelected && !bIsSelected) {
+          return -1; // a (selected) comes before b (unselected)
+        } else if (!aIsSelected && bIsSelected) {
+          return 1; // b (selected) comes before a (unselected)
+        }
+      }
+
+      // Next priority: active status
       if (!a.isActive && b.isActive) {
         return 1; // Active items come before inactive
       } else if (a.isActive && !b.isActive) {
