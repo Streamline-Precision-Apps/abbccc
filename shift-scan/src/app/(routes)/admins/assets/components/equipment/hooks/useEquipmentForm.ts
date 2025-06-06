@@ -17,7 +17,7 @@ interface UseEquipmentFormProps {
   selectEquipment: Equipment | null;
   setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+
   refreshEquipments?: () => Promise<void>;
 }
 
@@ -65,7 +65,6 @@ export const useEquipmentForm = ({
   selectEquipment,
   setSelectEquipment,
   onUnsavedChangesChange,
-  setIsRegistrationFormOpen,
   refreshEquipments,
 }: UseEquipmentFormProps): UseEquipmentFormReturn => {
   const [formData, setFormData] = useState<Equipment | null>(null);
@@ -327,7 +326,6 @@ export const useEquipmentForm = ({
               (result.data as Equipment).equipmentVehicleInfo || undefined,
           };
           setSelectEquipment(equipmentToSelect);
-          setIsRegistrationFormOpen(false);
 
           // Refresh equipment list after registration
           if (refreshEquipments) {
@@ -347,7 +345,7 @@ export const useEquipmentForm = ({
         setIsSaving(false);
       }
     },
-    [session, setSelectEquipment, setIsRegistrationFormOpen, refreshEquipments]
+    [session, setSelectEquipment, refreshEquipments]
   );
 
   /**

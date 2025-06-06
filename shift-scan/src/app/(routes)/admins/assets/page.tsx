@@ -34,9 +34,6 @@ export default function Assets() {
   const [equipmentUIState, setEquipmentUIState] = useState<
     "idle" | "creating" | "editing"
   >("idle");
-  const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
-  const [isRegistrationGroupFormOpen, setIsRegistrationGroupFormOpen] =
-    useState(false);
 
   // Use the assets hook for data fetching and state management
   const {
@@ -227,8 +224,6 @@ export default function Assets() {
                   equipments={equipmentSummaries}
                   selectEquipment={selectEquipment}
                   setSelectEquipment={handleEquipmentSelection}
-                  isRegistrationFormOpen={isRegistrationFormOpen}
-                  setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
                   setHasUnsavedChanges={setHasUnsavedChanges}
                   setEquipmentUIState={setEquipmentUIState}
@@ -242,8 +237,6 @@ export default function Assets() {
                   jobsites={jobsiteSummaries}
                   setSelectJobsite={handleJobsiteSelection}
                   selectJobsite={selectJobsite}
-                  isRegistrationFormOpen={isRegistrationFormOpen}
-                  setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
                   jobsiteUIState={jobsiteUIState}
                   setJobsiteUIState={setJobsiteUIState}
@@ -258,8 +251,6 @@ export default function Assets() {
                   tagSummaries={tagSummaries}
                   selectTag={selectTag}
                   selectCostCode={selectCostCode}
-                  isRegistrationFormOpen={isRegistrationFormOpen}
-                  setIsRegistrationFormOpen={setIsRegistrationFormOpen}
                   hasUnsavedChanges={hasUnsavedChanges}
                   costCodeUIState={costCodeUIState}
                   setCostCodeUIState={setCostCodeUIState}
@@ -293,8 +284,6 @@ export default function Assets() {
             <EquipmentMainContent
               assets={assets}
               selectEquipment={selectEquipment}
-              isRegistrationFormOpen={isRegistrationFormOpen}
-              setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectEquipment={setSelectEquipment}
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshEquipments={fetchEquipmentSummaries}
@@ -307,8 +296,6 @@ export default function Assets() {
             <JobsiteMainContent
               assets={assets}
               selectJobsite={selectJobsite}
-              isRegistrationFormOpen={isRegistrationFormOpen}
-              setIsRegistrationFormOpen={setIsRegistrationFormOpen}
               setSelectJobsite={setSelectJobsite}
               onUnsavedChangesChange={setHasUnsavedChanges}
               refreshJobsites={fetchJobsiteSummaries}

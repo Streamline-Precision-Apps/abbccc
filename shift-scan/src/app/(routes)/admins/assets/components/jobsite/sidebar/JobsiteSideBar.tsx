@@ -22,8 +22,6 @@ interface JobsiteSideBarProps {
   jobsites: JobsiteSummary[];
   setSelectJobsite: (jobsite: JobsiteSummary | null) => void;
   selectJobsite: Jobsite | null;
-  isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
   jobsiteUIState: "idle" | "creating" | "editing";
   setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;

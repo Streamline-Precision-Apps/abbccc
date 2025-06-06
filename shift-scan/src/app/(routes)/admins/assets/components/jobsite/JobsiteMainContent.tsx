@@ -16,8 +16,7 @@ import DeleteConfirmationModal from "../shared/DeleteConfirmationModal";
 interface JobsiteMainContentProps {
   assets: string;
   selectJobsite: Jobsite | null;
-  isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+
   setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange: (hasChanges: boolean) => void;
   onRegistrationFormChangesChange?: (hasChanges: boolean) => void;

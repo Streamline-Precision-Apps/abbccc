@@ -33,8 +33,6 @@ export default function EquipmentSideBar({
   equipments: EquipmentSummary[];
   setSelectEquipment: (equipment: EquipmentSummary | null) => void;
   selectEquipment: Equipment | null;
-  isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
   setEquipmentUIState: Dispatch<
     SetStateAction<"idle" | "creating" | "editing">
