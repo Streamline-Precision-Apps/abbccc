@@ -20,9 +20,6 @@ interface EquipmentMainContentProps {
   /** Currently selected equipment */
   selectEquipment: Equipment | null;
   /** Whether the registration form is open */
-  isRegistrationFormOpen: boolean;
-  /** Handler to set registration form state */
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   /** Handler to set selected equipment */
   setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
   /** Callback when unsaved changes state changes */
@@ -53,8 +50,6 @@ interface EquipmentMainContentProps {
 export default function EquipmentMainContent({
   assets,
   selectEquipment,
-  isRegistrationFormOpen,
-  setIsRegistrationFormOpen,
   setSelectEquipment,
   onUnsavedChangesChange,
   refreshEquipments,
@@ -66,8 +61,6 @@ export default function EquipmentMainContent({
   const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
     useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showConfirmFormEditingModal, setShowConfirmFormEditingModal] =
-    useState(false);
   const {
     formData,
     changedFields,
@@ -86,7 +79,6 @@ export default function EquipmentMainContent({
   } = useEquipmentForm({
     selectEquipment,
     setSelectEquipment,
-    setIsRegistrationFormOpen,
     onUnsavedChangesChange,
     refreshEquipments,
   });

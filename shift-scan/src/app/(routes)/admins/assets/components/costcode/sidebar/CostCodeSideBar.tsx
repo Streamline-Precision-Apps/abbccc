@@ -37,8 +37,6 @@ export default function CostCodeSideBar({
   costCodes: CostCodeSummary[];
   setSelectCostCode: (costCode: CostCodeSummary | null) => void;
   selectCostCode: CostCode | null;
-  isRegistrationFormOpen: boolean;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
   hasUnsavedChanges?: boolean;
   tagSummaries: TagSummary[];
   selectTag: Tag | null;
