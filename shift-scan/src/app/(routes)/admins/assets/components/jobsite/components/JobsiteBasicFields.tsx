@@ -3,17 +3,28 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import React, { useEffect, useState } from "react";
-import { Jobsite } from "../../../types";
+import { Jobsite, TagSummary } from "../../../types";
 import { COUNTRIES } from "../../../constants/countries";
 import { Titles } from "@/components/(reusable)/titles";
 import QRCode from "qrcode";
 import { Tooltips } from "@/components/(reusable)/tooltip";
+import JobsiteCostCodeGroups from "./JobsiteCostCodeGroups";
 
 interface JobsiteBasicFieldsProps {
   formData: Jobsite;
   changedFields: Set<string>;
-  onInputChange: (fieldName: string, value: string | boolean) => void;
+  onInputChange: (
+    fieldName: string,
+    value:
+      | string
+      | boolean
+      | Array<{
+          id: string;
+          name: string;
+        }>
+  ) => void;
   onRevertField: (fieldName: string) => void;
+  tagSummaries: TagSummary[];
 }
 
 /**
@@ -25,6 +36,7 @@ export default function JobsiteBasicFields({
   changedFields,
   onInputChange,
   onRevertField,
+  tagSummaries,
 }: JobsiteBasicFieldsProps) {
   const isFieldChanged = (fieldName: string) => changedFields.has(fieldName);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
@@ -313,7 +325,14 @@ export default function JobsiteBasicFields({
           <label htmlFor="costCodeGroups" className="text-xs font-medium">
             Cost Code Groups
           </label>
-          <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]"></Holds>
+          <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]">
+            <JobsiteCostCodeGroups
+              formData={formData}
+              tagSummaries={tagSummaries}
+              onInputChange={onInputChange}
+              changedFields={changedFields}
+            />
+          </Holds>
         </Holds>
       </Grids>
     </Grids>

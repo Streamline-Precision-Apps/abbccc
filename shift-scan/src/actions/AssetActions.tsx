@@ -312,6 +312,8 @@ export async function updateJobsite(formData: FormData) {
     const comment = formData.get("comment") as string;
     const isActive = formData.get("isActive") === "true";
     const client = formData.get("client") as string;
+    // CCTags are passed as a JSON string, not as multiple form fields
+    const cCTagsString = formData.get("cCTags") as string;
 
     // Validate required fields
     if (!id) {
@@ -355,6 +357,32 @@ export async function updateJobsite(formData: FormData) {
         );
       }
 
+      // Get current CCTags for this jobsite
+      const jobsiteWithTags = await prisma.jobsite.findUnique({
+        where: { id },
+        include: { CCTags: true },
+      });
+
+      if (!jobsiteWithTags) {
+        throw new Error("Jobsite not found");
+      }
+
+      // Get current tag IDs
+      const currentTagIds = jobsiteWithTags.CCTags.map((tag) => tag.id);
+
+      // Parse cCTags from JSON string
+      const parsedCCTags = JSON.parse(cCTagsString || "[]");
+      const newTagIds = parsedCCTags.map((tag: { id: string }) => tag.id);
+
+      // Determine which tags to connect (add) and disconnect (remove)
+      const tagsToConnect = newTagIds
+        .filter((tagId: string) => !currentTagIds.includes(tagId))
+        .map((tagId: string) => ({ id: tagId }));
+
+      const tagsToDisconnect = currentTagIds
+        .filter((tagId: string) => !newTagIds.includes(tagId))
+        .map((tagId: string) => ({ id: tagId }));
+
       // Update jobsite
       return await prisma.jobsite.update({
         where: { id },
@@ -370,6 +398,11 @@ export async function updateJobsite(formData: FormData) {
           isActive: isActive,
           Client: { connect: { id: client } },
           updatedAt: new Date(),
+          CCTags: {
+            connect: tagsToConnect.length > 0 ? tagsToConnect : undefined,
+            disconnect:
+              tagsToDisconnect.length > 0 ? tagsToDisconnect : undefined,
+          },
         },
         include: {
           CCTags: true,
@@ -411,8 +444,10 @@ export async function createJobsiteFromObject(jobsiteData: {
   comment?: string;
   isActive?: boolean;
   client?: string;
+  CCTags?: Array<{ id: string; name: string }>;
 }) {
   console.log("Creating jobsite from object...");
+  console.log(jobsiteData);
 
   try {
     // Validate required fields
@@ -458,6 +493,12 @@ export async function createJobsiteFromObject(jobsiteData: {
           comment: jobsiteData.comment?.trim() || null,
           isActive: jobsiteData.isActive ?? true,
           Client: { connect: { id: jobsiteData.client } },
+          CCTags:
+            jobsiteData.CCTags && jobsiteData.CCTags.length > 0
+              ? {
+                  connect: jobsiteData.CCTags.map((tag) => ({ id: tag.id })),
+                }
+              : undefined,
         },
         include: {
           CCTags: true,

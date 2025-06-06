@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Jobsite } from "../../types";
+import { Jobsite, TagSummary } from "../../types";
 import {
   JobsiteHeaderActions,
   JobsiteFormView,
@@ -16,6 +16,7 @@ import {
 import Spinner from "@/components/(animations)/spinner";
 import DiscardChangesModal from "../shared/DiscardChangesModal";
 import DeleteConfirmationModal from "../shared/DeleteConfirmationModal";
+import { UseTagsFormReturn } from "../costcode/hooks/useTagsForm";
 
 interface JobsiteMainContentProps {
   /** Assets data */
@@ -38,6 +39,10 @@ interface JobsiteMainContentProps {
   jobsiteUIState: "idle" | "creating" | "editing";
   /** Setter for unsaved changes state */
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  /** Function to set the tag form */
+  tagFormHook: UseTagsFormReturn;
+  /** Cost code group summary data */
+  tagSummaries?: TagSummary[];
 }
 
 /**
@@ -60,6 +65,8 @@ export default function JobsiteMainContent({
   setJobsiteUIState,
   jobsiteUIState,
   setHasUnsavedChanges,
+  tagFormHook,
+  tagSummaries = [],
 }: JobsiteMainContentProps) {
   const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
     useState(false);
@@ -153,6 +160,7 @@ export default function JobsiteMainContent({
           onSubmit={handleNewJobsiteSubmit}
           onCancel={handleCancelRegistration}
           onUnsavedChangesChange={handleRegistrationFormChanges}
+          tagSummaries={tagSummaries}
         />
       ) : jobsiteUIState === "editing" && selectJobsite && formData ? (
         <Holds className="w-full h-full col-span-4">
@@ -180,6 +188,7 @@ export default function JobsiteMainContent({
               successfullyUpdated={successfullyUpdated}
               setJobsiteUIState={setJobsiteUIState}
               onDeleteJobsite={handleDeleteJobsite}
+              tagSummaries={tagSummaries}
             />
           </Grids>
         </Holds>

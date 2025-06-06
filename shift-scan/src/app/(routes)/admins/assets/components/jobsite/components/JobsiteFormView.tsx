@@ -4,13 +4,16 @@ import { Holds } from "@/components/(reusable)/holds";
 import React from "react";
 import JobsiteBasicFields from "./JobsiteBasicFields";
 import JobsiteHeaderActions from "./JobsiteHeaderActions";
-import { Jobsite } from "../../../types";
+import { Jobsite, TagSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
 
 interface JobsiteFormViewProps {
   formData: Jobsite;
   changedFields: Set<string>;
-  onInputChange: (fieldName: string, value: string | boolean) => void;
+  onInputChange: (
+    fieldName: string,
+    value: string | boolean | Array<{ id: string; name: string }>
+  ) => void;
   onRevertField: (fieldName: string) => void;
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
@@ -22,6 +25,7 @@ interface JobsiteFormViewProps {
   setJobsiteUIState: React.Dispatch<
     React.SetStateAction<"idle" | "creating" | "editing">
   >;
+  tagSummaries?: TagSummary[];
 }
 
 /**
@@ -34,6 +38,7 @@ export default function JobsiteFormView({
   onInputChange,
   onRevertField,
   isSaving,
+  tagSummaries = [],
 }: JobsiteFormViewProps) {
   return (
     <Holds
@@ -49,6 +54,7 @@ export default function JobsiteFormView({
 
       {/* Basic Information Section */}
       <JobsiteBasicFields
+        tagSummaries={tagSummaries}
         formData={formData}
         changedFields={changedFields}
         onInputChange={onInputChange}

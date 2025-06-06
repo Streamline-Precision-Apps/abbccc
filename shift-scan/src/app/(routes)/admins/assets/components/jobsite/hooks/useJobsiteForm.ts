@@ -33,7 +33,12 @@ export interface UseJobsiteFormReturn {
   setShowDeleteConfirmModal: (show: boolean) => void;
   handleInputChange: (
     fieldName: string,
-    value: string | number | boolean | Date
+    value:
+      | string
+      | number
+      | boolean
+      | Date
+      | Array<{ id: string; name: string }>
   ) => void;
   handleSaveChanges: () => Promise<void>;
   handleDiscardChanges: () => void;
@@ -91,7 +96,15 @@ export const useJobsiteForm = ({
    * Generic handler for input changes
    */
   const handleInputChange = useCallback(
-    (fieldName: string, value: string | number | boolean | Date) => {
+    (
+      fieldName: string,
+      value:
+        | string
+        | number
+        | boolean
+        | Date
+        | Array<{ id: string; name: string }>
+    ) => {
       if (!formData || !selectJobsite) return;
 
       setFormData((prev: Jobsite | null) => {
@@ -136,6 +149,7 @@ export const useJobsiteForm = ({
       formDataToSend.append("comment", formData.comment || "");
       formDataToSend.append("isActive", formData.isActive.toString());
       formDataToSend.append("client", formData.clientId || "");
+      formDataToSend.append("cCTags", JSON.stringify(formData.CCTags || []));
 
       // Call the actual update jobsite server action
       const result = await updateJobsite(formDataToSend);
@@ -219,6 +233,7 @@ export const useJobsiteForm = ({
       comment?: string;
       isActive?: boolean;
       client?: string;
+      CCTags?: Array<{ id: string; name: string }>;
     }) => {
       try {
         // Validate required fields
@@ -242,6 +257,7 @@ export const useJobsiteForm = ({
           comment: newJobsite.comment || "",
           isActive: newJobsite.isActive ?? true,
           client: newJobsite.client || "",
+          CCTags: newJobsite.CCTags || [],
         });
 
         if (result.success) {
