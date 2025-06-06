@@ -303,6 +303,8 @@ export default function Assets() {
               jobsiteUIState={jobsiteUIState}
               setJobsiteUIState={setJobsiteUIState}
               setHasUnsavedChanges={setHasUnsavedChanges}
+              tagFormHook={tagFormHook}
+              tagSummaries={tagSummaries}
             />
           ) : assets === "CostCode" ? (
             <CostCodeMainContent

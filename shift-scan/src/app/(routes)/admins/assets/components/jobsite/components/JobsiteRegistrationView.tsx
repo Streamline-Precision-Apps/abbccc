@@ -8,6 +8,8 @@ import { Selects } from "@/components/(reusable)/selects";
 import React, { useState, useEffect } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
+import { TagSummary } from "../../../types";
+import JobsiteCostCodeGroups from "./JobsiteCostCodeGroups";
 
 interface JobsiteRegistrationFormData {
   name: string;
@@ -20,12 +22,14 @@ interface JobsiteRegistrationFormData {
   description: string;
   isActive: boolean;
   approvalStatus: string;
+  CCTags?: Array<{ id: string; name: string }>;
 }
 
 interface JobsiteRegistrationViewProps {
   onSubmit: (newJobsite: JobsiteRegistrationFormData) => void;
   onCancel: () => void;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
+  tagSummaries?: TagSummary[];
 }
 
 /**
@@ -36,6 +40,7 @@ export default function JobsiteRegistrationView({
   onSubmit,
   onCancel,
   onUnsavedChangesChange,
+  tagSummaries = [],
 }: JobsiteRegistrationViewProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -48,6 +53,7 @@ export default function JobsiteRegistrationView({
     description: "",
     isActive: true,
     approvalStatus: "",
+    CCTags: [],
   });
 
   // Track if form has unsaved changes
@@ -59,14 +65,23 @@ export default function JobsiteRegistrationView({
     formData.state.trim() !== "" ||
     formData.zipCode.trim() !== "" ||
     formData.country !== "US" ||
-    formData.description.trim() !== "";
+    formData.description.trim() !== "" ||
+    (formData.CCTags && formData.CCTags.length > 0);
 
   // Notify parent component when unsaved changes state changes
   useEffect(() => {
     onUnsavedChangesChange?.(hasUnsavedChanges);
   }, [hasUnsavedChanges, onUnsavedChangesChange]);
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (
+    field: string,
+    value:
+      | string
+      | number
+      | boolean
+      | Date
+      | Array<{ id: string; name: string }>
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -267,7 +282,13 @@ export default function JobsiteRegistrationView({
                   >
                     Cost Code Groups
                   </label>
-                  <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]"></Holds>
+                  <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]">
+                    <JobsiteCostCodeGroups
+                      formData={formData}
+                      tagSummaries={tagSummaries}
+                      onInputChange={handleInputChange}
+                    />
+                  </Holds>
                 </Holds>
               </Grids>
             </Grids>
