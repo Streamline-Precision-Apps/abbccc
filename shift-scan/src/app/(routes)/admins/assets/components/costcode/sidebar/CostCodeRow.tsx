@@ -65,10 +65,10 @@ function CostCodeRow({
         className="w-full h-[40px] justify-center flex gap-2 mb-3"
       >
         <Holds
-          background={showCheckBox && isSelected ? "lightBlue" : "gray"}
+          background={showCheckBox && isSelected ? "lightBlue" : "lightGray"}
           className={`w-full h-[40px] justify-center flex hover:opacity-80 cursor-pointer relative ${
             isSelected && "outline outline-[2px] outline-black"
-          } rounded-[10px] my-1 px-4`}
+          } rounded-[10px] px-4`}
           onClick={handleCostCodeClick}
         >
           <Texts position="left" size="xs">

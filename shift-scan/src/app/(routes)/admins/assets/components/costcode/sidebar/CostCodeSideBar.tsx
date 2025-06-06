@@ -13,8 +13,6 @@ import CostCodeRow from "./CostCodeRow";
 import { CostCode, CostCodeSummary, Tag, TagSummary } from "../../../types";
 import { Selects } from "@/components/(reusable)/selects";
 import Spinner from "@/components/(animations)/spinner";
-import { set } from "date-fns";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 
 export default function CostCodeSideBar({
@@ -191,15 +189,17 @@ export default function CostCodeSideBar({
           <Holds className="w-full h-full p-3 overflow-y-auto no-scrollbar">
             {(costCodeUIState === "editingGroups" ||
               costCodeUIState === "creatingGroups") && (
-              <Holds position={"row"} className="w-full h-[40px]  gap-2 mb-2">
+              <Holds position={"row"} className="w-full h-[40px] gap-2 mb-2">
                 <Holds className="w-full h-full justify-center ">
-                  <Texts size="sm" position={"right"} className="">
-                    {allCostCodesSelected ? "Unselect All" : "Select All"}
+                  <Texts size="xs" position={"right"} className="italic">
+                    {allCostCodesSelected
+                      ? "Unselect All"
+                      : "Select All Cost Codes"}
                   </Texts>
                 </Holds>
                 <Holds className="w-fit h-full relative">
                   <CheckBox
-                    height={30}
+                    height={20}
                     width={30}
                     shadow={false}
                     id={"select-all-cost-codes"}

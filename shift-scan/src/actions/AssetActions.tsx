@@ -551,8 +551,10 @@ export async function createCostCode(costCodeData: {
   cCNumber: string;
   cCName: string;
   isActive: boolean;
+  CCTags?: { id: string; name: string }[];
 }) {
   console.log("Creating new cost code...");
+  console.log(costCodeData);
 
   try {
     // Validate required fields
@@ -576,6 +578,9 @@ export async function createCostCode(costCodeData: {
       data: {
         name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
         isActive: costCodeData.isActive,
+        CCTags: {
+          connect: costCodeData.CCTags?.map((tag) => ({ id: tag.id })) || [],
+        },
       },
     });
 

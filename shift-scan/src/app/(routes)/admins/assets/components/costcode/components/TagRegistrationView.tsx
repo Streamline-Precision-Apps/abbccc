@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { useTagCreation, UseTagCreationReturn } from "../hooks/useTagCreation";
+import { UseTagCreationReturn } from "../hooks/useTagCreation";
 import { CostCodeSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
+import DiscardChangesModal from "../../shared/DiscardChangesModal";
 
 interface TagsRegistrationViewProps {
   /** Function to expose the creation hook handlers to parent */
@@ -22,13 +23,17 @@ interface TagsRegistrationViewProps {
     formData: { costCodes: Array<{ id: string; name: string }> };
   }) => void;
   tagCreation: UseTagCreationReturn;
+  closeForm: () => void;
 }
 
 export default function TagsRegistrationView({
   onCreationHookReady,
   tagCreation,
+  closeForm,
 }: TagsRegistrationViewProps) {
   // Expose the creation hook handlers to parent component
+  const [closeTagModal, setCloseTagModal] = useState(false);
+
   useEffect(() => {
     if (onCreationHookReady) {
       onCreationHookReady({
@@ -45,6 +50,20 @@ export default function TagsRegistrationView({
   ]);
 
   const numberOfCostCodes = tagCreation.formData.costCodes.length;
+
+  const handleCancel = () => {
+    if (tagCreation.hasUnsavedChanges) {
+      setCloseTagModal(true);
+      return;
+    }
+    handleConfirmCancel();
+  };
+
+  const handleConfirmCancel = () => {
+    tagCreation.clearForm();
+    closeForm();
+    setCloseTagModal(false);
+  };
 
   return (
     <Holds className="w-full h-full">
@@ -72,7 +91,13 @@ export default function TagsRegistrationView({
                 </Texts>
               </Holds>
             ) : (
-              <Texts size="sm" text={"link"}>
+              <Texts
+                size="sm"
+                text={"link"}
+                className={
+                  !tagCreation.hasUnsavedChanges ? "text-app-dark-gray" : ""
+                }
+              >
                 Submit New Group
               </Texts>
             )}
@@ -81,7 +106,7 @@ export default function TagsRegistrationView({
             shadow="none"
             background={"none"}
             className="w-fit h-auto"
-            onClick={tagCreation.handleCancel}
+            onClick={handleCancel}
             disabled={tagCreation.isSubmitting}
           >
             <Texts size="sm" text={"link"}>
@@ -195,6 +220,14 @@ export default function TagsRegistrationView({
           </Grids>
         </Holds>
       </Grids>
+      <DiscardChangesModal
+        isOpen={closeTagModal}
+        confirmDiscardChanges={handleConfirmCancel}
+        cancelDiscard={() => setCloseTagModal(false)}
+        message="Are you sure you want to cancel creation? This will discard all unsaved changes."
+        confirmationText="Yes, cancel creation"
+        cancelText="No, go back"
+      />
     </Holds>
   );
 }

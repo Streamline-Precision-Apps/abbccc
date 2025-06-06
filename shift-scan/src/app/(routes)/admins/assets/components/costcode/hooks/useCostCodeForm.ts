@@ -13,6 +13,7 @@ import {
   updateCostCode,
   deleteCostCode,
 } from "@/actions/AssetActions";
+import { setCostCode } from "@/actions/cookieActions";
 
 /**
  * Props for the useCostCodeForm hook
@@ -26,6 +27,12 @@ export interface UseCostCodeFormProps {
   setHasUnsavedChanges: Dispatch<SetStateAction<boolean>>;
   /** Function to refresh the list of cost codes */
   refreshCostCodes?: () => Promise<void>;
+  /** Function to set Ui after deletion */
+  setCostCodeUIState: React.Dispatch<
+    React.SetStateAction<
+      "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
+    >
+  >;
 }
 
 /**
@@ -94,6 +101,7 @@ export function useCostCodeForm({
   setSelectCostCode,
   setHasUnsavedChanges,
   refreshCostCodes,
+  setCostCodeUIState,
 }: UseCostCodeFormProps): UseCostCodeFormReturn {
   // Form state
   const [formData, setFormData] = useState<CostCode | null>(null);
@@ -375,6 +383,7 @@ export function useCostCodeForm({
         setFormData(null);
         setOriginalData(null);
         setChangedFields(new Set());
+        setCostCodeUIState("idle");
 
         // Refresh the cost codes list
         if (refreshCostCodes) {
