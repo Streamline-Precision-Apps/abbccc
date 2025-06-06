@@ -13,7 +13,6 @@ import {
   updateCostCode,
   deleteCostCode,
 } from "@/actions/AssetActions";
-import { setCostCode } from "@/actions/cookieActions";
 
 /**
  * Props for the useCostCodeForm hook
@@ -70,6 +69,10 @@ export interface UseCostCodeFormReturn {
   isDeleting: boolean;
   /** Whether the last update was successful */
   successfullyUpdated: boolean;
+  /** Whether the delete confirmation modal is visible */
+  showDeleteConfirmModal: boolean;
+  /** Function to set the visibility of delete confirmation modal */
+  setShowDeleteConfirmModal: (isVisible: boolean) => void;
   /** Function to handle input changes */
   handleInputChange: (
     fieldName: keyof CostCode,
@@ -87,6 +90,8 @@ export interface UseCostCodeFormReturn {
   handleRevertField: (fieldName: keyof CostCode) => void;
   /** Function to delete a cost code */
   handleDeleteCostCode: () => Promise<CostCodeOperationResult>;
+  /** Function to confirm the deletion after modal confirmation */
+  confirmDeleteCostCode: () => Promise<void>;
 }
 
 /**
@@ -114,6 +119,8 @@ export function useCostCodeForm({
   const [successfullyUpdated, setSuccessfullyUpdated] =
     useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
+    useState<boolean>(false);
 
   // Initialize form data when selected cost code changes
   useEffect(() => {
@@ -359,11 +366,28 @@ export function useCostCodeForm({
   );
 
   /**
-   * Deletes the current cost code
+   * Initiates the delete process by showing the confirmation modal
    *
    * @returns Promise resolving to an object with success state and optional error
    */
   const handleDeleteCostCode =
+    useCallback(async (): Promise<CostCodeOperationResult> => {
+      if (!formData) {
+        return { success: false, error: "No cost code selected" };
+      }
+
+      // Show the confirmation modal instead of immediately deleting
+      setShowDeleteConfirmModal(true);
+      return { success: true };
+    }, [formData]);
+
+  /**
+   * Deletes the current cost code after confirmation
+   * This is the actual deletion operation, separated from the handler
+   *
+   * @returns Promise resolving to an object with success state and optional error
+   */
+  const executeDeleteCostCode =
     useCallback(async (): Promise<CostCodeOperationResult> => {
       if (!formData) {
         return { success: false, error: "No cost code selected" };
@@ -399,7 +423,23 @@ export function useCostCodeForm({
       } finally {
         setIsDeleting(false);
       }
-    }, [formData, refreshCostCodes, setSelectCostCode]);
+    }, [formData, refreshCostCodes, setSelectCostCode, setCostCodeUIState]);
+
+  /**
+   * Confirms the deletion of the cost code
+   * This is called after the user confirms through modal
+   */
+  const confirmDeleteCostCode = useCallback(async (): Promise<void> => {
+    // Close the confirmation modal
+    setShowDeleteConfirmModal(false);
+
+    // Execute the delete operation
+    const result = await executeDeleteCostCode();
+
+    if (!result.success) {
+      setError(result.error || "Failed to delete cost code");
+    }
+  }, [executeDeleteCostCode]);
 
   return {
     formData,
@@ -409,11 +449,14 @@ export function useCostCodeForm({
     isSaving,
     isDeleting,
     successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleNewCostCodeSubmit,
     handleRevertField,
     handleDeleteCostCode,
+    confirmDeleteCostCode,
   };
 }

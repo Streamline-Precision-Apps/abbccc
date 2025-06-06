@@ -1,39 +1,58 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { CostCode, Tag, TagSummary, CostCodeSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
-import CostCodeEmptyState from "./CostCodeEmptyState";
-import CostCodeFormView from "./CostCodeFormView";
-import CostCodeRegistrationView from "./CostCodeRegistrationView";
-import { useCostCodeForm } from "../hooks/useCostCodeForm";
+import {
+  CostCodeHeaderActions,
+  CostCodeFormView,
+  CostCodeRegistrationView,
+  CostCodeEmptyState,
+  useCostCodeForm,
+} from "../index";
 import TagsFormView from "./TagsFormView";
 import TagsRegistrationView from "./TagRegistrationView";
 import { useTagsForm } from "../hooks/useTagsForm";
 import { useTagCreation } from "../hooks/useTagCreation";
+import DiscardChangesModal from "../../shared/DiscardChangesModal";
+import DeleteConfirmationModal from "../../shared/DeleteConfirmationModal";
 
 interface CostCodeMainContentProps {
+  /** Assets data */
   assets: string;
+  /** Currently selected cost code */
   selectCostCode: CostCode | null;
+  /** Handler to set selected cost code */
   setSelectCostCode: Dispatch<SetStateAction<CostCode | null>>;
+  /** Function to refresh cost code list */
   refreshCostCodes: () => Promise<void>;
+  /** Function to refresh tags list */
   refreshTags?: () => Promise<void>;
+  /** Cost code loading state */
   CostCodeLoading: boolean;
+  /** Tag loading state */
   TagLoading: boolean;
+  /** Handler to set selected tag */
   setSelectTag: React.Dispatch<React.SetStateAction<Tag | null>>;
+  /** Setter for unsaved changes state */
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  /** Current UI state */
   costCodeUIState:
     | "idle"
     | "creating"
     | "editing"
     | "editingGroups"
     | "creatingGroups";
+  /** UI state setter */
   setCostCodeUIState: React.Dispatch<
     React.SetStateAction<
       "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
     >
   >;
+  /** Available tag summaries */
   tagSummaries: TagSummary[];
+  /** Tag form hook */
   tagFormHook: ReturnType<typeof useTagsForm>;
   /** Callback to get creation handlers when in creation mode */
   onCreationHandlersReady?: (handlers: {
@@ -50,9 +69,14 @@ interface CostCodeMainContentProps {
 
 /**
  * Main content component for cost code management.
- * Handles cost code viewing, editing, and registration.
+ * Handles cost code viewing, editing, and registration using decomposed components.
+ *
+ * This component follows the pattern of JobsiteMainContent and EquipmentMainContent for consistency.
+ *
+ * @param props - The component props
+ * @returns JSX element containing the appropriate view based on current state
  */
-const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
+export default function CostCodeMainContent({
   selectCostCode,
   setSelectCostCode,
   refreshCostCodes,
@@ -67,7 +91,11 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
   tagFormHook,
   onCreationHandlersReady,
   deletionSuccessMessage,
-}) => {
+}: CostCodeMainContentProps) {
+  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
+    useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   // State to store creation handlers when in creation mode
   const [creationHandlers, setCreationHandlers] = useState<{
     handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
@@ -77,6 +105,15 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
     ) => void;
     formData: { costCodes: Array<{ id: string; name: string }> };
   } | null>(null);
+
+  // Get the cost code form hook with all handlers
+  const costCodeFormHook = useCostCodeForm({
+    selectCostCode,
+    setSelectCostCode,
+    setHasUnsavedChanges,
+    refreshCostCodes,
+    setCostCodeUIState,
+  });
 
   // Handle creation hook readiness
   const handleCreationHookReady = useCallback(
@@ -95,87 +132,130 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
     },
     [onCreationHandlersReady]
   );
-  const costCodeFormHook = useCostCodeForm({
-    selectCostCode,
-    setSelectCostCode,
-    setHasUnsavedChanges,
-    refreshCostCodes,
-    setCostCodeUIState,
-  });
+
   const onCancel = useCallback(() => {
     setCostCodeUIState("idle");
     setSelectTag(null);
-  }, [
-    setCostCodeUIState,
-    setSelectCostCode,
-    setSelectTag,
-    setHasUnsavedChanges,
-  ]);
+  }, [setCostCodeUIState, setSelectTag]);
 
   const tagCreation = useTagCreation({
     refreshTags,
     onCancel,
   });
 
+  // Handle registration form unsaved changes
+  const handleRegistrationFormChanges = useCallback(
+    (hasChanges: boolean) => {
+      setHasRegistrationFormChanges(hasChanges);
+      setHasUnsavedChanges(hasChanges);
+    },
+    [setHasRegistrationFormChanges, setHasUnsavedChanges]
+  );
+
+  // Handle opening registration form
+  const handleOpenRegistration = () => {
+    setCostCodeUIState("creating");
+    setSelectCostCode(null);
+  };
+
+  // Handle cancel registration with unsaved changes check
+  const handleCancelRegistration = useCallback(() => {
+    // Show confirmation modal if there are unsaved changes
+    if (hasRegistrationFormChanges) {
+      setShowConfirmModal(true);
+    } else {
+      setCostCodeUIState("idle");
+      setHasRegistrationFormChanges(false);
+      setHasUnsavedChanges(false);
+    }
+  }, [
+    hasRegistrationFormChanges,
+    setCostCodeUIState,
+    setHasRegistrationFormChanges,
+    setHasUnsavedChanges,
+  ]);
+
+  // Modal confirmation handlers
+  const handleConfirmDiscard = () => {
+    setShowConfirmModal(false);
+    setCostCodeUIState("idle");
+    setHasRegistrationFormChanges(false);
+  };
+
+  const handleCancelDiscard = () => {
+    setShowConfirmModal(false);
+  };
+
+  // Show loading indicator when data is being fetched
+  if (CostCodeLoading || TagLoading) {
+    return (
+      <Holds
+        background={"white"}
+        className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
+      >
+        <Spinner size={50} />
+      </Holds>
+    );
+  }
+
   return (
     <>
-      {CostCodeLoading || TagLoading ? (
-        <Holds
-          background={"white"}
-          className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7 flex justify-center items-center animate-pulse"
-        >
-          <Spinner size={50} />
-        </Holds>
-      ) : costCodeUIState === "creating" ? (
-        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
-          <CostCodeRegistrationView
-            onSubmit={costCodeFormHook.handleNewCostCodeSubmit}
-            onCancel={() => {
-              setCostCodeUIState("idle");
-              setHasUnsavedChanges(false);
-            }}
-            setHasUnsavedChanges={setHasUnsavedChanges}
-            tagSummaries={tagSummaries}
-          />
-        </Holds>
-      ) : costCodeUIState === "editing" && costCodeFormHook.formData ? (
-        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
-          <CostCodeFormView
-            formData={costCodeFormHook.formData}
-            changedFields={costCodeFormHook.changedFields}
-            onInputChange={costCodeFormHook.handleInputChange}
-            onRevertField={costCodeFormHook.handleRevertField}
-            onRegisterNew={() => {
-              setCostCodeUIState("creating");
-              setSelectCostCode(null);
-            }}
-            onDiscardChanges={costCodeFormHook.handleDiscardChanges}
-            onSaveChanges={costCodeFormHook.handleSaveChanges}
-            hasUnsavedChanges={costCodeFormHook.hasUnsavedChanges}
-            isSaving={costCodeFormHook.isSaving}
-            successfullyUpdated={costCodeFormHook.successfullyUpdated}
-            isDeleting={costCodeFormHook.isDeleting}
-            onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
-            error={costCodeFormHook.error}
-            tagSummaries={tagSummaries}
-            closeForm={() => {
-              setCostCodeUIState("idle");
-              setSelectCostCode(null);
-              setHasUnsavedChanges(false);
-            }}
-          />
+      {costCodeUIState === "creating" ? (
+        <CostCodeRegistrationView
+          onSubmit={costCodeFormHook.handleNewCostCodeSubmit}
+          onCancel={handleCancelRegistration}
+          setHasUnsavedChanges={setHasUnsavedChanges}
+          tagSummaries={tagSummaries}
+        />
+      ) : costCodeUIState === "editing" &&
+        selectCostCode &&
+        costCodeFormHook.formData ? (
+        <Holds className="w-full h-full col-span-4">
+          <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
+            <CostCodeHeaderActions
+              hasUnsavedChanges={costCodeFormHook.hasUnsavedChanges}
+              isSaving={costCodeFormHook.isSaving}
+              successfullyUpdated={costCodeFormHook.successfullyUpdated}
+              onRegisterNew={handleOpenRegistration}
+              onDiscardChanges={costCodeFormHook.handleDiscardChanges}
+              onSaveChanges={costCodeFormHook.handleSaveChanges}
+              onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
+            />
+
+            <CostCodeFormView
+              formData={costCodeFormHook.formData}
+              changedFields={costCodeFormHook.changedFields}
+              onInputChange={costCodeFormHook.handleInputChange}
+              onRevertField={costCodeFormHook.handleRevertField}
+              onRegisterNew={handleOpenRegistration}
+              onDiscardChanges={costCodeFormHook.handleDiscardChanges}
+              onSaveChanges={costCodeFormHook.handleSaveChanges}
+              hasUnsavedChanges={costCodeFormHook.hasUnsavedChanges}
+              isSaving={costCodeFormHook.isSaving}
+              successfullyUpdated={costCodeFormHook.successfullyUpdated}
+              isDeleting={costCodeFormHook.isDeleting}
+              onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
+              error={costCodeFormHook.error}
+              tagSummaries={tagSummaries}
+              closeForm={() => {
+                setCostCodeUIState("idle");
+                setSelectCostCode(null);
+                setHasUnsavedChanges(false);
+              }}
+            />
+          </Grids>
         </Holds>
       ) : costCodeUIState === "idle" ? (
-        <Holds className="w-full h-full col-start-3 col-end-11">
+        <Holds className="w-full h-full col-span-8">
           <CostCodeEmptyState
-            onRegisterNew={() => setCostCodeUIState("creating")}
+            onRegisterNew={handleOpenRegistration}
             onRegisterNewGroup={() => setCostCodeUIState("creatingGroups")}
             error={tagCreation.error}
             successMessage={deletionSuccessMessage || null}
           />
         </Holds>
       ) : costCodeUIState === "editingGroups" ? (
-        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
+        <Holds className="w-full h-full col-span-4">
           <TagsFormView
             formData={tagFormHook.formData}
             onDeleteTag={tagFormHook.handleDeleteTag}
@@ -205,19 +285,32 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
           />
         </Holds>
       ) : costCodeUIState === "creatingGroups" ? (
-        <Holds className="w-full h-full col-start-3 col-end-7 sm:col-end-11 md:col-end-11 lg:col-end-11 xl:col-end-7">
-          <TagsRegistrationView
-            onCreationHookReady={handleCreationHookReady}
-            tagCreation={tagCreation}
-            closeForm={() => {
-              setCostCodeUIState("idle");
-              setHasUnsavedChanges(false);
-            }}
-          />
-        </Holds>
+        <TagsRegistrationView
+          onCreationHookReady={handleCreationHookReady}
+          tagCreation={tagCreation}
+          closeForm={() => {
+            setCostCodeUIState("idle");
+            setHasUnsavedChanges(false);
+          }}
+        />
       ) : null}
+
+      <DiscardChangesModal
+        isOpen={showConfirmModal}
+        confirmDiscardChanges={handleConfirmDiscard}
+        cancelDiscard={handleCancelDiscard}
+        message="You have unsaved changes. Are you sure you want to discard them?"
+      />
+
+      <DeleteConfirmationModal
+        isOpen={costCodeFormHook.showDeleteConfirmModal}
+        itemName={costCodeFormHook.formData?.name || ""}
+        itemType="cost code"
+        onConfirm={costCodeFormHook.confirmDeleteCostCode}
+        onCancel={() => costCodeFormHook.setShowDeleteConfirmModal(false)}
+      />
     </>
   );
-};
+}
 
-export default CostCodeMainContent;
+// Export removed as we now use export default in the function declaration

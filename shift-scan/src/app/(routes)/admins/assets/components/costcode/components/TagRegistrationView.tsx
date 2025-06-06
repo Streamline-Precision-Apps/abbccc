@@ -66,7 +66,7 @@ export default function TagsRegistrationView({
   };
 
   return (
-    <Holds className="w-full h-full">
+    <Holds className="w-full h-full col-span-4">
       <Grids className="w-full h-full grid-rows-[40px_200px_1fr] gap-4">
         {/* Header with buttons */}
         <Holds

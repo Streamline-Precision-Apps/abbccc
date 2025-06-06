@@ -197,171 +197,178 @@ function CostCodeRegistrationView({
   }, [isSubmitting, formData.cCName, formData.cCNumber]);
 
   return (
-    <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
-      <Holds
-        position={"row"}
-        background={"white"}
-        className="w-full h-full gap-4 px-4 relative"
-      >
-        <Holds position={"row"} className=" justify-between">
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={handleSubmit}
-            disabled={isSubmitDisabled || !hasUnsavedChanges}
-            className="w-fit h-auto px-2"
-          >
-            <Texts
-              size="sm"
-              text="link"
-              className={`${!hasUnsavedChanges ? "text-gray-500" : ""}`}
+    <Holds className="w-full h-full col-span-4">
+      <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
+        <Holds
+          position={"row"}
+          background={"white"}
+          className="w-full h-full gap-4 px-4 relative"
+        >
+          <Holds position={"row"} className=" justify-between">
+            <Buttons
+              background={"none"}
+              shadow={"none"}
+              onClick={handleSubmit}
+              disabled={isSubmitDisabled || !hasUnsavedChanges}
+              className="w-fit h-auto px-2"
             >
-              {isSubmitting ? "Registering..." : "Register Cost Code"}
-            </Texts>
-          </Buttons>
-
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={onCancel}
-            disabled={isSubmitting}
-            className="w-fit h-auto px-2"
-          >
-            <Texts position={"left"} size="sm" text="link">
-              Cancel Registration
-            </Texts>
-          </Buttons>
-          {successfullyRegistered && (
-            <Holds
-              background={"green"}
-              className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
-            >
-              <Texts size="sm">Cost Code successfully registered!</Texts>
-            </Holds>
-          )}
-
-          {registrationError && (
-            <Holds
-              background={"red"}
-              className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
-            >
-              <Texts size="sm">{registrationError}</Texts>
-            </Holds>
-          )}
-        </Holds>
-      </Holds>
-
-      <Holds background={"white"} className="w-full h-full">
-        <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
-          <Holds className="w-full h-full">
-            <Titles position="left" size="h5" className="font-bold mb-2">
-              Register New Cost Code
-            </Titles>
-          </Holds>
-
-          <Grids
-            cols="2"
-            gap="4"
-            className="w-full h-full bg-white rounded-[10px]"
-          >
-            <Holds className="col-span-1 h-full">
-              {/* Preview of how the cost code will appear */}
-              <Holds background={"lightGray"} className="mb-3 rounded-[10px] ">
-                <Texts
-                  position={"left"}
-                  size="xs"
-                  className="text-app-dark-gray"
-                >
-                  Preview:
-                </Texts>
-                {previewText && (
-                  <Texts size="md" className="font-medium">
-                    {previewText}
-                  </Texts>
-                )}
-              </Holds>
-              <label htmlFor="cCNumber" className="text-sm">
-                Cost Code Number<span className="text-red-500">*</span>
-              </label>
-              <Inputs
-                type="text"
-                name="cCNumber"
-                value={formData.cCNumber}
-                onChange={handleInputChange}
-                required
-                className=" w-full text-sm"
-              />
-
-              <label htmlFor="cCName" className="text-sm">
-                Cost Code Name*
-              </label>
-              <Inputs
-                type="text"
-                name="cCName"
-                value={formData.cCName}
-                onChange={handleInputChange}
-                required
-                className="w-full text-sm"
-              />
-
-              <label htmlFor="isActive" className="text-sm ">
-                Status
-              </label>
-              <Selects
-                name="isActive"
-                value={formData.isActive ? "Active" : "Inactive"}
-                onChange={handleInputChange}
-                className="w-full text-sm"
+              <Texts
+                size="sm"
+                text="link"
+                className={`${!hasUnsavedChanges ? "text-gray-500" : ""}`}
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </Selects>
-            </Holds>
-
-            <Holds className="col-span-1 h-full">
-              <Texts position={"left"} size="xs" className="font-bold mb-2">
-                Cost Code Groups
+                {isSubmitting ? "Registering..." : "Register Cost Code"}
               </Texts>
-              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] overflow-y-auto">
-                {tagSummaries.length > 0 ? (
-                  tagSummaries.map((tag, index) => (
-                    <Holds
-                      position={"row"}
-                      key={index}
-                      className="w-full gap-3 mt-2 first:mt-0"
-                    >
-                      <Holds
-                        background={"lightBlue"}
-                        className="w-full h-[40px] rounded-[10px] flex items-center justify-center"
-                      >
-                        <Titles size="md">{tag.name}</Titles>
-                      </Holds>
+            </Buttons>
 
-                      <Holds className="w-fit h-fit justify-center items-center">
-                        <CheckBox
-                          shadow={false}
-                          checked={formData.CCTags.some((t) => t.id === tag.id)}
-                          onChange={() => handleTagToggle(tag.id, tag.name)}
-                          id={tag.id}
-                          name={tag.name}
-                          height={35}
-                          width={35}
-                        />
-                      </Holds>
-                    </Holds>
-                  ))
-                ) : (
-                  <Texts size="xs" className="text-gray-500">
-                    No cost code groups available. Create groups in the groups
-                    management section.
-                  </Texts>
-                )}
+            <Buttons
+              background={"none"}
+              shadow={"none"}
+              onClick={onCancel}
+              disabled={isSubmitting}
+              className="w-fit h-auto px-2"
+            >
+              <Texts position={"left"} size="sm" text="link">
+                Cancel Registration
+              </Texts>
+            </Buttons>
+            {successfullyRegistered && (
+              <Holds
+                background={"green"}
+                className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+              >
+                <Texts size="sm">Cost Code successfully registered!</Texts>
               </Holds>
+            )}
+
+            {registrationError && (
+              <Holds
+                background={"red"}
+                className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+              >
+                <Texts size="sm">{registrationError}</Texts>
+              </Holds>
+            )}
+          </Holds>
+        </Holds>
+
+        <Holds background={"white"} className="w-full h-full">
+          <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
+            <Holds className="w-full h-full">
+              <Titles position="left" size="h5" className="font-bold mb-2">
+                Register New Cost Code
+              </Titles>
             </Holds>
+
+            <Grids
+              cols="2"
+              gap="4"
+              className="w-full h-full bg-white rounded-[10px]"
+            >
+              <Holds className="col-span-1 h-full">
+                {/* Preview of how the cost code will appear */}
+                <Holds
+                  background={"lightGray"}
+                  className="mb-3 rounded-[10px] "
+                >
+                  <Texts
+                    position={"left"}
+                    size="xs"
+                    className="text-app-dark-gray"
+                  >
+                    Preview:
+                  </Texts>
+                  {previewText && (
+                    <Texts size="md" className="font-medium">
+                      {previewText}
+                    </Texts>
+                  )}
+                </Holds>
+                <label htmlFor="cCNumber" className="text-sm">
+                  Cost Code Number<span className="text-red-500">*</span>
+                </label>
+                <Inputs
+                  type="text"
+                  name="cCNumber"
+                  value={formData.cCNumber}
+                  onChange={handleInputChange}
+                  required
+                  className=" w-full text-sm"
+                />
+
+                <label htmlFor="cCName" className="text-sm">
+                  Cost Code Name*
+                </label>
+                <Inputs
+                  type="text"
+                  name="cCName"
+                  value={formData.cCName}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full text-sm"
+                />
+
+                <label htmlFor="isActive" className="text-sm ">
+                  Status
+                </label>
+                <Selects
+                  name="isActive"
+                  value={formData.isActive ? "Active" : "Inactive"}
+                  onChange={handleInputChange}
+                  className="w-full text-sm"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </Selects>
+              </Holds>
+
+              <Holds className="col-span-1 h-full">
+                <Texts position={"left"} size="xs" className="font-bold mb-2">
+                  Cost Code Groups
+                </Texts>
+                <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] overflow-y-auto">
+                  {tagSummaries.length > 0 ? (
+                    tagSummaries.map((tag, index) => (
+                      <Holds
+                        position={"row"}
+                        key={index}
+                        className="w-full gap-3 mt-2 first:mt-0"
+                      >
+                        <Holds
+                          background={"lightBlue"}
+                          className="w-full h-[40px] rounded-[10px] flex items-center justify-center"
+                        >
+                          <Titles size="md">{tag.name}</Titles>
+                        </Holds>
+
+                        <Holds className="w-fit h-fit justify-center items-center">
+                          <CheckBox
+                            shadow={false}
+                            checked={formData.CCTags.some(
+                              (t) => t.id === tag.id
+                            )}
+                            onChange={() => handleTagToggle(tag.id, tag.name)}
+                            id={tag.id}
+                            name={tag.name}
+                            height={35}
+                            width={35}
+                          />
+                        </Holds>
+                      </Holds>
+                    ))
+                  ) : (
+                    <Texts size="xs" className="text-gray-500">
+                      No cost code groups available. Create groups in the groups
+                      management section.
+                    </Texts>
+                  )}
+                </Holds>
+              </Holds>
+            </Grids>
           </Grids>
-        </Grids>
-      </Holds>
-    </Grids>
+        </Holds>
+      </Grids>
+    </Holds>
   );
 }
 
