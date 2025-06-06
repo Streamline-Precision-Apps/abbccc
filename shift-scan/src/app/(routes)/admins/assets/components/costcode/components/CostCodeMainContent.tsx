@@ -100,6 +100,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
     setSelectCostCode,
     setHasUnsavedChanges,
     refreshCostCodes,
+    setCostCodeUIState,
   });
   const onCancel = useCallback(() => {
     setCostCodeUIState("idle");
@@ -134,6 +135,7 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
               setHasUnsavedChanges(false);
             }}
             setHasUnsavedChanges={setHasUnsavedChanges}
+            tagSummaries={tagSummaries}
           />
         </Holds>
       ) : costCodeUIState === "editing" && costCodeFormHook.formData ? (
@@ -156,6 +158,11 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             onDeleteCostCode={costCodeFormHook.handleDeleteCostCode}
             error={costCodeFormHook.error}
             tagSummaries={tagSummaries}
+            closeForm={() => {
+              setCostCodeUIState("idle");
+              setSelectCostCode(null);
+              setHasUnsavedChanges(false);
+            }}
           />
         </Holds>
       ) : costCodeUIState === "idle" ? (
@@ -189,6 +196,12 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
             }}
             tagSummaries={tagSummaries}
             setCostCodeUIState={setCostCodeUIState}
+            closeForm={() => {
+              setCostCodeUIState("idle");
+              setSelectCostCode(null);
+              setHasUnsavedChanges(false);
+              setSelectTag(null);
+            }}
           />
         </Holds>
       ) : costCodeUIState === "creatingGroups" ? (
@@ -196,6 +209,10 @@ const CostCodeMainContent: React.FC<CostCodeMainContentProps> = ({
           <TagsRegistrationView
             onCreationHookReady={handleCreationHookReady}
             tagCreation={tagCreation}
+            closeForm={() => {
+              setCostCodeUIState("idle");
+              setHasUnsavedChanges(false);
+            }}
           />
         </Holds>
       ) : null}

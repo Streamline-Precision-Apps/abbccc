@@ -15,6 +15,8 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { CostCodeRegistrationViewProps } from "../types";
 import { formatCostCodeName, combineCostCodeName } from "../utils/formatters";
+import { CheckBox } from "@/components/(inputs)/checkBox";
+import { TagSummary } from "../../../types";
 
 /**
  * Component for registering a new cost code
@@ -26,11 +28,13 @@ function CostCodeRegistrationView({
   onSubmit,
   onCancel,
   setHasUnsavedChanges,
+  tagSummaries = [], // Include available tags/groups
 }: CostCodeRegistrationViewProps) {
   const [formData, setFormData] = useState({
     cCNumber: "#",
     cCName: "",
     isActive: true,
+    CCTags: [] as Array<{ id: string; name: string }>,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,14 +44,15 @@ function CostCodeRegistrationView({
   );
 
   // Track if form has meaningful unsaved changes
-  // Only consider it a change if user has entered actual content beyond the initial "#"
+  // Only consider it a change if user has entered actual content beyond the initial "#" or groups selected
   const hasUnsavedChanges = useMemo(() => {
     return (
       (formData.cCNumber.trim() !== "#" && formData.cCNumber.trim() !== "") ||
       formData.cCName.trim() !== "" ||
-      formData.isActive !== true
+      formData.isActive !== true ||
+      formData.CCTags.length > 0
     );
-  }, [formData.cCName, formData.cCNumber, formData.isActive]);
+  }, [formData.cCName, formData.cCNumber, formData.isActive, formData.CCTags]);
 
   // Update parent component with changes state
   useEffect(() => {
@@ -100,6 +105,35 @@ function CostCodeRegistrationView({
     []
   );
 
+  // Handler for toggling tags/groups
+  const handleTagToggle = useCallback(
+    (tagId: string, tagName: string) => {
+      // Get the current CCTags array
+      const currentTags = formData.CCTags;
+
+      // Check if the tag is already selected
+      const tagIndex = currentTags.findIndex((tag) => tag.id === tagId);
+
+      // Create a new array based on the toggle action
+      const newTags =
+        tagIndex >= 0
+          ? // Remove if it exists
+            [
+              ...currentTags.slice(0, tagIndex),
+              ...currentTags.slice(tagIndex + 1),
+            ]
+          : // Add if it doesn't exist
+            [...currentTags, { id: tagId, name: tagName }];
+
+      // Update the form data
+      setFormData((prev) => ({
+        ...prev,
+        CCTags: newTags,
+      }));
+    },
+    [formData.CCTags]
+  );
+
   // Memoized submit handler
   const handleSubmit = useCallback(async () => {
     // Clear any existing notifications
@@ -117,6 +151,7 @@ function CostCodeRegistrationView({
           cCNumber: "#",
           cCName: "",
           isActive: true,
+          CCTags: [],
         });
 
         // Hide the success message after 3 seconds
@@ -168,55 +203,51 @@ function CostCodeRegistrationView({
         background={"white"}
         className="w-full h-full gap-4 px-4 relative"
       >
-        {/* Success notification */}
-        {successfullyRegistered && (
-          <Holds
-            background={"green"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+        <Holds position={"row"} className=" justify-between">
+          <Buttons
+            background={"none"}
+            shadow={"none"}
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled || !hasUnsavedChanges}
+            className="w-fit h-auto px-2"
           >
-            <Texts size="sm" className="text-white">
-              Cost Code successfully registered!
+            <Texts
+              size="sm"
+              text="link"
+              className={`${!hasUnsavedChanges ? "text-gray-500" : ""}`}
+            >
+              {isSubmitting ? "Registering..." : "Register Cost Code"}
             </Texts>
-          </Holds>
-        )}
+          </Buttons>
 
-        {/* Error notification */}
-        {registrationError && (
-          <Holds
-            background={"red"}
-            className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
-          >
-            <Texts size="sm" className="text-white flex-1 text-center">
-              {registrationError}
-            </Texts>
-          </Holds>
-        )}
-
-        <Holds className="w-full">
           <Buttons
             background={"none"}
             shadow={"none"}
             onClick={onCancel}
             disabled={isSubmitting}
-            className="w-full h-auto px-2"
+            className="w-fit h-auto px-2"
           >
             <Texts position={"left"} size="sm" text="link">
               Cancel Registration
             </Texts>
           </Buttons>
-        </Holds>
-        <Holds position={"row"} className="justify-end">
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={handleSubmit}
-            disabled={isSubmitDisabled}
-            className="w-fit h-auto px-2"
-          >
-            <Texts size="sm" text="link">
-              {isSubmitting ? "Registering..." : "Register Cost Code"}
-            </Texts>
-          </Buttons>
+          {successfullyRegistered && (
+            <Holds
+              background={"green"}
+              className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+            >
+              <Texts size="sm">Cost Code successfully registered!</Texts>
+            </Holds>
+          )}
+
+          {registrationError && (
+            <Holds
+              background={"red"}
+              className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
+            >
+              <Texts size="sm">{registrationError}</Texts>
+            </Holds>
+          )}
         </Holds>
       </Holds>
 
@@ -291,11 +322,40 @@ function CostCodeRegistrationView({
               <Texts position={"left"} size="xs" className="font-bold mb-2">
                 Cost Code Groups
               </Texts>
-              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] mb-3">
-                <Texts size="xs" className="text-gray-500">
-                  Cost code group management will be implemented in a future
-                  update.
-                </Texts>
+              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] overflow-y-auto">
+                {tagSummaries.length > 0 ? (
+                  tagSummaries.map((tag, index) => (
+                    <Holds
+                      position={"row"}
+                      key={index}
+                      className="w-full gap-3 mt-2 first:mt-0"
+                    >
+                      <Holds
+                        background={"lightBlue"}
+                        className="w-full h-[40px] rounded-[10px] flex items-center justify-center"
+                      >
+                        <Titles size="md">{tag.name}</Titles>
+                      </Holds>
+
+                      <Holds className="w-fit h-fit justify-center items-center">
+                        <CheckBox
+                          shadow={false}
+                          checked={formData.CCTags.some((t) => t.id === tag.id)}
+                          onChange={() => handleTagToggle(tag.id, tag.name)}
+                          id={tag.id}
+                          name={tag.name}
+                          height={35}
+                          width={35}
+                        />
+                      </Holds>
+                    </Holds>
+                  ))
+                ) : (
+                  <Texts size="xs" className="text-gray-500">
+                    No cost code groups available. Create groups in the groups
+                    management section.
+                  </Texts>
+                )}
               </Holds>
             </Holds>
           </Grids>

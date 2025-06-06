@@ -6,7 +6,7 @@ interface EquipmentHeaderActionsProps {
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
-  changedFieldsCount: number;
+
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
@@ -21,7 +21,7 @@ export default function EquipmentHeaderActions({
   hasUnsavedChanges,
   isSaving,
   successfullyUpdated,
-  changedFieldsCount,
+
   onRegisterNew,
   onDiscardChanges,
   onSaveChanges,
@@ -59,7 +59,7 @@ export default function EquipmentHeaderActions({
           text={"link"}
           className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
         >
-          Discard All Changes {hasUnsavedChanges && `(${changedFieldsCount})`}
+          Discard All Changes
         </Texts>
       </Buttons>
 

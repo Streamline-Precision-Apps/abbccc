@@ -246,14 +246,6 @@ export const useEquipmentForm = ({
    */
   const handleDiscardChanges = useCallback(() => {
     if (selectEquipment) {
-      if (
-        hasUnsavedChanges &&
-        !confirm(
-          "Are you sure you want to discard all changes? This action cannot be undone."
-        )
-      ) {
-        return;
-      }
       setFormData({ ...selectEquipment });
       setChangedFields(new Set());
       setHasUnsavedChanges(false);

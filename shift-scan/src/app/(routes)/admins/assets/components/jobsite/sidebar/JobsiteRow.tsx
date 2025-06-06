@@ -48,7 +48,7 @@ export default function JobsiteRow({
         }
         className={`w-full h-[40px] justify-center flex  hover:opacity-80 cursor-pointer relative ${
           isSelected && "outline outline-[2px] outline-black"
-        } rounded-[10px] my-1 px-4`}
+        } rounded-[10px] mb-3 px-4`}
         onClick={handleJobsiteClick}
       >
         <Texts position="left" size="xs">

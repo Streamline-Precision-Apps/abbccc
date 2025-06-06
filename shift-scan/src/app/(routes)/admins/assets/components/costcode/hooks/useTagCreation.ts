@@ -48,7 +48,6 @@ export interface UseTagCreationReturn {
     selectAll: boolean
   ) => void;
   handleSubmit: () => Promise<void>;
-  handleCancel: () => void;
   clearForm: () => void;
 }
 
@@ -61,7 +60,6 @@ export interface UseTagCreationReturn {
  */
 export function useTagCreation({
   refreshTags,
-  onCancel,
 }: UseTagCreationProps): UseTagCreationReturn {
   const [formData, setFormData] = useState<TagCreationFormData>({
     name: "",
@@ -211,10 +209,9 @@ export function useTagCreation({
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create tag";
       setError(errorMessage);
-      // Auto-hide error message after 5 seconds
       setTimeout(() => {
         setError(null);
-      }, 5000);
+      }, 3000);
     } finally {
       setIsSubmitting(false);
     }
@@ -223,18 +220,6 @@ export function useTagCreation({
   /**
    * Handle cancel action
    */
-  const handleCancel = useCallback(() => {
-    if (hasUnsavedChanges) {
-      // Could show a confirmation modal here
-      const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to cancel?"
-      );
-      if (!confirmed) return;
-    }
-
-    clearForm();
-    onCancel();
-  }, [hasUnsavedChanges, clearForm, onCancel]);
 
   return {
     formData,
@@ -247,7 +232,6 @@ export function useTagCreation({
     handleCostCodeToggle,
     handleCostCodeToggleAll,
     handleSubmit,
-    handleCancel,
     clearForm,
   };
 }

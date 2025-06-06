@@ -66,6 +66,8 @@ export default function EquipmentMainContent({
   const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
     useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showConfirmFormEditingModal, setShowConfirmFormEditingModal] =
+    useState(false);
   const {
     formData,
     changedFields,
@@ -113,7 +115,6 @@ export default function EquipmentMainContent({
     setEquipmentUIState("creating");
     setSelectEquipment(null);
   };
-
   // Handle cancel registration with unsaved changes check
   const handleCancelRegistration = useCallback(() => {
     // Show confirmation modal if there are unsaved changes
@@ -166,7 +167,6 @@ export default function EquipmentMainContent({
               onDiscardChanges={handleDiscardChanges}
               onSaveChanges={handleSaveChanges}
               onDeleteEquipment={handleDeleteEquipment}
-              changedFieldsCount={changedFields.size}
             />
 
             <EquipmentFormView
@@ -182,12 +182,14 @@ export default function EquipmentMainContent({
       ) : equipmentUIState === "idle" ? (
         <EquipmentEmptyState onOpenRegistration={handleOpenRegistration} />
       ) : null}
+
       <DiscardChangesModal
         isOpen={showConfirmModal}
         confirmDiscardChanges={handleConfirmDiscard}
         cancelDiscard={handleCancelDiscard}
         message="You have unsaved changes. Are you sure you want to discard them?"
       />
+
       <DeleteConfirmationModal
         isOpen={showDeleteConfirmModal}
         itemName={formData?.name || ""}

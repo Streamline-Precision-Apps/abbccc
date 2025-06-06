@@ -29,6 +29,7 @@ function CostCodeFormView({
   onDiscardChanges,
   onSaveChanges,
   onDeleteCostCode,
+  closeForm,
   hasUnsavedChanges,
   isSaving,
   isDeleting,
@@ -226,14 +227,18 @@ function CostCodeFormView({
               <Texts position={"left"} size="xs" className="font-bold mb-2">
                 Cost Code Groups
               </Texts>
-              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px] mb-3">
+              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px]">
                 {tagSummaries.map((tag, index) => (
-                  <Holds position={"row"} key={index} className="w-full gap-3">
+                  <Holds
+                    position={"row"}
+                    key={index}
+                    className="w-full gap-3 mt-2 first:mt-0"
+                  >
                     <Holds
                       background={"lightBlue"}
-                      className="w-full h-[40px]  rounded-[10px] flex items-center justify-center"
+                      className="w-full h-[40px] rounded-[10px] flex items-center justify-center"
                     >
-                      <Titles size="lg">{tag.name}</Titles>
+                      <Titles size="md">{tag.name}</Titles>
                     </Holds>
 
                     <Holds className="w-fit h-fit justify-center items-center">
@@ -258,22 +263,6 @@ function CostCodeFormView({
           </Grids>
         </Grids>
       </Holds>
-
-      {successfullyUpdated && (
-        <Holds className="mt-4 bg-green-100 p-2 rounded-md">
-          <Texts size="xs" text="green">
-            Cost code updated successfully
-          </Texts>
-        </Holds>
-      )}
-
-      {deleteError && (
-        <Holds className="mt-4 bg-red-100 p-2 rounded-md">
-          <Texts size="xs" text="red">
-            {deleteError}
-          </Texts>
-        </Holds>
-      )}
 
       <DeleteCostCodeModal
         isOpen={showDeleteModal}

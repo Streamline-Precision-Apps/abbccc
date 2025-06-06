@@ -82,6 +82,7 @@ export interface CostCodeFormViewProps {
   successfullyUpdated: boolean;
   error?: string | null;
   tagSummaries: TagSummary[];
+  closeForm: () => void;
 }
 
 /**
@@ -120,9 +121,11 @@ export interface CostCodeRegistrationViewProps {
     cCNumber: string;
     cCName: string;
     isActive: boolean;
+    CCTags?: Array<{ id: string; name: string }>;
   }) => Promise<RegistrationResult>;
   onCancel: () => void;
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  tagSummaries?: TagSummary[];
 }
 
 /**

@@ -6,10 +6,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
+import { EditableFields } from "@/components/(reusable)/EditableField";
 import { CostCode, Tag, TagSummary } from "../../../types";
 import DeleteConfirmationModal from "../../shared/DeleteConfirmationModal";
 import Spinner from "@/components/(animations)/spinner";
 import { TagOperationResult } from "../hooks/useTagsForm";
+import DiscardChangesModal from "../../shared/DiscardChangesModal";
 
 interface TagsFormViewProps {
   formData?: Tag | null;
@@ -36,6 +38,7 @@ interface TagsFormViewProps {
       "idle" | "creating" | "editing" | "editingGroups" | "creatingGroups"
     >
   >;
+  closeForm: () => void;
 }
 
 export default function TagsFormView({
@@ -44,12 +47,17 @@ export default function TagsFormView({
   onDiscardChanges,
   onSaveChanges,
   onInputChange,
+  onRevertField,
   onRegisterNew,
   onToggleCostCode,
   setCostCodeUIState,
+  closeForm,
+  hasUnsavedChanges,
+  changedFields,
 }: TagsFormViewProps) {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showCloseModal, setShowCloseModal] = useState<boolean>(false);
+
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -57,9 +65,21 @@ export default function TagsFormView({
 
   const numberOfCostCodes = formData?.CostCodes?.length || 0;
 
+  // Handle the close button click
+  const handleCloseClick = useCallback(() => {
+    setError(null);
+    setShowCloseModal(true);
+  }, []);
+
+  // Handle confirming close
+  const handleCloseConfirm = useCallback(() => {
+    setShowCloseModal(false);
+    closeForm();
+  }, [closeForm]);
+
   // Handle the delete button click
   const handleDeleteClick = useCallback(() => {
-    setDeleteError(null);
+    setError(null);
     setShowDeleteModal(true);
   }, []);
 
@@ -72,8 +92,8 @@ export default function TagsFormView({
     setIsDeleting(false);
 
     if (!result.success) {
-      setDeleteError(result.error || "Failed to delete Tag");
-      setTimeout(() => setDeleteError(null), 3000);
+      setError(result.error || "Failed to delete Tag");
+      setTimeout(() => setError(null), 3000);
       console.error("Error deleting Tag:", result.error);
       return;
     }
@@ -84,7 +104,7 @@ export default function TagsFormView({
   // Handle cancelling deletion
   const handleDeleteCancel = useCallback(() => {
     setShowDeleteModal(false);
-    setDeleteError(null);
+    setError(null);
   }, []);
 
   // Handle saving changes
@@ -138,8 +158,13 @@ export default function TagsFormView({
             background={"none"}
             className="w-fit h-auto"
             onClick={onRegisterNew}
+            disabled={isDeleting || isSaving || hasUnsavedChanges}
           >
-            <Texts size="sm" text="link">
+            <Texts
+              size="sm"
+              text="link"
+              className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
+            >
               Create New Group
             </Texts>
           </Buttons>
@@ -148,7 +173,40 @@ export default function TagsFormView({
             shadow="none"
             background={"none"}
             className="w-fit h-auto"
+            onClick={onDiscardChanges}
+            disabled={isDeleting || isSaving || !hasUnsavedChanges}
+          >
+            <Texts
+              size="sm"
+              text="link"
+              className={!hasUnsavedChanges ? "text-app-dark-gray" : ""}
+            >
+              Discard Changes
+            </Texts>
+          </Buttons>
+
+          <Buttons
+            shadow="none"
+            background={"none"}
+            className="w-fit h-auto"
+            onClick={handleSaveChanges}
+            disabled={isDeleting || isSaving || !hasUnsavedChanges}
+          >
+            <Texts
+              size="sm"
+              text="link"
+              className={!hasUnsavedChanges ? "text-app-dark-gray" : ""}
+            >
+              {isSaving ? <Spinner size={20} /> : "Save Changes"}
+            </Texts>
+          </Buttons>
+
+          <Buttons
+            shadow="none"
+            background={"none"}
+            className="w-fit h-auto"
             onClick={handleDeleteClick}
+            disabled={isDeleting || isSaving}
           >
             <Texts size="sm" text="link">
               {isDeleting ? <Spinner size={20} /> : "Delete Group"}
@@ -159,68 +217,69 @@ export default function TagsFormView({
             shadow="none"
             background={"none"}
             className="w-fit h-auto"
-            onClick={onDiscardChanges}
+            onClick={!hasUnsavedChanges ? closeForm : handleCloseClick}
           >
-            <Texts size="sm" text="link">
-              Discard Changes
-            </Texts>
-          </Buttons>
-
-          <Buttons
-            shadow="none"
-            background={"none"}
-            className="w-fit h-auto"
-            onClick={handleSaveChanges}
-          >
-            <Texts size="sm" text="link">
-              {isSaving ? <Spinner size={20} /> : "Save Changes"}
-            </Texts>
+            <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />
           </Buttons>
         </Holds>
 
-        <Holds background="white" className="w-full h-full p-4 gap-4">
-          <Holds className="">
-            <label htmlFor="name" className="text-sm font-medium">
+        <Holds background="white" className="w-full h-full px-4 py-2 gap-2">
+          <Holds position={"left"} className="w-1/2 h-fit">
+            <label htmlFor="name" className="text-xs">
               Group Name
             </label>
-            <Inputs
-              id="name"
+            <EditableFields
+              type="text"
               name="name"
               value={formData?.name || ""}
               onChange={(e) => onInputChange("name", e.target.value)}
-              className="w-1/2 text-sm"
+              isChanged={changedFields.has("name")}
+              onRevert={() => onRevertField("name")}
+              variant={changedFields.has("name") ? "edited" : "default"}
+              size="sm"
+              disable={isSaving}
             />
           </Holds>
-
-          <Holds className="">
-            <label htmlFor="description" className="text-sm font-medium">
+          <Holds className="h-fit">
+            <label htmlFor="description" className="text-xs">
               Group Description
             </label>
-            <TextAreas
-              id="description"
+            <EditableFields
+              formDatatype="textarea"
               name="description"
               value={formData?.description || ""}
               onChange={(e) => onInputChange("description", e.target.value)}
-              className="w-full text-sm"
-              style={{ resize: "none" }}
+              isChanged={changedFields.has("description")}
+              onRevert={() => onRevertField("description")}
+              variant={changedFields.has("description") ? "edited" : "default"}
+              size="sm"
+              className="w-full"
+              rows={3}
+              disable={isSaving}
             />
           </Holds>
         </Holds>
 
         <Holds
           background="white"
-          className="w-full h-full p-4 overflow-auto no-scrollbar"
+          className="w-full h-full px-4 pt-2 pb-4 overflow-auto no-scrollbar"
         >
-          <Grids className="w-full h-full grid-rows-[30px_1fr] gap-1">
+          <Grids className="w-full h-full grid-rows-[25px_1fr] gap-1">
             <Holds position={"row"} className="w-full h-full justify-between">
-              <Texts position={"left"} size="md" className="font-medium">
+              <Texts position={"left"} size="sm">
                 Cost Codes in Group
               </Texts>
-              <Texts position={"right"} size="md">
+              <Texts position={"right"} size="sm">
                 Cost Codes Count: <span>{numberOfCostCodes}</span>
               </Texts>
             </Holds>
-            <Holds className="w-full h-full rounded-[10px] border-black border-[3px] p-4 overflow-auto no-scrollbar">
+            <Holds
+              className={`w-full h-full rounded-[10px] border-[3px] px-4 py-2 overflow-auto no-scrollbar ${
+                changedFields.has("CostCodes")
+                  ? "border-app-orange"
+                  : "border-black"
+              }`}
+            >
               {formData?.CostCodes && formData.CostCodes.length ? (
                 formData.CostCodes.map((costCode) => (
                   <Holds
@@ -255,6 +314,12 @@ export default function TagsFormView({
         onCancel={handleDeleteCancel}
         itemName={formData?.name || "this group"}
         itemType=""
+      />
+      <DiscardChangesModal
+        isOpen={showCloseModal}
+        confirmDiscardChanges={handleCloseConfirm}
+        cancelDiscard={() => setShowCloseModal(false)}
+        message="You have unsaved changes. Are you sure you want to close without saving?"
       />
     </Holds>
   );
