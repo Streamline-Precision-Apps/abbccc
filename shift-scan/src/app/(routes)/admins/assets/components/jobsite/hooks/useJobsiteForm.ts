@@ -98,10 +98,10 @@ export const useJobsiteForm = ({
   const arraysEqual = (arr1: any, arr2: any): boolean => {
     if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
     if (arr1.length !== arr2.length) return false;
-    
+
     const sortedArr1 = [...arr1].sort((a, b) => a.id.localeCompare(b.id));
     const sortedArr2 = [...arr2].sort((a, b) => a.id.localeCompare(b.id));
-    
+
     return sortedArr1.every((item1, index) => {
       const item2 = sortedArr2[index];
       return item1.id === item2.id && item1.name === item2.name;
@@ -133,7 +133,7 @@ export const useJobsiteForm = ({
       const originalValue = selectJobsite[fieldName as keyof Jobsite];
 
       let hasChanged = false;
-      
+
       // Special handling for array fields (like CCTags)
       if (Array.isArray(value) && Array.isArray(originalValue)) {
         hasChanged = !arraysEqual(value, originalValue);
