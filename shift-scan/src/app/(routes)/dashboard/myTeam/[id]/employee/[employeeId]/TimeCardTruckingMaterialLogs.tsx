@@ -29,6 +29,9 @@ type TimeCardTruckingMaterialHaulLogsProps = {
   manager: string;
   truckingMaterialHaulLogs: TruckingMaterialHaulLogData;
   onDataChange: (data: TruckingMaterialHaulLogData) => void;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 // Helper to flatten nested material logs for server submission
@@ -43,13 +46,11 @@ export const flattenMaterialLogs = (
         if (
           material &&
           material.id &&
-          (
-            material.name ||
+          (material.name ||
             material.LocationOfMaterial ||
             material.materialWeight !== null ||
             material.lightWeight !== null ||
-            material.grossWeight !== null
-          )
+            material.grossWeight !== null)
         ) {
           result.push({
             id: material.id,
@@ -72,9 +73,69 @@ export default function TimeCardTruckingMaterialLogs({
   manager,
   truckingMaterialHaulLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardTruckingMaterialHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingMaterialLogs");
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
 
+  // Create a unique key for each input field
+  const getInputKey = (
+    logId: string,
+    materialId: string,
+    fieldName: string
+  ) => {
+    return `${logId}-${materialId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    logId: string,
+    materialId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(logId, materialId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (
+    logId: string,
+    materialId: string,
+    fieldName: string,
+    value: any
+  ) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, materialId, fieldName)]: value,
+    }));
+  };
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (
+    itemIdx: number,
+    logId: string,
+    materialId: string,
+    field: keyof ProcessedMaterialLog
+  ) => {
+    const key = getInputKey(logId, materialId, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      handleMaterialChange(itemIdx, logId, materialId, field, value);
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
   // Handler for updating a nested Material item
   const handleMaterialChange = (
     truckingLogItemIndex: number,
@@ -108,22 +169,6 @@ export default function TimeCardTruckingMaterialLogs({
     onDataChange(updated);
   };
 
-  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
-
-  useEffect(() => {
-    const fetchMaterialTypes = async () => {
-      try {
-        const materialTypesResponse = await fetch("/api/getMaterialTypes");
-        const materialTypesData = await materialTypesResponse.json();
-        setMaterialTypes(materialTypesData);
-      } catch {
-        console.error("Error fetching material types");
-      }
-    };
-
-    fetchMaterialTypes();
-  }, []);
-
   const isEmptyData = truckingMaterialHaulLogs.length === 0;
 
   return (
@@ -154,7 +199,9 @@ export default function TimeCardTruckingMaterialLogs({
                       <Holds
                         key={`${log.id}-${material.id}`}
                         background={"white"}
-                        className="border-black border-[3px] rounded-lg mb-2"
+                        className={`border-black border-[3px] rounded-lg mb-2 ${
+                          focusIds.includes(material.id) ? "bg-orange-400" : ""
+                        }`}
                       >
                         <Buttons
                           shadow={"none"}
@@ -167,32 +214,37 @@ export default function TimeCardTruckingMaterialLogs({
                                 rows={"2"}
                                 className="w-full h-full rounded-none"
                               >
+                                {" "}
                                 <Holds className="row-start-1 row-end-2 h-full rounded-none border-b-[1.5px] border-black">
+                                  {" "}
                                   {edit ? (
-                                    <select
-                                      value={material.name}
+                                    <Inputs
+                                      value={getDisplayValue(
+                                        log.id,
+                                        material.id,
+                                        "name",
+                                        material.name
+                                      )}
                                       onChange={(e) =>
-                                        handleMaterialChange(
-                                          itemIdx,
+                                        handleLocalChange(
                                           log.id,
                                           material.id,
                                           "name",
                                           e.target.value
                                         )
                                       }
+                                      onBlur={() =>
+                                        handleBlur(
+                                          itemIdx,
+                                          log.id,
+                                          material.id,
+                                          "name"
+                                        )
+                                      }
                                       disabled={!edit}
+                                      placeholder="Material"
                                       className="w-full h-full border-none rounded-none rounded-tl-md text-xs px-2 bg-white"
-                                    >
-                                      <option value="">Select Material</option>
-                                      {materialTypes.map((materialType) => (
-                                        <option
-                                          key={materialType.id}
-                                          value={materialType.name}
-                                        >
-                                          {materialType.name}
-                                        </option>
-                                      ))}
-                                    </select>
+                                    />
                                   ) : (
                                     <Inputs
                                       value={material.name}
@@ -210,17 +262,29 @@ export default function TimeCardTruckingMaterialLogs({
                                       className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
                                     />
                                   )}
-                                </Holds>
+                                </Holds>{" "}
                                 <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
                                   <Inputs
-                                    value={material.LocationOfMaterial}
+                                    value={getDisplayValue(
+                                      log.id,
+                                      material.id,
+                                      "LocationOfMaterial",
+                                      material.LocationOfMaterial
+                                    )}
                                     onChange={(e) =>
-                                      handleMaterialChange(
-                                        itemIdx,
+                                      handleLocalChange(
                                         log.id,
                                         material.id,
                                         "LocationOfMaterial",
                                         e.target.value
+                                      )
+                                    }
+                                    onBlur={() =>
+                                      handleBlur(
+                                        itemIdx,
+                                        log.id,
+                                        material.id,
+                                        "LocationOfMaterial"
                                       )
                                     }
                                     disabled={!edit}
@@ -244,20 +308,32 @@ export default function TimeCardTruckingMaterialLogs({
                                     className="px-1"
                                   >
                                     Material
-                                  </Titles>
+                                  </Titles>{" "}
                                   <Inputs
                                     value={
-                                      material.materialWeight?.toString() || ""
+                                      getDisplayValue(
+                                        log.id,
+                                        material.id,
+                                        "materialWeight",
+                                        material.materialWeight
+                                      ) || ""
                                     }
                                     onChange={(e) =>
-                                      handleMaterialChange(
-                                        itemIdx,
+                                      handleLocalChange(
                                         log.id,
                                         material.id,
                                         "materialWeight",
                                         e.target.value
                                           ? Number(e.target.value)
                                           : null
+                                      )
+                                    }
+                                    onBlur={() =>
+                                      handleBlur(
+                                        itemIdx,
+                                        log.id,
+                                        material.id,
+                                        "materialWeight"
                                       )
                                     }
                                     disabled={!edit}
@@ -277,20 +353,32 @@ export default function TimeCardTruckingMaterialLogs({
                                     className="px-1"
                                   >
                                     Light
-                                  </Titles>
+                                  </Titles>{" "}
                                   <Inputs
                                     value={
-                                      material.lightWeight?.toString() || ""
+                                      getDisplayValue(
+                                        log.id,
+                                        material.id,
+                                        "lightWeight",
+                                        material.lightWeight
+                                      ) || ""
                                     }
                                     onChange={(e) =>
-                                      handleMaterialChange(
-                                        itemIdx,
+                                      handleLocalChange(
                                         log.id,
                                         material.id,
                                         "lightWeight",
                                         e.target.value
                                           ? Number(e.target.value)
                                           : null
+                                      )
+                                    }
+                                    onBlur={() =>
+                                      handleBlur(
+                                        itemIdx,
+                                        log.id,
+                                        material.id,
+                                        "lightWeight"
                                       )
                                     }
                                     disabled={!edit}
@@ -310,20 +398,32 @@ export default function TimeCardTruckingMaterialLogs({
                                     className="px-1"
                                   >
                                     Gross
-                                  </Titles>
+                                  </Titles>{" "}
                                   <Inputs
                                     value={
-                                      material.grossWeight?.toString() || ""
+                                      getDisplayValue(
+                                        log.id,
+                                        material.id,
+                                        "grossWeight",
+                                        material.grossWeight
+                                      ) || ""
                                     }
                                     onChange={(e) =>
-                                      handleMaterialChange(
-                                        itemIdx,
+                                      handleLocalChange(
                                         log.id,
                                         material.id,
                                         "grossWeight",
                                         e.target.value
                                           ? Number(e.target.value)
                                           : null
+                                      )
+                                    }
+                                    onBlur={() =>
+                                      handleBlur(
+                                        itemIdx,
+                                        log.id,
+                                        material.id,
+                                        "grossWeight"
                                       )
                                     }
                                     disabled={!edit}

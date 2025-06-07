@@ -604,6 +604,7 @@
     "Approve": "Approve",
     "Edit": "Edit",
     "EndTime": "End Time",
+    "NoTeamMembers": "No team members found",
     "ReviewYourTeam": "Review Your Team"
   },
 
@@ -1085,6 +1086,7 @@
 
   "TruckingAssistant": {
     "WorkDetails": "Work Details",
+    "EnterMaterialType": "Enter Material Type",
     "WriteYourNotesHere": "Write your Notes here...",
     "Mileage": "Mileage",
     "State": "State",

@@ -15,6 +15,9 @@ type TimeCardTruckingStateMileageLogsProps = {
   manager: string;
   truckingStateLogs: TruckingStateLogData;
   onDataChange: (data: TruckingStateLogData) => void;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 type ProcessedStateMileage = {
@@ -31,8 +34,54 @@ export default function TimeCardTruckingStateMileageLogs({
   manager,
   truckingStateLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardTruckingStateMileageLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingStateMileageLogs");
+
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<Record<string, string | number | null>>({});
+
+  // Create a unique key for each input field
+  const getInputKey = (logId: string, mileageId: string, fieldName: string) => {
+    return `${logId}-${mileageId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (logId: string, mileageId: string, fieldName: string, originalValue: any) => {
+    const key = getInputKey(logId, mileageId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (logId: string, mileageId: string, fieldName: string, value: any) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, mileageId, fieldName)]: value,
+    }));
+  };
+
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (logId: string, mileageId: string, field: keyof ProcessedStateMileage) => {
+    const key = getInputKey(logId, mileageId, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      // Make sure value is not null before passing to handleStateMileageChange
+      if (value !== null) {
+        handleStateMileageChange(mileageId, logId, field, value as string | number);
+      }
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
+
   // Process the data to combine state mileages with their truck info
   const allStateMileages = truckingStateLogs
     .flatMap((item) => item.TruckingLogs)
@@ -147,7 +196,9 @@ export default function TimeCardTruckingStateMileageLogs({
               {editedStateMileages.map((mileage) => (
                 <Holds
                   key={`${mileage.truckingLogId}-${mileage.id}`}
-                  className="border-black border-[3px] rounded-lg bg-white mb-2"
+                  className={`border-black border-[3px] rounded-lg bg-white mb-2 ${
+                    focusIds.includes(mileage.id) ? "bg-orange-400" : ""
+                  }`}
                 >
                   <Buttons
                     shadow={"none"}
@@ -163,50 +214,52 @@ export default function TimeCardTruckingStateMileageLogs({
                           readOnly
                         />
                       </Holds>
-                      <Holds className="col-start-3 col-end-4 w-full h-full">
-                        {edit ? (
-                          <select
-                            value={mileage.state}
+                      <Holds className="col-start-3 col-end-4 w-full h-full">                        {edit ? (                          <select
+                            value={getDisplayValue(mileage.truckingLogId, mileage.id, "state", mileage.state)}
                             onChange={(e) =>
-                              handleStateMileageChange(
-                                mileage.id,
+                              handleLocalChange(
                                 mileage.truckingLogId,
+                                mileage.id,
                                 "state",
                                 e.target.value
                               )
+                            }
+                            onBlur={() => 
+                              handleBlur(mileage.truckingLogId, mileage.id, "state")
                             }
                             className="w-full h-full border-none rounded-none text-center text-xs bg-white"
                           >
                             <option value="">{t("SelectState")}</option>
                             {US_STATES.map((state) => (
                               <option key={state.code} value={state.code}>
-                                {state.code}
+                                {state.name}
                               </option>
                             ))}
-                          </select>
-                        ) : (
+                          </select>                        ) : (
                           <Inputs
-                            value={mileage.state}
+                            value={US_STATES.find(state => state.code === mileage.state)?.name || mileage.state}
                             disabled={true}
                             className="w-full h-full border-none rounded-none text-center text-xs"
                             readOnly
                           />
                         )}
                       </Holds>
-                      <Holds className="col-start-4 col-end-5 w-full h-full border-l-[3px] border-black">
-                        <Inputs
+                      <Holds className="col-start-4 col-end-5 w-full h-full border-l-[3px] border-black">                        <Inputs
                           type="number"
-                          value={mileage.stateLineMileage?.toString() || ""}
+                          value={getDisplayValue(mileage.truckingLogId, mileage.id, "stateLineMileage", mileage.stateLineMileage?.toString() || "")}
                           onChange={(e) =>
-                            handleStateMileageChange(
-                              mileage.id,
+                            handleLocalChange(
                               mileage.truckingLogId,
+                              mileage.id,
                               "stateLineMileage",
                               e.target.value
                             )
                           }
                           disabled={!edit}
                           className="w-full h-full py-2 border-none rounded-none rounded-tr-md rounded-br-md text-right text-xs"
+                          onBlur={() =>
+                            handleBlur(mileage.truckingLogId, mileage.id, "stateLineMileage")
+                          }
                         />
                       </Holds>
                     </Grids>

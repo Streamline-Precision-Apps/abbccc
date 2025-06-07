@@ -53,20 +53,6 @@ export default function MaterialItem({
     { id: string; name: string }[]
   >([]);
 
-  // Fetch material types (same as TimeCardTascoHaulLogs)
-  useEffect(() => {
-    const fetchMaterialTypes = async () => {
-      try {
-        const materialTypesResponse = await fetch("/api/getMaterialTypes");
-        const materialTypesData = await materialTypesResponse.json();
-        setMaterialTypes(materialTypesData);
-      } catch {
-        console.error("Error fetching material types");
-      }
-    };
-    fetchMaterialTypes();
-  }, []);
-
   // Find the selected material when selectedItemId changes
   useEffect(() => {
     if (selectedItemId && material) {
@@ -162,25 +148,20 @@ export default function MaterialItem({
       {/* Material details */}
       <Holds background={"white"} className="pt-10">
         <Contents width={"section"}>
+          {" "}
           <Holds className="mb-2">
             <label className="text-sm font-medium">
               {t("MaterialName")}
               <span className="text-red-500 pl-0.5">*</span>
             </label>
-            <Selects
+            <Inputs
+              type="text"
               value={currentMaterial.name || ""}
               onChange={(e) => handleChange("name", e.target.value)}
-              className="w-full pl-2 text-base"
-            >
-              <option value="">{t("SelectMaterial")}</option>
-              {materialTypes.map((material) => (
-                <option key={material.id} value={material.name}>
-                  {material.name}
-                </option>
-              ))}
-            </Selects>
+              className="w-full text-base pl-2"
+              placeholder={t("EnterMaterialType")}
+            />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium">
               {t("OriginOfMaterial")}
@@ -195,7 +176,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium mb-1">
               {t("MaterialWeight")}
@@ -210,7 +190,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium ">
               {t("LightWeight")} <span className="text-red-500 pl-0.5">*</span>
@@ -224,7 +203,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium ">
               {t("GrossWeight")}
@@ -239,7 +217,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium">{t("LoadType")}</label>
             <Selects

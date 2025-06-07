@@ -18,6 +18,9 @@ interface TimeCardTruckingMileageProps {
   manager: string;
   truckingMileage: TruckingMileageData;
   onDataChange: (data: TruckingMileageData) => void; // FIX: expects nested structure
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 }
 
 export default function TimeCardTruckingMileage({
@@ -25,8 +28,65 @@ export default function TimeCardTruckingMileage({
   manager,
   truckingMileage,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardTruckingMileageProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingMileage");
+
+  // Debug what data we're receiving
+  useEffect(() => {
+    console.log("TimeCardTruckingMileage received data:", {
+      isReviewYourTeam,
+      truckingMileageLength: truckingMileage?.length,
+      truckingMileage,
+    });
+  }, [truckingMileage, isReviewYourTeam]);
+
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
+
+  // Create a unique key for each input field
+  const getInputKey = (logId: string, fieldName: string) => {
+    return `${logId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    logId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(logId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (logId: string, fieldName: string, value: any) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, fieldName)]: value,
+    }));
+  };
+
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (logId: string, field: keyof TruckingMileageUpdate) => {
+    const key = getInputKey(logId, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      handleMileageChange(logId, field, value);
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
 
   // Use truckingMileage prop directly for rendering and updates
   const allTruckingLogs = truckingMileage
@@ -100,65 +160,102 @@ export default function TimeCardTruckingMileage({
                 </Holds>
               </Grids>
 
-              {allTruckingLogs.map((sheet) => (
-                <Holds
-                  key={sheet.id}
-                  className="border-black border-[3px] rounded-lg bg-white mb-2"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="w-full h-full text-left"
+              {allTruckingLogs.map((sheet) => {
+                const isFocused = focusIds.includes(sheet.id);
+                const handleToggleFocus = () => {
+                  if (isFocused) {
+                    setFocusIds(focusIds.filter((id) => id !== sheet.id));
+                  } else {
+                    setFocusIds([...focusIds, sheet.id]);
+                  }
+                };
+                return (
+                  <Holds
+                    key={sheet.id}
+                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
+                      isFocused ? "bg-orange-400" : "bg-white"
+                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
-                    <Grids cols={"4"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-3 h-full w-full">
-                        <Inputs
-                          type={"text"}
-                          value={sheet.Equipment?.name || ""}
-                          className="text-xs border-none h-full w-full p-2.5 rounded-md rounded-tr-none rounded-br-none justify-center"
-                          disabled={true} // Equipment name should not be editable
-                          readOnly
-                        />
-                      </Holds>
-                      <Holds className="col-start-3 col-end-4 border-x-[3px] border-black h-full">
-                        <Holds className="h-full justify-center">
+                    {isReviewYourTeam && (
+                      <div
+                        className="absolute top-0 left-0 w-full h-full z-10 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleToggleFocus();
+                        }}
+                      />
+                    )}
+                    <Buttons
+                      shadow={"none"}
+                      background={"none"}
+                      className="w-full h-full text-left"
+                    >
+                      <Grids cols={"4"} className="w-full h-full">
+                        <Holds className="col-start-1 col-end-3 h-full w-full">
                           <Inputs
-                            type={"number"}
-                            value={sheet.startingMileage}
-                            className="text-xs border-none h-full rounded-none justify-center p-2.5"
-                            disabled={!edit}
-                            onChange={(e) =>
-                              handleMileageChange(
+                            type={"text"}
+                            value={sheet.Equipment?.name || ""}
+                            className="text-xs border-none h-full w-full p-2.5 rounded-md rounded-tr-none rounded-br-none justify-center"
+                            disabled={true} // Equipment name should not be editable
+                            readOnly
+                          />
+                        </Holds>
+                        <Holds className="col-start-3 col-end-4 border-x-[3px] border-black h-full">
+                          <Holds className="h-full justify-center">
+                            <Inputs
+                              type={"number"}
+                              value={getDisplayValue(
                                 sheet.id,
                                 "startingMileage",
-                                Number(e.target.value)
-                              )
-                            }
-                          />
+                                sheet.startingMileage
+                              )}
+                              className="text-xs border-none h-full rounded-none justify-center p-2.5"
+                              disabled={!edit}
+                              onChange={(e) =>
+                                handleLocalChange(
+                                  sheet.id,
+                                  "startingMileage",
+                                  Number(e.target.value)
+                                )
+                              }
+                              onBlur={() =>
+                                handleBlur(sheet.id, "startingMileage")
+                              }
+                            />
+                          </Holds>
                         </Holds>
-                      </Holds>
 
-                      <Holds className="col-start-4 col-end-5 h-full">
-                        <Holds className="h-full justify-center">
-                          <Inputs
-                            type={"number"}
-                            value={sheet.endingMileage || ""}
-                            className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right p-2.5"
-                            disabled={!edit}
-                            onChange={(e) =>
-                              handleMileageChange(
+                        <Holds className="col-start-4 col-end-5 h-full">
+                          <Holds className="h-full justify-center">
+                            <Inputs
+                              type={"number"}
+                              value={getDisplayValue(
                                 sheet.id,
                                 "endingMileage",
-                                Number(e.target.value)
-                              )
-                            }
-                          />
+                                sheet.endingMileage || ""
+                              )}
+                              className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right p-2.5"
+                              disabled={!edit}
+                              onChange={(e) =>
+                                handleLocalChange(
+                                  sheet.id,
+                                  "endingMileage",
+                                  Number(e.target.value)
+                                )
+                              }
+                              onBlur={() =>
+                                handleBlur(sheet.id, "endingMileage")
+                              }
+                            />
+                          </Holds>
                         </Holds>
-                      </Holds>
-                    </Grids>
-                  </Buttons>
-                </Holds>
-              ))}
+                      </Grids>
+                    </Buttons>
+                  </Holds>
+                );
+              })}
             </>
           )}
         </Holds>

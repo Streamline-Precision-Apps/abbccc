@@ -1,10 +1,10 @@
 "use client";
+import React, { useState, useEffect, useCallback } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import { TimesheetHighlights } from "@/lib/types";
-import { useState, useEffect, useCallback } from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
@@ -20,6 +20,9 @@ interface TimeCardHighlightsProps {
   manager: string;
   onDataChange: (data: TimesheetHighlights[]) => void;
   date: string;
+  focusIds?: string[];
+  setFocusIds?: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 }
 
 export default function TimeCardHighlights({
@@ -28,21 +31,123 @@ export default function TimeCardHighlights({
   manager,
   onDataChange,
   date,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardHighlightsProps) {
   const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
   const [costCodeModalOpen, setCostCodeModalOpen] = useState(false);
   const [currentEditingId, setCurrentEditingId] = useState<string | null>(null);
   const t = useTranslations("Clock");
 
-  const isEmptyData = !highlightTimesheet || highlightTimesheet.length === 0;
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
 
+  // Create a unique key for each input field
+  const getInputKey = (id: string, fieldName: string) => {
+    return `${id}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    id: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(id, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (id: string, fieldName: string, value: any) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(id, fieldName)]: value,
+    }));
+  };
+
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (
+    id: string,
+    field: "startTime" | "endTime",
+    timeString: string
+  ) => {
+    const key = getInputKey(id, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      handleTimeChange(id, field, value as string);
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
+
+  const isEmptyData = !highlightTimesheet || highlightTimesheet.length === 0;
   const handleTimeChange = useCallback(
     (id: string, field: "startTime" | "endTime", timeString: string) => {
       const updated = highlightTimesheet.map((item) => {
         if (item.id === id) {
-          const newValue = timeString
-            ? new Date(`${date}T${timeString}:00`)
-            : null;
+          let newValue = null;
+
+          if (timeString) {
+            try {
+              // Extract time components
+              const [hours, minutes] = timeString
+                .split(":")
+                .map((part) => parseInt(part, 10));
+
+              // Create a new date using the original date components but with new time
+              let baseDate;
+
+              // Try to use the existing date if possible
+              if (item[field] && item[field] instanceof Date) {
+                baseDate = new Date(item[field]);
+              } else if (item[field] && typeof item[field] === "string") {
+                baseDate = new Date(item[field]);
+              } else {
+                // Fallback to the component's date prop
+                baseDate = new Date(date);
+              }
+
+              // Ensure we have a valid base date
+              if (isNaN(baseDate.getTime())) {
+                console.warn("Invalid base date, using current date");
+                baseDate = new Date(); // Last resort fallback
+              }
+
+              // Create a completely new date object to avoid reference issues
+              const newDate = new Date(baseDate);
+
+              // Set only the time portion, keeping the date intact
+              newDate.setHours(hours || 0);
+              newDate.setMinutes(minutes || 0);
+              newDate.setSeconds(0);
+              newDate.setMilliseconds(0);
+
+              // Validate final date
+              if (!isNaN(newDate.getTime())) {
+                console.log(`New valid date created: ${newDate.toISOString()}`);
+                newValue = newDate;
+              } else {
+                console.warn(`Failed to create valid date from: ${timeString}`);
+                newValue = item[field]; // Fallback to existing value
+              }
+            } catch (error) {
+              console.error(
+                `Error processing time value: ${timeString}`,
+                error
+              );
+              newValue = item[field]; // Keep existing value
+            }
+          }
+
           return { ...item, [field]: newValue };
         }
         return item;
@@ -84,15 +189,29 @@ export default function TimeCardHighlights({
     },
     [highlightTimesheet, onDataChange]
   );
-
   const formatTimeForInput = useCallback(
     (date: Date | string | null | undefined): string => {
       if (!date) return "";
 
       try {
-        // Always parse as UTC and convert to local time zone
-        const dateObj = date instanceof Date ? date : new Date(date);
-        if (isNaN(dateObj.getTime())) return "";
+        // Safely handle the date value
+        let dateObj: Date;
+
+        if (date instanceof Date) {
+          dateObj = date;
+        } else if (typeof date === "string") {
+          dateObj = new Date(date);
+        } else {
+          return "";
+        }
+
+        // Validate the date is valid before attempting to format
+        if (isNaN(dateObj.getTime())) {
+          console.warn("Invalid date value:", date);
+          return "";
+        }
+
+        // Format using local timezone
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const zoned = toZonedTime(dateObj, timeZone);
         const hours = zoned.getHours().toString().padStart(2, "0");
@@ -105,20 +224,34 @@ export default function TimeCardHighlights({
     },
     []
   );
-
   // Helper to format time for display in local timezone (HH:mm)
   const formatTimeLocal = useCallback(
     (date: Date | string | null | undefined): string => {
       if (!date) return "";
       try {
-        const dateObj = date instanceof Date ? date : new Date(date);
-        if (isNaN(dateObj.getTime())) return "";
+        // Safely handle the date value
+        let dateObj: Date;
+
+        if (date instanceof Date) {
+          dateObj = date;
+        } else if (typeof date === "string") {
+          dateObj = new Date(date);
+        } else {
+          return "";
+        }
+
+        // Check if date is valid before formatting
+        if (isNaN(dateObj.getTime())) {
+          console.warn("Invalid date value for local formatting:", date);
+          return "";
+        }
+
         return dateObj.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         });
       } catch (error) {
-        console.error("Error formatting time:", error);
+        console.error("Error formatting local time:", error);
         return "";
       }
     },
@@ -155,9 +288,51 @@ export default function TimeCardHighlights({
     setCostCodeModalOpen(false);
   };
 
+  // Add debugging function to log date values
+  const debugLogDate = useCallback((context: string, dateValue: any) => {
+    if (!dateValue) {
+      console.log(`${context}: undefined or null`);
+      return;
+    }
+
+    try {
+      if (dateValue instanceof Date) {
+        console.log(
+          `${context}: Date object - ${dateValue.toISOString()} - Valid: ${!isNaN(
+            dateValue.getTime()
+          )}`
+        );
+      } else if (typeof dateValue === "string") {
+        const parsed = new Date(dateValue);
+        console.log(
+          `${context}: String - ${dateValue} - Parsed to: ${parsed.toISOString()} - Valid: ${!isNaN(
+            parsed.getTime()
+          )}`
+        );
+      } else {
+        console.log(
+          `${context}: Unknown type - ${typeof dateValue} - ${String(
+            dateValue
+          )}`
+        );
+      }
+    } catch (error) {
+      console.error(`${context}: Error logging date:`, error);
+    }
+  }, []);
+
+  // Debug log when component renders with new timesheet data
   useEffect(() => {
-    console.log("TimeCardHighlights received data:", highlightTimesheet);
-  }, [highlightTimesheet]);
+    console.log(
+      `TimeCardHighlights rendered with ${highlightTimesheet.length} items`
+    );
+
+    if (highlightTimesheet.length > 0) {
+      const sample = highlightTimesheet[0];
+      debugLogDate("First timesheet startTime", sample.startTime);
+      debugLogDate("First timesheet endTime", sample.endTime);
+    }
+  }, [highlightTimesheet, debugLogDate]);
 
   return (
     <Holds className="w-full h-full">
@@ -181,102 +356,175 @@ export default function TimeCardHighlights({
                   <Titles position={"right"} size={"h6"}>
                     {t("JobsiteCostCode")}
                   </Titles>
-                </Holds>
-              </Grids>
+                </Holds>{" "}
+              </Grids>{" "}
+              {highlightTimesheet.map((sheet) => {
+                // Ensure focusIds exists and is an array before using includes
+                const isFocused =
+                  Array.isArray(focusIds) && focusIds.includes(sheet.id);
+                const handleToggleFocus = () => {
+                  if (
+                    !isReviewYourTeam ||
+                    !setFocusIds ||
+                    !Array.isArray(focusIds)
+                  )
+                    return;
+                  if (isFocused) {
+                    setFocusIds(focusIds.filter((id) => id !== sheet.id));
+                  } else {
+                    setFocusIds([...focusIds, sheet.id]);
+                  }
+                };
+                const rowContent = (
+                  <>
+                    <Holds
+                      background={"white"}
+                      className={`relative border-black border-[3px] rounded-[10px] mb-3 ${
+                        isFocused ? "bg-orange-400" : ""
+                      } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                      onClick={(e) => {
+                        if (!isReviewYourTeam) {
+                          return;
+                        }
+                        // Stop propagation to prevent parent handlers from triggering
+                        e.stopPropagation();
 
-              {highlightTimesheet.map((sheet) => (
-                <Holds
-                  key={sheet.id}
-                  background={"white"}
-                  className="border-black border-[3px] rounded-[10px] mb-3"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="w-full h-full text-left"
-                  >
-                    {sheet.startTime && sheet.endTime ? (
-                      <Grids cols={"6"} className="w-full h-full">
-                        <Holds className="col-start-1 col-end-2 p-2">
-                          <Images
-                            titleImg={
-                              sheet.workType === "TASCO"
-                                ? "/tasco.svg"
-                                : sheet.workType === "TRUCK_DRIVER"
-                                ? "/trucking.svg"
-                                : sheet.workType === "MECHANIC"
-                                ? "/mechanic.svg"
-                                : sheet.workType === "LABOR"
-                                ? "/equipment.svg"
-                                : "null"
-                            }
-                            titleImgAlt={`${sheet.workType} Icon`}
-                            className="m-auto w-8 h-8"
-                          />
-                        </Holds>
-                        <Holds className="col-start-2 col-end-4 border-x-[3px] border-black h-full">
-                          <Holds className="h-full justify-center border-b-[1.5px] border-black">
-                            <Inputs
-                              type="time"
-                              value={formatTimeForInput(sheet.startTime)}
-                              onChange={(e) =>
-                                handleTimeChange(
-                                  sheet.id,
-                                  "startTime",
-                                  e.target.value
-                                )
-                              }
-                              className="text-xs border-none h-full rounded-none justify-center"
-                              disabled={!edit}
-                            />
-                          </Holds>
-                          <Holds className="h-full w-full justify-center border-t-[1.5px] border-black">
-                            <Inputs
-                              type="time"
-                              value={formatTimeForInput(sheet.endTime)}
-                              onChange={(e) =>
-                                handleTimeChange(
-                                  sheet.id,
-                                  "endTime",
-                                  e.target.value
-                                )
-                              }
-                              className="text-xs border-none h-full rounded-none justify-center"
-                              disabled={!edit}
-                            />
-                          </Holds>
-                        </Holds>
-                        <Holds className="col-start-4 col-end-7 h-full">
-                          <Holds className="border-b-[1.5px] border-black h-full justify-center">
-                            <Inputs
-                              type={"text"}
-                              value={sheet.Jobsite?.name || "N/A"}
-                              className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none justify-center text-right"
-                              onClick={() => openJobsiteModal(sheet.id)}
-                              disabled={!edit}
-                              readOnly
-                            />
-                          </Holds>
-                          <Holds className="h-full justify-center text-right border-t-[1.5px] border-black">
-                            <Inputs
-                              type={"text"}
-                              value={sheet.costcode || "N/A"}
-                              className="text-xs border-none h-full rounded-t-none rounded-bl-none justify-center text-right"
-                              onClick={() => openCostCodeModal(sheet.id)}
-                              disabled={!edit}
-                              readOnly
-                            />
-                          </Holds>
-                        </Holds>
-                      </Grids>
-                    ) : (
-                      <Texts size="p6" className="text-gray-500 italic">
-                        {t("IncompleteTimesheetData")}
-                      </Texts>
-                    )}
-                  </Buttons>
-                </Holds>
-              ))}
+                        handleToggleFocus();
+                      }}
+                      // Add data attributes to help debug in browser
+                      data-review-mode={isReviewYourTeam ? "true" : "false"}
+                      data-row-id={sheet.id}
+                      data-focused={isFocused ? "true" : "false"}
+                    >
+                      {/* Add an explicit overlay div for click handling that's always on top */}
+                      {isReviewYourTeam && (
+                        <div
+                          className="absolute top-0 left-0 w-full h-full z-50 cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleToggleFocus();
+                          }}
+                        />
+                      )}
+                      <Buttons
+                        shadow={"none"}
+                        background={"none"}
+                        className="w-full h-full text-left"
+                        // Completely remove this onClick as it might interfere// Prevent button from capturing clicks in review mode
+                      >
+                        {sheet.startTime && sheet.endTime ? (
+                          <Grids cols={"6"} className="w-full h-full">
+                            <Holds className="col-start-1 col-end-2 p-2">
+                              <Images
+                                titleImg={
+                                  sheet.workType === "TASCO"
+                                    ? "/tasco.svg"
+                                    : sheet.workType === "TRUCK_DRIVER"
+                                    ? "/trucking.svg"
+                                    : sheet.workType === "MECHANIC"
+                                    ? "/mechanic.svg"
+                                    : sheet.workType === "LABOR"
+                                    ? "/equipment.svg"
+                                    : "null"
+                                }
+                                titleImgAlt={`${sheet.workType} Icon`}
+                                className="m-auto w-8 h-8"
+                              />
+                            </Holds>
+                            <Holds className="col-start-2 col-end-4 border-x-[3px] border-black h-full">
+                              <Holds className="h-full justify-center border-b-[1.5px] border-black">
+                                {" "}
+                                <Inputs
+                                  type="time"
+                                  value={getDisplayValue(
+                                    sheet.id,
+                                    "startTime",
+                                    formatTimeForInput(sheet.startTime)
+                                  )}
+                                  onChange={(e) =>
+                                    handleLocalChange(
+                                      sheet.id,
+                                      "startTime",
+                                      e.target.value
+                                    )
+                                  }
+                                  onBlur={(e) =>
+                                    handleBlur(
+                                      sheet.id,
+                                      "startTime",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="text-xs border-none h-full rounded-none justify-center"
+                                  disabled={!edit}
+                                />
+                              </Holds>
+                              <Holds className="h-full w-full justify-center border-t-[1.5px] border-black">
+                                {" "}
+                                <Inputs
+                                  type="time"
+                                  value={getDisplayValue(
+                                    sheet.id,
+                                    "endTime",
+                                    formatTimeForInput(sheet.endTime)
+                                  )}
+                                  onChange={(e) =>
+                                    handleLocalChange(
+                                      sheet.id,
+                                      "endTime",
+                                      e.target.value
+                                    )
+                                  }
+                                  onBlur={(e) =>
+                                    handleBlur(
+                                      sheet.id,
+                                      "endTime",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="text-xs border-none h-full rounded-none justify-center"
+                                  disabled={!edit}
+                                />
+                              </Holds>
+                            </Holds>
+                            <Holds className="col-start-4 col-end-7 h-full">
+                              <Holds className="border-b-[1.5px] border-black h-full justify-center">
+                                <Inputs
+                                  type={"text"}
+                                  value={sheet.Jobsite?.name || "N/A"}
+                                  className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none justify-center text-right"
+                                  onClick={() => openJobsiteModal(sheet.id)}
+                                  disabled={!edit}
+                                  readOnly
+                                />
+                              </Holds>
+                              <Holds className="h-full justify-center text-right border-t-[1.5px] border-black">
+                                <Inputs
+                                  type={"text"}
+                                  value={sheet.costcode || "N/A"}
+                                  className="text-xs border-none h-full rounded-t-none rounded-bl-none justify-center text-right"
+                                  onClick={() => openCostCodeModal(sheet.id)}
+                                  disabled={!edit}
+                                  readOnly
+                                />
+                              </Holds>
+                            </Holds>
+                          </Grids>
+                        ) : (
+                          <Texts size="p6" className="text-gray-500 italic">
+                            {t("IncompleteTimesheetData")}
+                          </Texts>
+                        )}
+                      </Buttons>
+                    </Holds>
+                  </>
+                );
+                // Always use a keyed fragment for the row
+                return (
+                  <React.Fragment key={sheet.id}>{rowContent}</React.Fragment>
+                );
+              })}
             </>
           )}
         </Holds>

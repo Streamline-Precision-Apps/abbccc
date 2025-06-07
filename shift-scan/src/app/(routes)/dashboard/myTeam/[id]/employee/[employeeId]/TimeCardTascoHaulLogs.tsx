@@ -23,6 +23,9 @@ type TimeCardTascoHaulLogsProps = {
   manager: string;
   tascoHaulLogs: TascoHaulLogData;
   onDataChange: (data: TascoHaulLogData) => void;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 // Helper to reconstruct the nested TascoHaulLogData structure
@@ -52,8 +55,59 @@ export default function TimeCardTascoHaulLogs({
   manager,
   tascoHaulLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardTascoHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTascoHaulLogs");
+
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
+
+  // Create a unique key for each input field
+  const getInputKey = (logId: string, fieldName: string) => {
+    return `${logId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    logId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(logId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (logId: string, fieldName: string, value: any) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, fieldName)]: value,
+    }));
+  };
+
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (logId: string, field: keyof ProcessedTascoHaulLog) => {
+    const key = getInputKey(logId, field);
+    if (key in inputValues) {
+      const value = inputValues[key];
+      // Make sure value is not null before passing to handleTascoHaulChange
+      if (value !== null) {
+        handleTascoHaulChange(logId, field, value as string | number);
+      }
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
+
   // Process the tasco haul logs
   const allTascoHaulLogs: ProcessedTascoHaulLog[] = tascoHaulLogs
     .flatMap((log) => log.TascoLogs)
@@ -149,107 +203,136 @@ export default function TimeCardTascoHaulLogs({
                 </Holds>
               </Grids>
 
-              {editedTascoHaulLogs.map((log) => (
-                <Holds
-                  key={log.id}
-                  className="border-black border-[3px] rounded-lg bg-white mb-2"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="size-full"
+              {editedTascoHaulLogs.map((log) => {
+                const isFocused = focusIds.includes(log.id);
+                const handleToggleFocus = () => {
+                  if (isFocused) {
+                    setFocusIds(focusIds.filter((id) => id !== log.id));
+                  } else {
+                    setFocusIds([...focusIds, log.id]);
+                  }
+                };
+                return (
+                  <Holds
+                    key={log.id}
+                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
+                      isFocused ? "bg-orange-400" : "bg-white"
+                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
-                    <Grids cols={"2"} rows={"2"} className="w-full h-full">
-                      <Holds className="size-full col-start-1 col-end-2 row-start-1 row-end-2 border-b-[3px] border-r-[3px] border-black">
-                        {edit ? (
-                          <select
-                            value={log.shiftType}
+                    {isReviewYourTeam && (
+                      <div
+                        className="absolute top-0 left-0 w-full h-full z-10 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleToggleFocus();
+                        }}
+                      />
+                    )}
+                    <Buttons
+                      shadow={"none"}
+                      background={"none"}
+                      className="size-full"
+                    >
+                      <Grids cols={"2"} rows={"2"} className="w-full h-full">
+                        <Holds className="size-full col-start-1 col-end-2 row-start-1 row-end-2 border-b-[3px] border-r-[3px] border-black">
+                          {edit ? (
+                            <select
+                              value={log.shiftType}
+                              onChange={(e) =>
+                                handleTascoHaulChange(
+                                  log.id,
+                                  "shiftType",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full h-full text-xs text-center border-none rounded-none rounded-tl-md py-2 bg-white"
+                            >
+                              {SHIFT_TYPES.map((shift) => (
+                                <option key={shift.value} value={shift.value}>
+                                  {shift.label}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Inputs
+                              value={log.shiftType}
+                              disabled={true}
+                              className="size-full text-xs text-center border-none rounded-none rounded-tl-md py-2"
+                              readOnly
+                            />
+                          )}
+                        </Holds>
+                        <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
+                          <Inputs
+                            value={log.equipmentId || "N/A"}
                             onChange={(e) =>
                               handleTascoHaulChange(
                                 log.id,
-                                "shiftType",
+                                "equipmentId",
                                 e.target.value
                               )
                             }
-                            className="w-full h-full text-xs text-center border-none rounded-none rounded-tl-md py-2 bg-white"
-                          >
-                            {SHIFT_TYPES.map((shift) => (
-                              <option key={shift.value} value={shift.value}>
-                                {shift.label}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <Inputs
-                            value={log.shiftType}
                             disabled={true}
-                            className="size-full text-xs text-center border-none rounded-none rounded-tl-md py-2"
-                            readOnly
+                            className="size-full text-xs text-center border-none rounded-none rounded-bl-md py-2"
                           />
-                        )}
-                      </Holds>
-                      <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
-                        <Inputs
-                          value={log.equipmentId || "N/A"}
-                          onChange={(e) =>
-                            handleTascoHaulChange(
-                              log.id,
-                              "equipmentId",
-                              e.target.value
-                            )
-                          }
-                          disabled={true}
-                          className="size-full text-xs text-center border-none rounded-none rounded-bl-md py-2"
-                        />
-                      </Holds>
-                      <Holds className="size-full col-start-2 col-end-3 row-start-1 row-end-2 border-b-[3px] border-black">
-                        {edit ? (
-                          <select
-                            value={log.materialType}
-                            onChange={(e) =>
-                              handleTascoHaulChange(
-                                log.id,
-                                "materialType",
-                                e.target.value
-                              )
-                            }
-                            className="w-full h-full text-xs text-center border-none rounded-none rounded-tr-md py-2 bg-white"
-                          >
-                            <option value="">{t("SelectMaterial")}</option>
-                            {materialTypes.map((material) => (
-                              <option key={material.id} value={material.name}>
-                                {material.name}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
+                        </Holds>
+                        <Holds className="size-full col-start-2 col-end-3 row-start-1 row-end-2 border-b-[3px] border-black">
+                          {edit ? (
+                            <select
+                              value={log.materialType}
+                              onChange={(e) =>
+                                handleTascoHaulChange(
+                                  log.id,
+                                  "materialType",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full h-full text-xs text-center border-none rounded-none rounded-tr-md py-2 bg-white"
+                            >
+                              <option value="">{t("SelectMaterial")}</option>
+                              {materialTypes.map((material) => (
+                                <option key={material.id} value={material.name}>
+                                  {material.name}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Inputs
+                              value={log.materialType}
+                              disabled={true}
+                              className="size-full text-xs text-center border-none rounded-none rounded-tr-md py-2"
+                              readOnly
+                            />
+                          )}
+                        </Holds>
+                        <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3">
+                          {" "}
                           <Inputs
-                            value={log.materialType}
-                            disabled={true}
-                            className="size-full text-xs text-center border-none rounded-none rounded-tr-md py-2"
-                            readOnly
-                          />
-                        )}
-                      </Holds>
-                      <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3">
-                        <Inputs
-                          type="number"
-                          value={log.LoadQuantity?.toString() || ""}
-                          onChange={(e) =>
-                            handleTascoHaulChange(
+                            type="number"
+                            value={getDisplayValue(
                               log.id,
                               "LoadQuantity",
-                              e.target.value
-                            )
-                          }
-                          disabled={!edit}
-                          className="size-full text-xs text-center border-none rounded-none rounded-br-md py-2"
-                        />
-                      </Holds>
-                    </Grids>
-                  </Buttons>
-                </Holds>
-              ))}
+                              log.LoadQuantity?.toString() || ""
+                            )}
+                            onChange={(e) =>
+                              handleLocalChange(
+                                log.id,
+                                "LoadQuantity",
+                                e.target.value
+                              )
+                            }
+                            onBlur={() => handleBlur(log.id, "LoadQuantity")}
+                            disabled={!edit}
+                            className="size-full text-xs text-center border-none rounded-none rounded-br-md py-2"
+                          />
+                        </Holds>
+                      </Grids>
+                    </Buttons>
+                  </Holds>
+                );
+              })}
             </>
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">

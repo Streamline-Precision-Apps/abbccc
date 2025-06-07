@@ -233,16 +233,11 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
   if (step === 2 && editFilter !== null) {
     return (
       <EditTeamTimeSheet
-        handleProceed={() => 
-          handleNextStep()
-        }
         prevStep={prevStep}
         employeeId={employeeId}
-        editDate={editDate}
-        setEditDate={setEditDate}
         editFilter={editFilter}
-        setEditFilter={setEditFilter}
         focusIds={focusIds}
+        setFocusIds={setFocusIds}
       />
     );
   } else if (step === 2) {

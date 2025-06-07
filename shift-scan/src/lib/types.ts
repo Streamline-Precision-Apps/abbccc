@@ -30,6 +30,12 @@ export enum FormStatus {
   DRAFT = "DRAFT",
 }
 
+export enum TimeSheetStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
 export enum WorkType {
   MECHANIC = "MECHANIC",
   LABOR = "LABOR",

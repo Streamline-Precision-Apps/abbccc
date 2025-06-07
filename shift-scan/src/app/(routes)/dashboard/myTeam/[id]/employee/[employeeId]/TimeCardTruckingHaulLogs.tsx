@@ -21,6 +21,9 @@ type TimeCardTruckingHaulLogsProps = {
   manager: string;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData;
   onDataChange: (data: TruckingEquipmentHaulLogData) => void; // FIX: expects nested structure
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 export default function TimeCardTruckingHaulLogs({
@@ -28,8 +31,69 @@ export default function TimeCardTruckingHaulLogs({
   manager,
   truckingEquipmentHaulLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardTruckingHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingHaulLogs");
+
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
+
+  // Create a unique key for each input field
+  const getInputKey = (logId: string, hauledId: string, fieldName: string) => {
+    return `${logId}-${hauledId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    logId: string,
+    hauledId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(logId, hauledId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (
+    logId: string,
+    hauledId: string,
+    fieldName: string,
+    value: any
+  ) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, hauledId, fieldName)]: value,
+    }));
+  };
+
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number,
+    field: keyof EquipmentHauledItem,
+    logId: string,
+    hauledId: string
+  ) => {
+    const key = getInputKey(logId, hauledId, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      handleEquipmentHauledChange(itemIdx, logIdx, hauledIdx, field, value);
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
 
   // Handler to update the TruckingEquipmentHaulLogData structure
   const handleHaulLogChange = (
@@ -202,11 +266,20 @@ export default function TimeCardTruckingHaulLogs({
               {truckingEquipmentHaulLogs.map((item, itemIdx) =>
                 item.TruckingLogs.map((log, logIdx) => {
                   if (!log) return null;
-
-                  return (
+                  const isFocused = focusIds.includes(log.id);
+                  const handleToggleFocus = () => {
+                    if (isFocused) {
+                      setFocusIds(focusIds.filter((id) => id !== log.id));
+                    } else {
+                      setFocusIds([...focusIds, log.id]);
+                    }
+                  };
+                  const rowContent = (
                     <Holds
                       key={`${log.id}-${logIdx}`}
-                      className="border-black border-[3px] rounded-lg bg-white mb-2"
+                      className={`border-black border-[3px] rounded-lg mb-2 ${
+                        isFocused ? "bg-orange-400" : "bg-white"
+                      }`}
                     >
                       <Buttons
                         shadow={"none"}
@@ -254,6 +327,20 @@ export default function TimeCardTruckingHaulLogs({
                         </Grids>
                       </Buttons>
                     </Holds>
+                  );
+                  return isReviewYourTeam ? (
+                    <button
+                      key={`${log.id}-${logIdx}`}
+                      type="button"
+                      className="w-full h-full bg-transparent p-0 border-none"
+                      onClick={handleToggleFocus}
+                      tabIndex={0}
+                      aria-label={isFocused ? "Unselect row" : "Select row"}
+                    >
+                      {rowContent}
+                    </button>
+                  ) : (
+                    rowContent
                   );
                 })
               )}
