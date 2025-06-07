@@ -57,3 +57,4 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 -   Prefer === and !== for equality checks.
 -   Prefer null over undefined for uninitialized values.
 -   No Any, Object, or unknown types; always use specific types.
+-   I don't want you to make any UI changes without my explicit request or permission.

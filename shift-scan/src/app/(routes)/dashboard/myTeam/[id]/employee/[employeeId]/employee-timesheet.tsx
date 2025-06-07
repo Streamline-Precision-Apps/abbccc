@@ -80,6 +80,9 @@ export interface EmployeeTimeSheetsProps {
   setEdit: (edit: boolean) => void;
   loading: boolean;
   manager: string;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
   timeSheetFilter: TimesheetFilter;
   setTimeSheetFilter: React.Dispatch<React.SetStateAction<TimesheetFilter>>;
   onSaveChanges: (
@@ -119,6 +122,9 @@ export const EmployeeTimeSheets = ({
   setEdit,
   loading,
   manager,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam = false,
   timeSheetFilter,
   setTimeSheetFilter,
   onSaveChanges: parentOnSaveChanges,
@@ -161,9 +167,7 @@ export const EmployeeTimeSheets = ({
   const [isSaving, setIsSaving] = useState(false);
 
   // Track last loaded date and filter to know when to sync with parent data
-  const [lastLoadedDate, setLastLoadedDate] = useState<string>(date);
-  const [lastLoadedFilter, setLastLoadedFilter] =
-    useState<TimesheetFilter>(timeSheetFilter);
+  useState<TimesheetFilter>(timeSheetFilter);
 
   useEffect(() => {
     console.log("newData: ", newData);
@@ -178,9 +182,7 @@ export const EmployeeTimeSheets = ({
     // When filter or date changes, always sync local state to the new data from props
     setOriginalData(data ? JSON.parse(JSON.stringify(data)) : null);
     setNewData(data ? JSON.parse(JSON.stringify(data)) : null);
-    setLastLoadedDate(date);
-    setLastLoadedFilter(timeSheetFilter);
-  }, [date, timeSheetFilter, data]);
+  }, [timeSheetFilter, data]);
 
   // On initial load, if data arrives and local state is still null, set it
   useEffect(() => {
@@ -189,17 +191,19 @@ export const EmployeeTimeSheets = ({
       setNewData(JSON.parse(JSON.stringify(data)));
     }
   }, [data]);
-
   const handleDateChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
     setDate(newDate);
-    await fetchTimesheetsForDate(newDate);
+    if (fetchTimesheetsForDate) {
+      await fetchTimesheetsForDate(newDate);
+    }
   };
-
   const handleFilterChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     const newFilter = e.target.value as TimesheetFilter;
     setTimeSheetFilter(newFilter);
-    await fetchTimesheetsForFilter(newFilter);
+    if (fetchTimesheetsForFilter) {
+      await fetchTimesheetsForFilter(newFilter);
+    }
   };
 
   // In EmployeeTimeSheets.tsx
@@ -397,13 +401,98 @@ export const EmployeeTimeSheets = ({
         return;
       }
       console.log("Saving changes:", changes);
-      const result = await parentOnSaveChanges(changes);
+
+      // Check if all items have properties matching TimesheetHighlights
+      const isTimesheetHighlights =
+        Array.isArray(changes) &&
+        changes.every(
+          (item) =>
+            typeof item === "object" &&
+            item !== null &&
+            "id" in item &&
+            "jobsiteId" in item &&
+            "startTime" in item
+        );
+
+      if (isTimesheetHighlights) {
+        // Handle as TimesheetHighlights
+        const validatedTimesheets = changes.map((item) => {
+          const timesheet = item as any;
+          const result: any = {
+            id: timesheet.id,
+            jobsiteId: timesheet.jobsiteId,
+            costcode: timesheet.costcode,
+          };
+
+          // Process startTime
+          if (timesheet.startTime) {
+            try {
+              const startDate =
+                timesheet.startTime instanceof Date
+                  ? timesheet.startTime
+                  : new Date(timesheet.startTime as string);
+
+              if (!isNaN(startDate.getTime())) {
+                result.startTime = startDate;
+              }
+            } catch (error) {
+              console.warn(
+                `Invalid startTime for timesheet ${timesheet.id}`,
+                error
+              );
+            }
+          }
+
+          // Process endTime
+          if (timesheet.endTime) {
+            try {
+              const endDate =
+                timesheet.endTime instanceof Date
+                  ? timesheet.endTime
+                  : new Date(timesheet.endTime as string);
+
+              if (!isNaN(endDate.getTime())) {
+                result.endTime = endDate;
+              }
+            } catch (error) {
+              console.warn(
+                `Invalid endTime for timesheet ${timesheet.id}`,
+                error
+              );
+            }
+          }
+
+          return result;
+        });
+        await parentOnSaveChanges(validatedTimesheets as TimesheetHighlights[]);
+      } else {
+        // For other types, pass through as-is
+        await parentOnSaveChanges(changes);
+      }
+
+      // After save, update state
+      if (newData) {
+        setOriginalData(structuredClone(newData));
+      }
+      setChanges([]);
       // After save, update both originalData and newData to the just-saved state using the latest newData
       setOriginalData(JSON.parse(JSON.stringify(newData)));
       setChanges([]); // Clear changes after save
       setEdit(false); // Exit edit mode after save
     } catch (error) {
       console.error("Error saving changes:", error);
+
+      // Add more descriptive error information for date-related issues
+      if (error instanceof Error) {
+        if (
+          error.message.includes("Invalid time value") ||
+          error.message.includes("Invalid Date")
+        ) {
+          console.error(
+            "Detected invalid date format in the data. Please check all date values."
+          );
+        }
+      }
     } finally {
       setIsSaving(false);
     }
@@ -620,6 +709,14 @@ export const EmployeeTimeSheets = ({
     console.log("Material log update result:", result);
   };
 
+  const handleSelectEntity = (id: string) => {
+    if (focusIds.includes(id)) {
+      setFocusIds(focusIds.filter((fid) => fid !== id));
+    } else {
+      setFocusIds([...focusIds, id]);
+    }
+  };
+
   return (
     <Grids rows={"3"} gap={"3"} className="h-full w-full">
       <Holds
@@ -753,6 +850,10 @@ export const EmployeeTimeSheets = ({
               manager={manager}
               onDataChange={handleDataChange}
               date={date}
+              focusIds={focusIds}
+              setFocusIds={setFocusIds}
+              handleSelectEntity={handleSelectEntity}
+              isReviewYourTeam={isReviewYourTeam}
             />
           )}
         </Contents>
@@ -760,3 +861,18 @@ export const EmployeeTimeSheets = ({
     </Grids>
   );
 };
+
+// Type guard to check if an object has startTime and endTime properties
+function hasTimestampProperties(obj: any): obj is {
+  id: string;
+  startTime: Date | string | null;
+  endTime: Date | string | null;
+  [key: string]: any;
+} {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    "id" in obj &&
+    ("startTime" in obj || "endTime" in obj)
+  );
+}

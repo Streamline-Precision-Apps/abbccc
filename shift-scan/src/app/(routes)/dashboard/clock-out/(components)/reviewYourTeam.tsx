@@ -73,6 +73,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   const [pendingTimesheets, setPendingTimesheets] = useState<
     Record<string, any[]>
   >({});
+  const [dataLoaded, setDataLoaded] = useState(false); // Track when data is loaded
   const [focusIndex, setFocusIndex] = useState(0);
   const [filter, setFilter] = useState<
     "timesheetHighlights" | "trucking" | "tasco" | "equipmentLogs"
@@ -93,19 +94,37 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     }
   }, [filteredCrewMembers.length]);
   const focusUser = filteredCrewMembers[focusIndex];
-
   // Fetch all pending timesheets for all users on mount
   useEffect(() => {
     const fetchPending = async () => {
-      if (!crewMembers.length) return;
-      const userIds = crewMembers.map((u) => u.id);
-      const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userIds }),
-      });
-      const data = await res.json();
-      setPendingTimesheets(data);
+      if (!crewMembers.length) {
+        console.log("No crew members provided, marking as loaded");
+        setHasNoMembers(true);
+        return;
+      }
+
+      try {
+        const userIds = crewMembers.map((u) => u.id);
+        const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userIds }),
+        });
+        const data = await res.json();
+        console.log(
+          "Fetched pending timesheets:",
+          Object.keys(data).length > 0
+            ? `${Object.keys(data).length} users with data`
+            : "No pending timesheets"
+        );
+        setPendingTimesheets(data);
+        setDataLoaded(true); // Mark data as loaded after successful fetch
+      } catch (error) {
+        console.error("Error fetching pending timesheets:", error);
+        // Mark as loaded even on error to avoid infinite loading
+        setDataLoaded(true);
+        setHasNoMembers(true);
+      }
     };
     fetchPending();
   }, [crewMembers]);
@@ -150,12 +169,61 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     );
     setEmployeeId(focusUser.id);
     handleClick();
-  };
+  }; // Debug data flow - moved up with other hooks to avoid conditional hooks
+  useEffect(() => {
+    if (dataLoaded && !loading) {
+      const userTimesheets = pendingTimesheets[focusUser?.id] || [];
+
+      // Only log when we have data to show
+      if (userTimesheets.length > 0) {
+        console.log("ReviewYourTeam debug data:", {
+          // Input data structure
+          timesheetData: userTimesheets.map((ts) => ({
+            id: ts.id,
+            hasEquipmentLogs: !!ts.EmployeeEquipmentLogs?.length,
+            hasTascoLogs: !!ts.TascoLogs?.length,
+            hasTruckingLogs: !!ts.TruckingLogs?.length,
+            equipmentLogsCount: ts.EmployeeEquipmentLogs?.length || 0,
+            tascoLogsCount: ts.TascoLogs?.length || 0,
+            truckingLogsCount: ts.TruckingLogs?.length || 0,
+            tascoLogs: ts.TascoLogs?.map(
+              (tl: {
+                id: string;
+                RefuelLogs?: { length: number }[];
+                shiftType?: string;
+                materialType?: string;
+                LoadQuantity?: number;
+                Equipment?: { id: string; name: string } | null;
+              }) => ({
+                id: tl.id,
+                hasRefuelLogs: !!tl.RefuelLogs?.length,
+                refuelLogsCount: tl.RefuelLogs?.length || 0,
+                shiftType: tl.shiftType,
+                materialType: tl.materialType,
+                LoadQuantity: tl.LoadQuantity,
+                Equipment: tl.Equipment,
+              })
+            ),
+          })),
+        });
+      }
+    }
+  }, [dataLoaded, loading, pendingTimesheets, focusUser?.id]);
 
   // Render correct data for filter/tab
   const getTimesheetData = () => {
     // Show all timesheets for the focus user, including incomplete
     const userTimesheets = pendingTimesheets[focusUser?.id] || [];
+    //       TruckingLogs: ts.TruckingLogs?.map(tl => ({
+    //         id: tl.id,
+    //         Equipment: tl.Equipment,
+    //         startingMileage: tl.startingMileage,
+    //         endingMileage: tl.endingMileage
+    //       }))
+    //     }))
+    //   });
+    // }
+
     if (filter === "trucking") {
       return { filter: truckingTab, data: userTimesheets };
     }
@@ -165,7 +233,66 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     return { filter, data: userTimesheets };
   };
 
-  if (!focusUser) {
+  // Helper to toggle selection for entity IDs (not employee IDs)
+  const handleSelectEntity = (id: string) => {
+    if (focusIds.includes(id)) {
+      setFocusIds(focusIds.filter((fid) => fid !== id));
+    } else {
+      setFocusIds([...focusIds, id]);
+    }
+  };
+  // Clear focusIds when returning from edit (when focusIds changes from non-empty to empty)
+  useEffect(() => {
+    if (focusIds.length === 0) {
+      // No-op, but this ensures the UI resets
+    }
+  }, [focusIds]);
+  // Use a separate state to track if we've loaded data and determined there are no members
+  const [hasNoMembers, setHasNoMembers] = useState(false);
+  // Handle case when no users are found - use a separate effect and state
+  useEffect(() => {
+    // Only run this check after we've loaded data
+    if (dataLoaded && !loading) {
+      console.log(
+        `Data loaded. Filtered crew members: ${filteredCrewMembers.length}`
+      );
+      if (filteredCrewMembers.length === 0) {
+        // Set flag that we've determined there are no members
+        console.log(
+          "No crew members with pending timesheets, will navigate away"
+        );
+        setHasNoMembers(true);
+      }
+    }
+  }, [filteredCrewMembers.length, loading, dataLoaded]);
+
+  // Separate effect for navigation to avoid render-during-render issues
+  useEffect(() => {
+    if (hasNoMembers) {
+      console.log(
+        "No team members with pending timesheets found, navigating to next step"
+      );
+      // Use setTimeout to defer state updates to next tick to avoid React warnings
+      setTimeout(() => {
+        setEditFilter(null);
+        handleClick();
+      }, 0);
+    }
+  }, [hasNoMembers, setEditFilter, handleClick]);
+
+  if (loading) {
+    return (
+      <Bases>
+        <Contents>
+          <Holds className="h-full flex items-center justify-center">
+            <Titles size="h2">{t("Loading")}</Titles>
+          </Holds>
+        </Contents>
+      </Bases>
+    );
+  }
+
+  if (!focusUser && !hasNoMembers) {
     return (
       <Bases>
         <Contents>
@@ -177,6 +304,21 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     );
   }
 
+  // If hasNoMembers is true, we're about to navigate away,
+  // so render a temporary loading state
+  if (hasNoMembers) {
+    return (
+      <Bases>
+        <Contents>
+          <Holds className="h-full flex items-center justify-center">
+            <Titles size="h2">{t("Proceeding")}</Titles>
+          </Holds>
+        </Contents>
+      </Bases>
+    );
+  }
+
+  // Get data for rendering after all hooks have been called
   const { filter: renderFilter, data: renderData } = getTimesheetData();
 
   return (
@@ -195,9 +337,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
               <Holds className="row-start-2 row-end-9 h-full w-full ">
                 <div className="flex flex-col items-center w-full h-full">
                   <div className="flex flex-row items-center justify-between w-full px-2 py-1">
-                    <div className="font-bold text-lg">
-                      {focusUser.firstName} {focusUser.lastName}
-                    </div>
                     <select
                       className="border rounded px-2 py-1"
                       value={filter}
@@ -240,16 +379,20 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                         )
                       )}
                     </div>
-                  )}
+                  )}{" "}
                   {/* Timesheet Data Table/Section */}
                   <div className="flex-1 w-full mt-2 overflow-y-auto">
                     <TimeSheetRenderer
-                      filter={renderFilter as TimesheetFilter}
+                      filter={renderFilter}
                       data={renderData}
                       edit={false}
                       manager={manager}
-                      date={new Date().toISOString().slice(0, 10)}
                       onDataChange={() => {}}
+                      date={new Date().toISOString().slice(0, 10)}
+                      focusIds={focusIds}
+                      setFocusIds={setFocusIds}
+                      handleSelectEntity={handleSelectEntity}
+                      isReviewYourTeam={true} // Explicitly set to true in ReviewYourTeam context
                     />
                   </div>
                   {/* Action Buttons */}
@@ -265,6 +408,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                       className=" px-4 py-2 rounded font-bold"
                       background={"green"}
                       onClick={handleApprove}
+                      disabled={focusIds.length > 0}
                     >
                       {t("Approve")}
                     </Buttons>

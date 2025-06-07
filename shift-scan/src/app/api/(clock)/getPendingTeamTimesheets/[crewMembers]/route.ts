@@ -12,13 +12,11 @@ export async function POST(request: Request) {
     const { userIds } = await request.json();
     if (!Array.isArray(userIds) || userIds.length === 0) {
       return NextResponse.json({ error: 'userIds array required' }, { status: 400 });
-    }
-
-    // Fetch all pending timesheets for all users in one query
+    }    // Fetch all pending timesheets for all users in one query
     const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: { in: userIds },
-        status: 'PENDING',
+        status: TimeSheetStatus.PENDING,
       },
       include: {
         Jobsite: true,

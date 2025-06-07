@@ -137,28 +137,21 @@ function isEquipmentLogChange(
 }
 
 interface EditTeamTimeSheetProps {
-  handleProceed: () => void;
   prevStep: () => void;
   employeeId?: string;
-  editDate?: string;
-  setEditDate?: (date: string) => void;
   editFilter?: TimesheetFilter;
-  setEditFilter?: (filter: TimesheetFilter) => void;
   focusIds?: string[];
+  setFocusIds?: (ids: string[]) => void;
 }
 
 const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
-  handleProceed,
   prevStep,
   employeeId,
-  editDate,
-  setEditDate,
   editFilter,
-  setEditFilter,
-  focusIds = [],
+  focusIds,
+  setFocusIds,
 }) => {
   const t = useTranslations("MyTeam");
-  const router = useRouter();
   const { data: session } = useSession();
 
   const manager = useMemo(
@@ -166,8 +159,9 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
     [session]
   );
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
-  const [date, setDate] = useState<string>(editDate || today);
+  const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
+
 
   const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
     editFilter || "timesheetHighlights"
@@ -235,18 +229,41 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
             const changesArray = Array.isArray(timesheetChanges)
               ? timesheetChanges
               : [timesheetChanges];
+            const serializedChanges = changesArray.map((timesheet) => {
+              // Safely convert to ISO string with validation
+              const safeToISOString = (
+                dateValue: Date | string | null | undefined
+              ) => {
+                if (!dateValue) return undefined;
 
-            const serializedChanges = changesArray.map((timesheet) => ({
-              id: timesheet.id,
-              startTime: timesheet.startTime
-                ? new Date(timesheet.startTime).toISOString()
-                : undefined,
-              endTime: timesheet.endTime
-                ? new Date(timesheet.endTime).toISOString()
-                : undefined,
-              jobsiteId: timesheet.jobsiteId,
-              costcode: timesheet.costcode,
-            }));
+                try {
+                  // Ensure we're working with a valid Date object
+                  const date =
+                    dateValue instanceof Date ? dateValue : new Date(dateValue);
+
+                  // Check if date is valid before converting
+                  if (isNaN(date.getTime())) {
+                    console.warn(`Invalid date detected: ${dateValue}`);
+                    return undefined;
+                  }
+
+                  return date.toISOString();
+                } catch (error) {
+                  console.error(
+                    `Error converting date to ISO string: ${error}`
+                  );
+                  return undefined;
+                }
+              };
+
+              return {
+                id: timesheet.id,
+                startTime: safeToISOString(timesheet.startTime),
+                endTime: safeToISOString(timesheet.endTime),
+                jobsiteId: timesheet.jobsiteId,
+                costcode: timesheet.costcode,
+              };
+            });
 
             const validChanges = serializedChanges.filter(
               (timesheet) => timesheet.id && timesheet.startTime !== undefined
@@ -484,65 +501,68 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
     setEdit(false);
   }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
 
+  const handleProceed = () => {
+    setFocusIds?.([]);
+    prevStep();
+  };
+
   return (
     <Bases>
       <Contents>
-          <Holds className="h-full w-full">
-            <Grids rows={"7"} gap={"5"} className="h-full w-full">
-              <Holds
-                background={"white"}
-                className="row-start-1 row-end-2 h-full w-full"
-              >
-                <TitleBoxes
-                  onClick={() =>
-                    prevStep()
-                  }
-                >
-                  <Titles size={"h2"}>
-                    {loading
-                      ? t("Loading")
-                      : `${employee?.firstName} ${employee?.lastName}`}
-                  </Titles>
-                </TitleBoxes>
-              </Holds>
+        <Holds className="h-full w-full">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds
+              background={"white"}
+              className="row-start-1 row-end-2 h-full w-full"
+            >
+              <TitleBoxes onClick={() => prevStep()}>
+                <Titles size={"h2"}>
+                  {loading
+                    ? t("Loading")
+                    : `${employee?.firstName} ${employee?.lastName}`}
+                </Titles>
+              </TitleBoxes>
+            </Holds>
 
-              <Holds
-                className={`w-full h-full row-start-2 row-end-8 ${
-                  loading ? "animate-pulse" : ""
-                }`}
-              >
-                <Grids rows={"12"} className="h-full w-full">
-                  <Holds className="h-full w-full row-start-1 row-end-12">
-                    <EmployeeTimeSheets
-                      data={timesheetData}
-                      date={date}
-                      setDate={setDate}
-                      edit={edit}
-                      setEdit={setEdit}
-                      loading={loading}
-                      manager={manager}
-                      timeSheetFilter={timeSheetFilter}
-                      setTimeSheetFilter={setTimeSheetFilter}
-                      onSaveChanges={onSaveChanges}
-                      onCancelEdits={onCancelEdits}
-                      fetchTimesheetsForDate={fetchTimesheetsForDate}
-                      fetchTimesheetsForFilter={fetchTimesheetsForFilter}
-                    />
-                  </Holds>
-                  <Holds className="h-full w-full row-start-12 row-end-13">
-                    <Buttons
-                      onClick={handleProceed}
-                      disabled={edit}
-                      background={"green"}
-                      className="w-full h-full"
-                    >
-                      {t("Continue")}
-                    </Buttons>
-                  </Holds>
-                </Grids>
-              </Holds>
-            </Grids>
-          </Holds>
+            <Holds
+              className={`w-full h-full row-start-2 row-end-8 ${
+                loading ? "animate-pulse" : ""
+              }`}
+            >
+              <Grids rows={"12"} className="h-full w-full">
+                <Holds className="h-full w-full row-start-1 row-end-12">
+                  <EmployeeTimeSheets
+                    data={timesheetData}
+                    date={date}
+                    setDate={setDate}
+                    edit={edit}
+                    setEdit={setEdit}
+                    loading={loading}
+                    manager={manager}
+                    focusIds={focusIds || []}
+                    setFocusIds={setFocusIds || ((ids) => {})}
+                    timeSheetFilter={timeSheetFilter}
+                    setTimeSheetFilter={setTimeSheetFilter}
+                    onSaveChanges={onSaveChanges}
+                    onCancelEdits={onCancelEdits}
+                    fetchTimesheetsForDate={fetchTimesheetsForDate}
+                    fetchTimesheetsForFilter={fetchTimesheetsForFilter}
+                  />
+                </Holds>
+                <Holds className="h-full w-full row-start-12 row-end-13">
+                  <Buttons
+                    onClick={handleProceed}
+                    disabled={edit}
+                    background={"green"}
+                    className="w-full h-full"
+                  >
+                    {t("Continue")}
+                  </Buttons>
+                </Holds>
+              </Grids>
+            </Holds>
+          </Grids>
+        </Holds>
       </Contents>
     </Bases>
   );
