@@ -189,11 +189,19 @@ export default function CostCodeMainContent({
   // Show loading indicator when data is being fetched
   if (CostCodeLoading || TagLoading) {
     return (
-      <Holds
-        background={"white"}
-        className="w-full h-full col-span-4 flex justify-center items-center animate-pulse"
-      >
-        <Spinner size={50} />
+      <Holds className="w-full h-full col-span-4 flex justify-center items-center animate-pulse">
+        <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
+          <Holds
+            background={"white"}
+            className="w-full h-full rounded-[10px] flex flex-col items-center justify-center"
+          />
+          <Holds
+            background={"white"}
+            className="w-full h-full rounded-[10px] flex flex-col items-center justify-center"
+          >
+            <Spinner size={50} />
+          </Holds>
+        </Grids>
       </Holds>
     );
   }

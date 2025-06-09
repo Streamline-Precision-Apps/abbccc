@@ -79,15 +79,15 @@ export default function EquipmentRegistrationView({
 
         <Holds
           background={"white"}
-          className="w-full h-full rounded-[10px] p-3"
+          className="w-full h-full rounded-[10px] p-3 overflow-y-auto"
         >
           <Grids className="w-full h-full grid-rows-[50px_1fr]">
-            <Holds>
+            <Holds className="w-full h-full">
               <Titles position={"left"} size={"xl"} className="font-bold">
                 New Equipment
               </Titles>
             </Holds>
-            <Holds className="w-full h-full">
+            <Holds className="w-full h-full overflow-y-auto ">
               <EquipmentRegistrationForm
                 onSubmit={onSubmit}
                 onCancel={onCancel}

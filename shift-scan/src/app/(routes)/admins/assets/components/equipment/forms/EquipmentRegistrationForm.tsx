@@ -5,7 +5,45 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import ValidationMessage from "./ValidationMessage";
+// Helper for validation
+const getValidationErrors = (formData: NewEquipment) => {
+  const errors: Record<string, string> = {};
+  if (!formData.name.trim()) errors.name = "Equipment Name is required.";
+  if (!formData.equipmentTag.trim())
+    errors.equipmentTag = "Equipment Type is required.";
+  if (
+    formData.equipmentTag === "TRUCK" ||
+    formData.equipmentTag === "TRAILER" ||
+    formData.equipmentTag === "VEHICLE"
+  ) {
+    const vehicle = formData.equipmentVehicleInfo ?? {
+      make: "",
+      model: "",
+      year: "",
+      licensePlate: "",
+      registrationExpiration: null,
+      mileage: "",
+    };
+    if (!vehicle.make || !vehicle.make.toString().trim())
+      errors.make = "Vehicle Make is required.";
+    if (!vehicle.model || !vehicle.model.toString().trim())
+      errors.model = "Vehicle Model is required.";
+    if (!vehicle.year || !vehicle.year.toString().trim())
+      errors.year = "Vehicle Year is required.";
+    if (!vehicle.licensePlate || !vehicle.licensePlate.toString().trim())
+      errors.licensePlate = "License Plate is required.";
+    if (
+      vehicle.mileage === null ||
+      vehicle.mileage === undefined ||
+      vehicle.mileage === "" ||
+      isNaN(Number(vehicle.mileage))
+    )
+      errors.mileage = "Vehicle Mileage is required.";
+  }
+  return errors;
+};
 import SafetyDocumentsAndPolicies from "./SafetyDocumentsAndPolicies";
 
 type NewEquipment = {
@@ -58,6 +96,8 @@ export default function EquipmentRegistrationForm({
   });
 
   const [hasVehicleInfo, setHasVehicleInfo] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [triedSubmit, setTriedSubmit] = useState(false);
 
   // Track if form has unsaved changes
   const hasUnsavedChanges =
@@ -100,57 +140,84 @@ export default function EquipmentRegistrationForm({
           },
         };
       }
-
       return { ...prev, [fieldName]: value };
     });
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
+  };
+
+  const handleBlur = (fieldName: string) => {
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
   };
 
   const handleSubmit = () => {
-    if (!formData.name.trim() || !formData.equipmentTag.trim()) {
-      alert("Please fill in all required fields (Name and Equipment Tag)");
+    setTriedSubmit(true);
+    const errors = getValidationErrors(formData);
+    if (Object.keys(errors).length > 0) {
+      // Mark all fields as touched to show errors
+      setTouched((prev) => ({
+        ...prev,
+        name: true,
+        equipmentTag: true,
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
+        mileage: true,
+      }));
       return;
     }
-
     // If no vehicle info is needed, remove it from the submission
     const submissionData = {
       ...formData,
-      equipmentVehicleInfo: hasVehicleInfo
-        ? formData.equipmentVehicleInfo
-        : undefined,
+      equipmentVehicleInfo:
+        formData.equipmentTag === "TRUCK" ||
+        formData.equipmentTag === "TRAILER" ||
+        formData.equipmentTag === "VEHICLE"
+          ? formData.equipmentVehicleInfo
+          : undefined,
     };
-
     onSubmit(submissionData);
   };
 
+  const validationErrors = getValidationErrors(formData);
+  const showError = (field: string) =>
+    (touched[field] || triedSubmit) && validationErrors[field];
+
   return (
-    <Holds className="w-full h-full">
-      <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4">
-        <Holds className="w-full h-full overflow-y-auto overflow-x-hidden">
-          <label htmlFor="EquipmentName" className="text-xs font-medium">
-            Equipment Name *
+    <div className="w-full h-full flex flex-col">
+      <Grids className="w-full flex-1 grid-cols-[1fr_1fr] gap-4 overflow-hidden">
+        <div className="flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">
+          <label htmlFor="EquipmentName" className="text-sm font-medium">
+            Equipment Name <span className="text-red-500">*</span>
           </label>
           <Inputs
             type="text"
             name="EquipmentName"
             value={formData.name}
             onChange={(e) => handleInputChange("name", e.target.value)}
+            onBlur={() => handleBlur("name")}
             className="w-full text-xs"
+            variant={"validationMessage"}
             required
           />
-          <label htmlFor="EquipmentDescription" className="text-xs font-medium">
+          <ValidationMessage
+            message={showError("name") ? validationErrors.name : undefined}
+          />
+          <label htmlFor="EquipmentDescription" className="text-sm font-medium">
             Equipment Description
           </label>
           <TextAreas
             name="EquipmentDescription"
             value={formData.description || ""}
             onChange={(e) => handleInputChange("description", e.target.value)}
-            rows={2}
-            className="w-full text-xs"
+            rows={4}
+            className="w-full text-xs min-h-[96px] mb-5"
             placeholder="Enter equipment description..."
             style={{ resize: "none" }}
           />
-          <label htmlFor="CurrentWeight" className="text-xs font-medium">
-            Current Weight
+
+          <label htmlFor="CurrentWeight" className="text-sm font-medium">
+            Current Weight <span className="italic">{`(lbs)`}</span>
           </label>
           <Inputs
             type="number"
@@ -160,10 +227,10 @@ export default function EquipmentRegistrationForm({
               handleInputChange("currentWeight", Number(e.target.value))
             }
             placeholder="0"
-            className="text-xs"
+            className="text-xs mb-5 "
           />
 
-          <label htmlFor="OverweightEquipment" className="text-xs font-medium">
+          <label htmlFor="OverweightEquipment" className="text-sm font-medium">
             Overweight Equipment
           </label>
           <Selects
@@ -178,21 +245,23 @@ export default function EquipmentRegistrationForm({
             onChange={(e) =>
               handleInputChange("overWeight", e.target.value === "true")
             }
-            className="text-center text-xs"
+            className="text-center text-xs mb-5"
           >
             <option value="">Select Weight Status</option>
             <option value="false">No</option>
             <option value="true">Yes</option>
           </Selects>
-
-          <label htmlFor="EquipmentStatus" className="text-xs font-medium">
-            Equipment Type
+          <label htmlFor="EquipmentStatus" className="text-sm font-medium">
+            Equipment Type <span className="text-red-500">*</span>
           </label>
           <Selects
             name="EquipmentStatus"
             value={formData.equipmentTag}
             onChange={(e) => handleInputChange("equipmentTag", e.target.value)}
-            className="text-xs"
+            onBlur={() => handleBlur("equipmentTag")}
+            className="text-xs mb-0"
+            variant={"validationMessage"}
+            required
           >
             <option value="">Select Equipment Type</option>
             <option value="TRUCK">Truck</option>
@@ -200,11 +269,18 @@ export default function EquipmentRegistrationForm({
             <option value="VEHICLE">Vehicle</option>
             <option value="EQUIPMENT">Equipment</option>
           </Selects>
+          <ValidationMessage
+            message={
+              showError("equipmentTag")
+                ? validationErrors.equipmentTag
+                : undefined
+            }
+          />
           {formData.equipmentTag !== "EQUIPMENT" &&
             formData.equipmentTag !== "" && (
               <>
-                <label htmlFor="VehicleMake" className="text-xs font-medium">
-                  Vehicle Make
+                <label htmlFor="VehicleMake" className="text-sm font-medium">
+                  Vehicle Make <span className="text-red-500">*</span>
                 </label>
                 <Inputs
                   type="text"
@@ -213,11 +289,19 @@ export default function EquipmentRegistrationForm({
                   onChange={(e) =>
                     handleInputChange("vehicle.make", e.target.value)
                   }
+                  onBlur={() => handleBlur("make")}
                   placeholder="Make"
                   className="text-xs"
+                  variant={"validationMessage"}
+                  required
                 />
-                <label htmlFor="VehicleModel" className="text-xs font-medium">
-                  Vehicle Model
+                <ValidationMessage
+                  message={
+                    showError("make") ? validationErrors.make : undefined
+                  }
+                />
+                <label htmlFor="VehicleModel" className="text-sm font-medium">
+                  Vehicle Model <span className="text-red-500">*</span>
                 </label>
                 <Inputs
                   type="text"
@@ -226,11 +310,19 @@ export default function EquipmentRegistrationForm({
                   onChange={(e) =>
                     handleInputChange("vehicle.model", e.target.value)
                   }
+                  onBlur={() => handleBlur("model")}
                   placeholder="Model"
                   className="text-xs"
+                  variant={"validationMessage"}
+                  required
                 />
-                <label htmlFor="VehicleYear" className="text-xs font-medium">
-                  Vehicle Year
+                <ValidationMessage
+                  message={
+                    showError("model") ? validationErrors.model : undefined
+                  }
+                />
+                <label htmlFor="VehicleYear" className="text-sm font-medium">
+                  Vehicle Year <span className="text-red-500">*</span>
                 </label>
                 <Inputs
                   type="text"
@@ -242,14 +334,22 @@ export default function EquipmentRegistrationForm({
                   onChange={(e) =>
                     handleInputChange("vehicle.year", e.target.value)
                   }
+                  onBlur={() => handleBlur("year")}
                   placeholder="YYYY"
                   className="text-xs"
+                  variant={"validationMessage"}
+                  required
+                />
+                <ValidationMessage
+                  message={
+                    showError("year") ? validationErrors.year : undefined
+                  }
                 />
                 <label
                   htmlFor="VehicleLicensePlate"
-                  className="text-xs font-medium"
+                  className="text-sm font-medium"
                 >
-                  License Plate
+                  License Plate <span className="text-red-500">*</span>
                 </label>
                 <Inputs
                   type="text"
@@ -258,12 +358,44 @@ export default function EquipmentRegistrationForm({
                   onChange={(e) =>
                     handleInputChange("vehicle.licensePlate", e.target.value)
                   }
+                  onBlur={() => handleBlur("licensePlate")}
                   placeholder="License Plate"
+                  className="text-xs mb-0"
+                  variant={"validationMessage"}
+                  required
+                />
+                <ValidationMessage
+                  message={
+                    showError("licensePlate")
+                      ? validationErrors.licensePlate
+                      : undefined
+                  }
+                />
+
+                <label htmlFor="VehicleMileage" className="text-sm font-medium">
+                  Vehicle Mileage <span className="text-red-500">*</span>
+                </label>
+                <Inputs
+                  type="number"
+                  name="VehicleMileage"
+                  value={formData.equipmentVehicleInfo?.mileage || ""}
+                  onChange={(e) =>
+                    handleInputChange("vehicle.mileage", Number(e.target.value))
+                  }
+                  onBlur={() => handleBlur("mileage")}
+                  placeholder="Mileage"
                   className="text-xs"
+                  variant={"validationMessage"}
+                  required
+                />
+                <ValidationMessage
+                  message={
+                    showError("mileage") ? validationErrors.mileage : undefined
+                  }
                 />
                 <label
                   htmlFor="VehicleRegistration"
-                  className="text-xs font-medium"
+                  className="text-sm font-medium"
                 >
                   Registration Expiration
                 </label>
@@ -287,24 +419,11 @@ export default function EquipmentRegistrationForm({
                   }
                   className="text-xs"
                 />
-                <label htmlFor="VehicleMileage" className="text-xs font-medium">
-                  Vehicle Mileage
-                </label>
-                <Inputs
-                  type="number"
-                  name="VehicleMileage"
-                  value={formData.equipmentVehicleInfo?.mileage || ""}
-                  onChange={(e) =>
-                    handleInputChange("vehicle.mileage", Number(e.target.value))
-                  }
-                  placeholder="Mileage"
-                  className="text-xs"
-                />
               </>
             )}
-        </Holds>
+        </div>
 
-        <Holds className="w-full h-full">
+        <Holds className="h-full col-span-1 overflow-y-auto ">
           <Texts position={"left"} size={"sm"} className="font-bold">
             Safety Documents & Policies
           </Texts>
@@ -330,6 +449,6 @@ export default function EquipmentRegistrationForm({
           </Holds>
         </Holds>
       </Grids>
-    </Holds>
+    </div>
   );
 }
