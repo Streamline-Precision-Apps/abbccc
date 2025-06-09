@@ -97,6 +97,7 @@ export const useEquipmentRegistrationForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [hasChanged, setHasChanged] = useState(false);
   const [isFormEmpty, setIsFormEmpty] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Effect to check if the form is empty
   useEffect(() => {
@@ -259,17 +260,6 @@ export const useEquipmentRegistrationForm = ({
     []
   );
 
-  const handleSubmit = useCallback(async () => {
-    setTriedSubmit(true);
-    const currentErrors = getValidationErrors(formData);
-    setErrors(currentErrors);
-    if (Object.keys(currentErrors).length === 0) {
-      await onSubmit(formData);
-      setHasChanged(false); // Reset after successful submit
-      resetForm();
-    }
-  }, [formData, onSubmit]);
-
   const resetForm = useCallback(() => {
     setFormData(() => ({
       name: "",
@@ -300,7 +290,30 @@ export const useEquipmentRegistrationForm = ({
         ["TRUCK", "TRAILER", "VEHICLE"].includes(initialFormData.equipmentTag)
       )
     );
+    // Ensure isFormEmpty is also reset based on initial/empty state
+    // This might need a more direct way to set based on the truly empty form if initialFormData can make it non-empty
+    setIsFormEmpty(true); // Assuming reset means it becomes empty
   }, [initialFormData]);
+
+  const handleSubmit = useCallback(async () => {
+    setTriedSubmit(true);
+    const currentErrors = getValidationErrors(formData);
+    setErrors(currentErrors);
+    if (Object.keys(currentErrors).length === 0) {
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formData);
+        setHasChanged(false); // Reset after successful submit
+        resetForm(); // Now resetForm is defined before being used here
+      } catch (error) {
+        // Handle submission error (e.g., display a notification)
+        console.error("Submission failed:", error);
+        // Optionally, set an error state here to display in the UI
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  }, [formData, onSubmit, resetForm]);
 
   return {
     formData,
@@ -310,7 +323,8 @@ export const useEquipmentRegistrationForm = ({
     triedSubmit,
     hasVehicleInfo,
     hasChanged,
-    isFormEmpty, // Expose isFormEmpty
+    isFormEmpty,
+    isSubmitting,
     handleInputChange,
     handleVehicleInfoChange,
     handleEquipmentTagChange,

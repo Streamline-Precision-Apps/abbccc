@@ -10,6 +10,7 @@ import {
   NewEquipment,
 } from "../hooks/useEquipmentRegistrationForm";
 import { on } from "events";
+import Spinner from "@/components/(animations)/spinner";
 
 interface EquipmentRegistrationViewProps {
   /** Handler for new equipment submission */
@@ -49,8 +50,8 @@ export default function EquipmentRegistrationView({
     handleEquipmentTagChange,
     handleBlur,
     handleSubmit,
-    resetForm,
     isFormEmpty,
+    isSubmitting,
   } = useEquipmentRegistrationForm({
     onSubmit: onSubmitProp,
     onUnsavedChangesChange: onUnsavedChangesChange,
@@ -109,7 +110,7 @@ export default function EquipmentRegistrationView({
 
         <Holds
           background={"white"}
-          className="w-full h-full rounded-[10px] p-3 overflow-y-auto"
+          className="w-full h-full rounded-[10px] p-3 overflow-y-auto relative"
         >
           <Grids className="w-full h-full grid-rows-[50px_1fr]">
             <Holds className="w-full h-full">
@@ -117,7 +118,12 @@ export default function EquipmentRegistrationView({
                 New Equipment
               </Titles>
             </Holds>
-            <Holds className="w-full h-full overflow-y-auto ">
+            <Holds className="w-full h-full overflow-y-auto">
+              {isSubmitting && (
+                <Holds className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-white z-10">
+                  <Spinner size={80} />
+                </Holds>
+              )}
               <EquipmentRegistrationForm
                 formData={formData}
                 errors={errors}
