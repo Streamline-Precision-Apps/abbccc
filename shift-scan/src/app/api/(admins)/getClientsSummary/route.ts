@@ -5,8 +5,8 @@ import { auth } from "@/auth";
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
 /**
- * Get summary information of all jobsites (just id and name)
- * Used for lightweight jobsite listing in admin assets page
+ * Get summary information of all clients (just id and name)
+ * Used for lightweight client listing in admin assets page
  */
 export async function GET() {
   try {

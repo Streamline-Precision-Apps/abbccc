@@ -4,7 +4,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import React from "react";
 import JobsiteBasicFields from "./JobsiteBasicFields";
 import JobsiteHeaderActions from "./JobsiteHeaderActions";
-import { Jobsite, TagSummary } from "../../../types";
+import { ClientsSummary, Jobsite, TagSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
 
 interface JobsiteFormViewProps {
@@ -26,6 +26,7 @@ interface JobsiteFormViewProps {
     React.SetStateAction<"idle" | "creating" | "editing">
   >;
   tagSummaries?: TagSummary[];
+  clients: ClientsSummary[];
 }
 
 /**
@@ -39,6 +40,7 @@ export default function JobsiteFormView({
   onRevertField,
   isSaving,
   tagSummaries = [],
+  clients = [],
 }: JobsiteFormViewProps) {
   return (
     <Holds
@@ -59,6 +61,7 @@ export default function JobsiteFormView({
         changedFields={changedFields}
         onInputChange={onInputChange}
         onRevertField={onRevertField}
+        clients={clients}
       />
     </Holds>
   );

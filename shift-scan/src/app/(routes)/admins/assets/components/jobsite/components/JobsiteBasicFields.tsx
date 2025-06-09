@@ -3,7 +3,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import React, { useEffect, useState } from "react";
-import { Jobsite, TagSummary } from "../../../types";
+import { ClientsSummary, Jobsite, TagSummary } from "../../../types";
 import { COUNTRIES } from "../../../constants/countries";
 import { Titles } from "@/components/(reusable)/titles";
 import QRCode from "qrcode";
@@ -25,6 +25,7 @@ interface JobsiteBasicFieldsProps {
   ) => void;
   onRevertField: (fieldName: string) => void;
   tagSummaries: TagSummary[];
+  clients: ClientsSummary[];
 }
 
 /**
@@ -37,6 +38,7 @@ export default function JobsiteBasicFields({
   onInputChange,
   onRevertField,
   tagSummaries,
+  clients,
 }: JobsiteBasicFieldsProps) {
   const isFieldChanged = (fieldName: string) => changedFields.has(fieldName);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
@@ -190,10 +192,14 @@ export default function JobsiteBasicFields({
             Client
           </label>
           <EditableFields
-            formDatatype="input"
+            formDatatype="select"
+            options={clients.map((client) => ({
+              label: client.name,
+              value: client.id,
+            }))}
             name="clientId"
             type="text"
-            value={formData.Client?.name || formData.clientId || ""}
+            value={formData.clientId || ""}
             onChange={(e) => onInputChange("clientId", e.target.value)}
             isChanged={isFieldChanged("clientId")}
             onRevert={() => onRevertField("clientId")}

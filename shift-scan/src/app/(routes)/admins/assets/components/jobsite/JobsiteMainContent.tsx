@@ -200,6 +200,7 @@ export default function JobsiteMainContent({
               setJobsiteUIState={setJobsiteUIState}
               onDeleteJobsite={handleDeleteJobsite}
               tagSummaries={tagSummaries}
+              clients={clients}
             />
           </Grids>
         </Holds>
