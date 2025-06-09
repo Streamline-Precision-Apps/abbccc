@@ -197,7 +197,7 @@ export default function CostCodeSideBar({
                 </Holds>
                 <Holds className="w-fit h-full relative">
                   <CheckBox
-                    height={20}
+                    height={30}
                     width={30}
                     shadow={false}
                     id={"select-all-cost-codes"}
