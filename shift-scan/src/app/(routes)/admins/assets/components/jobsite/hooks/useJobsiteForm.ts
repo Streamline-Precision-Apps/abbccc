@@ -289,7 +289,6 @@ export const useJobsiteForm = ({
 
         if (result.success) {
           console.log("Jobsite created successfully:", result.data);
-          setJobsiteUIState("idle");
 
           // Refresh jobsite list after registration
           if (refreshJobsites) {
