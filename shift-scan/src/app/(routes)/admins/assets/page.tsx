@@ -325,6 +325,7 @@ export default function Assets() {
               tagFormHook={tagFormHook}
               onCreationHandlersReady={setCreationHandlers}
               deletionSuccessMessage={deletionSuccessMessage}
+              handleDeletionSuccess={handleDeletionSuccess}
             />
           ) : null}
         </Grids>

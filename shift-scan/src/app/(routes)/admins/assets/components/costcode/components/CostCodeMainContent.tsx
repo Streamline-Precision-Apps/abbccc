@@ -65,6 +65,7 @@ interface CostCodeMainContentProps {
   }) => void;
   /** Success message from tag deletion */
   deletionSuccessMessage: string | null;
+  handleDeletionSuccess: (message: string) => void;
 }
 
 /**
@@ -91,6 +92,7 @@ export default function CostCodeMainContent({
   tagFormHook,
   onCreationHandlersReady,
   deletionSuccessMessage,
+  handleDeletionSuccess,
 }: CostCodeMainContentProps) {
   const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
     useState(false);
@@ -113,6 +115,7 @@ export default function CostCodeMainContent({
     setHasUnsavedChanges,
     refreshCostCodes,
     setCostCodeUIState,
+    onDeletionSuccess: handleDeletionSuccess,
   });
 
   // Handle creation hook readiness

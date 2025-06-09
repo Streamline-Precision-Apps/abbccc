@@ -76,7 +76,10 @@ export function useTagsForm({
   setHasUnsavedChanges,
   refreshTags,
   onDeletionSuccess,
-}: UseTagsFormProps): UseTagsFormReturn {
+  onDeletionError,
+}: UseTagsFormProps & {
+  onDeletionError?: (msg: string) => void;
+}): UseTagsFormReturn {
   const [formData, setFormData] = useState<Tag | null>(null);
   const [originalData, setOriginalData] = useState<Tag | null>(null);
   const [changedFields, setChangedFields] = useState<Set<keyof Tag>>(new Set());
@@ -373,7 +376,9 @@ export function useTagsForm({
   const handleDeleteTag = useCallback(async (): Promise<TagOperationResult> => {
     try {
       if (!formData || !formData.id) {
-        return { success: false, error: "No tag selected" };
+        const msg = "No tag selected";
+        if (onDeletionError) onDeletionError(msg);
+        return { success: false, error: msg };
       }
 
       setIsDeleting(true);
@@ -384,6 +389,7 @@ export function useTagsForm({
       if (!result || !result.success) {
         const errorMessage = result?.error || "Failed to delete tag";
         setError(errorMessage);
+        if (onDeletionError) onDeletionError(errorMessage);
         return {
           success: false,
           error: errorMessage,
@@ -413,11 +419,20 @@ export function useTagsForm({
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
       setError(errorMessage);
+      if (onDeletionError) onDeletionError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
       setIsDeleting(false);
     }
-  }, [formData, refreshTags, setSelectTag, setFormData, setOriginalData]);
+  }, [
+    formData,
+    refreshTags,
+    setSelectTag,
+    setFormData,
+    setOriginalData,
+    onDeletionSuccess,
+    onDeletionError,
+  ]);
 
   return {
     formData,
