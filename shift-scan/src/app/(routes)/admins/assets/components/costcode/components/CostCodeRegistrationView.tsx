@@ -217,7 +217,7 @@ function CostCodeRegistrationView({
                 text="link"
                 className={`${!hasUnsavedChanges ? "text-gray-500" : ""}`}
               >
-                {isSubmitting ? "Registering..." : "Register Cost Code"}
+                {isSubmitting ? "Registering..." : "Register New"}
               </Texts>
             </Buttons>
 
@@ -228,10 +228,9 @@ function CostCodeRegistrationView({
               disabled={isSubmitting}
               className="w-fit h-auto px-2"
             >
-              <Texts position={"left"} size="sm" text="link">
-                Cancel Registration
-              </Texts>
+              <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />
             </Buttons>
+
             {successfullyRegistered && (
               <Holds
                 background={"green"}

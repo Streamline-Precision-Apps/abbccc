@@ -3,6 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import EquipmentRegistrationForm from "../forms/EquipmentRegistrationForm";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 interface EquipmentRegistrationViewProps {
   /** Handler for new equipment submission */
@@ -50,7 +51,12 @@ export default function EquipmentRegistrationView({
           position={"row"}
           className="w-full h-full rounded-[10px] justify-between px-4"
         >
-          <Holds className="w-full h-full flex justify-center">
+          <Buttons
+            background={"none"}
+            shadow={"none"}
+            type="submit"
+            className="w-fit h-auto"
+          >
             <Texts
               position={"left"}
               size={"sm"}
@@ -59,18 +65,16 @@ export default function EquipmentRegistrationView({
             >
               Submit New Equipment
             </Texts>
-          </Holds>
-          <Holds className="h-full flex justify-center">
-            <Texts
-              position={"right"}
-              size={"sm"}
-              text={"link"}
-              className="cursor-pointer hover:underline"
-              onClick={onCancel}
-            >
-              Cancel Registration
-            </Texts>
-          </Holds>
+          </Buttons>
+
+          <Buttons
+            background={"none"}
+            shadow={"none"}
+            className="w-fit h-auto"
+            onClick={onCancel}
+          >
+            <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />
+          </Buttons>
         </Holds>
 
         <Holds

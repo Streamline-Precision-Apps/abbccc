@@ -117,153 +117,68 @@ function CostCodeFormView({
   }, [onSaveChanges]);
 
   return (
-    <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4 ">
-      <Holds
-        position={"row"}
-        background={"white"}
-        className="w-full h-full gap-4 px-4 relative"
-      >
-        {successfullyEdited && (
-          <Holds
-            background={"green"}
-            className="w-full h-full justify-center absolute left-0 top-0 z-50"
-          >
-            <Texts size="sm"> Cost Code successfully updated!</Texts>
-          </Holds>
-        )}
-        {error && (
-          <Holds
-            background={"red"}
-            className="w-full h-full justify-center absolute left-0 top-0 z-50"
-          >
-            <Texts size="sm">{error}</Texts>
-          </Holds>
-        )}
-
-        <Holds position={"row"} className="w-full justify-between">
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={onRegisterNew}
-            disabled={hasUnsavedChanges}
-            className="w-fit h-auto "
-          >
-            <Texts
-              size="xs"
-              text="link"
-              className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
-            >
-              Register New
-            </Texts>
-          </Buttons>
-
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={handleSaveChanges}
-            disabled={isSaving || !hasUnsavedChanges}
-            className="w-fit h-auto "
-          >
-            <Texts
-              size="xs"
-              text="link"
-              className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Texts>
-          </Buttons>
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
-            disabled={isSaving || !hasUnsavedChanges}
-            className="w-fit h-auto "
-          >
-            <Texts
-              size="xs"
-              text="link"
-              className={hasUnsavedChanges ? "" : "text-app-dark-gray"}
-            >
-              {"Discard Changes"}
-            </Texts>
-          </Buttons>
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={handleDeleteClick}
-            disabled={hasUnsavedChanges || isDeleting}
-            className="w-fit h-auto "
-          >
-            <Texts size="xs" text="link">
-              {isDeleting ? "Deleting..." : "Delete"}
-            </Texts>
-          </Buttons>
+    <Holds background={"white"} className="w-full h-full">
+      <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
+        <Holds className="w-full h-full">
+          <Titles position="left" size="h5" className="font-bold mb-2">
+            {formattedCostCodeName}
+          </Titles>
         </Holds>
-      </Holds>
-      <Holds background={"white"} className="w-full h-full">
-        <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
-          <Holds className="w-full h-full">
-            <Titles position="left" size="h5" className="font-bold mb-2">
-              {formattedCostCodeName}
-            </Titles>
+
+        <Grids
+          cols="2"
+          gap="4"
+          className="w-full h-full bg-white rounded-[10px]"
+        >
+          <Holds className="col-span-1 h-full">
+            <CostCodeBasicFields
+              formData={formData}
+              changedFields={changedFields}
+              onInputChange={onInputChange}
+              onRevertField={onRevertField}
+            />
           </Holds>
 
-          <Grids
-            cols="2"
-            gap="4"
-            className="w-full h-full bg-white rounded-[10px]"
-          >
-            <Holds className="col-span-1 h-full">
-              <CostCodeBasicFields
-                formData={formData}
-                changedFields={changedFields}
-                onInputChange={onInputChange}
-                onRevertField={onRevertField}
-              />
-            </Holds>
-
-            <Holds className="col-span-1 h-full">
-              {/* Cost Code Groups Section - Placeholder for future implementation */}
-              <Texts position={"left"} size="xs" className="font-bold mb-2">
-                Cost Code Groups
-              </Texts>
-              <Holds className="h-full border-[3px] border-black p-3 rounded-[10px]">
-                {tagSummaries.map((tag, index) => (
+          <Holds className="col-span-1 h-full">
+            {/* Cost Code Groups Section - Placeholder for future implementation */}
+            <Texts position={"left"} size="xs" className="font-bold mb-2">
+              Cost Code Groups
+            </Texts>
+            <Holds className="h-full border-[3px] border-black p-3 rounded-[10px]">
+              {tagSummaries.map((tag, index) => (
+                <Holds
+                  position={"row"}
+                  key={index}
+                  className="w-full gap-3 mt-2 first:mt-0"
+                >
                   <Holds
-                    position={"row"}
-                    key={index}
-                    className="w-full gap-3 mt-2 first:mt-0"
+                    background={"lightBlue"}
+                    className="w-full h-[40px] rounded-[10px] flex items-center justify-center"
                   >
-                    <Holds
-                      background={"lightBlue"}
-                      className="w-full h-[40px] rounded-[10px] flex items-center justify-center"
-                    >
-                      <Titles size="md">{tag.name}</Titles>
-                    </Holds>
-
-                    <Holds className="w-fit h-fit justify-center items-center">
-                      <CheckBox
-                        shadow={false}
-                        checked={
-                          Array.isArray(formData.CCTags)
-                            ? formData.CCTags.some((cc) => cc.id === tag.id)
-                            : false
-                        }
-                        onChange={() => handleTagToggle(tag.id, tag.name)}
-                        id={tag.id}
-                        name={tag.name}
-                        height={35}
-                        width={35}
-                      />
-                    </Holds>
+                    <Titles size="md">{tag.name}</Titles>
                   </Holds>
-                ))}
-              </Holds>
-            </Holds>
-          </Grids>
-        </Grids>
-      </Holds>
 
+                  <Holds className="w-fit h-fit justify-center items-center">
+                    <CheckBox
+                      shadow={false}
+                      checked={
+                        Array.isArray(formData.CCTags)
+                          ? formData.CCTags.some((cc) => cc.id === tag.id)
+                          : false
+                      }
+                      onChange={() => handleTagToggle(tag.id, tag.name)}
+                      id={tag.id}
+                      name={tag.name}
+                      height={35}
+                      width={35}
+                    />
+                  </Holds>
+                </Holds>
+              ))}
+            </Holds>
+          </Holds>
+        </Grids>
+      </Grids>
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onCancel={handleDeleteCancel}
@@ -271,7 +186,7 @@ function CostCodeFormView({
         itemName={formData.name}
         itemType="cost code"
       />
-    </Grids>
+    </Holds>
   );
 }
 

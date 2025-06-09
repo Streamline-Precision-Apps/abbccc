@@ -308,8 +308,25 @@ export default function EquipmentRegistrationForm({
           <Texts position={"left"} size={"sm"} className="font-bold">
             Safety Documents & Policies
           </Texts>
-          <Holds className="w-full h-full border-[3px] rounded-[10px] border-black">
+
+          <Holds className="w-full h-full border-[3px] rounded-[10px] border-black p-2">
+            <Texts
+              size={"xs"}
+              text={"italic"}
+              className="text-center text-gray-500 "
+            >
+              Connect your Safety document and policy to your equipment to help
+              workers know which documents are required to operate the
+              equipment.
+              <br />
+              <br />
+            </Texts>
+            <Texts size={"xs"} className="text-center">
+              Coming Soon!
+            </Texts>
+            {/* Safety Documents and Policies 
             <SafetyDocumentsAndPolicies />
+            */}
           </Holds>
         </Holds>
       </Grids>
