@@ -165,7 +165,7 @@ export default function TagsFormView({
               text="link"
               className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
             >
-              Create New Group
+              Create New
             </Texts>
           </Buttons>
 
@@ -209,7 +209,7 @@ export default function TagsFormView({
             disabled={isDeleting || isSaving}
           >
             <Texts size="sm" text="link">
-              {isDeleting ? <Spinner size={20} /> : "Delete Group"}
+              {isDeleting ? <Spinner size={20} /> : "Delete"}
             </Texts>
           </Buttons>
 

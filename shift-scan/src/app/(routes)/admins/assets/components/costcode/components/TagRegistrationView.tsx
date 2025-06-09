@@ -109,9 +109,7 @@ export default function TagsRegistrationView({
             onClick={handleCancel}
             disabled={tagCreation.isSubmitting}
           >
-            <Texts size="sm" text={"link"}>
-              Cancel Creation
-            </Texts>
+            <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />
           </Buttons>
           {/* Success/Error Messages */}
           {tagCreation.successMessage && (

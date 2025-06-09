@@ -110,7 +110,7 @@ export default function JobsiteRegistrationView({
               background={"none"}
               shadow={"none"}
               disabled={!isFormValid}
-              className="w-full"
+              className="w-fit h-auto"
             >
               <Texts position={"left"} text={"link"} size="sm" className="">
                 Submit New Jobsite
@@ -121,11 +121,9 @@ export default function JobsiteRegistrationView({
               background={"none"}
               shadow={"none"}
               onClick={onCancel}
-              className="w-full"
+              className="w-fit h-auto"
             >
-              <Texts position={"right"} text={"link"} size="sm" className="">
-                Cancel Registration
-              </Texts>
+              <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />
             </Buttons>
           </Holds>
 

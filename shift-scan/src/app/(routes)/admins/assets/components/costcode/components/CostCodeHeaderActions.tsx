@@ -48,42 +48,25 @@ export default function CostCodeHeaderActions({
             text={"link"}
             className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
           >
-            Register New Cost Code
+            Register New
           </Texts>
         </Buttons>
-      </Holds>
 
-      <Holds
-        position="row"
-        className="h-full flex items-center justify-end gap-4"
-      >
-        {/* Delete button */}
         <Buttons
           background={"none"}
           shadow={"none"}
-          onClick={onDeleteCostCode}
-          disabled={isSaving}
+          onClick={onDiscardChanges}
+          disabled={isSaving || !hasUnsavedChanges}
           className="w-fit h-auto px-2"
         >
-          <Texts text="link" size="sm">
-            Delete Cost Code
+          <Texts
+            size="sm"
+            text="link"
+            className={!hasUnsavedChanges ? "text-app-dark-gray" : ""}
+          >
+            Discard Changes
           </Texts>
         </Buttons>
-
-        {/* Only show discard changes when there are changes */}
-        {hasUnsavedChanges && (
-          <Buttons
-            background={"none"}
-            shadow={"none"}
-            onClick={onDiscardChanges}
-            disabled={isSaving}
-            className="w-fit h-auto px-2"
-          >
-            <Texts size="sm" text="link">
-              Discard Changes
-            </Texts>
-          </Buttons>
-        )}
 
         {/* Save Changes button shows saved indicator when successful */}
         {successfullyUpdated ? (
@@ -112,6 +95,18 @@ export default function CostCodeHeaderActions({
             </Texts>
           </Buttons>
         )}
+
+        <Buttons
+          background={"none"}
+          shadow={"none"}
+          onClick={onDeleteCostCode}
+          disabled={isSaving}
+          className="w-fit h-auto px-2"
+        >
+          <Texts text="link" size="sm">
+            Delete
+          </Texts>
+        </Buttons>
       </Holds>
     </Holds>
   );
