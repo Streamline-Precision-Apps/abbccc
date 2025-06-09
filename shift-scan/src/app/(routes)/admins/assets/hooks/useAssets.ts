@@ -9,6 +9,7 @@ import {
   JobsiteSummary,
   CostCodeSummary,
   TagSummary,
+  ClientsSummary,
 } from "../types";
 
 /**
@@ -32,6 +33,8 @@ export const useAssets = ({
   );
   const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
 
+  const [clients, setClients] = useState<ClientsSummary[]>([]);
+
   // Detailed state (for selected items)
   const [selectEquipment, setSelectEquipment] = useState<Equipment | null>(
     null
@@ -43,6 +46,7 @@ export const useAssets = ({
   // Loading state
   // Granular loading states
   const [loadingStates, setLoadingStates] = useState({
+    clientSummary: false,
     equipmentSummary: false,
     jobsiteSummary: false,
     costCodeSummary: false,
@@ -83,6 +87,16 @@ export const useAssets = ({
       }
     }
   };
+
+  // Summary fetch functions
+  const fetchClientSummaries = useCallback(async () => {
+    await fetchData<ClientsSummary[]>(
+      "/api/getClientsSummary",
+      "Failed to fetch client summaries:",
+      setClients,
+      "clientSummary"
+    );
+  }, []);
 
   // Summary fetch functions
   const fetchEquipmentSummaries = useCallback(async () => {
@@ -201,6 +215,7 @@ export const useAssets = ({
       try {
         setLoadingStates((prev) => ({ ...prev, initialLoad: true }));
         await Promise.all([
+          fetchClientSummaries(),
           fetchEquipmentSummaries(),
           fetchJobsiteSummaries(),
           fetchCostCodeSummaries(),
@@ -227,6 +242,7 @@ export const useAssets = ({
     jobsiteSummaries,
     costCodeSummaries,
     tagSummaries,
+    clients,
 
     // Selected data
     selectEquipment,

@@ -6,7 +6,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import React, { useState, useEffect } from "react";
-import ValidationMessage from "./ValidationMessage";
+import ValidationMessage from "../../shared/ValidationMessage";
 // Helper for validation
 const getValidationErrors = (formData: NewEquipment) => {
   const errors: Record<string, string> = {};

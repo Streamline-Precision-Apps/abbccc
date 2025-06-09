@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Jobsite, TagSummary } from "../../types";
+import { ClientsSummary, Jobsite, TagSummary } from "../../types";
 import {
   JobsiteHeaderActions,
   JobsiteFormView,
@@ -43,6 +43,7 @@ interface JobsiteMainContentProps {
   tagFormHook: UseTagsFormReturn;
   /** Cost code group summary data */
   tagSummaries?: TagSummary[];
+  clients?: ClientsSummary[];
 }
 
 /**
@@ -67,6 +68,7 @@ export default function JobsiteMainContent({
   setHasUnsavedChanges,
   tagFormHook,
   tagSummaries = [],
+  clients = [],
 }: JobsiteMainContentProps) {
   const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
     useState(false);
@@ -169,6 +171,7 @@ export default function JobsiteMainContent({
           onCancel={handleCancelRegistration}
           onUnsavedChangesChange={handleRegistrationFormChanges}
           tagSummaries={tagSummaries}
+          clients={clients}
         />
       ) : jobsiteUIState === "editing" && selectJobsite && formData ? (
         <Holds className="w-full h-full col-span-4">

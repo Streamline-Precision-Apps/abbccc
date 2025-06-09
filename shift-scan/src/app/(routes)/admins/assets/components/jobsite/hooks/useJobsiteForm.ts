@@ -249,6 +249,7 @@ export const useJobsiteForm = ({
   const handleNewJobsiteSubmit = useCallback(
     async (newJobsite: {
       name: string;
+      clientId: string;
       description: string;
       address?: string;
       city?: string;
@@ -257,7 +258,6 @@ export const useJobsiteForm = ({
       country?: string;
       comment?: string;
       isActive?: boolean;
-      client?: string;
       CCTags?: Array<{ id: string; name: string }>;
     }) => {
       try {
@@ -265,7 +265,9 @@ export const useJobsiteForm = ({
         if (!newJobsite.name?.trim()) {
           throw new Error("Jobsite name is required");
         }
-
+        if (!newJobsite.clientId?.trim()) {
+          throw new Error("Client is required");
+        }
         if (!newJobsite.description?.trim()) {
           throw new Error("Jobsite description is required");
         }
@@ -273,6 +275,7 @@ export const useJobsiteForm = ({
         // Call the actual create jobsite server action
         const result = await createJobsiteFromObject({
           name: newJobsite.name,
+          clientId: newJobsite.clientId,
           description: newJobsite.description,
           address: newJobsite.address || "",
           city: newJobsite.city || "",
@@ -281,7 +284,6 @@ export const useJobsiteForm = ({
           country: newJobsite.country || "US",
           comment: newJobsite.comment || "",
           isActive: newJobsite.isActive ?? true,
-          client: newJobsite.client || "",
           CCTags: newJobsite.CCTags || [],
         });
 
