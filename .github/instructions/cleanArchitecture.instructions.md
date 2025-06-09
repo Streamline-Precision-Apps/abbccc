@@ -17,7 +17,7 @@ Copy and paste this for future reference:
 - **Contains**: TypeScript types, interfaces, business rules
 - **Examples**: `User`, `Equipment`, validation functions
 
-### 2. 🟢 APPLICATION (Use Cases)
+### 2. 🟢 APP (Use Cases)
 
 - **Purpose**: Business workflows as pure functions
 - **Dependencies**: Only depends on Domain
@@ -106,32 +106,26 @@ useEffect(() => {
 ```
 src/
 ├── domain/
-│   ├── entities/          # TypeScript types & interfaces
-│   │   ├── User.ts
-│   │   ├── Equipment.ts
-│   │   └── index.ts
-│   └── repositories/      # Repository interfaces
-│       ├── UserRepository.ts
-│       ├── EquipmentRepository.ts
-│       └── index.ts
+│   ├── entities/                # Pure TypeScript types/interfaces
+│   └── repositories/            # Contracts for data access
+│       └── UserRepository.ts
 ├── application/
-│   └── useCases/          # Pure functions for business logic
-│       ├── createUser.ts
-│       ├── getUsers.ts
-│       ├── updateEquipment.ts
-│       └── index.ts
+│   └── useCases/                # Business logic
+│       └── createUser.ts
 ├── infrastructure/
-│   └── repositories/      # Concrete implementations
-│       ├── UserRepositoryImpl.ts
-│       ├── EquipmentRepositoryImpl.ts
-│       └── index.ts
-├── app/                   # Next.js 14 App Router
-│   ├── api/               # API routes using use cases
-│   │   ├── users/
-│   │   └── equipment/
-│   └── (routes)/          # Pages
-├── components/            # React components (presentation only)
-└── lib/                   # Utilities and shared code
+│   ├── prisma/                  # Prisma singleton client
+│   │   └── client.ts
+│   └── repositories/            # Implement Domain interfaces
+│       └── UserRepositoryImpl.ts
+├── app/                         # Next.js App Router
+│   ├── api/
+│   │   └── users/
+│   │       └── route.ts         # API routes
+│   └── (dashboard)/             # UI pages
+│       └── page.tsx
+├── components/                  # Pure UI components
+├── lib/                         # Utils, validation functions
+└── types/                       # Shared types if needed
 ```
 
 ## 🎯 Benefits Checklist:
