@@ -14,7 +14,7 @@ const ValidationMessage: React.FC<ValidationMessageProps> = ({
   className,
 }) => (
   <div
-    className={`text-xs min-h-[10px] mt-1 mb-3 ${
+    className={`text-xs min-h-[10px] mt-1 mb-2 ${
       message ? "text-red-500" : "invisible"
     } ${className || ""}`.trim()}
     aria-live="polite"

@@ -12,3 +12,8 @@ export const ASSET_TYPES = [
 ] as const;
 
 export type AssetType = (typeof ASSET_TYPES)[number]["value"];
+
+export type ClientsSummary = {
+  id: string;
+  name: string;
+};

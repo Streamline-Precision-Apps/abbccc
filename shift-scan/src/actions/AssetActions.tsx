@@ -435,6 +435,7 @@ export async function updateJobsite(formData: FormData) {
  */
 export async function createJobsiteFromObject(jobsiteData: {
   name: string;
+  clientId: string;
   description: string;
   address?: string;
   city?: string;
@@ -443,7 +444,6 @@ export async function createJobsiteFromObject(jobsiteData: {
   country?: string;
   comment?: string;
   isActive?: boolean;
-  client?: string;
   CCTags?: Array<{ id: string; name: string }>;
 }) {
   console.log("Creating jobsite from object...");
@@ -492,7 +492,7 @@ export async function createJobsiteFromObject(jobsiteData: {
           country: jobsiteData.country?.trim() || "US",
           comment: jobsiteData.comment?.trim() || null,
           isActive: jobsiteData.isActive ?? true,
-          Client: { connect: { id: jobsiteData.client } },
+          Client: { connect: { id: jobsiteData.clientId } },
           CCTags:
             jobsiteData.CCTags && jobsiteData.CCTags.length > 0
               ? {

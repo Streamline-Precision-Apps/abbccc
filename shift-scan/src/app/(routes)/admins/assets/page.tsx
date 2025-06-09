@@ -42,6 +42,7 @@ export default function Assets() {
     jobsiteSummaries,
     costCodeSummaries,
     tagSummaries,
+    clients,
 
     // Selected data
     selectEquipment,
@@ -305,6 +306,7 @@ export default function Assets() {
               setHasUnsavedChanges={setHasUnsavedChanges}
               tagFormHook={tagFormHook}
               tagSummaries={tagSummaries}
+              clients={clients}
             />
           ) : assets === "CostCode" ? (
             <CostCodeMainContent
