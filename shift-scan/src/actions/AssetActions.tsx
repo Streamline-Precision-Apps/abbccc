@@ -192,7 +192,7 @@ export async function registerEquipment(
     description?: string;
     equipmentTag: string;
     overWeight: boolean | null;
-    currentWeight: number;
+    currentWeight: number | null;
     equipmentVehicleInfo?: {
       make: string | null;
       model: string | null;

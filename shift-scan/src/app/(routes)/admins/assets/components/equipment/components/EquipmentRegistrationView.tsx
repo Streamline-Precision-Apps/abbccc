@@ -1,34 +1,25 @@
+import React, { useState, useRef, useEffect } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import EquipmentRegistrationForm from "../forms/EquipmentRegistrationForm";
 import { Buttons } from "@/components/(reusable)/buttons";
+import {
+  useEquipmentRegistrationForm,
+  NewEquipment,
+} from "../hooks/useEquipmentRegistrationForm";
+import { on } from "events";
 
 interface EquipmentRegistrationViewProps {
   /** Handler for new equipment submission */
-  onSubmit: (newEquipment: {
-    name: string;
-    description?: string;
-    equipmentTag: string;
-    status?: string;
-    isActive: boolean;
-    inUse: boolean;
-    overWeight: boolean | null;
-    currentWeight: number;
-    equipmentVehicleInfo?: {
-      make: string | null;
-      model: string | null;
-      year: string | null;
-      licensePlate: string | null;
-      registrationExpiration: Date | null;
-      mileage: number | null;
-    };
-  }) => Promise<void>;
+  onSubmit: (newEquipment: NewEquipment) => Promise<void>;
   /** Handler to cancel registration */
   onCancel: () => void;
   /** Handler for tracking unsaved changes */
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
+  /** Flag indicating if the equipment was successfully updated */
+  onSuccess: boolean;
 }
 
 /**
@@ -39,29 +30,68 @@ interface EquipmentRegistrationViewProps {
  * @returns JSX element containing the complete registration interface
  */
 export default function EquipmentRegistrationView({
-  onSubmit,
+  onSubmit: onSubmitProp,
   onCancel,
   onUnsavedChangesChange,
+  onSuccess,
 }: EquipmentRegistrationViewProps) {
+  const [isFormValid, setIsFormValid] = useState(false);
+  const formSubmitRef = useRef<(() => void) | null>(null);
+
+  const {
+    formData,
+    errors,
+    touched,
+    triedSubmit,
+    hasVehicleInfo,
+    handleInputChange,
+    handleVehicleInfoChange,
+    handleEquipmentTagChange,
+    handleBlur,
+    handleSubmit,
+    resetForm,
+    isFormEmpty,
+  } = useEquipmentRegistrationForm({
+    onSubmit: onSubmitProp,
+    onUnsavedChangesChange: onUnsavedChangesChange,
+    onValidityChange: setIsFormValid,
+  });
+
+  useEffect(() => {
+    formSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
+
   return (
     <Holds className="w-full h-full col-span-4">
       <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
         <Holds
           background={"white"}
           position={"row"}
-          className="w-full h-full rounded-[10px] justify-between px-4"
+          className="w-full h-full rounded-[10px] justify-between px-4 relative"
         >
+          {onSuccess && (
+            <Holds
+              background={"green"}
+              className="absolute top-0 left-0 w-full h-full rounded-[10px] flex items-center justify-center"
+            >
+              <Texts size={"sm"}>Equipment successfully registered!</Texts>
+            </Holds>
+          )}
+
           <Buttons
             background={"none"}
             shadow={"none"}
-            type="submit"
-            className="w-fit h-auto"
+            className={`w-fit h-auto`}
+            disabled={!isFormValid || isFormEmpty}
+            onClick={handleSubmit}
           >
             <Texts
               position={"left"}
               size={"sm"}
               text={"link"}
-              className="cursor-pointer hover:underline font-semibold"
+              className={`flex items-center gap-2 ${
+                !isFormValid || isFormEmpty ? "text-gray-400" : "text-black"
+              }`}
             >
               Submit New Equipment
             </Texts>
@@ -89,9 +119,17 @@ export default function EquipmentRegistrationView({
             </Holds>
             <Holds className="w-full h-full overflow-y-auto ">
               <EquipmentRegistrationForm
-                onSubmit={onSubmit}
+                formData={formData}
+                errors={errors}
+                touched={touched}
+                triedSubmit={triedSubmit}
+                hasVehicleInfo={hasVehicleInfo}
+                onInputChange={handleInputChange}
+                onVehicleInfoChange={handleVehicleInfoChange}
+                onEquipmentTagChange={handleEquipmentTagChange}
+                onBlur={handleBlur}
+                onFormSubmit={handleSubmit}
                 onCancel={onCancel}
-                onUnsavedChangesChange={onUnsavedChangesChange}
               />
             </Holds>
           </Grids>

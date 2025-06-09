@@ -13,7 +13,7 @@ export type Equipment = {
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
   isDisabledByAdmin: boolean;
   overWeight: boolean;
-  currentWeight: number;
+  currentWeight: number | null;
   equipmentVehicleInfo?: {
     make: string | null;
     model: string | null;
