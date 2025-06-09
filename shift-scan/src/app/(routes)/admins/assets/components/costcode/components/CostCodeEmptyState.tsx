@@ -61,9 +61,7 @@ function CostCodeEmptyState({
               background={"green"}
               className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
             >
-              <Texts size="sm" className="text-white">
-                {successMessage}
-              </Texts>
+              <Texts size="sm">{successMessage}</Texts>
             </Holds>
           )}
           {error && (
@@ -71,7 +69,7 @@ function CostCodeEmptyState({
               background={"red"}
               className="w-full h-full absolute top-0 left-0 justify-center items-center rounded-[10px] z-50"
             >
-              <Texts size="sm" className="text-white flex-1 text-center">
+              <Texts size="sm" className=" flex-1 text-center">
                 {error}
               </Texts>
             </Holds>
