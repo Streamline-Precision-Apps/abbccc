@@ -8,6 +8,8 @@ const SelectsVariants = cva("text-lg rounded-[10px]", {
     variant: {
       default:
         "border border-[3px] border-black disabled:bg-app-gray mb-3 last:mb-0 w-full p-1",
+      validationMessage:
+        "border border-[3px] border-black disabled:bg-app-gray w-full p-1",
     },
   },
   defaultVariants: {
