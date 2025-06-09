@@ -7,6 +7,7 @@ import { Jobsite } from "../../../types";
 import { TagSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
+import { useJobsiteRegistrationForm } from "../hooks/useJobsiteRegistrationForm";
 
 interface JobsiteCostCodeGroupsProps {
   formData: {
@@ -37,6 +38,9 @@ export default function JobsiteCostCodeGroups({
   onInputChange,
   changedFields,
 }: JobsiteCostCodeGroupsProps) {
+  const { handleCCTagsChange } = useJobsiteRegistrationForm({
+    onSubmit: async () => {},
+  });
   const [loading, setLoading] = useState(false);
 
   // Handle selecting/deselecting all tags
@@ -51,13 +55,8 @@ export default function JobsiteCostCodeGroups({
    * Toggle a single cost code group for the jobsite
    */
   const handleTagToggle = (tagId: string, tagName: string) => {
-    // Get current CCTags or initialize empty array
     const currentTags = formData.CCTags || [];
-
-    // Check if tag is already in the array
     const tagIndex = currentTags.findIndex((tag) => tag.id === tagId);
-
-    // Create a new array based on toggle action
     const newTags =
       tagIndex >= 0
         ? [
@@ -66,8 +65,7 @@ export default function JobsiteCostCodeGroups({
           ] // Remove
         : [...currentTags, { id: tagId, name: tagName }]; // Add
 
-    // Update form data with new tags array
-    onInputChange("CCTags", newTags);
+    handleCCTagsChange(newTags);
   };
 
   // Is a particular tag selected?
@@ -107,7 +105,7 @@ export default function JobsiteCostCodeGroups({
                 <CheckBox
                   id={`tag-${tag.id}`}
                   name={`tag-${tag.id}`}
-                  checked={isTagSelected(tag.id)}
+                  checked={formData.CCTags?.some((tag) => tag.id === tag.id)}
                   onChange={() => handleTagToggle(tag.id, tag.name)}
                   width={35}
                   height={35}
