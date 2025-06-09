@@ -76,11 +76,14 @@ export default function EquipmentMainContent({
     handleRevertField,
     handleDeleteEquipment,
     confirmDeleteEquipment,
+    message,
+    error,
   } = useEquipmentForm({
     selectEquipment,
     setSelectEquipment,
     onUnsavedChangesChange,
     refreshEquipments,
+    setEquipmentUIState,
   });
 
   // Handle registration form unsaved changes
@@ -155,6 +158,7 @@ export default function EquipmentMainContent({
           onSubmit={handleNewEquipmentSubmit}
           onCancel={handleCancelRegistration}
           onUnsavedChangesChange={handleRegistrationFormChanges}
+          onSuccess={successfullyUpdated}
         />
       ) : equipmentUIState === "editing" && selectEquipment && formData ? (
         <Holds className="w-full h-full col-span-4">
@@ -180,7 +184,11 @@ export default function EquipmentMainContent({
           </Grids>
         </Holds>
       ) : equipmentUIState === "idle" ? (
-        <EquipmentEmptyState onOpenRegistration={handleOpenRegistration} />
+        <EquipmentEmptyState
+          onOpenRegistration={handleOpenRegistration}
+          deletionConfirmationMessage={message}
+          deletionErrorMessage={error}
+        />
       ) : null}
 
       <DiscardChangesModal

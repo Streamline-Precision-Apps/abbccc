@@ -17,7 +17,9 @@ interface UseEquipmentFormProps {
   selectEquipment: Equipment | null;
   setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
-
+  setEquipmentUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
   refreshEquipments?: () => Promise<void>;
 }
 
@@ -26,7 +28,7 @@ interface NewEquipmentData {
   description?: string;
   equipmentTag: string;
   overWeight: boolean | null;
-  currentWeight: number;
+  currentWeight: number | null;
   equipmentVehicleInfo?: {
     make: string | null;
     model: string | null;
@@ -38,6 +40,8 @@ interface NewEquipmentData {
 }
 
 interface UseEquipmentFormReturn {
+  message: string | null;
+  error: string | null;
   formData: Equipment | null;
   changedFields: Set<string>;
   hasUnsavedChanges: boolean;
@@ -55,6 +59,7 @@ interface UseEquipmentFormReturn {
   handleNewEquipmentSubmit: (newEquipment: NewEquipmentData) => Promise<void>;
   handleDeleteEquipment: () => void;
   confirmDeleteEquipment: () => Promise<void>;
+  successfullySubmitted?: string | null;
 }
 
 /**
@@ -66,12 +71,15 @@ export const useEquipmentForm = ({
   setSelectEquipment,
   onUnsavedChangesChange,
   refreshEquipments,
+  setEquipmentUIState,
 }: UseEquipmentFormProps): UseEquipmentFormReturn => {
   const [formData, setFormData] = useState<Equipment | null>(null);
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [successfullyUpdated, setSuccessfullyUpdated] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: session } = useSession();
 
@@ -166,7 +174,12 @@ export const useEquipmentForm = ({
         "isDisabledByAdmin",
         String(formData.isDisabledByAdmin)
       );
-      formDataToSend.append("currentWeight", formData.currentWeight.toString());
+      if (formData.currentWeight) {
+        formDataToSend.append(
+          "currentWeight",
+          formData.currentWeight.toString()
+        );
+      }
       formDataToSend.append("overWeight", formData.overWeight.toString());
 
       // Add vehicle information if it exists
@@ -311,22 +324,6 @@ export const useEquipmentForm = ({
         const result = await registerEquipment(newEquipment, session.user.id);
 
         if (result.success && result.data) {
-          const equipmentToSelect: Equipment = {
-            id: result.data.id,
-            qrId: result.data.qrId,
-            name: result.data.name,
-            description: result.data.description,
-            equipmentTag: result.data.equipmentTag,
-            approvalStatus: result.data.approvalStatus,
-            state: result.data.state,
-            isDisabledByAdmin: result.data.isDisabledByAdmin,
-            overWeight: result.data.overWeight || false,
-            currentWeight: result.data.currentWeight || 0,
-            equipmentVehicleInfo:
-              (result.data as Equipment).equipmentVehicleInfo || undefined,
-          };
-          setSelectEquipment(equipmentToSelect);
-
           // Refresh equipment list after registration
           if (refreshEquipments) {
             await refreshEquipments();
@@ -376,14 +373,14 @@ export const useEquipmentForm = ({
       if (result.success) {
         // Reset selection and UI state
         setSelectEquipment(null);
+        setMessage("Successfully deleted equipment.");
+        setEquipmentUIState("idle");
+        setError(null);
 
         // Refresh equipment list after deletion
         if (refreshEquipments) {
           await refreshEquipments();
         }
-
-        // Show a success message (could be replaced with a toast notification)
-        alert("Equipment deleted successfully");
       } else {
         throw new Error(result.error || "Failed to delete equipment");
       }
@@ -396,6 +393,7 @@ export const useEquipmentForm = ({
       );
     } finally {
       setIsSaving(false);
+      setTimeout(() => setMessage(null), 3000);
     }
   }, [formData, setSelectEquipment, refreshEquipments]);
 
@@ -414,5 +412,7 @@ export const useEquipmentForm = ({
     handleNewEquipmentSubmit,
     handleDeleteEquipment,
     confirmDeleteEquipment,
+    message,
+    error,
   };
 };
