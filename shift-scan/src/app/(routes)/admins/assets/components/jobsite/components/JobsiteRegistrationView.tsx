@@ -222,9 +222,6 @@ export default function JobsiteRegistrationView({
                       className="text-sm mb-0"
                       variant={"validationMessage"}
                     >
-                      <option value="" disabled>
-                        Select a client...
-                      </option>
                       {clients.map((client) => (
                         <option key={client.id} value={client.id}>
                           {client.name}
