@@ -117,15 +117,9 @@ export interface RegistrationResult {
  * Props for the CostCodeRegistrationView component
  */
 export interface CostCodeRegistrationViewProps {
-  onSubmit: (formData: {
-    cCNumber: string;
-    cCName: string;
-    isActive: boolean;
-    CCTags?: Array<{ id: string; name: string }>;
-  }) => Promise<RegistrationResult>;
-  onCancel: () => void;
   setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
   tagSummaries?: TagSummary[];
+  refreshCostCodes: () => Promise<void>;
 }
 
 /**
