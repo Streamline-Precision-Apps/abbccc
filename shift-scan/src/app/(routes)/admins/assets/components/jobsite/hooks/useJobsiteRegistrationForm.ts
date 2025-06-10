@@ -250,11 +250,6 @@ export const useJobsiteRegistrationForm = ({
           await refreshJobsites();
         }
 
-        // Reset UI state
-        if (setJobsiteUIState) {
-          setJobsiteUIState("idle");
-        }
-
         return result;
       } catch (error) {
         console.error("Failed to create jobsite:", error);
@@ -309,12 +304,6 @@ export const useJobsiteRegistrationForm = ({
     setJobsiteUIState("idle");
     resetForm();
   }, [formData, setJobsiteUIState, resetForm]);
-
-  const confirmCancelRegistration = useCallback(() => {
-    setJobsiteUIState("idle");
-    setShowConfirmModal(false);
-    resetForm();
-  }, [setJobsiteUIState, resetForm]);
 
   return {
     formData,

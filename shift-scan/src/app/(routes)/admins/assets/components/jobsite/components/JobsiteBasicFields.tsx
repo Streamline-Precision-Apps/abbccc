@@ -337,6 +337,24 @@ export default function JobsiteBasicFields({
               tagSummaries={tagSummaries}
               onInputChange={onInputChange}
               changedFields={changedFields}
+              isTagSelected={(tagId: string) =>
+                formData.CCTags?.some((tag) => tag.id === tagId) || false
+              }
+              handleTagToggle={(tagId: string, tagName: string) => {
+                const currentTags = formData.CCTags || [];
+                const tagIndex = currentTags.findIndex(
+                  (tag) => tag.id === tagId
+                );
+                const newTags =
+                  tagIndex >= 0
+                    ? [
+                        ...currentTags.slice(0, tagIndex),
+                        ...currentTags.slice(tagIndex + 1),
+                      ] // Remove
+                    : [...currentTags, { id: tagId, name: tagName }]; // Add
+
+                onInputChange("CCTags", newTags);
+              }}
             />
           </Holds>
         </Holds>

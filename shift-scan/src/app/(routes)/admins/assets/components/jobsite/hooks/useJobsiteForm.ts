@@ -41,6 +41,8 @@ export interface UseJobsiteFormReturn {
   handleRevertField: (fieldName: string) => void;
   handleDeleteJobsite: () => void;
   confirmDeleteJobsite: () => Promise<void>;
+  successMessage: string | null;
+  errorMessage: string | null;
 }
 
 /**
@@ -59,8 +61,8 @@ export const useJobsiteForm = ({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [successfullyUpdated, setSuccessfullyUpdated] = useState(false);
-
-  const { data: session } = useSession();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Initialize form data when selectJobsite changes
   useEffect(() => {
@@ -255,25 +257,25 @@ export const useJobsiteForm = ({
       if (result.success) {
         // Reset selection and UI state
         setSelectJobsite(null);
+        setSuccessMessage("Jobsite deleted successfully");
         setJobsiteUIState("idle");
-
         // Refresh jobsite list after deletion
         if (refreshJobsites) {
           await refreshJobsites();
         }
 
-        // Show a success message (could be replaced with a toast notification)
-        alert("Jobsite deleted successfully");
+        setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         throw new Error(result.error || "Failed to delete jobsite");
       }
     } catch (error) {
       console.error("Error deleting jobsite:", error);
-      alert(
+      setErrorMessage(
         `Failed to delete jobsite: ${
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
+      setTimeout(() => setErrorMessage(null), 3000);
     } finally {
       setIsSaving(false);
     }
@@ -293,5 +295,7 @@ export const useJobsiteForm = ({
     handleRevertField,
     handleDeleteJobsite,
     confirmDeleteJobsite,
+    successMessage,
+    errorMessage,
   };
 };

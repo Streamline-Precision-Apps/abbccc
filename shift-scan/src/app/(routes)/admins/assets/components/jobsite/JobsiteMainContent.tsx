@@ -86,6 +86,8 @@ export default function JobsiteMainContent({
     handleRevertField,
     handleDeleteJobsite,
     confirmDeleteJobsite,
+    successMessage,
+    errorMessage,
   } = useJobsiteForm({
     selectJobsite,
     setSelectJobsite,
@@ -172,7 +174,11 @@ export default function JobsiteMainContent({
           </Grids>
         </Holds>
       ) : jobsiteUIState === "idle" ? (
-        <JobsiteEmptyState onRegisterNew={handleOpenRegistration} />
+        <JobsiteEmptyState
+          onRegisterNew={handleOpenRegistration}
+          successMessage={successMessage}
+          errorMessage={errorMessage}
+        />
       ) : null}
 
       <DiscardChangesModal
