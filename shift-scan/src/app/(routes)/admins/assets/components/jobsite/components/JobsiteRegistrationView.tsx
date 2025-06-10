@@ -17,6 +17,7 @@ import {
   useJobsiteRegistrationForm,
   NewJobsiteData,
 } from "../hooks/useJobsiteRegistrationForm";
+import Spinner from "@/components/(animations)/spinner";
 
 interface JobsiteRegistrationViewProps {
   tagSummaries?: TagSummary[];
@@ -46,17 +47,12 @@ export default function JobsiteRegistrationView({
     errors,
     touched,
     triedSubmit,
-    isSubmitting,
-    hasChanged,
-    handleInputChange,
     updateField,
-    handleCCTagsChange,
     isTagSelected,
     handleTagToggle,
-    handleBlur,
     updateFieldTouched,
     handleSubmit,
-    resetForm,
+    isSubmitting,
     isFormValid,
     successMessage,
     errorMessage,
@@ -107,7 +103,7 @@ export default function JobsiteRegistrationView({
               type="submit"
               background={"none"}
               shadow={"none"}
-              disabled={!isFormValid}
+              disabled={!isFormValid || isSubmitting}
               className="w-fit h-auto"
             >
               <Texts
@@ -116,7 +112,7 @@ export default function JobsiteRegistrationView({
                 size="sm"
                 className={`${isFormValid ? "" : "text-app-dark-gray"}`}
               >
-                Submit New Jobsite
+                {isSubmitting ? `Submitting...` : "Submit New Jobsite"}
               </Texts>
             </Buttons>
             <Buttons
