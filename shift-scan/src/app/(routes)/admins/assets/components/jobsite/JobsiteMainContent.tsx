@@ -71,6 +71,7 @@ export default function JobsiteMainContent({
   clients = [],
 }: JobsiteMainContentProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
 
   const {
     formData,
@@ -111,6 +112,20 @@ export default function JobsiteMainContent({
   const handleCancelDiscard = () => {
     setShowConfirmModal(false);
   };
+  const handleDiscardEdit = () => {
+    if (hasUnsavedChanges) {
+      setShowEditConfirmModal(true);
+      return;
+    }
+    handleDiscardChanges();
+  };
+  const handleCancelEditDiscard = () => {
+    setShowEditConfirmModal(false);
+  };
+  const handleConfirmEditDiscard = () => {
+    setShowEditConfirmModal(false);
+    handleDiscardChanges();
+  };
 
   // Show loading indicator when data is being fetched
   if (loading) {
@@ -150,9 +165,10 @@ export default function JobsiteMainContent({
               isSaving={isSaving}
               successfullyUpdated={successfullyUpdated}
               onRegisterNew={handleOpenRegistration}
-              onDiscardChanges={handleDiscardChanges}
+              onDiscardChanges={handleDiscardEdit}
               onSaveChanges={handleSaveChanges}
               onDeleteJobsite={handleDeleteJobsite}
+              setShowConfirmModal={setShowConfirmModal}
             />
 
             <JobsiteFormView
@@ -185,6 +201,13 @@ export default function JobsiteMainContent({
         isOpen={showConfirmModal}
         confirmDiscardChanges={handleConfirmDiscard}
         cancelDiscard={handleCancelDiscard}
+        message="You have unsaved changes. Are you sure you want to discard them?"
+      />
+
+      <DiscardChangesModal
+        isOpen={showEditConfirmModal}
+        confirmDiscardChanges={handleConfirmEditDiscard}
+        cancelDiscard={handleCancelEditDiscard}
         message="You have unsaved changes. Are you sure you want to discard them?"
       />
 
