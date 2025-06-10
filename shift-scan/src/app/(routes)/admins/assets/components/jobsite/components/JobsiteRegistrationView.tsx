@@ -5,7 +5,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Selects } from "@/components/(reusable)/selects";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ValidationMessage from "../../shared/ValidationMessage";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
@@ -13,11 +13,7 @@ import { ClientsSummary, TagSummary } from "../../../types";
 import JobsiteCostCodeGroups from "./JobsiteCostCodeGroups";
 import { US_STATES } from "@/data/stateValues";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import {
-  useJobsiteRegistrationForm,
-  NewJobsiteData,
-} from "../hooks/useJobsiteRegistrationForm";
-import Spinner from "@/components/(animations)/spinner";
+import { useJobsiteRegistrationForm } from "../hooks/useJobsiteRegistrationForm";
 
 interface JobsiteRegistrationViewProps {
   tagSummaries?: TagSummary[];
