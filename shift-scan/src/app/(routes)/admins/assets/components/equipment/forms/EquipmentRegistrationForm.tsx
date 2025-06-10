@@ -6,7 +6,6 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import React from "react";
-import ValidationMessage from "../../shared/ValidationMessage";
 import { NewEquipment } from "../hooks/useEquipmentRegistrationForm";
 import SafetyDocumentsAndPolicies from "./SafetyDocumentsAndPolicies";
 
