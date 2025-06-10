@@ -1,28 +1,14 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
-import { Jobsite } from "../../../types";
 import { TagSummary } from "../../../types";
-import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
 
 interface JobsiteCostCodeGroupsProps {
-  formData: {
-    CCTags?: Array<{ id: string; name: string }>;
-    [key: string]: any;
-  };
   tagSummaries: TagSummary[];
-  handleCCTagsChange: (
-    tags: Array<{
-      id: string;
-      name: string;
-    }>
-  ) => void;
   isTagSelected: (tagId: string) => boolean;
   handleTagToggle: (tagId: string, tagName: string) => void;
-  changedFields?: Set<string>;
 }
 
 /**
@@ -30,12 +16,9 @@ interface JobsiteCostCodeGroupsProps {
  * Allows users to select or deselect cost code groups for the current jobsite
  */
 export default function JobsiteCostCodeGroups({
-  formData,
   tagSummaries,
-  handleCCTagsChange,
   isTagSelected,
   handleTagToggle,
-  changedFields,
 }: JobsiteCostCodeGroupsProps) {
   return (
     <Holds className="w-full h-full flex flex-col">

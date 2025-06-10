@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 // Define the shape of the form data
 export interface NewJobsiteData {
@@ -61,6 +61,8 @@ export const useJobsiteRegistrationForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
   const [isFormEmpty, setIsFormEmpty] = useState(true);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Effect to update isFormEmpty
   useEffect(() => {
@@ -142,6 +144,14 @@ export const useJobsiteRegistrationForm = ({
   );
 
   /**
+   * Check if the form is valid (all required fields filled and no validation errors)
+   */
+  const isFormValid = useMemo(() => {
+    const validationErrors = getValidationErrors(formData);
+    return Object.keys(validationErrors).length === 0;
+  }, [formData]);
+
+  /**
    * Check if a particular tag is selected
    */
   const isTagSelected = useCallback(
@@ -201,12 +211,27 @@ export const useJobsiteRegistrationForm = ({
     setTouched({});
     setTriedSubmit(false);
     setHasChanged(false);
+    setTimeout(() => {
+      setSuccessMessage(null);
+      setErrorMessage(null);
+    }, 300);
+  }, []);
+
+  /**
+   * Clear success and error messages manually
+   */
+  const clearMessages = useCallback(() => {
+    setSuccessMessage(null);
+    setErrorMessage(null);
   }, []);
 
   const handleSubmit = useCallback(
     async (event?: React.FormEvent<HTMLFormElement>) => {
       if (event) event.preventDefault();
       setTriedSubmit(true);
+      setSuccessMessage(null);
+      setErrorMessage(null);
+
       const validationErrors = getValidationErrors(formData);
       setErrors(validationErrors);
 
@@ -214,12 +239,16 @@ export const useJobsiteRegistrationForm = ({
         setIsSubmitting(true);
         try {
           await onSubmit(formData);
-          // resetForm(); // Reset form on successful submission - this will be called by the parent
+          setSuccessMessage("Jobsite created successfully!");
+          resetForm(); // Reset form on successful submission
           return true; // Indicate success
         } catch (error) {
           console.error("Submission failed:", error);
-          // Handle submission error (e.g., display a message to the user)
-          // setErrors({ form: "Submission failed. Please try again." });
+          const errorMsg =
+            error instanceof Error
+              ? error.message
+              : "Failed to create jobsite. Please try again.";
+          setErrorMessage(errorMsg);
           return false; // Indicate failure
         } finally {
           setIsSubmitting(false);
@@ -227,7 +256,7 @@ export const useJobsiteRegistrationForm = ({
       }
       return false; // Indicate validation failure
     },
-    [formData, onSubmit]
+    [formData, onSubmit, resetForm]
   );
 
   return {
@@ -238,6 +267,9 @@ export const useJobsiteRegistrationForm = ({
     isSubmitting,
     isFormEmpty,
     hasChanged,
+    isFormValid,
+    successMessage,
+    errorMessage,
     handleInputChange,
     updateField,
     handleCCTagsChange,
@@ -247,7 +279,10 @@ export const useJobsiteRegistrationForm = ({
     updateFieldTouched,
     handleSubmit,
     resetForm,
+    clearMessages,
     setFormData, // Exposing setFormData for more complex scenarios if needed (e.g. setting CCTags)
     setErrors, // Exposing setErrors for potential external error setting
+    setSuccessMessage, // Exposing for manual success message setting
+    setErrorMessage, // Exposing for manual error message setting
   };
 };
