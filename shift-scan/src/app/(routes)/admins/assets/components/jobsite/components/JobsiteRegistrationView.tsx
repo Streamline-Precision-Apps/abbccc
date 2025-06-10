@@ -13,23 +13,13 @@ import { ClientsSummary, TagSummary } from "../../../types";
 import JobsiteCostCodeGroups from "./JobsiteCostCodeGroups";
 import { US_STATES } from "@/data/stateValues";
 import { TextAreas } from "@/components/(reusable)/textareas";
-
-interface JobsiteRegistrationFormData {
-  name: string;
-  clientId: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  description: string;
-  isActive: boolean;
-  approvalStatus: string;
-  CCTags?: Array<{ id: string; name: string }>;
-}
+import {
+  useJobsiteRegistrationForm,
+  NewJobsiteData,
+} from "../hooks/useJobsiteRegistrationForm";
 
 interface JobsiteRegistrationViewProps {
-  onSubmit: (newJobsite: JobsiteRegistrationFormData) => void;
+  onSubmit: (newJobsite: NewJobsiteData) => Promise<any>;
   onCancel: () => void;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
   tagSummaries?: TagSummary[];
@@ -48,100 +38,34 @@ export default function JobsiteRegistrationView({
   tagSummaries = [],
   clients,
 }: JobsiteRegistrationViewProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    clientId: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "US",
-    description: "",
-    isActive: true,
-    approvalStatus: "",
-    CCTags: [],
+  // Use the jobsite registration form hook
+  const {
+    formData,
+    errors,
+    touched,
+    triedSubmit,
+    isSubmitting,
+    hasChanged,
+    handleInputChange,
+    updateField,
+    handleCCTagsChange,
+    isTagSelected,
+    handleTagToggle,
+    handleBlur,
+    updateFieldTouched,
+    handleSubmit,
+    resetForm,
+  } = useJobsiteRegistrationForm({
+    onSubmit,
+    onUnsavedChangesChange,
   });
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [triedSubmit, setTriedSubmit] = useState(false);
 
-  // Validation logic
-  const getValidationErrors = (data: typeof formData) => {
-    const errors: Record<string, string> = {};
-    if (!data.name.trim()) errors.name = "Jobsite Name is required.";
-    if (!data.clientId.trim()) errors.clientId = "Client is required.";
-    if (!data.address.trim()) errors.address = "Street Address is required.";
-    if (!data.city.trim()) errors.city = "City is required.";
-    if (!data.state.trim()) errors.state = "State is required.";
-    if (!data.zipCode.trim()) errors.zipCode = "Zip Code is required.";
-    if (!data.country.trim()) errors.country = "Country is required.";
-    if (!data.description.trim())
-      errors.description = "Description is required.";
-    // Optionally: add regex for zip, city, address, etc.
-    return errors;
-  };
-  const validationErrors = getValidationErrors(formData);
+  // Helper function to show validation errors
   const showError = (field: string) =>
-    (touched[field] || triedSubmit) && validationErrors[field];
+    (touched[field] || triedSubmit) && errors[field];
 
-  // Track if form has unsaved changes
-  const hasUnsavedChanges =
-    formData.name.trim() !== "" ||
-    formData.clientId.trim() !== "" ||
-    formData.address.trim() !== "" ||
-    formData.city.trim() !== "" ||
-    formData.state.trim() !== "" ||
-    formData.zipCode.trim() !== "" ||
-    formData.country !== "US" ||
-    formData.description.trim() !== "" ||
-    (formData.CCTags && formData.CCTags.length > 0);
-
-  // Notify parent component when unsaved changes state changes
-  useEffect(() => {
-    onUnsavedChangesChange?.(hasUnsavedChanges);
-  }, [hasUnsavedChanges, onUnsavedChangesChange]);
-
-  const handleInputChange = (
-    field: string,
-    value:
-      | string
-      | number
-      | boolean
-      | Date
-      | Array<{ id: string; name: string }>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleBlur = (field: string) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTriedSubmit(true);
-    const errors = getValidationErrors(formData);
-    if (Object.keys(errors).length > 0) {
-      setTouched({
-        name: true,
-        clientId: true,
-        address: true,
-        city: true,
-        state: true,
-        zipCode: true,
-        country: true,
-        description: true,
-      });
-      return;
-    }
-    console.log("Form submitted:", formData);
-    onSubmit(formData);
-  };
-
-  const isFormValid = Object.keys(getValidationErrors(formData)).length === 0;
+  // Check if form is valid for submit button
+  const isFormValid = Object.keys(errors).length === 0;
 
   return (
     <Holds className="w-full h-full col-span-4">
@@ -196,18 +120,14 @@ export default function JobsiteRegistrationView({
                       type="text"
                       name="name"
                       value={formData.name}
-                      onChange={(e) =>
-                        handleInputChange("name", e.target.value)
-                      }
-                      onBlur={() => handleBlur("name")}
+                      onChange={(e) => updateField("name", e.target.value)}
+                      onBlur={() => updateFieldTouched("name")}
                       required
                       className="text-sm"
                       variant={"validationMessage"}
                     />
                     <ValidationMessage
-                      message={
-                        showError("name") ? validationErrors.name : undefined
-                      }
+                      message={showError("name") ? errors.name : undefined}
                     />
                     <label htmlFor="clientId" className="text-xs font-medium">
                       Client <span className="text-red-500">*</span>
@@ -215,10 +135,8 @@ export default function JobsiteRegistrationView({
                     <Selects
                       name="clientId"
                       value={formData.clientId}
-                      onChange={(e) =>
-                        handleInputChange("clientId", e.target.value)
-                      }
-                      onBlur={() => handleBlur("clientId")}
+                      onChange={(e) => updateField("clientId", e.target.value)}
+                      onBlur={() => updateFieldTouched("clientId")}
                       className="text-sm mb-0"
                       variant={"validationMessage"}
                     >
@@ -231,9 +149,7 @@ export default function JobsiteRegistrationView({
 
                     <ValidationMessage
                       message={
-                        showError("clientId")
-                          ? validationErrors.clientId
-                          : undefined
+                        showError("clientId") ? errors.clientId : undefined
                       }
                     />
 
@@ -244,19 +160,15 @@ export default function JobsiteRegistrationView({
                       type="text"
                       name="address"
                       value={formData.address}
-                      onChange={(e) =>
-                        handleInputChange("address", e.target.value)
-                      }
-                      onBlur={() => handleBlur("address")}
+                      onChange={(e) => updateField("address", e.target.value)}
+                      onBlur={() => updateFieldTouched("address")}
                       placeholder="Enter street address"
                       className="text-sm"
                       variant={"validationMessage"}
                     />
                     <ValidationMessage
                       message={
-                        showError("address")
-                          ? validationErrors.address
-                          : undefined
+                        showError("address") ? errors.address : undefined
                       }
                     />
 
@@ -267,18 +179,14 @@ export default function JobsiteRegistrationView({
                       type="text"
                       name="city"
                       value={formData.city}
-                      onChange={(e) =>
-                        handleInputChange("city", e.target.value)
-                      }
-                      onBlur={() => handleBlur("city")}
+                      onChange={(e) => updateField("city", e.target.value)}
+                      onBlur={() => updateFieldTouched("city")}
                       placeholder="Enter city"
                       className="text-sm"
                       variant={"validationMessage"}
                     />
                     <ValidationMessage
-                      message={
-                        showError("city") ? validationErrors.city : undefined
-                      }
+                      message={showError("city") ? errors.city : undefined}
                     />
 
                     <label htmlFor="state" className="text-xs font-medium">
@@ -287,10 +195,8 @@ export default function JobsiteRegistrationView({
                     <Selects
                       name="state"
                       value={formData.state}
-                      onChange={(e) =>
-                        handleInputChange("state", e.target.value)
-                      }
-                      onBlur={() => handleBlur("state")}
+                      onChange={(e) => updateField("state", e.target.value)}
+                      onBlur={() => updateFieldTouched("state")}
                       className="text-sm"
                       variant={"validationMessage"}
                     >
@@ -302,9 +208,7 @@ export default function JobsiteRegistrationView({
                       ))}
                     </Selects>
                     <ValidationMessage
-                      message={
-                        showError("state") ? validationErrors.state : undefined
-                      }
+                      message={showError("state") ? errors.state : undefined}
                     />
 
                     <label htmlFor="zipCode" className="text-xs font-medium">
@@ -314,19 +218,16 @@ export default function JobsiteRegistrationView({
                       type="text"
                       name="zipCode"
                       value={formData.zipCode}
-                      onChange={(e) =>
-                        handleInputChange("zipCode", e.target.value)
-                      }
-                      onBlur={() => handleBlur("zipCode")}
+                      onChange={(e) => updateField("zipCode", e.target.value)}
+                      onBlur={() => updateFieldTouched("zipCode")}
+                      required
                       placeholder="Enter zip code"
                       className="text-sm "
                       variant={"validationMessage"}
                     />
                     <ValidationMessage
                       message={
-                        showError("zipCode")
-                          ? validationErrors.zipCode
-                          : undefined
+                        showError("zipCode") ? errors.zipCode : undefined
                       }
                     />
 
@@ -336,10 +237,8 @@ export default function JobsiteRegistrationView({
                     <Selects
                       name="country"
                       value={formData.country}
-                      onChange={(e) =>
-                        handleInputChange("country", e.target.value)
-                      }
-                      onBlur={() => handleBlur("country")}
+                      onChange={(e) => updateField("country", e.target.value)}
+                      onBlur={() => updateFieldTouched("country")}
                       className="text-sm mb-5"
                     >
                       {COUNTRIES.map((country) => (
@@ -361,9 +260,9 @@ export default function JobsiteRegistrationView({
                       name="description"
                       value={formData.description}
                       onChange={(e) =>
-                        handleInputChange("description", e.target.value)
+                        updateField("description", e.target.value)
                       }
-                      onBlur={() => handleBlur("description")}
+                      onBlur={() => updateFieldTouched("description")}
                       placeholder="Enter jobsite description"
                       required
                       className="text-sm"
@@ -373,7 +272,7 @@ export default function JobsiteRegistrationView({
                     <ValidationMessage
                       message={
                         showError("description")
-                          ? validationErrors.description
+                          ? errors.description
                           : undefined
                       }
                     />
@@ -405,7 +304,9 @@ export default function JobsiteRegistrationView({
                     <JobsiteCostCodeGroups
                       formData={formData}
                       tagSummaries={tagSummaries}
-                      onInputChange={handleInputChange}
+                      handleCCTagsChange={handleCCTagsChange}
+                      isTagSelected={isTagSelected}
+                      handleTagToggle={handleTagToggle}
                     />
                   </Holds>
                 </Holds>

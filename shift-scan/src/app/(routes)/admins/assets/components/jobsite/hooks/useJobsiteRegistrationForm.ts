@@ -105,6 +105,29 @@ export const useJobsiteRegistrationForm = ({
     [formData]
   );
 
+  // Helper function for direct field updates (used by child components)
+  const updateField = useCallback(
+    (
+      fieldName: string,
+      value:
+        | string
+        | boolean
+        | Array<{
+            id: string;
+            name: string;
+          }>
+    ) => {
+      setFormData((prev) => ({ ...prev, [fieldName]: value }));
+      setTouched((prev) => ({ ...prev, [fieldName]: true }));
+      const validationErrors = getValidationErrors({
+        ...formData,
+        [fieldName]: value,
+      });
+      setErrors(validationErrors);
+    },
+    [formData]
+  );
+
   const handleCCTagsChange = useCallback(
     (tags: Array<{ id: string; name: string }>) => {
       setFormData((prev) => ({ ...prev, CCTags: tags }));
@@ -113,6 +136,46 @@ export const useJobsiteRegistrationForm = ({
         ...formData,
         CCTags: tags,
       });
+      setErrors(validationErrors);
+    },
+    [formData]
+  );
+
+  /**
+   * Check if a particular tag is selected
+   */
+  const isTagSelected = useCallback(
+    (tagId: string) => {
+      return formData.CCTags?.some((tag) => tag.id === tagId) || false;
+    },
+    [formData.CCTags]
+  );
+
+  /**
+   * Toggle a single cost code group for the jobsite
+   */
+  const handleTagToggle = useCallback(
+    (tagId: string, tagName: string) => {
+      const currentTags = formData.CCTags || [];
+      const tagIndex = currentTags.findIndex((tag) => tag.id === tagId);
+      const newTags =
+        tagIndex >= 0
+          ? [
+              ...currentTags.slice(0, tagIndex),
+              ...currentTags.slice(tagIndex + 1),
+            ] // Remove
+          : [...currentTags, { id: tagId, name: tagName }]; // Add
+
+      handleCCTagsChange(newTags);
+    },
+    [formData.CCTags, handleCCTagsChange]
+  );
+
+  // Helper function for direct field blur (used by child components)
+  const updateFieldTouched = useCallback(
+    (fieldName: string) => {
+      setTouched((prev) => ({ ...prev, [fieldName]: true }));
+      const validationErrors = getValidationErrors(formData);
       setErrors(validationErrors);
     },
     [formData]
@@ -176,8 +239,12 @@ export const useJobsiteRegistrationForm = ({
     isFormEmpty,
     hasChanged,
     handleInputChange,
+    updateField,
     handleCCTagsChange,
+    isTagSelected,
+    handleTagToggle,
     handleBlur,
+    updateFieldTouched,
     handleSubmit,
     resetForm,
     setFormData, // Exposing setFormData for more complex scenarios if needed (e.g. setting CCTags)
