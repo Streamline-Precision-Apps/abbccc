@@ -3,7 +3,6 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
 import React from "react";
 
 interface JobsiteHeaderActionsProps {
@@ -33,78 +32,71 @@ export default function JobsiteHeaderActions({
     <Holds
       background="white"
       position="row"
-      className="w-full h-full justify-between rounded-[10px] px-4"
+      className="w-full h-full justify-between rounded-[10px] px-4 relative"
     >
-      <Holds
-        position="row"
-        className="h-full flex items-center justify-between"
+      {successfullyUpdated && (
+        <Holds
+          background={"green"}
+          className="w-full h-full absolute top-0 left-0 rounded-[10px] justify-center items-center z-10"
+        >
+          <Texts size="sm">Successfully Updated!</Texts>
+        </Holds>
+      )}
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges ? undefined : onRegisterNew}
+        className="w-fit h-auto "
       >
-        <Buttons
-          background={"none"}
-          shadow={"none"}
-          onClick={hasUnsavedChanges ? undefined : onRegisterNew}
-          className="w-fit h-auto "
+        <Texts
+          size="sm"
+          text={"link"}
+          className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
         >
-          <Texts
-            size="sm"
-            text={"link"}
-            className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
-          >
-            Register New Jobsite
-          </Texts>
-        </Buttons>
+          Register New Jobsite
+        </Texts>
+      </Buttons>
 
-        <Buttons
-          background={"none"}
-          shadow={"none"}
-          onClick={
-            hasUnsavedChanges && !isSaving ? onDiscardChanges : undefined
-          }
-          className="w-fit h-auto "
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges && !isSaving ? onDiscardChanges : undefined}
+        className="w-fit h-auto "
+      >
+        <Texts
+          size="sm"
+          text={"link"}
+          className={!hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""}
         >
-          <Texts
-            size="sm"
-            text={"link"}
-            className={
-              !hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""
-            }
-          >
-            Discard Changes
-          </Texts>
-        </Buttons>
+          Discard Changes
+        </Texts>
+      </Buttons>
 
-        <Buttons
-          background={"none"}
-          shadow={"none"}
-          onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
-          className="w-fit h-auto "
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
+        className="w-fit h-auto "
+      >
+        <Texts
+          size="sm"
+          text={"link"}
+          className={!hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""}
         >
-          <Texts
-            size="sm"
-            text={"link"}
-            className={
-              !hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""
-            }
-          >
-            {isSaving
-              ? "Saving..."
-              : successfullyUpdated
-              ? "Saved!"
-              : "Save Changes"}
-          </Texts>
-        </Buttons>
+          {isSaving ? "Saving..." : "Save Changes"}
+        </Texts>
+      </Buttons>
 
-        <Buttons
-          background={"none"}
-          shadow={"none"}
-          onClick={onDeleteJobsite}
-          className="w-fit h-auto "
-        >
-          <Texts size="sm" text="link">
-            Delete Jobsite
-          </Texts>
-        </Buttons>
-      </Holds>
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={onDeleteJobsite}
+        className="w-fit h-auto "
+      >
+        <Texts size="sm" text="link">
+          Delete Jobsite
+        </Texts>
+      </Buttons>
     </Holds>
   );
 }

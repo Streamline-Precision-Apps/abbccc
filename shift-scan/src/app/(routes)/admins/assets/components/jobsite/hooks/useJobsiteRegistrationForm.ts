@@ -1,5 +1,6 @@
 "use client";
 import { createJobsiteFromObject } from "@/actions/AssetActions";
+import { set } from "date-fns";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 // Define the shape of the form data
@@ -244,7 +245,7 @@ export const useJobsiteRegistrationForm = ({
         if (!result.success) {
           throw new Error(result.error || "Failed to create jobsite");
         }
-
+        setSuccessMessage("Jobsite created successfully!");
         // Refresh jobsites list if function is provided
         if (refreshJobsites) {
           await refreshJobsites();
@@ -253,6 +254,11 @@ export const useJobsiteRegistrationForm = ({
         return result;
       } catch (error) {
         console.error("Failed to create jobsite:", error);
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Failed to create jobsite. Please try again."
+        );
         throw error;
       }
     },
@@ -262,6 +268,7 @@ export const useJobsiteRegistrationForm = ({
   const handleSubmit = useCallback(
     async (event?: React.FormEvent<HTMLFormElement>) => {
       if (event) event.preventDefault();
+
       setTriedSubmit(true);
       setSuccessMessage(null);
       setErrorMessage(null);
@@ -273,7 +280,6 @@ export const useJobsiteRegistrationForm = ({
         setIsSubmitting(true);
         try {
           await createNewJobsite(formData);
-          setSuccessMessage("Jobsite created successfully!");
           resetForm(); // Reset form on successful submission
           return true; // Indicate success
         } catch (error) {
