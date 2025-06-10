@@ -3,6 +3,7 @@ import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
+import { min } from "date-fns";
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
 interface EditableFieldsProps
@@ -22,6 +23,8 @@ interface EditableFieldsProps
   onRevert?: () => void;
   iconSrc?: string;
   iconAlt?: string;
+  min?: number;
+  max?: number;
   minLength?: number;
   maxLength?: number;
   pattern?: string;
@@ -70,6 +73,8 @@ const EditableFields: FC<EditableFieldsProps> = ({
   onRevert,
   minLength,
   maxLength,
+  min,
+  max,
   pattern,
   iconSrc = "/arrowBack.svg",
   iconAlt = "revert",
@@ -80,45 +85,86 @@ const EditableFields: FC<EditableFieldsProps> = ({
   rows = 3, // Added rows prop for textarea
 }) => {
   if (formDatatype === "input") {
-    return (
-      <div
-        className={cn(
-          EditableFieldsVariants({ variant, size, className }),
-          "w-full"
-        )}
-      >
-        {/* Input container with flex-1 to take available space */}
-        <div className="flex-1 h-full">
-          <input
-            type={type}
-            value={value}
-            name={name}
-            disabled={disable}
-            checked={checked}
-            onChange={onChange}
-            placeholder={placeholder || ""}
-            className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
-            minLength={minLength}
-            maxLength={maxLength}
-            pattern={pattern}
-            readOnly={readonly}
-          />
-        </div>
+    if (type === "number") {
+      return (
+        <div
+          className={cn(
+            EditableFieldsVariants({ variant, size, className }),
+            "w-full"
+          )}
+        >
+          {/* Input container with flex-1 to take available space */}
+          <div className="flex-1 h-full">
+            <input
+              type={type}
+              value={value}
+              name={name}
+              disabled={disable}
+              checked={checked}
+              onChange={onChange}
+              placeholder={placeholder || ""}
+              className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
+              max={max}
+              min={min}
+              readOnly={readonly}
+            />
+          </div>
 
-        {/* Revert button - only appears when needed */}
-        {isChanged && onRevert && (
-          <button
-            type="button"
-            className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
-            title="Revert changes"
-            onClick={onRevert}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element*/}
-            <img src={iconSrc} alt={iconAlt} className="w-5 h-5" />
-          </button>
-        )}
-      </div>
-    );
+          {/* Revert button - only appears when needed */}
+          {isChanged && onRevert && (
+            <button
+              type="button"
+              className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
+              title="Revert changes"
+              onClick={onRevert}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element*/}
+              <img src={iconSrc} alt={iconAlt} className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          className={cn(
+            EditableFieldsVariants({ variant, size, className }),
+            "w-full"
+          )}
+        >
+          {/* Input container with flex-1 to take available space */}
+          <div className="flex-1 h-full">
+            <input
+              type={type}
+              value={value}
+              name={name}
+              disabled={disable}
+              checked={checked}
+              onChange={onChange}
+              placeholder={placeholder || ""}
+              className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
+              minLength={minLength}
+              maxLength={maxLength}
+              pattern={pattern}
+              readOnly={readonly}
+            />
+          </div>
+
+          {/* Revert button - only appears when needed */}
+          {isChanged && onRevert && (
+            <button
+              type="button"
+              className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
+              title="Revert changes"
+              onClick={onRevert}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element*/}
+              <img src={iconSrc} alt={iconAlt} className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      );
+    }
   }
 
   if (formDatatype === "textarea") {

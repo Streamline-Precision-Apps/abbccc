@@ -116,13 +116,14 @@ export default function EquipmentBasicFields({
         <EditableFields
           type="number"
           name="CurrentWeight"
-          value={formData?.currentWeight?.toString() || "0"}
+          value={formData?.currentWeight?.toString() || ""}
           onChange={(e) =>
             onInputChange("currentWeight", Number(e.target.value))
           }
           isChanged={changedFields.has("currentWeight")}
           onRevert={() => onRevertField("currentWeight")}
           variant={changedFields.has("currentWeight") ? "edited" : "default"}
+          min={1}
           size="sm"
         />
       </Holds>
@@ -169,7 +170,7 @@ export default function EquipmentBasicFields({
           size="sm"
         />
       </Holds>
-      {formData?.equipmentVehicleInfo && (
+      {formData?.equipmentTag !== "EQUIPMENT" && (
         <>
           <Holds>
             <label htmlFor="VehicleMake" className="text-sm">
