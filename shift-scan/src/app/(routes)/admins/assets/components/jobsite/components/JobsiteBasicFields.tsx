@@ -173,7 +173,7 @@ export default function JobsiteBasicFields({
 
       <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4">
         <Holds className="w-full h-full col-span-1 overflow-y-auto no-scrollbar">
-          <label htmlFor="name" className="text-xs font-sm">
+          <label htmlFor="name" className="text-xs">
             Jobsite Name
           </label>
           <EditableFields

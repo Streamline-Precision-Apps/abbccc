@@ -6,7 +6,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Selects } from "@/components/(reusable)/selects";
 import React from "react";
-import ValidationMessage from "../../shared/ValidationMessage";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
 import { ClientsSummary, TagSummary } from "../../../types";
@@ -136,7 +135,12 @@ export default function JobsiteRegistrationView({
               <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4 overflow-y-scroll no-scrollbar ">
                 <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
                   <Holds>
-                    <label htmlFor="name" className="text-xs">
+                    <label
+                      htmlFor="name"
+                      className={`text-xs ${
+                        showError("name") ? "text-red-500" : ""
+                      }`}
+                    >
                       Name <span className="text-red-500">*</span>
                     </label>
                     <Inputs
@@ -147,12 +151,13 @@ export default function JobsiteRegistrationView({
                       onBlur={() => updateFieldTouched("name")}
                       required
                       className="text-sm"
-                      variant={"validationMessage"}
                     />
-                    <ValidationMessage
-                      message={showError("name") ? errors.name : undefined}
-                    />
-                    <label htmlFor="clientId" className="text-xs font-medium">
+                    <label
+                      htmlFor="clientId"
+                      className={`text-xs ${
+                        showError("clientId") ? "text-red-500" : ""
+                      }`}
+                    >
                       Client <span className="text-red-500">*</span>
                     </label>
                     <Selects
@@ -160,8 +165,7 @@ export default function JobsiteRegistrationView({
                       value={formData.clientId}
                       onChange={(e) => updateField("clientId", e.target.value)}
                       onBlur={() => updateFieldTouched("clientId")}
-                      className="text-sm mb-0"
-                      variant={"validationMessage"}
+                      className="text-sm"
                     >
                       <option value="" disabled>
                         Select client
@@ -173,13 +177,12 @@ export default function JobsiteRegistrationView({
                       ))}
                     </Selects>
 
-                    <ValidationMessage
-                      message={
-                        showError("clientId") ? errors.clientId : undefined
-                      }
-                    />
-
-                    <label htmlFor="address" className="text-xs font-medium">
+                    <label
+                      htmlFor="address"
+                      className={`text-xs ${
+                        showError("address") ? "text-red-500" : ""
+                      }`}
+                    >
                       Street Address <span className="text-red-500">*</span>
                     </label>
                     <Inputs
@@ -190,15 +193,14 @@ export default function JobsiteRegistrationView({
                       onBlur={() => updateFieldTouched("address")}
                       placeholder="Enter street address"
                       className="text-sm"
-                      variant={"validationMessage"}
-                    />
-                    <ValidationMessage
-                      message={
-                        showError("address") ? errors.address : undefined
-                      }
                     />
 
-                    <label htmlFor="city" className="text-xs font-medium">
+                    <label
+                      htmlFor="city"
+                      className={`text-xs ${
+                        showError("city") ? "text-red-500" : ""
+                      }`}
+                    >
                       City <span className="text-red-500">*</span>
                     </label>
                     <Inputs
@@ -209,13 +211,14 @@ export default function JobsiteRegistrationView({
                       onBlur={() => updateFieldTouched("city")}
                       placeholder="Enter city"
                       className="text-sm"
-                      variant={"validationMessage"}
-                    />
-                    <ValidationMessage
-                      message={showError("city") ? errors.city : undefined}
                     />
 
-                    <label htmlFor="state" className="text-xs font-medium">
+                    <label
+                      htmlFor="state"
+                      className={`text-xs ${
+                        showError("state") ? "text-red-500" : ""
+                      }`}
+                    >
                       State <span className="text-red-500">*</span>
                     </label>
                     <Selects
@@ -224,7 +227,6 @@ export default function JobsiteRegistrationView({
                       onChange={(e) => updateField("state", e.target.value)}
                       onBlur={() => updateFieldTouched("state")}
                       className="text-sm"
-                      variant={"validationMessage"}
                     >
                       <option value="">Select state</option>
                       {US_STATES.map((state) => (
@@ -233,11 +235,13 @@ export default function JobsiteRegistrationView({
                         </option>
                       ))}
                     </Selects>
-                    <ValidationMessage
-                      message={showError("state") ? errors.state : undefined}
-                    />
 
-                    <label htmlFor="zipCode" className="text-xs font-medium">
+                    <label
+                      htmlFor="zipCode"
+                      className={`text-xs ${
+                        showError("zipCode") ? "text-red-500" : ""
+                      }  `}
+                    >
                       Zip Code <span className="text-red-500">*</span>
                     </label>
                     <Inputs
@@ -249,15 +253,14 @@ export default function JobsiteRegistrationView({
                       required
                       placeholder="Enter zip code"
                       className="text-sm "
-                      variant={"validationMessage"}
-                    />
-                    <ValidationMessage
-                      message={
-                        showError("zipCode") ? errors.zipCode : undefined
-                      }
                     />
 
-                    <label htmlFor="country" className="text-sm">
+                    <label
+                      htmlFor="country"
+                      className={`text-sm ${
+                        showError("country") ? "text-red-500" : ""
+                      }`}
+                    >
                       Country <span className="text-red-500">*</span>
                     </label>
                     <Selects
@@ -265,7 +268,7 @@ export default function JobsiteRegistrationView({
                       value={formData.country}
                       onChange={(e) => updateField("country", e.target.value)}
                       onBlur={() => updateFieldTouched("country")}
-                      className="text-sm mb-5"
+                      className="text-sm"
                     >
                       {COUNTRIES.map((country) => (
                         <option key={country.code} value={country.code}>
@@ -276,7 +279,9 @@ export default function JobsiteRegistrationView({
 
                     <label
                       htmlFor="description"
-                      className="text-xs font-medium"
+                      className={`text-xs ${
+                        showError("description") ? "text-red-500" : ""
+                      }`}
                     >
                       Jobsite Description{" "}
                       <span className="text-red-500">*</span>
@@ -292,19 +297,13 @@ export default function JobsiteRegistrationView({
                       placeholder="Enter jobsite description"
                       required
                       className="text-sm"
-                      variant={"validationMessage"}
                       style={{ resize: "none" }}
-                    />
-                    <ValidationMessage
-                      message={
-                        showError("description")
-                          ? errors.description
-                          : undefined
-                      }
                     />
                     <label
                       htmlFor="approvalStatus"
-                      className="text-xs font-medium"
+                      className={`text-xs ${
+                        showError("approvalStatus") ? "text-red-500" : ""
+                      }`}
                     >
                       Jobsite Status <span className="text-red-500">*</span>
                     </label>
@@ -316,7 +315,6 @@ export default function JobsiteRegistrationView({
                         updateField("isActive", e.target.value === "Active")
                       }
                       onBlur={() => updateFieldTouched("approvalStatus")}
-                      variant={"validationMessage"}
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -325,10 +323,7 @@ export default function JobsiteRegistrationView({
                 </Holds>
 
                 <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
-                  <label
-                    htmlFor="costCodeGroups"
-                    className="text-xs font-medium"
-                  >
+                  <label htmlFor="costCodeGroups" className="text-xs ">
                     Cost Code Groups <span className="text-red-500">*</span>
                   </label>
                   <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]">
