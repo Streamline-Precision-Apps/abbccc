@@ -9,6 +9,7 @@ import {
   ChangeEvent,
   SetStateAction,
   Dispatch,
+  use,
 } from "react";
 
 /**
@@ -83,17 +84,12 @@ export const useCostcodeRegistrationForm = ({
     return (
       (formData.cCNumber.trim() !== "#" && formData.cCNumber.trim() !== "") ||
       formData.cCName.trim() !== "" ||
-      formData.isActive !== true ||
       formData.CCTags.length > 0
     );
   }, [formData.cCName, formData.cCNumber, formData.isActive, formData.CCTags]);
 
-  // Notify parent of unsaved changes
   useEffect(() => {
-    setHasChanged(hasUnsavedChanges);
-    if (setHasUnsavedChanges) {
-      setHasUnsavedChanges(hasUnsavedChanges);
-    }
+    setHasUnsavedChanges(hasUnsavedChanges);
   }, [hasUnsavedChanges, setHasUnsavedChanges]);
 
   // Validate on formData change
@@ -264,5 +260,6 @@ export const useCostcodeRegistrationForm = ({
     handleTagToggle,
     resetForm,
     handleSubmit,
+    hasUnsavedChanges,
   };
 };

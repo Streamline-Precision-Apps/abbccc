@@ -339,60 +339,44 @@ export function useCostCodeForm({
    * Handles server action, state cleanup, and banner messaging.
    * @returns Promise resolving to an object with success state and optional error
    */
-  const executeDeleteCostCode =
-    useCallback(async (): Promise<CostCodeOperationResult> => {
-      if (!formData) {
-        const msg = "No cost code selected";
-        setError(msg);
-        if (onDeletionError) onDeletionError(msg);
-        return { success: false, error: msg };
-      }
-      setIsDeleting(true);
-      try {
-        const result = await deleteCostCode(formData.id);
-        if (!result.success) {
-          const errorMessage = result.error || "Failed to delete cost code";
-          setError(errorMessage);
-          if (onDeletionError) onDeletionError(errorMessage);
-          return { success: false, error: errorMessage };
-        }
-        // Clean up state
-        setSelectCostCode(null);
-        setFormData(null);
-        setOriginalData(null);
-        setChangedFields(new Set());
-        if (refreshCostCodes) await refreshCostCodes();
-        const successMsg = "Cost code deleted successfully";
-        if (onDeletionSuccess) onDeletionSuccess(successMsg);
-        setCostCodeUIState("idle");
-        setError(null);
-        return { success: true };
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error occurred";
-        setError(errorMessage);
-        if (onDeletionError) onDeletionError(errorMessage);
-        return { success: false, error: errorMessage };
-      } finally {
-        setIsDeleting(false);
-      }
-    }, [
-      formData,
-      refreshCostCodes,
-      setSelectCostCode,
-      setCostCodeUIState,
-      onDeletionSuccess,
-      onDeletionError,
-    ]);
-
-  /**
-   * Confirms the deletion of the cost code after user confirmation.
-   * Closes the modal and executes the deletion.
-   */
   const confirmDeleteCostCode = useCallback(async (): Promise<void> => {
+    if (!formData) {
+      throw new Error("No cost code selected for deletion");
+    }
     setShowDeleteConfirmModal(false);
-    await executeDeleteCostCode();
-  }, [executeDeleteCostCode]);
+    setIsDeleting(true); // Set loading state for deletion
+    try {
+      const result = await deleteCostCode(formData.id);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete cost code");
+      }
+
+      // Clean up state
+      await Promise.all([
+        // Close modal and reset UI (state updates are synchronous)
+        new Promise<void>((resolve) => {
+          setSelectCostCode(null);
+          setCostCodeUIState("idle");
+          setIsDeleting(false);
+          onDeletionSuccess?.("Cost code deleted successfully");
+          resolve();
+        }),
+        // Refresh data (if needed)
+        refreshCostCodes?.(), // Optional chaining in case it's undefined
+      ]);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      setError(errorMessage);
+    }
+  }, [
+    formData,
+    refreshCostCodes,
+    setSelectCostCode,
+    setCostCodeUIState,
+    onDeletionSuccess,
+    onDeletionError,
+  ]);
 
   return {
     formData,
