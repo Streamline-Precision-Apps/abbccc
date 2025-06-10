@@ -17,14 +17,15 @@ import {
   useJobsiteRegistrationForm,
   NewJobsiteData,
 } from "../hooks/useJobsiteRegistrationForm";
-import { error } from "console";
 
 interface JobsiteRegistrationViewProps {
-  onSubmit: (newJobsite: NewJobsiteData) => Promise<any>;
-  onCancel: () => void;
-  onUnsavedChangesChange?: (hasChanges: boolean) => void;
   tagSummaries?: TagSummary[];
   clients: ClientsSummary[];
+  setJobsiteUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
+  refreshJobsites: (() => Promise<void>) | undefined;
+  setShowConfirmModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -33,11 +34,11 @@ interface JobsiteRegistrationViewProps {
  */
 
 export default function JobsiteRegistrationView({
-  onSubmit,
-  onCancel,
-  onUnsavedChangesChange,
   tagSummaries = [],
   clients,
+  setJobsiteUIState,
+  refreshJobsites,
+  setShowConfirmModal,
 }: JobsiteRegistrationViewProps) {
   // Use the jobsite registration form hook
   const {
@@ -59,9 +60,11 @@ export default function JobsiteRegistrationView({
     isFormValid,
     successMessage,
     errorMessage,
+    handleCancelRegistration,
   } = useJobsiteRegistrationForm({
-    onSubmit,
-    onUnsavedChangesChange,
+    setJobsiteUIState,
+    refreshJobsites,
+    setShowConfirmModal,
   });
 
   // Helper function to show validation errors
@@ -120,7 +123,7 @@ export default function JobsiteRegistrationView({
               type="button"
               background={"none"}
               shadow={"none"}
-              onClick={onCancel}
+              onClick={handleCancelRegistration}
               className="w-fit h-auto"
             >
               <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />

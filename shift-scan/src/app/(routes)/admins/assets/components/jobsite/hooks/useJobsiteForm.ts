@@ -7,11 +7,7 @@ import {
 } from "react";
 import { useSession } from "next-auth/react";
 import { Jobsite } from "../../../types";
-import {
-  updateJobsite,
-  createJobsiteFromObject,
-  deleteJobsite,
-} from "@/actions/AssetActions";
+import { updateJobsite, deleteJobsite } from "@/actions/AssetActions";
 
 export interface UseJobsiteFormProps {
   selectJobsite: Jobsite | null;
@@ -45,18 +41,6 @@ export interface UseJobsiteFormReturn {
   handleRevertField: (fieldName: string) => void;
   handleDeleteJobsite: () => void;
   confirmDeleteJobsite: () => Promise<void>;
-  handleNewJobsiteSubmit: (newJobsite: {
-    name: string;
-    clientId: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-    description: string;
-    isActive: boolean;
-    approvalStatus: string;
-  }) => Promise<void>;
 }
 
 /**
@@ -244,68 +228,6 @@ export const useJobsiteForm = ({
   );
 
   /**
-   * Handle new jobsite registration
-   */
-  const handleNewJobsiteSubmit = useCallback(
-    async (newJobsite: {
-      name: string;
-      clientId: string;
-      description: string;
-      address?: string;
-      city?: string;
-      state?: string;
-      zipCode?: string;
-      country?: string;
-      comment?: string;
-      isActive?: boolean;
-      CCTags?: Array<{ id: string; name: string }>;
-    }) => {
-      try {
-        // Validate required fields
-        if (!newJobsite.name?.trim()) {
-          throw new Error("Jobsite name is required");
-        }
-        if (!newJobsite.clientId?.trim()) {
-          throw new Error("Client is required");
-        }
-        if (!newJobsite.description?.trim()) {
-          throw new Error("Jobsite description is required");
-        }
-
-        // Call the actual create jobsite server action
-        const result = await createJobsiteFromObject({
-          name: newJobsite.name,
-          clientId: newJobsite.clientId,
-          description: newJobsite.description,
-          address: newJobsite.address || "",
-          city: newJobsite.city || "",
-          state: newJobsite.state || "",
-          zipCode: newJobsite.zipCode || "",
-          country: newJobsite.country || "US",
-          comment: newJobsite.comment || "",
-          isActive: newJobsite.isActive ?? true,
-          CCTags: newJobsite.CCTags || [],
-        });
-
-        if (result.success) {
-          console.log("Jobsite created successfully:", result.data);
-
-          // Refresh jobsite list after registration
-          if (refreshJobsites) {
-            await refreshJobsites();
-          }
-        } else {
-          throw new Error(result.error || "Failed to create jobsite");
-        }
-      } catch (error) {
-        console.error("Error registering new jobsite:", error);
-        // TODO: Add toast notification for error
-      }
-    },
-    [setJobsiteUIState, refreshJobsites]
-  );
-
-  /**
    * Tracks the state of the delete confirmation modal
    */
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
@@ -369,7 +291,6 @@ export const useJobsiteForm = ({
     handleSaveChanges,
     handleDiscardChanges,
     handleRevertField,
-    handleNewJobsiteSubmit,
     handleDeleteJobsite,
     confirmDeleteJobsite,
   };

@@ -1,4 +1,5 @@
 "use client";
+import { createJobsiteFromObject } from "@/actions/AssetActions";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 // Define the shape of the form data
@@ -11,9 +12,8 @@ export interface NewJobsiteData {
   zipCode: string;
   country: string;
   description: string;
-  isActive: boolean; // Default to true
-  // approvalStatus: string; // Assuming this might not be set by user directly on creation or has a default
-  CCTags?: Array<{ id: string; name: string }>; // Optional
+  isActive: boolean;
+  CCTags?: Array<{ id: string; name: string }>;
 }
 
 // Initial state for the form
@@ -24,7 +24,7 @@ const initialFormData: NewJobsiteData = {
   city: "",
   state: "",
   zipCode: "",
-  country: "US", // Default country
+  country: "US",
   description: "",
   isActive: true,
   CCTags: [],
@@ -34,25 +34,30 @@ const initialFormData: NewJobsiteData = {
 const getValidationErrors = (data: NewJobsiteData): Record<string, string> => {
   const errors: Record<string, string> = {};
   if (!data.name.trim()) errors.name = "Jobsite Name is required.";
-  if (!data.clientId) errors.clientId = "Client is required."; // Assuming clientId is a string ID
+  if (!data.clientId) errors.clientId = "Client is required.";
   if (!data.address.trim()) errors.address = "Street Address is required.";
   if (!data.city.trim()) errors.city = "City is required.";
   if (!data.state.trim()) errors.state = "State is required.";
   if (!data.zipCode.trim()) errors.zipCode = "Zip Code is required.";
   if (!data.country.trim()) errors.country = "Country is required.";
   if (!data.description.trim()) errors.description = "Description is required.";
-  // Add more specific validations if needed (e.g., zip code format)
   return errors;
 };
 
 interface UseJobsiteRegistrationFormProps {
-  onSubmit: (formData: NewJobsiteData) => Promise<any>; // The actual submission function
+  setJobsiteUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
+  refreshJobsites?: () => Promise<void>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
+  setShowConfirmModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const useJobsiteRegistrationForm = ({
-  onSubmit,
+  setJobsiteUIState,
+  refreshJobsites,
   onUnsavedChangesChange,
+  setShowConfirmModal,
 }: UseJobsiteRegistrationFormProps) => {
   const [formData, setFormData] = useState<NewJobsiteData>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -72,7 +77,7 @@ export const useJobsiteRegistrationForm = ({
     setIsFormEmpty(isEmpty);
   }, [formData]);
 
-  // Effect to track overall form changes for onUnsavedChangesChange
+  // Effect to track overall form changes
   useEffect(() => {
     const hasChanges =
       JSON.stringify(formData) !== JSON.stringify(initialFormData);
@@ -214,16 +219,50 @@ export const useJobsiteRegistrationForm = ({
     setTimeout(() => {
       setSuccessMessage(null);
       setErrorMessage(null);
-    }, 300);
+    }, 3000); // Reset messages after next render
   }, []);
 
   /**
-   * Clear success and error messages manually
+   * Internal jobsite creation function using server action
    */
-  const clearMessages = useCallback(() => {
-    setSuccessMessage(null);
-    setErrorMessage(null);
-  }, []);
+  const createNewJobsite = useCallback(
+    async (jobsiteData: NewJobsiteData) => {
+      try {
+        const result = await createJobsiteFromObject({
+          name: jobsiteData.name,
+          clientId: jobsiteData.clientId,
+          address: jobsiteData.address,
+          city: jobsiteData.city,
+          state: jobsiteData.state,
+          zipCode: jobsiteData.zipCode,
+          country: jobsiteData.country,
+          description: jobsiteData.description,
+          isActive: jobsiteData.isActive,
+          CCTags: jobsiteData.CCTags || [],
+        });
+
+        if (!result.success) {
+          throw new Error(result.error || "Failed to create jobsite");
+        }
+
+        // Refresh jobsites list if function is provided
+        if (refreshJobsites) {
+          await refreshJobsites();
+        }
+
+        // Reset UI state
+        if (setJobsiteUIState) {
+          setJobsiteUIState("idle");
+        }
+
+        return result;
+      } catch (error) {
+        console.error("Failed to create jobsite:", error);
+        throw error;
+      }
+    },
+    [refreshJobsites, setJobsiteUIState]
+  );
 
   const handleSubmit = useCallback(
     async (event?: React.FormEvent<HTMLFormElement>) => {
@@ -238,7 +277,7 @@ export const useJobsiteRegistrationForm = ({
       if (Object.keys(validationErrors).length === 0) {
         setIsSubmitting(true);
         try {
-          await onSubmit(formData);
+          await createNewJobsite(formData);
           setSuccessMessage("Jobsite created successfully!");
           resetForm(); // Reset form on successful submission
           return true; // Indicate success
@@ -256,8 +295,26 @@ export const useJobsiteRegistrationForm = ({
       }
       return false; // Indicate validation failure
     },
-    [formData, onSubmit, resetForm]
+    [formData, createNewJobsite, resetForm]
   );
+
+  /**
+   * Handle cancel registration action
+   */
+  const handleCancelRegistration = useCallback(() => {
+    if (hasChanged) {
+      setShowConfirmModal(true);
+      return;
+    }
+    setJobsiteUIState("idle");
+    resetForm();
+  }, [formData, setJobsiteUIState, resetForm]);
+
+  const confirmCancelRegistration = useCallback(() => {
+    setJobsiteUIState("idle");
+    setShowConfirmModal(false);
+    resetForm();
+  }, [setJobsiteUIState, resetForm]);
 
   return {
     formData,
@@ -279,8 +336,8 @@ export const useJobsiteRegistrationForm = ({
     updateFieldTouched,
     handleSubmit,
     resetForm,
-    clearMessages,
-    setFormData, // Exposing setFormData for more complex scenarios if needed (e.g. setting CCTags)
+    handleCancelRegistration,
+    setFormData, // Exposing setFormData for more complex scenarios
     setErrors, // Exposing setErrors for potential external error setting
     setSuccessMessage, // Exposing for manual success message setting
     setErrorMessage, // Exposing for manual error message setting

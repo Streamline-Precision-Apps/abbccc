@@ -70,8 +70,6 @@ export default function JobsiteMainContent({
   tagSummaries = [],
   clients = [],
 }: JobsiteMainContentProps) {
-  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
-    useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const {
@@ -86,7 +84,6 @@ export default function JobsiteMainContent({
     handleSaveChanges,
     handleDiscardChanges,
     handleRevertField,
-    handleNewJobsiteSubmit,
     handleDeleteJobsite,
     confirmDeleteJobsite,
   } = useJobsiteForm({
@@ -97,46 +94,16 @@ export default function JobsiteMainContent({
     setJobsiteUIState,
   });
 
-  // Handle registration form unsaved changes
-  const handleRegistrationFormChanges = useCallback(
-    (hasChanges: boolean) => {
-      setHasRegistrationFormChanges(hasChanges);
-      if (onRegistrationFormChangesChange) {
-        onRegistrationFormChangesChange(hasChanges);
-      }
-      // Notify parent component about unsaved changes
-      if (onUnsavedChangesChange) {
-        onUnsavedChangesChange(hasChanges);
-      }
-    },
-    [
-      onRegistrationFormChangesChange,
-      onUnsavedChangesChange,
-      setHasRegistrationFormChanges,
-    ]
-  );
-
   // Handle opening registration form
   const handleOpenRegistration = () => {
     setJobsiteUIState("creating");
     setSelectJobsite(null);
   };
 
-  // Handle cancel registration with unsaved changes check
-  const handleCancelRegistration = useCallback(() => {
-    // Show confirmation modal if there are unsaved changes
-    if (hasRegistrationFormChanges) {
-      setShowConfirmModal(true);
-    } else {
-      setJobsiteUIState("idle");
-    }
-  }, [hasRegistrationFormChanges, setJobsiteUIState]);
-
   // Modal confirmation handlers
   const handleConfirmDiscard = () => {
     setShowConfirmModal(false);
     setJobsiteUIState("idle");
-    setHasRegistrationFormChanges(false);
   };
 
   const handleCancelDiscard = () => {
@@ -167,11 +134,11 @@ export default function JobsiteMainContent({
     <>
       {jobsiteUIState === "creating" ? (
         <JobsiteRegistrationView
-          onSubmit={handleNewJobsiteSubmit}
-          onCancel={handleCancelRegistration}
-          onUnsavedChangesChange={handleRegistrationFormChanges}
           tagSummaries={tagSummaries}
           clients={clients}
+          setJobsiteUIState={setJobsiteUIState}
+          refreshJobsites={refreshJobsites}
+          setShowConfirmModal={setShowConfirmModal}
         />
       ) : jobsiteUIState === "editing" && selectJobsite && formData ? (
         <Holds className="w-full h-full col-span-4">
