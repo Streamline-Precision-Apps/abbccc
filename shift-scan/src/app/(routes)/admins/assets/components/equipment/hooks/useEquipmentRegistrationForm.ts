@@ -24,8 +24,22 @@ export type NewEquipment = {
 const getValidationErrors = (formData: NewEquipment) => {
   const errors: Record<string, string> = {};
   if (!formData.name.trim()) errors.name = "Equipment Name is required.";
-  if (!formData.equipmentTag.trim())
+  if (!formData.equipmentTag.trim()) {
     errors.equipmentTag = "Equipment Tag is required.";
+  }
+
+  // Validate currentWeight as required and must be a valid number (not null, not empty, not NaN)
+  if (
+    formData.currentWeight === null ||
+    isNaN(Number(formData.currentWeight))
+  ) {
+    errors.currentWeight = "Current Weight is required.";
+  }
+
+  // Validate overWeight as required (must be true or false, not null or empty)
+  if (formData.overWeight === null) {
+    errors.overWeight = "Overweight Equipment status is required.";
+  }
 
   const isVehicle = ["TRUCK", "TRAILER", "VEHICLE"].includes(
     formData.equipmentTag
@@ -74,7 +88,7 @@ export const useEquipmentRegistrationForm = ({
     isActive: true,
     inUse: false,
     overWeight: null,
-    currentWeight: 0,
+    currentWeight: null,
     equipmentVehicleInfo: {
       make: null,
       model: null,

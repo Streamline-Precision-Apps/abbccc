@@ -13,6 +13,7 @@ interface JobsiteHeaderActionsProps {
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  setShowConfirmModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -27,6 +28,7 @@ export default function JobsiteHeaderActions({
   isSaving,
   successfullyUpdated,
   onDeleteJobsite,
+  setShowConfirmModal,
 }: JobsiteHeaderActionsProps) {
   return (
     <Holds
