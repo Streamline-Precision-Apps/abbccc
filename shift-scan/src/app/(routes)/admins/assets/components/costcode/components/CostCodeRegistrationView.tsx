@@ -227,11 +227,6 @@ function CostCodeRegistrationView({
                       management section.
                     </Texts>
                   )}
-                  {touched.CCTags && errors.CCTags && (
-                    <Texts size="xs" className="text-red-500 mt-2">
-                      {errors.CCTags}
-                    </Texts>
-                  )}
                 </Holds>
               </Holds>
             </Grids>
