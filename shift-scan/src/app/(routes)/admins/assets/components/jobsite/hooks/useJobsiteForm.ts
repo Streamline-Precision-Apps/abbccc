@@ -5,17 +5,14 @@ import {
   SetStateAction,
   Dispatch,
 } from "react";
-import { useSession } from "next-auth/react";
 import { Jobsite } from "../../../types";
 import { updateJobsite, deleteJobsite } from "@/actions/AssetActions";
 
 export interface UseJobsiteFormProps {
   selectJobsite: Jobsite | null;
-  setSelectJobsite: React.Dispatch<React.SetStateAction<Jobsite | null>>;
+  setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
-  setJobsiteUIState: React.Dispatch<
-    React.SetStateAction<"idle" | "creating" | "editing">
-  >;
+  setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
   refreshJobsites?: () => Promise<void>;
 }
 
@@ -178,14 +175,15 @@ export const useJobsiteForm = ({
           await refreshJobsites();
         }
 
-        // Reset success state after 3 seconds
-        setTimeout(() => setSuccessfullyUpdated(false), 3000);
+        // Reset success state after 2 seconds
+        setTimeout(() => setSuccessfullyUpdated(false), 2000);
       } else {
         throw new Error(result.error || "Failed to update jobsite");
       }
     } catch (error) {
       console.error("Error saving jobsite:", error);
-      // TODO: Add toast notification for error
+      setErrorMessage(`Failed to save jobsite: ${error}`);
+      setTimeout(() => setErrorMessage(""), 2000);
     } finally {
       setIsSaving(false);
     }
@@ -264,7 +262,7 @@ export const useJobsiteForm = ({
           await refreshJobsites();
         }
 
-        setTimeout(() => setSuccessMessage(null), 3000);
+        setTimeout(() => setSuccessMessage(null), 2000);
       } else {
         throw new Error(result.error || "Failed to delete jobsite");
       }
@@ -275,7 +273,7 @@ export const useJobsiteForm = ({
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
-      setTimeout(() => setErrorMessage(null), 3000);
+      setTimeout(() => setErrorMessage(null), 2000);
     } finally {
       setIsSaving(false);
     }

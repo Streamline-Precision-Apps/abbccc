@@ -1,6 +1,5 @@
 "use client";
 import { createJobsiteFromObject } from "@/actions/AssetActions";
-import { set } from "date-fns";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 // Define the shape of the form data
@@ -220,7 +219,7 @@ export const useJobsiteRegistrationForm = ({
     setTimeout(() => {
       setSuccessMessage(null);
       setErrorMessage(null);
-    }, 3000); // Reset messages after next render
+    }, 2000); // Reset messages after next render
   }, []);
 
   /**
@@ -264,7 +263,9 @@ export const useJobsiteRegistrationForm = ({
     },
     [refreshJobsites, setJobsiteUIState]
   );
-
+  /**
+   * Handle form submission action
+   */
   const handleSubmit = useCallback(
     async (event?: React.FormEvent<HTMLFormElement>) => {
       if (event) event.preventDefault();
@@ -298,7 +299,6 @@ export const useJobsiteRegistrationForm = ({
     },
     [formData, createNewJobsite, resetForm]
   );
-
   /**
    * Handle cancel registration action
    */
