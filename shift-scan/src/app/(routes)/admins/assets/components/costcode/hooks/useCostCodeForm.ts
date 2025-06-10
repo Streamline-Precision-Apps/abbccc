@@ -8,11 +8,7 @@ import {
   SetStateAction,
 } from "react";
 import { CostCode } from "../../../types";
-import {
-  createCostCode,
-  updateCostCode,
-  deleteCostCode,
-} from "@/actions/AssetActions";
+import { updateCostCode, deleteCostCode } from "@/actions/AssetActions";
 
 /**
  * Props for the useCostCodeForm hook
@@ -86,10 +82,6 @@ export interface UseCostCodeFormReturn {
   handleSaveChanges: () => Promise<CostCodeOperationResult>;
   /** Function to discard changes */
   handleDiscardChanges: () => void;
-  /** Function to submit a new cost code */
-  handleNewCostCodeSubmit: (
-    newCostCode: NewCostCodeData
-  ) => Promise<CostCodeOperationResult>;
   /** Function to revert a field to its original value */
   handleRevertField: (fieldName: keyof CostCode) => void;
   /** Function to delete a cost code */
@@ -326,52 +318,6 @@ export function useCostCodeForm({
   }, [originalData]);
 
   /**
-   * Submits a new cost code
-   *
-   * @param newCostCode - Data for the new cost code
-   * @returns Promise resolving to an object with success state and optional error
-   */
-  const handleNewCostCodeSubmit = useCallback(
-    async (newCostCode: NewCostCodeData): Promise<CostCodeOperationResult> => {
-      setIsSaving(true);
-      try {
-        // Call the server action to create a new cost code
-        const result = await createCostCode(newCostCode);
-
-        if (!result.success) {
-          return {
-            success: false,
-            error: result.error || "Failed to create cost code",
-          };
-        }
-
-        setSelectCostCode(null);
-        setFormData(null);
-        setOriginalData(null);
-        setChangedFields(new Set());
-
-        // Refresh the cost codes list
-        if (refreshCostCodes) {
-          await refreshCostCodes();
-        }
-
-        return { success: true };
-      } catch (error: any) {
-        console.error("Failed to create cost code:", error);
-        return {
-          success: false,
-          error:
-            error?.message ||
-            "An unexpected error occurred while creating the cost code",
-        };
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [refreshCostCodes, setSelectCostCode]
-  );
-
-  /**
    * Initiates the delete process by showing the confirmation modal.
    * Only works if a cost code is selected.
    * @returns Promise resolving to an object with success state and optional error
@@ -461,7 +407,6 @@ export function useCostCodeForm({
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
-    handleNewCostCodeSubmit,
     handleRevertField,
     handleDeleteCostCode,
     confirmDeleteCostCode,

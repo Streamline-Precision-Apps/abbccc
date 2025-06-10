@@ -94,19 +94,7 @@ export default function CostCodeMainContent({
   deletionSuccessMessage,
   handleDeletionSuccess,
 }: CostCodeMainContentProps) {
-  const [hasRegistrationFormChanges, setHasRegistrationFormChanges] =
-    useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-
-  // State to store creation handlers when in creation mode
-  const [creationHandlers, setCreationHandlers] = useState<{
-    handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
-    handleCostCodeToggleAll: (
-      costCodes: CostCodeSummary[],
-      selectAll: boolean
-    ) => void;
-    formData: { costCodes: Array<{ id: string; name: string }> };
-  } | null>(null);
 
   // Get the cost code form hook with all handlers
   const costCodeFormHook = useCostCodeForm({
@@ -128,7 +116,6 @@ export default function CostCodeMainContent({
       ) => void;
       formData: { costCodes: Array<{ id: string; name: string }> };
     }) => {
-      setCreationHandlers(handlers);
       if (onCreationHandlersReady) {
         onCreationHandlersReady(handlers);
       }
@@ -146,43 +133,15 @@ export default function CostCodeMainContent({
     onCancel,
   });
 
-  // Handle registration form unsaved changes
-  const handleRegistrationFormChanges = useCallback(
-    (hasChanges: boolean) => {
-      setHasRegistrationFormChanges(hasChanges);
-      setHasUnsavedChanges(hasChanges);
-    },
-    [setHasRegistrationFormChanges, setHasUnsavedChanges]
-  );
-
   // Handle opening registration form
   const handleOpenRegistration = () => {
     setCostCodeUIState("creating");
     setSelectCostCode(null);
   };
 
-  // Handle cancel registration with unsaved changes check
-  const handleCancelRegistration = useCallback(() => {
-    // Show confirmation modal if there are unsaved changes
-    if (hasRegistrationFormChanges) {
-      setShowConfirmModal(true);
-    } else {
-      setCostCodeUIState("idle");
-      setHasRegistrationFormChanges(false);
-      setHasUnsavedChanges(false);
-    }
-  }, [
-    hasRegistrationFormChanges,
-    setCostCodeUIState,
-    setHasRegistrationFormChanges,
-    setHasUnsavedChanges,
-  ]);
-
-  // Modal confirmation handlers
   const handleConfirmDiscard = () => {
     setShowConfirmModal(false);
     setCostCodeUIState("idle");
-    setHasRegistrationFormChanges(false);
   };
 
   const handleCancelDiscard = () => {
@@ -213,10 +172,9 @@ export default function CostCodeMainContent({
     <>
       {costCodeUIState === "creating" ? (
         <CostCodeRegistrationView
-          onSubmit={costCodeFormHook.handleNewCostCodeSubmit}
-          onCancel={handleCancelRegistration}
           setHasUnsavedChanges={setHasUnsavedChanges}
           tagSummaries={tagSummaries}
+          refreshCostCodes={refreshCostCodes}
         />
       ) : costCodeUIState === "editing" &&
         selectCostCode &&
