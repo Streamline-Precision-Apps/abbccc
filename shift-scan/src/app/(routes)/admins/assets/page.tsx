@@ -108,6 +108,9 @@ export default function Assets() {
       setAssets(newAssetType);
       // Clear all selections when changing asset types
       clearAllSelections();
+      setCostCodeUIState("idle");
+      setJobsiteUIState("idle");
+      setEquipmentUIState("idle");
     }
   };
 
@@ -116,6 +119,7 @@ export default function Assets() {
     if (pendingAssetChange) {
       setAssets(pendingAssetChange);
       // Clear all selections using the utility function from useAssets
+
       clearAllSelections();
       setHasUnsavedChanges(false); // Reset unsaved changes state
     }
