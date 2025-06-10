@@ -12,6 +12,7 @@ import { formatCostCodeName } from "../utils/formatters";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Tag, TagSummary } from "../../../types";
+import Spinner from "@/components/(animations)/spinner";
 
 /**
  * Main form view for cost code editing
@@ -98,26 +99,16 @@ function CostCodeFormView({
     [formData.CCTags, onInputChange]
   );
 
-  /**
-   * Handles the save changes operation with proper error handling
-   */
-  const handleSaveChanges = useCallback(async () => {
-    try {
-      const result = await onSaveChanges();
-      if (!result.success) {
-        setSuccessfullyEdited(false);
-        return;
-      }
-      setSuccessfullyEdited(true);
-      setTimeout(() => setSuccessfullyEdited(false), 3000);
-    } catch (error) {
-      console.error("Error saving cost code:", error);
-      setSuccessfullyEdited(false);
-    }
-  }, [onSaveChanges]);
-
   return (
-    <Holds background={"white"} className="w-full h-full">
+    <Holds background={"white"} className="w-full h-full relative">
+      {isDeleting && (
+        <Holds
+          background={"white"}
+          className="absolute w-full h-full animate-pulse bg-opacity-80 z-50 flex flex-col items-center justify-center rounded-[10px]"
+        >
+          <Spinner size={100} />
+        </Holds>
+      )}
       <Grids className="w-full h-full grid-rows-[50px_1fr] p-4">
         <Holds className="w-full h-full">
           <Titles position="left" size="h5" className="font-bold mb-2">

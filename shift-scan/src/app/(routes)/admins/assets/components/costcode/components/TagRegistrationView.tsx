@@ -117,19 +117,19 @@ export default function TagsRegistrationView({
               background="green"
               className="absolute top-0 left-0 w-full h-full rounded-[10px] flex items-center justify-center z-10"
             >
-              <Texts size="sm" className="text-white font-medium">
+              <Texts size="sm" className="text-white ">
                 {tagCreation.successMessage}
               </Texts>
             </Holds>
           )}
 
-          {tagCreation.error && (
+          {tagCreation.errorMessage && (
             <Holds
               background="red"
               className="absolute top-0 left-0 w-full h-full rounded-[10px] flex items-center justify-center z-10"
             >
-              <Texts size="sm" className="text-white font-medium">
-                {tagCreation.error}
+              <Texts size="sm" className="text-white ">
+                {tagCreation.errorMessage}
               </Texts>
             </Holds>
           )}
@@ -141,14 +141,20 @@ export default function TagsRegistrationView({
           className="w-full h-full flex flex-col p-4 gap-4"
         >
           <Holds className="">
-            <label htmlFor="name" className="text-sm font-medium">
-              Group Name <span className="pl-0.5 text-red-500">*</span>
+            <label
+              htmlFor="name"
+              className={`text-xs ${
+                tagCreation.showError("name") ? "text-red-500" : ""
+              }`}
+            >
+              Group Name<span className="pl-0.5 text-red-500">*</span>
             </label>
             <Inputs
               id="name"
               name="name"
               value={tagCreation.formData.name}
               onChange={(e) => tagCreation.handleNameChange(e.target.value)}
+              onBlur={() => tagCreation.updateFieldTouched("name")}
               placeholder="Enter group name"
               disabled={tagCreation.isSubmitting}
               className="w-1/2 text-sm"
@@ -156,8 +162,13 @@ export default function TagsRegistrationView({
           </Holds>
 
           <Holds className="">
-            <label htmlFor="description" className="text-sm font-medium">
-              Group Description
+            <label
+              htmlFor="description"
+              className={`text-xs ${
+                tagCreation.showError("name") ? "text-red-500" : ""
+              }`}
+            >
+              Group Description<span className="pl-0.5 text-red-500">*</span>
             </label>
             <TextAreas
               id="description"
@@ -166,6 +177,7 @@ export default function TagsRegistrationView({
               onChange={(e) =>
                 tagCreation.handleDescriptionChange(e.target.value)
               }
+              onBlur={() => tagCreation.updateFieldTouched("description")}
               placeholder="Enter group description"
               disabled={tagCreation.isSubmitting}
               style={{ resize: "none" }}
@@ -181,7 +193,7 @@ export default function TagsRegistrationView({
         >
           <Grids className="w-full h-full grid-rows-[30px_1fr] gap-1">
             <Holds position={"row"} className="w-full h-full justify-between">
-              <Texts position={"left"} size="md" className="font-medium">
+              <Texts position={"left"} size="md" className="">
                 Cost Codes in Group
               </Texts>
               <Texts position={"right"} size="md">
@@ -199,19 +211,29 @@ export default function TagsRegistrationView({
                   </Texts>
                 </Holds>
               ) : (
-                <Holds className="w-full h-full overflow-y-auto no-scrollbar">
-                  {tagCreation.formData.costCodes.map((costCode) => (
-                    <Holds
-                      key={costCode.id}
-                      className="flex justify-between items-center pb-2 border-b last:border-b-0"
-                    >
-                      <Holds className="flex gap-2">
-                        <Texts position={"left"} size="p6">
-                          {costCode.name}
-                        </Texts>
+                <Holds
+                  position={"row"}
+                  className="w-full h-auto overflow-y-auto no-scrollbar flex-wrap"
+                >
+                  {tagCreation.formData.costCodes.map((costCode) => {
+                    const [firstWord, ...restWords] = costCode.name.split(" ");
+                    const remainingText = restWords.join(" "); // Combine remaining words
+
+                    return (
+                      <Holds
+                        key={costCode.id}
+                        className="flex w-1/3 sm:w-full md:w-1/2 lg:w-1/3  h-fit p-1"
+                      >
+                        <Holds
+                          background="lightBlue"
+                          className="w-full h-full rounded-[10px] p-1 justify-center gap-1"
+                        >
+                          <Texts size="xs">{`${firstWord} `}</Texts>
+                          <Texts size="xs">{remainingText}</Texts>
+                        </Holds>
                       </Holds>
-                    </Holds>
-                  ))}
+                    );
+                  })}
                 </Holds>
               )}
             </Holds>

@@ -1,4 +1,5 @@
 import { CostCode, CostCodeSummary, Tag, TagSummary } from "../../types";
+import { NewCostCodeData } from "./hooks/useCostCodeRegistrationForm";
 
 /**
  * Type for the UI state of the Cost Code management interface
@@ -117,9 +118,26 @@ export interface RegistrationResult {
  * Props for the CostCodeRegistrationView component
  */
 export interface CostCodeRegistrationViewProps {
-  setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  formData: NewCostCodeData;
+  errors: Record<string, string>;
+  touched: Record<string, boolean>;
+  isSubmitting: boolean;
+  successfullyRegistered: string | null;
+  registrationError: string | null;
+  handleInputChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
+  handleBlur: (
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
+  handleTagToggle: (tagId: string, tagName: string) => void;
+  handleSubmit: () => Promise<void>;
+  resetForm: () => void;
+  hasChanged: boolean;
+  isFormValid: boolean;
   tagSummaries?: TagSummary[];
   refreshCostCodes: () => Promise<void>;
+  onCancel: () => void;
 }
 
 /**

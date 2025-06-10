@@ -17,6 +17,7 @@ import { useTagsForm } from "../hooks/useTagsForm";
 import { useTagCreation } from "../hooks/useTagCreation";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
 import DeleteConfirmationModal from "../../shared/DeleteConfirmationModal";
+import { useCostcodeRegistrationForm } from "../hooks/useCostCodeRegistrationForm";
 
 interface CostCodeMainContentProps {
   /** Assets data */
@@ -106,6 +107,23 @@ export default function CostCodeMainContent({
     onDeletionSuccess: handleDeletionSuccess,
   });
 
+  const {
+    formData,
+    errors,
+    touched,
+    isSubmitting,
+    isFormValid,
+    successfullyRegistered,
+    registrationError,
+    handleInputChange,
+    handleBlur,
+    handleTagToggle,
+    handleSubmit,
+    resetForm,
+    hasChanged,
+    hasUnsavedChanges,
+  } = useCostcodeRegistrationForm({ setHasUnsavedChanges, refreshCostCodes });
+
   // Handle creation hook readiness
   const handleCreationHookReady = useCallback(
     (handlers: {
@@ -124,9 +142,14 @@ export default function CostCodeMainContent({
   );
 
   const onCancel = useCallback(() => {
-    setCostCodeUIState("idle");
-    setSelectTag(null);
-  }, [setCostCodeUIState, setSelectTag]);
+    if (hasUnsavedChanges) {
+      setShowConfirmModal(true);
+    } else {
+      setCostCodeUIState("idle");
+      setSelectTag(null);
+      resetForm();
+    }
+  }, [hasUnsavedChanges, setCostCodeUIState, setSelectTag, resetForm]);
 
   const tagCreation = useTagCreation({
     refreshTags,
@@ -141,6 +164,7 @@ export default function CostCodeMainContent({
 
   const handleConfirmDiscard = () => {
     setShowConfirmModal(false);
+    resetForm();
     setCostCodeUIState("idle");
   };
 
@@ -172,9 +196,22 @@ export default function CostCodeMainContent({
     <>
       {costCodeUIState === "creating" ? (
         <CostCodeRegistrationView
-          setHasUnsavedChanges={setHasUnsavedChanges}
+          formData={formData}
+          errors={errors}
+          touched={touched}
+          isSubmitting={isSubmitting}
+          successfullyRegistered={successfullyRegistered}
+          registrationError={registrationError}
+          handleInputChange={handleInputChange}
+          handleBlur={handleBlur}
+          handleTagToggle={handleTagToggle}
+          handleSubmit={handleSubmit}
+          resetForm={resetForm}
+          hasChanged={hasChanged}
+          isFormValid={isFormValid}
           tagSummaries={tagSummaries}
           refreshCostCodes={refreshCostCodes}
+          onCancel={onCancel}
         />
       ) : costCodeUIState === "editing" &&
         selectCostCode &&
@@ -219,7 +256,7 @@ export default function CostCodeMainContent({
           <CostCodeEmptyState
             onRegisterNew={handleOpenRegistration}
             onRegisterNewGroup={() => setCostCodeUIState("creatingGroups")}
-            error={tagCreation.error}
+            error={tagCreation.errorMessage || null}
             successMessage={deletionSuccessMessage || null}
           />
         </Holds>

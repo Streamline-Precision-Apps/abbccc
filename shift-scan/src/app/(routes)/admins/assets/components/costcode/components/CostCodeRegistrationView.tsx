@@ -11,8 +11,6 @@ import { Titles } from "@/components/(reusable)/titles";
 import { CostCodeRegistrationViewProps } from "../types";
 import { formatCostCodeName, combineCostCodeName } from "../utils/formatters";
 import { CheckBox } from "@/components/(inputs)/checkBox";
-import { useCostcodeRegistrationForm } from "../hooks/useCostCodeRegistrationForm";
-
 /**
  * Component for registering a new cost code
  *
@@ -21,26 +19,19 @@ import { useCostcodeRegistrationForm } from "../hooks/useCostCodeRegistrationFor
  */
 
 function CostCodeRegistrationView({
-  setHasUnsavedChanges,
   tagSummaries = [],
-  refreshCostCodes,
+  onCancel,
+  formData,
+  handleInputChange,
+  handleBlur,
+  handleTagToggle,
+  handleSubmit,
+  isSubmitting,
+  successfullyRegistered,
+  registrationError,
+  errors,
+  touched,
 }: CostCodeRegistrationViewProps) {
-  // Use the custom form hook
-  const {
-    formData,
-    errors,
-    touched,
-    isSubmitting,
-    isFormValid,
-    successfullyRegistered,
-    registrationError,
-    handleInputChange,
-    handleBlur,
-    handleTagToggle,
-    handleSubmit,
-    resetForm,
-  } = useCostcodeRegistrationForm({ setHasUnsavedChanges, refreshCostCodes });
-
   // isComplete logic (matches hook's internal logic)
   const isComplete =
     formData.cCNumber &&
@@ -57,11 +48,6 @@ function CostCodeRegistrationView({
     }
     return null;
   }, [formData.cCNumber, formData.cCName]);
-
-  // Cancel handler resets the form
-  const onCancel = () => {
-    resetForm();
-  };
 
   return (
     <Holds className="w-full h-full col-span-4">
@@ -168,11 +154,6 @@ function CostCodeRegistrationView({
                   required
                   className="w-full text-sm"
                 />
-                {touched.cCNumber && errors.cCNumber && (
-                  <Texts size="xs" className="text-red-500 mb-2">
-                    {errors.cCNumber}
-                  </Texts>
-                )}
 
                 <label
                   htmlFor="cCName"
@@ -180,7 +161,7 @@ function CostCodeRegistrationView({
                     touched.cCName && errors.cCName ? " text-red-500" : ""
                   }`}
                 >
-                  Cost Code Name*
+                  Cost Code Name <span className="text-red-500">*</span>
                 </label>
                 <Inputs
                   type="text"
@@ -191,11 +172,6 @@ function CostCodeRegistrationView({
                   required
                   className="w-full text-sm"
                 />
-                {touched.cCName && errors.cCName && (
-                  <Texts size="xs" className="text-red-500 mb-2">
-                    {errors.cCName}
-                  </Texts>
-                )}
 
                 <label htmlFor="isActive" className="text-sm ">
                   Status

@@ -280,29 +280,40 @@ export default function TagsFormView({
                   : "border-black"
               }`}
             >
-              {formData?.CostCodes && formData.CostCodes.length ? (
-                formData.CostCodes.map((costCode) => (
-                  <Holds
-                    key={costCode.id}
-                    className="flex justify-between items-center pb-2 border-b last:border-b-0"
-                  >
-                    <Holds className="flex gap-2">
-                      <Texts position={"left"} size="p6">
-                        {costCode.name}
-                      </Texts>
-                    </Holds>
+              <Holds
+                position={"row"}
+                className="w-full h-auto overflow-y-auto no-scrollbar flex-wrap"
+              >
+                {formData?.CostCodes && formData.CostCodes.length ? (
+                  formData.CostCodes.map((costCode) => {
+                    const [firstWord, ...restWords] = costCode.name.split(" ");
+                    const remainingText = restWords.join(" "); // Combine remaining words
+                    return (
+                      <Holds
+                        key={costCode.id}
+                        className="flex w-1/3 sm:w-full md:w-1/2 lg:w-1/3  h-fit p-1"
+                      >
+                        <Holds
+                          background="lightBlue"
+                          className="w-full h-full rounded-[10px] p-1 justify-center gap-1"
+                        >
+                          <Texts size="xs">{`${firstWord} `}</Texts>
+                          <Texts size="xs">{remainingText}</Texts>
+                        </Holds>
+                      </Holds>
+                    );
+                  })
+                ) : (
+                  <Holds className="text-center justify-center items-center w-full h-full">
+                    <Texts size="md" className="text-gray-500">
+                      No cost codes selected
+                    </Texts>
+                    <Texts size="sm" className="text-gray-400 mt-2">
+                      Use the sidebar to select cost codes for this group
+                    </Texts>
                   </Holds>
-                ))
-              ) : (
-                <Holds className="text-center justify-center items-center w-full h-full">
-                  <Texts size="md" className="text-gray-500">
-                    No cost codes selected
-                  </Texts>
-                  <Texts size="sm" className="text-gray-400 mt-2">
-                    Use the sidebar to select cost codes for this group
-                  </Texts>
-                </Holds>
-              )}
+                )}
+              </Holds>
             </Holds>
           </Grids>
         </Holds>
