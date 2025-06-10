@@ -17,6 +17,7 @@ import {
   useJobsiteRegistrationForm,
   NewJobsiteData,
 } from "../hooks/useJobsiteRegistrationForm";
+import { error } from "console";
 
 interface JobsiteRegistrationViewProps {
   onSubmit: (newJobsite: NewJobsiteData) => Promise<any>;
@@ -55,6 +56,9 @@ export default function JobsiteRegistrationView({
     updateFieldTouched,
     handleSubmit,
     resetForm,
+    isFormValid,
+    successMessage,
+    errorMessage,
   } = useJobsiteRegistrationForm({
     onSubmit,
     onUnsavedChangesChange,
@@ -64,9 +68,6 @@ export default function JobsiteRegistrationView({
   const showError = (field: string) =>
     (touched[field] || triedSubmit) && errors[field];
 
-  // Check if form is valid for submit button
-  const isFormValid = Object.keys(errors).length === 0;
-
   return (
     <Holds className="w-full h-full col-span-4">
       <form onSubmit={handleSubmit} className="w-full h-full">
@@ -75,8 +76,30 @@ export default function JobsiteRegistrationView({
           <Holds
             position={"row"}
             background={"white"}
-            className="row-span-1 h-full w-full px-4 justify-between"
+            className="row-span-1 h-full w-full px-4 justify-between relative"
           >
+            {successMessage && (
+              <Holds
+                background={"green"}
+                className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+              >
+                <Texts position={"left"} size="sm">
+                  {successMessage}
+                </Texts>
+              </Holds>
+            )}
+
+            {errorMessage && (
+              <Holds
+                background={"red"}
+                className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+              >
+                <Texts position={"left"} size="sm">
+                  {errorMessage}
+                </Texts>
+              </Holds>
+            )}
+
             <Buttons
               type="submit"
               background={"none"}
@@ -84,7 +107,12 @@ export default function JobsiteRegistrationView({
               disabled={!isFormValid}
               className="w-fit h-auto"
             >
-              <Texts position={"left"} text={"link"} size="sm" className="">
+              <Texts
+                position={"left"}
+                text={"link"}
+                size="sm"
+                className={`${isFormValid ? "" : "text-app-dark-gray"}`}
+              >
                 Submit New Jobsite
               </Texts>
             </Buttons>
@@ -140,6 +168,9 @@ export default function JobsiteRegistrationView({
                       className="text-sm mb-0"
                       variant={"validationMessage"}
                     >
+                      <option value="" disabled>
+                        Select client
+                      </option>
                       {clients.map((client) => (
                         <option key={client.id} value={client.id}>
                           {client.name}
@@ -286,6 +317,11 @@ export default function JobsiteRegistrationView({
                       name="approvalStatus"
                       value={formData.isActive ? "Active" : "Inactive"}
                       className="text-center"
+                      onChange={(e) =>
+                        updateField("isActive", e.target.value === "Active")
+                      }
+                      onBlur={() => updateFieldTouched("approvalStatus")}
+                      variant={"validationMessage"}
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -302,9 +338,7 @@ export default function JobsiteRegistrationView({
                   </label>
                   <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]">
                     <JobsiteCostCodeGroups
-                      formData={formData}
                       tagSummaries={tagSummaries}
-                      handleCCTagsChange={handleCCTagsChange}
                       isTagSelected={isTagSelected}
                       handleTagToggle={handleTagToggle}
                     />
