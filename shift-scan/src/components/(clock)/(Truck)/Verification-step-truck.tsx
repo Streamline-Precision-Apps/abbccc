@@ -28,6 +28,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type Options = {
+  id: string;
   label: string;
   code: string;
 };
@@ -98,14 +99,14 @@ export default function TruckVerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
       formData.append("laborType", clockInRoleTypes || ""); // sets the title of task to the labor type worked on
       formData.append("startingMileage", startingMileage?.toString() || ""); // sets new starting mileage
-      formData.append("truck", truck?.code || ""); // sets truck ID if applicable
-      formData.append("equipment", equipment?.code || ""); // sets equipment Id if applicable
+      formData.append("truck", truck?.id || ""); // sets truck ID if applicable
+      formData.append("equipment", equipment?.id || ""); // sets equipment Id if applicable
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {

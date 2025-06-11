@@ -131,17 +131,17 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   console.log("Updating hauling logs...");
   console.log(formData);
   const id = formData.get("id") as string;
-  const equipmentName = formData.get("equipmentName") as string;
-  const equipmentId = formData.get("equipmentId") as string;
+  const equipmentQrId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
   // First check if equipment exists
   const equipmentExists = await prisma.equipment.findUnique({
-    where: { id: equipmentId },
+    where: { qrId: equipmentQrId },
   });
 
+
   if (!equipmentExists) {
-    throw new Error(`Equipment with ID ${equipmentId} not found`);
+    throw new Error(`Equipment with ID ${equipmentQrId} not found`);
   }
 
   // Then proceed with update
@@ -149,7 +149,7 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
     where: { id },
     data: {
       truckingLogId,
-      equipmentId: equipmentName,
+      equipmentId: equipmentQrId,
     },
   });
 
@@ -378,19 +378,26 @@ export async function createRefuelLog(formData: FormData) {
 export async function createRefuelEquipmentLog(formData: FormData) {
   console.log("Creating refuel logs...");
   console.log(formData);
+  
   const employeeEquipmentLogId = formData.get(
     "employeeEquipmentLogId"
   ) as string;
+  
+  const gallonsRefueledStr = formData.get("gallonsRefueled") as string | null;
+  const gallonsRefueled = gallonsRefueledStr ? parseFloat(gallonsRefueledStr) : null;
 
   const refueledLogs = await prisma.refuelLog.create({
     data: {
       employeeEquipmentLogId,
+      gallonsRefueled,
     },
   });
 
   console.log(refueledLogs);
+  revalidatePath(`/dashboard/equipment/${employeeEquipmentLogId}`);
   revalidatePath("/dashboard/truckingAssistant");
-  const { id, gallonsRefueled } = refueledLogs;
+  
+  const { id } = refueledLogs;
   const data = { id, gallonsRefueled, employeeEquipmentLogId };
   return data;
 }

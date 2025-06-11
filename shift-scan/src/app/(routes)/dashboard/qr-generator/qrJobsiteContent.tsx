@@ -13,6 +13,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -51,6 +52,7 @@ export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
   const handleSearchSelectChange = (selectedOption: Option | null) => {
     if (selectedOption) {
       setSelectedJobSite({
+        id: selectedOption.id,
         label: selectedOption.label,
         code: selectedOption.code,
       });

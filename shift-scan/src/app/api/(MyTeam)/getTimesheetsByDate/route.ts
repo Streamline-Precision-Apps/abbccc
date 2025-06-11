@@ -77,23 +77,8 @@ export async function GET(request: Request) {
         );
       }
 
-      // Convert fetched ISO times to local timezone
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const adjustedTimeSheets = timeSheets.map((sheet) => ({
-        ...sheet,
-        submitDate: sheet.createdAt
-          ? formatInTimeZone(sheet.createdAt, timeZone, "yyyy-MM-dd HH:mm:ss")
-          : "",
-        date: formatInTimeZone(sheet.date, timeZone, "yyyy-MM-dd"),
-        startTime: sheet.startTime
-          ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-          : "",
-        endTime: sheet.endTime
-          ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-          : "",
-      }));
-
-      result = adjustedTimeSheets;
+      // Just send the raw data:
+      result = timeSheets;
     }
     if (type === "truckingMileage") {
       const timeSheets = await prisma.timeSheet.findMany({
@@ -414,8 +399,8 @@ export async function GET(request: Request) {
         where: {
           userId: employeeId,
           date: {
-            gte: startOfDay.toISOString(), // Start of the day in UTC
-            lte: endOfDay.toISOString(), // End of the day in UTC
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
           },
         },
         orderBy: {
@@ -423,28 +408,25 @@ export async function GET(request: Request) {
         },
         select: {
           EmployeeEquipmentLogs: {
-            select: {
-              id: true,
+            include: {
               Equipment: {
                 select: {
                   id: true,
                   name: true,
                 },
               },
-              RefuelLogs: {
-                select: {
-                  id: true,
-                  gallonsRefueled: true,
-                },
-              },
+              RefuelLogs: true,
             },
           },
         },
       });
 
+      // Filter logs that have refuel logs
       result = timeSheets
         .flatMap((sheet) => sheet.EmployeeEquipmentLogs)
-        .filter((log) => log.RefuelLogs && log.RefuelLogs.length > 0); // or any other condition you need;
+        .filter(
+          (log) => Array.isArray(log.RefuelLogs) && log.RefuelLogs.length > 0
+        );
     }
 
     return NextResponse.json(result, {

@@ -1,5 +1,5 @@
 model FormTemplate {
-  id                  String           @id @default(cuid())
+  id                  String           @id @default(uuid())
   companyId           String
   name                String
   formType            String?
@@ -13,7 +13,7 @@ model FormTemplate {
 }
 
 model FormGrouping {
-  id           String         @id @default(cuid())
+  id           String         @id @default(uuid())
   title        String?
   order        Int
   Fields       FormField[]
@@ -21,7 +21,7 @@ model FormGrouping {
 }
 
 model FormField {
-  id             String            @id @default(cuid())
+  id             String            @id @default(uuid())
   formGroupingId String
   label          String
   name           String
@@ -37,14 +37,14 @@ model FormField {
 }
 
 model FormFieldOption {
-  id      String    @id @default(cuid())
+  id      String    @id @default(uuid())
   fieldId String
   value   String
   Field   FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
 }
 
 model FormSubmission {
-  id             String         @id @default(cuid())
+  id             String         @id @default(uuid())
   title          String?
   formTemplateId String
   userId         String
@@ -60,7 +60,7 @@ model FormSubmission {
 }
 
 model FormApproval {
-  id               String         @id @default(cuid())
+  id               String         @id @default(uuid())
   formSubmissionId String
   signedBy         String?
   submittedAt      DateTime       @default(now())

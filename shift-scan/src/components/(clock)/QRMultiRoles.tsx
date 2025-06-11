@@ -15,6 +15,7 @@ import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Title } from "@/app/(routes)/dashboard/mechanic/_components/Title";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };

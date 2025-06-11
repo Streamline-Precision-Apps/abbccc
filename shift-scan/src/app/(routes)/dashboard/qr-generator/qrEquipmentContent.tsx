@@ -15,6 +15,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -55,6 +56,7 @@ export default function QrEquipmentContent({
   const handleSearchSelectChange = (selectedOption: Option | null) => {
     if (selectedOption) {
       setSelectedEquipment({
+        id: selectedOption.id,
         label: selectedOption.label,
         code: selectedOption.code,
       });

@@ -27,6 +27,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -98,7 +99,7 @@ export default function TascoVerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id);
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("laborType", clockInRoleTypes || "");
@@ -115,7 +116,7 @@ export default function TascoVerificationStep({
         formData.append("shiftType", "E shift");
       }
       formData.append("workType", role);
-      formData.append("equipment", equipment?.code || "");
+      formData.append("equipment", equipment?.id || "");
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {

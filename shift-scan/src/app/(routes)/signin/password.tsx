@@ -62,10 +62,10 @@ export default function SignInForm() {
         </Holds>
       )}
       <Forms onSubmit={handleSubmit}>
-        <Labels>{t("EmployeeID")}</Labels>
+        <Labels htmlFor="username">{t("EmployeeID")}</Labels>
         <Inputs variant="default" name="username" type="text" required />
         <Holds position={"row"}>
-          <Labels>{t("Password")}</Labels>
+          <Labels htmlFor="password">{t("Password")}</Labels>
           <Images
             titleImg={viewSecret ? "/eye.svg" : "/eyeSlash.svg"}
             titleImgAlt="eye"
@@ -74,6 +74,7 @@ export default function SignInForm() {
             onClick={viewPasscode}
           />
         </Holds>
+
         <Inputs
           variant="default"
           name="password"

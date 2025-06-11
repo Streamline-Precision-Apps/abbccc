@@ -5,6 +5,7 @@ import { useDBEquipment } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
+  id: string; // Optional ID for compatibility
   code: string;
   label: string;
 };
@@ -29,25 +30,25 @@ export const EquipmentSelector = ({
 
   useEffect(() => {
     const options = equipmentResults.map((equipment) => ({
-      code: useEquipmentId ? equipment.id : equipment.qrId,
+      id: equipment.id,
+      code: equipment.qrId,
       label: equipment.name,
     }));
     setEquipmentOptions(options);
   }, [equipmentResults]);
 
-  // Initialize with the passed initialValue
+  // Initialize with the passed initialValue, but avoid infinite loops
   useEffect(() => {
-    if (initialValue) {
-      // If options are available, find the matching one
-      if (equipmentOptions.length > 0) {
-        const foundOption = equipmentOptions.find(
-          (opt) => opt.code === initialValue.code
-        );
-        setSelectedEquipment(foundOption || null);
-      }
-      // If options aren't loaded yet, set the initial value directly
-      else if (initialValue.code && initialValue.label) {
-        setSelectedEquipment(initialValue);
+    if (initialValue && equipmentOptions.length > 0) {
+      const foundOption = equipmentOptions.find(
+        (opt) => opt.code === initialValue.code
+      );
+      // Only update if different
+      if (
+        foundOption &&
+        (!selectedEquipment || foundOption.code !== selectedEquipment.code)
+      ) {
+        setSelectedEquipment(foundOption);
       }
     }
   }, [initialValue, equipmentOptions]);
