@@ -5,23 +5,33 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState,
 } from "react";
 import QrScanner from "qr-scanner";
-import { Holds } from "../(reusable)/holds";
 
 export default function SimpleQr({
   setScannedId,
   setScanned,
   onScanComplete,
+  resetOnMount = false,
 }: {
   setScanned: Dispatch<SetStateAction<boolean>>;
   setScannedId: Dispatch<SetStateAction<string | null>>;
   onScanComplete?: (scannedId: string) => Promise<void>;
+  resetOnMount?: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
   const hasScanned = useRef(false);
+
+  // Function to reset the scanner state
+  const resetScanner = useCallback(() => {
+    hasScanned.current = false;
+    if (qrScannerRef.current) {
+      qrScannerRef.current
+        .start()
+        .catch((err) => console.error("Error restarting scanner:", err));
+    }
+  }, []);
 
   const handleScanSuccess = useCallback(
     async (result: QrScanner.ScanResult) => {
@@ -32,12 +42,15 @@ export default function SimpleQr({
           hasScanned.current = true;
           setScannedId(data);
           setScanned(true);
+
+          if (onScanComplete && hasScanned.current) {
+            console.log("Scanned data:", data);
+            await onScanComplete(data);
+          }
+
+          // Stop the scanner immediately after a successful scan
+          qrScannerRef.current?.stop();
         }
-        // Only call if provided
-        if (onScanComplete) {
-          await onScanComplete(data);
-        }
-        qrScannerRef.current?.stop();
       } catch (error) {
         console.error("Error processing scanned data:", error);
         hasScanned.current = false; // Reset on error
@@ -91,6 +104,13 @@ export default function SimpleQr({
       qrScannerRef.current?.stop();
     };
   }, [handleScanSuccess]);
+
+  // Reset scanner on component mount if resetOnMount is true
+  useEffect(() => {
+    if (resetOnMount) {
+      resetScanner();
+    }
+  }, [resetOnMount, resetScanner]);
 
   return (
     <video

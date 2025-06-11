@@ -3,245 +3,342 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Selects } from "@/components/(reusable)/selects";
-import React, { useState } from "react";
+import React from "react";
 import { Texts } from "@/components/(reusable)/texts";
 import { COUNTRIES } from "../../../constants/countries";
-import { Jobsite } from "@/app/(routes)/admins/assets/types/jobsite";
-
-interface JobsiteRegistrationFormData {
-  name: string;
-  clientId: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  description: string;
-  isActive: boolean;
-  approvalStatus: string;
-}
+import { ClientsSummary, TagSummary } from "../../../types";
+import JobsiteCostCodeGroups from "./JobsiteCostCodeGroups";
+import { US_STATES } from "@/data/stateValues";
+import { TextAreas } from "@/components/(reusable)/textareas";
+import { useJobsiteRegistrationForm } from "../hooks/useJobsiteRegistrationForm";
 
 interface JobsiteRegistrationViewProps {
-  onSubmit: (newJobsite: JobsiteRegistrationFormData) => void;
-  onCancel: () => void;
+  tagSummaries?: TagSummary[];
+  clients: ClientsSummary[];
+  setJobsiteUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
+  refreshJobsites: (() => Promise<void>) | undefined;
+  setShowConfirmModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
  * Jobsite registration form component
  * Handles creation of new jobsites with required fields
  */
+
 export default function JobsiteRegistrationView({
-  onSubmit,
-  onCancel,
+  tagSummaries = [],
+  clients,
+  setJobsiteUIState,
+  refreshJobsites,
+  setShowConfirmModal,
 }: JobsiteRegistrationViewProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    clientId: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "US",
-    description: "",
-    isActive: true,
-    approvalStatus: "PENDING",
+  // Use the jobsite registration form hook
+  const {
+    formData,
+    errors,
+    touched,
+    triedSubmit,
+    updateField,
+    isTagSelected,
+    handleTagToggle,
+    updateFieldTouched,
+    handleSubmit,
+    isSubmitting,
+    isFormValid,
+    successMessage,
+    errorMessage,
+    handleCancelRegistration,
+  } = useJobsiteRegistrationForm({
+    setJobsiteUIState,
+    refreshJobsites,
+    setShowConfirmModal,
   });
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  const isFormValid = formData.name.trim() && formData.description.trim();
+  // Helper function to show validation errors
+  const showError = (field: string) =>
+    (touched[field] || triedSubmit) && errors[field];
 
   return (
-    <form onSubmit={handleSubmit} className="w-full h-full">
-      <Grids gap="4" className="w-full h-full grid-rows-[40px_1fr]">
-        {/* Header */}
-        <Holds
-          position={"row"}
-          background={"white"}
-          className="row-span-1 h-full w-full px-4 justify-between"
-        >
-          <Buttons
-            type="submit"
-            background={"none"}
-            shadow={"none"}
-            disabled={!isFormValid}
-            className="w-full"
+    <Holds className="w-full h-full col-span-4">
+      <form onSubmit={handleSubmit} className="w-full h-full">
+        <Grids gap="4" className="w-full h-full grid-rows-[40px_1fr]">
+          {/* Header */}
+          <Holds
+            position={"row"}
+            background={"white"}
+            className="row-span-1 h-full w-full px-4 justify-between relative"
           >
-            <Texts position={"left"} text={"link"} size="sm" className="">
-              Submit New Jobsite
-            </Texts>
-          </Buttons>
-          <Buttons
-            type="button"
-            background={"none"}
-            shadow={"none"}
-            onClick={onCancel}
-            className="w-full"
+            {successMessage && (
+              <Holds
+                background={"green"}
+                className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+              >
+                <Texts position={"left"} size="sm">
+                  {successMessage}
+                </Texts>
+              </Holds>
+            )}
+
+            {errorMessage && (
+              <Holds
+                background={"red"}
+                className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+              >
+                <Texts position={"left"} size="sm">
+                  {errorMessage}
+                </Texts>
+              </Holds>
+            )}
+
+            <Buttons
+              type="submit"
+              background={"none"}
+              shadow={"none"}
+              disabled={!isFormValid || isSubmitting}
+              className="w-fit h-auto"
+            >
+              <Texts
+                position={"left"}
+                text={"link"}
+                size="sm"
+                className={`${isFormValid ? "" : "text-app-dark-gray"}`}
+              >
+                {isSubmitting ? `Submitting...` : "Submit New Jobsite"}
+              </Texts>
+            </Buttons>
+            <Buttons
+              type="button"
+              background={"none"}
+              shadow={"none"}
+              onClick={handleCancelRegistration}
+              className="w-fit h-auto"
+            >
+              <img src="/statusDenied.svg" alt="Close" className="w-4 h-4" />
+            </Buttons>
+          </Holds>
+
+          <Holds
+            background={"white"}
+            className="w-full h-full p-3 overflow-y-scroll no-scrollbar"
           >
-            <Texts position={"right"} text={"link"} size="sm" className="">
-              Cancel Registration
-            </Texts>
-          </Buttons>
-        </Holds>
+            <Grids className="w-full h-full grid-rows-[50px_1fr]">
+              <Holds className="w-full h-full flex justify-center">
+                <Titles position={"left"} size="h4" className="">
+                  New Jobsite
+                </Titles>
+              </Holds>
 
-        <Holds background={"white"} className="w-full h-full p-3">
-          <Grids className="w-full h-full grid-rows-[50px_1fr]">
-            <Holds className="w-full h-full flex justify-center">
-              <Titles position={"left"} size="h4" className="">
-                New Jobsite
-              </Titles>
-            </Holds>
-
-            <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4">
-              <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
-                <Holds>
-                  <label htmlFor="name" className="text-xs font-medium">
-                    Jobsite Name *
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    required
-                    className="text-sm mb-3"
-                  />
-                  <label htmlFor="clientId" className="text-xs font-medium">
-                    Client
-                  </label>
-                  <Inputs
-                    name="clientId"
-                    type="text"
-                    value={formData.clientId}
-                    onChange={(e) =>
-                      handleInputChange("clientId", e.target.value)
-                    }
-                    required
-                    className="text-sm mb-3"
-                  />
-
-                  <label htmlFor="address" className="text-xs font-medium">
-                    Street Address
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={(e) =>
-                      handleInputChange("address", e.target.value)
-                    }
-                    placeholder="Enter street address"
-                    className="text-sm mb-3"
-                  />
-
-                  <label htmlFor="city" className="text-xs font-medium">
-                    City
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={(e) => handleInputChange("city", e.target.value)}
-                    placeholder="Enter city"
-                    className="text-sm mb-3"
-                  />
-
-                  <label htmlFor="state" className="text-xs font-medium">
-                    State
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={(e) => handleInputChange("state", e.target.value)}
-                    placeholder="Enter state"
-                    className="text-sm mb-3"
-                  />
-
-                  <label htmlFor="zipCode" className="text-xs font-medium">
-                    Zip Code
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="zipCode"
-                    value={formData.zipCode}
-                    onChange={(e) =>
-                      handleInputChange("zipCode", e.target.value)
-                    }
-                    placeholder="Enter zip code"
-                    className="text-sm mb-3"
-                  />
-
-                  <label htmlFor="country" className="text-xs font-medium">
-                    Country
-                  </label>
-                  <Selects
-                    name="country"
-                    value={formData.country}
-                    onChange={(e) =>
-                      handleInputChange("country", e.target.value)
-                    }
-                    className="mb-3 text-sm"
-                  >
-                    {COUNTRIES.map((country) => (
-                      <option key={country.code} value={country.code}>
-                        {country.name}
+              <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4 overflow-y-scroll no-scrollbar ">
+                <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
+                  <Holds>
+                    <label
+                      htmlFor="name"
+                      className={`text-xs ${
+                        showError("name") ? "text-red-500" : ""
+                      }`}
+                    >
+                      Name <span className="text-red-500">*</span>
+                    </label>
+                    <Inputs
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={(e) => updateField("name", e.target.value)}
+                      onBlur={() => updateFieldTouched("name")}
+                      required
+                      className="text-sm"
+                    />
+                    <label
+                      htmlFor="clientId"
+                      className={`text-xs ${
+                        showError("clientId") ? "text-red-500" : ""
+                      }`}
+                    >
+                      Client <span className="text-red-500">*</span>
+                    </label>
+                    <Selects
+                      name="clientId"
+                      value={formData.clientId}
+                      onChange={(e) => updateField("clientId", e.target.value)}
+                      onBlur={() => updateFieldTouched("clientId")}
+                      className="text-sm"
+                    >
+                      <option value="" disabled>
+                        Select client
                       </option>
-                    ))}
-                  </Selects>
-                  <label htmlFor="description" className="text-xs font-medium">
-                    Jobsite Description *
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      handleInputChange("description", e.target.value)
-                    }
-                    placeholder="Enter jobsite description"
-                    required
-                    className="text-sm mb-3"
-                  />
-                  <label
-                    htmlFor="approvalStatus"
-                    className="text-xs font-medium"
-                  >
-                    Approval Status
-                  </label>
-                  <Inputs
-                    type="text"
-                    name="approvalStatus"
-                    value={formData.approvalStatus}
-                    readOnly
-                    className="mb-3 text-gray-500 bg-gray-100"
-                  />
-                </Holds>
-              </Holds>
+                      {clients.map((client) => (
+                        <option key={client.id} value={client.id}>
+                          {client.name}
+                        </option>
+                      ))}
+                    </Selects>
 
-              <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
-                <label htmlFor="costCodeGroups" className="text-xs font-medium">
-                  Cost Code Groups
-                </label>
-                <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]"></Holds>
-              </Holds>
+                    <label
+                      htmlFor="address"
+                      className={`text-xs ${
+                        showError("address") ? "text-red-500" : ""
+                      }`}
+                    >
+                      Street Address <span className="text-red-500">*</span>
+                    </label>
+                    <Inputs
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={(e) => updateField("address", e.target.value)}
+                      onBlur={() => updateFieldTouched("address")}
+                      placeholder="Enter street address"
+                      className="text-sm"
+                    />
+
+                    <label
+                      htmlFor="city"
+                      className={`text-xs ${
+                        showError("city") ? "text-red-500" : ""
+                      }`}
+                    >
+                      City <span className="text-red-500">*</span>
+                    </label>
+                    <Inputs
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={(e) => updateField("city", e.target.value)}
+                      onBlur={() => updateFieldTouched("city")}
+                      placeholder="Enter city"
+                      className="text-sm"
+                    />
+
+                    <label
+                      htmlFor="state"
+                      className={`text-xs ${
+                        showError("state") ? "text-red-500" : ""
+                      }`}
+                    >
+                      State <span className="text-red-500">*</span>
+                    </label>
+                    <Selects
+                      name="state"
+                      value={formData.state}
+                      onChange={(e) => updateField("state", e.target.value)}
+                      onBlur={() => updateFieldTouched("state")}
+                      className="text-sm"
+                    >
+                      <option value="">Select state</option>
+                      {US_STATES.map((state) => (
+                        <option key={state.code} value={state.name}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </Selects>
+
+                    <label
+                      htmlFor="zipCode"
+                      className={`text-xs ${
+                        showError("zipCode") ? "text-red-500" : ""
+                      }  `}
+                    >
+                      Zip Code <span className="text-red-500">*</span>
+                    </label>
+                    <Inputs
+                      type="text"
+                      name="zipCode"
+                      value={formData.zipCode}
+                      onChange={(e) => updateField("zipCode", e.target.value)}
+                      onBlur={() => updateFieldTouched("zipCode")}
+                      required
+                      placeholder="Enter zip code"
+                      className="text-sm "
+                    />
+
+                    <label
+                      htmlFor="country"
+                      className={`text-sm ${
+                        showError("country") ? "text-red-500" : ""
+                      }`}
+                    >
+                      Country <span className="text-red-500">*</span>
+                    </label>
+                    <Selects
+                      name="country"
+                      value={formData.country}
+                      onChange={(e) => updateField("country", e.target.value)}
+                      onBlur={() => updateFieldTouched("country")}
+                      className="text-sm"
+                    >
+                      {COUNTRIES.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </Selects>
+
+                    <label
+                      htmlFor="description"
+                      className={`text-xs ${
+                        showError("description") ? "text-red-500" : ""
+                      }`}
+                    >
+                      Jobsite Description{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <TextAreas
+                      rows={3}
+                      name="description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        updateField("description", e.target.value)
+                      }
+                      onBlur={() => updateFieldTouched("description")}
+                      placeholder="Enter jobsite description"
+                      required
+                      className="text-sm"
+                      style={{ resize: "none" }}
+                    />
+                    <label
+                      htmlFor="approvalStatus"
+                      className={`text-xs ${
+                        showError("approvalStatus") ? "text-red-500" : ""
+                      }`}
+                    >
+                      Jobsite Status <span className="text-red-500">*</span>
+                    </label>
+                    <Selects
+                      name="approvalStatus"
+                      value={formData.isActive ? "Active" : "Inactive"}
+                      className="text-center"
+                      onChange={(e) =>
+                        updateField("isActive", e.target.value === "Active")
+                      }
+                      onBlur={() => updateFieldTouched("approvalStatus")}
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </Selects>
+                  </Holds>
+                </Holds>
+
+                <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
+                  <label htmlFor="costCodeGroups" className="text-xs ">
+                    Cost Code Groups <span className="text-red-500">*</span>
+                  </label>
+                  <Holds className="w-full h-full p-3 border-black border-[3px] rounded-[10px]">
+                    <JobsiteCostCodeGroups
+                      tagSummaries={tagSummaries}
+                      isTagSelected={isTagSelected}
+                      handleTagToggle={handleTagToggle}
+                    />
+                  </Holds>
+                </Holds>
+              </Grids>
             </Grids>
-          </Grids>
-        </Holds>
-      </Grids>
-    </form>
+          </Holds>
+        </Grids>
+      </form>
+    </Holds>
   );
 }

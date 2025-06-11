@@ -51,94 +51,72 @@ export async function updateTimesheetHighlights(
 }
 
 export async function updateTruckingMileage(
-  data: FormData | TruckingMileageUpdate[]
+  data: FormData | Array<{ id: string; TruckingLogs: Array<{ startingMileage?: number; endingMileage?: number }> }>
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking mileage:", data);
+    console.log('[SERVER] Updating trucking mileage:', data);
     const session = await auth();
-
     if (!session) {
-      console.error("[SERVER] Unauthorized attempt to update mileage");
-      throw new Error("Unauthorized");
+      console.error('[SERVER] Unauthorized attempt to update mileage');
+      throw new Error('Unauthorized');
     }
 
     // Handle both FormData and direct array input
-    let mileageUpdates: TruckingMileageUpdate[];
+    let mileageUpdates: Array<{ id: string; TruckingLogs: Array<{ startingMileage?: number; endingMileage?: number }> }>;
     if (data instanceof FormData) {
-      // Get all entries that start with 'changes'
       const changesEntries = Array.from(data.entries())
-        .filter(([key]) => key.startsWith("changes"))
+        .filter(([key]) => key.startsWith('changes'))
         .map(([, value]) => value as string);
-
       if (changesEntries.length === 0) {
-        throw new Error("No changes data found in FormData");
+        throw new Error('No changes data found in FormData');
       }
-
-      // Parse each entry and combine into an array
       mileageUpdates = changesEntries.flatMap((entry) => JSON.parse(entry));
     } else {
-      // Direct array input
       mileageUpdates = data;
     }
 
-    // Rest of your code remains the same...
-    // Validate the updates
     if (!Array.isArray(mileageUpdates)) {
-      throw new Error("Invalid mileage updates format");
+      throw new Error('Invalid mileage updates format');
     }
 
     const updatePromises = mileageUpdates.map((mileage) => {
       if (!mileage.id) {
-        console.error("[SERVER] Missing ID in mileage update:", mileage);
-        throw new Error(
-          `Missing ID in mileage update: ${JSON.stringify(mileage)}`
-        );
+        console.error('[SERVER] Missing ID in mileage update:', mileage);
+        throw new Error(`Missing ID in mileage update: ${JSON.stringify(mileage)}`);
       }
-
+      // Extract startingMileage and endingMileage from the first TruckingLogs entry
+      const firstLog = Array.isArray(mileage.TruckingLogs) && mileage.TruckingLogs.length > 0 ? mileage.TruckingLogs[0] : undefined;
+      const startingMileage = firstLog?.startingMileage;
+      const endingMileage = firstLog?.endingMileage;
       // Validate numbers
-      if (
-        mileage.startingMileage !== undefined &&
-        isNaN(Number(mileage.startingMileage))
-      ) {
-        throw new Error(`Invalid startingMileage: ${mileage.startingMileage}`);
+      if (startingMileage !== undefined && isNaN(Number(startingMileage))) {
+        throw new Error(`Invalid startingMileage: ${startingMileage}`);
       }
-      if (
-        mileage.endingMileage !== undefined &&
-        isNaN(Number(mileage.endingMileage))
-      ) {
-        throw new Error(`Invalid endingMileage: ${mileage.endingMileage}`);
+      if (endingMileage !== undefined && isNaN(Number(endingMileage))) {
+        throw new Error(`Invalid endingMileage: ${endingMileage}`);
       }
-
       return prisma.truckingLog.update({
         where: { id: mileage.id },
         data: {
-          startingMileage:
-            mileage.startingMileage !== undefined
-              ? Number(mileage.startingMileage)
-              : undefined,
-          endingMileage:
-            mileage.endingMileage !== undefined
-              ? Number(mileage.endingMileage)
-              : undefined,
+          startingMileage: startingMileage !== undefined ? Number(startingMileage) : undefined,
+          endingMileage: endingMileage !== undefined ? Number(endingMileage) : undefined,
         },
       });
     });
 
     const results = await Promise.all(updatePromises);
-    console.log("[SERVER] Successfully updated", results.length, "records");
-
-    revalidatePath("/dashboard/myTeam");
-    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
-
+    console.log('[SERVER] Successfully updated', results.length, 'records');
+    revalidatePath('/dashboard/myTeam');
+    revalidatePath('/dashboard/myTeam/[id]/employee/[employeeId]', 'page');
     return {
       success: true,
       updatedCount: results.length,
     };
   } catch (error) {
-    console.error("[SERVER] Error updating trucking mileage:", error);
+    console.error('[SERVER] Error updating trucking mileage:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -219,56 +197,65 @@ export async function updateTruckingHaulLogs(
   }
 }
 
+/**
+ * Update trucking material logs in the database.
+ * @param updates - Array of material log updates, each with strict typing.
+ * @returns Result object with success, updatedCount, and error (if any).
+ */
 export async function updateTruckingMaterialLogs(
-  updates: {
+  updates: Array<{
     id: string;
     name?: string;
     LocationOfMaterial?: string;
     materialWeight?: number | null;
     lightWeight?: number | null;
     grossWeight?: number | null;
-  }[]
+  }>
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking material logs:", updates);
+    console.log('[SERVER] Updating trucking material logs:', updates);
     const session = await auth();
-    if (!session) throw new Error("Unauthorized");
+    if (!session) throw new Error('Unauthorized');
+
+    // Validate updates
+    const validUpdates = updates.filter(
+      (update) => !!update.id && typeof update.id === 'string'
+    );
+    if (validUpdates.length === 0) {
+      return { success: false, error: 'No valid updates provided' };
+    }
 
     const result = await prisma.$transaction(async (tx) => {
-      const updatePromises = updates.map((update) =>
+      const updatePromises = validUpdates.map((update) =>
         tx.material.update({
           where: { id: update.id },
           data: {
             name: update.name,
             LocationOfMaterial: update.LocationOfMaterial,
-            materialWeight: update.materialWeight,
-            lightWeight: update.lightWeight,
-            grossWeight: update.grossWeight,
+            materialWeight:
+              update.materialWeight !== undefined ? update.materialWeight : null,
+            lightWeight:
+              update.lightWeight !== undefined ? update.lightWeight : null,
+            grossWeight:
+              update.grossWeight !== undefined ? update.grossWeight : null,
           },
         })
       );
-
       return await Promise.all(updatePromises);
     });
 
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "material logs"
-    );
-
-    revalidatePath("/dashboard/myTeam");
-    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
-
+    console.log('[SERVER] Successfully updated', result.length, 'material logs');
+    revalidatePath('/dashboard/myTeam');
+    revalidatePath('/dashboard/myTeam/[id]/employee/[employeeId]', 'page');
     return {
       success: true,
       updatedCount: result.length,
     };
   } catch (error) {
-    console.error("Error updating trucking material logs:", error);
+    console.error('[SERVER] Error updating trucking material logs:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }

@@ -9,14 +9,17 @@ import { useSession } from "next-auth/react";
 import {
   updateEquipmentAsset,
   registerEquipment,
+  deleteEquipment,
 } from "@/actions/AssetActions";
 import { Equipment } from "../../../types";
 
 interface UseEquipmentFormProps {
   selectEquipment: Equipment | null;
-  setSelectEquipment: React.Dispatch<React.SetStateAction<Equipment | null>>;
+  setSelectEquipment: Dispatch<SetStateAction<Equipment | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+  setEquipmentUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
   refreshEquipments?: () => Promise<void>;
 }
 
@@ -25,7 +28,7 @@ interface NewEquipmentData {
   description?: string;
   equipmentTag: string;
   overWeight: boolean | null;
-  currentWeight: number;
+  currentWeight: number | null;
   equipmentVehicleInfo?: {
     make: string | null;
     model: string | null;
@@ -37,11 +40,15 @@ interface NewEquipmentData {
 }
 
 interface UseEquipmentFormReturn {
+  message: string | null;
+  error: string | null;
   formData: Equipment | null;
   changedFields: Set<string>;
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  showDeleteConfirmModal: boolean;
+  setShowDeleteConfirmModal: (show: boolean) => void;
   handleInputChange: (
     fieldName: string,
     value: string | number | boolean | Date
@@ -50,6 +57,9 @@ interface UseEquipmentFormReturn {
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
   handleNewEquipmentSubmit: (newEquipment: NewEquipmentData) => Promise<void>;
+  handleDeleteEquipment: () => void;
+  confirmDeleteEquipment: () => Promise<void>;
+  successfullySubmitted?: string | null;
 }
 
 /**
@@ -60,14 +70,16 @@ export const useEquipmentForm = ({
   selectEquipment,
   setSelectEquipment,
   onUnsavedChangesChange,
-  setIsRegistrationFormOpen,
   refreshEquipments,
+  setEquipmentUIState,
 }: UseEquipmentFormProps): UseEquipmentFormReturn => {
   const [formData, setFormData] = useState<Equipment | null>(null);
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [successfullyUpdated, setSuccessfullyUpdated] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: session } = useSession();
 
@@ -162,7 +174,12 @@ export const useEquipmentForm = ({
         "isDisabledByAdmin",
         String(formData.isDisabledByAdmin)
       );
-      formDataToSend.append("currentWeight", formData.currentWeight.toString());
+      if (formData.currentWeight) {
+        formDataToSend.append(
+          "currentWeight",
+          formData.currentWeight.toString()
+        );
+      }
       formDataToSend.append("overWeight", formData.overWeight.toString());
 
       // Add vehicle information if it exists
@@ -241,14 +258,6 @@ export const useEquipmentForm = ({
    */
   const handleDiscardChanges = useCallback(() => {
     if (selectEquipment) {
-      if (
-        hasUnsavedChanges &&
-        !confirm(
-          "Are you sure you want to discard all changes? This action cannot be undone."
-        )
-      ) {
-        return;
-      }
       setFormData({ ...selectEquipment });
       setChangedFields(new Set());
       setHasUnsavedChanges(false);
@@ -315,23 +324,6 @@ export const useEquipmentForm = ({
         const result = await registerEquipment(newEquipment, session.user.id);
 
         if (result.success && result.data) {
-          const equipmentToSelect: Equipment = {
-            id: result.data.id,
-            qrId: result.data.qrId,
-            name: result.data.name,
-            description: result.data.description,
-            equipmentTag: result.data.equipmentTag,
-            approvalStatus: result.data.approvalStatus,
-            state: result.data.state,
-            isDisabledByAdmin: result.data.isDisabledByAdmin,
-            overWeight: result.data.overWeight || false,
-            currentWeight: result.data.currentWeight || 0,
-            equipmentVehicleInfo:
-              (result.data as Equipment).equipmentVehicleInfo || undefined,
-          };
-          setSelectEquipment(equipmentToSelect);
-          setIsRegistrationFormOpen(false);
-
           // Refresh equipment list after registration
           if (refreshEquipments) {
             await refreshEquipments();
@@ -350,8 +342,60 @@ export const useEquipmentForm = ({
         setIsSaving(false);
       }
     },
-    [session, setSelectEquipment, setIsRegistrationFormOpen, refreshEquipments]
+    [session, setSelectEquipment, refreshEquipments]
   );
+
+  /**
+   * Tracks the state of the delete confirmation modal
+   */
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+
+  /**
+   * Opens the delete confirmation modal
+   */
+  const handleDeleteEquipment = useCallback(() => {
+    if (!formData) return;
+    setShowDeleteConfirmModal(true);
+  }, [formData]);
+
+  /**
+   * Performs the actual equipment deletion after confirmation
+   */
+  const confirmDeleteEquipment = useCallback(async () => {
+    if (!formData) return;
+
+    setIsSaving(true);
+    setShowDeleteConfirmModal(false);
+
+    try {
+      const result = await deleteEquipment(formData.id);
+
+      if (result.success) {
+        // Reset selection and UI state
+        setSelectEquipment(null);
+        setMessage("Successfully deleted equipment.");
+        setEquipmentUIState("idle");
+        setError(null);
+
+        // Refresh equipment list after deletion
+        if (refreshEquipments) {
+          await refreshEquipments();
+        }
+      } else {
+        throw new Error(result.error || "Failed to delete equipment");
+      }
+    } catch (error) {
+      console.error("Error deleting equipment:", error);
+      alert(
+        `Failed to delete equipment: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => setMessage(null), 3000);
+    }
+  }, [formData, setSelectEquipment, refreshEquipments]);
 
   return {
     formData,
@@ -359,10 +403,16 @@ export const useEquipmentForm = ({
     hasUnsavedChanges,
     isSaving,
     successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleRevertField,
     handleNewEquipmentSubmit,
+    handleDeleteEquipment,
+    confirmDeleteEquipment,
+    message,
+    error,
   };
 };

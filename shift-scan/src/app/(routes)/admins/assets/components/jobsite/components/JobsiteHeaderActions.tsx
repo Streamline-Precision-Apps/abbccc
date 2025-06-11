@@ -3,16 +3,17 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
 import React from "react";
 
 interface JobsiteHeaderActionsProps {
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
+  onDeleteJobsite: () => void;
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  setShowConfirmModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -26,65 +27,78 @@ export default function JobsiteHeaderActions({
   hasUnsavedChanges,
   isSaving,
   successfullyUpdated,
+  onDeleteJobsite,
+  setShowConfirmModal,
 }: JobsiteHeaderActionsProps) {
   return (
     <Holds
       background="white"
       position="row"
-      className="w-full h-full justify-between rounded-[10px] px-4"
+      className="w-full h-full justify-between rounded-[10px] px-4 relative"
     >
-      <Holds className="">
+      {successfullyUpdated && (
+        <Holds
+          background={"green"}
+          className="w-full h-full absolute top-0 left-0 rounded-[10px] justify-center items-center z-10"
+        >
+          <Texts size="sm">Successfully Updated!</Texts>
+        </Holds>
+      )}
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges ? undefined : onRegisterNew}
+        className="w-fit h-auto "
+      >
         <Texts
-          position="left"
-          text={hasUnsavedChanges ? "gray" : "link"}
           size="sm"
-          onClick={hasUnsavedChanges ? undefined : onRegisterNew}
-          style={{
-            pointerEvents: hasUnsavedChanges ? "none" : "auto",
-            opacity: hasUnsavedChanges ? 0.5 : 1,
-            cursor: hasUnsavedChanges ? "not-allowed" : "pointer",
-          }}
+          text={"link"}
+          className={hasUnsavedChanges ? "text-app-dark-gray" : ""}
         >
           Register New Jobsite
         </Texts>
-      </Holds>
+      </Buttons>
 
-      <Holds
-        position="row"
-        className="h-full flex items-center justify-between"
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={hasUnsavedChanges && !isSaving ? onDiscardChanges : undefined}
+        className="w-fit h-auto "
       >
         <Texts
-          onClick={hasUnsavedChanges ? onDiscardChanges : undefined}
-          position="left"
-          text={hasUnsavedChanges ? "link" : "gray"}
           size="sm"
-          style={{
-            pointerEvents: hasUnsavedChanges ? "auto" : "none",
-            opacity: hasUnsavedChanges ? 1 : 0.5,
-            cursor: hasUnsavedChanges ? "pointer" : "not-allowed",
-          }}
+          text={"link"}
+          className={!hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""}
         >
           Discard Changes
         </Texts>
+      </Buttons>
 
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
+        className="w-fit h-auto "
+      >
         <Texts
-          position="right"
-          text={!hasUnsavedChanges || isSaving ? "gray" : "link"}
           size="sm"
-          onClick={!hasUnsavedChanges || isSaving ? undefined : onSaveChanges}
-          style={{
-            pointerEvents: !hasUnsavedChanges || isSaving ? "none" : "auto",
-            opacity: !hasUnsavedChanges || isSaving ? 0.5 : 1,
-            cursor: !hasUnsavedChanges || isSaving ? "not-allowed" : "pointer",
-          }}
+          text={"link"}
+          className={!hasUnsavedChanges || isSaving ? "text-app-dark-gray" : ""}
         >
-          {isSaving
-            ? "Saving..."
-            : successfullyUpdated
-            ? "Saved!"
-            : "Save Changes"}
+          {isSaving ? "Saving..." : "Save Changes"}
         </Texts>
-      </Holds>
+      </Buttons>
+
+      <Buttons
+        background={"none"}
+        shadow={"none"}
+        onClick={onDeleteJobsite}
+        className="w-fit h-auto "
+      >
+        <Texts size="sm" text="link">
+          Delete Jobsite
+        </Texts>
+      </Buttons>
     </Holds>
   );
 }

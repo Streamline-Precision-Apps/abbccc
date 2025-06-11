@@ -741,7 +741,7 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 export const initialDocumentTags: Prisma.DocumentTagCreateInput[] = [
   {
     id: "dt1",
-    tagName: "Equipment",
+    tagName: "General",
   },
   {
     id: "dt2",
@@ -843,17 +843,17 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    DocumentTags: { connect: [{ id: "dt1" }] },
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
         model: "W900",
-        year: "2020",
-        licensePlate: "ABC123",
-        registrationExpiration: new Date("2025-01-01"),
-        mileage: 50000,
+        year: "2015",
+        licensePlate: "KW900",
+        registrationExpiration: new Date("2025-12-31"),
+        mileage: 100000,
       },
     },
-    DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
     id: "eq2",
@@ -1541,6 +1541,37 @@ export const initialFormApprovals: Prisma.FormApprovalCreateInput[] = [
 
 /* TIME SHEETS */
 export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
+  // --- Test data for hour viewer: 14 days of timesheets with varied hours ---
+  ...Array.from({ length: 14 }).map((_, i) => {
+    const day = new Date();
+    day.setHours(8, 0, 0, 0);
+    day.setDate(day.getDate() - (13 - i));
+    const startTime = new Date(day);
+    // Random hours between 6 and 12
+    const hoursWorked = Math.floor(Math.random() * 7) + 6; // 6 to 12 inclusive
+    const endTime = new Date(day);
+    endTime.setHours(8 + hoursWorked, 0, 0, 0);
+    return {
+      id: `ts_test_${i + 1}`,
+      date: new Date(day),
+      User: { connect: { id: "8" } },
+      Jobsite: { connect: { qrId: "j123" } },
+      CostCode: { connect: { name: "#01.20 Engineering Labor" } },
+      nu: "nu",
+      Fp: "fp",
+      startTime,
+      endTime,
+      comment: `Timesheet test entry for ${day
+        .toISOString()
+        .slice(0, 10)} (${hoursWorked} hrs)`,
+      statusComment: "Approved by manager",
+      location: "Site A",
+      status: FormStatus.APPROVED,
+      workType: WorkType.LABOR,
+      createdByAdmin: false,
+      createdAt: new Date(day),
+    };
+  }),
   {
     id: "ts1",
     date: new Date(),

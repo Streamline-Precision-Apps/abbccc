@@ -1,6 +1,8 @@
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
 
 interface EquipmentDescriptionFieldsProps {
   /** Equipment description value */
@@ -49,12 +51,25 @@ export default function EquipmentDescriptionFields({
           disable={isSaving}
         />
       </Holds>
+
       <Holds className="w-full h-full">
         <label htmlFor="SafetyDocuments" className="text-base">
           Safety Documents & Policies
         </label>
-        <Holds className="w-full h-full border-[3px] border-black rounded-[10px]">
-          {/* TODO: Implement safety documents upload/management */}
+        <Holds className="w-full h-full border-[3px] border-black rounded-[10px] p-3">
+          <Texts
+            size={"xs"}
+            text={"italic"}
+            className="text-center text-gray-500 "
+          >
+            Connect your Safety document and policy to your equipment to help
+            workers know which documents are required to operate the equipment.
+            <br />
+            <br />
+          </Texts>
+          <Texts size={"xs"} className="text-center">
+            Coming Soon!
+          </Texts>
         </Holds>
       </Holds>
     </Grids>

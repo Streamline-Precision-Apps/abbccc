@@ -9,13 +9,17 @@ interface DiscardChangesModalProps {
   confirmDiscardChanges: () => void;
   cancelDiscard: () => void;
   message?: string;
+  confirmationText?: string;
+  cancelText?: string;
 }
 
 const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
   isOpen,
   confirmDiscardChanges,
   cancelDiscard,
-  message = "You have unsaved equipment changes. Are you sure you want to discard them?",
+  message = "You have unsaved changes. Are you sure you want to discard them?",
+  confirmationText = "Yes, discard changes.",
+  cancelText = "No, go back!",
 }) => {
   return (
     <NModals
@@ -35,7 +39,7 @@ const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
             className="w-full p-1"
             onClick={confirmDiscardChanges}
           >
-            <Titles size="sm">Yes, continue.</Titles>
+            <Titles size="sm">{confirmationText}</Titles>
           </Buttons>
           <Buttons
             background="red"
@@ -43,7 +47,7 @@ const DiscardChangesModal: React.FC<DiscardChangesModalProps> = ({
             className="w-full p-1"
             onClick={cancelDiscard}
           >
-            <Titles size="sm">No, go back!</Titles>
+            <Titles size="sm">{cancelText}</Titles>
           </Buttons>
         </Holds>
       </Holds>

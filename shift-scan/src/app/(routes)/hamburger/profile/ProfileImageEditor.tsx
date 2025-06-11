@@ -14,6 +14,7 @@ import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { set } from "date-fns";
 import { useTranslations } from "next-intl";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function ProfileImageEditor({
   employee,
@@ -39,6 +40,7 @@ export default function ProfileImageEditor({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Camera management
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function ProfileImageEditor({
   };
 
   const saveImage = async () => {
+    setIsSaving(true);
     if (!imageSrc) return;
     try {
       // Submit to server
@@ -129,6 +132,8 @@ export default function ProfileImageEditor({
       resetState();
     } catch (error) {
       console.error("Error saving image:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -177,7 +182,15 @@ export default function ProfileImageEditor({
           resetState();
         }}
       >
-        <Holds background={"white"} className="p-5 h-full">
+        <Holds background={"white"} className={`p-5 h-full `}>
+          {isSaving && (
+            <Holds
+              background={"white"}
+              className="h-full w-full fixed top-0 left-0 z-50 bg-opacity-50 flex flex-col justify-center items-center"
+            >
+              <Spinner size={60} color={"border-app-dark-blue"} />
+            </Holds>
+          )}
           {/* Back Button */}
           <Holds>
             <Images
@@ -307,6 +320,7 @@ export default function ProfileImageEditor({
                     background="green"
                     className="w-full py-2"
                     onClick={saveImage}
+                    disabled={isSaving}
                   >
                     <Titles size={"h4"}>{t("Save")}</Titles>
                   </Buttons>
