@@ -154,13 +154,17 @@ export default function JobsiteBasicFields({
             {formData?.name || "N/A"}
           </Titles>
         </Holds>
-        <Holds className="w-full h-full">
+        <Holds className="w-full h-full justify-center">
           <Holds
             position={"right"}
             className={`w-[50px] h-[50px] border-[3px] border-black rounded-[10px] cursor-pointer hover:opacity-80 hover:border-blue-900 transition-opacity z-20`}
             onClick={printQRCode}
           >
-            <Tooltips content="Click to print QR code" delay={0}>
+            <Tooltips
+              content="Click to print QR code"
+              delay={0}
+              position="left"
+            >
               <img
                 src={qrCodeUrl}
                 alt="QR Code"

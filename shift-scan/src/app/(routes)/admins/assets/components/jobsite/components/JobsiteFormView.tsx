@@ -45,7 +45,7 @@ export default function JobsiteFormView({
   return (
     <Holds
       background={"white"}
-      className="w-full h-full rounded-[10px] p-3 px-5 relative"
+      className="w-full h-full rounded-[10px] p-3 px-5 relative "
     >
       {/* Loading overlay - only show when saving */}
       {isSaving && (

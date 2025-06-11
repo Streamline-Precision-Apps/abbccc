@@ -154,7 +154,7 @@ export default function EquipmentFormView({
   return (
     <Holds
       background={"white"}
-      className="w-full h-full rounded-[10px] p-3 px-5 relative"
+      className="w-full h-full rounded-[10px] p-3 px-5 relative overflow-y-auto"
     >
       {/* Loading overlay - only show when saving */}
       {isSaving && (
@@ -163,8 +163,11 @@ export default function EquipmentFormView({
         </Holds>
       )}
 
-      <Grids className="w-full h-full grid-rows-[50px_1fr]">
-        <Holds position={"row"} className="w-full h-full justify-between">
+      <Grids className="w-full h-full grid-rows-[50px_1fr] overflow-auto no-scrollbar ">
+        <Holds
+          position={"row"}
+          className="w-full h-full row-span-1 justify-between "
+        >
           <Holds className="w-full">
             <Titles position={"left"} size={"xl"} className="font-bold">
               {formData?.name || equipment.name}
@@ -176,7 +179,11 @@ export default function EquipmentFormView({
               className={`w-[50px] h-[50px] border-[3px] border-black rounded-[10px] cursor-pointer hover:opacity-80 hover:border-blue-900 transition-opacity`}
               onClick={printQRCode}
             >
-              <Tooltips content="Click to print QR code" delay={0}>
+              <Tooltips
+                content="Click to print QR code"
+                delay={0}
+                position="left"
+              >
                 <img
                   src={qrCodeUrl}
                   alt="QR Code"
@@ -187,8 +194,8 @@ export default function EquipmentFormView({
           </Holds>
         </Holds>
 
-        <Holds className="w-full h-full">
-          <Grids className="w-full h-full grid-cols-[1fr_1fr] gap-4">
+        <Holds className="w-full h-full row-span-1 overflow-hidden">
+          <Grids className="w-full  grid-cols-[1fr_1fr] gap-4 overflow-auto no-scrollbar">
             <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
               <Holds>
                 <EquipmentBasicFields
@@ -209,7 +216,7 @@ export default function EquipmentFormView({
               </Holds>
             </Holds>
 
-            <Holds className="w-full h-full">
+            <Holds className="w-full h-full col-span-1 overflow-y-scroll no-scrollbar">
               <EquipmentDescriptionFields
                 description={formData?.description || ""}
                 onDescriptionChange={(value) =>
