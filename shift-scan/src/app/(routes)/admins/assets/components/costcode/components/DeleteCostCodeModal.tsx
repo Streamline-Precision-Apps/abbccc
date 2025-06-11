@@ -29,6 +29,12 @@ const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
     onClose();
   }, [onClose]);
 
+  const deleteQuestion = {
+    text: "Are you sure you want to delete the cost code ",
+    itemDeleting: <span className="font-semibold">{`${costCodeName}?`}</span>,
+    text2: <span className="font-bold">This action cannot be undone.</span>,
+  };
+
   return (
     <NModals
       isOpen={isOpen}
@@ -40,11 +46,11 @@ const DeleteCostCodeModal: React.FC<DeleteCostCodeModalProps> = ({
         <Contents width="section" className="h-full">
           <Holds className="flex h-1/2">
             <Texts size="p5">
-              Are you sure you want to delete the cost code{" "}
-              {costCodeName && (
-                <span className="font-bold">"{costCodeName}"</span>
-              )}
-              ? This action cannot be undone.
+              {`
+              ${deleteQuestion.text}
+              ${deleteQuestion.itemDeleting}
+              ${deleteQuestion.text2}
+              `}
             </Texts>
             <Texts size="xs" className="text-gray-500 mt-2">
               This will only work if the cost code is not being used in any

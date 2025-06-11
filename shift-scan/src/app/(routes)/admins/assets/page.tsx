@@ -82,7 +82,10 @@ export default function Assets() {
   // State for creation mode
   const [creationHandlers, setCreationHandlers] = useState<{
     handleCostCodeToggle: (costCodeId: string, costCodeName: string) => void;
-    handleCostCodeToggleAll: (costCodes: any[], selectAll: boolean) => void;
+    handleCostCodeToggleAll: (
+      costCodes: CostCodeSummary[],
+      selectAll: boolean
+    ) => void;
     formData: { costCodes: Array<{ id: string; name: string }> };
   } | null>(null);
   const [pendingAssetChange, setPendingAssetChange] = useState<
