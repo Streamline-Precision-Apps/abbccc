@@ -16,7 +16,7 @@ model PdfDocument {
 }
 
 model DocumentTag {
-  id        String        @id @default(cuid())
+  id        String        @id @default(uuid())
   tagName   String
   Equipment Equipment[]   @relation("DocumentTagToEquipment")
   Documents PdfDocument[] @relation("DocumentTagToPdfDocument")

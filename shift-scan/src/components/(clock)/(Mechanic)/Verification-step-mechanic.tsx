@@ -30,6 +30,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -96,7 +97,7 @@ export default function MechanicVerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id);
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", costCode);
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);

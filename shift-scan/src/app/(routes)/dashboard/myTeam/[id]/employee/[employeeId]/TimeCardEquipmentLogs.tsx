@@ -50,11 +50,15 @@ type EquipmentLogUpdate = {
   endTime?: Date;
 };
 
+// Add focusIds to props
 type TimeCardEquipmentLogsProps = {
   edit: boolean;
   manager: string;
   equipmentLogs: EquipmentLogsData;
   onDataChange: (data: EquipmentLogUpdate[]) => void;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 export default function TimeCardEquipmentLogs({
@@ -62,8 +66,62 @@ export default function TimeCardEquipmentLogs({
   manager,
   equipmentLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardEquipmentLogsProps) {
   const t = useTranslations("MyTeam.TimeCardEquipmentLogs");
+
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
+
+  // Create a unique key for each input field
+  const getInputKey = (logId: string, fieldName: string) => {
+    return `${logId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    logId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(logId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (logId: string, fieldName: string, value: any) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, fieldName)]: value,
+    }));
+  };
+
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (logId: string, field: string) => {
+    const key = getInputKey(logId, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      // Find the log and update it with the local value
+      const log = editedEquipmentLogs.find((l) => l.id === logId);
+      if (log) {
+        if (field === "startTime" || field === "endTime") {
+          handleTimeChange(logId, field, value as string);
+        }
+      }
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
 
   const [editedEquipmentLogs, setEditedEquipmentLogs] = useState<
     ProcessedEquipmentLog[]
@@ -82,12 +140,19 @@ export default function TimeCardEquipmentLogs({
         );
       })
       .map((log) => {
-        const start = parse(
-          log.startTime ?? "",
-          "yyyy-MM-dd HH:mm:ss",
-          new Date()
+        // Parse as UTC and convert to local time
+        const startUTC = new Date(log.startTime + "Z");
+        const endUTC = new Date(log.endTime + "Z");
+        const start = new Date(
+          startUTC.getTime() +
+            startUTC.getTimezoneOffset() * 60000 -
+            new Date().getTimezoneOffset() * 60000
         );
-        const end = parse(log.endTime ?? "", "yyyy-MM-dd HH:mm:ss", new Date());
+        const end = new Date(
+          endUTC.getTime() +
+            endUTC.getTimezoneOffset() * 60000 -
+            new Date().getTimezoneOffset() * 60000
+        );
 
         const durationMinutes = differenceInMinutes(end, start);
         const durationHours = differenceInHours(end, start);
@@ -119,6 +184,9 @@ export default function TimeCardEquipmentLogs({
     }
   }, [equipmentLogs, processLogs, editedEquipmentLogs.length]);
 
+  // If you use local state, sync it here
+  // setEditedEquipmentLogs(equipmentLogs ?? []);
+
   const handleTimeChange = useCallback(
     (id: string, field: "startTime" | "endTime", timeString: string) => {
       const updatedLogs = editedEquipmentLogs.map((log) => {
@@ -130,18 +198,15 @@ export default function TimeCardEquipmentLogs({
               "yyyy-MM-dd HH:mm",
               new Date()
             );
-
             const start =
               field === "startTime" ? newDateTime : log.originalStart;
             const end = field === "endTime" ? newDateTime : log.originalEnd;
-
             const durationMinutes = differenceInMinutes(end, start);
             const durationHours = differenceInHours(end, start);
             const remainingMinutes = durationMinutes % 60;
-
             return {
               ...log,
-              [field]: timeString, // Keep display format
+              [field]: timeString,
               usageTime: `${
                 durationHours > 0 ? `${durationHours} hrs ` : ""
               }${remainingMinutes} min`,
@@ -155,19 +220,33 @@ export default function TimeCardEquipmentLogs({
         }
         return log;
       });
-
       setEditedEquipmentLogs(updatedLogs);
 
-      // Prepare the update data with proper Date objects
-      const updateData = updatedLogs.map((log) => ({
-        id: log.id,
-        startTime: log.originalStart,
-        endTime: log.originalEnd,
+      // Reconstruct the nested EquipmentLogsData structure with updated times
+      const updatedNested = equipmentLogs.map((group) => ({
+        ...group,
+        EmployeeEquipmentLogs: group.EmployeeEquipmentLogs.map((log) => {
+          const updated = updatedLogs.find((l) => l.id === log.id);
+          if (updated) {
+            return {
+              ...log,
+              startTime: updated.originalStart
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
+              endTime: updated.originalEnd
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
+            };
+          }
+          return log;
+        }),
       }));
-
-      onDataChange(updateData);
+      // Cast to any to satisfy the onDataChange signature, which expects EquipmentLogUpdate[]
+      onDataChange(updatedNested as any);
     },
-    [editedEquipmentLogs, onDataChange]
+    [editedEquipmentLogs, equipmentLogs, onDataChange]
   );
 
   const isEmptyData = editedEquipmentLogs.length === 0;
@@ -206,72 +285,114 @@ export default function TimeCardEquipmentLogs({
                 )}
               </Grids>
 
-              {editedEquipmentLogs.map((log) => (
-                <Holds
-                  key={log.id}
-                  className="border-black border-[3px] rounded-lg bg-white mb-2"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="w-full h-full text-left"
+              {/* For each row, if isReviewYourTeam is true, wrap in a button that toggles the id in focusIds */}
+              {editedEquipmentLogs.map((log) => {
+                const isFocused = focusIds.includes(log.id);
+                const handleToggleFocus = () => {
+                  if (isFocused) {
+                    setFocusIds(focusIds.filter((id) => id !== log.id));
+                  } else {
+                    setFocusIds([...focusIds, log.id]);
+                  }
+                };
+                return (
+                  <Holds
+                    key={log.id}
+                    background={isFocused ? "orange" : "white"}
+                    className={`relative border-black border-[3px] rounded-lg mb-2 
+                    ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
-                    <Grids cols={"4"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-3 w-full h-full">
-                        <Inputs
-                          value={log.equipmentName}
-                          disabled={true}
-                          className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
-                          readOnly
-                        />
-                      </Holds>
-                      {!edit ? (
-                        <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                    {isReviewYourTeam && (
+                      <div
+                        className="absolute top-0 left-0 w-full h-full z-10 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleToggleFocus();
+                        }}
+                      />
+                    )}
+                    <Buttons
+                      shadow={"none"}
+                      background={"none"}
+                      className="w-full h-full text-left"
+                    >
+                      <Grids cols={"4"} className="w-full h-full">
+                        <Holds className="col-start-1 col-end-3 w-full h-full">
+                          {" "}
                           <Inputs
-                            value={log.usageTime}
+                            value={log.equipmentName}
                             disabled={true}
-                            className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
+                            className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
+                            background={isFocused ? "orange" : "white"}
                             readOnly
                           />
                         </Holds>
-                      ) : (
-                        <>
-                          <Holds className="col-start-3 col-end-4 w-full h-full border-l-black border-l-[3px]">
+                        {!edit ? (
+                          <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                            {" "}
                             <Inputs
-                              type="time"
-                              value={log.startTime}
-                              onChange={(e) =>
-                                handleTimeChange(
+                              value={log.usageTime}
+                              disabled={true}
+                              className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
+                              background={isFocused ? "orange" : "white"}
+                              readOnly
+                            />
+                          </Holds>
+                        ) : (
+                          <>
+                            <Holds className="col-start-3 col-end-4 w-full h-full border-l-black border-l-[3px]">
+                              {" "}
+                              <Inputs
+                                type="time"
+                                value={getDisplayValue(
                                   log.id,
                                   "startTime",
-                                  e.target.value
-                                )
-                              }
-                              disabled={!edit}
-                              className="text-xs border-none h-full rounded-none justify-center text-center"
-                            />
-                          </Holds>
-                          <Holds className="col-start-4 col-end-5 w-full h-full border-l-black border-l-[3px]">
-                            <Inputs
-                              type="time"
-                              value={log.endTime}
-                              onChange={(e) =>
-                                handleTimeChange(
+                                  log.startTime
+                                )}
+                                onChange={(e) =>
+                                  handleLocalChange(
+                                    log.id,
+                                    "startTime",
+                                    e.target.value
+                                  )
+                                }
+                                onBlur={() => handleBlur(log.id, "startTime")}
+                                disabled={!edit}
+                                background={isFocused ? "orange" : "white"}
+                                className="text-xs border-none h-full rounded-none justify-center text-center"
+                              />
+                            </Holds>
+                            <Holds className="col-start-4 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                              {" "}
+                              <Inputs
+                                type="time"
+                                value={getDisplayValue(
                                   log.id,
                                   "endTime",
-                                  e.target.value
-                                )
-                              }
-                              disabled={!edit}
-                              className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
-                            />
-                          </Holds>
-                        </>
-                      )}
-                    </Grids>
-                  </Buttons>
-                </Holds>
-              ))}
+                                  log.endTime
+                                )}
+                                background={isFocused ? "orange" : "white"}
+                                onChange={(e) =>
+                                  handleLocalChange(
+                                    log.id,
+                                    "endTime",
+                                    e.target.value
+                                  )
+                                }
+                                onBlur={() => handleBlur(log.id, "endTime")}
+                                disabled={!edit}
+                                className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
+                              />
+                            </Holds>
+                          </>
+                        )}
+                      </Grids>
+                    </Buttons>
+                  </Holds>
+                );
+              })}
             </>
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">

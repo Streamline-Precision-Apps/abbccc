@@ -1,5 +1,4 @@
 "use client";
-
 import { updateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { useNotification } from "@/app/context/NotificationContext";
 import { Bases } from "@/components/(reusable)/bases";
@@ -10,11 +9,11 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { z } from "zod";
 import { differenceInSeconds, parseISO } from "date-fns";
 import {
-  createRefuelEquipmentLog,
   deleteEmployeeEquipmentLog,
+  deleteRefuelLog,
+  updateRefuelLog,
 } from "@/actions/truckingActions";
 import Spinner from "@/components/(animations)/spinner";
 import { NewTab } from "@/components/(reusable)/newTabs";
@@ -24,157 +23,122 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentStatus, FormStatus } from "@/lib/types";
 
-type Refueled = {
-  id: string;
-  employeeEquipmentLogId: string | null;
-  truckingLogId: string | null;
-  gallonsRefueled: number | null;
-  milesAtFueling: number | null;
-  tascoLogId: string | null;
-};
+import {
+  UnifiedEquipmentState,
+  EmployeeEquipmentLogData,
+  EquipmentLog,
+  RefuelLogData,
+  Refueled,
+  EquipmentState,
+} from "./types";
 
-const maintenanceSchema = z.object({
-  id: z.string().optional(),
-  equipmentIssue: z.string().nullable(),
-  additionalInfo: z.string().nullable(), // assuming this might be null
-});
-const EquipmentLogSchema = z.object({
-  id: z.string(),
-  equipmentId: z.string(),
-  employeeId: z.string(),
-  startTime: z.string(),
-  endTime: z.string(),
-  comment: z.string().optional(),
-  isFinished: z.boolean(),
-  equipment: z.object({
-    name: z.string(),
-    status: z.string().optional(),
-  }),
-  maintenanceId: maintenanceSchema.nullable(),
-  fullyOperational: z.boolean(),
-});
-type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
+// Helper function to transform API response to form state
+function transformApiToFormState(
+  apiData: EmployeeEquipmentLogData
+): EquipmentLog {
+  return {
+    id: apiData.id,
+    equipmentId: apiData.equipmentId,
+    employeeId: apiData.employeeId,
+    startTime: apiData.startTime || "",
+    endTime: apiData.endTime || "",
+    comment: apiData.comment || "",
+    isFinished: apiData.isFinished,
+    equipment: {
+      name: apiData.Equipment.name,
+      status: apiData.Equipment.state,
+    },
+    maintenanceId: apiData.MaintenanceId
+      ? {
+          id: apiData.MaintenanceId.id,
+          equipmentIssue: apiData.MaintenanceId.equipmentIssue,
+          additionalInfo: apiData.MaintenanceId.additionalInfo,
+        }
+      : null,
+    refuelLogs: apiData.RefuelLogs
+      ? {
+          id: apiData.RefuelLogs.id,
+          gallonsRefueled: apiData.RefuelLogs.gallonsRefueled,
+        }
+      : null,
+
+    fullyOperational: !apiData.MaintenanceId && apiData.isFinished,
+  };
+}
+
+// Initial state factory
+function createInitialState(): UnifiedEquipmentState {
+  return {
+    isLoading: true,
+    hasChanged: false,
+    tab: 1,
+    formState: {
+      id: "",
+      equipmentId: "",
+      employeeId: "",
+      startTime: "",
+      endTime: "",
+      comment: "",
+      isFinished: false,
+      equipment: {
+        name: "",
+        status: "OPERATIONAL" as EquipmentStatus, // Default to OPERATIONAL
+      },
+      maintenanceId: null,
+      refuelLogs: null,
+      fullyOperational: true,
+    },
+    markedForRefuel: false,
+    error: null,
+  };
+}
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
   const id = params.id;
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
-  const [isLoading, setIsLoading] = useState(true);
-  const [refuelLog, setRefuelLog] = useState<Refueled[]>([]);
-  const [formState, setFormState] = useState({
-    id: "",
-    equipmentId: "",
-    employeeId: "",
-    startTime: "",
-    endTime: "",
-    comment: "",
-    isFinished: false,
-    equipment: {
-      name: "",
-      status: "OPERATIONAL" as EquipmentStatus,
-    },
-    maintenanceId: null,
-    fullyOperational: false,
-  } as EquipmentLog);
-
-  const [originalState, setOriginalState] = useState(formState);
-  const [hasChanged, setHasChanged] = useState<boolean>(false);
-  const [refueledLogs, setRefueledLogs] = useState<boolean>();
-  const [tab, setTab] = useState(1);
-
-  const deepCompareObjects = useCallback(
-    <T extends Record<string, unknown>>(obj1: T, obj2: T): boolean => {
-      if (obj1 === obj2) return true;
-
-      const keys1 = Object.keys(obj1);
-      const keys2 = Object.keys(obj2);
-
-      if (keys1.length !== keys2.length) return false;
-
-      for (const key of keys1) {
-        const val1 = obj1[key] as string;
-        const val2 = obj2[key] as string;
-        const areObjects = isObject(val1) && isObject(val2);
-
-        if (
-          (areObjects && !deepCompareObjects(val1, val2)) ||
-          (!areObjects && val1 !== val2)
-        ) {
-          return false;
-        }
-      }
-
-      return true;
-    },
-    []
+  const [state, setState] = useState<UnifiedEquipmentState>(
+    createInitialState()
   );
 
-  const isObject = (object: string) => {
-    return object != null && typeof object === "object";
-  };
-
-  useEffect(() => {
-    const changed = !deepCompareObjects(formState, originalState);
-    setHasChanged(changed);
-  }, [formState, originalState, deepCompareObjects]);
-
+  // Fetch equipment log data
   useEffect(() => {
     const fetchEqLog = async () => {
       try {
-        setIsLoading(true);
+        setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
         const response = await fetch(`/api/getEqUserLogs/${id}`);
-        const data = await response.json();
-
-        const processedData = {
-          id: data.id || "",
-          equipmentId: data.equipmentId || "",
-          employeeId: data.employeeId || "",
-          startTime: data.startTime.toString(),
-          endTime: data.endTime
-            ? data.endTime.toString()
-            : new Date().toISOString(),
-          comment: data.comment || "",
-          isFinished: data.isFinished || false,
-          refuelLogs: (data.RefuelLogs as Refueled[]) || [],
-          equipment: {
-            name: data.Equipment?.name || "",
-            status: data.Equipment?.status || "OPERATIONAL",
-          },
-          maintenanceId: data.MaintenanceId
-            ? {
-                id: data.MaintenanceId.id || "",
-                equipmentIssue: data.MaintenanceId.equipmentIssue || "",
-                additionalInfo: data.MaintenanceId.additionalInfo || "",
-              }
-            : null,
-          fullyOperational:
-            data.isFinished && data.Equipment.status === "OPERATIONAL"
-              ? true
-              : false,
-        } as EquipmentLog;
-
-        if (data.isFinished && data.Equipment.status === "OPERATIONAL") {
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch equipment log: ${response.statusText}`
+          );
         }
 
-        const result = EquipmentLogSchema.safeParse(processedData);
-        if (!result.success) {
-          console.error("Schema validation failed:", result.error);
-          return;
+        const apiData = (await response.json()) as EmployeeEquipmentLogData;
+        const formState = transformApiToFormState(apiData);
+
+        // If the log isn't finished, set the end time to now when opening the form
+        if (!apiData.isFinished) {
+          formState.endTime = new Date().toISOString();
         }
 
-        setFormState(processedData);
-        setOriginalState(processedData);
-
-        const isRefueled = data.refueled.length > 0;
-
-        console.log("isRefueled: ", isRefueled);
-
-        setRefueledLogs(isRefueled);
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          formState: formState,
+          markedForRefuel: Boolean(formState.refuelLogs),
+        }));
       } catch (error) {
         console.error("Error fetching equipment log:", error);
-      } finally {
-        setIsLoading(false);
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch equipment log",
+        }));
       }
     };
 
@@ -188,93 +152,145 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       | number
       | boolean
       | FormStatus
-      | EquipmentStatus
+      | EquipmentState
       | Refueled
       | null
   ) => {
-    if (field === "Equipment.status") {
-      setFormState((prev) => {
-        const newState = {
+    setState((prev) => {
+      if (field.startsWith("equipment.")) {
+        const equipmentField = field.split(".")[1];
+        return {
           ...prev,
-          equipment: {
-            ...prev.equipment,
-            status: value as EquipmentStatus,
+          hasChanged: true,
+          formState: {
+            ...prev.formState,
+            equipment: {
+              ...prev.formState.equipment,
+              [equipmentField]: value,
+            },
           },
         };
-        return newState;
-      });
-    } else if (field.startsWith("maintenanceId.")) {
-      const maintenanceField = field.split(".")[1];
-      setFormState((prev) => ({
+      }
+
+      if (field.startsWith("maintenanceId.")) {
+        const maintenanceField = field.split(".")[1];
+        return {
+          ...prev,
+          hasChanged: true,
+          formState: {
+            ...prev.formState,
+            maintenanceId: {
+              ...(prev.formState.maintenanceId || {
+                id: "",
+                equipmentIssue: "",
+                additionalInfo: null,
+              }),
+              [maintenanceField]: value,
+            },
+          },
+        };
+      }
+
+      return {
         ...prev,
-        maintenanceId: {
-          ...(prev.maintenanceId || {
-            id: "",
-            equipmentIssue: "",
-            additionalInfo: null,
-          }),
-          [maintenanceField]: value,
+        hasChanged: true,
+        formState: {
+          ...prev.formState,
+          [field]: value,
         },
-      }));
-    } else {
-      setFormState((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
+      };
+    });
   };
 
-  const AddRefuelLog = async () => {
-    if (!formState.id) {
+  const addRefuelLog = async (gallons: number, existingLogId?: string) => {
+    if (!state.formState.id) {
       setNotification(t("NoEquipmentLog"), "error");
       return;
     }
-    try {
-      const formData = new FormData();
-      formData.append("employeeEquipmentLogId", formState.id);
-      const response = await createRefuelEquipmentLog(formData);
 
-      if (response) {
-        setRefuelLog((prev) => [
-          ...prev,
-          {
-            id: response.id,
-            employeeEquipmentLogId: response.employeeEquipmentLogId,
-            gallonsRefueled: response.gallonsRefueled,
-            milesAtFueling: null,
-            truckingLogId: null, // add this property
-            tascoLogId: null, // add this property
-          },
-        ]);
+    try {
+      // If an existingLogId is provided, update the existing log
+      if (existingLogId) {
+        const formData = new FormData();
+        formData.append("id", existingLogId);
+        formData.append("gallonsRefueled", gallons.toString());
+
+        const response = await updateRefuelLog(formData);
+
+        if (response) {
+          // Update the existing log in state
+          setState((prev) => ({
+            ...prev,
+            formState: {
+              ...prev.formState,
+              refuelLogs: {
+                ...prev.formState.refuelLogs!,
+                gallonsRefueled: gallons,
+              },
+            },
+            hasChanged: true,
+          }));
+
+          setNotification("Refuel log updated successfully", "success");
+        }
       }
     } catch (error) {
-      console.log("error adding state Mileage", error);
+      console.error("Error managing refuel log:", error);
+      setNotification("Failed to save refuel log", "error");
     }
   };
+  useEffect(() => {
+    console.log(
+      "fullyOperational state changed:",
+      state.formState.fullyOperational
+    );
+  }, [state.formState.fullyOperational]);
 
   const handleChangeRefueled = () => {
-    if (refueledLogs) {
-      setRefueledLogs(false);
-    } else {
-      setRefueledLogs(true);
-    }
+    setState((prev) => ({
+      ...prev,
+      markedForRefuel: !prev.markedForRefuel,
+      hasChanged: true,
+    }));
   };
-
   const handleFullOperational = () => {
-    if (formState.fullyOperational === true) {
-      handleFieldChange("fullyOperational", false);
-    } else {
-      handleFieldChange("fullyOperational", true);
-    }
+    setState((prev) => ({
+      ...prev,
+      formState: {
+        ...prev.formState,
+        fullyOperational: !prev.formState.fullyOperational,
+      },
+      hasChanged: true,
+    }));
   };
-
   const deleteLog = async () => {
     try {
-      await deleteEmployeeEquipmentLog(formState.id);
-      setFormState({
-        ...formState,
-        maintenanceId: null,
-      });
+      // Check if there's a refuel log to delete
+      if (state.formState.refuelLogs) {
+        // Call the deleteRefuelLog server action with the ID of the refuel log
+        await deleteRefuelLog(state.formState.refuelLogs.id);
+
+        // Update the state to reflect the deletion
+        setState((prev) => ({
+          ...prev,
+          formState: {
+            ...prev.formState,
+            refuelLogs: null, // Set to null since we've deleted the refuel log
+          },
+          hasChanged: true,
+        }));
+
+        setNotification("Refuel log removed", "success");
+      }
+    } catch (error) {
+      console.error("Error deleting refuel log:", error);
+      setNotification("Failed to delete refuel log", "error");
+    }
+  };
+
+  const deleteEquipmentLog = async () => {
+    try {
+      await deleteEmployeeEquipmentLog(state.formState.id);
       setNotification(t("Deleted"), "success");
       router.replace("/dashboard/equipment");
     } catch (error) {
@@ -286,74 +302,161 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const saveEdits = async () => {
     try {
       const formData = new FormData();
-      Object.entries(formState).forEach(([key, value]) => {
-        if (key === "equipment") {
+
+      // Add basic form field data
+      Object.entries(state.formState).forEach(([key, value]) => {
+        if (
+          key === "equipment" ||
+          key === "maintenanceId" ||
+          key === "refuelLogs"
+        ) {
+          // Handle these separately
         } else {
           formData.append(key, String(value));
         }
       });
-      formData.set(
-        "Equipment.status",
-        formState.equipment.status || "OPERATIONAL"
-      );
-      formData.append(
-        "equipmentIssue",
-        formState.maintenanceId?.equipmentIssue || ""
-      );
-      formData.append(
-        "additionalInfo",
-        formState.maintenanceId?.additionalInfo || ""
-      );
 
-      console.log("Form Data: ", formData);
+      // Add equipment status
+      formData.append("Equipment.status", state.formState.equipment.status);
+
+      // Handle maintenance data
+      if (!state.formState.fullyOperational) {
+        if (state.formState.maintenanceId) {
+          // Add maintenance fields
+          if (state.formState.maintenanceId.id) {
+            formData.append("maintenanceId", state.formState.maintenanceId.id);
+          }
+          formData.append(
+            "equipmentIssue",
+            state.formState.maintenanceId.equipmentIssue || ""
+          );
+          formData.append(
+            "additionalInfo",
+            state.formState.maintenanceId.additionalInfo || ""
+          );
+        }
+      }
+
+      // Handle refuel log data
+      if (
+        state.formState.refuelLogs === null &&
+        state.markedForRefuel === false
+      ) {
+        formData.append("disconnectRefuelLog", "true");
+      } else if (state.formState.refuelLogs) {
+        formData.append(
+          "refuelLogId",
+          state.formState.refuelLogs.id.startsWith("temp-")
+            ? "__NULL__" // This indicates we need to create a new log
+            : state.formState.refuelLogs.id
+        );
+        formData.append(
+          "gallonsRefueled",
+          state.formState.refuelLogs.gallonsRefueled?.toString() || "__NULL__"
+        );
+      }
+
+      // Add standard fields
+      formData.append("priority", "LOW");
+      formData.append("repaired", String(false));
+
+      // Make a single server call to update everything
       await updateEmployeeEquipmentLog(formData);
-      setNotification(t("Saved"), "success");
+
+      setState((prev) => ({
+        ...prev,
+        hasChanged: false,
+      }));
+
       router.replace("/dashboard/equipment");
+      setNotification(t("Saved"), "success");
     } catch (error) {
       console.error("Error saving equipment log:", error);
       setNotification(t("FailedToSave"), "error");
     }
   };
 
-  const start = parseISO(formState.startTime);
-  const end = formState.endTime ? parseISO(formState.endTime) : new Date();
-  const diffInSeconds = differenceInSeconds(end, start);
-  const hours = Math.floor(diffInSeconds / 3600);
-  const minutes = Math.floor((diffInSeconds % 3600) / 60);
-  const seconds = diffInSeconds % 60;
-  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  // Calculate formatted time
+  const formattedTime = (() => {
+    if (!state.formState.startTime) return "00:00:00";
 
-  // validation function
+    const start = parseISO(state.formState.startTime);
+    const end = state.formState.endTime
+      ? parseISO(state.formState.endTime)
+      : new Date();
+    const diffInSeconds = differenceInSeconds(end, start);
+
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+
+    return `${hours}h ${minutes}m`;
+  })();
+
+  // Validation function
   const isFormValid = useCallback(() => {
     return (
       // Either equipment is fully operational
-      formState.fullyOperational ||
+      state.formState.fullyOperational ||
       // OR maintenance request is properly filled out
-      (formState.maintenanceId?.equipmentIssue &&
-        formState.maintenanceId?.equipmentIssue.length > 0 &&
-        formState.maintenanceId?.additionalInfo &&
-        formState.maintenanceId?.additionalInfo.length > 0 &&
-        formState.equipment.status !== "OPERATIONAL")
+      (state.formState.maintenanceId?.equipmentIssue &&
+        state.formState.maintenanceId?.equipmentIssue.length > 0 &&
+        state.formState.maintenanceId?.additionalInfo &&
+        state.formState.maintenanceId?.additionalInfo.length > 0 &&
+        state.formState.equipment.status !== "OPERATIONAL")
     );
   }, [
-    formState.fullyOperational,
-    formState.maintenanceId?.equipmentIssue,
-    formState.maintenanceId?.additionalInfo,
-    formState.equipment.status,
+    state.formState.fullyOperational,
+    state.formState.maintenanceId?.equipmentIssue,
+    state.formState.maintenanceId?.additionalInfo,
+    state.formState.equipment.status,
   ]);
 
-  useEffect(() => {
-    console.log("Checking for changes...");
-    console.log("Current formState:", formState);
-    console.log("Current originalState:", originalState);
+  const setTab = (newTab: number) => {
+    setState((prev) => ({ ...prev, tab: newTab }));
+  };
 
-    const changed = !deepCompareObjects(formState, originalState);
-    console.log("Change detected:", changed);
+  const setRefuelLog = (
+    updater:
+      | ((prev: RefuelLogData | null) => RefuelLogData | null)
+      | RefuelLogData
+      | null
+  ) => {
+    setState((prev) => {
+      const newRefuelLog =
+        typeof updater === "function"
+          ? updater(prev.formState.refuelLogs)
+          : updater;
 
-    setHasChanged(changed);
-  }, [formState, originalState, deepCompareObjects]);
+      return {
+        ...prev,
+        formState: {
+          ...prev.formState,
+          refuelLogs: newRefuelLog,
+        },
+        refueledLogs: Boolean(newRefuelLog), // Update the refueledLogs flag based on whether there is a refuel log
+        hasChanged: true,
+      };
+    });
+  };
+
+  // Show error state
+  if (state.error) {
+    return (
+      <Bases>
+        <Contents>
+          <Holds className="h-full w-full justify-center items-center">
+            <Titles size="h3">Error: {state.error}</Titles>
+            <Buttons
+              onClick={() => router.push("/dashboard/equipment")}
+              background="lightBlue"
+            >
+              <Titles size="h5">Back to Equipment</Titles>
+            </Buttons>
+          </Holds>
+        </Contents>
+      </Bases>
+    );
+  }
 
   return (
     <Bases>
@@ -362,17 +465,17 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           <Holds
             background="white"
             className={
-              isLoading
+              state.isLoading
                 ? "row-span-1 h-full justify-center animate-pulse"
                 : "row-span-1 h-full justify-center"
             }
           >
             <TitleBoxes onClick={() => router.push("/dashboard/equipment")}>
               <Titles size={"h2"}>
-                {isLoading
+                {state.isLoading
                   ? "Loading..."
-                  : `${formState.equipment.name.slice(0, 16)}${
-                      formState.equipment.name.length > 16 ? "..." : ""
+                  : `${state.formState.equipment.name.slice(0, 16)}${
+                      state.formState.equipment.name.length > 16 ? "..." : ""
                     }`}
               </Titles>
             </TitleBoxes>
@@ -382,26 +485,26 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               <Holds
                 position={"row"}
                 className={`row-start-1 row-end-2 h-full w-full gap-1 ${
-                  isLoading ? "animate-pulse" : ""
+                  state.isLoading ? "animate-pulse" : ""
                 }`}
               >
                 <NewTab
-                  isActive={tab === 1}
+                  isActive={state.tab === 1}
                   onClick={() => setTab(1)}
                   titleImage="/form.svg"
                   titleImageAlt=""
                   isComplete={true}
-                  isLoading={isLoading}
+                  isLoading={state.isLoading}
                 >
                   Usage Data
                 </NewTab>
                 <NewTab
-                  isActive={tab === 2}
+                  isActive={state.tab === 2}
                   onClick={() => setTab(2)}
                   titleImage="/broken.svg"
                   titleImageAlt=""
                   isComplete={true}
-                  isLoading={isLoading}
+                  isLoading={state.isLoading}
                 >
                   Maintenance Log
                 </NewTab>
@@ -409,42 +512,40 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               <Holds
                 background="white"
                 className={
-                  isLoading
+                  state.isLoading
                     ? "row-start-2 row-end-11 h-full rounded-t-none animate-pulse"
                     : "row-start-2 row-end-11 h-full rounded-t-none "
                 }
               >
-                {isLoading ? (
-                  <>
-                    <Holds className="h-full w-full justify-center">
-                      <Spinner />
-                    </Holds>
-                  </>
+                {state.isLoading ? (
+                  <Holds className="h-full w-full justify-center">
+                    <Spinner />
+                  </Holds>
                 ) : (
                   <Contents width={"section"}>
                     <Grids rows={"8"} gap={"5"} className="h-full w-full pb-3">
-                      {tab === 1 && (
+                      {state.tab === 1 && (
                         <UsageData
-                          formState={formState}
-                          refuelLog={refuelLog}
+                          formState={state.formState}
+                          refuelLog={state.formState.refuelLogs}
                           setRefuelLog={setRefuelLog}
                           handleFieldChange={handleFieldChange}
                           formattedTime={formattedTime}
-                          refueledLogs={refueledLogs}
+                          isRefueled={state.markedForRefuel}
                           handleChangeRefueled={handleChangeRefueled}
-                          AddRefuelLog={AddRefuelLog}
+                          AddRefuelLog={addRefuelLog}
+                          handleFullOperational={handleFullOperational}
+                          t={t}
                           deleteLog={deleteLog}
                           saveEdits={saveEdits}
-                          handleFullOperational={handleFullOperational}
                           isFormValid={isFormValid}
-                          t={t}
                         />
                       )}
-                      {tab === 2 && (
+                      {state.tab === 2 && (
                         <MaintenanceLogEquipment
-                          formState={formState}
+                          formState={state.formState}
                           handleFieldChange={handleFieldChange}
-                          hasChanged={hasChanged}
+                          hasChanged={state.hasChanged}
                           t={t}
                         />
                       )}
@@ -454,16 +555,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                         className="w-full gap-4 row-start-8 row-end-9 py-2"
                       >
                         <Buttons
-                          onClick={() => {
-                            deleteLog();
-                          }}
+                          onClick={deleteEquipmentLog}
                           background="red"
                           className="w-full "
                         >
                           <Titles size="h5">Delete Log</Titles>
                         </Buttons>
 
-                        {hasChanged && (
+                        {state.hasChanged && (
                           <Buttons
                             onClick={() => {
                               if (!isFormValid()) {

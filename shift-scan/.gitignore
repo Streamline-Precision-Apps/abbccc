@@ -19,7 +19,6 @@
 # misc
 .DS_Store
 *.pem
-
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -37,5 +36,7 @@ shift-scan/.env
 *.tsbuildinfo
 next-env.d.ts
 
+# prisma
+dev.db
 
 certificates

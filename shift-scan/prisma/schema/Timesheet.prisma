@@ -1,6 +1,6 @@
 model TimeSheet {
   id                    String                 @id @default(uuid())
-  date                  DateTime               @db.Date
+  date                  DateTime
   userId                String
   jobsiteId             String
   costcode              String
@@ -22,7 +22,7 @@ model TimeSheet {
   MaintenanceLogs       MaintenanceLog[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
-  Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [qrId])
+  Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
 }
@@ -41,26 +41,27 @@ model MaintenanceLog {
 }
 
 model Maintenance {
-  id                     String                @id @default(uuid())
+  id                     String  @id @default(uuid())
   equipmentId            String
   equipmentIssue         String?
-  employeeEquipmentLogId String?               @unique
-  additionalInfo         String?
-  location               String?
-  problemDiagnosis       String?
-  solution               String?
-  totalHoursLaboured     Float?
-  createdAt              DateTime              @default(now())
-  priority               Priority
-  delay                  DateTime?
-  delayReasoning         String?
-  repaired               Boolean               @default(false)
-  selected               Boolean               @default(false)
-  hasBeenDelayed         Boolean               @default(false)
-  createdBy              String?
-  EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
-  Equipment              Equipment             @relation(fields: [equipmentId], references: [id])
-  MaintenanceLogs        MaintenanceLog[]
+  employeeEquipmentLogId String? @unique
+
+  additionalInfo       String?
+  location             String?
+  problemDiagnosis     String?
+  solution             String?
+  totalHoursLaboured   Float?
+  createdAt            DateTime              @default(now())
+  priority             Priority
+  delay                DateTime?
+  delayReasoning       String?
+  repaired             Boolean               @default(false)
+  selected             Boolean               @default(false)
+  hasBeenDelayed       Boolean               @default(false)
+  createdBy            String?
+  EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+  Equipment            Equipment             @relation(fields: [equipmentId], references: [id])
+  MaintenanceLogs      MaintenanceLog[]
 }
 
 model TascoLog {
@@ -72,7 +73,7 @@ model TascoLog {
   materialType       String?
   LoadQuantity       Int                 @default(0)
   RefuelLogs         RefuelLog[]
-  Equipment          Equipment?          @relation(fields: [equipmentId], references: [qrId])
+  Equipment          Equipment?          @relation(fields: [equipmentId], references: [id])
   TascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [name], onDelete: Cascade)
   TimeSheet          TimeSheet           @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
@@ -97,7 +98,7 @@ model TruckingLog {
   RefuelLogs        RefuelLog[]
   StateMileages     StateMileage[]
   TruckingLaborLogs TruckLaborLogs[]
-  Equipment         Equipment?        @relation(fields: [equipmentId], references: [qrId])
+  Equipment         Equipment?        @relation(fields: [equipmentId], references: [id])
   TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
@@ -133,13 +134,14 @@ model Material {
 }
 
 model RefuelLog {
-  id                     String                @id @default(cuid())
-  employeeEquipmentLogId String?
+  id                     String  @id @default(uuid())
+  employeeEquipmentLogId String? @unique
   truckingLogId          String?
   tascoLogId             String?
   gallonsRefueled        Float?
   milesAtFueling         Int?
-  EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
-  TascoLog               TascoLog?             @relation(fields: [tascoLogId], references: [id])
-  TruckingLog            TruckingLog?          @relation(fields: [truckingLogId], references: [id])
+
+  TascoLog             TascoLog?             @relation(fields: [tascoLogId], references: [id])
+  TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
+  EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
 }

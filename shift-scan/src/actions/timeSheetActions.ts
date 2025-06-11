@@ -12,6 +12,7 @@ import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
+import { form } from "@nextui-org/theme";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -138,7 +139,7 @@ export async function CreateTimeSheet(formData: FormData) {
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
         date: formatISO(formData.get("date") as string),
-        Jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
+        Jobsite: { connect: { id: formData.get("jobsiteId") as string } },
         comment: (formData.get("timeSheetComments") as string) || null,
         User: { connect: { id: formData.get("userId") as string } },
         CostCode: { connect: { name: costCode } },
@@ -294,7 +295,7 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
     const createdTimeSheet = await prisma.timeSheet.create({
       data: {
         date: formatISO(formData.get("date") as string),
-        Jobsite: { connect: { qrId: jobsiteId } },
+        Jobsite: { connect: { id: jobsiteId } },
         comment: timeSheetComments || null,
         User: { connect: { id: userId } },
         CostCode: { connect: { name: costCode } },
@@ -397,7 +398,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
           date: formatISO(formData.get("date") as string),
-          Jobsite: { connect: { qrId: jobsiteId } },
+          Jobsite: { connect: { id: jobsiteId } },
           User: { connect: { id: userId } },
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
@@ -472,7 +473,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
           date: formatISO(formData.get("date") as string),
-          Jobsite: { connect: { qrId: jobsiteId } },
+          Jobsite: { connect: { id: jobsiteId } },
           User: { connect: { id: userId } },
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
@@ -556,7 +557,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
           date: formatISO(formData.get("date") as string),
-          Jobsite: { connect: { qrId: jobsiteId } },
+          Jobsite: { connect: { id: jobsiteId } },
           User: { connect: { id: userId } },
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
@@ -566,7 +567,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
               shiftType,
               laborType: laborType,
               ...(equipmentId && {
-                Equipment: { connect: { id: equipmentId } },
+                Equipment: { connect: { qrId: equipmentId } },
               }),
               ...(materialType && {
                 TascoMaterialTypes: { connect: { name: materialType } },
@@ -622,6 +623,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
 // --- Transaction to handle Truck Driver TimeSheet
 export async function handleTruckTimeSheet(formData: FormData) {
   try {
+    console.log("truck form data:", formData);
     const session = await auth();
     if (!session) {
       throw new Error("Unauthorized user");
@@ -649,7 +651,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
           date: formatISO(formData.get("date") as string),
-          Jobsite: { connect: { qrId: jobsiteId } },
+          Jobsite: { connect: { id: jobsiteId } },
           User: { connect: { id: userId } },
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
@@ -905,5 +907,39 @@ export async function updateTimesheetHighlights(
   } catch (error) {
     console.error("Error updating timesheets:", error);
     throw error;
+  }
+}
+
+// Approve all pending timesheets for a user
+export async function approvePendingTimesheets(userId: string, managerName?: string) {
+  try {
+    // Find all pending timesheets for the user
+    const pendingTimesheets = await prisma.timeSheet.findMany({
+      where: {
+        userId,
+        status: "PENDING",
+      },
+      select: { id: true },
+    });
+    if (!pendingTimesheets.length) return { success: true, updated: 0 };
+    const timesheetIds = pendingTimesheets.map((ts) => ts.id);
+    // Update all to APPROVED
+    await prisma.timeSheet.updateMany({
+      where: {
+        id: { in: timesheetIds },
+        userId,
+        status: "PENDING",
+      },
+      data: {
+        status: "APPROVED",
+        statusComment: managerName ? `Approved by ${managerName}` : "Approved by manager",
+      },
+    });
+    revalidatePath("/dashboard/myTeam/timecards");
+    revalidatePath("/dashboard/myTeam");
+    return { success: true, updated: timesheetIds.length };
+  } catch (error) {
+    console.error("Error approving pending timesheets:", error);
+    return { success: false, error: "Failed to approve timesheets" };
   }
 }

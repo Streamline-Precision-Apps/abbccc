@@ -60,7 +60,9 @@ export const useUserData = ({
   }, [userid]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     if (!editState.user) return;
     const { name, value } = e.target;

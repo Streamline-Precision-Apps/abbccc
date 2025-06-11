@@ -49,6 +49,9 @@ export default function MaterialItem({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [currentMaterial, setCurrentMaterial] = useState<Material | null>(null);
+  const [materialTypes, setMaterialTypes] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   // Find the selected material when selectedItemId changes
   useEffect(() => {
@@ -145,6 +148,7 @@ export default function MaterialItem({
       {/* Material details */}
       <Holds background={"white"} className="pt-10">
         <Contents width={"section"}>
+          {" "}
           <Holds className="mb-2">
             <label className="text-sm font-medium">
               {t("MaterialName")}
@@ -153,12 +157,11 @@ export default function MaterialItem({
             <Inputs
               type="text"
               value={currentMaterial.name || ""}
-              placeholder={t("Material")}
               onChange={(e) => handleChange("name", e.target.value)}
               className="w-full text-base pl-2"
+              placeholder={t("EnterMaterialType")}
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium">
               {t("OriginOfMaterial")}
@@ -173,7 +176,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium mb-1">
               {t("MaterialWeight")}
@@ -188,7 +190,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium ">
               {t("LightWeight")} <span className="text-red-500 pl-0.5">*</span>
@@ -202,7 +203,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium ">
               {t("GrossWeight")}
@@ -217,7 +217,6 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-
           <Holds className="mb-2">
             <label className="text-sm font-medium">{t("LoadType")}</label>
             <Selects

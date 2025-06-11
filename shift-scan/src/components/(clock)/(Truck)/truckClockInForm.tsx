@@ -13,6 +13,7 @@ import TruckDriverForm from "./truckDriverForm";
 import TruckEquipmentOperatorForm from "./truckEquipmentOperatorForm";
 
 type Option = {
+  id: string;
   code: string;
   label: string;
 };

@@ -1,10 +1,10 @@
 model Jobsite {
-  id                    String                 @id @default(cuid())
-  qrId                  String                 @unique @default(cuid())
+  id                    String                 @id @default(uuid())
+  qrId                  String                 @unique @default(uuid())
   name                  String
   description           String
+  approvalStatus        ApprovalStatus         @default(APPROVED) // Fields-created in admin are Approved
   isActive              Boolean                @default(true)
-  status                FormStatus             @default(PENDING)
   address               String
   city                  String
   state                 String
@@ -15,14 +15,17 @@ model Jobsite {
   updatedAt             DateTime               @updatedAt
   archiveDate           DateTime?
   companyId             String?
-  Client                String?                @default("Streamline Precision LLC")
-  CreationLogs          CreationLogs[]
+  clientId              String // Replace Client string with proper relation
+  PendingApprovals      PendingApproval[]
+  AuditLogs             AuditLog[]
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   EquipmentHauled       EquipmentHauled[]
+  Client                Client                 @relation(fields: [clientId], references: [id])
   Company               Company?               @relation(fields: [companyId], references: [id])
   TimeSheets            TimeSheet[]
   CCTags                CCTag[]                @relation("CCTagToJobsite")
 
   @@unique([name, address, city, state])
   @@index([qrId])
+  @@index([clientId, companyId])
 }

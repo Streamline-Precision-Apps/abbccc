@@ -5,6 +5,7 @@ import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useTranslations } from "next-intl";
 
 type Option = {
+  id: string;
   code: string;
   label: string;
 };
@@ -24,6 +25,7 @@ export const CostCodeSelector = ({
   const t = useTranslations("Clock");
   useEffect(() => {
     const options = costcodeResults.map((costcode) => ({
+      id: costcode.id,
       code: costcode.name,
       label: costcode.name,
     }));

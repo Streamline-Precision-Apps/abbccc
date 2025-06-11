@@ -59,6 +59,7 @@ export async function createJobsite(formData: FormData) {
 
   const creationComment = formData.get("creationComment") as string;
   const creationReasoning = formData.get("creationReasoning") as string;
+  const clientId = formData.get("clientId") as string;
   try {
     prisma.$transaction(async (prisma) => {
       const existingJobsites = await prisma.jobsite.findMany({
@@ -77,7 +78,7 @@ export async function createJobsite(formData: FormData) {
         );
       }
 
-      await prisma.jobsite.create({
+      const newJobsite = await prisma.jobsite.create({
         data: {
           name,
           qrId,
@@ -90,12 +91,18 @@ export async function createJobsite(formData: FormData) {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          CreationLogs: {
-            create: {
-              createdById,
-              comment: creationComment,
-            },
-          },
+          Client: { connect: { id: clientId } },
+        },
+      });
+
+      // Create PendingApproval for the new jobsite
+      await prisma.pendingApproval.create({
+        data: {
+          entityType: "JOBSITE",
+          jobsiteId: newJobsite.id,
+          createdById: createdById,
+          approvalStatus: "PENDING",
+          comment: creationComment,
         },
       });
       revalidatePath("/dashboard/qr-generator");

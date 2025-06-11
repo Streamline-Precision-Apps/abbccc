@@ -62,7 +62,6 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
   const queryParams = useSearchParams();
 
   useEffect(() => {
-    
     const fetchData = async () => {
       try {
         if (
@@ -71,6 +70,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
           url === "/dashboard/truckingAssistant" ||
+          url === "/dashboard/clock-out" ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getJobsites");
@@ -124,6 +124,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
+          url === "/dashboard/clock-out" ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getCostCodes");
@@ -176,6 +177,7 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/mechanic/new-repair" ||
           url === "/dashboard/truckingAssistant" ||
           url === "/hamburger/inbox" ||
+          url === "/dashboard/clock-out" ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getEquipment");

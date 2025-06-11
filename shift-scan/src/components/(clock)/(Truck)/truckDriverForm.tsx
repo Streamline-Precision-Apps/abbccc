@@ -9,6 +9,7 @@ import TruckSelector from "../(General)/truckSelector";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -72,7 +73,7 @@ export default function TruckDriverForm({
                 if (selectedTruck) {
                   setTruck(selectedTruck); // Update the truck state with the full Option object
                 } else {
-                  setTruck({ code: "", label: "" }); // Reset if null
+                  setTruck({ id: "", code: "", label: "" }); // Reset if null
                 }
                 setSelectedOpt(!!selectedTruck);
               }}

@@ -1,5 +1,5 @@
 model Crew {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   leadId    String
   crewType  WorkType

@@ -30,6 +30,12 @@ export enum FormStatus {
   DRAFT = "DRAFT",
 }
 
+export enum TimeSheetStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
 export enum WorkType {
   MECHANIC = "MECHANIC",
   LABOR = "LABOR",
@@ -130,19 +136,24 @@ export type UserTraining = {
 };
 
 // moved to searchUser.ts
+/**
+ * User search result type for API responses.
+ * Dates are always returned as ISO strings or null.
+ */
 export type SearchUser = {
   id: string;
   firstName: string;
   lastName: string;
   username: string;
   permission: Permission;
-  DOB: string;
+  DOB: string | null;
   truckView: boolean;
   mechanicView: boolean;
   laborView: boolean;
   tascoView: boolean;
   image: string | null;
-  terminationDate: Date | null;
+  terminationDate: string | null;
+  accountSetup: boolean;
 };
 
 // moved to personnel.ts
@@ -985,3 +996,43 @@ export type TimesheetFilter =
   | "tascoRefuelLogs"
   | "equipmentLogs"
   | "equipmentRefuelLogs";
+
+// Helper: Flatten EquipmentLogsData to array of { id, startTime, endTime }
+export function flattenEquipmentLogs(logs: EquipmentLogsData): { id: string; startTime: Date; endTime: Date }[] {
+  return logs
+    .flatMap((item) => item.EmployeeEquipmentLogs)
+    .filter((log): log is EmployeeEquipmentLogData => !!log && typeof log.id === 'string')
+    .map((log) => ({
+      id: log.id,
+      startTime: log.startTime ? new Date(log.startTime) : null,
+      endTime: log.endTime ? new Date(log.endTime) : null,
+    }))
+    .filter((log) => log.startTime && log.endTime) as { id: string; startTime: Date; endTime: Date }[];
+}
+
+// Helper: Flatten EquipmentRefuelLogs to array of { id, gallonsRefueled }
+export function flattenEquipmentRefuelLogs(logs: EmployeeEquipmentLogWithRefuel[]): { id: string; gallonsRefueled: number | null }[] {
+  return logs.flatMap((log) =>
+    (log.RefuelLogs ?? []).map((refuel) => ({
+      id: refuel.id,
+      gallonsRefueled: typeof refuel.gallonsRefueled === 'number' ? refuel.gallonsRefueled : refuel.gallonsRefueled ? Number(refuel.gallonsRefueled) : null,
+    }))
+  );
+}
+
+// Type guard: is EquipmentLogsData
+export function isEquipmentLogsData(data: unknown): data is EquipmentLogsData {
+  return (
+    Array.isArray(data) &&
+    data.length > 0 &&
+    typeof data[0] === 'object' &&
+    'EmployeeEquipmentLogs' in data[0]
+  );
+}
+
+export type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};
