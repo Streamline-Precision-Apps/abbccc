@@ -84,7 +84,6 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
         email,
         DOB: dateOfBirth,
         permission: permissionLevel as Permission,
-        activeEmployee: employmentStatus.toLowerCase() === "active",
         truckView: truckingView,
         tascoView: tascoView,
         mechanicView: engineerView,
@@ -302,6 +301,7 @@ export async function createAdminJobsite(formData: FormData) {
         zipCode: formData.get("zipCode") as string,
         description: formData.get("description") as string,
         comment: formData.get("comment") as string,
+        clientId: formData.get("clientId") as string,
         CCTags: {
           connect: {
             id: "1", //automatically connect to the first tag
@@ -796,8 +796,7 @@ export async function saveEquipmentLogs(formData: FormData) {
         equipmentId: formData.get("equipmentId") as string,
         comment: formData.get("comment") as string,
         timeSheetId: (formData.get("timeSheetId") as string) || null,
-        tascoLogId: (formData.get("tascoLogId") as string) || null,
-        laborLogId: (formData.get("laborLogId") as string) || null,
+
         MaintenanceId: {
           connect: {
             id: formData.get("maintenanceId") as string,
@@ -821,16 +820,13 @@ export async function reactivatePersonnel(formData: FormData) {
     console.log("Archiving personnel...");
     console.log(formData);
     const id = formData.get("userId") as string;
-    const activeEmployee = formData.get("active") === "true";
 
     const result = await prisma.user.update({
       where: { id },
       data: {
-        activeEmployee: activeEmployee,
         terminationDate: null,
       },
     });
-    console.log(result.activeEmployee);
 
     revalidatePath(`/admins/personnel/${id}`);
     return true;
@@ -867,16 +863,13 @@ export async function archivePersonnel(formData: FormData) {
     console.log("Archiving personnel...");
     console.log(formData);
     const id = formData.get("userId") as string;
-    const activeEmployee = formData.get("active") === "true";
 
     const result = await prisma.user.update({
       where: { id },
       data: {
-        activeEmployee: activeEmployee,
         terminationDate: new Date().toISOString(),
       },
     });
-    console.log(result.activeEmployee);
 
     revalidatePath(`/admins/personnel/${id}`);
     return true;
@@ -975,6 +968,16 @@ export async function editGeneratedJobsite(formData: FormData) {
     throw error;
   }
 }
+
+// SCHEMA NOTE: The User.activeEmployee field has been removed from the database schema.
+// To check if a user is active, use: user.terminationDate === null
+// Example for filtering active employees:
+//   const activeEmployees = await prisma.user.findMany({ where: { terminationDate: null } });
+// If you add or update CreationLogs, createdAt and updatedAt are now required (handled by Prisma defaults).
+
+// NOTE: The User.activeEmployee field has been removed from the schema.
+// Use user.terminationDate === null to check if a user is active.
+// If you add or update CreationLogs, ensure createdAt and updatedAt are set (handled by Prisma defaults).
 
 export async function createCostCode(formData: FormData) {
   try {

@@ -6,8 +6,9 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import {
-  BaseUser,
+  UserData,
   CrewCreationState,
+  CrewEditState,
   PersonnelView,
   UserEditState,
 } from "./types/personnel";
@@ -18,8 +19,10 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
-import { CheckBox } from "@/components/(inputs)/checkBox";
 import Spinner from "@/components/(animations)/spinner";
+import EmployeeRow from "./SideBar/EmployeeRow";
+import { useEmployeeHandlers } from "../hooks/useEmployeeHandlers";
+import DiscardChangesModal from "./SideBar/DiscardChangesModal";
 
 export default function PersonnelSideBar({
   view,
@@ -37,6 +40,14 @@ export default function PersonnelSideBar({
   selectLead,
   addMembers,
   removeMembers,
+  crewEditStates,
+  updateCrewEditState,
+  isCrewEditStateDirty,
+  discardCrewEditChanges,
+  isRegistrationFormDirty,
+  resetRegistrationState,
+  isCrewCreationFormDirty,
+  resetCrewCreationState,
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
@@ -45,7 +56,7 @@ export default function PersonnelSideBar({
   term: string;
   setTerm: Dispatch<SetStateAction<string>>;
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  filteredList: BaseUser[];
+  filteredList: UserData[];
   userEditStates: Record<string, UserEditState>;
   isUserEditStateDirty: (userId: string) => boolean;
   discardUserEditChanges: (userId: string) => void;
@@ -53,66 +64,100 @@ export default function PersonnelSideBar({
   selectLead: (leadId: string | null) => void;
   addMembers: (userId: string[]) => void;
   removeMembers: (userId: string[]) => void;
+  crewEditStates: Record<string, CrewEditState>;
+  updateCrewEditState: (
+    crewId: string,
+    updates: Partial<CrewEditState>
+  ) => void;
+  isCrewEditStateDirty: (crewId: string) => boolean;
+  discardCrewEditChanges: (crewId: string) => void;
+  isRegistrationFormDirty: () => boolean;
+  resetRegistrationState: () => void;
+  isCrewCreationFormDirty: () => boolean;
+  resetCrewCreationState: () => void;
 }) {
   const t = useTranslations("Admins");
   const [nextView, setNextView] = useState<PersonnelView | null>(null);
   const [isDiscardChangesModalOpen, setIsDiscardChangesModalOpen] =
     useState(false);
 
-  const activeChanges =
-    view.mode === "user" && isUserEditStateDirty(view.userId);
+  const isEditingExistingCrew =
+    view.mode === "crew" ||
+    view.mode === "user+crew" ||
+    view.mode === "registerUser+crew";
 
-  const handleEmployeeClick = (employee: BaseUser) => {
-    const targetView: PersonnelView =
-      view.mode === "crew"
-        ? { mode: "user+crew", userId: employee.id, crewId: view.crewId }
-        : view.mode === "registerCrew"
-        ? { mode: "registerCrew+user", userId: employee.id }
-        : view.mode === "registerCrew+user"
-        ? { mode: "registerCrew" }
-        : { mode: "user", userId: employee.id };
+  const currentCrewId =
+    view.mode === "crew" ||
+    view.mode === "user+crew" ||
+    view.mode === "registerUser+crew"
+      ? view.crewId
+      : null;
 
-    const isSameUser = view.mode === "user" && view.userId === employee.id;
+  const selectedUsers = isEditingExistingCrew
+    ? crewEditStates[currentCrewId!]?.crew?.Users || []
+    : crewCreationState.selectedUsers;
 
-    if (activeChanges && !isSameUser) {
-      setNextView(targetView);
-      setIsDiscardChangesModalOpen(true);
-    } else {
-      setView(isSameUser ? { mode: "default" } : targetView);
-    }
-  };
+  const teamLead = isEditingExistingCrew
+    ? crewEditStates[currentCrewId!]?.crew?.leadId
+    : crewCreationState.teamLead;
 
-  const handleCrewLeadToggle = (employeeId: string) => {
-    // Only allow if employee is in selectedUsers
-    const isCrewMember = crewCreationState.selectedUsers.some(
-      (user) => user.id === employeeId
-    );
-
-    if (!isCrewMember) return;
-
-    // Toggle crew lead
-    if (crewCreationState.teamLead === employeeId) {
-      selectLead(null);
-    } else {
-      selectLead(employeeId);
-    }
-  };
-
-  const handleEmployeeCheck = (employee: BaseUser) => {
-    const isSelected = crewCreationState.selectedUsers.some(
-      (user) => user.id === employee.id
-    );
-
-    if (isSelected) {
-      removeMembers([employee.id]); // From your hook - remove if already selected
-    } else {
-      addMembers([employee.id]); // From your hook - add if not selected
-    }
-  };
+  const { handleEmployeeClick, handleCrewLeadToggle, handleEmployeeCheck } =
+    useEmployeeHandlers({
+      view,
+      setView,
+      crewEditStates,
+      crewCreationState,
+      updateCrewEditState,
+      selectLead,
+      addMembers,
+      removeMembers,
+      discardUserEditChanges,
+      isUserEditStateDirty,
+      isCrewEditStateDirty,
+      discardCrewEditChanges,
+      isRegistrationFormDirty,
+      setNextView,
+      setIsDiscardChangesModalOpen,
+      filteredList,
+    });
 
   const confirmDiscardChanges = () => {
-    if (nextView && view.mode === "user") {
-      discardUserEditChanges(view.userId); // <-- discard context state
+    if (nextView) {
+      // Handle user edit discards
+      if (view.mode === "user") {
+        discardUserEditChanges(view.userId);
+      }
+      // Handle crew edit discards
+      else if (view.mode === "crew" && "crewId" in view) {
+        discardCrewEditChanges(view.crewId);
+      }
+      // Handle user+crew edit discards
+      else if (view.mode === "user+crew" && "crewId" in view) {
+        discardCrewEditChanges(view.crewId);
+        if ("userId" in view) {
+          discardUserEditChanges(view.userId);
+        }
+      }
+      // Handle registration form discards
+      else if (
+        view.mode === "registerUser" || 
+        view.mode === "registerUser+crew"
+      ) {
+        resetRegistrationState();
+      }
+      // Handle crew creation form discards
+      else if (
+        view.mode === "registerCrew" ||
+        view.mode === "registerCrew+user" 
+      ) {
+        resetCrewCreationState();
+      }
+      // Handle both registration and crew creation form discards
+      else if (view.mode === "registerBoth") {
+        resetRegistrationState();
+        resetCrewCreationState();
+      }
+
       setView(nextView);
       setNextView(null);
       setIsDiscardChangesModalOpen(false);
@@ -127,27 +172,109 @@ export default function PersonnelSideBar({
   return (
     <>
       <Holds className="w-full h-full col-start-1 col-end-3">
-        <Grids className="w-full h-full grid-rows-[40px_40px_1fr] gap-4">
+        <Grids className="w-full h-full grid-rows-[50px_40px_1fr] gap-4">
           <Holds className="w-full h-full">
             <Selects
               onChange={(e) => {
                 const crewId = e.target.value;
+                console.log("Selected Crew ID:", crewId);
+
+                // Determine target view based on current mode and selected crew
+                let targetView: PersonnelView;
+
                 if (crewId) {
-                  if (view.mode === "user") {
-                    setView({
-                      mode: "user+crew",
-                      userId: view.userId,
-                      crewId,
-                    });
-                  } else {
-                    setView({ mode: "crew", crewId });
+                  switch (view.mode) {
+                    case "user":
+                      targetView = {
+                        mode: "user+crew",
+                        userId: view.userId,
+                        crewId,
+                      };
+                      break;
+                    case "registerCrew+user":
+                      targetView = {
+                        mode: "user+crew",
+                        userId: view.userId,
+                        crewId,
+                      };
+                      break;
+                    case "registerUser+crew":
+                      targetView = {
+                        mode: "registerUser+crew",
+                        crewId,
+                      };
+                      break;
+                    case "registerBoth":
+                      targetView = {
+                        mode: "registerUser+crew",
+                        crewId,
+                      };
+                      break;
+                    case "registerUser":
+                      targetView = {
+                        mode: "registerUser+crew",
+                        crewId,
+                      };
+                      break;
+                    case "user+crew":
+                      targetView = {
+                        mode: "user+crew",
+                        crewId,
+                        userId: view.userId,
+                      };
+                      break;
+                    default:
+                      targetView = { mode: "crew", crewId };
                   }
                 } else {
-                  setView({ mode: "default" });
+                  targetView = { mode: "default" };
+                }
+
+                // Check for unsaved changes before changing views
+                const hasUnsavedCrewChanges =
+                  (view.mode === "crew" || view.mode === "user+crew") &&
+                  "crewId" in view &&
+                  isCrewEditStateDirty(view.crewId);
+                  
+                // Check if there are unsaved registration form changes
+                const hasUnsavedRegistrationChanges = 
+                  (view.mode === "registerUser" || 
+                   view.mode === "registerUser+crew" || 
+                   view.mode === "registerBoth") && 
+                  isRegistrationFormDirty();
+                  
+                // Check if there are unsaved crew creation form changes
+                const hasUnsavedCrewCreationChanges =
+                  (view.mode === "registerCrew" ||
+                   view.mode === "registerCrew+user" ||
+                   view.mode === "registerBoth") &&
+                  isCrewCreationFormDirty && isCrewCreationFormDirty();
+
+                // Determine if we're switching from crew to user+crew (adding a user to the view)
+                const isCrewToUserView =
+                  view.mode === "crew" &&
+                  targetView.mode === "user+crew" &&
+                  "userId" in targetView;
+
+                // Show confirmation dialog if:
+                // 1. There are unsaved crew changes (and we're not just adding a user to the view)
+                // 2. There are unsaved registration changes
+                // 3. There are unsaved crew creation changes
+                if ((hasUnsavedCrewChanges && !isCrewToUserView) || 
+                    hasUnsavedRegistrationChanges || 
+                    hasUnsavedCrewCreationChanges) {
+                  // Store target view and show confirmation modal
+                  setNextView(targetView);
+                  setIsDiscardChangesModalOpen(true);
+                } else {
+                  // No unsaved changes or switching from crew to user view, proceed with view change
+                  setView(targetView);
                 }
               }}
               value={
-                view.mode === "crew" || view.mode === "user+crew"
+                view.mode === "crew" ||
+                view.mode === "user+crew" ||
+                view.mode === "registerUser+crew"
                   ? view.crewId
                   : ""
               }
@@ -184,150 +311,56 @@ export default function PersonnelSideBar({
                 <Spinner />
               </Holds>
             ) : (
-              <div className="w-full h-full flex flex-col p-3 space-y-2">
-                {filteredList.map((employee) => {
-                  const isSelected =
-                    (view.mode === "user" && view.userId === employee.id) ||
-                    (view.mode === "user+crew" &&
-                      view.userId === employee.id) ||
-                    (view.mode === "registerCrew+user" &&
-                      view.userId === employee.id);
-
-                  const isCrew =
-                    view.mode === "crew" ||
-                    view.mode === "user+crew" ||
-                    view.mode === "registerCrew" ||
-                    view.mode === "registerCrew+user" ||
-                    view.mode === "registerBoth";
-
-                  const isCrewMember = crewCreationState.selectedUsers.some(
-                    (user) => user.id === employee.id
-                  );
-
-                  const isCurrentLead =
-                    crewCreationState.teamLead === employee.id;
-
-                  const isManager = employee.permission !== "USER";
-
-                  return (
-                    <Holds
-                      key={employee.id}
-                      position={"row"}
-                      className="w-full gap-4"
-                    >
-                      <Holds
-                        size={isCrew ? "70" : "full"}
-                        onClick={() => handleEmployeeClick(employee)}
-                        background={isCrew ? "darkGray" : "white"}
-                        className={`p-1 pl-2 flex-shrink-0 ${
-                          !isCrew && "hover:bg-gray-100"
-                        } relative ${
-                          isSelected ? "border-[3px] border-black" : ""
-                        } rounded-[10px]`}
-                      >
-                        <Texts position="left" size="p7">
-                          {`${employee.firstName} ${employee.lastName}`}
-                        </Texts>
-                      </Holds>
-                      {isCrew && (
-                        <>
-                          <Holds
-                            size={"20"}
-                            className="w-fit min-w-[35px] h-full flex items-center"
-                          >
-                            {isManager && (
-                              <img
-                                onClick={() =>
-                                  isCrewMember &&
-                                  handleCrewLeadToggle(employee.id)
-                                }
-                                src={
-                                  isCurrentLead
-                                    ? "/starFilled.svg"
-                                    : isCrewMember
-                                    ? "/star.svg"
-                                    : "/star.svg"
-                                }
-                                alt={
-                                  isCurrentLead
-                                    ? "Current Crew Lead"
-                                    : isCrewMember
-                                    ? "Make Crew Lead"
-                                    : "Add to crew first"
-                                }
-                                className={`w-[35px] h-[35px] ${
-                                  isCrewMember
-                                    ? "cursor-pointer hover:opacity-80"
-                                    : "cursor-not-allowed opacity-50"
-                                } transition-opacity`}
-                                title={
-                                  isCurrentLead
-                                    ? "Current Crew Lead"
-                                    : isCrewMember
-                                    ? "Make Crew Lead"
-                                    : "Add to crew first"
-                                }
-                              />
-                            )}
-                          </Holds>
-                          <Holds size={isManager ? "10" : "30"}>
-                            <CheckBox
-                              shadow={false}
-                              checked={crewCreationState.selectedUsers.some(
-                                (user) => user.id === employee.id
-                              )}
-                              onChange={() => handleEmployeeCheck(employee)}
-                              id={`crew-member-${employee.id}`}
-                              name={`crew-member-${employee.id}`}
-                              width={30}
-                              height={30}
-                            />
-                          </Holds>
-                        </>
-                      )}
-                    </Holds>
-                  );
-                })}
+              <div className="w-full h-full overflow-y-auto no-scrollbar p-3">
+                {filteredList.map((employee) => (
+                  <EmployeeRow
+                    key={employee.id}
+                    employee={employee}
+                    isSelected={
+                      (view.mode === "user" && view.userId === employee.id) ||
+                      (view.mode === "user+crew" &&
+                        view.userId === employee.id) ||
+                      (view.mode === "registerCrew+user" &&
+                        view.userId === employee.id)
+                    }
+                    isCrew={
+                      view.mode === "registerUser+crew" ||
+                      view.mode === "crew" ||
+                      view.mode === "user+crew" ||
+                      view.mode === "registerCrew" ||
+                      view.mode === "registerCrew+user" ||
+                      view.mode === "registerBoth"
+                    }
+                    view={view}
+                    isManager={employee.permission !== "USER"}
+                    isCrewMember={selectedUsers.some(
+                      (u) => u.id === employee.id
+                    )}
+                    isCurrentLead={teamLead === employee.id}
+                    onEmployeeClick={handleEmployeeClick}
+                    onCrewLeadToggle={handleCrewLeadToggle}
+                    onEmployeeCheck={handleEmployeeCheck}
+                    hasUnsavedChanges={
+                      // Only show confirmation when in user mode and editing that specific user
+                      // We're handling crew changes in the useEmployeeHandlers hook
+                      view.mode === "user" &&
+                      view.userId === employee.id &&
+                      isUserEditStateDirty(view.userId)
+                    }
+                  />
+                ))}
               </div>
             )}
           </Holds>
         </Grids>
       </Holds>
 
-      <NModals
+      <DiscardChangesModal
         isOpen={isDiscardChangesModalOpen}
-        handleClose={cancelDiscard}
-        size="sm"
-        background={"noOpacity"}
-      >
-        <Holds className="w-full h-full items-center justify-center text-center pt-3">
-          <Contents width={"section"} className="h-full">
-            <Holds className="flex  h-1/2">
-              <Texts size="p5">
-                You have unsaved changes. Are you sure you want to discard them?
-              </Texts>
-            </Holds>
-            <Holds className="flex justify-center items-center gap-4 h-1/2">
-              <Buttons
-                shadow={"none"}
-                background={"lightBlue"}
-                className="w-full p-2 "
-                onClick={confirmDiscardChanges}
-              >
-                <Titles size="h5">Yes, continue.</Titles>
-              </Buttons>
-              <Buttons
-                background={"red"}
-                shadow={"none"}
-                className=" w-full p-2"
-                onClick={cancelDiscard}
-              >
-                <Titles size="h5">No, go back!</Titles>
-              </Buttons>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
+        confirmDiscardChanges={confirmDiscardChanges}
+        cancelDiscard={cancelDiscard}
+        view={view}
+      />
     </>
   );
 }

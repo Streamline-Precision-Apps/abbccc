@@ -5,6 +5,7 @@ import { useDBEquipment } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
+  id: string; // ID is now required
   code: string;
   label: string;
 };
@@ -24,6 +25,7 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
     const options = equipmentResults
       .filter((equipment) => equipment.equipmentTag === "TRUCK")
       .map((equipment) => ({
+        id: equipment.id,
         code: equipment.qrId,
         label: equipment.name,
       }));

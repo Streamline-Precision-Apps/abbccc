@@ -542,6 +542,11 @@ export default function TimeCardHighlights({
             initialValue={
               currentEditingId
                 ? {
+                    id:
+                      editedHighlightTimesheet.find(
+                        (item) => item.id === currentEditingId
+                      )?.id || "",
+
                     code:
                       highlightTimesheet.find(
                         (item) => item.id === currentEditingId
@@ -569,6 +574,10 @@ export default function TimeCardHighlights({
             initialValue={
               currentEditingId
                 ? {
+                    id:
+                      editedHighlightTimesheet.find(
+                        (item) => item.id === currentEditingId
+                      )?.id || "",
                     code:
                       highlightTimesheet.find(
                         (item) => item.id === currentEditingId

@@ -6,12 +6,16 @@ import { Images } from "@/components/(reusable)/images";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { PersonnelView } from "../types/personnel";
+import { view } from "framer-motion";
 
 export default function CrewSelectList({
   crew,
   selectedCrews,
   handleCrewCheckbox,
+  setViewOption,
+  viewOption,
 }: {
   crew: {
     id: string;
@@ -19,6 +23,8 @@ export default function CrewSelectList({
   }[];
   selectedCrews: string[];
   handleCrewCheckbox: (id: string) => void;
+  setViewOption: Dispatch<SetStateAction<PersonnelView>>;
+  viewOption: PersonnelView;
 }) {
   return (
     <>
@@ -39,7 +45,24 @@ export default function CrewSelectList({
                     selectedCrews.includes(c.id) ? "lightBlue" : "gray"
                   }
                   className="w-full h-full transition-colors duration-150 cursor-pointer "
-                  onClick={() => {}} // add a click handler to open the crew details
+                  onClick={() => {
+                    if (viewOption.mode === "registerUser+crew") {
+                      setViewOption({
+                        mode: "registerUser+crew",
+                        crewId: c.id,
+                      });
+                    } else if (viewOption.mode === "registerUser") {
+                      setViewOption({
+                        mode: "registerUser+crew",
+                        crewId: c.id,
+                      });
+                    } else {
+                      setViewOption({
+                        mode: "crew",
+                        crewId: c.id,
+                      });
+                    }
+                  }} // add a click handler to open the crew details
                 >
                   <Titles size={"h6"}>{c.name}</Titles>
                 </Holds>

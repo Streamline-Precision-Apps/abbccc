@@ -1,13 +1,15 @@
 // hooks/usePersonnelState.ts
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { SearchCrew } from "@/lib/types";
 import { z } from "zod";
-import { BaseUser } from "@/app/(routes)/admins/personnel/components/types/personnel";
+import {
+  UserData,
+  CrewData,
+} from "@/app/(routes)/admins/personnel/components/types/personnel";
 
 export const usePersonnelState = () => {
   const [loading, setLoading] = useState(false);
-  const [employees, setEmployees] = useState<BaseUser[]>([]);
-  const [crew, setCrew] = useState<SearchCrew[]>([]);
+  const [employees, setEmployees] = useState<UserData[]>([]);
+  const [crew, setCrew] = useState<CrewData[]>([]);
   const [term, setTerm] = useState("");
 
   const fetchAllData = useCallback(async () => {
@@ -40,6 +42,7 @@ export const usePersonnelState = () => {
     }
   }, []);
 
+  // Automatic fetch on mount and when revalidateCounter changes
   useEffect(() => {
     fetchAllData();
   }, [fetchAllData]);

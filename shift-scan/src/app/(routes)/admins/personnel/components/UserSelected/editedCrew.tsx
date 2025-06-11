@@ -3,8 +3,10 @@ import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { UserData } from "../types/personnel";
+import { PersonnelView, UserData } from "../types/personnel";
 import { SearchCrew } from "@/lib/types";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 export default function EditedCrew({
   edited,
@@ -15,6 +17,8 @@ export default function EditedCrew({
   handleCrewLeadToggle,
   permission,
   user,
+  setViewOption,
+  viewOption,
 }: {
   user: UserData;
   edited: {
@@ -26,7 +30,13 @@ export default function EditedCrew({
   handleCrewCheckbox: (id: string) => void;
   handleCrewLeadToggle: (crewId: string) => void;
   permission: string;
+  setViewOption: Dispatch<SetStateAction<PersonnelView>>;
+  viewOption: PersonnelView;
 }) {
+  const [showAllCrews, setShowAllCrews] = useState(false);
+  const crewsToShow = showAllCrews
+    ? crew
+    : crew.filter((c) => selectedCrews.includes(c.id));
   return (
     <Holds size={"50"} className="h-full">
       <Texts position={"left"} size={"p7"}>
@@ -40,13 +50,27 @@ export default function EditedCrew({
         } rounded-[10px] p-2`}
       >
         <div className="h-full overflow-y-auto no-scrollbar">
-          {crew.map((c) => (
+          {crewsToShow.map((c) => (
             <Holds
               position={"row"}
               key={c.id}
               className="p-1 justify-center items-center gap-2 group"
             >
               <Holds
+                onClick={() => {
+                  if (viewOption.mode === "user") {
+                    setViewOption({
+                      mode: "user+crew",
+                      userId: user.id,
+                      crewId: c.id,
+                    });
+                  } else if (viewOption.mode === "user+crew") {
+                    setViewOption({
+                      ...viewOption,
+                      crewId: c.id,
+                    });
+                  }
+                }}
                 background={
                   selectedCrews.some((sc) => sc === c.id)
                     ? "lightBlue"
@@ -86,6 +110,14 @@ export default function EditedCrew({
               </Holds>
             </Holds>
           ))}
+          <Texts
+            size="p7"
+            text={"link"}
+            className="italic mt-2 cursor-pointer"
+            onClick={() => setShowAllCrews(!showAllCrews)}
+          >
+            {showAllCrews ? "View My Crews" : "Show all Crews"}
+          </Texts>
         </div>
       </Holds>
     </Holds>

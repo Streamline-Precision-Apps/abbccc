@@ -5,6 +5,7 @@ import SelectEquipment from "./SelectEquipment";
 import EquipmentScanner from "./EquipmentScanner";
 import EquipmentSelectorView from "./EquipmentSelector";
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -14,10 +15,12 @@ export default function ScanEquipment() {
   const [method, setMethod] = useState<"Scan" | "Select" | "">("");
   const [equipmentQr, setEquipmentQr] = useState<string | null>(null);
   const [equipment, setEquipment] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
   const [jobSite, setJobSite] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
@@ -27,6 +30,7 @@ export default function ScanEquipment() {
       const jobsiteResult = await fetch("/api/getRecentJobDetails");
       const jobsiteData = await jobsiteResult.json();
       setJobSite({
+        id: jobsiteData.id,
         label: jobsiteData.name,
         code: jobsiteData.qrId,
       });

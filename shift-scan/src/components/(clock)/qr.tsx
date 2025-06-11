@@ -7,6 +7,7 @@ import { useEQScanData } from "@/app/context/equipmentContext";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -80,10 +81,15 @@ export default function QR({
   // In your QR component (qr-handler.tsx), update the processGeneralScan function:
   const processGeneralScan = useCallback(
     (data: string) => {
+      console.log("Processing General Scan with data:", data);
+      console.log("Current jobsiteResults:", jobsiteResults);
+
       // Find the matching jobsite from the jobsiteResults
       const matchedJobsite = jobsiteResults?.find((j) => j.qrId === data);
       if (matchedJobsite) {
+        console.log("Matched jobsite:", matchedJobsite);
         setJobsite({
+          id: matchedJobsite.id, // Add the id
           label: matchedJobsite.name, // Add the label
           code: matchedJobsite.qrId, // Add the code (id)
         });
@@ -92,6 +98,7 @@ export default function QR({
           handleScanJobsite(clockInRole || "");
         }
       } else {
+        console.error("Error: Invalid QR code Scanned!", data);
         throw new Error("Invalid QR code Scanned!");
       }
     },
@@ -104,9 +111,14 @@ export default function QR({
     (result: QrScanner.ScanResult) => {
       try {
         const { data } = result;
+        console.log("Scan result data:", data);
+        console.log("Current jobsiteResults:", jobsiteResults);
+
         if (!jobsiteResults?.some((j) => j.qrId === data)) {
+          console.error("Error: QR code not found in jobsiteResults", data);
           throw new Error("Invalid QR code Scanned!");
         }
+
         if (type === "equipment") {
           processEquipmentScan(data);
           setScanned(true);

@@ -1,36 +1,19 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { user } from "@nextui-org/theme";
-
-interface UserData {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  DOB: string;
-  truckView: boolean;
-  tascoView: boolean;
-  laborView: boolean;
-  mechanicView: boolean;
-  permission: string;
-  activeEmployee: boolean;
-  startDate?: string;
-  terminationDate?: string;
-  Contact: {
-    phoneNumber: string;
-    emergencyContact: string;
-    emergencyContactNumber: string;
-  };
-  Crews: {
-    id: string;
-    name: string;
-    leadId: string;
-  }[];
-  image?: string;
-}
+import { UserData } from "../types/personnel";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Contents } from "@/components/(reusable)/contents";
+import { useState } from "react";
+import { Anton } from "next/font/google";
+import { RemoveUserProfilePicture } from "@/actions/PersonnelActions";
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export default function ProfileAndRoles({
   user,
@@ -57,6 +40,27 @@ export default function ProfileAndRoles({
     [key: string]: boolean;
   };
 }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRemoveProfilePicture = async () => {
+    const result = await RemoveUserProfilePicture(user.id); // Call the function to remove the profile picture
+    if (!result) {
+      console.error("Failed to remove profile picture");
+      return;
+    }
+    updateEditState({
+      user: {
+        ...user,
+        image: undefined, // Remove the profile picture
+      },
+      edited: {
+        ...edited,
+        image: true, // Mark the image field as edited
+      },
+    });
+    setIsModalOpen(false); // Close the modal after the action
+  };
+
   return (
     <>
       <Holds position={"row"} className="w-full gap-3">
@@ -65,12 +69,14 @@ export default function ProfileAndRoles({
           alt="profile"
           className={
             user.image
-              ? "max-w-14 h-auto object-contain rounded-full border-2 border-black"
+              ? "max-w-14 h-auto object-contain rounded-full border-2 border-black cursor-pointer"
               : "max-w-14 h-auto object-contain"
           }
+          onClick={() => setIsModalOpen(true)} // Open modal if image exists
         />
-        <Titles size="h4">{`${user.firstName} ${user.lastName}`}</Titles>
+        <Titles size="h5">{`${user.firstName} ${user.lastName}`}</Titles>
       </Holds>
+
       <Holds className="w-full flex flex-col">
         <Holds position={"row"} className="w-full gap-x-3 justify-end">
           <Buttons
@@ -211,6 +217,45 @@ export default function ProfileAndRoles({
             </Texts>
           )}
       </Holds>
+
+      {/* Modal for confirmation */}
+
+      <NModals
+        isOpen={isModalOpen}
+        handleClose={() => setIsModalOpen(false)}
+        size="sm"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full items-center justify-center text-center px-4">
+          <Holds className="w-[90%] flex h-1/2">
+            <Texts size="p5">
+              Are you sure you want to remove
+              <span
+                className={anton.className + " text-sm font-bold text-black"}
+              >{`  ${user.firstName} ${user.lastName}'s  `}</span>
+              profile picture? This will revert it back to the default image.
+            </Texts>
+          </Holds>
+          <Holds className="w-[80%] flex justify-center items-center gap-4 h-1/2">
+            <Buttons
+              shadow="none"
+              background="lightBlue"
+              className="w-full p-1"
+              onClick={() => handleRemoveProfilePicture()}
+            >
+              <Titles size="sm">Yes, continue.</Titles>
+            </Buttons>
+            <Buttons
+              background="red"
+              shadow="none"
+              className="w-full p-1"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <Titles size="sm">No, go back!</Titles>
+            </Buttons>
+          </Holds>
+        </Holds>
+      </NModals>
     </>
   );
 }

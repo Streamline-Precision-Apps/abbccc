@@ -7,11 +7,12 @@ import { Grids } from "@/components/(reusable)/grids";
 import StepButtons from "../step-buttons";
 
 type Option = {
+  id: string;
   code: string;
   label: string;
 };
 type TruckEquipmentOperatorFormProps = {
-  equipment: { code: string; label: string };
+  equipment: { id: string; code: string; label: string };
   setEquipment: Dispatch<SetStateAction<Option>>;
   selectedOpt: boolean;
   setSelectedOpt: Dispatch<SetStateAction<boolean>>;
@@ -32,7 +33,7 @@ export default function TruckEquipmentOperatorForm({
             if (equipment) {
               setEquipment(equipment); // Update the equipment state with the full Option object
             } else {
-              setEquipment({ code: "", label: "" }); // Reset if null
+              setEquipment({ id: "", code: "", label: "" }); // Reset if null
             }
             setSelectedOpt(!!equipment);
           }}

@@ -3,33 +3,52 @@ export interface UserData {
   username: string;
   firstName: string;
   lastName: string;
+  image?: string;
   email: string;
   DOB: string;
+  permission: string;
   truckView: boolean;
   tascoView: boolean;
   laborView: boolean;
   mechanicView: boolean;
-  permission: string;
-  activeEmployee: boolean;
+  terminationDate: string | null;
   startDate?: string;
-  terminationDate?: string;
   Contact: {
     phoneNumber: string;
     emergencyContact: string;
     emergencyContactNumber: string;
   };
-  Crews: {
+  Crews: Array<{
     id: string;
     name: string;
     leadId: string;
-  }[];
-  image?: string;
+  }>;
+}
+
+export interface EditState {
+  user: UserData | null;
+  originalUser: UserData | null;
+  selectedCrews: string[];
+  originalCrews: string[];
+  crewLeads: Record<string, boolean>;
+  originalCrewLeads: Record<string, boolean>;
+  edited: { [key: string]: boolean };
+  loading: boolean;
+  successfullyUpdated: boolean;
+}
+
+export interface UseUserDataProps {
+  userid: string;
+  editState: EditState;
+  updateEditState: (updates: Partial<EditState>) => void;
 }
 
 export interface CrewData {
   id: string;
   name: string;
   leadId: string;
+  crewType: "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO" | "";
+  Users: { id: string; firstName: string; lastName: string }[];
 }
 
 // BaseUser contains common properties
@@ -50,6 +69,15 @@ export interface UserEditState {
   originalCrews: string[];
   crewLeads: Record<string, boolean>; // Track which crews this user leads
   originalCrewLeads: Record<string, boolean>;
+  edited: { [key: string]: boolean };
+  loading: boolean;
+  successfullyUpdated: boolean;
+}
+
+// Crew edit/create state management (single source of truth for both modes)
+export interface CrewEditState {
+  crew: CrewData | null;
+  originalCrew: CrewData | null;
   edited: { [key: string]: boolean };
   loading: boolean;
   successfullyUpdated: boolean;
@@ -99,4 +127,5 @@ export interface CrewCreationState {
   selectedUsers: { id: string }[];
   teamLead: string | null;
   isPending: boolean;
+  isSuccess: boolean;
 }

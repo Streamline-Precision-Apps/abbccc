@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -48,18 +49,21 @@ export default function EquipmentSelectorView({
   return (
     <Holds className="h-full pb-5">
       <Grids rows={"7"} gap={"5"}>
-        <Holds className="row-start-1 row-end-2">
+        <Holds className="row-start-1 row-end-2 h-full w-full">
           <TitleBoxes
             onClick={() => {
               setStep(1);
               setMethod("");
             }}
-          ></TitleBoxes>
+          >
+            {" "}
+            <Holds className="flex items-center justify-end w-full h-full">
+              <Titles size={"h1"}>Select Equipment</Titles>
+            </Holds>
+          </TitleBoxes>
         </Holds>
-        <Holds className="row-start-2 row-end-3 h-full">
-          <Titles size={"h1"}>Select Equipment</Titles>
-        </Holds>
-        <Holds className="h-full row-start-3 row-end-8">
+
+        <Holds className="h-full row-start-2 row-end-8">
           <Contents width={"section"} className="h-full">
             <Grids rows={"7"} gap={"5"}>
               <Holds className="h-full w-full row-start-1 row-end-7 ">
@@ -68,7 +72,7 @@ export default function EquipmentSelectorView({
                     if (equipment) {
                       setEquipment(equipment); // Update the equipment state with the full Option object
                     } else {
-                      setEquipment({ code: "", label: "" }); // Reset if null
+                      setEquipment({ id: "", code: "", label: "" }); // Reset if null
                     }
                   }}
                   initialValue={equipment}

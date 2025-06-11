@@ -1,19 +1,22 @@
 "use client";
 import { SearchCrew } from "@/lib/types";
 import {
+  BaseUser,
   CrewCreationState,
+  CrewData,
+  CrewEditState,
   PersonnelView,
   RegistrationState,
   UserEditState,
 } from "./types/personnel";
 import { Dispatch, SetStateAction } from "react";
 import UserSelected from "./UserSelected";
-import CreateNewCrewTab from "./CreateNewCrew";
+import CreateNewCrewTab from "./CreateNewCrewTab";
 import CreateNewUserTab from "./CreateNewUserTab";
 import DefaultTab from "./defaultTab";
-import RegisterNewCrew from "./RegisterNewCrew";
-import RegisterNewUser from "./RegisterNewUser";
-import ViewCrew from "./ViewCrew";
+import RegisterNewCrew from "./RegisterNewCrew/RegisterNewCrew";
+import RegisterNewUser from "./RegisterNewUser/RegisterNewUser";
+import CrewSelected from "./CrewSelected/CrewSelected";
 
 interface PersonnelMainContentProps {
   view: PersonnelView;
@@ -33,29 +36,54 @@ interface PersonnelMainContentProps {
   ) => void;
   retainOnlyUserEditState: (userId: string) => void;
   discardUserEditChanges: (userId: string) => void;
+  employees: BaseUser[];
+  crewEditStates: Record<string, CrewEditState>;
+  updateCrewEditState: (
+    crewId: string,
+    updates: Partial<CrewEditState>
+  ) => void;
+  discardCrewEditChanges: (crewId: string) => void;
+  retainOnlyCrewEditState: (crewId: string) => void;
+  isCrewEditStateDirty: (crewId: string) => boolean;
+  initializeCrewEditState: (crewData: CrewData) => CrewEditState;
+  setCrewCreationSuccess: (isSuccess: boolean) => void;
+  fetchAllData: () => Promise<void>;
+  isUserEditStateDirty: (userId: string) => boolean;
+  isCrewCreationFormDirty?: () => boolean;
 }
 
-export default function PersonnelMainContent({
-  view,
-  crew,
-  setView,
-  registrationState,
-  updateRegistrationForm,
-  updateRegistrationCrews,
-  handleRegistrationSubmit,
-  crewCreationState,
-  updateCrewForm,
-  handleCrewSubmit,
-  userEditStates,
-  updateUserEditState,
-  retainOnlyUserEditState,
-  discardUserEditChanges,
-}: PersonnelMainContentProps) {
+export default function PersonnelMainContent(props: PersonnelMainContentProps) {
+  const {
+    view,
+    crew,
+    employees,
+    setView,
+    registrationState,
+    updateRegistrationForm,
+    updateRegistrationCrews,
+    handleRegistrationSubmit,
+    crewCreationState,
+    updateCrewForm,
+    handleCrewSubmit,
+    userEditStates,
+    updateUserEditState,
+    retainOnlyUserEditState,
+    discardUserEditChanges,
+    crewEditStates,
+    updateCrewEditState,
+    retainOnlyCrewEditState,
+    discardCrewEditChanges,
+    fetchAllData,
+    isUserEditStateDirty,
+    isCrewCreationFormDirty,
+  } = props;
+
   return (
     <>
       {view.mode === "user" && (
         <>
           <UserSelected
+            fetchAllData={fetchAllData}
             crew={crew}
             setView={() => setView({ mode: "default" })}
             setRegistration={() => setView({ mode: "registerUser" })}
@@ -76,6 +104,9 @@ export default function PersonnelMainContent({
             }
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            setViewOption={setView}
+            viewOption={view}
+            isUserEditStateDirty={isUserEditStateDirty}
           />
           <CreateNewCrewTab
             setView={() =>
@@ -93,10 +124,28 @@ export default function PersonnelMainContent({
       )}
       {view.mode === "registerUser+crew" && (
         <>
-          <ViewCrew
-            setView={() => {
-              setView({ mode: "registerUser" });
-            }}
+          <CrewSelected
+            setView={() => setView({ mode: "registerUser" })}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
+            employees={employees}
+            crewId={view.crewId}
+            crewEditState={
+              crewEditStates[view.crewId] || {
+                crew: null,
+                originalCrew: null,
+                edited: {},
+                loading: false,
+                successfullyUpdated: false,
+              }
+            }
+            updateCrewEditState={(updates) =>
+              updateCrewEditState(view.crewId, updates)
+            }
+            retainOnlyCrewEditState={retainOnlyCrewEditState}
+            discardCrewEditChanges={discardCrewEditChanges}
+            setViewOption={setView}
+            viewOption={view}
           />
           <RegisterNewUser
             crew={crew}
@@ -107,18 +156,26 @@ export default function PersonnelMainContent({
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
             handleSubmit={handleRegistrationSubmit}
+            setViewOption={setView}
+            viewOption={view}
           />
         </>
       )}
       {view.mode === "registerCrew+user" && (
         <>
           <RegisterNewCrew
+            crewCreationState={crewCreationState}
             cancelCrewCreation={() =>
               setView({ mode: "user", userId: view.userId })
             }
+            employees={employees}
+            handleCrewSubmit={handleCrewSubmit}
+            updateCrewForm={updateCrewForm}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
           <UserSelected
             crew={crew}
+            fetchAllData={fetchAllData}
             setView={() => setView({ mode: "registerCrew" })}
             setRegistration={() => setView({ mode: "registerBoth" })}
             userid={view.userId}
@@ -138,13 +195,21 @@ export default function PersonnelMainContent({
             }
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            setViewOption={setView}
+            viewOption={view}
+            isUserEditStateDirty={isUserEditStateDirty}
           />
         </>
       )}
       {view.mode === "registerBoth" && (
         <>
           <RegisterNewCrew
+            crewCreationState={crewCreationState}
             cancelCrewCreation={() => setView({ mode: "registerUser" })}
+            employees={employees}
+            handleCrewSubmit={handleCrewSubmit}
+            updateCrewForm={updateCrewForm}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
           <RegisterNewUser
             crew={crew}
@@ -153,27 +218,74 @@ export default function PersonnelMainContent({
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
             handleSubmit={handleRegistrationSubmit}
+            setViewOption={setView}
+            viewOption={view}
           />
         </>
       )}
       {view.mode === "crew" && (
         <>
-          <ViewCrew setView={() => setView({ mode: "default" })} />
+          <CrewSelected
+            setView={() => setView({ mode: "registerUser" })}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
+            employees={employees}
+            crewId={view.crewId}
+            crewEditState={
+              crewEditStates[view.crewId] || {
+                crew: null,
+                originalCrew: null,
+                edited: {},
+                loading: false,
+                successfullyUpdated: false,
+              }
+            }
+            updateCrewEditState={(updates) =>
+              updateCrewEditState(view.crewId, updates)
+            }
+            retainOnlyCrewEditState={retainOnlyCrewEditState}
+            discardCrewEditChanges={discardCrewEditChanges}
+            setViewOption={setView}
+            viewOption={view}
+          />
           <CreateNewUserTab
-            setView={() => () =>
+            setView={() =>
               setView({
                 mode: "registerUser+crew",
                 crewId: view.crewId,
-              })}
+              })
+            }
           />
         </>
       )}
       {view.mode === "user+crew" && (
         <>
-          <ViewCrew
-            setView={() => setView({ mode: "user", userId: view.userId })}
+          <CrewSelected
+            setView={() => setView({ mode: "registerUser" })}
+            fetchAllData={fetchAllData}
+            resetView={() => setView({ mode: "default" })}
+            employees={employees}
+            crewId={view.crewId}
+            crewEditState={
+              crewEditStates[view.crewId] || {
+                crew: null,
+                originalCrew: null,
+                edited: {},
+                loading: false,
+                successfullyUpdated: false,
+              }
+            }
+            updateCrewEditState={(updates) =>
+              updateCrewEditState(view.crewId, updates)
+            }
+            retainOnlyCrewEditState={retainOnlyCrewEditState}
+            discardCrewEditChanges={discardCrewEditChanges}
+            setViewOption={setView}
+            viewOption={view}
+            userId={view.userId}
           />
           <UserSelected
+            fetchAllData={fetchAllData}
             crew={crew}
             setView={() => setView({ mode: "crew", crewId: view.crewId })}
             setRegistration={() =>
@@ -196,6 +308,9 @@ export default function PersonnelMainContent({
             }
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            setViewOption={setView}
+            viewOption={view}
+            isUserEditStateDirty={isUserEditStateDirty}
           />
         </>
       )}
@@ -214,6 +329,8 @@ export default function PersonnelMainContent({
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
             handleSubmit={handleRegistrationSubmit}
+            setViewOption={setView}
+            viewOption={view}
           />
           <CreateNewCrewTab setView={() => setView({ mode: "registerBoth" })} />
         </>
@@ -223,7 +340,12 @@ export default function PersonnelMainContent({
       {view.mode === "registerCrew" && (
         <>
           <RegisterNewCrew
+            crewCreationState={crewCreationState}
             cancelCrewCreation={() => setView({ mode: "default" })}
+            employees={employees}
+            handleCrewSubmit={handleCrewSubmit}
+            updateCrewForm={updateCrewForm}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
           <CreateNewUserTab setView={() => setView({ mode: "registerBoth" })} />
         </>

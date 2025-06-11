@@ -378,19 +378,26 @@ export async function createRefuelLog(formData: FormData) {
 export async function createRefuelEquipmentLog(formData: FormData) {
   console.log("Creating refuel logs...");
   console.log(formData);
+  
   const employeeEquipmentLogId = formData.get(
     "employeeEquipmentLogId"
   ) as string;
+  
+  const gallonsRefueledStr = formData.get("gallonsRefueled") as string | null;
+  const gallonsRefueled = gallonsRefueledStr ? parseFloat(gallonsRefueledStr) : null;
 
   const refueledLogs = await prisma.refuelLog.create({
     data: {
       employeeEquipmentLogId,
+      gallonsRefueled,
     },
   });
 
   console.log(refueledLogs);
+  revalidatePath(`/dashboard/equipment/${employeeEquipmentLogId}`);
   revalidatePath("/dashboard/truckingAssistant");
-  const { id, gallonsRefueled } = refueledLogs;
+  
+  const { id } = refueledLogs;
   const data = { id, gallonsRefueled, employeeEquipmentLogId };
   return data;
 }
