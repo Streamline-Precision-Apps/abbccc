@@ -131,17 +131,17 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   console.log("Updating hauling logs...");
   console.log(formData);
   const id = formData.get("id") as string;
-  const equipmentName = formData.get("equipmentName") as string;
-  const equipmentId = formData.get("equipmentId") as string;
+  const equipmentQrId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
   // First check if equipment exists
   const equipmentExists = await prisma.equipment.findUnique({
-    where: { id: equipmentId },
+    where: { qrId: equipmentQrId },
   });
 
+
   if (!equipmentExists) {
-    throw new Error(`Equipment with ID ${equipmentId} not found`);
+    throw new Error(`Equipment with ID ${equipmentQrId} not found`);
   }
 
   // Then proceed with update
@@ -149,7 +149,7 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
     where: { id },
     data: {
       truckingLogId,
-      equipmentId: equipmentName,
+      equipmentId: equipmentQrId,
     },
   });
 

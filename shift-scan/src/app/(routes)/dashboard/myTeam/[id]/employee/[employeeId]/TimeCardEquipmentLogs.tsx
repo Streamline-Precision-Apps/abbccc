@@ -82,12 +82,19 @@ export default function TimeCardEquipmentLogs({
         );
       })
       .map((log) => {
-        const start = parse(
-          log.startTime ?? "",
-          "yyyy-MM-dd HH:mm:ss",
-          new Date()
+        // Parse as UTC and convert to local time
+        const startUTC = new Date(log.startTime + "Z");
+        const endUTC = new Date(log.endTime + "Z");
+        const start = new Date(
+          startUTC.getTime() +
+            startUTC.getTimezoneOffset() * 60000 -
+            new Date().getTimezoneOffset() * 60000
         );
-        const end = parse(log.endTime ?? "", "yyyy-MM-dd HH:mm:ss", new Date());
+        const end = new Date(
+          endUTC.getTime() +
+            endUTC.getTimezoneOffset() * 60000 -
+            new Date().getTimezoneOffset() * 60000
+        );
 
         const durationMinutes = differenceInMinutes(end, start);
         const durationHours = differenceInHours(end, start);
@@ -119,6 +126,9 @@ export default function TimeCardEquipmentLogs({
     }
   }, [equipmentLogs, processLogs, editedEquipmentLogs.length]);
 
+  // If you use local state, sync it here
+  // setEditedEquipmentLogs(equipmentLogs ?? []);
+
   const handleTimeChange = useCallback(
     (id: string, field: "startTime" | "endTime", timeString: string) => {
       const updatedLogs = editedEquipmentLogs.map((log) => {
@@ -130,18 +140,15 @@ export default function TimeCardEquipmentLogs({
               "yyyy-MM-dd HH:mm",
               new Date()
             );
-
             const start =
               field === "startTime" ? newDateTime : log.originalStart;
             const end = field === "endTime" ? newDateTime : log.originalEnd;
-
             const durationMinutes = differenceInMinutes(end, start);
             const durationHours = differenceInHours(end, start);
             const remainingMinutes = durationMinutes % 60;
-
             return {
               ...log,
-              [field]: timeString, // Keep display format
+              [field]: timeString,
               usageTime: `${
                 durationHours > 0 ? `${durationHours} hrs ` : ""
               }${remainingMinutes} min`,
@@ -155,19 +162,33 @@ export default function TimeCardEquipmentLogs({
         }
         return log;
       });
-
       setEditedEquipmentLogs(updatedLogs);
 
-      // Prepare the update data with proper Date objects
-      const updateData = updatedLogs.map((log) => ({
-        id: log.id,
-        startTime: log.originalStart,
-        endTime: log.originalEnd,
+      // Reconstruct the nested EquipmentLogsData structure with updated times
+      const updatedNested = equipmentLogs.map((group) => ({
+        ...group,
+        EmployeeEquipmentLogs: group.EmployeeEquipmentLogs.map((log) => {
+          const updated = updatedLogs.find((l) => l.id === log.id);
+          if (updated) {
+            return {
+              ...log,
+              startTime: updated.originalStart
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
+              endTime: updated.originalEnd
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
+            };
+          }
+          return log;
+        }),
       }));
-
-      onDataChange(updateData);
+      // Cast to any to satisfy the onDataChange signature, which expects EquipmentLogUpdate[]
+      onDataChange(updatedNested as any);
     },
-    [editedEquipmentLogs, onDataChange]
+    [editedEquipmentLogs, equipmentLogs, onDataChange]
   );
 
   const isEmptyData = editedEquipmentLogs.length === 0;

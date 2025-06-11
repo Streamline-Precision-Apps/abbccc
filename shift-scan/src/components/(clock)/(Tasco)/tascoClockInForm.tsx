@@ -69,6 +69,10 @@ export default function TascoClockInForm({
     fetchMaterialTypes();
   }, []);
 
+  useEffect(() => {
+    console.log("equipment: ", equipment);
+  }, [equipment]);
+
   return (
     <Holds
       background={"white"}
