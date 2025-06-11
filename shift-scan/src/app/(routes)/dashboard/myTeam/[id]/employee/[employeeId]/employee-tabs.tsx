@@ -201,18 +201,80 @@ export default function EmployeeTabs() {
             const changesArray = Array.isArray(timesheetChanges)
               ? timesheetChanges
               : [timesheetChanges];
+            const serializedChanges = changesArray.map((timesheet) => {
+              // Debug: Log the type and value of time properties
+              console.log("Processing timesheet data:", {
+                id: timesheet.id,
+                startTimeType: typeof timesheet.startTime,
+                startTimeValue: timesheet.startTime,
+                endTimeType: typeof timesheet.endTime,
+                endTimeValue: timesheet.endTime,
+              });
 
-            const serializedChanges = changesArray.map((timesheet) => ({
-              id: timesheet.id,
-              startTime: timesheet.startTime
-                ? new Date(timesheet.startTime).toISOString()
-                : undefined,
-              endTime: timesheet.endTime
-                ? new Date(timesheet.endTime).toISOString()
-                : undefined,
-              jobsiteId: timesheet.jobsiteId,
-              costcode: timesheet.costcode,
-            }));
+              // Validate date values before conversion
+              let startTimeISO = undefined;
+              let endTimeISO = undefined;
+
+              try {
+                if (timesheet.startTime) {
+                  // Ensure we're working with a Date object
+                  const startDate =
+                    timesheet.startTime instanceof Date
+                      ? timesheet.startTime
+                      : new Date(timesheet.startTime);
+
+                  // Validate the date
+                  if (!isNaN(startDate.getTime())) {
+                    startTimeISO = startDate.toISOString();
+                  } else {
+                    console.warn(
+                      "Invalid startTime detected:",
+                      timesheet.startTime
+                    );
+                  }
+                }
+              } catch (e) {
+                console.error(
+                  "Error processing startTime:",
+                  timesheet.startTime,
+                  e
+                );
+              }
+
+              try {
+                if (timesheet.endTime) {
+                  // Ensure we're working with a Date object
+                  const endDate =
+                    timesheet.endTime instanceof Date
+                      ? timesheet.endTime
+                      : new Date(timesheet.endTime);
+
+                  // Validate the date
+                  if (!isNaN(endDate.getTime())) {
+                    endTimeISO = endDate.toISOString();
+                  } else {
+                    console.warn(
+                      "Invalid endTime detected:",
+                      timesheet.endTime
+                    );
+                  }
+                }
+              } catch (e) {
+                console.error(
+                  "Error processing endTime:",
+                  timesheet.endTime,
+                  e
+                );
+              }
+
+              return {
+                id: timesheet.id,
+                startTime: startTimeISO,
+                endTime: endTimeISO,
+                jobsiteId: timesheet.jobsiteId,
+                costcode: timesheet.costcode,
+              };
+            });
 
             const validChanges = serializedChanges.filter(
               (timesheet) => timesheet.id && timesheet.startTime !== undefined
@@ -450,6 +512,9 @@ export default function EmployeeTabs() {
     setEdit(false);
   }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
 
+  // Add state for focusIds
+  const [focusIds, setFocusIds] = useState<string[]>([]);
+
   return (
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="h-full w-full">
@@ -520,6 +585,9 @@ export default function EmployeeTabs() {
                   manager={manager}
                   timeSheetFilter={timeSheetFilter}
                   setTimeSheetFilter={setTimeSheetFilter}
+                  focusIds={focusIds}
+                  setFocusIds={setFocusIds}
+                  isReviewYourTeam={false}
                   onSaveChanges={onSaveChanges}
                   onCancelEdits={onCancelEdits}
                   fetchTimesheetsForDate={fetchTimesheetsForDate}
@@ -547,6 +615,9 @@ export interface EmployeeTimeSheetsProps {
   manager: string;
   timeSheetFilter: TimesheetFilter;
   setTimeSheetFilter: React.Dispatch<React.SetStateAction<TimesheetFilter>>;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
   onSaveChanges: (
     changes:
       | TimesheetHighlights[]

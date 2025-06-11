@@ -30,6 +30,12 @@ export enum FormStatus {
   DRAFT = "DRAFT",
 }
 
+export enum TimeSheetStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
 export enum WorkType {
   MECHANIC = "MECHANIC",
   LABOR = "LABOR",
@@ -1023,3 +1029,10 @@ export function isEquipmentLogsData(data: unknown): data is EquipmentLogsData {
     'EmployeeEquipmentLogs' in data[0]
   );
 }
+
+export type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};

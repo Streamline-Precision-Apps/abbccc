@@ -16,10 +16,10 @@ import {
   TimesheetFilter,
   TruckingMileageUpdate,
   TruckingEquipmentHaulLog,
-  TruckingMileageData,
-  TruckingEquipmentHaulLogData,
   TruckingMaterialHaulLogData,
   TruckingRefuelLogData,
+  TruckingMileageData,
+  TruckingEquipmentHaulLogData,
   TruckingStateLogData,
   TascoHaulLogData,
   TascoRefuelLogData,
@@ -39,6 +39,53 @@ import {
   updateTruckingMileage,
 } from "@/actions/myTeamsActions";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
+import { EmployeeTimeSheets } from "../../myTeam/[id]/employee/[employeeId]/employee-timesheet";
+import { flattenMaterialLogs } from "../../myTeam/[id]/employee/[employeeId]/TimeCardTruckingMaterialLogs";
+import { z } from "zod";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { Buttons } from "@/components/(reusable)/buttons";
+
+// Zod schema for Team data
+const countSchema = z.object({
+  Users: z.number(),
+});
+
+// Define the main schema
+const TeamSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  _count: countSchema,
+});
+
+// Zod schema for the response containing an array of Teams
+const TeamsResponseSchema = z.array(TeamSchema);
+
+type Team = z.infer<typeof TeamSchema>;
+
+// Helper to flatten nested refuel logs for server submission
+const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
+  const result: {
+    id: string;
+    gallonsRefueled?: number | null;
+    milesAtFueling?: number | null;
+  }[] = [];
+  logs.forEach((item) => {
+    (item.TruckingLogs ?? []).forEach((log) => {
+      if (!log) return;
+      (log.RefuelLogs ?? []).forEach((refuel) => {
+        if (refuel && refuel.id) {
+          result.push({
+            id: refuel.id,
+            gallonsRefueled: refuel.gallonsRefueled,
+            milesAtFueling: refuel.milesAtFueling,
+          });
+        }
+      });
+    });
+  });
+  return result;
+};
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -89,13 +136,21 @@ function isEquipmentLogChange(
   );
 }
 
-export default function EmployeeTabs() {
-  const { employeeId } = useParams();
-  const { id } = useParams();
-  const urls = useSearchParams();
-  const rPath = urls.get("rPath");
-  const timeCard = urls.get("timeCard");
-  const router = useRouter();
+interface EditTeamTimeSheetProps {
+  prevStep: () => void;
+  employeeId?: string;
+  editFilter?: TimesheetFilter;
+  focusIds?: string[];
+  setFocusIds?: (ids: string[]) => void;
+}
+
+const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
+  prevStep,
+  employeeId,
+  editFilter,
+  focusIds,
+  setFocusIds,
+}) => {
   const t = useTranslations("MyTeam");
   const { data: session } = useSession();
 
@@ -103,20 +158,20 @@ export default function EmployeeTabs() {
     () => `${session?.user?.firstName} ${session?.user?.lastName}`,
     [session]
   );
-  const [activeTab, setActiveTab] = useState(1);
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
+
+
   const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
-    "timesheetHighlights"
+    editFilter || "timesheetHighlights"
   );
 
   const {
     employee,
-    contacts,
     loading: loadingEmployee,
     error: errorEmployee,
-  } = useEmployeeData(employeeId as string | undefined);
+  } = useEmployeeData(employeeId);
 
   const {
     data: timesheetData,
@@ -125,7 +180,7 @@ export default function EmployeeTabs() {
     error: errorTimesheets,
     updateDate: fetchTimesheetsForDate,
     updateFilter: fetchTimesheetsForFilter,
-  } = useTimesheetData(employeeId as string | undefined, date, timeSheetFilter);
+  } = useTimesheetData(employeeId, date, timeSheetFilter);
 
   const loading = loadingEmployee || loadingTimesheets;
 
@@ -146,7 +201,8 @@ export default function EmployeeTabs() {
         | TimesheetHighlights
         | TruckingMileageUpdate[]
         | TruckingEquipmentHaulLog[]
-        | TruckingMaterialHaulLog[]
+        | TruckingMaterialHaulLogData
+        | TruckingRefuelLogData
         | {
             id: string;
             gallonsRefueled?: number | null;
@@ -162,6 +218,7 @@ export default function EmployeeTabs() {
           }[]
         | { id: string; gallonsRefueled?: number | null }[]
         | EquipmentLogChange[]
+        | TruckingMileageData
     ) => {
       try {
         switch (timeSheetFilter) {
@@ -172,18 +229,41 @@ export default function EmployeeTabs() {
             const changesArray = Array.isArray(timesheetChanges)
               ? timesheetChanges
               : [timesheetChanges];
+            const serializedChanges = changesArray.map((timesheet) => {
+              // Safely convert to ISO string with validation
+              const safeToISOString = (
+                dateValue: Date | string | null | undefined
+              ) => {
+                if (!dateValue) return undefined;
 
-            const serializedChanges = changesArray.map((timesheet) => ({
-              id: timesheet.id,
-              startTime: timesheet.startTime
-                ? new Date(timesheet.startTime).toISOString()
-                : undefined,
-              endTime: timesheet.endTime
-                ? new Date(timesheet.endTime).toISOString()
-                : undefined,
-              jobsiteId: timesheet.jobsiteId,
-              costcode: timesheet.costcode,
-            }));
+                try {
+                  // Ensure we're working with a valid Date object
+                  const date =
+                    dateValue instanceof Date ? dateValue : new Date(dateValue);
+
+                  // Check if date is valid before converting
+                  if (isNaN(date.getTime())) {
+                    console.warn(`Invalid date detected: ${dateValue}`);
+                    return undefined;
+                  }
+
+                  return date.toISOString();
+                } catch (error) {
+                  console.error(
+                    `Error converting date to ISO string: ${error}`
+                  );
+                  return undefined;
+                }
+              };
+
+              return {
+                id: timesheet.id,
+                startTime: safeToISOString(timesheet.startTime),
+                endTime: safeToISOString(timesheet.endTime),
+                jobsiteId: timesheet.jobsiteId,
+                costcode: timesheet.costcode,
+              };
+            });
 
             const validChanges = serializedChanges.filter(
               (timesheet) => timesheet.id && timesheet.startTime !== undefined
@@ -225,15 +305,32 @@ export default function EmployeeTabs() {
           }
 
           case "truckingEquipmentHaulLogs": {
-            const haulLogChanges = changes as TruckingEquipmentHaulLog[];
-            const updates = haulLogChanges.flatMap(
-              (log) =>
-                log.EquipmentHauled?.map((hauledItem) => ({
+            // Only proceed if changes is an array and has the expected structure
+            if (
+              !Array.isArray(changes) ||
+              !changes.every(
+                (item) => typeof item === "object" && "TruckingLogs" in item
+              )
+            ) {
+              console.warn("No valid haul log changes to send");
+              return;
+            }
+            const haulLogChanges = changes as Array<{ TruckingLogs: any[] }>;
+
+            const updates = haulLogChanges.flatMap((item) =>
+              (item.TruckingLogs || []).flatMap((log: any) =>
+                (log.EquipmentHauled || []).map((hauledItem: any) => ({
                   id: hauledItem.id,
                   equipmentId: hauledItem.Equipment?.id,
                   jobSiteId: hauledItem.JobSite?.id,
-                })) || []
+                }))
+              )
             );
+
+            if (updates.length === 0) {
+              console.warn("No haul log updates to send");
+              return;
+            }
 
             const haulingResult = await updateTruckingHaulLogs(updates);
             if (haulingResult?.success) {
@@ -247,57 +344,49 @@ export default function EmployeeTabs() {
           }
 
           case "truckingMaterialHaulLogs": {
-            const materialChanges = changes as TruckingMaterialHaulLog[];
-            if (materialChanges.length > 0) {
-              const formattedChanges = materialChanges.map((change) => ({
-                id: change.id,
-                name: change.name,
-                LocationOfMaterial: change.LocationOfMaterial,
-                materialWeight: change.materialWeight,
-                lightWeight: change.lightWeight,
-                grossWeight: change.grossWeight,
-              }));
+            // Accept both flat and nested structure
+            let formattedChanges: any[] = [];
+            if (
+              Array.isArray(changes) &&
+              changes.length > 0 &&
+              "TruckingLogs" in changes[0]
+            ) {
+              formattedChanges = flattenMaterialLogs(
+                changes as TruckingMaterialHaulLogData
+              );
+            } else if (Array.isArray(changes)) {
+              formattedChanges = changes;
+            }
+            if (
+              Array.isArray(formattedChanges) &&
+              formattedChanges.length > 0
+            ) {
               await updateTruckingMaterialLogs(formattedChanges);
             }
             break;
           }
-
-          case "truckingRefuelLogs":
+          case "truckingRefuelLogs": {
+            // Accept both flat and nested structure
+            let formattedChanges: any[] = [];
             if (
-              changes &&
               Array.isArray(changes) &&
-              changes.every(
-                (change) =>
-                  "id" in change &&
-                  ("gallonsRefueled" in change || "milesAtFueling" in change)
-              )
+              changes.length > 0 &&
+              "TruckingLogs" in changes[0]
             ) {
-              await updateTruckingRefuelLogs(
-                changes as {
-                  id: string;
-                  gallonsRefueled?: number | null;
-                  milesAtFueling?: number | null;
-                }[]
+              formattedChanges = flattenRefuelLogs(
+                changes as TruckingRefuelLogData
               );
-            } else {
-              console.error("Invalid changes type");
+            } else if (Array.isArray(changes)) {
+              formattedChanges = changes;
             }
-            break;
-
-          case "truckingStateLogs":
             if (
-              Array.isArray(changes) &&
-              changes.every(
-                (change) =>
-                  "id" in change &&
-                  ("state" in change || "stateLineMileage" in change)
-              )
+              Array.isArray(formattedChanges) &&
+              formattedChanges.length > 0
             ) {
-              await updateTruckingStateLogs(changes);
-            } else {
-              console.error("Invalid changes type");
+              await updateTruckingRefuelLogs(formattedChanges);
             }
             break;
+          }
 
           case "tascoHaulLogs":
             if (
@@ -343,19 +432,31 @@ export default function EmployeeTabs() {
             }
             break;
 
-          case "equipmentLogs":
-            if (Array.isArray(changes) && changes.every(isEquipmentLogChange)) {
-              await updateEquipmentLogs(
-                changes.map((change) => ({
-                  id: change.id,
-                  startTime: change.startTime,
-                  endTime: change.endTime,
-                }))
+          case "equipmentLogs": {
+            if (
+              Array.isArray(changes) &&
+              changes.length > 0 &&
+              typeof changes[0] === "object" &&
+              "startTime" in changes[0] &&
+              "endTime" in changes[0]
+            ) {
+              const validChanges = (changes as EquipmentLogChange[]).filter(
+                (change) => change.id && change.startTime && change.endTime
               );
+              if (validChanges.length > 0) {
+                await updateEquipmentLogs(
+                  validChanges.map((change) => ({
+                    id: change.id,
+                    startTime: change.startTime,
+                    endTime: change.endTime,
+                  }))
+                );
+              }
             } else {
-              console.error("Invalid changes type");
+              console.error("Invalid changes type for equipmentLogs");
             }
             break;
+          }
 
           case "equipmentRefuelLogs":
             if (
@@ -400,86 +501,74 @@ export default function EmployeeTabs() {
     setEdit(false);
   }, [date, fetchTimesheetsForDate, fetchTimesheetsForFilter, timeSheetFilter]);
 
-  return (
-    <Holds className="h-full w-full">
-      <Grids rows={"7"} gap={"5"} className="h-full w-full">
-        <Holds className="row-start-1 row-end-2 h-full w-full">
-          <TitleBoxes
-            onClick={() =>
-              router.push(
-                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`
-              )
-            }
-          >
-            <Titles size={"h2"}>
-              {loading
-                ? "Loading..."
-                : `${employee?.firstName} ${employee?.lastName}`}
-            </Titles>
-          </TitleBoxes>
-        </Holds>
+  const handleProceed = () => {
+    setFocusIds?.([]);
+    prevStep();
+  };
 
-        <Holds
-          className={`w-full h-full row-start-2 row-end-8 ${
-            loading ? "animate-pulse" : ""
-          }`}
-        >
-          <Grids rows={"12"} className="h-full w-full">
+  return (
+    <Bases>
+      <Contents>
+        <Holds className="h-full w-full">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds
-              position={"row"}
-              className={"row-start-1 row-end-2 h-full gap-1"}
+              background={"white"}
+              className="row-start-1 row-end-2 h-full w-full"
             >
-              <NewTab
-                onClick={() => setActiveTab(1)}
-                isActive={activeTab === 1}
-                isComplete={true}
-                titleImage="/information.svg"
-                titleImageAlt={""}
-              >
-                {t("ContactInfo")}
-              </NewTab>
-              <NewTab
-                onClick={() => setActiveTab(2)}
-                isActive={activeTab === 2}
-                isComplete={true}
-                titleImage="/form.svg"
-                titleImageAlt={""}
-              >
-                {t("TimeCards")}
-              </NewTab>
+              <TitleBoxes onClick={() => prevStep()}>
+                <Titles size={"h2"}>
+                  {loading
+                    ? t("Loading")
+                    : `${employee?.firstName} ${employee?.lastName}`}
+                </Titles>
+              </TitleBoxes>
             </Holds>
-            <Holds className="h-full w-full row-start-2 row-end-13">
-              {activeTab === 1 && (
-                <EmployeeInfo
-                  employee={employee}
-                  contacts={contacts}
-                  loading={loading}
-                />
-              )}
-              {activeTab === 2 && (
-                <EmployeeTimeSheets
-                  data={timesheetData}
-                  date={date}
-                  setDate={setDate}
-                  edit={edit}
-                  setEdit={setEdit}
-                  loading={loading}
-                  manager={manager}
-                  timeSheetFilter={timeSheetFilter}
-                  setTimeSheetFilter={setTimeSheetFilter}
-                  onSaveChanges={onSaveChanges}
-                  onCancelEdits={onCancelEdits}
-                  fetchTimesheetsForDate={fetchTimesheetsForDate}
-                  fetchTimesheetsForFilter={fetchTimesheetsForFilter}
-                />
-              )}
+
+            <Holds
+              className={`w-full h-full row-start-2 row-end-8 ${
+                loading ? "animate-pulse" : ""
+              }`}
+            >
+              <Grids rows={"12"} className="h-full w-full">
+                <Holds className="h-full w-full row-start-1 row-end-12">
+                  <EmployeeTimeSheets
+                    data={timesheetData}
+                    date={date}
+                    setDate={setDate}
+                    edit={edit}
+                    setEdit={setEdit}
+                    loading={loading}
+                    manager={manager}
+                    focusIds={focusIds || []}
+                    setFocusIds={setFocusIds || ((ids) => {})}
+                    timeSheetFilter={timeSheetFilter}
+                    setTimeSheetFilter={setTimeSheetFilter}
+                    onSaveChanges={onSaveChanges}
+                    onCancelEdits={onCancelEdits}
+                    fetchTimesheetsForDate={fetchTimesheetsForDate}
+                    fetchTimesheetsForFilter={fetchTimesheetsForFilter}
+                  />
+                </Holds>
+                <Holds className="h-full w-full row-start-12 row-end-13">
+                  <Buttons
+                    onClick={handleProceed}
+                    disabled={edit}
+                    background={"green"}
+                    className="w-full h-full"
+                  >
+                    {t("Continue")}
+                  </Buttons>
+                </Holds>
+              </Grids>
             </Holds>
           </Grids>
         </Holds>
-      </Grids>
-    </Holds>
+      </Contents>
+    </Bases>
   );
-}
+};
+
+export default EditTeamTimeSheet;
 
 // In EmployeeTimesheetProps (or EmployeeTimesheetData type), allow null:
 export type EmployeeTimesheetData = TimesheetDataUnion;
@@ -500,7 +589,8 @@ export interface EmployeeTimeSheetsProps {
       | TimesheetHighlights
       | TruckingMileageUpdate[]
       | TruckingEquipmentHaulLog[]
-      | TruckingMaterialHaulLog[]
+      | TruckingMaterialHaulLogData
+      | TruckingRefuelLogData
       | {
           id: string;
           gallonsRefueled?: number | null;

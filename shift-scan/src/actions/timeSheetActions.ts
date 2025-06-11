@@ -909,3 +909,37 @@ export async function updateTimesheetHighlights(
     throw error;
   }
 }
+
+// Approve all pending timesheets for a user
+export async function approvePendingTimesheets(userId: string, managerName?: string) {
+  try {
+    // Find all pending timesheets for the user
+    const pendingTimesheets = await prisma.timeSheet.findMany({
+      where: {
+        userId,
+        status: "PENDING",
+      },
+      select: { id: true },
+    });
+    if (!pendingTimesheets.length) return { success: true, updated: 0 };
+    const timesheetIds = pendingTimesheets.map((ts) => ts.id);
+    // Update all to APPROVED
+    await prisma.timeSheet.updateMany({
+      where: {
+        id: { in: timesheetIds },
+        userId,
+        status: "PENDING",
+      },
+      data: {
+        status: "APPROVED",
+        statusComment: managerName ? `Approved by ${managerName}` : "Approved by manager",
+      },
+    });
+    revalidatePath("/dashboard/myTeam/timecards");
+    revalidatePath("/dashboard/myTeam");
+    return { success: true, updated: timesheetIds.length };
+  } catch (error) {
+    console.error("Error approving pending timesheets:", error);
+    return { success: false, error: "Failed to approve timesheets" };
+  }
+}
