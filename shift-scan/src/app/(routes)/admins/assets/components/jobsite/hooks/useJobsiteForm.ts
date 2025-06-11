@@ -76,9 +76,20 @@ export const useJobsiteForm = ({
   }, [hasUnsavedChanges, onUnsavedChangesChange]);
 
   /**
+   * Type definition for objects with id and name properties
+   */
+  type IdNamePair = {
+    id: string;
+    name: string;
+  };
+
+  /**
    * Deep comparison function for arrays with id/name objects
    */
-  const arraysEqual = (arr1: any, arr2: any): boolean => {
+  const arraysEqual = (
+    arr1: IdNamePair[] | unknown,
+    arr2: IdNamePair[] | unknown
+  ): boolean => {
     if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
     if (arr1.length !== arr2.length) return false;
 
