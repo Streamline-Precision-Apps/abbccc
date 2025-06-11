@@ -13,7 +13,7 @@ export type Equipment = {
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
   isDisabledByAdmin: boolean;
   overWeight: boolean;
-  currentWeight: number;
+  currentWeight: number | null;
   equipmentVehicleInfo?: {
     make: string | null;
     model: string | null;
@@ -22,4 +22,16 @@ export type Equipment = {
     registrationExpiration: Date | null;
     mileage: number | null;
   };
+};
+export type ApprovalStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "CHANGES_REQUESTED";
+
+// Summary type for equipment listing
+export type EquipmentSummary = {
+  id: string;
+  name: string;
+  approvalStatus: ApprovalStatus;
 };

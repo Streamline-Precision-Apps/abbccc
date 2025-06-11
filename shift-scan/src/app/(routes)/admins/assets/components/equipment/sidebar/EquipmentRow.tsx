@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
-import { Equipment } from "../../../types";
+import { EquipmentSummary } from "../../../types";
 
 interface EquipmentRowProps {
-  equipment: Equipment;
+  equipment: EquipmentSummary;
   isSelected: boolean;
-  onEquipmentClick: (equipment: Equipment) => void;
+  onEquipmentClick: (equipment: EquipmentSummary) => void;
   hasUnsavedChanges?: boolean;
 }
 
@@ -45,13 +45,19 @@ const EquipmentRow: React.FC<EquipmentRowProps> = ({
     <>
       <Holds
         onClick={handleEquipmentClick}
-        background="lightGray"
-        className={`w-full h-[40px] flex  hover:opacity-80 cursor-pointer relative ${
+        background={
+          equipment.approvalStatus === "PENDING" ? "orange" : "lightGray"
+        }
+        className={`w-full justify-center h-[40px] flex hover:opacity-80 cursor-pointer relative ${
           isSelected && "outline outline-[2px] outline-black"
-        } rounded-[10px] my-1 px-4`}
+        } rounded-[10px] mb-3 px-4`}
       >
         <Texts position="left" size="xs">
-          {`${equipment.name.slice(0, 30)} (${equipment.id})`}
+          {`${equipment.name.slice(0, 30)} ${
+            equipment.approvalStatus === "PENDING"
+              ? "(pending)"
+              : `(${equipment.id})`
+          }`}
         </Texts>
       </Holds>
 

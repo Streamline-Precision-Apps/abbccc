@@ -1,4 +1,6 @@
-// Placeholder for Jobsite types
+/**
+ * Type definition for Jobsite entity that matches the Prisma schema
+ */
 export type Jobsite = {
   CCTags: CCTag[];
   id: string;
@@ -6,7 +8,7 @@ export type Jobsite = {
   Client?: { id: string; name: string };
   qrId: string;
   isActive: boolean;
-  approvalStatus: "PENDING" | "APPROVED" | "DENIED";
+  approvalStatus: ApprovalStatus;
   name: string;
   address: string;
   city: string;
@@ -14,10 +16,29 @@ export type Jobsite = {
   zipCode: string;
   country: string;
   description: string;
-  comment: string;
+  comment?: string;
 };
 
+/**
+ * Approval status options from Prisma schema
+ */
+export type ApprovalStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "CHANGES_REQUESTED";
+
+/**
+ * Type for Cost Code Tag relation with Jobsite
+ */
 type CCTag = {
   id: string;
   name: string;
+};
+
+// Summary type for jobsite listing
+export type JobsiteSummary = {
+  id: string;
+  name: string;
+  approvalStatus: ApprovalStatus;
 };

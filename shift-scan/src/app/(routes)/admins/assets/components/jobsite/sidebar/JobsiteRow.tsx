@@ -2,13 +2,13 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import React, { useState } from "react";
-import { Jobsite } from "../../../types";
+import { Jobsite, JobsiteSummary } from "../../../types";
 import DiscardChangesModal from "../../shared/DiscardChangesModal";
 
 interface JobsiteRowProps {
-  jobsite: Jobsite;
+  jobsite: JobsiteSummary;
   isSelected?: boolean;
-  onClick: (jobsite: Jobsite) => void;
+  onClick: (jobsite: JobsiteSummary) => void;
   hasUnsavedChanges?: boolean;
 }
 
@@ -26,32 +26,35 @@ export default function JobsiteRow({
 
   const handleJobsiteClick = () => {
     if (hasUnsavedChanges) {
-      // If there are unsaved changes, show confirmation modal
       setShowConfirmModal(true);
     } else {
-      // Otherwise process click normally
       onClick(jobsite);
     }
   };
 
   const handleConfirmNavigation = () => {
     setShowConfirmModal(false);
-    onClick(jobsite); // Process the click after confirmation
+    onClick(jobsite);
   };
+
   const handleCancelNavigation = () => {
     setShowConfirmModal(false);
   };
   return (
     <>
       <Holds
-        background="lightGray"
+        background={
+          jobsite.approvalStatus === "PENDING" ? "orange" : "lightGray"
+        }
         className={`w-full h-[40px] justify-center flex  hover:opacity-80 cursor-pointer relative ${
           isSelected && "outline outline-[2px] outline-black"
-        } rounded-[10px] my-1 px-4`}
+        } rounded-[10px] mb-3 px-4`}
         onClick={handleJobsiteClick}
       >
         <Texts position="left" size="xs">
-          {jobsite.name}
+          {`${jobsite.name} ${
+            jobsite.approvalStatus === "PENDING" ? "(pending)" : ""
+          }`}
         </Texts>
       </Holds>
       <DiscardChangesModal

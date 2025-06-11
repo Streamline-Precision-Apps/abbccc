@@ -3,21 +3,30 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import React from "react";
 import JobsiteBasicFields from "./JobsiteBasicFields";
-import JobsiteLocationFields from "./JobsiteLocationFields";
 import JobsiteHeaderActions from "./JobsiteHeaderActions";
-import { Jobsite } from "../../../types";
+import { ClientsSummary, Jobsite, TagSummary } from "../../../types";
+import Spinner from "@/components/(animations)/spinner";
 
 interface JobsiteFormViewProps {
   formData: Jobsite;
   changedFields: Set<string>;
-  onInputChange: (fieldName: string, value: string | boolean) => void;
+  onInputChange: (
+    fieldName: string,
+    value: string | boolean | Array<{ id: string; name: string }>
+  ) => void;
   onRevertField: (fieldName: string) => void;
   onRegisterNew: () => void;
   onDiscardChanges: () => void;
   onSaveChanges: () => void;
+  onDeleteJobsite: () => void;
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  setJobsiteUIState: React.Dispatch<
+    React.SetStateAction<"idle" | "creating" | "editing">
+  >;
+  tagSummaries?: TagSummary[];
+  clients: ClientsSummary[];
 }
 
 /**
@@ -29,38 +38,31 @@ export default function JobsiteFormView({
   changedFields,
   onInputChange,
   onRevertField,
-  onRegisterNew,
-  onDiscardChanges,
-  onSaveChanges,
-  hasUnsavedChanges,
   isSaving,
-  successfullyUpdated,
+  tagSummaries = [],
+  clients = [],
 }: JobsiteFormViewProps) {
   return (
-    <Holds className="w-full h-full col-start-3 col-end-11">
-      <Grids gap="4" className="w-full h-full grid-rows-[40px_1fr]">
-        {/* Header Actions */}
-        <Holds className="row-span-1 h-full ">
-          <JobsiteHeaderActions
-            onRegisterNew={onRegisterNew}
-            onDiscardChanges={onDiscardChanges}
-            onSaveChanges={onSaveChanges}
-            hasUnsavedChanges={hasUnsavedChanges}
-            isSaving={isSaving}
-            successfullyUpdated={successfullyUpdated}
-          />
+    <Holds
+      background={"white"}
+      className="w-full h-full rounded-[10px] p-3 px-5 relative "
+    >
+      {/* Loading overlay - only show when saving */}
+      {isSaving && (
+        <Holds className="w-full h-full justify-center items-center absolute left-0 top-0 z-50 bg-white bg-opacity-80 rounded-[10px]">
+          <Spinner size={80} />
         </Holds>
+      )}
 
-        {/* Basic Information Section */}
-        <Holds background={"white"} className="h-full row-span-1">
-          <JobsiteBasicFields
-            formData={formData}
-            changedFields={changedFields}
-            onInputChange={onInputChange}
-            onRevertField={onRevertField}
-          />
-        </Holds>
-      </Grids>
+      {/* Basic Information Section */}
+      <JobsiteBasicFields
+        tagSummaries={tagSummaries}
+        formData={formData}
+        changedFields={changedFields}
+        onInputChange={onInputChange}
+        onRevertField={onRevertField}
+        clients={clients}
+      />
     </Holds>
   );
 }

@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
 /**
  * Get equipment details by ID
@@ -29,29 +30,14 @@ export async function GET(
       );
     }
 
+    // Fetch all equipment data including relations
     const equipment = await prisma.equipment.findUnique({
       where: { id: equipmentId },
-      select: {
-        id: true,
-        qrId: true,
-        name: true,
-        description: true,
-        equipmentTag: true,
-        state: true,
-        isDisabledByAdmin: true,
-        approvalStatus: true,
-        overWeight: true,
-        currentWeight: true,
-        equipmentVehicleInfo: {
-          select: {
-            make: true,
-            model: true,
-            year: true,
-            licensePlate: true,
-            registrationExpiration: true,
-            mileage: true,
-          },
-        },
+      include: {
+        equipmentVehicleInfo: true,
+        TruckingLogs: true,
+        DocumentTags: true,
+        PendingApprovals: true,
       },
     });
 

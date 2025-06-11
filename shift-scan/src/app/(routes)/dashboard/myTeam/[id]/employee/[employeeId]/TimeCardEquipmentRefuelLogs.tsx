@@ -23,6 +23,9 @@ type TimeCardEquipmentRefuelLogsProps = {
   manager: string;
   equipmentRefuelLogs: EmployeeEquipmentLogWithRefuel[] | null;
   onDataChange: (data: EquipmentRefuelLog[]) => void;
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 export default function TimeCardEquipmentRefuelLogs({
@@ -30,8 +33,65 @@ export default function TimeCardEquipmentRefuelLogs({
   manager,
   equipmentRefuelLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardEquipmentRefuelLogsProps) {
-  const t = useTranslations("MyTeam.TimeCardEquipmentLogs");
+  const t = useTranslations("MyTeam.TimeCardEquipmentRefuelLogs");
+
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
+  >({});
+
+  // Create a unique key for each input field
+  const getInputKey = (refuelId: string, logId: string, fieldName: string) => {
+    return `${refuelId}-${logId}-${fieldName}`;
+  };
+
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    refuelId: string,
+    logId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(refuelId, logId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
+
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (
+    refuelId: string,
+    logId: string,
+    fieldName: string,
+    value: any
+  ) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(refuelId, logId, fieldName)]: value,
+    }));
+  };
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (refuelId: string, logId: string, field: string) => {
+    const key = getInputKey(refuelId, logId, field);
+
+    if (key in inputValues) {
+      const value = inputValues[key];
+      // Make sure value is not null before passing to handleRefuelChange
+      if (value !== null) {
+        handleRefuelChange(refuelId, logId, value as string);
+      }
+
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
+
   // Flatten the logs to pair each RefuelLog with its Equipment
   const flattenRefuelLogs = useCallback(
     (logs: EmployeeEquipmentLogWithRefuel[]): EquipmentRefuelLog[] => {
@@ -69,6 +129,32 @@ export default function TimeCardEquipmentRefuelLogs({
     }
   }, [equipmentRefuelLogs, flattenRefuelLogs]);
 
+  useEffect(() => {
+    // Flatten the logs to pair each RefuelLog with its Equipment
+    // If you use local state, sync it here
+    // setEditedEquipmentRefuelLogs(equipmentRefuelLogs ?? []);
+  }, [equipmentRefuelLogs]);
+
+  // Helper to reconstruct the nested structure with updated gallons
+  const reconstructEquipmentRefuelLogs = (
+    original: EmployeeEquipmentLogWithRefuel[],
+    updated: EquipmentRefuelLog[]
+  ): EmployeeEquipmentLogWithRefuel[] => {
+    return original.map((log) => ({
+      ...log,
+      RefuelLogs: log.RefuelLogs.map((refuel) => {
+        const found = updated.find(
+          (u) => u.id === refuel.id && u.employeeEquipmentLogId === log.id
+        );
+        return found &&
+          typeof found.gallonsRefueled === "number" &&
+          found.gallonsRefueled !== null
+          ? { ...refuel, gallonsRefueled: found.gallonsRefueled }
+          : refuel;
+      }),
+    }));
+  };
+
   const handleRefuelChange = useCallback(
     (id: string, employeeEquipmentLogId: string, value: string) => {
       const updatedLogs = flattenedLogs.map((log) => {
@@ -86,9 +172,16 @@ export default function TimeCardEquipmentRefuelLogs({
 
       setChangesWereMade(true);
       setFlattenedLogs(updatedLogs);
-      onDataChange(updatedLogs);
+      // Reconstruct the nested structure and send to parent
+      if (equipmentRefuelLogs) {
+        const updatedNested = reconstructEquipmentRefuelLogs(
+          equipmentRefuelLogs,
+          updatedLogs
+        );
+        onDataChange(updatedNested as any); // Cast if needed for prop type
+      }
     },
-    [flattenedLogs, onDataChange]
+    [flattenedLogs, onDataChange, equipmentRefuelLogs]
   );
 
   const isEmptyData = flattenedLogs.length === 0;
@@ -113,45 +206,87 @@ export default function TimeCardEquipmentRefuelLogs({
                 </Holds>
               </Grids>
 
-              {flattenedLogs.map((log) => (
-                <Holds
-                  key={`${log.employeeEquipmentLogId}-${log.id}`}
-                  className="border-black border-[3px] rounded-lg bg-white mb-2"
-                >
-                  <Buttons
-                    shadow={"none"}
-                    background={"none"}
-                    className="w-full h-full text-left"
+              {flattenedLogs.map((log) => {
+                const isFocused = focusIds.includes(log.id);
+                const handleToggleFocus = () => {
+                  if (isFocused) {
+                    setFocusIds(focusIds.filter((id) => id !== log.id));
+                  } else {
+                    setFocusIds([...focusIds, log.id]);
+                  }
+                };
+                const rowContent = (
+                  <Holds
+                    key={`${log.employeeEquipmentLogId}-${log.id}`}
+                    background={isFocused ? "orange" : "white"}
+                    className="border-black border-[3px] rounded-lg mb-2"
                   >
-                    <Grids cols={"4"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-3 w-full h-full">
-                        <Inputs
-                          value={log.equipmentName}
-                          disabled={true}
-                          className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
-                          readOnly
-                        />
-                      </Holds>
+                    <Buttons
+                      shadow={"none"}
+                      background={"none"}
+                      className="w-full h-full text-left"
+                    >
+                      <Grids cols={"4"} className="w-full h-full">
+                        <Holds className="col-start-1 col-end-3 w-full h-full">
+                          {" "}
+                          <Inputs
+                            value={log.equipmentName}
+                            disabled={true}
+                            background={isFocused ? "orange" : "white"}
+                            className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
+                            readOnly
+                          />
+                        </Holds>
 
-                      <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
-                        <Inputs
-                          type="number"
-                          value={log.gallonsRefueled?.toString() || ""}
-                          onChange={(e) =>
-                            handleRefuelChange(
+                        <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                          {" "}
+                          <Inputs
+                            type="number"
+                            value={getDisplayValue(
                               log.id,
                               log.employeeEquipmentLogId,
-                              e.target.value
-                            )
-                          }
-                          disabled={!edit}
-                          className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
-                        />
-                      </Holds>
-                    </Grids>
-                  </Buttons>
-                </Holds>
-              ))}
+                              "gallonsRefueled",
+                              log.gallonsRefueled?.toString() || ""
+                            )}
+                            background={isFocused ? "orange" : "white"}
+                            onChange={(e) =>
+                              handleLocalChange(
+                                log.id,
+                                log.employeeEquipmentLogId,
+                                "gallonsRefueled",
+                                e.target.value
+                              )
+                            }
+                            onBlur={() =>
+                              handleBlur(
+                                log.id,
+                                log.employeeEquipmentLogId,
+                                "gallonsRefueled"
+                              )
+                            }
+                            disabled={!edit}
+                            className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
+                          />
+                        </Holds>
+                      </Grids>
+                    </Buttons>
+                  </Holds>
+                );
+                return isReviewYourTeam ? (
+                  <button
+                    key={`${log.employeeEquipmentLogId}-${log.id}`}
+                    type="button"
+                    className="w-full h-full bg-transparent p-0 border-none"
+                    onClick={handleToggleFocus}
+                    tabIndex={0}
+                    aria-label={isFocused ? "Unselect row" : "Select row"}
+                  >
+                    {rowContent}
+                  </button>
+                ) : (
+                  rowContent
+                );
+              })}
             </>
           ) : (
             <Holds className="w-full h-full flex items-center justify-center">

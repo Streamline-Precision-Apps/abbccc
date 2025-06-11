@@ -96,39 +96,43 @@ export default function EquipmentLogContent() {
             }
           >
             <Holds className="h-full w-full ">
-              <Holds position={"row"} className=" gap-1">
-                <NewTab
-                  onClick={() => setActive(1)}
-                  isActive={active === 1}
-                  titleImage="/statusOngoingFilled.svg"
-                  titleImageAlt="Clock"
-                  isComplete={true}
+              <Grids rows={"10"} className="h-full w-full ">
+                <Holds
+                  position={"row"}
+                  className="w-full row-start-1 row-end-2 gap-1"
                 >
-                  <Titles size={"h4"}>Current Logs</Titles>
-                </NewTab>
-                <NewTab
-                  onClick={() => setActive(2)}
-                  isActive={active === 2}
-                  titleImage="/statusApprovedFilled.svg"
-                  titleImageAlt="Finished logs Icon"
-                  isComplete={true}
-                >
-                  <Titles size={"h4"}>Finished Logs</Titles>
-                </NewTab>
-              </Holds>
-              <Grids rows={"8"} className="h-full w-full ">
+                  <NewTab
+                    onClick={() => setActive(1)}
+                    isActive={active === 1}
+                    titleImage="/statusOngoingFilled.svg"
+                    titleImageAlt="Clock"
+                    isComplete={true}
+                  >
+                    <Titles size={"h4"}>Current Logs</Titles>
+                  </NewTab>
+                  <NewTab
+                    onClick={() => setActive(2)}
+                    isActive={active === 2}
+                    titleImage="/statusApprovedFilled.svg"
+                    titleImageAlt="Finished logs Icon"
+                    isComplete={true}
+                  >
+                    <Titles size={"h4"}>Finished Logs</Titles>
+                  </NewTab>
+                </Holds>
+
                 <Holds
                   background={"white"}
-                  className="h-full w-full row-start-1 row-end-9 rounded-t-none"
+                  className="h-full w-full row-start-2 row-end-11 rounded-t-none"
                 >
                   <Contents width={"section"}>
                     <Grids rows={"7"} gap={"5"} className="h-full w-full py-5">
                       {loading ? (
                         <>
-                          <Holds className="row-span-6 h-full justify-center items-center">
+                          <Holds className="row-start-1 row-end-7 h-full justify-center items-center">
                             <Spinner />
                           </Holds>
-                          <Holds className="row-span-1 ">
+                          <Holds className="row-start-7 row-end-8 h-full w-full gap-1 ">
                             <Buttons
                               background={"darkGray"}
                               className="w-full py-2"
@@ -141,7 +145,7 @@ export default function EquipmentLogContent() {
                         <>
                           {filteredLogs.length === 0 ? (
                             <>
-                              <Holds className="row-span-6 h-full justify-center">
+                              <Holds className="row-start-1 row-end-7 h-full justify-center">
                                 <Texts
                                   size="p6"
                                   className="text-gray-500 italic"
@@ -149,7 +153,7 @@ export default function EquipmentLogContent() {
                                   {t("NoCurrent")}
                                 </Texts>
                               </Holds>
-                              <Holds className="row-span-1 w-full">
+                              <Holds className="row-span-1 w-full h-full">
                                 <Buttons
                                   background={"green"}
                                   className="w-full py-2"
@@ -163,7 +167,7 @@ export default function EquipmentLogContent() {
                             </>
                           ) : (
                             <>
-                              <Holds className="row-span-6 h-full overflow-y-auto no-scrollbar">
+                              <Holds className="row-start-1 row-end-7 h-full overflow-y-auto no-scrollbar">
                                 {filteredLogs.map((log) => {
                                   // Calculate elapsed time as shown above
                                   const start = parseISO(
@@ -237,7 +241,7 @@ export default function EquipmentLogContent() {
                                   );
                                 })}
                               </Holds>
-                              <Holds className="row-span-1 h-full w-full">
+                              <Holds className="row-start-7 row-end-8 h-full w-full">
                                 <Buttons
                                   background={"green"}
                                   onClick={() =>

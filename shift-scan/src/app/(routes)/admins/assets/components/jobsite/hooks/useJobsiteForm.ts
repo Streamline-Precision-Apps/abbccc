@@ -5,15 +5,14 @@ import {
   SetStateAction,
   Dispatch,
 } from "react";
-import { useSession } from "next-auth/react";
 import { Jobsite } from "../../../types";
-import { updateJobsite, createJobsiteFromObject } from "@/actions/AssetActions";
+import { updateJobsite, deleteJobsite } from "@/actions/AssetActions";
 
 export interface UseJobsiteFormProps {
   selectJobsite: Jobsite | null;
-  setSelectJobsite: React.Dispatch<React.SetStateAction<Jobsite | null>>;
+  setSelectJobsite: Dispatch<SetStateAction<Jobsite | null>>;
   onUnsavedChangesChange?: (hasChanges: boolean) => void;
-  setIsRegistrationFormOpen: Dispatch<SetStateAction<boolean>>;
+  setJobsiteUIState: Dispatch<SetStateAction<"idle" | "creating" | "editing">>;
   refreshJobsites?: () => Promise<void>;
 }
 
@@ -23,25 +22,24 @@ export interface UseJobsiteFormReturn {
   hasUnsavedChanges: boolean;
   isSaving: boolean;
   successfullyUpdated: boolean;
+  showDeleteConfirmModal: boolean;
+  setShowDeleteConfirmModal: (show: boolean) => void;
   handleInputChange: (
     fieldName: string,
-    value: string | number | boolean | Date
+    value:
+      | string
+      | number
+      | boolean
+      | Date
+      | Array<{ id: string; name: string }>
   ) => void;
   handleSaveChanges: () => Promise<void>;
   handleDiscardChanges: () => void;
   handleRevertField: (fieldName: string) => void;
-  handleNewJobsiteSubmit: (newJobsite: {
-    name: string;
-    clientId: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-    description: string;
-    isActive: boolean;
-    approvalStatus: string;
-  }) => Promise<void>;
+  handleDeleteJobsite: () => void;
+  confirmDeleteJobsite: () => Promise<void>;
+  successMessage: string | null;
+  errorMessage: string | null;
 }
 
 /**
@@ -52,7 +50,7 @@ export const useJobsiteForm = ({
   selectJobsite,
   setSelectJobsite,
   onUnsavedChangesChange,
-  setIsRegistrationFormOpen,
+  setJobsiteUIState,
   refreshJobsites,
 }: UseJobsiteFormProps): UseJobsiteFormReturn => {
   const [formData, setFormData] = useState<Jobsite | null>(null);
@@ -60,8 +58,8 @@ export const useJobsiteForm = ({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [successfullyUpdated, setSuccessfullyUpdated] = useState(false);
-
-  const { data: session } = useSession();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Initialize form data when selectJobsite changes
   useEffect(() => {
@@ -78,10 +76,45 @@ export const useJobsiteForm = ({
   }, [hasUnsavedChanges, onUnsavedChangesChange]);
 
   /**
+   * Type definition for objects with id and name properties
+   */
+  type IdNamePair = {
+    id: string;
+    name: string;
+  };
+
+  /**
+   * Deep comparison function for arrays with id/name objects
+   */
+  const arraysEqual = (
+    arr1: IdNamePair[] | unknown,
+    arr2: IdNamePair[] | unknown
+  ): boolean => {
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
+    if (arr1.length !== arr2.length) return false;
+
+    const sortedArr1 = [...arr1].sort((a, b) => a.id.localeCompare(b.id));
+    const sortedArr2 = [...arr2].sort((a, b) => a.id.localeCompare(b.id));
+
+    return sortedArr1.every((item1, index) => {
+      const item2 = sortedArr2[index];
+      return item1.id === item2.id && item1.name === item2.name;
+    });
+  };
+
+  /**
    * Generic handler for input changes
    */
   const handleInputChange = useCallback(
-    (fieldName: string, value: string | number | boolean | Date) => {
+    (
+      fieldName: string,
+      value:
+        | string
+        | number
+        | boolean
+        | Date
+        | Array<{ id: string; name: string }>
+    ) => {
       if (!formData || !selectJobsite) return;
 
       setFormData((prev: Jobsite | null) => {
@@ -93,7 +126,16 @@ export const useJobsiteForm = ({
       const newChangedFields = new Set(changedFields);
       const originalValue = selectJobsite[fieldName as keyof Jobsite];
 
-      if (value !== originalValue) {
+      let hasChanged = false;
+
+      // Special handling for array fields (like CCTags)
+      if (Array.isArray(value) && Array.isArray(originalValue)) {
+        hasChanged = !arraysEqual(value, originalValue);
+      } else {
+        hasChanged = value !== originalValue;
+      }
+
+      if (hasChanged) {
         newChangedFields.add(fieldName);
       } else {
         newChangedFields.delete(fieldName);
@@ -126,6 +168,7 @@ export const useJobsiteForm = ({
       formDataToSend.append("comment", formData.comment || "");
       formDataToSend.append("isActive", formData.isActive.toString());
       formDataToSend.append("client", formData.clientId || "");
+      formDataToSend.append("cCTags", JSON.stringify(formData.CCTags || []));
 
       // Call the actual update jobsite server action
       const result = await updateJobsite(formDataToSend);
@@ -143,14 +186,15 @@ export const useJobsiteForm = ({
           await refreshJobsites();
         }
 
-        // Reset success state after 3 seconds
-        setTimeout(() => setSuccessfullyUpdated(false), 3000);
+        // Reset success state after 2 seconds
+        setTimeout(() => setSuccessfullyUpdated(false), 2000);
       } else {
         throw new Error(result.error || "Failed to update jobsite");
       }
     } catch (error) {
       console.error("Error saving jobsite:", error);
-      // TODO: Add toast notification for error
+      setErrorMessage(`Failed to save jobsite: ${error}`);
+      setTimeout(() => setErrorMessage(""), 2000);
     } finally {
       setIsSaving(false);
     }
@@ -195,63 +239,56 @@ export const useJobsiteForm = ({
   );
 
   /**
-   * Handle new jobsite registration
+   * Tracks the state of the delete confirmation modal
    */
-  const handleNewJobsiteSubmit = useCallback(
-    async (newJobsite: {
-      name: string;
-      description: string;
-      address?: string;
-      city?: string;
-      state?: string;
-      zipCode?: string;
-      country?: string;
-      comment?: string;
-      isActive?: boolean;
-      client?: string;
-    }) => {
-      try {
-        // Validate required fields
-        if (!newJobsite.name?.trim()) {
-          throw new Error("Jobsite name is required");
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+
+  /**
+   * Opens the delete confirmation modal
+   */
+  const handleDeleteJobsite = useCallback(() => {
+    if (!formData) return;
+    setShowDeleteConfirmModal(true);
+  }, [formData]);
+
+  /**
+   * Performs the actual jobsite deletion after confirmation
+   */
+  const confirmDeleteJobsite = useCallback(async () => {
+    if (!formData) return;
+
+    setIsSaving(true);
+    setShowDeleteConfirmModal(false);
+
+    try {
+      const result = await deleteJobsite(formData.id);
+
+      if (result.success) {
+        // Reset selection and UI state
+        setSelectJobsite(null);
+        setSuccessMessage("Jobsite deleted successfully");
+        setJobsiteUIState("idle");
+        // Refresh jobsite list after deletion
+        if (refreshJobsites) {
+          await refreshJobsites();
         }
 
-        if (!newJobsite.description?.trim()) {
-          throw new Error("Jobsite description is required");
-        }
-
-        // Call the actual create jobsite server action
-        const result = await createJobsiteFromObject({
-          name: newJobsite.name,
-          description: newJobsite.description,
-          address: newJobsite.address || "",
-          city: newJobsite.city || "",
-          state: newJobsite.state || "",
-          zipCode: newJobsite.zipCode || "",
-          country: newJobsite.country || "US",
-          comment: newJobsite.comment || "",
-          isActive: newJobsite.isActive ?? true,
-          client: newJobsite.client || "",
-        });
-
-        if (result.success) {
-          console.log("Jobsite created successfully:", result.data);
-          setIsRegistrationFormOpen(false);
-
-          // Refresh jobsite list after registration
-          if (refreshJobsites) {
-            await refreshJobsites();
-          }
-        } else {
-          throw new Error(result.error || "Failed to create jobsite");
-        }
-      } catch (error) {
-        console.error("Error registering new jobsite:", error);
-        // TODO: Add toast notification for error
+        setTimeout(() => setSuccessMessage(null), 2000);
+      } else {
+        throw new Error(result.error || "Failed to delete jobsite");
       }
-    },
-    [setIsRegistrationFormOpen, refreshJobsites]
-  );
+    } catch (error) {
+      console.error("Error deleting jobsite:", error);
+      setErrorMessage(
+        `Failed to delete jobsite: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+      setTimeout(() => setErrorMessage(null), 2000);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [formData, setSelectJobsite, setJobsiteUIState, refreshJobsites]);
 
   return {
     formData,
@@ -259,10 +296,15 @@ export const useJobsiteForm = ({
     hasUnsavedChanges,
     isSaving,
     successfullyUpdated,
+    showDeleteConfirmModal,
+    setShowDeleteConfirmModal,
     handleInputChange,
     handleSaveChanges,
     handleDiscardChanges,
     handleRevertField,
-    handleNewJobsiteSubmit,
+    handleDeleteJobsite,
+    confirmDeleteJobsite,
+    successMessage,
+    errorMessage,
   };
 };

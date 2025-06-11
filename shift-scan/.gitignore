@@ -36,5 +36,7 @@ shift-scan/.env
 *.tsbuildinfo
 next-env.d.ts
 
+# prisma
+dev.db
 
 certificates

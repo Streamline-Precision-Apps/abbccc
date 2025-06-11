@@ -6,6 +6,7 @@ interface SearchBarProps {
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -13,24 +14,28 @@ const SearchBar: React.FC<SearchBarProps> = ({
   handleSearchChange,
   placeholder,
   disabled = false,
+  children = null,
 }) => {
   return (
     <Holds
       background={disabled ? "lightGray" : "white"}
       position="row"
-      className="px-2 w-full h-full gap-x-3"
+      className="px-2 w-full h-full gap-x-3 relative"
     >
-      <Holds size="10">
+      <Holds className="w-8 h-full justify-center items-center">
         <img src="/searchLeft.svg" alt="search" />
       </Holds>
-      <Inputs
-        type="search"
-        placeholder={placeholder}
-        value={term}
-        onChange={handleSearchChange}
-        disabled={disabled}
-        className="border-none outline-none text-sm text-left w-full h-full rounded-md bg-white"
-      />
+      <Holds className="w-full h-auto justify-center items-center ">
+        <Inputs
+          type="search"
+          placeholder={placeholder}
+          value={term}
+          onChange={handleSearchChange}
+          disabled={disabled}
+          className="border-none outline-none text-sm text-left w-full h-full rounded-md bg-white"
+        />
+      </Holds>
+      {children}
     </Holds>
   );
 };

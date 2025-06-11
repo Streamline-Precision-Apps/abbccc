@@ -37,19 +37,18 @@ export const EquipmentSelector = ({
     setEquipmentOptions(options);
   }, [equipmentResults]);
 
-  // Initialize with the passed initialValue
+  // Initialize with the passed initialValue, but avoid infinite loops
   useEffect(() => {
-    if (initialValue) {
-      // If options are available, find the matching one
-      if (equipmentOptions.length > 0) {
-        const foundOption = equipmentOptions.find(
-          (opt) => opt.code === initialValue.code
-        );
-        setSelectedEquipment(foundOption || null);
-      }
-      // If options aren't loaded yet, set the initial value directly
-      else if (initialValue.code && initialValue.label) {
-        setSelectedEquipment(initialValue);
+    if (initialValue && equipmentOptions.length > 0) {
+      const foundOption = equipmentOptions.find(
+        (opt) => opt.code === initialValue.code
+      );
+      // Only update if different
+      if (
+        foundOption &&
+        (!selectedEquipment || foundOption.code !== selectedEquipment.code)
+      ) {
+        setSelectedEquipment(foundOption);
       }
     }
   }, [initialValue, equipmentOptions]);

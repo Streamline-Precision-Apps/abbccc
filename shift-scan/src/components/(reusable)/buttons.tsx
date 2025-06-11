@@ -43,7 +43,7 @@ const ButtonVariants = cva(
       },
       shadow: {
         none: "shadow-none",
-        yes: "shadow-[8px_8px_0px_grey]",
+        yes: "shadow-[8px_8px_0px_rgba(0,0,0,0.45)]",
       },
     },
     defaultVariants: {

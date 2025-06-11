@@ -32,14 +32,12 @@ export default function ReviewYourDay({
   prevStep,
   loading,
   timesheets,
-  manager,
   setReviewYourTeam,
 }: {
   loading: boolean;
   timesheets: TimeSheet[];
   handleClick: () => void;
   prevStep: () => void;
-  manager: boolean;
   setReviewYourTeam: Dispatch<SetStateAction<boolean>>;
 }) {
   const t = useTranslations("ClockOut");
@@ -207,9 +205,7 @@ export default function ReviewYourDay({
                 <Contents width={"section"}>
                   <Buttons
                     background={"orange"}
-                    onClick={
-                      manager ? () => setReviewYourTeam(true) : handleClick
-                    }
+                    onClick={handleClick}
                   >
                     <Titles size={"h2"}>{t("Continue")}</Titles>
                   </Buttons>
