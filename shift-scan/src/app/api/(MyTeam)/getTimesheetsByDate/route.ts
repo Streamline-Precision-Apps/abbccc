@@ -77,23 +77,8 @@ export async function GET(request: Request) {
         );
       }
 
-      // Convert fetched ISO times to local timezone
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const adjustedTimeSheets = timeSheets.map((sheet) => ({
-        ...sheet,
-        submitDate: sheet.createdAt
-          ? formatInTimeZone(sheet.createdAt, timeZone, "yyyy-MM-dd HH:mm:ss")
-          : "",
-        date: formatInTimeZone(sheet.date, timeZone, "yyyy-MM-dd"),
-        startTime: sheet.startTime
-          ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-          : "",
-        endTime: sheet.endTime
-          ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-          : "",
-      }));
-
-      result = adjustedTimeSheets;
+      // Just send the raw data:
+      result = timeSheets;
     }
     if (type === "truckingMileage") {
       const timeSheets = await prisma.timeSheet.findMany({

@@ -17,7 +17,7 @@ interface TimeCardTruckingMileageProps {
   edit: boolean;
   manager: string;
   truckingMileage: TruckingMileageData;
-  onDataChange: (data: TruckingMileageUpdate[]) => void; // Change this line
+  onDataChange: (data: TruckingMileageData) => void; // FIX: expects nested structure
 }
 
 export default function TimeCardTruckingMileage({
@@ -26,50 +26,49 @@ export default function TimeCardTruckingMileage({
   truckingMileage,
   onDataChange,
 }: TimeCardTruckingMileageProps) {
+  const t = useTranslations("MyTeam.TimeCardTruckingMileage");
+
+  // Use truckingMileage prop directly for rendering and updates
   const allTruckingLogs = truckingMileage
     .flatMap((item) => item.TruckingLogs)
-    .filter((log) => log !== null && log.id);
-  const t = useTranslations("MyTeam.TimeCardTruckingMileage");
-  const [editedTruckingLogs, setEditedTruckingLogs] =
-    useState<TruckingMileage[]>(allTruckingLogs);
-  const [changesWereMade, setChangesWereMade] = useState(false);
-
-  // Reset when edit mode is turned off or when new data comes in
-  useEffect(() => {
-    setEditedTruckingLogs(allTruckingLogs);
-    setChangesWereMade(false);
-  }, [truckingMileage]);
-
-  const handleMileageChange = useCallback(
-    (id: string, field: keyof TruckingMileage, value: string | number) => {
-      const updatedLogs = editedTruckingLogs.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              [field]: typeof value === "string" ? Number(value) : value,
-            }
-          : item
-      );
-
-      setChangesWereMade(true);
-      setEditedTruckingLogs(updatedLogs);
-
-      // Find the complete log that was changed
-      const changedLog = updatedLogs.find((log) => log.id === id);
-      if (changedLog) {
-        onDataChange([
-          {
-            id: changedLog.id,
-            startingMileage: changedLog.startingMileage,
-            endingMileage: changedLog.endingMileage,
-          },
-        ]);
-      }
-    },
-    [editedTruckingLogs, onDataChange]
-  );
+    .filter(
+      (log): log is TruckingMileage =>
+        !!log && typeof log === "object" && "id" in log
+    );
 
   const isEmptyData = allTruckingLogs.length === 0;
+
+  // Handler to update the TruckingMileageData structure
+  const handleMileageChange = (
+    id: string,
+    field: keyof TruckingMileageUpdate,
+    value: any
+  ) => {
+    const updated = truckingMileage
+      .map((item) => {
+        const updatedLogs = item.TruckingLogs.map((log) => {
+          if (log && log.id === id) {
+            return { ...log, [field]: value };
+          }
+          return log;
+        }).filter(
+          (log): log is TruckingMileage =>
+            !!log && typeof log === "object" && "id" in log
+        );
+        if (updatedLogs.length === 0) return null;
+        // Use the id of the first log as the parent id (TruckingLog.id)
+        return {
+          id: updatedLogs[0].id,
+          TruckingLogs: updatedLogs,
+        };
+      })
+      .filter(
+        (item): item is { id: string; TruckingLogs: TruckingMileage[] } =>
+          !!item && item.TruckingLogs.length > 0 && !!item.id
+      );
+
+    onDataChange(updated);
+  };
 
   return (
     <Holds className="w-full h-full">
@@ -101,7 +100,7 @@ export default function TimeCardTruckingMileage({
                 </Holds>
               </Grids>
 
-              {editedTruckingLogs.map((sheet) => (
+              {allTruckingLogs.map((sheet) => (
                 <Holds
                   key={sheet.id}
                   className="border-black border-[3px] rounded-lg bg-white mb-2"
