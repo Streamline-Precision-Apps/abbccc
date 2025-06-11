@@ -203,9 +203,9 @@ export default function TimeCardTascoRefuelLogs({
                 return (
                   <Holds
                     key={`${log.tascoLogId}-${log.id}`}
-                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
-                      isFocused ? "bg-orange-400" : "bg-white"
-                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    background={isFocused ? "orange" : "white"}
+                    className={`relative border-black border-[3px] rounded-lg mb-2 
+                    ${isReviewYourTeam ? "cursor-pointer" : ""}`}
                     onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
                     {isReviewYourTeam && (
@@ -225,14 +225,17 @@ export default function TimeCardTascoRefuelLogs({
                     >
                       <Grids cols={"2"} className="w-full h-full">
                         <Holds className="col-start-1 col-end-2 w-full h-full">
+                          {" "}
                           <Inputs
                             value={log.truckName}
                             disabled={true}
+                            background={isFocused ? "orange" : "white"}
                             className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md py-2 text-xs"
                             readOnly
                           />
                         </Holds>
                         <Holds className="col-start-2 col-end-3 w-full h-full border-l-[3px] border-black">
+                          {" "}
                           <Inputs
                             type="number"
                             value={getDisplayValue(
@@ -241,6 +244,7 @@ export default function TimeCardTascoRefuelLogs({
                               "gallonsRefueled",
                               log.gallonsRefueled?.toString() || ""
                             )}
+                            background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(
                                 log.tascoLogId,

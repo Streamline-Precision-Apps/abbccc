@@ -346,185 +346,185 @@ export default function TimeCardHighlights({
             </Holds>
           ) : (
             <>
-              <Grids cols={"6"} className="w-full h-fit">
+              {" "}
+              <Grids cols={"7"} className="w-full h-fit">
                 <Holds className="col-start-2 col-end-4 w-full h-full pl-1">
                   <Titles position={"left"} size={"h6"}>
                     {t("StartEnd")}
                   </Titles>
                 </Holds>
-                <Holds className="col-start-4 col-end-7 w-full h-full pr-1">
+                <Holds className="col-start-4 col-end-8 w-full h-full pr-1">
                   <Titles position={"right"} size={"h6"}>
                     {t("JobsiteCostCode")}
                   </Titles>
                 </Holds>{" "}
               </Grids>{" "}
-              {highlightTimesheet.map((sheet) => {
-                // Ensure focusIds exists and is an array before using includes
-                const isFocused =
-                  Array.isArray(focusIds) && focusIds.includes(sheet.id);
-                const handleToggleFocus = () => {
-                  if (
-                    !isReviewYourTeam ||
-                    !setFocusIds ||
-                    !Array.isArray(focusIds)
-                  )
-                    return;
-                  if (isFocused) {
-                    setFocusIds(focusIds.filter((id) => id !== sheet.id));
-                  } else {
-                    setFocusIds([...focusIds, sheet.id]);
-                  }
-                };
-                const rowContent = (
-                  <>
-                    <Holds
-                      background={"white"}
-                      className={`relative border-black border-[3px] rounded-[10px] mb-3 ${
-                        isFocused ? "bg-orange-400" : ""
-                      } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
-                      onClick={(e) => {
-                        if (!isReviewYourTeam) {
-                          return;
-                        }
-                        // Stop propagation to prevent parent handlers from triggering
-                        e.stopPropagation();
+              {highlightTimesheet
+                .filter((sheet) => sheet.endTime) // Additional filter to ensure we only show complete timesheets
+                .map((sheet) => {
+                  // Ensure focusIds exists and is an array before using includes
+                  const isFocused =
+                    Array.isArray(focusIds) && focusIds.includes(sheet.id);
+                  const handleToggleFocus = () => {
+                    if (
+                      !isReviewYourTeam ||
+                      !setFocusIds ||
+                      !Array.isArray(focusIds)
+                    )
+                      return;
+                    if (isFocused) {
+                      setFocusIds(focusIds.filter((id) => id !== sheet.id));
+                    } else {
+                      setFocusIds([...focusIds, sheet.id]);
+                    }
+                  };
+                  const rowContent = (
+                    <>
+                      {" "}
+                      <Holds
+                        background={isFocused ? "orange" : "white"}
+                        className={`relative border-black border-[3px] rounded-[10px] mb-3
+                        ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                        onClick={(e) => {
+                          if (!isReviewYourTeam) {
+                            return;
+                          }
+                          // Stop propagation to prevent parent handlers from triggering
+                          e.stopPropagation();
 
-                        handleToggleFocus();
-                      }}
-                      // Add data attributes to help debug in browser
-                      data-review-mode={isReviewYourTeam ? "true" : "false"}
-                      data-row-id={sheet.id}
-                      data-focused={isFocused ? "true" : "false"}
-                    >
-                      {/* Add an explicit overlay div for click handling that's always on top */}
-                      {isReviewYourTeam && (
-                        <div
-                          className="absolute top-0 left-0 w-full h-full z-50 cursor-pointer"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleToggleFocus();
-                          }}
-                        />
-                      )}
-                      <Buttons
-                        shadow={"none"}
-                        background={"none"}
-                        className="w-full h-full text-left"
-                        // Completely remove this onClick as it might interfere// Prevent button from capturing clicks in review mode
+                          handleToggleFocus();
+                        }}
+                        // Add data attributes to help debug in browser
+                        data-review-mode={isReviewYourTeam ? "true" : "false"}
+                        data-row-id={sheet.id}
+                        data-focused={isFocused ? "true" : "false"}
                       >
-                        {sheet.startTime && sheet.endTime ? (
-                          <Grids cols={"6"} className="w-full h-full">
-                            <Holds className="col-start-1 col-end-2 p-2">
-                              <Images
-                                titleImg={
-                                  sheet.workType === "TASCO"
-                                    ? "/tasco.svg"
-                                    : sheet.workType === "TRUCK_DRIVER"
-                                    ? "/trucking.svg"
-                                    : sheet.workType === "MECHANIC"
-                                    ? "/mechanic.svg"
-                                    : sheet.workType === "LABOR"
-                                    ? "/equipment.svg"
-                                    : "null"
-                                }
-                                titleImgAlt={`${sheet.workType} Icon`}
-                                className="m-auto w-8 h-8"
-                              />
-                            </Holds>
-                            <Holds className="col-start-2 col-end-4 border-x-[3px] border-black h-full">
-                              <Holds className="h-full justify-center border-b-[1.5px] border-black">
-                                {" "}
-                                <Inputs
-                                  type="time"
-                                  value={getDisplayValue(
-                                    sheet.id,
-                                    "startTime",
-                                    formatTimeForInput(sheet.startTime)
-                                  )}
-                                  onChange={(e) =>
-                                    handleLocalChange(
-                                      sheet.id,
-                                      "startTime",
-                                      e.target.value
-                                    )
-                                  }
-                                  onBlur={(e) =>
-                                    handleBlur(
-                                      sheet.id,
-                                      "startTime",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="text-xs border-none h-full rounded-none justify-center"
-                                  disabled={!edit}
-                                />
-                              </Holds>
-                              <Holds className="h-full w-full justify-center border-t-[1.5px] border-black">
-                                {" "}
-                                <Inputs
-                                  type="time"
-                                  value={getDisplayValue(
-                                    sheet.id,
-                                    "endTime",
-                                    formatTimeForInput(sheet.endTime)
-                                  )}
-                                  onChange={(e) =>
-                                    handleLocalChange(
-                                      sheet.id,
-                                      "endTime",
-                                      e.target.value
-                                    )
-                                  }
-                                  onBlur={(e) =>
-                                    handleBlur(
-                                      sheet.id,
-                                      "endTime",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="text-xs border-none h-full rounded-none justify-center"
-                                  disabled={!edit}
-                                />
-                              </Holds>
-                            </Holds>
-                            <Holds className="col-start-4 col-end-7 h-full">
-                              <Holds className="border-b-[1.5px] border-black h-full justify-center">
-                                <Inputs
-                                  type={"text"}
-                                  value={sheet.Jobsite?.name || "N/A"}
-                                  className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none justify-center text-right"
-                                  onClick={() => openJobsiteModal(sheet.id)}
-                                  disabled={!edit}
-                                  readOnly
-                                />
-                              </Holds>
-                              <Holds className="h-full justify-center text-right border-t-[1.5px] border-black">
-                                <Inputs
-                                  type={"text"}
-                                  value={sheet.costcode || "N/A"}
-                                  className="text-xs border-none h-full rounded-t-none rounded-bl-none justify-center text-right"
-                                  onClick={() => openCostCodeModal(sheet.id)}
-                                  disabled={!edit}
-                                  readOnly
-                                />
-                              </Holds>
-                            </Holds>
-                          </Grids>
-                        ) : (
-                          <Texts size="p6" className="text-gray-500 italic">
-                            {t("IncompleteTimesheetData")}
-                          </Texts>
+                        {/* Add an explicit overlay div for click handling that's always on top */}
+                        {isReviewYourTeam && (
+                          <div
+                            className="absolute top-0 left-0 w-full h-full z-50 cursor-pointer"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleToggleFocus();
+                            }}
+                          />
                         )}
-                      </Buttons>
-                    </Holds>
-                  </>
-                );
-                // Always use a keyed fragment for the row
-                return (
-                  <React.Fragment key={sheet.id}>{rowContent}</React.Fragment>
-                );
-              })}
+                        <Buttons
+                          shadow={"none"}
+                          background={"none"}
+                          className="w-full h-full text-left"
+                          // Completely remove this onClick as it might interfere// Prevent button from capturing clicks in review mode
+                        >
+                          {sheet.startTime && sheet.endTime ? (
+                            <Grids cols={"7"} className="w-full h-full">
+                              <Holds className="col-start-1 col-end-2 p-2">
+                                <Images
+                                  titleImg={
+                                    sheet.workType === "TASCO"
+                                      ? "/tasco.svg"
+                                      : sheet.workType === "TRUCK_DRIVER"
+                                      ? "/trucking.svg"
+                                      : sheet.workType === "MECHANIC"
+                                      ? "/mechanic.svg"
+                                      : sheet.workType === "LABOR"
+                                      ? "/equipment.svg"
+                                      : "null"
+                                  }
+                                  titleImgAlt={`${sheet.workType} Icon`}
+                                  className="m-auto w-8 h-8"
+                                />
+                              </Holds>
+                              <Holds className="col-start-2 col-end-4 border-x-[3px] border-black h-full">
+                                <Holds className="h-full justify-center border-b-[1.5px] border-black">
+                                  {" "}
+                                  <Inputs
+                                    type="text"
+                                    value={formatTimeLocal(sheet.startTime)}
+                                    onChange={(e) =>
+                                      handleLocalChange(
+                                        sheet.id,
+                                        "startTime",
+                                        e.target.value
+                                      )
+                                    }
+                                    onBlur={(e) =>
+                                      handleBlur(
+                                        sheet.id,
+                                        "startTime",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="text-xs border-none h-full rounded-none justify-center text-center px-1 w-full"
+                                    background={isFocused ? "orange" : "white"}
+                                    disabled={!edit}
+                                  />
+                                </Holds>
+                                <Holds className="h-full w-full justify-center border-t-[1.5px] border-black">
+                                  {" "}
+                                  <Inputs
+                                    type="text"
+                                    value={formatTimeLocal(sheet.endTime)}
+                                    onChange={(e) =>
+                                      handleLocalChange(
+                                        sheet.id,
+                                        "endTime",
+                                        e.target.value
+                                      )
+                                    }
+                                    onBlur={(e) =>
+                                      handleBlur(
+                                        sheet.id,
+                                        "endTime",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="text-xs border-none h-full rounded-none justify-center text-center px-1 w-full"
+                                    background={isFocused ? "orange" : "white"}
+                                    disabled={!edit}
+                                  />
+                                </Holds>
+                              </Holds>
+                              <Holds className="col-start-4 col-end-8 h-full">
+                                <Holds className="border-b-[1.5px] border-black h-full justify-center">
+                                  {" "}
+                                  <Inputs
+                                    type={"text"}
+                                    value={sheet.Jobsite?.name || "N/A"}
+                                    className="text-xs border-none h-full rounded-b-none rounded-l-none rounded-br-none justify-center text-right"
+                                    onClick={() => openJobsiteModal(sheet.id)}
+                                    background={isFocused ? "orange" : "white"}
+                                    disabled={!edit}
+                                    readOnly
+                                  />
+                                </Holds>{" "}
+                                <Holds className="h-full justify-center text-right border-t-[1.5px] border-black">
+                                  <Inputs
+                                    type={"text"}
+                                    value={sheet.costcode || "N/A"}
+                                    className="text-xs border-none h-full rounded-t-none rounded-bl-none justify-center text-right"
+                                    onClick={() => openCostCodeModal(sheet.id)}
+                                    background={isFocused ? "orange" : "white"}
+                                    disabled={!edit}
+                                    readOnly
+                                  />
+                                </Holds>
+                              </Holds>
+                            </Grids>
+                          ) : (
+                            <Texts size="p6" className="text-gray-500 italic">
+                              {t("IncompleteTimesheetData")}
+                            </Texts>
+                          )}
+                        </Buttons>
+                      </Holds>
+                    </>
+                  );
+                  // Always use a keyed fragment for the row
+                  return (
+                    <React.Fragment key={sheet.id}>{rowContent}</React.Fragment>
+                  );
+                })}
             </>
           )}
         </Holds>
