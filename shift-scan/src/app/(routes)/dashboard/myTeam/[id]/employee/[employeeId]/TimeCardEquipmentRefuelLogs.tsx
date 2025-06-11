@@ -218,9 +218,8 @@ export default function TimeCardEquipmentRefuelLogs({
                 const rowContent = (
                   <Holds
                     key={`${log.employeeEquipmentLogId}-${log.id}`}
-                    className={`border-black border-[3px] rounded-lg mb-2 ${
-                      isFocused ? "bg-orange-400" : "bg-white"
-                    }`}
+                    background={isFocused ? "orange" : "white"}
+                    className="border-black border-[3px] rounded-lg mb-2"
                   >
                     <Buttons
                       shadow={"none"}
@@ -229,15 +228,18 @@ export default function TimeCardEquipmentRefuelLogs({
                     >
                       <Grids cols={"4"} className="w-full h-full">
                         <Holds className="col-start-1 col-end-3 w-full h-full">
+                          {" "}
                           <Inputs
                             value={log.equipmentName}
                             disabled={true}
+                            background={isFocused ? "orange" : "white"}
                             className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
                             readOnly
                           />
                         </Holds>
 
                         <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                          {" "}
                           <Inputs
                             type="number"
                             value={getDisplayValue(
@@ -246,6 +248,7 @@ export default function TimeCardEquipmentRefuelLogs({
                               "gallonsRefueled",
                               log.gallonsRefueled?.toString() || ""
                             )}
+                            background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(
                                 log.id,

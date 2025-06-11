@@ -182,10 +182,9 @@ export default function TimeCardTruckingRefuelLogs({
 
                 return (
                   <Holds
-                    key={`${rl.truckingLogId}-${rl.id}`}
-                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
-                      isFocused ? "bg-orange-400" : "bg-white"
-                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    key={`${rl.truckingLogId}-${rl.id}`}                    background={isFocused ? "orange" : "white"}
+                    className={`relative border-black border-[3px] rounded-lg mb-2
+                    ${isReviewYourTeam ? "cursor-pointer" : ""}`}
                     onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
                     {isReviewYourTeam && (
@@ -204,18 +203,17 @@ export default function TimeCardTruckingRefuelLogs({
                       className="w-full h-full text-left"
                     >
                       <Grids cols={"4"} className="w-full h-full">
-                        <Holds className="w-full h-full col-start-1 col-end-3 border-r-[3px] border-black">
-                          <Inputs
+                        <Holds className="w-full h-full col-start-1 col-end-3 border-r-[3px] border-black">                          <Inputs
                             value={rl.truckName}
                             disabled={true}
                             placeholder="Truck ID"
                             className="pl-1 py-2 w-full h-full text-xs border-none rounded-none rounded-tl-md rounded-bl-md"
+                            background={isFocused ? "orange" : "white"}
                             readOnly
                           />
                         </Holds>
 
-                        <Holds className="w-full h-full col-start-3 col-end-4 border-black">
-                          <Inputs
+                        <Holds className="w-full h-full col-start-3 col-end-4 border-black">                          <Inputs
                             type="number"
                             value={
                               getDisplayValue(
@@ -241,11 +239,11 @@ export default function TimeCardTruckingRefuelLogs({
                               )
                             }
                             disabled={!edit}
+                            background={isFocused ? "orange" : "white"}
                             className="py-2 w-full h-full text-xs border-none rounded-none text-center"
                           />
                         </Holds>
-                        <Holds className="w-full h-full col-start-4 col-end-5 border-l-[3px] border-black">
-                          <Inputs
+                        <Holds className="w-full h-full col-start-4 col-end-5 border-l-[3px] border-black">                          <Inputs
                             type="number"
                             value={
                               getDisplayValue(
@@ -255,6 +253,7 @@ export default function TimeCardTruckingRefuelLogs({
                                 rl.milesAtFueling
                               )?.toString() || ""
                             }
+                            background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(
                                 rl.truckingLogId,

@@ -244,9 +244,8 @@ export default function TimeCardTruckingHaulLogs({
                   const rowContent = (
                     <Holds
                       key={`${log.id}-${logIdx}`}
-                      className={`border-black border-[3px] rounded-lg mb-2 ${
-                        isFocused ? "bg-orange-400" : "bg-white"
-                      }`}
+                      background={isFocused ? "orange" : "white"}
+                      className="border-black border-[3px] rounded-lg mb-2"
                     >
                       <Buttons
                         shadow={"none"}
@@ -255,21 +254,25 @@ export default function TimeCardTruckingHaulLogs({
                       >
                         <Grids cols={"3"} className="w-full h-full">
                           <Holds className="col-start-1 col-end-2">
+                            {" "}
                             <Inputs
                               type={"text"}
                               value={log.Equipment?.name || ""}
                               className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
+                              background={isFocused ? "orange" : "white"}
                               disabled={true}
                               readOnly
                             />
                           </Holds>
                           <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
+                            {" "}
                             <Inputs
                               type={"text"}
                               value={
                                 log.EquipmentHauled?.[0]?.Equipment?.name || ""
                               }
                               className="text-xs border-none h-full rounded-none justify-center text-center"
+                              background={isFocused ? "orange" : "white"}
                               onClick={() =>
                                 openEquipmentModal(itemIdx, logIdx, 0)
                               }
@@ -278,12 +281,14 @@ export default function TimeCardTruckingHaulLogs({
                             />
                           </Holds>
                           <Holds className="col-start-3 col-end-4 h-full">
+                            {" "}
                             <Inputs
                               type={"text"}
                               value={
                                 log.EquipmentHauled?.[0]?.JobSite?.name || ""
                               }
                               className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
+                              background={isFocused ? "orange" : "white"}
                               onClick={() =>
                                 openJobsiteModal(itemIdx, logIdx, 0)
                               }
