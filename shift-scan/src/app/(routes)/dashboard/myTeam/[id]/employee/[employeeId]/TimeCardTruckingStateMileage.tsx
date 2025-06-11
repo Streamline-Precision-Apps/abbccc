@@ -191,14 +191,11 @@ export default function TimeCardTruckingStateMileageLogs({
                     {t("Mileage")}
                   </Titles>
                 </Holds>
-              </Grids>
-
-              {editedStateMileages.map((mileage) => (
+              </Grids>              {editedStateMileages.map((mileage) => (
                 <Holds
                   key={`${mileage.truckingLogId}-${mileage.id}`}
-                  className={`border-black border-[3px] rounded-lg bg-white mb-2 ${
-                    focusIds.includes(mileage.id) ? "bg-orange-400" : ""
-                  }`}
+                  background={focusIds.includes(mileage.id) ? "orange" : "white"}
+                  className="border-black border-[3px] rounded-lg mb-2"
                 >
                   <Buttons
                     shadow={"none"}
@@ -206,10 +203,10 @@ export default function TimeCardTruckingStateMileageLogs({
                     className="w-full h-full text-left"
                   >
                     <Grids cols={"4"} className="w-full h-full">
-                      <Holds className="col-start-1 col-end-3 w-full h-full border-r-[3px] border-black">
-                        <Inputs
+                      <Holds className="col-start-1 col-end-3 w-full h-full border-r-[3px] border-black">                        <Inputs
                           value={mileage.truckName}
                           disabled={true}
+                          background={focusIds.includes(mileage.id) ? "orange" : "white"}
                           className="w-full h-full border-none rounded-none rounded-tl-md rounded-bl-md text-left text-xs"
                           readOnly
                         />
@@ -235,10 +232,10 @@ export default function TimeCardTruckingStateMileageLogs({
                                 {state.name}
                               </option>
                             ))}
-                          </select>                        ) : (
-                          <Inputs
+                          </select>                        ) : (                          <Inputs
                             value={US_STATES.find(state => state.code === mileage.state)?.name || mileage.state}
                             disabled={true}
+                            background={focusIds.includes(mileage.id) ? "orange" : "white"}
                             className="w-full h-full border-none rounded-none text-center text-xs"
                             readOnly
                           />
@@ -247,6 +244,7 @@ export default function TimeCardTruckingStateMileageLogs({
                       <Holds className="col-start-4 col-end-5 w-full h-full border-l-[3px] border-black">                        <Inputs
                           type="number"
                           value={getDisplayValue(mileage.truckingLogId, mileage.id, "stateLineMileage", mileage.stateLineMileage?.toString() || "")}
+                          background={focusIds.includes(mileage.id) ? "orange" : "white"}
                           onChange={(e) =>
                             handleLocalChange(
                               mileage.truckingLogId,

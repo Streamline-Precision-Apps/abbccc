@@ -298,9 +298,9 @@ export default function TimeCardEquipmentLogs({
                 return (
                   <Holds
                     key={log.id}
-                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
-                      isFocused ? "bg-orange-400" : "bg-white"
-                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    background={isFocused ? "orange" : "white"}
+                    className={`relative border-black border-[3px] rounded-lg mb-2 
+                    ${isReviewYourTeam ? "cursor-pointer" : ""}`}
                     onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
                     {isReviewYourTeam && (
@@ -320,25 +320,30 @@ export default function TimeCardEquipmentLogs({
                     >
                       <Grids cols={"4"} className="w-full h-full">
                         <Holds className="col-start-1 col-end-3 w-full h-full">
+                          {" "}
                           <Inputs
                             value={log.equipmentName}
                             disabled={true}
                             className="text-xs border-none h-full rounded-none rounded-bl-md rounded-tl-md justify-center text-center pl-1"
+                            background={isFocused ? "orange" : "white"}
                             readOnly
                           />
                         </Holds>
                         {!edit ? (
                           <Holds className="col-start-3 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                            {" "}
                             <Inputs
                               value={log.usageTime}
                               disabled={true}
                               className="text-xs border-none h-full rounded-none rounded-br-md rounded-tr-md justify-center text-center"
+                              background={isFocused ? "orange" : "white"}
                               readOnly
                             />
                           </Holds>
                         ) : (
                           <>
                             <Holds className="col-start-3 col-end-4 w-full h-full border-l-black border-l-[3px]">
+                              {" "}
                               <Inputs
                                 type="time"
                                 value={getDisplayValue(
@@ -355,10 +360,12 @@ export default function TimeCardEquipmentLogs({
                                 }
                                 onBlur={() => handleBlur(log.id, "startTime")}
                                 disabled={!edit}
+                                background={isFocused ? "orange" : "white"}
                                 className="text-xs border-none h-full rounded-none justify-center text-center"
                               />
                             </Holds>
                             <Holds className="col-start-4 col-end-5 w-full h-full border-l-black border-l-[3px]">
+                              {" "}
                               <Inputs
                                 type="time"
                                 value={getDisplayValue(
@@ -366,6 +373,7 @@ export default function TimeCardEquipmentLogs({
                                   "endTime",
                                   log.endTime
                                 )}
+                                background={isFocused ? "orange" : "white"}
                                 onChange={(e) =>
                                   handleLocalChange(
                                     log.id,

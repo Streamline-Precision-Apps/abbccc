@@ -172,9 +172,9 @@ export default function TimeCardTruckingMileage({
                 return (
                   <Holds
                     key={sheet.id}
-                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
-                      isFocused ? "bg-orange-400" : "bg-white"
-                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    background={isFocused ? "orange" : "white"}
+                    className={`relative border-black border-[3px] rounded-lg mb-2
+                    ${isReviewYourTeam ? "cursor-pointer" : ""}`}
                     onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
                     {isReviewYourTeam && (
@@ -194,16 +194,19 @@ export default function TimeCardTruckingMileage({
                     >
                       <Grids cols={"4"} className="w-full h-full">
                         <Holds className="col-start-1 col-end-3 h-full w-full">
+                          {" "}
                           <Inputs
                             type={"text"}
                             value={sheet.Equipment?.name || ""}
                             className="text-xs border-none h-full w-full p-2.5 rounded-md rounded-tr-none rounded-br-none justify-center"
+                            background={isFocused ? "orange" : "white"}
                             disabled={true} // Equipment name should not be editable
                             readOnly
                           />
                         </Holds>
                         <Holds className="col-start-3 col-end-4 border-x-[3px] border-black h-full">
                           <Holds className="h-full justify-center">
+                            {" "}
                             <Inputs
                               type={"number"}
                               value={getDisplayValue(
@@ -212,6 +215,7 @@ export default function TimeCardTruckingMileage({
                                 sheet.startingMileage
                               )}
                               className="text-xs border-none h-full rounded-none justify-center p-2.5"
+                              background={isFocused ? "orange" : "white"}
                               disabled={!edit}
                               onChange={(e) =>
                                 handleLocalChange(
@@ -229,6 +233,7 @@ export default function TimeCardTruckingMileage({
 
                         <Holds className="col-start-4 col-end-5 h-full">
                           <Holds className="h-full justify-center">
+                            {" "}
                             <Inputs
                               type={"number"}
                               value={getDisplayValue(
@@ -237,6 +242,7 @@ export default function TimeCardTruckingMileage({
                                 sheet.endingMileage || ""
                               )}
                               className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right p-2.5"
+                              background={isFocused ? "orange" : "white"}
                               disabled={!edit}
                               onChange={(e) =>
                                 handleLocalChange(
