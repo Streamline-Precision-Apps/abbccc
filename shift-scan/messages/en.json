@@ -1,4 +1,12 @@
 {
+  "Settings": {
+    "Camera": "Camera Access",
+    "Location": "Location Access",
+    "Granted": "Permission granted",
+    "NotGranted": "Permission needed",
+    "Enable": "Enable",
+    "Enabled": "Enabled"
+  },
   "Login": {
     "EmployeeID": "Employee ID",
     "Password": "Password",

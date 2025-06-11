@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { Holds } from "../(reusable)/holds";
 import { Images } from "../(reusable)/images";
+import { PermissionsBadge } from "../(settings)/PermissionsBadge";
 
 export default function HamburgerMenuNew() {
   const [image, setImage] = useState("");
@@ -50,12 +51,13 @@ export default function HamburgerMenuNew() {
                 : "mx-auto w-16 h-auto"
             }
           />
-
-          <img
-            src={"/settingsFilled.svg"}
-            alt={"settings"}
-            className="w-7 h-7 absolute right-[-10px] bottom-0 " // White icon
-          />
+          <div className="relative">
+            <img
+              src={"/settingsFilled.svg"}
+              alt={"settings"}
+              className="w-7 h-7 absolute right-[-10px] bottom-0"
+            />
+          </div>
         </Buttons>
       </Holds>
 

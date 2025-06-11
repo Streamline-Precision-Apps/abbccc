@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
 export async function GET(
   req: Request,
@@ -19,12 +20,30 @@ export async function GET(
     // Validate the ID parameter
     const jobsiteId = params.id;
     if (!jobsiteId) {
-      return NextResponse.json({ error: "Invalid or missing jobsite ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or missing jobsite ID" },
+        { status: 400 }
+      );
     }
 
-    // Fetch jobsite data
+    // Fetch complete jobsite data with all relationships
     const jobsiteData = await prisma.jobsite.findUnique({
       where: { id: jobsiteId },
+      include: {
+        PendingApprovals: true,
+        Client: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        CCTags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!jobsiteData) {
@@ -40,9 +59,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -2,6 +2,9 @@
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
+import { CrewEditState, UserEditState } from "./types/personnel";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export default function DefaultTab({
   createNewCrew,
@@ -16,7 +19,7 @@ export default function DefaultTab({
         <Holds
           background={"white"}
           position={"row"}
-          className="w-full px-5 py-1 space-x-10 items-center"
+          className="w-full px-5 py-1 space-x-10 items-center relative"
         >
           <Holds
             className="flex w-fit items-center"
@@ -33,6 +36,7 @@ export default function DefaultTab({
             <Texts text={"link"} size={"p7"}>
               Register New Employee
             </Texts>
+            <NotificationComponent />
           </Holds>
         </Holds>
       </Grids>

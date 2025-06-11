@@ -10,13 +10,26 @@ const pwaConfig = {
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
-
   swcMinify: true,
-  // disable: process.env.NODE_ENV !== "production",
   disable: false,
   workboxOptions: {
     disableDevLogs: true,
+    runtimeCaching: [
+      {
+        urlPattern: /^https?.*/,
+        handler: "NetworkFirst",
+        options: {
+          cacheName: "offlineCache",
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          },
+        },
+      },
+    ],
   },
+  buildExcludes: [/middleware-manifest\.json$/],
+  publicExcludes: ["!camera.js"],
 };
 
 const nextConfig = {

@@ -1,5 +1,4 @@
 "use client";
-import { useEffect } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
@@ -8,9 +7,13 @@ import { SearchCrew } from "@/lib/types";
 import EditedCrew from "./UserSelected/editedCrew";
 import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
+import { useUserData } from "../hooks/useUserData";
+import { PersonnelView, UserData } from "./types/personnel";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { deletePersonnel, editPersonnelInfo } from "@/actions/PersonnelActions";
-import { UserData } from "./types/personnel";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
@@ -29,12 +32,6 @@ const fields = [
   { label: "Employment Status", name: "activeEmployee", type: "text" },
 ];
 
-const fetchUserData = async (userid: string) => {
-  const res = await fetch(`/api/employeeInfo/${userid}`);
-  if (!res.ok) throw new Error("Failed to fetch user data");
-  return res.json();
-};
-
 const UserSelected = ({
   setView,
   userid,
@@ -44,6 +41,10 @@ const UserSelected = ({
   updateEditState,
   retainOnlyUserEditState,
   discardUserEditChanges,
+  fetchAllData,
+  setViewOption,
+  viewOption,
+  isUserEditStateDirty,
 }: {
   setView: () => void;
   setRegistration: () => void;
@@ -63,6 +64,10 @@ const UserSelected = ({
   updateEditState: (updates: Partial<typeof editState>) => void;
   retainOnlyUserEditState: (userId: string) => void;
   discardUserEditChanges: (userId: string) => void;
+  fetchAllData: () => void;
+  setViewOption: Dispatch<SetStateAction<PersonnelView>>;
+  viewOption: PersonnelView;
+  isUserEditStateDirty: (userId: string) => boolean;
 }) => {
   const {
     user,
@@ -74,209 +79,20 @@ const UserSelected = ({
     edited,
     loading,
     successfullyUpdated,
-  } = editState;
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadUserData = async () => {
-      if (!editState.user) {
-        updateEditState({ loading: true });
-        try {
-          const userData = await fetchUserData(userid);
-
-          if (!isMounted) return;
-
-          const crewIds = userData.Crews.map((c: { id: string }) => c.id);
-
-          const crewLeadsMap = userData.Crews.reduce(
-            (
-              acc: Record<string, boolean>,
-              crew: { id: string; name: string; leadId: string }
-            ) => {
-              console.log(crew);
-
-              acc[crew.id] = crew.leadId === userData.id;
-              return acc;
-            },
-            {}
-          );
-          console.log(crewLeadsMap);
-
-          updateEditState({
-            user: userData,
-            originalUser: userData,
-            selectedCrews: crewIds,
-            originalCrews: crewIds,
-            crewLeads: crewLeadsMap,
-            originalCrewLeads: { ...crewLeadsMap },
-            edited: {},
-            loading: false,
-          });
-        } catch (e) {
-          console.error(e);
-          if (isMounted) {
-            updateEditState({ loading: false });
-          }
-        }
-      }
-    };
-
-    loadUserData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [userid]);
-
-  // Handle input changes and track edits
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    if (!user) return;
-    const { name, value } = e.target;
-
-    // Handle Contact fields
-    if (
-      name === "phoneNumber" ||
-      name === "emergencyContact" ||
-      name === "emergencyContactNumber"
-    ) {
-      updateEditState({
-        user: {
-          ...user,
-          Contact: {
-            ...user.Contact,
-            [name]: value,
-          },
-        },
-        edited: {
-          ...edited,
-          [name]: value !== (originalUser?.Contact as any)?.[name],
-        },
-      });
-      return;
-    }
-
-    // All other fields (top-level)
-    updateEditState({
-      user: { ...user, [name]: value },
-      edited: {
-        ...edited,
-        [name]: value !== (originalUser as any)?.[name],
-      },
-    });
-  };
-
-  // Crew checkbox handler
-  const handleCrewCheckbox = (id: string) => {
-    const newCrews = selectedCrews.includes(id)
-      ? selectedCrews.filter((c) => c !== id)
-      : [...selectedCrews, id];
-
-    // If removing from crews, also remove as crew lead
-    const newCrewLeads = { ...crewLeads };
-    if (!newCrews.includes(id)) {
-      delete newCrewLeads[id];
-    }
-
-    updateEditState({
-      selectedCrews: newCrews,
-      crewLeads: newCrewLeads,
-      edited: {
-        ...edited,
-        crews:
-          JSON.stringify(newCrews.sort()) !==
-          JSON.stringify(originalCrews.sort()),
-        crewLeads:
-          JSON.stringify(newCrewLeads) !== JSON.stringify(originalCrewLeads),
-      },
-    });
-  };
-
-  // Crew lead toggle handler
-  const handleCrewLeadToggle = (crewId: string) => {
-    if (!user) return;
-
-    const newCrewLeads = {
-      ...crewLeads,
-      [crewId]: !crewLeads[crewId],
-    };
-
-    updateEditState({
-      crewLeads: newCrewLeads,
-      edited: {
-        ...edited,
-        crewLeads:
-          JSON.stringify(newCrewLeads) !== JSON.stringify(originalCrewLeads),
-      },
-    });
-  };
-
-  // Save changes using server action (async)
-  const handleSave = async () => {
-    if (!user) return;
-    updateEditState({ loading: true });
-
-    const formData = new FormData();
-    formData.set("id", user.id);
-    formData.set("firstName", user.firstName);
-    formData.set("lastName", user.lastName);
-    formData.set("email", user.email);
-    formData.set("DOB", user.DOB);
-    formData.set("permission", user.permission);
-    formData.set("truckView", String(user.truckView));
-    formData.set("tascoView", String(user.tascoView));
-    formData.set("laborView", String(user.laborView));
-    formData.set("mechanicView", String(user.mechanicView));
-    formData.set("phoneNumber", user.Contact?.phoneNumber || "");
-    formData.set("emergencyContact", user.Contact?.emergencyContact || "");
-    formData.set(
-      "emergencyContactNumber",
-      user.Contact?.emergencyContactNumber || ""
-    );
-    formData.set("activeEmployee", String(user.activeEmployee));
-    formData.set("crewLeads", JSON.stringify(crewLeads));
-    formData.set("selectedCrews", JSON.stringify(selectedCrews));
-
-    try {
-      const result = await editPersonnelInfo(formData);
-      if (result === true) {
-        updateEditState({
-          loading: false,
-          originalUser: user ? { ...user } : null,
-          originalCrews: [...selectedCrews],
-          originalCrewLeads: { ...crewLeads },
-          edited: {},
-          successfullyUpdated: true,
-        });
-        retainOnlyUserEditState(user.id);
-        setTimeout(() => {
-          updateEditState({ successfullyUpdated: false });
-        }, 3000);
-      } else {
-        updateEditState({ loading: false });
-        throw new Error("Failed to save changes");
-      }
-    } catch (err: any) {
-      alert(err?.message || "Failed to save changes");
-    }
-  };
-
-  const handleDelete = async (userid: string) => {
-    if (!user) return;
-    const result = await deletePersonnel(user.id);
-    if (result === true) {
-      setView();
-    } else {
-      alert("Failed to delete user");
-    }
-  };
+    handleInputChange,
+    handleCrewCheckbox,
+    handleCrewLeadToggle,
+    handleSave,
+    handleDelete,
+  } = useUserData({ userid, editState, updateEditState });
+  const [deleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const userStartDate = new Date(originalUser?.startDate ?? "");
 
   return (
     <>
       <Holds className="col-span-4 w-full h-full overflow-y-auto no-scrollbar ">
-        <Grids className="w-full h-full grid-rows-[40px_1fr] gap-4">
+        <Grids className="w-full h-full grid-rows-[50px_1fr] gap-4">
           <Holds
             background={"white"}
             position={"row"}
@@ -315,6 +131,35 @@ const UserSelected = ({
                 Register New Employee
               </Texts>
             </Holds>
+            {originalUser?.startDate && userStartDate > twentyFourHoursAgo && (
+              <Holds className="flex w-fit items-center ">
+                <Texts
+                  text={"link"}
+                  size={"p7"}
+                  onClick={
+                    edited && Object.values(edited).some(Boolean)
+                      ? undefined
+                      : () => {
+                          setDeleteUserModalOpen(true);
+                        }
+                  }
+                  style={{
+                    pointerEvents:
+                      edited && Object.values(edited).some(Boolean)
+                        ? "none"
+                        : "auto",
+                    opacity:
+                      edited && Object.values(edited).some(Boolean) ? 0.5 : 1,
+                    cursor:
+                      edited && Object.values(edited).some(Boolean)
+                        ? "not-allowed"
+                        : "pointer",
+                  }}
+                >
+                  Delete Employee
+                </Texts>
+              </Holds>
+            )}
             <Holds
               position={"row"}
               className="flex w-fit items-center space-x-10 "
@@ -392,16 +237,8 @@ const UserSelected = ({
                 <Grids className="w-full h-full grid-rows-[50px_1fr] p-3 gap-5">
                   <Holds
                     position={"row"}
-                    className="size-full row-start-1 row-end-2"
+                    className="w-full h-full row-start-1 row-end-2"
                   >
-                    <Buttons
-                      background={"red"}
-                      shadow={"none"}
-                      onClick={() => handleDelete(user.id)}
-                      className="w-fit px-3 h-full mr-4"
-                    >
-                      Delete
-                    </Buttons>
                     <ProfileAndRoles
                       user={user}
                       originalUser={originalUser}
@@ -430,6 +267,8 @@ const UserSelected = ({
                       handleCrewCheckbox={handleCrewCheckbox}
                       handleCrewLeadToggle={handleCrewLeadToggle}
                       permission={user.permission}
+                      setViewOption={setViewOption}
+                      viewOption={viewOption}
                     />
                   </Holds>
                 </Grids>
@@ -438,6 +277,41 @@ const UserSelected = ({
           </>
         </Grids>
       </Holds>
+      <NModals
+        isOpen={deleteUserModalOpen}
+        handleClose={() => setDeleteUserModalOpen(false)}
+        size="sm"
+        background={"noOpacity"}
+      >
+        <Holds className="w-full h-full items-center justify-center text-center px-4">
+          <Holds className="w-[90%] flex h-1/2">
+            <Texts size="p5">Are you sure you want to delete this user?</Texts>
+          </Holds>
+          <Holds className="w-[80%] flex justify-center items-center gap-4 h-1/2">
+            <Buttons
+              shadow="none"
+              background="lightBlue"
+              className="w-full p-1"
+              onClick={() => {
+                handleDelete(userid);
+                fetchAllData();
+                setView();
+                setDeleteUserModalOpen(false);
+              }}
+            >
+              <Titles size="sm">Yes, continue.</Titles>
+            </Buttons>
+            <Buttons
+              background="red"
+              shadow="none"
+              className="w-full p-1"
+              onClick={() => setDeleteUserModalOpen(false)}
+            >
+              <Titles size="sm">No, go back!</Titles>
+            </Buttons>
+          </Holds>
+        </Holds>
+      </NModals>
     </>
   );
 };

@@ -10,11 +10,13 @@ import { useViewState } from "@/hooks/(Admin)/useViewState";
 import { useUserEdit } from "@/app/context/(admin)/UserEditContext";
 import PersonnelSideBar from "./components/PersonnelSideBar";
 import PersonnelMainContent from "./components/PersonnelMainContent";
+import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
 
 export default function Personnel() {
   const {
     loading,
     crew,
+    employees,
     term,
     setTerm,
     filteredList,
@@ -30,6 +32,7 @@ export default function Personnel() {
     setRegistrationPending,
     setRegistrationSuccess,
     resetRegistrationState,
+    isRegistrationFormDirty,
   } = useRegistrationState();
 
   // crew creation state
@@ -41,6 +44,8 @@ export default function Personnel() {
     removeMembers,
     setCrewCreationPending,
     resetCrewCreationState,
+    setCrewCreationSuccess,
+    isCrewCreationFormDirty,
   } = useCrewCreationState();
 
   const { view, setView } = useViewState();
@@ -51,6 +56,15 @@ export default function Personnel() {
     isUserEditStateDirty,
     discardUserEditChanges,
   } = useUserEdit();
+
+  const {
+    crewEditStates,
+    updateCrewEditState,
+    retainOnlyCrewEditState,
+    isCrewEditStateDirty,
+    discardCrewEditChanges,
+    initializeCrewEditState,
+  } = useCrewEdit();
 
   const handleRegistrationSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -68,7 +82,6 @@ export default function Personnel() {
           setTimeout(async () => {
             resetRegistrationState();
             await fetchAllData();
-            setView({ mode: "default" });
           }, 3000);
         }
       } catch (error) {
@@ -115,10 +128,15 @@ export default function Personnel() {
           formData.append("crewType", crewCreationState.form.crewType);
         }
 
-        await createCrew(formData);
-        await fetchAllData();
-        resetCrewCreationState();
-        setView({ mode: "default" });
+        const result = await createCrew(formData);
+        if (result?.success) {
+          setCrewCreationSuccess(true);
+          // Wait 3 seconds before resetting and redirecting
+          setTimeout(async () => {
+            resetCrewCreationState();
+            await fetchAllData();
+          }, 3000);
+        }
       } catch (error) {
         console.error("Failed to create crew:", error);
         setCrewCreationPending(false);
@@ -158,6 +176,14 @@ export default function Personnel() {
             selectLead={selectLead}
             addMembers={addMembers}
             removeMembers={removeMembers}
+            crewEditStates={crewEditStates}
+            updateCrewEditState={updateCrewEditState}
+            isCrewEditStateDirty={isCrewEditStateDirty}
+            discardCrewEditChanges={discardCrewEditChanges}
+            isRegistrationFormDirty={isRegistrationFormDirty}
+            resetRegistrationState={resetRegistrationState}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
+            resetCrewCreationState={resetCrewCreationState}
           />
           {/* Main content area, also scrollable if needed */}
           {/* Display logic based on new state variables */}
@@ -165,6 +191,7 @@ export default function Personnel() {
             view={view}
             setView={setView}
             crew={crew}
+            employees={employees}
             registrationState={registrationState}
             updateRegistrationForm={updateRegistrationForm}
             updateRegistrationCrews={updateRegistrationCrews}
@@ -176,6 +203,16 @@ export default function Personnel() {
             updateUserEditState={updateUserEditState}
             retainOnlyUserEditState={retainOnlyUserEditState}
             discardUserEditChanges={discardUserEditChanges}
+            crewEditStates={crewEditStates}
+            updateCrewEditState={updateCrewEditState}
+            retainOnlyCrewEditState={retainOnlyCrewEditState}
+            discardCrewEditChanges={discardCrewEditChanges}
+            isCrewEditStateDirty={isCrewEditStateDirty}
+            initializeCrewEditState={initializeCrewEditState}
+            setCrewCreationSuccess={setCrewCreationSuccess}
+            fetchAllData={fetchAllData}
+            isUserEditStateDirty={isUserEditStateDirty}
+            isCrewCreationFormDirty={isCrewCreationFormDirty}
           />
         </Grids>
       </Holds>

@@ -8,9 +8,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import {
   TruckingEquipmentHaulLog,
   TruckingEquipmentHaulLogData,
-  EquipmentHauledItem,
 } from "@/lib/types";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
@@ -165,23 +164,15 @@ export default function TimeCardTruckingHaulLogs({
     label: string;
   } | null>(null);
 
-  const openJobsiteModal = (
-    itemIdx: number,
-    logIdx: number,
-    hauledIdx: number = 0
-  ) => {
+  const openJobsiteModal = (logId: string, equipmentIndex: number) => {
     if (!edit) return;
-    setCurrentEditingLog({ itemIdx, logIdx, hauledIdx });
+    setCurrentEditingLog({ logId, equipmentIndex });
     setJobsiteModalOpen(true);
   };
 
-  const openEquipmentModal = (
-    itemIdx: number,
-    logIdx: number,
-    hauledIdx: number = 0
-  ) => {
+  const openEquipmentModal = (logId: string, equipmentIndex: number) => {
     if (!edit) return;
-    setCurrentEditingLog({ itemIdx, logIdx, hauledIdx });
+    setCurrentEditingLog({ logId, equipmentIndex });
     setEquipmentModalOpen(true);
   };
 
@@ -189,15 +180,11 @@ export default function TimeCardTruckingHaulLogs({
     jobsite: { code: string; label: string } | null
   ) => {
     if (currentEditingLog && jobsite) {
-      handleEquipmentHauledChange(
-        currentEditingLog.itemIdx,
-        currentEditingLog.logIdx,
-        currentEditingLog.hauledIdx,
-        "JobSite",
-        {
-          id: jobsite.code,
-          name: jobsite.label,
-        }
+      handleJobsiteChange(
+        currentEditingLog.logId,
+        currentEditingLog.equipmentIndex,
+        jobsite.code,
+        jobsite.label
       );
     }
     setJobsiteModalOpen(false);
@@ -207,37 +194,17 @@ export default function TimeCardTruckingHaulLogs({
     equipment: { code: string; label: string } | null
   ) => {
     if (currentEditingLog && equipment) {
-      handleEquipmentHauledChange(
-        currentEditingLog.itemIdx,
-        currentEditingLog.logIdx,
-        currentEditingLog.hauledIdx,
-        "Equipment",
-        {
-          id: equipment.code,
-          name: equipment.label,
-        }
-      );
-    }
-  };
-
-  const handleConfirmEquipment = () => {
-    if (currentEditingLog && tempEquipment) {
-      handleEquipmentHauledChange(
-        currentEditingLog.itemIdx,
-        currentEditingLog.logIdx,
-        currentEditingLog.hauledIdx,
-        "Equipment",
-        {
-          id: tempEquipment.code,
-          name: tempEquipment.label,
-        }
+      handleEquipmentChange(
+        currentEditingLog.logId,
+        currentEditingLog.equipmentIndex,
+        equipment.code,
+        equipment.label
       );
     }
     setEquipmentModalOpen(false);
-    setTempEquipment(null);
   };
 
-  const isEmptyData = truckingEquipmentHaulLogs.length === 0;
+  const isEmptyData = editedTruckingHaulLogs.length === 0;
 
   return (
     <Holds className="w-full h-full">
@@ -374,14 +341,21 @@ export default function TimeCardTruckingHaulLogs({
             initialValue={
               currentEditingLog
                 ? {
+                    id:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.JobSite?.id || "",
                     code:
-                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
-                        .TruckingLogs[currentEditingLog.logIdx]
-                        .EquipmentHauled?.[0]?.JobSite?.id || "",
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.JobSite?.id || "",
                     label:
-                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
-                        .TruckingLogs[currentEditingLog.logIdx]
-                        .EquipmentHauled?.[0]?.JobSite?.name || "",
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.JobSite?.name || "",
                   }
                 : undefined
             }
@@ -397,57 +371,30 @@ export default function TimeCardTruckingHaulLogs({
         handleClose={() => setEquipmentModalOpen(false)}
       >
         <Holds background={"white"} className="w-full h-full p-2">
-          <Grids rows={"8"} className="w-full h-full">
-            <Holds
-              position={"row"}
-              className={"row-start-1 row-end-8 h-full gap-1"}
-            >
-              <EquipmentSelector
-                onEquipmentSelect={setTempEquipment}
-                initialValue={
-                  tempEquipment ||
-                  (currentEditingLog
-                    ? {
-                        code:
-                          truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
-                            .TruckingLogs[currentEditingLog.logIdx].Equipment &&
-                          (
-                            truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
-                              .TruckingLogs[currentEditingLog.logIdx]
-                              .Equipment as {
-                              id?: string;
-                            }
-                          ).id
-                            ? (
-                                truckingEquipmentHaulLogs[
-                                  currentEditingLog.itemIdx
-                                ].TruckingLogs[currentEditingLog.logIdx]
-                                  .Equipment as { id?: string }
-                              ).id ?? ""
-                            : "",
-                        label:
-                          truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
-                            .TruckingLogs[currentEditingLog.logIdx].Equipment
-                            ?.name || "",
-                      }
-                    : undefined)
-                }
-              />
-            </Holds>
-            <Holds
-              position={"row"}
-              className={"row-start-8 row-end-9 h-full gap-1"}
-            >
-              <Buttons
-                background={"green"}
-                className="w-full mt-4"
-                onClick={handleConfirmEquipment}
-                disabled={!tempEquipment}
-              >
-                {t("Confirm")}
-              </Buttons>
-            </Holds>
-          </Grids>
+          <EquipmentSelector
+            onEquipmentSelect={handleEquipmentSelect}
+            initialValue={
+              currentEditingLog
+                ? {
+                    id:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.Equipment?.id || "",
+                    code:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.Equipment?.id || "",
+                    label:
+                      editedTruckingHaulLogs.find(
+                        (log) => log.id === currentEditingLog.logId
+                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                        ?.Equipment?.name || "",
+                  }
+                : undefined
+            }
+          />
         </Holds>
       </NModals>
     </Holds>

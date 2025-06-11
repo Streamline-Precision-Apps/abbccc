@@ -12,6 +12,7 @@ export const useCrewCreationState = () => {
     selectedUsers: [] as { id: string }[],
     teamLead: null as string | null,
     isPending: false,
+    isSuccess: false,
   });
 
   const updateForm = (updates: Partial<CrewCreationState["form"]>) => {
@@ -62,6 +63,10 @@ export const useCrewCreationState = () => {
     });
   };
 
+  const setSuccess = (isSuccess: boolean) => {
+    setState((prev) => ({ ...prev, isSuccess }));
+  };
+
   const reset = () => {
     setState({
       form: {
@@ -71,7 +76,25 @@ export const useCrewCreationState = () => {
       selectedUsers: [],
       teamLead: null,
       isPending: false,
+      isSuccess: false,
     });
+  };
+  
+  // Check if the crew creation form has any user-entered data
+  const isCrewCreationFormDirty = () => {
+    // Check if crew name has content
+    const hasCrewName = state.form.crewName.trim() !== "";
+
+    // Check if crew type is selected
+    const hasCrewType = state.form.crewType.trim() !== "";
+
+    // Check if any users are selected
+    const hasSelectedUsers = state.selectedUsers.length > 0;
+
+    // Check if a team lead is selected
+    const hasTeamLead = state.teamLead !== null;
+
+    return hasCrewName || hasCrewType || hasSelectedUsers || hasTeamLead;
   };
 
   return {
@@ -80,8 +103,10 @@ export const useCrewCreationState = () => {
     updateCrewForm: updateForm,
     setCrewCreationPending: setPending,
     resetCrewCreationState: reset,
+    setCrewCreationSuccess: setSuccess,
     selectLead,
     addMembers,
     removeMembers,
+    isCrewCreationFormDirty,
   };
 };

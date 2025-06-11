@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -10,11 +9,14 @@ export async function GET(
 
   // Check if the ID is missing or invalid
   if (!id || typeof id !== "string") {
-    return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid or missing ID" },
+      { status: 400 }
+    );
   }
 
   try {
-    // Query the database for the tag data
+    // Query the database for the complete tag data with full relationships
     const tags = await prisma.cCTag.findUnique({
       where: {
         id: String(id), // Ensure that the id is a string
@@ -23,8 +25,8 @@ export async function GET(
         Jobsites: {
           select: {
             id: true,
-            qrId: true,
             name: true,
+            qrId: true,
           },
         },
         CostCodes: {

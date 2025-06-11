@@ -22,6 +22,7 @@ const TextVariants = cva(
         red: "text-red-500",
         green: "text-green-500",
         gray: "text-gray-500",
+        italic: "italic",
       },
       position: {
         //only position attributes
@@ -39,6 +40,11 @@ const TextVariants = cva(
         p6: "text-sm sm:text-sm md:text-med lg:text-lg",
         p7: "text-xs sm:text-xs md:text-sm lg:text-med",
         p8: "text-[10px] sm:text-[10px] md:text-xs lg:text-sm",
+        xs: "text-xs",
+        sm: "text-sm",
+        md: "text-base",
+        lg: "text-lg",
+        xl: "text-xl",
       },
     },
     defaultVariants: {

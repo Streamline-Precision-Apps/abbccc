@@ -24,6 +24,7 @@ const JobCodesSchema = z.object({
 });
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };

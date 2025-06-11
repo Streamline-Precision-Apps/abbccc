@@ -22,6 +22,8 @@ const InputVariants = cva(
         transparent:
           "border border-[3px] border-black disabled:bg-app-gray mb-3 last:mb-0 w-full p-1 bg-transparent",
         empty: "",
+        validationMessage:
+          "bg-white border border-[3px] border-black disabled:bg-app-gray last:mb-0 w-full p-1",
       },
     },
     defaultVariants: {

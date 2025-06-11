@@ -28,6 +28,7 @@ type TascoClockInFormProps = {
 };
 
 type Option = {
+  id: string;
   code: string;
   label: string;
 };
@@ -100,9 +101,13 @@ export default function TascoClockInForm({
               {clockInRoleTypes === "tascoEEquipment" ? (
                 <Holds className="row-start-1 row-end-7 h-full w-full">
                   <EquipmentSelector
-                    onEquipmentSelect={(equipment) =>
-                      setEquipment(equipment ?? { code: "", label: "" })
-                    }
+                    onEquipmentSelect={(equipment) => {
+                      if (equipment) {
+                        setEquipment(equipment); // Update the equipment state with the full Option object
+                      } else {
+                        setEquipment({ id: "", code: "", label: "" }); // Reset if null
+                      }
+                    }}
                     initialValue={equipment}
                   />
                 </Holds>
@@ -127,9 +132,13 @@ export default function TascoClockInForm({
                     </Holds>
                     <Holds className="row-start-2 row-end-11 h-full w-full">
                       <EquipmentSelector
-                        onEquipmentSelect={(equipment) =>
-                          setEquipment(equipment ?? { code: "", label: "" })
-                        }
+                        onEquipmentSelect={(equipment) => {
+                          if (equipment) {
+                            setEquipment(equipment); // Update the equipment state with the full Option object
+                          } else {
+                            setEquipment({ id: "", code: "", label: "" }); // Reset if null
+                          }
+                        }}
                         initialValue={equipment}
                       />
                     </Holds>

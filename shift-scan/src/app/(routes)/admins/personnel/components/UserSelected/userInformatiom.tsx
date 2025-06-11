@@ -1,34 +1,7 @@
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-
-interface UserData {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  DOB: string;
-  truckView: boolean;
-  tascoView: boolean;
-  laborView: boolean;
-  mechanicView: boolean;
-  permission: string;
-  activeEmployee: boolean;
-  startDate?: string;
-  terminationDate?: string;
-  Contact: {
-    phoneNumber: string;
-    emergencyContact: string;
-    emergencyContactNumber: string;
-  };
-  Crews: {
-    id: string;
-    name: string;
-    leadId: string;
-  }[];
-  image?: string;
-}
+import { UserData } from "../types/personnel";
 
 export default function UserInformation({
   fields,
@@ -48,7 +21,9 @@ export default function UserInformation({
     [key: string]: boolean;
   };
   handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => void;
   updateEditState: (
     updates: Partial<{
@@ -91,26 +66,31 @@ export default function UserInformation({
           ) : field.name === "activeEmployee" ? (
             <Selects
               name="activeEmployee"
-              value={user.activeEmployee ? "Active" : "Inactive"}
+              value={user.terminationDate === null ? "Active" : "Inactive"}
               className={`w-full px-2 h-8 text-sm text-center ${
-                edited["activeEmployee"] ? "border-2 border-orange-400" : ""
+                edited["terminationDate"] ? "border-2 border-orange-400" : ""
               }`}
               onChange={(e) => {
                 const value = e.target.value;
+                const isActive = value === "Active";
+                const newTerminationDate = isActive
+                  ? null
+                  : new Date().toISOString();
+                const hasChanged =
+                  (originalUser?.terminationDate === null) !== isActive;
+
                 updateEditState({
                   user: {
                     ...user,
-                    activeEmployee: value === "Active",
+                    terminationDate: newTerminationDate,
                   },
                   edited: {
                     ...edited,
-                    activeEmployee:
-                      (value === "Active") !== originalUser?.activeEmployee,
+                    terminationDate: hasChanged,
                   },
                 });
               }}
             >
-              <option value="">Select Employment Status</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </Selects>
@@ -149,12 +129,14 @@ export default function UserInformation({
                   field.name === "emergencyContact" ||
                   field.name === "emergencyContactNumber"
                 ) {
+                  const contactField =
+                    field.name as keyof typeof originalUser.Contact;
                   updateEditState({
                     user: {
                       ...user,
                       Contact: {
                         ...user.Contact,
-                        [field.name]: (originalUser.Contact as any)[field.name],
+                        [field.name]: originalUser.Contact[contactField],
                       },
                     },
                     edited: {
@@ -163,10 +145,11 @@ export default function UserInformation({
                     },
                   });
                 } else {
+                  const userField = field.name as keyof UserData;
                   updateEditState({
                     user: {
                       ...user,
-                      [field.name]: (originalUser as any)[field.name],
+                      [field.name]: originalUser[userField],
                     },
                     edited: {
                       ...edited,

@@ -5,6 +5,7 @@ import { useDBEquipment } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
+  id: string; // Optional ID for compatibility
   code: string;
   label: string;
 };
@@ -29,7 +30,8 @@ export const EquipmentSelector = ({
 
   useEffect(() => {
     const options = equipmentResults.map((equipment) => ({
-      code: useEquipmentId ? equipment.id : equipment.qrId,
+      id: equipment.id,
+      code: equipment.qrId,
       label: equipment.name,
     }));
     setEquipmentOptions(options);

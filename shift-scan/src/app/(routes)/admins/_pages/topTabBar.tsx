@@ -27,7 +27,9 @@ const TopTabBar = () => {
 
   useEffect(() => {
     const getUserImage = async () => {
-      const fetchData = await fetch("/api/getUserImage");
+      const fetchData = await fetch("/api/getUserImage", {
+        next: { tags: ["profilePicture"] },
+      });
       const data = await fetchData.json();
       setUserImage(data.image);
     };
@@ -52,11 +54,12 @@ const TopTabBar = () => {
               {userImage ? (
                 <img
                   src={userImage}
+                  alt="Profile Picture"
                   className="m-auto h-[40px] rounded-full border-2 border-black"
                 ></img>
               ) : (
                 <Images
-                  titleImg="/admin.svg"
+                  titleImg="/profileFilled.svg"
                   titleImgAlt="admin"
                   className="m-auto h-[40px]"
                 />

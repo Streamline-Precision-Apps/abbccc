@@ -44,7 +44,6 @@ export async function GET(
         laborView: true,
         mechanicView: true,
         permission: true,
-        activeEmployee: true,
         startDate: true,
         terminationDate: true,
         Contact: {

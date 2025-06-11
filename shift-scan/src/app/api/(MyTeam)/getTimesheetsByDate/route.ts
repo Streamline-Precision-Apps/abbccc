@@ -399,8 +399,8 @@ export async function GET(request: Request) {
         where: {
           userId: employeeId,
           date: {
-            gte: startOfDay.toISOString(), // Start of the day in UTC
-            lte: endOfDay.toISOString(), // End of the day in UTC
+            gte: startOfDay.toISOString(),
+            lte: endOfDay.toISOString(),
           },
         },
         orderBy: {
@@ -408,28 +408,25 @@ export async function GET(request: Request) {
         },
         select: {
           EmployeeEquipmentLogs: {
-            select: {
-              id: true,
+            include: {
               Equipment: {
                 select: {
                   id: true,
                   name: true,
                 },
               },
-              RefuelLogs: {
-                select: {
-                  id: true,
-                  gallonsRefueled: true,
-                },
-              },
+              RefuelLogs: true,
             },
           },
         },
       });
 
+      // Filter logs that have refuel logs
       result = timeSheets
         .flatMap((sheet) => sheet.EmployeeEquipmentLogs)
-        .filter((log) => log.RefuelLogs && log.RefuelLogs.length > 0); // or any other condition you need;
+        .filter(
+          (log) => Array.isArray(log.RefuelLogs) && log.RefuelLogs.length > 0
+        );
     }
 
     return NextResponse.json(result, {

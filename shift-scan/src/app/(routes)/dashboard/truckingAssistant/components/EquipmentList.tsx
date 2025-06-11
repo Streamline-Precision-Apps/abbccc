@@ -38,6 +38,7 @@ type EquipmentHauled = {
 };
 
 type Option = {
+  id: string;
   label: string;
   code: string;
 };
@@ -56,11 +57,13 @@ export default function EquipmentList({
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
   const [equipmentLoading, setEquipmentLoading] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Option>({
+    id: "",
     label: "",
     code: "",
   });
@@ -103,7 +106,7 @@ export default function EquipmentList({
 
       setIsEquipmentOpen(false);
       setSelectedIndex(null);
-      setSelectedEquipment({ label: "", code: "" });
+      setSelectedEquipment({ id: "", label: "", code: "" });
     } catch (error) {
       console.error(t("ErrorSubmittingData"), error);
     } finally {
@@ -148,7 +151,7 @@ export default function EquipmentList({
 
       setIsEquipmentOpen(false);
       setSelectedIndex(null);
-      setSelectedEquipment({ label: "", code: "" });
+      setSelectedEquipment({ id: "", label: "", code: "" });
     } catch (error) {
       console.error(t("ErrorSubmittingData"), error);
     } finally {
@@ -203,6 +206,7 @@ export default function EquipmentList({
                       value={mat.Equipment?.name || ""}
                       onClick={() => {
                         setSelectedEquipment({
+                          id: mat.Equipment?.id || "",
                           label: mat.Equipment?.name || "",
                           code: mat.Equipment?.id || "",
                         });
@@ -231,6 +235,7 @@ export default function EquipmentList({
                       value={mat.JobSite?.name || ""}
                       onClick={() => {
                         setSelectedLocation({
+                          id: mat.JobSite?.id || "",
                           label: mat.JobSite?.name || "",
                           code: mat.JobSite?.id || "",
                         });
@@ -263,7 +268,7 @@ export default function EquipmentList({
                   if (equipment) {
                     setSelectedEquipment(equipment); // Update the equipment state with the full Option object
                   } else {
-                    setSelectedEquipment({ code: "", label: "" }); // Reset if null
+                    setSelectedEquipment({ id: "", code: "", label: "" }); // Reset if null
                   }
                 }}
                 initialValue={selectedEquipment}
@@ -291,7 +296,7 @@ export default function EquipmentList({
                   background={"red"}
                   shadow={"none"}
                   onClick={() => {
-                    setSelectedEquipment({ code: "", label: "" });
+                    setSelectedEquipment({ id: "", code: "", label: "" });
                     setIsEquipmentOpen(false);
                   }}
                   className="py-3"
@@ -316,7 +321,7 @@ export default function EquipmentList({
                   if (jobSite) {
                     setSelectedLocation(jobSite); // Update the equipment state with the full Option object
                   } else {
-                    setSelectedLocation({ code: "", label: "" }); // Reset if null
+                    setSelectedLocation({ id: "", code: "", label: "" }); // Reset if null
                   }
                 }}
                 initialValue={selectedLocation}
@@ -344,7 +349,7 @@ export default function EquipmentList({
                   background={"red"}
                   shadow={"none"}
                   onClick={() => {
-                    setSelectedLocation({ code: "", label: "" });
+                    setSelectedLocation({ id: "", code: "", label: "" });
                     setIsLocationOpen(false);
                   }}
                   className="py-3"
