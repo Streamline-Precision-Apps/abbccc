@@ -741,7 +741,7 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 export const initialDocumentTags: Prisma.DocumentTagCreateInput[] = [
   {
     id: "dt1",
-    tagName: "Equipment",
+    tagName: "General",
   },
   {
     id: "dt2",
@@ -843,17 +843,17 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    DocumentTags: { connect: [{ id: "dt1" }] },
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
         model: "W900",
-        year: "2020",
-        licensePlate: "ABC123",
-        registrationExpiration: new Date("2025-01-01"),
-        mileage: 50000,
+        year: "2015",
+        licensePlate: "KW900",
+        registrationExpiration: new Date("2025-12-31"),
+        mileage: 100000,
       },
     },
-    DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
     id: "eq2",

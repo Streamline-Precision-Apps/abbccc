@@ -192,6 +192,22 @@
 ### built/created
 - building new step for clock out section. and fixing/adjusting my teams to work with it. (6 hours)
 
-# May 23, 2025 - Thursday
+# June 2, 2025 - Monday
 ### built/created
-- 
+- fixing bugs in the equipment selection and trucking section. (2 hours)
+- Working on some issues in the clock out section. (6 hours)
+- adding the select focus Id with the highlight function in the clock out section. (3.5 hours)
+
+# June 3, 2025 - Tuesday
+### built/created
+- fixing bugs in the my teams section and clock out to make it all have the correct functionality. (9.5 hours)
+
+# June 4, 2025 - Wednesday
+### built/created
+- Finished the clock out section Functionality UI could use some work and the swiping functionality is not implemented.
+- Changed material to be a text input and removed the select for it in the trucking section and myTeams section.
+
+# June 6, 2025 - Friday
+### built/created
+- Fixed one keystroke bug in my teams section.
+- Fixing type errors in the clock out section stopping you from being able to see changes.

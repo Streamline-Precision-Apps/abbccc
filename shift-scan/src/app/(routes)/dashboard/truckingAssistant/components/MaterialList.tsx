@@ -113,7 +113,9 @@ export default function MaterialList({
                 >
                   {mat.name === "Material"
                     ? `${mat.name} ${index + 1}`
-                    : mat.name}
+                    : mat.name
+                    ? mat.name
+                    : t("NoMaterialTypeSelected")}
                 </Texts>
               </Holds>
             </SlidingDiv>

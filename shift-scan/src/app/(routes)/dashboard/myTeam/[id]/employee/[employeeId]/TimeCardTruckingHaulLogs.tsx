@@ -19,7 +19,10 @@ type TimeCardTruckingHaulLogsProps = {
   edit: boolean;
   manager: string;
   truckingEquipmentHaulLogs: TruckingEquipmentHaulLogData;
-  onDataChange: (data: TruckingEquipmentHaulLog[]) => void;
+  onDataChange: (data: TruckingEquipmentHaulLogData) => void; // FIX: expects nested structure
+  focusIds: string[];
+  setFocusIds: (ids: string[]) => void;
+  isReviewYourTeam?: boolean;
 };
 
 export default function TimeCardTruckingHaulLogs({
@@ -27,171 +30,139 @@ export default function TimeCardTruckingHaulLogs({
   manager,
   truckingEquipmentHaulLogs,
   onDataChange,
+  focusIds,
+  setFocusIds,
+  isReviewYourTeam,
 }: TimeCardTruckingHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingHaulLogs");
-  // Extract all TruckingLogs with their EquipmentHauled items
-  const allTruckingLogs = truckingEquipmentHaulLogs
-    .flatMap((item) => item.TruckingLogs)
-    .filter((log) => log?.id && log.EquipmentHauled?.length > 0);
 
-  const [editedTruckingHaulLogs, setEditedTruckingHaulLogs] =
-    useState<TruckingEquipmentHaulLog[]>(allTruckingLogs);
-  const [pendingChanges, setPendingChanges] = useState<
-    Record<string, TruckingEquipmentHaulLog>
+  // Add state to store local input values to prevent losing focus while typing
+  const [inputValues, setInputValues] = useState<
+    Record<string, string | number | null>
   >({});
-  const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
-  const [equipmentModalOpen, setEquipmentModalOpen] = useState(false);
-  const [currentEditingLog, setCurrentEditingLog] = useState<{
-    logId: string;
-    equipmentIndex: number;
-  } | null>(null);
 
-  // Reset when edit mode is turned off or when new data comes in
-  useEffect(() => {
-    setEditedTruckingHaulLogs(allTruckingLogs);
-    setPendingChanges({});
-  }, [truckingEquipmentHaulLogs]);
+  // Create a unique key for each input field
+  const getInputKey = (logId: string, hauledId: string, fieldName: string) => {
+    return `${logId}-${hauledId}-${fieldName}`;
+  };
 
-  const handleHaulLogChange = useCallback(
-    (
-      logId: string,
-      equipmentIndex: number,
-      field: keyof TruckingEquipmentHaulLog["EquipmentHauled"][0],
-      value: string | { id: string; name: string }
-    ) => {
-      setEditedTruckingHaulLogs((prevLogs) =>
-        prevLogs.map((log) => {
-          if (log.id === logId) {
-            const updatedEquipment = [...log.EquipmentHauled];
-            updatedEquipment[equipmentIndex] = {
-              ...updatedEquipment[equipmentIndex],
-              [field]:
-                typeof value === "object" && value !== null
-                  ? { ...value }
-                  : value,
-            };
+  // Get the current value from local state or use the original value
+  const getDisplayValue = (
+    logId: string,
+    hauledId: string,
+    fieldName: string,
+    originalValue: any
+  ) => {
+    const key = getInputKey(logId, hauledId, fieldName);
+    return key in inputValues ? inputValues[key] : originalValue;
+  };
 
-            return {
-              ...log,
-              EquipmentHauled: updatedEquipment,
-            };
-          }
-          return log;
-        })
-      );
+  // Update local state without triggering parent update (and thus avoiding re-render)
+  const handleLocalChange = (
+    logId: string,
+    hauledId: string,
+    fieldName: string,
+    value: any
+  ) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [getInputKey(logId, hauledId, fieldName)]: value,
+    }));
+  };
 
-      // Update pending changes - use a Map to prevent duplicates
-      setPendingChanges((prev) => {
-        const newChanges = new Map(Object.entries(prev));
-        const logKey = logId;
+  // Update parent state only when field loses focus (onBlur)
+  const handleBlur = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number,
+    field: keyof EquipmentHauledItem,
+    logId: string,
+    hauledId: string
+  ) => {
+    const key = getInputKey(logId, hauledId, field);
 
-        if (!newChanges.has(logKey)) {
-          newChanges.set(logKey, {
-            id: logId,
-            Equipment: allTruckingLogs.find((l) => l.id === logId)!.Equipment,
-            EquipmentHauled: [
-              ...allTruckingLogs.find((l) => l.id === logId)!.EquipmentHauled,
-            ],
-          });
-        }
+    if (key in inputValues) {
+      const value = inputValues[key];
+      handleEquipmentHauledChange(itemIdx, logIdx, hauledIdx, field, value);
 
-        const logEntry = newChanges.get(logKey)!;
-        logEntry.EquipmentHauled[equipmentIndex] = {
-          ...logEntry.EquipmentHauled[equipmentIndex],
-          [field]: value,
-        };
-
-        return Object.fromEntries(newChanges);
+      // Clear from local state to avoid duplicate processing
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
       });
-    },
-    [allTruckingLogs]
-  );
-
-  const handleJobsiteChange = useCallback(
-    (
-      logId: string,
-      equipmentIndex: number,
-      jobsiteId: string,
-      jobsiteName: string
-    ) => {
-      handleHaulLogChange(logId, equipmentIndex, "JobSite", {
-        id: jobsiteId,
-        name: jobsiteName,
-      });
-
-      // Update the jobsite name in the local state for display
-      setEditedTruckingHaulLogs((prevLogs) =>
-        prevLogs.map((log) => {
-          if (log.id === logId) {
-            const updatedEquipment = [...log.EquipmentHauled];
-            updatedEquipment[equipmentIndex] = {
-              ...updatedEquipment[equipmentIndex],
-              JobSite: {
-                ...updatedEquipment[equipmentIndex].JobSite,
-                id: jobsiteId,
-                name: jobsiteName,
-              },
-            };
-
-            return {
-              ...log,
-              EquipmentHauled: updatedEquipment,
-            };
-          }
-          return log;
-        })
-      );
-    },
-    [handleHaulLogChange]
-  );
-
-  const handleEquipmentChange = useCallback(
-    (
-      logId: string,
-      equipmentIndex: number,
-      equipmentId: string,
-      equipmentName: string
-    ) => {
-      handleHaulLogChange(logId, equipmentIndex, "Equipment", {
-        id: equipmentId,
-        name: equipmentName,
-      });
-
-      // Update the equipment name in the local state for display
-      setEditedTruckingHaulLogs((prevLogs) =>
-        prevLogs.map((log) => {
-          if (log.id === logId) {
-            const updatedEquipment = [...log.EquipmentHauled];
-            updatedEquipment[equipmentIndex] = {
-              ...updatedEquipment[equipmentIndex],
-              Equipment: {
-                ...updatedEquipment[equipmentIndex].Equipment,
-                id: equipmentId,
-                name: equipmentName,
-              },
-            };
-
-            return {
-              ...log,
-              EquipmentHauled: updatedEquipment,
-            };
-          }
-          return log;
-        })
-      );
-    },
-    [handleHaulLogChange]
-  );
-
-  // Notify parent of all changes when pendingChanges updates
-  useEffect(() => {
-    console.log("Pending changes:", pendingChanges);
-    if (Object.keys(pendingChanges).length > 0) {
-      const changesArray = Object.values(pendingChanges);
-      console.log("Sending to parent:", changesArray);
-      onDataChange(changesArray);
     }
-  }, [pendingChanges]);
+  };
+
+  // Handler to update the TruckingEquipmentHaulLogData structure
+  const handleHaulLogChange = (
+    itemIndex: number,
+    logId: string,
+    field: keyof TruckingEquipmentHaulLog,
+    value: any
+  ) => {
+    const updated = truckingEquipmentHaulLogs.map((item, idx) => {
+      if (idx === itemIndex) {
+        return {
+          ...item,
+          TruckingLogs: item.TruckingLogs.map((log) => {
+            if (log && log.id === logId) {
+              // Only update fields that exist on TruckingEquipmentHaulLog
+              if (field in log) {
+                return { ...log, [field]: value };
+              }
+            }
+            return log;
+          }),
+        };
+      }
+      return item;
+    });
+    onDataChange(updated);
+  };
+
+  // When updating a job site or equipment, update the correct EquipmentHauled item inside the EquipmentHauled array of the TruckingEquipmentHaulLog.
+  // Do not use 'JobSite' as a field for handleHaulLogChange. Instead, write a handler like:
+  const handleEquipmentHauledChange = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number,
+    field: keyof EquipmentHauledItem,
+    value: any
+  ) => {
+    const updated = truckingEquipmentHaulLogs.map((item, i) => {
+      if (i !== itemIdx) return item;
+      return {
+        ...item,
+        TruckingLogs: item.TruckingLogs.map((log, j) => {
+          if (!log || j !== logIdx) return log;
+          return {
+            ...log,
+            EquipmentHauled: log.EquipmentHauled.map((hauled, k) => {
+              if (k !== hauledIdx) return hauled;
+              return {
+                ...hauled,
+                [field]: value,
+              };
+            }),
+          };
+        }),
+      };
+    });
+    onDataChange(updated);
+  };
+
+  const [equipmentModalOpen, setEquipmentModalOpen] = useState(false);
+  const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
+  const [currentEditingLog, setCurrentEditingLog] = useState<{
+    itemIdx: number;
+    logIdx: number;
+    hauledIdx: number;
+  } | null>(null);
+  const [tempEquipment, setTempEquipment] = useState<{
+    code: string;
+    label: string;
+  } | null>(null);
 
   const openJobsiteModal = (logId: string, equipmentIndex: number) => {
     if (!edit) return;
@@ -259,51 +230,86 @@ export default function TimeCardTruckingHaulLogs({
                 </Holds>
               </Grids>
 
-              {editedTruckingHaulLogs.map((log) =>
-                log.EquipmentHauled.map((hauledItem, index) => (
-                  <Holds
-                    key={`${log.id}-${index}`}
-                    className="border-black border-[3px] rounded-lg bg-white mb-2"
-                  >
-                    <Buttons
-                      shadow={"none"}
-                      background={"none"}
-                      className="w-full h-full text-left"
+              {truckingEquipmentHaulLogs.map((item, itemIdx) =>
+                item.TruckingLogs.map((log, logIdx) => {
+                  if (!log) return null;
+                  const isFocused = focusIds.includes(log.id);
+                  const handleToggleFocus = () => {
+                    if (isFocused) {
+                      setFocusIds(focusIds.filter((id) => id !== log.id));
+                    } else {
+                      setFocusIds([...focusIds, log.id]);
+                    }
+                  };
+                  const rowContent = (
+                    <Holds
+                      key={`${log.id}-${logIdx}`}
+                      className={`border-black border-[3px] rounded-lg mb-2 ${
+                        isFocused ? "bg-orange-400" : "bg-white"
+                      }`}
                     >
-                      <Grids cols={"3"} className="w-full h-full">
-                        <Holds className="col-start-1 col-end-2">
-                          <Inputs
-                            type={"text"}
-                            value={log.Equipment?.name || ""}
-                            className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
-                            disabled={true}
-                            readOnly
-                          />
-                        </Holds>
-                        <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
-                          <Inputs
-                            type={"text"}
-                            value={hauledItem.Equipment?.name || ""}
-                            className="text-xs border-none h-full rounded-none justify-center text-center"
-                            onClick={() => openEquipmentModal(log.id, index)}
-                            disabled={!edit}
-                            readOnly
-                          />
-                        </Holds>
-                        <Holds className="col-start-3 col-end-4 h-full">
-                          <Inputs
-                            type={"text"}
-                            value={hauledItem.JobSite?.name || ""}
-                            className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
-                            onClick={() => openJobsiteModal(log.id, index)}
-                            disabled={!edit}
-                            readOnly
-                          />
-                        </Holds>
-                      </Grids>
-                    </Buttons>
-                  </Holds>
-                ))
+                      <Buttons
+                        shadow={"none"}
+                        background={"none"}
+                        className="w-full h-full text-left"
+                      >
+                        <Grids cols={"3"} className="w-full h-full">
+                          <Holds className="col-start-1 col-end-2">
+                            <Inputs
+                              type={"text"}
+                              value={log.Equipment?.name || ""}
+                              className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
+                              disabled={true}
+                              readOnly
+                            />
+                          </Holds>
+                          <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
+                            <Inputs
+                              type={"text"}
+                              value={
+                                log.EquipmentHauled?.[0]?.Equipment?.name || ""
+                              }
+                              className="text-xs border-none h-full rounded-none justify-center text-center"
+                              onClick={() =>
+                                openEquipmentModal(itemIdx, logIdx, 0)
+                              }
+                              disabled={!edit}
+                              readOnly
+                            />
+                          </Holds>
+                          <Holds className="col-start-3 col-end-4 h-full">
+                            <Inputs
+                              type={"text"}
+                              value={
+                                log.EquipmentHauled?.[0]?.JobSite?.name || ""
+                              }
+                              className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
+                              onClick={() =>
+                                openJobsiteModal(itemIdx, logIdx, 0)
+                              }
+                              disabled={!edit}
+                              readOnly
+                            />
+                          </Holds>
+                        </Grids>
+                      </Buttons>
+                    </Holds>
+                  );
+                  return isReviewYourTeam ? (
+                    <button
+                      key={`${log.id}-${logIdx}`}
+                      type="button"
+                      className="w-full h-full bg-transparent p-0 border-none"
+                      onClick={handleToggleFocus}
+                      tabIndex={0}
+                      aria-label={isFocused ? "Unselect row" : "Select row"}
+                    >
+                      {rowContent}
+                    </button>
+                  ) : (
+                    rowContent
+                  );
+                })
               )}
             </>
           ) : (

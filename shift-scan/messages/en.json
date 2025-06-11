@@ -370,6 +370,7 @@
     "CostCode": "Recorded Cost Code",
     "Equipment": "Equipment",
     "EQTotalTime": "Total Time",
+    "Continue": "Continue",
     "NoDataFoundForCurrentDate": "No Data Found For Current Date",
     "TimeCardHighlights": {
       "NoTimecardDataAvailable": " No timecard data available",
@@ -605,6 +606,13 @@
     "Submit": "Submit",
     "EndWorkForTheDay": "End work for the day",
     "PreviousJobComments": "Previous Job Comments",
+    "StartEnd": "Start/End Time",
+    "JobsiteCostCode": "Jobsite/Cost Code",
+    "IncompleteTimesheetData": "Incomplete timesheet data",
+    "Approve": "Approve",
+    "Edit": "Edit",
+    "EndTime": "End Time",
+    "NoTeamMembers": "No team members found",
     "ReviewYourTeam": "Review Your Team"
   },
 
@@ -1086,6 +1094,7 @@
 
   "TruckingAssistant": {
     "WorkDetails": "Work Details",
+    "EnterMaterialType": "Enter Material Type",
     "WriteYourNotesHere": "Write your Notes here...",
     "Mileage": "Mileage",
     "State": "State",
@@ -1122,6 +1131,9 @@
     "ComingSoon": "Coming Soon",
     "Loading": "Loading...",
     "NoDrives": "There Are No Drives Currently",
+    "SelectMaterial": "Select Material",
+    "NoMaterialsHauledRecorded": "No Materials Hauled Recorded",
+    "NoMaterialTypeSelected": "No Material Type Selected",
     "FetchingError": "An error occurred while fetching received content"
   },
 
