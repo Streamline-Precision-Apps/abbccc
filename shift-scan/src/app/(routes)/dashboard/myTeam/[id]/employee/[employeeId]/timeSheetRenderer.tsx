@@ -612,10 +612,11 @@ export default function TimeSheetRenderer({
       default:
         return null;
     }
-  };
-
-  return (
-    <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
+  };  return (
+    <Holds 
+      className={`${isReviewYourTeam ? 'bg-orange-200' : 'row-start-2 row-end-7'} h-full w-full overflow-y-auto no-scrollbar`}
+      background={isReviewYourTeam ? null : 'white'}
+    >
       {renderContent()}
     </Holds>
   );

@@ -198,9 +198,11 @@ export default function TimeCardTruckingMaterialLogs({
                     return (
                       <Holds
                         key={`${log.id}-${material.id}`}
-                        background={"white"}
+                        background={
+                          focusIds.includes(material.id) ? "orange" : "white"
+                        }
                         className={`border-black border-[3px] rounded-lg mb-2 ${
-                          focusIds.includes(material.id) ? "bg-orange-400" : ""
+                          isReviewYourTeam ? "cursor-pointer" : ""
                         }`}
                       >
                         <Buttons
@@ -225,6 +227,9 @@ export default function TimeCardTruckingMaterialLogs({
                                         "name",
                                         material.name
                                       )}
+                                      background={
+                                        isFocused ? "orange" : "white"
+                                      }
                                       onChange={(e) =>
                                         handleLocalChange(
                                           log.id,
@@ -258,12 +263,18 @@ export default function TimeCardTruckingMaterialLogs({
                                         )
                                       }
                                       disabled={true}
+                                      background={
+                                        focusIds.includes(material.id)
+                                          ? "orange"
+                                          : "white"
+                                      }
                                       placeholder="Material"
                                       className="w-full h-full border-none rounded-none rounded-tl-md text-xs"
                                     />
                                   )}
                                 </Holds>{" "}
                                 <Holds className="row-start-2 row-end-3 h-full border-t-[1.5px] border-black">
+                                  {" "}
                                   <Inputs
                                     value={getDisplayValue(
                                       log.id,
@@ -288,6 +299,11 @@ export default function TimeCardTruckingMaterialLogs({
                                       )
                                     }
                                     disabled={!edit}
+                                    background={
+                                      focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"
+                                    }
                                     placeholder="Location"
                                     className="w-full h-full border-none rounded-none rounded-bl-md text-xs"
                                   />
@@ -337,6 +353,11 @@ export default function TimeCardTruckingMaterialLogs({
                                       )
                                     }
                                     disabled={!edit}
+                                    background={
+                                      focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"
+                                    }
                                     placeholder="Material"
                                     className="w-full h-full border-none rounded-none rounded-tr-md text-right text-xs"
                                   />
@@ -382,6 +403,11 @@ export default function TimeCardTruckingMaterialLogs({
                                       )
                                     }
                                     disabled={!edit}
+                                    background={
+                                      focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"
+                                    }
                                     placeholder="Light"
                                     className="w-full h-full border-none rounded-none text-right text-xs"
                                   />
@@ -427,6 +453,11 @@ export default function TimeCardTruckingMaterialLogs({
                                       )
                                     }
                                     disabled={!edit}
+                                    background={
+                                      focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"
+                                    }
                                     placeholder="Gross"
                                     className="w-full h-full border-none text-xs text-right rounded-none rounded-br-md"
                                   />

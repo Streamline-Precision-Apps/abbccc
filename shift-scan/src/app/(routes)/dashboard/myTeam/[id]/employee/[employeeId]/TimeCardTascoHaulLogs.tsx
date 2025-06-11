@@ -212,12 +212,11 @@ export default function TimeCardTascoHaulLogs({
                     setFocusIds([...focusIds, log.id]);
                   }
                 };
-                return (
-                  <Holds
+                return (                  <Holds
                     key={log.id}
-                    className={`relative border-black border-[3px] rounded-lg mb-2 ${
-                      isFocused ? "bg-orange-400" : "bg-white"
-                    } ${isReviewYourTeam ? "cursor-pointer" : ""}`}
+                    background={isFocused ? "orange" : "white"}
+                    className={`relative border-black border-[3px] rounded-lg mb-2 
+                    ${isReviewYourTeam ? "cursor-pointer" : ""}`}
                     onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
                     {isReviewYourTeam && (
@@ -255,17 +254,16 @@ export default function TimeCardTascoHaulLogs({
                                 </option>
                               ))}
                             </select>
-                          ) : (
-                            <Inputs
+                          ) : (                            <Inputs
                               value={log.shiftType}
                               disabled={true}
+                              background={isFocused ? "orange" : "white"}
                               className="size-full text-xs text-center border-none rounded-none rounded-tl-md py-2"
                               readOnly
                             />
                           )}
                         </Holds>
-                        <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
-                          <Inputs
+                        <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">                          <Inputs
                             value={log.equipmentId || "N/A"}
                             onChange={(e) =>
                               handleTascoHaulChange(
@@ -275,6 +273,7 @@ export default function TimeCardTascoHaulLogs({
                               )
                             }
                             disabled={true}
+                            background={isFocused ? "orange" : "white"}
                             className="size-full text-xs text-center border-none rounded-none rounded-bl-md py-2"
                           />
                         </Holds>
@@ -298,24 +297,24 @@ export default function TimeCardTascoHaulLogs({
                                 </option>
                               ))}
                             </select>
-                          ) : (
-                            <Inputs
+                          ) : (                            <Inputs
                               value={log.materialType}
                               disabled={true}
+                              background={isFocused ? "orange" : "white"}
                               className="size-full text-xs text-center border-none rounded-none rounded-tr-md py-2"
                               readOnly
                             />
                           )}
                         </Holds>
                         <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3">
-                          {" "}
-                          <Inputs
+                          {" "}                          <Inputs
                             type="number"
                             value={getDisplayValue(
                               log.id,
                               "LoadQuantity",
                               log.LoadQuantity?.toString() || ""
                             )}
+                            background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(
                                 log.id,
