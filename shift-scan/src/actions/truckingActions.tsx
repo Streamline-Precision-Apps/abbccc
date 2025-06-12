@@ -1,9 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
-
 import { revalidatePath, revalidateTag } from "next/cache";
-export type LoadType = "UNSCREENED" | "SCREENED";
 
 /* EQUIPMENT Hauled */
 //------------------------------------------------------------------
@@ -138,7 +136,6 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   const equipmentExists = await prisma.equipment.findUnique({
     where: { qrId: equipmentQrId },
   });
-
 
   if (!equipmentExists) {
     throw new Error(`Equipment with ID ${equipmentQrId} not found`);
@@ -378,13 +375,15 @@ export async function createRefuelLog(formData: FormData) {
 export async function createRefuelEquipmentLog(formData: FormData) {
   console.log("Creating refuel logs...");
   console.log(formData);
-  
+
   const employeeEquipmentLogId = formData.get(
     "employeeEquipmentLogId"
   ) as string;
-  
+
   const gallonsRefueledStr = formData.get("gallonsRefueled") as string | null;
-  const gallonsRefueled = gallonsRefueledStr ? parseFloat(gallonsRefueledStr) : null;
+  const gallonsRefueled = gallonsRefueledStr
+    ? parseFloat(gallonsRefueledStr)
+    : null;
 
   const refueledLogs = await prisma.refuelLog.create({
     data: {
@@ -396,7 +395,7 @@ export async function createRefuelEquipmentLog(formData: FormData) {
   console.log(refueledLogs);
   revalidatePath(`/dashboard/equipment/${employeeEquipmentLogId}`);
   revalidatePath("/dashboard/truckingAssistant");
-  
+
   const { id } = refueledLogs;
   const data = { id, gallonsRefueled, employeeEquipmentLogId };
   return data;

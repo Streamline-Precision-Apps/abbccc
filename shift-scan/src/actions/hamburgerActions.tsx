@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { UserSettings } from "@/lib/types";
-import { Prisma } from "@prisma/client";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -382,14 +381,5 @@ export async function updateFormApproval(formData: FormData) {
     return { approval, updatedSubmission }; // Return both updated records
   } catch (error) {
     console.error("Error updating form approval:", error);
-
-    // Handle specific Prisma errors
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        throw new Error("Record not found. Please check the provided IDs.");
-      }
-    }
-
-    throw new Error("Failed to update form approval");
   }
 }

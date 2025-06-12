@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Permission } from "@prisma/client";
+import { Permission } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 
