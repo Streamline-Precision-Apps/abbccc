@@ -86,8 +86,8 @@ model TascoMaterialTypes {
 model TruckingLog {
   id                String            @id @default(uuid())
   timeSheetId       String
-  laborType         String
-  taskName          String?
+  laborType         String // e.g. "trucking", "hauling", "delivery"
+  taskName          String? // No integration with task names
   equipmentId       String?
   startingMileage   Int?
   endingMileage     Int?

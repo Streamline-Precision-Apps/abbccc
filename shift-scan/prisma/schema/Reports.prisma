@@ -1,0 +1,51 @@
+// This file defines the schema for the Reports module in the Shift Scan application.
+
+model Report {
+    id          String      @id @default(uuid())
+    name        String      @unique
+    description String
+    companyId   String
+    createdAt   DateTime    @default(now()) // When the report was first created
+    createdBy   String // User ID of the creator
+    updatedAt   DateTime    @updatedAt // Auto-updated timestamp when the report is modified
+    parameters  Json? // JSON object storing filter criteria, grouping options, etc.
+    ReportRuns  ReportRun[] // All historical runs of this report
+
+    visibility ReportVisibility @default(PRIVATE) // Access control - who can see this report
+    tags       String[] // For categorizing and filtering reports
+    Company    Company          @relation(fields: [companyId], references: [id])
+}
+
+model ReportRun {
+    id       String       @id @default(uuid())
+    reportId String
+    runAt    DateTime     @default(now())
+    status   ReportStatus
+    results  Json?
+    duration Int?
+
+    // Add these fields for tracking date range parameters
+    startDate    DateTime? // Start of date range for this specific run
+    endDate      DateTime? // End of date range for this specific run
+    customParams Json? // Any other parameters that override the default ones
+
+    // Add these for file exports
+    exportFormats  String[] // List of formats this run was exported to (e.g. ["xlsx", "csv"])
+    lastExportedAt DateTime? // When report was last exported
+
+    Report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+enum ReportStatus {
+    PENDING // Report is queued but not yet processed
+    RUNNING // Report is currently being generated
+    COMPLETED // Report has finished successfully
+    FAILED // Report encountered an error
+    CANCELED // Report was manually canceled
+}
+
+enum ReportVisibility {
+    PRIVATE // Only the creator can view the report
+    MANAGEMENT // All users with manager role can access
+    COMPANY // Visible to all company users
+}
