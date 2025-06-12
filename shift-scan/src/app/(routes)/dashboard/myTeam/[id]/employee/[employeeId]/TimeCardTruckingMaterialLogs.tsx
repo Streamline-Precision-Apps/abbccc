@@ -228,7 +228,9 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.name
                                       )}
                                       background={
-                                        isFocused ? "orange" : "white"
+                                        focusIds.includes(material.id)
+                                          ? "orange"
+                                          : "white"
                                       }
                                       onChange={(e) =>
                                         handleLocalChange(

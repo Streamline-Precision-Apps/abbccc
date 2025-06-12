@@ -119,20 +119,23 @@ npx prisma generate
 Remember that in production, all schema changes should go through proper testing in staging environments first whenever possible.
 
 ### What is Prisma?
+
 - it is an ORM that is used to make writing databases easier and fast
-- has a direct connection to the database 
-    - fast at writing database queries and retrieving data
+- has a direct connection to the database
+  - fast at writing database queries and retrieving data
 - is built upon typescript
 
-## Prisma Schema 
+## Prisma Schema
+
 What is the generator?
-- it is what the code is generated into, it is the format of prisma and when you run it we take prisma code and it changes it to the selected datasource 
+
+- it is what the code is generated into, it is the format of prisma and when you run it we take prisma code and it changes it to the selected datasource
 - the default generator is what we use 90% of the time
 - you can have any amount of generators
-what is a datasource?
+  what is a datasource?
 - datasource - can only have 1 data source
 
-other things to included in the prisma schema attributes: 
+other things to included in the prisma schema attributes:
 
 - A model must have an ID
 - @id - this is the id for the model
@@ -143,31 +146,35 @@ other things to included in the prisma schema attributes:
 - @updatedAt it sets up the current field ayt a new time
 - default(now()) - take sthe time on creation
 
-
 ## Every Fields Type
+
 All the Field types in prisma are in relation to the database source you use, for example postgres used or has the ability to store data in the form of json. The following are Data types used in Prisma.
 
 - boolean
 - bigInt
 - Int
 - String
-- Float -  less specific
+- Float - less specific
 - Decimal - represents a more accurate way
 - DateTime - timestamp
 - Json -only postrgres allows json
-- Bytes -storing 
+- Bytes -storing
 - Unsupported(") if it isnt supported
 - An Object, this includes a relationship string with a one to main
 
 ## FieldType modifiers
+
 These modifiers help adjust the schema to accept and or require more or less.
+
 - [ ] - Array
 - ? - optional
 
 ## One to Many
+
 User has many-> POST
-A post has 1 User 
-one -> many 
+A post has 1 User
+one -> many
+
 ```
 model User {
     id String @id @default(uuid())
@@ -178,21 +185,22 @@ model User {
 
 model Post{
     id String @id @default(uuid())
-    rating Float 
-    authorId String 
+    rating Float
+    authorId String
     author User @relationship(fields : [authorId], references: [id])
 }
 
 ```
-**In the example above the connection occurs on the authorId and the Id located in the User table** 
 
-## Example of Two Reference on the Same Table 
+**In the example above the connection occurs on the authorId and the Id located in the User table**
+
+## Example of Two Reference on the Same Table
+
 User has many-> writtenPosts.
 
 User has many -> favoritePosts.
 
 A post can be linked to one, or both tables.
-
 
 ```
 model User {
@@ -206,34 +214,37 @@ model User {
 
 model Post{
     id String @id @default(uuid())
-    rating Float 
+    rating Float
 
-    authorId String 
+    authorId String
     author User @relationship("writtenPosts", fields : [authorId], references: [id])
-    
+
     favoriteBy User? @relation("favoritePosts", fields: [favoriteById], references:[id])
-    favoriteById string? 
+    favoriteById string?
 }
 
 ```
+
 **In the example above the connection occurs on:**
-- We used a "Keyword" to define where the particular connections occurred with the @relation() 
+
+- We used a "Keyword" to define where the particular connections occurred with the @relation()
 - the **authorId** and the **Id**
-- the **favoriteById** and the **Id** located in the User table 
+- the **favoriteById** and the **Id** located in the User table
 - the **favoriteBy** is optional
 - this is an example of **disambiguating multiple relationships** on a **one to many relationship**
 
 ## Example of a Many to Many
+
 ```
 model Post{
     id String @id @default(uuid())
-    rating Float 
+    rating Float
 
-    authorId String 
+    authorId String
     author User @relationship("writtenPosts", fields : [authorId], references: [id])
-    
+
     favoriteBy User? @relation("favoritePosts", fields: [favoriteById], references:[id])
-    favoriteById string? 
+    favoriteById string?
     Category[]
 }
 
@@ -243,15 +254,18 @@ model Category{
 }
 
 ```
+
 ### Why is this many to many?
+
 - Post can have many categories
 - Categories can have many Posts
 
 ### How does it connect?
+
 **In the example above the connection occurs on:**
+
 - **Post[]** and **Category[]**
 - this automatically creates a joining table for us thanks to Prisma
-
 
 ## Example of a one to one relationship
 
@@ -272,39 +286,42 @@ model UserPreference {
     UserId String @unique // a preference is unique to a user
 }
 ```
-**What is shown here?** 
+
+**What is shown here?**
+
 - we have an optional connection from the user to a preference on there account
 - a unique constraint that makes only one link to the user and preference
 
-
 ### Block level attributes
+
 - goes inside a curly brace
 
 example
+
 - @@unique([age, name])
 - @@index([email])
 - @@id([title, authorId]) we must have a unique title and author models
 
 only specified values use an ENUM
 enum Role{
-    BASIC
-    ADMIN
-    EDITOR
+BASIC
+ADMIN
+EDITOR
 }
 
 #### Things to Keep in mind when working with queries
 
 - **You can do only a select or an include you can't do both**
 - If you want to see the queries add the following to the client: **const prisma = new PrismaClient({ log : [query]})**
-    - it helps with debugging and seeing possible problems
+  - it helps with debugging and seeing possible problems
 - selects can not be used in create function
-- @@unique can be used by prisma in find uniques the examples above of User include 
-    - @id is always a unique constraint 
-    - @@unique(email)
-    -  @@unique([age, name]) is the reason Prisma generated a variable called age_name
-
+- @@unique can be used by prisma in find uniques the examples above of User include
+  - @id is always a unique constraint
+  - @@unique(email)
+  - @@unique([age, name]) is the reason Prisma generated a variable called age_name
 
 # Prisma schema
+
 ```
 model User {
     id string @id @default(uuid())
@@ -327,13 +344,15 @@ model UserPreference{
     user User?
 }
 ```
+
 Bases off this model we have:
+
 - a user that has option for a certain user preference
 - they have one unique connection to that model
 - they must have a age, and name that don't already exist in the database, might want to change to include email
 
-
 ### e.g of Prisma Queries
+
 ```
 #Creating Data
 await prisma.user.create({
@@ -357,6 +376,7 @@ await prisma.user.create({
 # Reading Data:
 
 ### Unique constraint on Email
+
 ```
 await prisma.user.findUnique({
     where:{
@@ -366,6 +386,7 @@ await prisma.user.findUnique({
 ```
 
 ### Unique Constraint on age_name
+
 ```
 await prisma.user.findUnique({
     where:{
@@ -377,9 +398,8 @@ await prisma.user.findUnique({
 })
 ```
 
-
-
 ### Finds first user with name
+
 ```
 await prisma.user.findFirst({
     where:{
@@ -388,9 +408,8 @@ await prisma.user.findFirst({
 })
 ```
 
+### Finds all Users with name
 
-
-### Finds all Users with name 
 ```
 await prisma.user.findMany({
     where:{
@@ -400,6 +419,7 @@ await prisma.user.findMany({
 ```
 
 ### Using Distinctness
+
 ```
 await prisma.user.findMany({
     where:{
@@ -410,10 +430,12 @@ await prisma.user.findMany({
     distinct: ["name"]
 
      // e.g. will only return all sally with a different Name and Age
-     distinct: ["name", "age"] 
+     distinct: ["name", "age"]
 })
 ```
+
 ### Pagination, OrderBy, Take, Skip
+
 ```
 await prisma.user.findMany({
     where:{
@@ -423,21 +445,22 @@ await prisma.user.findMany({
         age: "asc" // orders age in ascending order
     }
     take: 2, // takes 2
-    skip: 1, // skips the first data point that match 
+    skip: 1, // skips the first data point that match
 })
 ```
 
 ### Not, In, (=),(>),(<),(>=),(<=)
+
 ```
 await prisma.user.findMany({
 
-    // returns user that are not sally 
+    // returns user that are not sally
      where:{
        name: {not :'sally'}
     },
 
 
-    // returns all the users in the array of data 
+    // returns all the users in the array of data
      where:{
        name: {in :["Sally", "kyle"]}
     },
@@ -449,13 +472,13 @@ await prisma.user.findMany({
     },
 
 
-     // returns all the users that are not in the array of data 
+     // returns all the users that are not in the array of data
      where:{
        name: {notIn :["Sally", "kyle"]}
     },
 
 
-    // Less the and greater then 
+    // Less the and greater then
      where:{
        age:{ lt : 20} // Less Then.
        age:{ gt : 25} // Greater Then.
@@ -484,10 +507,11 @@ await prisma.user.findMany({
 ### Using AND, OR, NOT
 
 #### And
+
 ```
 await prisma.user.findMany({
 
-    // returns user that are not sally 
+    // returns user that are not sally
      where:{
         AND:[
             { name: {"sally"} }
@@ -498,10 +522,11 @@ await prisma.user.findMany({
 ```
 
 #### OR
+
 ```
 await prisma.user.findMany({
 
-    // returns user that are not sally 
+    // returns user that are not sally
      where:{
         OR:[
             { name: {"sally"} }
@@ -512,10 +537,11 @@ await prisma.user.findMany({
 ```
 
 #### NOT
+
 ```
 await prisma.user.findMany({
 
-    // returns user that are not sally 
+    // returns user that are not sally
      where:{
         NOT:[
             { name: {"sally"} },
@@ -523,8 +549,11 @@ await prisma.user.findMany({
     },
 })
 ```
+
 ## Reading Queries on Relationships
-#### ONE TO ONE 
+
+#### ONE TO ONE
+
 ```
 await prisma.user.findMany({
 
@@ -535,8 +564,11 @@ await prisma.user.findMany({
     },
 })
 ```
-#### EVERY 
+
+#### EVERY
+
 - every written post the user has includes **Test**
+
 ```
 await prisma.user.findMany({
 
@@ -549,7 +581,9 @@ await prisma.user.findMany({
     },
 })
 ```
+
 #### NONE
+
 - Looking for users that **don't** have any title of **Test**
 
 await prisma.user.findMany({
@@ -561,10 +595,13 @@ await prisma.user.findMany({
         }
       }
     },
+
 })
 
 #### SOME
+
 - Do any of there titles start with test?
+
 ```
 await prisma.user.findMany({
 
@@ -579,6 +616,7 @@ await prisma.user.findMany({
 ```
 
 #### IS / IsNot
+
 ```
 await prisma.post.findMany({
 
@@ -596,11 +634,14 @@ await prisma.post.findMany({
 ```
 
 # Updating Data
+
 - Updating data allows you to change values within a table
-- you can target a single value or mass covert some values. 
+- you can target a single value or mass covert some values.
 
 ### Update
+
 - e.g. updating the sally with the same email as the where
+
 ```
 const user = await prisma.user.update({
     where:{
@@ -611,9 +652,11 @@ const user = await prisma.user.update({
     }
 })
 ```
+
 ### Examples of Updating
 
 #### Incrementing Age
+
 - must use a unique field
 
 ```
@@ -638,11 +681,11 @@ const user = await prisma.user.update({
 })
 ```
 
-
-
 ### update many
+
 - you **can't** use a **Select** or **Include**
 - e.g. Converting all sally to a new name called "NewSally"
+
 ```
 const user = await prisma.user.updateMany({
     where:{
@@ -653,11 +696,16 @@ const user = await prisma.user.updateMany({
     }
 })
 ```
+
 # Deleting Data
+
 ### Delete
+
 - must use a unique constraint
 - if none is found we will get an error
+
 #### e.g.
+
 ```
 const user = await prisma.user.delete({
     where:{
@@ -667,8 +715,11 @@ const user = await prisma.user.delete({
 ```
 
 ### DeleteMany
+
 #### e.g.
+
 - this will delete all users under the age of 20
+
 ```
 const user = await prisma.user.deleteMany({
     where:{
@@ -677,12 +728,13 @@ const user = await prisma.user.deleteMany({
 })
 
 ```
+
 - this will delete all users in DB
+
 ```
 const user = await prisma.user.deleteMany()
 ```
 
-
-
 #### Sources
-- [Learn Prisma In 60 Mins - Web Dev Simplified ](https://www.youtube.com/watch?v=RebA5J-rlwg) 
+
+- [Learn Prisma In 60 Mins - Web Dev Simplified ](https://www.youtube.com/watch?v=RebA5J-rlwg)
