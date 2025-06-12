@@ -83,6 +83,7 @@ CREATE TABLE "Company" (
 CREATE TABLE "CostCode" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -93,6 +94,7 @@ CREATE TABLE "CostCode" (
 CREATE TABLE "CCTag" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
 
     CONSTRAINT "CCTag_pkey" PRIMARY KEY ("id")
 );
@@ -325,9 +327,8 @@ CREATE TABLE "Jobsite" (
     "qrId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'APPROVED',
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "address" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "state" TEXT NOT NULL,
@@ -653,9 +654,6 @@ CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
 
 -- CreateIndex
 CREATE INDEX "Jobsite_qrId_idx" ON "Jobsite"("qrId");
-
--- CreateIndex
-CREATE INDEX "Jobsite_approvalStatus_idx" ON "Jobsite"("approvalStatus");
 
 -- CreateIndex
 CREATE INDEX "Jobsite_clientId_companyId_idx" ON "Jobsite"("clientId", "companyId");
