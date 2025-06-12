@@ -83,6 +83,7 @@ CREATE TABLE "Company" (
 CREATE TABLE "CostCode" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -93,6 +94,7 @@ CREATE TABLE "CostCode" (
 CREATE TABLE "CCTag" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
 
     CONSTRAINT "CCTag_pkey" PRIMARY KEY ("id")
 );
@@ -325,9 +327,8 @@ CREATE TABLE "Jobsite" (
     "qrId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'APPROVED',
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "address" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "state" TEXT NOT NULL,
@@ -655,9 +656,6 @@ CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
 CREATE INDEX "Jobsite_qrId_idx" ON "Jobsite"("qrId");
 
 -- CreateIndex
-CREATE INDEX "Jobsite_approvalStatus_idx" ON "Jobsite"("approvalStatus");
-
--- CreateIndex
 CREATE INDEX "Jobsite_clientId_companyId_idx" ON "Jobsite"("clientId", "companyId");
 
 -- CreateIndex
@@ -718,10 +716,10 @@ CREATE INDEX "_FormGroupingToFormTemplate_B_index" ON "_FormGroupingToFormTempla
 ALTER TABLE "Client" ADD CONSTRAINT "Client_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_approvedById_fkey" FOREIGN KEY ("approvedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_approvedById_fkey" FOREIGN KEY ("approvedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -730,13 +728,13 @@ ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_equipmentId_fkey" 
 ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EquipmentVehicleInfo" ADD CONSTRAINT "EquipmentVehicleInfo_id_fkey" FOREIGN KEY ("id") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -838,13 +836,13 @@ ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FORE
 ALTER TABLE "Material" ADD CONSTRAINT "Material_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

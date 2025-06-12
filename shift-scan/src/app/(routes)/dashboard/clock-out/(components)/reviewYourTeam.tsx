@@ -473,9 +473,8 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                   <Holds className="h-full w-full">
                     {" "}
                     <div className="flex flex-col h-full bg-orange-200 rounded-lg overflow-hidden border-2 border-black shadow-md">
-                      {" "}
-                      {/* User info header with name and hours - improved styling */}
-                      <div className="flex justify-between items-center w-full px-4 py-3 bg-orange-200 border-b-2 border-black">
+                      {" "}                      {/* User info header with name and hours - updated styling */}
+                      <div className="flex justify-between items-center w-full px-2 py-3 bg-orange-200 border-b-2 border-black">
                         <Titles
                           size="h3"
                           className="text-left font-bold text-gray-800"
@@ -484,14 +483,11 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                             ? `${focusUser.firstName} ${focusUser.lastName}`
                             : "Unknown User"}
                         </Titles>
-                        <Holds className="flex items-center bg-white px-3 py-1 rounded-md border-2 border-black">
-                          <Texts size="p4" className="font-bold text-gray-800">
-                            {totalHours} {t("Hrs")}
-                          </Texts>
-                        </Holds>
-                      </div>{" "}
-                      {/* Filter dropdown with improved styling */}
-                      <div className="w-full px-4 pt-2 pb-3 bg-orange-200">
+                        <Texts size="p4" className="font-bold text-gray-800">
+                          {totalHours} {t("Hrs")}
+                        </Texts>
+                      </div>{" "}                      {/* Filter dropdown with reduced padding */}
+                      <div className="w-full px-2 pt-2 pb-2 bg-orange-200">
                         <div className="flex flex-row items-center">
                           <select
                             className="w-full border-2 border-black rounded-md px-3 py-2 text-sm bg-white text-gray-800 font-medium"
@@ -505,10 +501,9 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                             ))}
                           </select>
                         </div>
-                      </div>{" "}
-                      {/* Tabs for Trucking/TASCO using the new NewTab component */}{" "}
+                      </div>{" "}                      {/* Tabs for Trucking/TASCO using the new NewTab component */}{" "}
                       {(filter === "trucking" || filter === "tasco") && (
-                        <div className="w-full px-4 pt-2 pb-3 bg-orange-200">
+                        <div className="w-full px-2 pt-1 pb-1 bg-orange-200">
                           <Holds className="h-12">
                             <ReviewTabOptions
                               activeTab={
@@ -529,27 +524,28 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                             />
                           </Holds>
                         </div>
-                      )}{" "}
-                      <div
-                        className="flex-1 w-full px-4 py-3 bg-white rounded-b-lg"
+                      )}{" "}                      <div
+                        className="flex-1 w-full bg-orange-200 rounded-b-lg px-2 py-2"
                         style={{
                           maxHeight: "calc(100% - 120px)",
                           minHeight: "60%",
                           overflowY: "auto",
                         }}
                       >
-                        <TimeSheetRenderer
-                          filter={renderFilter}
-                          data={renderData}
-                          edit={false}
-                          manager={manager}
-                          onDataChange={() => {}}
-                          date={new Date().toISOString().slice(0, 10)}
-                          focusIds={focusIds}
-                          setFocusIds={setFocusIds}
-                          handleSelectEntity={handleSelectEntity}
-                          isReviewYourTeam={true}
-                        />
+                        <div className="bg-white rounded-lg w-full h-full">
+                          <TimeSheetRenderer
+                            filter={renderFilter}
+                            data={renderData}
+                            edit={false}
+                            manager={manager}
+                            onDataChange={() => {}}
+                            date={new Date().toISOString().slice(0, 10)}
+                            focusIds={focusIds}
+                            setFocusIds={setFocusIds}
+                            handleSelectEntity={handleSelectEntity}
+                            isReviewYourTeam={true}
+                          />
+                        </div>
                       </div>
                     </div>
                   </Holds>

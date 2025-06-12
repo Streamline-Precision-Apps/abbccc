@@ -246,18 +246,14 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
 
     const employeeId = formData.get("employeeId") as string;
     const equipmentQRId = formData.get("equipmentId") as string;
-    const jobsiteId = formData.get("jobsiteId") as string;
-
-    // Execute all operations in a transaction
+    const jobsiteId = formData.get("jobsiteId") as string; // Execute all operations in a transaction
     const result = await prisma.$transaction(async (tx) => {
       // 1. Check if related records exist
       const [employee, equipment, jobsite] = await Promise.all([
         tx.user.findUnique({ where: { id: employeeId } }),
         tx.equipment.findUnique({ where: { qrId: equipmentQRId } }),
-        tx.equipment.findUnique({ where: { qrId: equipmentQRId } }),
         tx.jobsite.findUnique({ where: { qrId: jobsiteId } }),
       ]);
-
       if (!employee) {
         throw new Error(`Employee with id ${employeeId} does not exist`);
       }
@@ -267,6 +263,8 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       if (!jobsite) {
         throw new Error(`Jobsite with QR ID ${jobsiteId} does not exist`);
       }
+
+      console.log("Found jobsite:", jobsite);
 
       // 2. Find the timesheet
       const timeSheet = await tx.timeSheet.findFirst({
@@ -280,7 +278,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
           employeeId,
           equipmentId: equipment.id,
           timeSheetId: timeSheet?.id || null,
-          jobsiteId: jobsite.id,
+          jobsiteId: jobsite.id, // Using the jobsite.id from the found jobsite
           startTime: formData.get("startTime")
             ? new Date(formData.get("startTime") as string)
             : null,
