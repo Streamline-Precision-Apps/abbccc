@@ -41,27 +41,26 @@ model MaintenanceLog {
 }
 
 model Maintenance {
-  id                     String  @id @default(uuid())
+  id                     String                @id @default(uuid())
   equipmentId            String
   equipmentIssue         String?
-  employeeEquipmentLogId String? @unique
-
-  additionalInfo       String?
-  location             String?
-  problemDiagnosis     String?
-  solution             String?
-  totalHoursLaboured   Float?
-  createdAt            DateTime              @default(now())
-  priority             Priority
-  delay                DateTime?
-  delayReasoning       String?
-  repaired             Boolean               @default(false)
-  selected             Boolean               @default(false)
-  hasBeenDelayed       Boolean               @default(false)
-  createdBy            String?
-  EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
-  Equipment            Equipment             @relation(fields: [equipmentId], references: [id])
-  MaintenanceLogs      MaintenanceLog[]
+  employeeEquipmentLogId String?               @unique
+  additionalInfo         String?
+  location               String?
+  problemDiagnosis       String?
+  solution               String?
+  totalHoursLaboured     Float?
+  createdAt              DateTime              @default(now())
+  priority               Priority
+  delay                  DateTime?
+  delayReasoning         String?
+  repaired               Boolean               @default(false)
+  selected               Boolean               @default(false)
+  hasBeenDelayed         Boolean               @default(false)
+  createdBy              String?
+  EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+  Equipment              Equipment             @relation(fields: [equipmentId], references: [id])
+  MaintenanceLogs        MaintenanceLog[]
 }
 
 model TascoLog {
@@ -134,14 +133,13 @@ model Material {
 }
 
 model RefuelLog {
-  id                     String  @id @default(uuid())
-  employeeEquipmentLogId String? @unique
+  id                     String                @id @default(uuid())
+  employeeEquipmentLogId String?               @unique
   truckingLogId          String?
   tascoLogId             String?
   gallonsRefueled        Float?
   milesAtFueling         Int?
-
-  TascoLog             TascoLog?             @relation(fields: [tascoLogId], references: [id])
-  TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
-  EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+  EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+  TascoLog               TascoLog?             @relation(fields: [tascoLogId], references: [id])
+  TruckingLog            TruckingLog?          @relation(fields: [truckingLogId], references: [id])
 }
