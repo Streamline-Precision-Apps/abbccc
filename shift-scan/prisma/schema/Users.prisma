@@ -20,16 +20,16 @@ model User {
   companyId                String
   passwordResetTokenId     String?
   workTypeId               String?
+  AuditLogs                AuditLog[]
   Contact                  Contacts?
   EquipmentLogs            EmployeeEquipmentLog[]
   FormApprovals            FormApproval[]
   FormSubmissions          FormSubmission[]
   MaintenanceLogs          MaintenanceLog[]
   PasswordResetTokens      PasswordResetToken[]
-  TimeSheets               TimeSheet[]
-  PendingApprovalsCreated  PendingApproval[]      @relation("PendingApprovalCreatedBy")
   PendingApprovalsApproved PendingApproval[]      @relation("PendingApprovalApprovedBy")
-  AuditLogs                AuditLog[]
+  PendingApprovalsCreated  PendingApproval[]      @relation("PendingApprovalCreatedBy")
+  TimeSheets               TimeSheet[]
   Company                  Company                @relation(fields: [companyId], references: [id])
   UserSettings             UserSettings?
   Crews                    Crew[]                 @relation("CrewToUser")
