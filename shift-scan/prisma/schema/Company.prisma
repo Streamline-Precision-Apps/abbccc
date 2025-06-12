@@ -1,17 +1,16 @@
 model Company {
-  id               String   @id @default(uuid())
+  id               String         @id @default(uuid())
   name             String
   address          String
   city             String
   state            String
   zipCode          String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  SubscriptionDate DateTime @default(now())
-
-  // Multi-tenant relationships
-  Clients       Client[] // This company's clients
-  FormTemplates FormTemplate[]
-  Jobsites      Jobsite[]
-  Users         User[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  SubscriptionDate DateTime       @default(now())
+  Clients          Client[]
+  FormTemplates    FormTemplate[]
+  Reports          Report[]
+  Jobsites         Jobsite[]
+  Users            User[]
 }
