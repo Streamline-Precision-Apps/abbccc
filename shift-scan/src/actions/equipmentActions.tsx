@@ -1,18 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { EquipmentTags } from "@/lib/types";
-import { Priority } from "@prisma/client";
+import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
-import { EquipmentState } from "@prisma/client";
-import { number } from "zod";
-
-type EquipmentStateType =
-  | "AVAILABLE"
-  | "IN_USE"
-  | "MAINTENANCE"
-  | "NEEDS_REPAIR"
-  | "RETIRED";
 
 export async function equipmentTagExists(id: string) {
   try {
