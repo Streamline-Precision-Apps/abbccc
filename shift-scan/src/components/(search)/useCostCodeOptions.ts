@@ -5,11 +5,11 @@ import {
   useDBCostcode,
   useDBEquipment,
 } from "@/app/context/dbCodeContext";
-import {
-  useRecentDBJobsite,
-  useRecentDBCostcode,
-  useRecentDBEquipment,
-} from "@/app/context/dbRecentCodesContext";
+// import {
+//   useRecentDBJobsite,
+//   useRecentDBCostcode,
+//   useRecentDBEquipment,
+// } from "@/app/context/dbRecentCodesContext";
 import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
 
 interface Option {
@@ -22,11 +22,11 @@ export const useCostCodeOptions = (
   searchTerm?: string
 ): Option[] => {
   const { jobsiteResults } = useDBJobsite();
-  const { recentlyUsedJobCodes } = useRecentDBJobsite();
+  // const { recentlyUsedJobCodes } = useRecentDBJobsite();
   const { costcodeResults } = useDBCostcode();
-  const { recentlyUsedCostCodes } = useRecentDBCostcode();
+  // const { recentlyUsedCostCodes } = useRecentDBCostcode();
   const { equipmentResults } = useDBEquipment();
-  const { recentlyUsedEquipment } = useRecentDBEquipment();
+  // const { recentlyUsedEquipment } = useRecentDBEquipment();
 
   const options = useMemo(() => {
     let opts: Option[] = [];
@@ -38,9 +38,9 @@ export const useCostCodeOptions = (
         opts = costcodeResults.map((costcode: CostCodes) => ({
           code: costcode.name,
           label: `${costcode.name}`,
-          isRecent: recentlyUsedCostCodes.some(
-            (recent) => recent?.name === costcode.name
-          ),
+          // isRecent: recentlyUsedCostCodes.some(
+          //   (recent) => recent?.name === costcode.name
+          // ),
         }));
         break;
 
@@ -50,9 +50,9 @@ export const useCostCodeOptions = (
         opts = jobsiteResults.map((jobcode: JobCodes) => ({
           code: jobcode.qrId,
           label: jobcode.name,
-          isRecent: recentlyUsedJobCodes.some(
-            (recent) => recent?.qrId === jobcode.qrId
-          ),
+          // isRecent: recentlyUsedJobCodes.some(
+          //   (recent) => recent?.qrId === jobcode.qrId
+          // ),
         }));
         break;
 
@@ -63,9 +63,9 @@ export const useCostCodeOptions = (
         opts = equipmentResults.map((equipment: EquipmentCode) => ({
           code: equipment.qrId,
           label: equipment.name,
-          isRecent: recentlyUsedEquipment.some(
-            (recent) => recent?.qrId === equipment.qrId
-          ),
+          // isRecent: recentlyUsedEquipment.some(
+          //   (recent) => recent?.qrId === equipment.qrId
+          // ),
         }));
         break;
       case "truck":
@@ -92,11 +92,11 @@ export const useCostCodeOptions = (
     dataType,
     searchTerm,
     jobsiteResults,
-    recentlyUsedJobCodes,
+    // recentlyUsedJobCodes,
     costcodeResults,
-    recentlyUsedCostCodes,
+    // recentlyUsedCostCodes,
     equipmentResults,
-    recentlyUsedEquipment,
+    // recentlyUsedEquipment,
   ]);
 
   return options;

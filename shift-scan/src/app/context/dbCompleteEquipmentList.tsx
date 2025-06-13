@@ -5,14 +5,30 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { ListEquipmentContext } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
+const EquipmentSchema = z.array(
+  z.object({
+    id: z.string(),
+    qrId: z.string(),
+    name: z.string(),
+    state: z.enum([
+      "NEEDS_REPAIR",
+      "MAINTENANCE",
+      "AVAILABLE",
+      "IN_USE",
+      "RETIRED",
+    ]),
+  })
+);
+
+type EquipmentItem = z.infer<typeof EquipmentSchema>[number];
+
 type EquipmentContextType = {
-  equipmentListResults: ListEquipmentContext[];
+  equipmentListResults: EquipmentItem[];
   setEquipmentListResults: React.Dispatch<
-    React.SetStateAction<ListEquipmentContext[]>
+    React.SetStateAction<EquipmentItem[]>
   >;
 };
 
@@ -20,37 +36,6 @@ const EquipmentContext = createContext<EquipmentContextType>({
   equipmentListResults: [],
   setEquipmentListResults: () => {},
 });
-// Updated to align with EmployeeEquipmentLog changes
-const EquipmentSchema = z.array(
-  z.object({
-    id: z.string(),
-    qrId: z.string(),
-    name: z.string(),
-    description: z.string().optional(),
-    equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
-    status: z.enum(["OPERATIONAL", "NEEDS_REPAIR", "NEEDS_MAINTENANCE"]),
-    make: z.string().nullable().optional(),
-    model: z.string().nullable().optional(),
-    year: z.string().nullable().optional(),
-    licensePlate: z.string().nullable().optional(),
-    registrationExpiration: z.string().nullable().optional(),
-    mileage: z.number().nullable().optional(),
-    isActive: z.boolean(),
-    inUse: z.boolean(),
-    employeeLogs: z
-      .array(
-        z.object({
-          employeeId: z.string(),
-          startTime: z.string().nullable(),
-          endTime: z.string().nullable(),
-          comment: z.string().optional(),
-          status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
-          workType: z.enum(["GENERAL", "MAINTENANCE", "REFUEL"]),
-        })
-      )
-      .optional(),
-  })
-);
 
 export const EquipmentListProvider = ({
   children,
@@ -58,7 +43,7 @@ export const EquipmentListProvider = ({
   children: ReactNode;
 }) => {
   const [equipmentListResults, setEquipmentListResults] = useState<
-    ListEquipmentContext[]
+    EquipmentItem[]
   >([]);
 
   const url = usePathname();
@@ -75,7 +60,11 @@ export const EquipmentListProvider = ({
           const recentEquipmentList = await response.json();
           const validatedEquipmentList =
             EquipmentSchema.parse(recentEquipmentList);
-          setEquipmentListResults(validatedEquipmentList);
+          // added filter to only include available equipment
+          const isAvailableEquipment = validatedEquipmentList.filter(
+            (item) => item.state === "AVAILABLE"
+          );
+          setEquipmentListResults(isAvailableEquipment);
         }
       } catch (error) {
         if (error instanceof z.ZodError) {

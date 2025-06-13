@@ -13,11 +13,11 @@ import {
   EquipmentProvider,
   CostCodeProvider,
 } from "./context/dbCodeContext";
-import {
-  RecentCostCodeProvider,
-  RecentJobSiteProvider,
-  RecentEquipmentProvider,
-} from "./context/dbRecentCodesContext";
+// import {
+//   RecentCostCodeProvider,
+//   RecentJobSiteProvider,
+//   RecentEquipmentProvider,
+// } from "./context/dbRecentCodesContext";
 import { PayPeriodTimeSheetProvider } from "./context/PayPeriodTimeSheetsContext";
 import React from "react";
 import { EquipmentListProvider } from "./context/dbCompleteEquipmentList";
@@ -47,21 +47,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
                               <EquipmentListProvider>
                                 <JobSiteProvider>
                                   <CostCodeProvider>
-                                    <RecentCostCodeProvider>
-                                      <RecentJobSiteProvider>
-                                        <PayPeriodTimeSheetProvider>
-                                          <RecentEquipmentProvider>
-                                            <NotificationProvider>
-                                              <CommentDataProvider>
-                                                <EquipmentIdProvider>
-                                                  {children}
-                                                </EquipmentIdProvider>
-                                              </CommentDataProvider>
-                                            </NotificationProvider>
-                                          </RecentEquipmentProvider>
-                                        </PayPeriodTimeSheetProvider>
-                                      </RecentJobSiteProvider>
-                                    </RecentCostCodeProvider>
+                                    {/* <RecentCostCodeProvider> */}
+                                    {/*<RecentJobSiteProvider> */}
+                                    <PayPeriodTimeSheetProvider>
+                                      {/* <RecentEquipmentProvider> */}
+                                      <NotificationProvider>
+                                        <CommentDataProvider>
+                                          <EquipmentIdProvider>
+                                            {children}
+                                          </EquipmentIdProvider>
+                                        </CommentDataProvider>
+                                      </NotificationProvider>
+                                      {/* </RecentEquipmentProvider> */}
+                                    </PayPeriodTimeSheetProvider>
+                                    {/* </RecentJobSiteProvider> */}
+                                    {/*</RecentCostCodeProvider> */}
                                   </CostCodeProvider>
                                 </JobSiteProvider>
                               </EquipmentListProvider>
