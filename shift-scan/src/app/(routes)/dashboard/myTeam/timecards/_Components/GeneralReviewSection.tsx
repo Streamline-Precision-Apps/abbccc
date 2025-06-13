@@ -91,8 +91,16 @@ import { useTranslations } from "next-intl";
 
 export default function GeneralReviewSection({
   currentTimeSheets,
+  isScrolling, // Default to 'verticle' if not provided
+  scrollSwipeHandlers,
 }: {
   currentTimeSheets: TimeSheet[];
+  isScrolling: boolean;
+  scrollSwipeHandlers?: {
+    onTouchStart: (e: React.TouchEvent) => void;
+    onTouchMove: (e: React.TouchEvent) => void;
+    onTouchEnd: (e: React.TouchEvent) => void;
+  };
 }) {
   const t = useTranslations("TimeCardSwiper");
 
@@ -117,7 +125,12 @@ export default function GeneralReviewSection({
             <Titles size={"h6"}>{t("CostCode")}</Titles>
           </Grids>
         </Holds>
-        <Holds className="h-full overflow-y-auto no-scrollbar">
+        <Holds
+          className={`h-full no-scrollbar ${
+            isScrolling ? "overflow-y-scroll" : "overflow-none"
+          }`}
+          {...scrollSwipeHandlers}
+        >
           {currentTimeSheets.map((timesheet: TimeSheet) => (
             <Holds
               position={"row"}

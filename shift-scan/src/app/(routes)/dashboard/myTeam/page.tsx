@@ -73,28 +73,34 @@ export default function Content() {
     };
 
     if (sessionStatus === "authenticated") {
-        fetchCrew();
+      fetchCrew();
     }
   }, [sessionStatus]);
 
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"} gap={"5"}>
-          <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Holds
+            background={"white"}
+            className="row-start-1 row-end-2 h-full w-full"
+          >
             <TitleBoxes
-              position={"row"}
               onClick={() => {
                 if (url) {
                   router.push(url);
                 }
               }}
+              position={"row"}
+              className="w-full h-full justify-center items-center"
             >
-              <Titles size="h1">{t("Teams-Title")}</Titles>
-              <Images
-                titleImg={"/team.svg"}
-                titleImgAlt={`${t("Teams-Logo-Title")}`}
-                className="h-8 w-8"
+              <Titles position="right" size={"h2"}>
+                {t("Teams-Title")}
+              </Titles>
+              <img
+                src={"/team.svg"}
+                alt={`${t("Teams-Logo-Title")}`}
+                className="h-8 w-fit object-contain "
               />
             </TitleBoxes>
           </Holds>

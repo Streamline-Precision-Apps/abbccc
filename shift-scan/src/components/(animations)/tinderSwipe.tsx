@@ -31,7 +31,6 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
       onSwipeLeft,
       onSwipeRight,
       swipeThreshold = 200,
-      swipeVelocityThreshold = 500,
       minHoldTime = 150,
     },
     ref
@@ -43,6 +42,8 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
     const [isHolding, setIsHolding] = useState(false);
     const holdTimerRef = useRef<NodeJS.Timeout>();
     const [dragEnabled, setDragEnabled] = useState(false);
+    const scrollableRef = useRef<HTMLDivElement>(null);
+    const touchStart = useRef<{ x: number; y: number } | null>(null);
 
     // Memoized swipe trigger function
     const triggerSwipe = useCallback(
@@ -151,11 +152,9 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
       // If scrolling, ignore swipe actions
       if (isScrolling) return;
 
-      const { offset, velocity } = info;
-      const shouldSwipeLeft =
-        offset.x < -swipeThreshold || velocity.x < -swipeVelocityThreshold;
-      const shouldSwipeRight =
-        offset.x > swipeThreshold || velocity.x > swipeVelocityThreshold;
+      const { offset } = info;
+      const shouldSwipeLeft = offset.x < -swipeThreshold;
+      const shouldSwipeRight = offset.x > swipeThreshold;
 
       if (shouldSwipeLeft) {
         triggerSwipe("left");
@@ -176,6 +175,30 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         setMessage("");
       }
     };
+
+    // Touch event handlers to distinguish scroll vs swipe
+    const handleTouchStart = (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      touchStart.current = { x: touch.clientX, y: touch.clientY };
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+      if (!touchStart.current) return;
+      const touch = e.touches[0];
+      const dx = Math.abs(touch.clientX - touchStart.current.x);
+      const dy = Math.abs(touch.clientY - touchStart.current.y);
+      // If vertical movement is greater, treat as scroll
+      if (dy > dx) {
+        setIsScrolling(true);
+      } else {
+        setIsScrolling(false);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      touchStart.current = null;
+    };
+
     return (
       <Holds
         className={`w-full h-full rounded-[10px] relative overflow-hidden transition-colors duration-200 ${bgColor}`}
@@ -206,6 +229,10 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
           onDragEnd={handleDragEnd}
           className="relative h-full overflow-y-auto"
           style={{ touchAction: "pan-y" }}
+          ref={scrollableRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {children}
         </motion.div>
