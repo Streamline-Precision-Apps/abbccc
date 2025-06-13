@@ -7,13 +7,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, {
-  Dispatch,
-  SetStateAction,
-  use,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 type Option = {
   label: string;
   code: string;
@@ -75,32 +69,38 @@ export default function EquipmentScanner({
   }, [equipmentQr]);
 
   return (
-    <Holds className="h-full pb-5">
+    <Holds className="h-full ">
       <Grids rows={"7"} gap={"5"}>
-        <Holds className="row-start-1 row-end-2">
+        <Holds className="h-full row-start-1 row-end-2">
           <TitleBoxes
             onClick={() => {
               setStep(1);
               setMethod("");
             }}
-          />
+          >
+            <Holds className="h-full justify-end">
+              <Titles size={"h2"}>Scan Equipment</Titles>
+            </Holds>
+          </TitleBoxes>
         </Holds>
-        <Holds className="row-start-2 row-end-3 h-full">
-          <Titles size={"h1"}>Select Equipment</Titles>
-        </Holds>
-        <Holds className="size-full row-start-3 row-end-7 px-4">
-          {loading ? (
+
+        {loading ? (
+          <Holds className="size-full row-start-3 row-end-7 px-4">
             <Holds className="flex justify-center items-center h-full w-full">
               <Spinner size={40} />
             </Holds>
-          ) : (
-            <SimpleQr
-              setScannedId={setEquipmentQr}
-              setScanned={setScanned}
-              onScanComplete={handleScanComplete}
-            />
-          )}
-        </Holds>
+          </Holds>
+        ) : (
+          <>
+            <Holds className="size-full row-start-3 row-end-6 px-4">
+              <SimpleQr
+                setScannedId={setEquipmentQr}
+                setScanned={setScanned}
+                onScanComplete={handleScanComplete}
+              />
+            </Holds>
+          </>
+        )}
       </Grids>
     </Holds>
   );
