@@ -96,11 +96,13 @@ model TruckingLog {
   Materials         Material[]
   RefuelLogs        RefuelLog[]
   StateMileages     StateMileage[]
-  TruckingLaborLogs TruckLaborLogs[]
+  TruckingLaborLogs TruckLaborLogs[] // Logs for labor time spent on trucking
   Equipment         Equipment?        @relation(fields: [equipmentId], references: [id])
   TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
+// is it worth it to explain the Truck labor Logs?
+// All I get out of this is alloting time 
 model TruckLaborLogs {
   id            String       @id @default(uuid())
   truckingLogId String?
@@ -123,7 +125,7 @@ model Material {
   truckingLogId      String
   LocationOfMaterial String?
   name               String?
-  quantity           Int?
+  quantity           Int? // removing quantity
   materialWeight     Float?
   lightWeight        Float?
   grossWeight        Float?
