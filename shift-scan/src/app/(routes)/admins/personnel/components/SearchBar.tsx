@@ -7,6 +7,8 @@ interface SearchBarProps {
   placeholder: string;
   disabled?: boolean;
   children?: React.ReactNode;
+  textSize?: "xs" | "sm" | "md" | "lg" | "xl";
+  imageSize?: "2" | "4" | "6" | "8" | "10" | "12" | "14" | "16";
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -15,6 +17,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   placeholder,
   disabled = false,
   children = null,
+  textSize = "sm",
+  imageSize = "8",
 }) => {
   return (
     <Holds
@@ -22,7 +26,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       position="row"
       className="px-2 w-full h-full gap-x-3 relative"
     >
-      <Holds className="w-8 h-full justify-center items-center">
+      <Holds className={`w-${imageSize} h-full justify-center items-center`}>
         <img src="/searchLeft.svg" alt="search" />
       </Holds>
       <Holds className="w-full h-auto justify-center items-center ">
@@ -32,7 +36,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           value={term}
           onChange={handleSearchChange}
           disabled={disabled}
-          className="border-none outline-none text-sm text-left w-full h-full rounded-md bg-white"
+          className={`border-none outline-none text-${textSize} text-left w-full h-full rounded-md bg-white`}
         />
       </Holds>
       {children}
