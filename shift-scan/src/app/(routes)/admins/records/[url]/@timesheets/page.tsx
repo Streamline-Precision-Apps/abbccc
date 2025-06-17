@@ -10,6 +10,13 @@ import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 export type Timesheet = {
   id: string;
@@ -42,10 +49,6 @@ type timesheetPending = {
 };
 
 export default function AdminTimesheets() {
-  //todo: Implement search functionality
-  // State: searchTerm
-  // Handler: onSearchChange
-  // Filter timesheets based on searchTerm
   const [searchTerm, setSearchTerm] = useState("");
   const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +57,12 @@ export default function AdminTimesheets() {
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const pageSizeOptions = [25, 50, 75, 100];
+  const [sortField, setSortField] = useState<keyof Timesheet | "">("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({ from: undefined, to: undefined });
 
   useEffect(() => {
     const fetchTimesheets = async () => {
@@ -75,7 +84,7 @@ export default function AdminTimesheets() {
     fetchTimesheets();
   }, [page, pageSize]);
 
-  // Filter timesheets based on searchTerm
+  // Filter timesheets based on searchTerm and date range
   const filteredTimesheets = allTimesheets.filter((ts) => {
     const id = ts.id || "";
     const firstName = ts?.User?.firstName || "";
@@ -83,41 +92,58 @@ export default function AdminTimesheets() {
     const jobsite = ts?.Jobsite?.name || "";
     const costCode = ts?.CostCode?.name || "";
     const term = searchTerm.toLowerCase();
+    // Date range filter
+    let inDateRange = true;
+    if (dateRange.from) {
+      inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
+    }
+    if (dateRange.to) {
+      inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
+    }
     return (
-      id.toLowerCase().includes(term) ||
-      firstName.toLowerCase().includes(term) ||
-      lastName.toLowerCase().includes(term) ||
-      jobsite.toLowerCase().includes(term) ||
-      costCode.toLowerCase().includes(term)
+      inDateRange &&
+      (id.toLowerCase().includes(term) ||
+        firstName.toLowerCase().includes(term) ||
+        lastName.toLowerCase().includes(term) ||
+        jobsite.toLowerCase().includes(term) ||
+        costCode.toLowerCase().includes(term))
     );
   });
 
-  //todo: Implement pagination functionality
-  // State: currentPage, pageSize
-  // Handler: onPageChange
-  // Calculate paginatedTimesheets
-  // const paginatedTimesheets = filteredTimesheets.slice(
-  //   (currentPage - 1) * pageSize,
-  //   currentPage * pageSize
-  // );
-  // <PageSelector currentPage={currentPage} totalPages={Math.ceil(filteredTimesheets.length / pageSize)} onPageChange={setCurrentPage} />
-
-  //todo: Implement sorting functionality
-  // State: sortField, sortDirection
-  // Handler: onSortChange
   // Sort filteredTimesheets before pagination
-  // const [sortField, setSortField] = useState("date");
-  // const [sortDirection, setSortDirection] = useState("asc");
-  // const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
-  //   // compare a[sortField] and b[sortField] based on sortDirection
-  // });
-  // <TableHeader onClick={() => setSortField("date")} />
+  const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
+    if (!sortField) return 0;
+    let aValue = a[sortField];
+    let bValue = b[sortField];
+    // Handle nested fields
+    if (sortField === "User") {
+      aValue = a.User.firstName + " " + a.User.lastName;
+      bValue = b.User.firstName + " " + b.User.lastName;
+    } else if (sortField === "Jobsite") {
+      aValue = a.Jobsite.name;
+      bValue = b.Jobsite.name;
+    } else if (sortField === "CostCode") {
+      aValue = a.CostCode.name;
+      bValue = b.CostCode.name;
+    }
+    if (aValue == null) return 1;
+    if (bValue == null) return -1;
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      if (sortDirection === "asc") {
+        return aValue.localeCompare(bValue);
+      } else {
+        return bValue.localeCompare(aValue);
+      }
+    }
+    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+    return 0;
+  });
 
   // implement timesheet creation functionality
   // State: showCreateModal
   // Handler: onCreateSubmit
   // Add new timesheet to state or refetch data
-  const [showCreateModal, setShowCreateModal] = useState(false);
   // <Button onClick={() => setShowCreateModal(true)}>Create New Form</Button>
   // {showCreateModal && <CreateTimesheetModal onSubmit={handleCreateSubmit} />}
 
@@ -197,13 +223,62 @@ export default function AdminTimesheets() {
           />
         </Holds>
         <Holds position={"row"} className="w-fit min-w-[40px] h-full">
-          <Holds
-            position={"left"}
-            background={"white"}
-            className="h-full w-full max-w-[40px] justify-center items-center"
-          >
-            <img src="/filterDials.svg" alt="Filter" className="h-4 w-4 " />
-          </Holds>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white h-full w-full max-w-[40px] justify-center items-center"
+              >
+                <img src="/filterDials.svg" alt="Filter" className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="min-w-[320px] p-4 ">
+              <div className="">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block mb-1 font-semibold">Date Range</label>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-2 flex-shrink-0"
+                    onClick={() =>
+                      setDateRange({ from: undefined, to: undefined })
+                    }
+                    aria-label="Clear date range"
+                  >
+                    <img
+                      src="/trash-red.svg"
+                      alt="Clear date range"
+                      className="h-5 w-5"
+                    />
+                  </Button>
+                </div>
+
+                <div className="mt-2 text-xs text-center text-muted-foreground">
+                  {dateRange.from && dateRange.to ? (
+                    `${format(dateRange.from, "PPP")} - ${format(
+                      dateRange.to,
+                      "PPP"
+                    )}`
+                  ) : dateRange.from ? (
+                    `${format(dateRange.from, "PPP")} - ...`
+                  ) : (
+                    <span>Pick a date range</span>
+                  )}
+                </div>
+                <div className="flex items-center justify-center gap-2 overflow-visible">
+                  <Calendar
+                    mode="range"
+                    selected={dateRange}
+                    onSelect={(value) =>
+                      setDateRange({ from: value?.from, to: value?.to })
+                    }
+                    autoFocus
+                  />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </Holds>
         <Holds position={"row"} className="w-full max-w-[160px] h-full">
           <Texts
@@ -250,7 +325,7 @@ export default function AdminTimesheets() {
       </Holds>
       <Holds className="h-full w-full px-4 overflow-y-auto">
         <TimesheetViewAll
-          timesheets={filteredTimesheets}
+          timesheets={sortedTimesheets}
           loading={loading}
           page={page}
           totalPages={totalPages}
