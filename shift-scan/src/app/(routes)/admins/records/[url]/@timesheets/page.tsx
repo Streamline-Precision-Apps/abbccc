@@ -8,9 +8,35 @@ import PageSelector from "../pageSelector";
 import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
+export type Timesheet = {
+  id: string;
+  date: Date | string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  Jobsite: {
+    id: string;
+    name: string;
+  };
+  CostCode: {
+    id: string;
+    name: string;
+  };
+  nu: string;
+  Fp: string;
+  startTime: Date | string;
+  endTime: Date | string;
+  comment: string;
+  status: TimeSheetStatus;
+  workType: WorkType;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
 type timesheetPending = {
   length: number;
 };
@@ -21,19 +47,55 @@ export default function AdminTimesheets() {
   // Handler: onSearchChange
   // Filter timesheets based on searchTerm
   const [searchTerm, setSearchTerm] = useState("");
-  // const filteredTimesheets = timesheets.filter(ts =>
-  //   ts.User.firstName.includes(searchTerm) ||
-  //   ts.User.lastName.includes(searchTerm) ||
-  //   ts.jobsite.name.includes(searchTerm)
-  // );
-  // <SearchBar term={searchTerm} handleSearchChange={e => setSearchTerm(e.target.value)} ... />
+  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const pageSizeOptions = [25, 50, 75, 100];
+
+  useEffect(() => {
+    const fetchTimesheets = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`
+        );
+        const data = await response.json();
+        setAllTimesheets(data.timesheets);
+        setTotalPages(data.totalPages);
+        setTotal(data.total);
+      } catch (error) {
+        console.error("Error fetching timesheets:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTimesheets();
+  }, [page, pageSize]);
+
+  // Filter timesheets based on searchTerm
+  const filteredTimesheets = allTimesheets.filter((ts) => {
+    const id = ts.id || "";
+    const firstName = ts?.User?.firstName || "";
+    const lastName = ts?.User?.lastName || "";
+    const jobsite = ts?.Jobsite?.name || "";
+    const costCode = ts?.CostCode?.name || "";
+    const term = searchTerm.toLowerCase();
+    return (
+      id.toLowerCase().includes(term) ||
+      firstName.toLowerCase().includes(term) ||
+      lastName.toLowerCase().includes(term) ||
+      jobsite.toLowerCase().includes(term) ||
+      costCode.toLowerCase().includes(term)
+    );
+  });
 
   //todo: Implement pagination functionality
   // State: currentPage, pageSize
   // Handler: onPageChange
   // Calculate paginatedTimesheets
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
   // const paginatedTimesheets = filteredTimesheets.slice(
   //   (currentPage - 1) * pageSize,
   //   currentPage * pageSize
@@ -124,12 +186,12 @@ export default function AdminTimesheets() {
         <Holds
           position={"left"}
           background={"white"}
-          className="h-full w-full max-w-[250px] py-2"
+          className="h-full w-full max-w-[450px] py-2"
         >
           <SearchBar
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={"Search forms..."}
+            placeholder={"Search by id, employee, Profit Id or cost code..."}
             textSize="xs"
             imageSize="6"
           />
@@ -187,7 +249,19 @@ export default function AdminTimesheets() {
         </Holds>
       </Holds>
       <Holds className="h-full w-full px-4 overflow-y-auto">
-        <TimesheetViewAll />
+        <TimesheetViewAll
+          timesheets={filteredTimesheets}
+          loading={loading}
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setPageSize(Number(e.target.value))
+          }
+          onPageChange={setPage}
+        />
       </Holds>
     </Holds>
   );

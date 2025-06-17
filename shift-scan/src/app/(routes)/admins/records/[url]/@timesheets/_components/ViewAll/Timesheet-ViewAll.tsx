@@ -4,9 +4,8 @@ import { TimesheetTableBody } from "./TimesheetTableBody";
 import { TimesheetTableSkeleton } from "./TimesheetTableSkeleton";
 import { TimesheetFooter } from "./TimesheetFooter";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";
-import { useEffect, useState } from "react";
 
-type Timesheet = {
+export type Timesheet = {
   id: string;
   date: Date | string;
   User: {
@@ -33,7 +32,27 @@ type Timesheet = {
   updatedAt: Date | string;
 };
 
-export default function ViewAllTimesheets() {
+export default function ViewAllTimesheets({
+  timesheets,
+  loading,
+  page,
+  totalPages,
+  total,
+  pageSize,
+  pageSizeOptions,
+  onPageSizeChange,
+  onPageChange,
+}: {
+  timesheets: Timesheet[];
+  loading: boolean;
+  page: number;
+  totalPages: number;
+  total: number;
+  pageSize: number;
+  pageSizeOptions: number[];
+  onPageSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onPageChange: (page: number) => void;
+}) {
   const timesheetHeaders = [
     "ID",
     "Date",
@@ -47,39 +66,6 @@ export default function ViewAllTimesheets() {
     "Created At",
     "Last modified",
   ];
-  const [loading, setLoading] = useState(true);
-  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
-  const pageSizeOptions = [25, 50, 75, 100];
-
-  useEffect(() => {
-    const fetchTimesheets = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`
-        );
-        const data = await response.json();
-        setAllTimesheets(data.timesheets);
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
-      } catch (error) {
-        console.error("Error fetching timesheets:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTimesheets();
-  }, [page, pageSize]);
-
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPageSize(Number(e.target.value));
-    setPage(1); // Reset to first page when page size changes
-  };
 
   if (loading) {
     return (
@@ -101,8 +87,8 @@ export default function ViewAllTimesheets() {
           total={total}
           pageSize={pageSize}
           pageSizeOptions={pageSizeOptions}
-          onPageSizeChange={handlePageSizeChange}
-          onPageChange={setPage}
+          onPageSizeChange={onPageSizeChange}
+          onPageChange={onPageChange}
           timesheetsLength={pageSize}
         />
       </div>
@@ -115,7 +101,7 @@ export default function ViewAllTimesheets() {
         <TableHeader className="sticky top-0 z-10 bg-gray-50 border-b-2 border-gray-300">
           <TimesheetTableHeader headers={timesheetHeaders} />
         </TableHeader>
-        <TimesheetTableBody timesheets={allTimesheets} />
+        <TimesheetTableBody timesheets={timesheets} />
       </Table>
       <TimesheetFooter
         page={page}
@@ -123,9 +109,9 @@ export default function ViewAllTimesheets() {
         total={total}
         pageSize={pageSize}
         pageSizeOptions={pageSizeOptions}
-        onPageSizeChange={handlePageSizeChange}
-        onPageChange={setPage}
-        timesheetsLength={allTimesheets.length}
+        onPageSizeChange={onPageSizeChange}
+        onPageChange={onPageChange}
+        timesheetsLength={timesheets.length}
       />
     </div>
   );
