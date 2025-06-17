@@ -31,7 +31,7 @@ const ButtonVariants = cva(
       },
       size: {
         //only width and height
-        full: "w-[100%] h-[100%]",
+        full: "w-full h-full",
         "90": "w-[90%]",
         "80": "w-[80%]",
         "70": "w-[70%]",

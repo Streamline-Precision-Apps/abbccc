@@ -96,13 +96,13 @@ export default function Log() {
           <p>You still have equipment checked out.</p>
           <div className="w-1/4">
             <button
-              className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
+              className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded-sm"
               onClick={handleReturnToDashboard}
             >
               {t("Return")}
             </button>
             <button
-              className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded mt-2"
+              className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded-sm mt-2"
               onClick={handleGoToCurrentEquipment}
             >
               Go to Current Equipment

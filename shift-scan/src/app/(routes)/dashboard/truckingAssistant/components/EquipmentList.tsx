@@ -214,7 +214,7 @@ export default function EquipmentList({
                         setIsEquipmentOpen(true);
                         setSelectedIndex(mat.id);
                       }}
-                      className={`border-none text-xs focus:outline-none cursor-pointer ${
+                      className={`border-none text-xs focus:outline-hidden cursor-pointer ${
                         mat.equipmentId === null && "placeholder:text-app-red"
                       }`}
                       readOnly
@@ -243,7 +243,7 @@ export default function EquipmentList({
                         setIsLocationOpen(true);
                         setSelectedIndex(mat.id);
                       }}
-                      className={`border-none text-xs focus:outline-none cursor-pointer ${
+                      className={`border-none text-xs focus:outline-hidden cursor-pointer ${
                         mat.jobSiteId === null && "placeholder:text-app-red"
                       }`}
                       readOnly

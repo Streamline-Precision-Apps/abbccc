@@ -179,7 +179,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
                     }
                     data={updatedData?.language}
                     onClick={() => setIsLangModalOpen(true)}
-                    className="bg-app-blue h-[2rem]  text-center cursor-pointer"
+                    className="bg-app-blue h-8  text-center cursor-pointer"
                   />
                 </Holds>
               </Holds>
@@ -194,7 +194,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
           title="Language Selection"
           background={"default"}
         >
-          <Holds size={"full"} className="h-[20rem]">
+          <Holds size={"full"} className="h-80">
             <Contents width={"section"} className="h-full">
               <Selects
                 value={updatedData?.language || "en"}

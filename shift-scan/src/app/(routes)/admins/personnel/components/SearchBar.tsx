@@ -36,7 +36,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           value={term}
           onChange={handleSearchChange}
           disabled={disabled}
-          className={`border-none outline-none text-${textSize} text-left w-full h-full rounded-md bg-white`}
+          className={`border-none outline-hidden text-${textSize} text-left w-full h-full rounded-md bg-white`}
         />
       </Holds>
       {children}

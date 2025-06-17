@@ -24,12 +24,12 @@ const ModalVariants = cva(
       },
       size: {
         default:
-          "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
+          "fixed rounded-sm p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
         sm: "absolute left-[50%] top-[50%]",
         med: "",
         lg: " fixed rounded-3xl p-1 bg-white opacity-none h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
         clock:
-          "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] ",
+          "fixed rounded-sm top-1/3 -translate-y-1/3 flex flex-col w-full h-full ",
         fullPage:
           "fixed left-0 top-0 mt-10 rounded-2xl rounded-b-none w-full h-full",
       },

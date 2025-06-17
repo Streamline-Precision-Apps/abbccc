@@ -211,7 +211,7 @@ export default function TimeCardTruckingMaterialLogs({
                           className="w-full h-full text-left"
                         >
                           <Grids cols={"2"} className="w-full h-full">
-                            <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
+                            <Holds className="col-start-1 col-end-2 h-full border-r-2 border-black">
                               <Grids
                                 rows={"2"}
                                 className="w-full h-full rounded-none"
@@ -316,7 +316,7 @@ export default function TimeCardTruckingMaterialLogs({
                               <Grids rows={"3"} className="w-full h-full">
                                 <Holds
                                   position={"row"}
-                                  className={`row-start-1 row-end-2 h-full rounded-none rounded-tr-md border-b-[2px] border-black ${
+                                  className={`row-start-1 row-end-2 h-full rounded-none rounded-tr-md border-b-2 border-black ${
                                     edit ? "bg-white" : "bg-app-gray"
                                   }`}
                                 >
@@ -366,7 +366,7 @@ export default function TimeCardTruckingMaterialLogs({
                                 </Holds>
                                 <Holds
                                   position={"row"}
-                                  className={`row-start-2 row-end-3 h-full rounded-none border-b-[2px] border-black ${
+                                  className={`row-start-2 row-end-3 h-full rounded-none border-b-2 border-black ${
                                     edit ? "bg-white" : "bg-app-gray"
                                   }`}
                                 >

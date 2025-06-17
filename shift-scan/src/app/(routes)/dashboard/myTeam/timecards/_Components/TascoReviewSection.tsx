@@ -186,7 +186,7 @@ export default function TascoReviewSection({
           {tabs === 1 && (
             <Holds className="w-full h-full">
               <Holds>
-                <Grids className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 py-2 px-1 border-b-[3px] border-black">
+                <Grids className="grid grid-cols-[.5fr_1fr_1fr_1fr_.5fr] gap-2 py-2 px-1 border-b-[3px] border-black">
                   <Titles size={"h7"}>{t("Shift")}</Titles>
                   <Titles size={"h7"}>{t("Labor")}</Titles>
                   <Titles size={"h7"}>{t("Equipment")}</Titles>
@@ -201,7 +201,7 @@ export default function TascoReviewSection({
                 {allTascoLogs.map((log) => (
                   <Grids
                     key={log.id}
-                    className="grid grid-cols-[.5fr,1fr,1fr,1fr,.5fr] gap-2 p-2 border-b-[3px] border-black justify-center items-center"
+                    className="grid grid-cols-[.5fr_1fr_1fr_1fr_.5fr] gap-2 p-2 border-b-[3px] border-black justify-center items-center"
                   >
                     <Texts position={"left"} size={"p7"}>
                       {log.shiftType?.split(" ")[0] || "-"}

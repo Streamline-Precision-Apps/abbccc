@@ -39,7 +39,7 @@ export const CheckBox = ({
         className={`
         peer relative appearance-none shrink-0 border-[3px] border-black  
          ${shadow ? "shadow-[8px_8px_0px_grey]" : ""}
-        focus:outline-none focus:ring-offset-0 focus:ring-1
+        focus:outline-hidden focus:ring-offset-0 focus:ring-1
         checked:bg-app-green checked:border-[3px] rounded-[10px]
         disabled:border-steel-400 disabled:bg-steel-400
         `}
@@ -52,7 +52,7 @@ export const CheckBox = ({
         style={{ width: dimensions.width, height: dimensions.height }}
       />
       <svg
-        className="absolute pointer-events-none hidden peer-checked:block stroke-black  outline-none animate-wave"
+        className="absolute pointer-events-none hidden peer-checked:block stroke-black  outline-hidden animate-wave"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 32 32"
         fill="none"

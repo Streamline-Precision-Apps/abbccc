@@ -79,7 +79,7 @@ export default function CustomForms({
                 placeholder={t("FormsSearchPlaceholder")}
                 value={term}
                 onChange={handleSearchChange}
-                className="border-none outline-none"
+                className="border-none outline-hidden"
               />
             </Holds>
           </Holds>

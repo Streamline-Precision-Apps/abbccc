@@ -298,7 +298,7 @@ export default function PersonnelSideBar({
               placeholder={t("PersonalSearchPlaceholder")}
               value={term}
               onChange={handleSearchChange}
-              className="border-none outline-none text-sm text-left w-full h-full rounded-md bg-white"
+              className="border-none outline-hidden text-sm text-left w-full h-full rounded-md bg-white"
             />
           </Holds>
 
