@@ -49,7 +49,7 @@ export default function TimesheetList({
               />
             </Holds>
           </Holds>
-          <Holds position={"row"} className="justify-between border-b-[1px]">
+          <Holds position={"row"} className="justify-between border-b">
             <Texts size={"p6"}>{t("StartTime")}</Texts>
             <Texts size={"p6"}>
               {timesheet.startTime
@@ -59,7 +59,7 @@ export default function TimesheetList({
           </Holds>
           <Holds
             position={"row"}
-            className="justify-between border-b-[1px] pt-2"
+            className="justify-between border-b pt-2"
           >
             <Texts size={"p6"}>{t("EndTime")}</Texts>
 
@@ -71,7 +71,7 @@ export default function TimesheetList({
           </Holds>
           <Holds
             position={"row"}
-            className="justify-between border-b-[1px] pt-2"
+            className="justify-between border-b pt-2"
           >
             <Texts size={"p6"}>{t("Jobsite")}</Texts>
 
@@ -79,7 +79,7 @@ export default function TimesheetList({
           </Holds>
           <Holds
             position={"row"}
-            className="justify-between border-b-[1px] pt-2"
+            className="justify-between border-b pt-2"
           >
             <Texts size={"p6"}>{t("CostCode")}</Texts>
 

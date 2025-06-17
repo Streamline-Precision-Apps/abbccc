@@ -11,7 +11,7 @@ const NModalVariants = cva("", {
     background: {
       default: "bg-white opacity-90 rounded-2xl p-1",
       takeABreak:
-        "bg-gradient-to-b from-app-dark-blue to-app-blue pb-7 pt-7 px-4",
+        "bg-linear-to-b from-app-dark-blue to-app-blue pb-7 pt-7 px-4",
       white: "bg-white rounded-2xl p-1",
       noOpacity: "bg-white rounded-2xl p-1 opacity-none",
     },
@@ -19,22 +19,22 @@ const NModalVariants = cva("", {
       center: "relative",
     },
     size: {
-      xs: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[350px] h-[200px]",
-      sm: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
-      med: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
-      medW: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/3",
+      xs: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[350px] h-[200px]",
+      sm: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
+      med: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
+      medW: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/3",
       medWW:
-        "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-1/3",
-      medM: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/2",
-      medH: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-3/4",
-      lg: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/2",
-      lgH: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-3/4",
-      xl: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-3/4",
-      xlW: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[80%]",
-      xlWS: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[40%] max-w-lg ",
-      page: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
+        "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-1/3",
+      medM: " fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/2",
+      medH: " fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-3/4",
+      lg: " fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/2",
+      lgH: " fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-3/4",
+      xl: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-3/4",
+      xlW: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[80%]",
+      xlWS: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[40%] max-w-lg ",
+      page: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
       screen:
-        "fixed z-[9999] bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-screen h-dvh",
+        "fixed z-9999 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-screen h-dvh",
     },
   },
   defaultVariants: {
@@ -80,7 +80,7 @@ const NModals: FC<NModalProps> = ({
         background={"modal"}
         position={"start"}
         size={"screen"}
-        className="z-[9998]" // Ensure it's just below the modal content
+        className="z-9998" // Ensure it's just below the modal content
         onClick={handleClose}
       >
         <div

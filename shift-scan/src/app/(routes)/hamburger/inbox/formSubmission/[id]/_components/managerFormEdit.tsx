@@ -247,7 +247,7 @@ export default function ManagerFormEditApproval({
                   onChange={handleCommentChange}
                   maxLength={40}
                 />
-                <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded text-sm text-gray-500">
+                <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded-sm text-sm text-gray-500">
                   {comment.length} / 40
                 </Texts>
               </Holds>

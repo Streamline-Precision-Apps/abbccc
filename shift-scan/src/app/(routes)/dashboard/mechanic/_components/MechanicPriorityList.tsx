@@ -369,7 +369,7 @@ export default function MechanicPriority({
                                   }).map((_, index) => (
                                     <Holds
                                       key={index}
-                                      className={`w-2 h-2 rounded-full border-[2px] border-black  ${
+                                      className={`w-2 h-2 rounded-full border-2 border-black  ${
                                         index + 1 === currentPage
                                           ? "bg-app-blue"
                                           : "bg-white"
