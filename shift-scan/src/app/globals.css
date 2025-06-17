@@ -1,7 +1,7 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @layer theme, base, mui, components, utilities;
-@import 'tailwindcss' layer(utilities);
+@import "tailwindcss" layer(utilities);
 
 @theme {
   --background-color-peer-checked: #fce700;
