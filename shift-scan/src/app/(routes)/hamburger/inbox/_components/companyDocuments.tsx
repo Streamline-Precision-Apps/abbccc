@@ -268,7 +268,7 @@ export default function CompanyDocuments() {
                                     {document.fileName}
                                   </Titles>
                                   {document.DocumentTags.length > 0 && (
-                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-sm">
                                       {document.DocumentTags[0].tagName}
                                     </span>
                                   )}

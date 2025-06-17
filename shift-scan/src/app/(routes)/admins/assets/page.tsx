@@ -217,7 +217,7 @@ export default function Assets() {
                   )
                 }
                 value={assets}
-                className="w-full h-full text-center text-sm border-[2px] outline outline-[1px] outline-black outline-offset-0"
+                className="w-full h-full text-center text-sm border-2 outline-solid outline-[1px] outline-black outline-offset-0"
               >
                 {ASSET_TYPES.map((asset) => (
                   <option key={asset.value} value={asset.value}>

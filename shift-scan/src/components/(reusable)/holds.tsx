@@ -24,7 +24,7 @@ const HoldVariants = cva(
         gray: "bg-[#AFB6C4] rounded-xl border border-[#AFB6C4] border-8",
         lightGray: "bg-app-gray rounded-xl border border-app-gray border-8",
         timeCardYellow: "bg-[#EBC68E] ",
-        adminBlue: "bg-gradient-to-b from-[#21355C]/60 to-[#4670C2]/60 ",
+        adminBlue: "bg-linear-to-b from-[#21355C]/60 to-[#4670C2]/60 ",
       },
       position: {
         //only position attributes

@@ -448,7 +448,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                                 <img
                                   src={tab.icon}
                                   alt={tab.label}
-                                  className="w-5 h-5 flex-shrink-0"
+                                  className="w-5 h-5 shrink-0"
                                 />
                                 {((filter === "trucking" &&
                                   truckingTab === tab.value) ||
