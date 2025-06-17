@@ -5,7 +5,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../pageSelector";
+import PageSelector from "../_components/pageSelector";
 
 export default function AdminReports() {
   return (
