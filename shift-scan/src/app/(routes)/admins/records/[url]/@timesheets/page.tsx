@@ -2,94 +2,124 @@
 
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import { Buttons } from "@/components/(reusable)/buttons";
+import { Button } from "@/components/ui/button";
 import SearchBar from "../../../personnel/components/SearchBar";
 import PageSelector from "../pageSelector";
+import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
+import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
+import { TimeSheetStatus, WorkType } from "@/lib/enums";
+import { use, useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+
+type timesheetPending = {
+  length: number;
+};
 
 export default function AdminTimesheets() {
-  const timesheetHeaders = [
-    "Timesheet Id",
-    "Date",
-    "Employee Name",
-    "Profit Id",
-    "Cost Code",
-    "Start Time",
-    "End Time",
-    "Comment",
-    "Status",
-    "Created At",
-    "Last modified",
-  ];
-  const timesheetObjects = [
-    {
-      id: "1",
-      date: "2023-01-01",
-      employeeName: "John Doe",
-      profitId: "P123",
-      costCode: "C456",
-      startTime: "08:00AM",
-      endTime: "05:00PM",
-      comment: "Worked on project X",
-      status: "Approved",
-      createdAt: "2023-01-01",
-      lastModified: "2023-01-01",
-    },
-    {
-      id: "2",
-      date: "2023-01-01",
-      employeeName: "John Doe",
-      profitId: "P123",
-      costCode: "C456",
-      startTime: "08:00AM",
-      endTime: "05:00PM",
-      comment: "Worked on project X",
-      status: "Approved",
-      createdAt: "2023-01-01",
-      lastModified: "2023-01-01",
-    },
-    {
-      id: "3",
-      date: "2023-01-01",
-      employeeName: "John Doe",
-      profitId: "P123",
-      costCode: "C456",
-      startTime: "08:00AM",
-      endTime: "05:00PM",
-      comment: "Worked on project X",
-      status: "Approved",
-      createdAt: "2023-01-01",
-      lastModified: "2023-01-01",
-    },
-    // Add more timesheet objects as needed
-  ];
-  const numOfTimesheets = timesheetObjects.length;
-
   //todo: Implement search functionality
+  // State: searchTerm
+  // Handler: onSearchChange
+  // Filter timesheets based on searchTerm
+  const [searchTerm, setSearchTerm] = useState("");
+  // const filteredTimesheets = timesheets.filter(ts =>
+  //   ts.User.firstName.includes(searchTerm) ||
+  //   ts.User.lastName.includes(searchTerm) ||
+  //   ts.jobsite.name.includes(searchTerm)
+  // );
+  // <SearchBar term={searchTerm} handleSearchChange={e => setSearchTerm(e.target.value)} ... />
 
   //todo: Implement pagination functionality
+  // State: currentPage, pageSize
+  // Handler: onPageChange
+  // Calculate paginatedTimesheets
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  // const paginatedTimesheets = filteredTimesheets.slice(
+  //   (currentPage - 1) * pageSize,
+  //   currentPage * pageSize
+  // );
+  // <PageSelector currentPage={currentPage} totalPages={Math.ceil(filteredTimesheets.length / pageSize)} onPageChange={setCurrentPage} />
 
   //todo: Implement sorting functionality
+  // State: sortField, sortDirection
+  // Handler: onSortChange
+  // Sort filteredTimesheets before pagination
+  // const [sortField, setSortField] = useState("date");
+  // const [sortDirection, setSortDirection] = useState("asc");
+  // const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
+  //   // compare a[sortField] and b[sortField] based on sortDirection
+  // });
+  // <TableHeader onClick={() => setSortField("date")} />
 
   // implement timesheet creation functionality
+  // State: showCreateModal
+  // Handler: onCreateSubmit
+  // Add new timesheet to state or refetch data
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  // <Button onClick={() => setShowCreateModal(true)}>Create New Form</Button>
+  // {showCreateModal && <CreateTimesheetModal onSubmit={handleCreateSubmit} />}
 
   // implement timesheet deletion functionality
+  // Handler: onDelete
+  // Remove timesheet from state or refetch data
+  // <Button onClick={() => handleDelete(timesheet.id)}>Delete</Button>
+  // function handleDelete(id) {
+  //   // confirm deletion
+  //   // call API to delete
+  //   // update state or refetch
+  // }
 
   // implement timesheet approval and rejection functionality
+  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
+    null
+  );
+
+  useEffect(() => {
+    const fetchTimesheetsPending = async () => {
+      try {
+        const response = await fetch(`/api/getAllTimesheetsPending`);
+        const data = await response.json();
+        setApprovalInbox(data);
+      } catch (error) {
+        console.error("Error fetching timesheets:", error);
+      }
+    };
+
+    fetchTimesheetsPending();
+  }, []);
+
+  // Handler: onApprove, onReject
+  // Update timesheet status
+  // <Button onClick={() => handleApprove(timesheet.id)}>Approve</Button>
+  // <Button onClick={() => handleReject(timesheet.id)}>Reject</Button>
+  // function handleApprove(id) {
+  //   // call API to approve
+  //   // update state or refetch
+  // }
+  // function handleReject(id) {
+  //   // call API to reject
+  //   // update state or refetch
+  // }
 
   // implement timesheet editing functionality
+  // State: showEditModal, editingTimesheet
+  // Handler: onEditSubmit
+  // <Button onClick={() => setEditingTimesheet(timesheet)}>Edit</Button>
+  // {editingTimesheet && <EditTimesheetModal timesheet={editingTimesheet} onSubmit={handleEditSubmit} />}
 
   // implement timesheet download / export functionality
+  // Handler: onExport
+  // Convert timesheet data to CSV or PDF and trigger download
+  // <Button onClick={handleExport}>Export</Button>
+  // function handleExport() {
+  //   // format timesheets as CSV
+  //   // create blob and trigger download
+  // }
 
   return (
     <Holds className="h-full w-full flex-col gap-4">
-      <Holds className="h-fit w-full gap-1 p-4">
-        <Texts size={"md"} text={"white"} className="text-left font-bold">
-          Timesheets Management
-        </Texts>
-        <Texts size={"sm"} text={"white"} className="text-left">
-          Create, manage, and track timesheet submissions
-        </Texts>
-      </Holds>
+      <TimesheetDescription />
+      {/*Timesheet search, filter and navigation*/}
       <Holds position={"row"} className="h-fit w-full px-4 gap-4">
         <Holds
           position={"left"}
@@ -97,8 +127,8 @@ export default function AdminTimesheets() {
           className="h-full w-full max-w-[250px] py-2"
         >
           <SearchBar
-            term={""}
-            handleSearchChange={(e) => console.log(e)}
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
             placeholder={"Search forms..."}
             textSize="xs"
             imageSize="6"
@@ -120,110 +150,44 @@ export default function AdminTimesheets() {
             text={"white"}
             className="font-bold"
           >
-            {numOfTimesheets} of {numOfTimesheets} forms
+            {/* {numOfTimesheets} of {numOfTimesheets} forms */}
           </Texts>
         </Holds>
         <Holds position={"row"} className="w-full justify-end h-full">
           <PageSelector />
-          <Buttons
-            position={"right"}
-            shadow={"none"}
-            background={"custom"}
-            className="border-none w-fit h-full px-4  bg-sky-500 hover:bg-sky-600 text-white"
-          >
+          <Button className="border-none w-fit h-fit px-4 bg-sky-500 hover:bg-sky-400 text-white mr-2">
             <Holds position={"row"} className="items-center">
               <img
                 src="/plus.svg"
                 alt="Create New Form"
                 className="h-4 w-4 mr-2"
               />
-              <Texts size={"sm"} text={"black"}>
+              <Texts size={"sm"} text={"black"} className="font-extrabold">
                 Create New Form
               </Texts>
             </Holds>
-          </Buttons>
+          </Button>
+          <Button className="relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white">
+            <Holds position={"row"} className="items-center">
+              <img
+                src="/inbox-white.svg"
+                alt="Approval"
+                className="h-4 w-4 mr-2"
+              />
+              <Texts size={"sm"} text={"white"} className="font-extrabold">
+                Approval
+              </Texts>
+              {approvalInbox && approvalInbox.length > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                  {approvalInbox.length}
+                </Badge>
+              )}
+            </Holds>
+          </Button>
         </Holds>
       </Holds>
-      <Holds className="h-full w-full px-4 ">
-        <Holds background={"white"} className="h-full w-full overflow-x-auto">
-          <table className="w-full table-auto overflow-auto min-w-max">
-            <thead className="w-full overflow-x-auto">
-              <tr className="border-b">
-                {timesheetHeaders.map((header) => (
-                  <th className="px-4 py-2 text-left">{header}</th>
-                ))}
-                <th className="px-4 py-2 text-left sticky right-0 bg-white z-10">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="w-full overflow-auto">
-              {timesheetObjects.map((timesheet) => (
-                <tr className="border-b" key={timesheet.id}>
-                  <td className="px-4 py-2 text-left">{timesheet.id}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.date}</td>
-                  <td className="px-4 py-2 text-left">
-                    {timesheet.employeeName}
-                  </td>
-                  <td className="px-4 py-2 text-left">{timesheet.profitId}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.costCode}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.startTime}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.endTime}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.comment}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.status}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.createdAt}</td>
-                  <td className="px-4 py-2 text-left">
-                    {timesheet.lastModified}
-                  </td>
-                  <td className="p-4 py-2 text-left sticky right-0 bg-white z-10">
-                    <Buttons
-                      shadow={"none"}
-                      background={"custom"}
-                      className="border-none w-fit h-full  "
-                    >
-                      <img
-                        src="/export.svg"
-                        alt="export Form"
-                        className="h-4 w-4 mr-4"
-                      />
-                    </Buttons>
-                    <Buttons
-                      shadow={"none"}
-                      background={"custom"}
-                      className="border-none w-fit h-full  "
-                    >
-                      <img
-                        src="/formEdit.svg"
-                        alt="Edit Form"
-                        className="h-4 w-4 mr-4"
-                      />
-                    </Buttons>
-                    <Buttons
-                      shadow={"none"}
-                      background={"custom"}
-                      className="border-none w-fit h-full justify-center "
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 80 100"
-                        className="h-4 w-4  fill-red-600"
-                      >
-                        <path
-                          d="M76.1035 24.0039C77.6888 24.0841 78.9492 25.3948 78.9492 27C78.9492 28.6052 77.6888 29.9159 76.1035 29.9961L75.9492 30H4.05078C2.39393 30 1.05078 28.6569 1.05078 27C1.05078 25.3431 2.39393 24 4.05078 24H75.9492L76.1035 24.0039Z"
-                          fill=""
-                        />
-                        <path
-                          d="M70.3613 24.0098C73.8523 24.2036 76.4709 27.3605 75.958 30.8682L66.5977 94.8682L66.5518 95.1426C66.0263 97.8592 63.7035 99.8663 60.9395 99.9932L60.6611 100H20.3516L20.0742 99.9932C17.3099 99.8666 14.9864 97.8594 14.4609 95.1426L14.415 94.8682L5.05566 30.8682C4.54271 27.3606 7.16047 24.2038 10.6514 24.0098L10.9922 24H70.0205L70.3613 24.0098ZM20.3516 94H60.6611L70.0205 30H10.9922L20.3516 94ZM40.5059 39C42.1627 39 43.5059 40.3431 43.5059 42V86C43.5059 87.6569 42.1627 89 40.5059 89C38.849 89 37.5059 87.6569 37.5059 86V42C37.5059 40.3431 38.849 39 40.5059 39ZM24.0391 39.0117C25.6388 38.88 27.0566 40.0281 27.2764 41.6006L27.2939 41.7539L31.1152 84.8848C31.2613 86.5351 30.0408 87.9831 28.3896 88.1191C26.7384 88.2551 25.281 87.0273 25.1348 85.377L21.3135 42.2461L21.3037 42.0918C21.244 40.5063 22.4394 39.1435 24.0391 39.0117ZM53.4893 41.7539C53.6355 40.1036 55.0929 38.8758 56.7441 39.0117C58.3953 39.1477 59.6158 40.5958 59.4697 42.2461L55.6484 85.377L55.6309 85.5303C55.4111 87.1028 53.9933 88.2509 52.3936 88.1191C50.7939 87.9874 49.5984 86.6245 49.6582 85.0391L49.668 84.8848L53.4893 41.7539ZM50.709 0C54.0227 0 56.709 2.68629 56.709 6V9L56.7168 9.30859C56.8774 12.4789 59.4988 15 62.709 15H75.9492L76.1035 15.0039C77.6888 15.0841 78.9492 16.3948 78.9492 18C78.9492 19.6052 77.6888 20.9159 76.1035 20.9961L75.9492 21H4.05078C2.39393 21 1.05078 19.6569 1.05078 18C1.05078 16.3431 2.39393 15 4.05078 15H17.291L17.5996 14.9922C20.6677 14.8367 23.1278 12.3767 23.2832 9.30859L23.291 9V6C23.291 2.68638 25.9774 0.000147198 29.291 0H50.709ZM29.291 9C29.291 11.1864 28.7033 13.2346 27.6816 15H52.3184C51.2967 13.2346 50.709 11.1864 50.709 9V6H29.291V9Z"
-                          fill=""
-                        />
-                      </svg>
-                    </Buttons>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Holds>
+      <Holds className="h-full w-full px-4 overflow-y-auto">
+        <TimesheetViewAll />
       </Holds>
     </Holds>
   );
