@@ -4,7 +4,6 @@ import { Providers } from "./providers";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dynamic from "next/dynamic";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 
 const AutoPermissionsManager = dynamic(
   () => import("@/components/(settings)/AutoPermissionsManager"),
@@ -53,17 +52,15 @@ export default async function RootLayout({
         <meta name="theme-color" content="#57BDE9" />
       </head>
       <body className="min-h-screen overflow-auto">
-        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <main className="min-h-screen overflow-auto">
-            <NextIntlClientProvider messages={messages}>
-              <Providers>
-                {children}
-                <SpeedInsights />
-                <AutoPermissionsManager />
-              </Providers>
-            </NextIntlClientProvider>
-          </main>
-        </AppRouterCacheProvider>
+        <main className="min-h-screen overflow-auto">
+          <NextIntlClientProvider messages={messages}>
+            <Providers>
+              {children}
+              <SpeedInsights />
+              <AutoPermissionsManager />
+            </Providers>
+          </NextIntlClientProvider>
+        </main>
       </body>
     </html>
   );
