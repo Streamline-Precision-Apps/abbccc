@@ -37,7 +37,7 @@ export default async function RootLayout({
                 {/* Sidebar */}
                 <Holds
                   position={"test"}
-                  className="h-full w-[60px] flex-shrink-0"
+                  className="h-full w-[60px] shrink-0"
                 >
                   <LeftSidebar />
                 </Holds>

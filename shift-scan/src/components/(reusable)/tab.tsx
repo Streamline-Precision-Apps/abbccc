@@ -30,7 +30,7 @@ const tabStyles = cva(
       },
       border: {
         default:
-          "border-black border-t-[3px] border-l-[3px] border-r-[3px] border-b-[2px]",
+          "border-black border-t-[3px] border-l-[3px] border-r-[3px] border-b-2",
         transparent: "border-transparent border-b-[3px]",
         border: "border-black border-t-[3px] border-l-[3px] border-r-[3px]",
       },

@@ -4,7 +4,7 @@ import { getMessages } from "next-intl/server";
 import { ReactNode } from "react";
 import { Providers } from "../../../../providers";
 import { Holds } from "@/components/(reusable)/holds";
-import PageSelector from "./pageSelector";
+import PageSelector from "./_components/pageSelector";
 
 export type LayoutProps = {
   forms: ReactNode;
@@ -19,20 +19,19 @@ export default async function PersonnelLayout({
   reports,
   params,
 }: LayoutProps) {
+  const section = params.url; // determines which url section to render
   const messages = await getMessages();
-
-  const section = params.url;
 
   return (
     <Holds className="w-full h-full">
       <NextIntlClientProvider messages={messages}>
         <Providers>
           {/* Dynamically render children based on the section */}
-          {params.url.startsWith("forms") ? (
+          {section.startsWith("forms") ? (
             forms // Use forms directly as a ReactNode
-          ) : params.url.startsWith("timesheets") ? (
+          ) : section.startsWith("timesheets") ? (
             timesheets // Use timesheets directly as a ReactNode
-          ) : params.url.startsWith("reports") ? (
+          ) : section.startsWith("reports") ? (
             reports // Use reports directly as a ReactNode
           ) : (
             <div>Invalid section</div>
