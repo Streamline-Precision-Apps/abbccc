@@ -43,3 +43,6 @@ body {
   overflow-x: hidden;
   touch-action: pan-x pan-y;
 }
+
+@layer theme, base, mui, components, utilities;
+@import "tailwindcss";

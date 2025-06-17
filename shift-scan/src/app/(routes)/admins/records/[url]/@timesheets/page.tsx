@@ -2,9 +2,9 @@
 
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import { Buttons } from "@/components/(reusable)/buttons";
+import Button from "@mui/material/Button";
 import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../pageSelector";
+import PageSelector from "../_components/pageSelector";
 
 export default function AdminTimesheets() {
   const timesheetHeaders = [
@@ -125,23 +125,17 @@ export default function AdminTimesheets() {
         </Holds>
         <Holds position={"row"} className="w-full justify-end h-full">
           <PageSelector />
-          <Buttons
-            position={"right"}
-            shadow={"none"}
-            background={"custom"}
-            className="border-none w-fit h-full px-4  bg-sky-500 hover:bg-sky-600 text-white"
-          >
+          <Button className="border-none w-fit h-full px-4  bg-gray-900 hover:bg-gray-800 text-white">
             <Holds position={"row"} className="items-center">
               <img
-                src="/plus.svg"
-                alt="Create New Form"
+                src="/plus-stroke-white.svg"
+                alt="white Plus icon"
                 className="h-4 w-4 mr-2"
               />
-              <Texts size={"sm"} text={"black"}>
-                Create New Form
-              </Texts>
+
+              <p className="rounded-lg p-2">Create New Timesheet</p>
             </Holds>
-          </Buttons>
+          </Button>
         </Holds>
       </Holds>
       <Holds className="h-full w-full px-4 ">
@@ -176,33 +170,21 @@ export default function AdminTimesheets() {
                     {timesheet.lastModified}
                   </td>
                   <td className="p-4 py-2 text-left sticky right-0 bg-white z-10">
-                    <Buttons
-                      shadow={"none"}
-                      background={"custom"}
-                      className="border-none w-fit h-full  "
-                    >
+                    <Button className="border-none w-fit h-full  ">
                       <img
                         src="/export.svg"
                         alt="export Form"
                         className="h-4 w-4 mr-4"
                       />
-                    </Buttons>
-                    <Buttons
-                      shadow={"none"}
-                      background={"custom"}
-                      className="border-none w-fit h-full  "
-                    >
+                    </Button>
+                    <Button className="border-none w-fit h-full  ">
                       <img
                         src="/formEdit.svg"
                         alt="Edit Form"
                         className="h-4 w-4 mr-4"
                       />
-                    </Buttons>
-                    <Buttons
-                      shadow={"none"}
-                      background={"custom"}
-                      className="border-none w-fit h-full justify-center "
-                    >
+                    </Button>
+                    <Button className="border-none w-fit h-full  ">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 80 100"
@@ -217,7 +199,7 @@ export default function AdminTimesheets() {
                           fill=""
                         />
                       </svg>
-                    </Buttons>
+                    </Button>
                   </td>
                 </tr>
               ))}
