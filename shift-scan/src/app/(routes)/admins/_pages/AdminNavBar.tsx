@@ -156,7 +156,7 @@ const AdminNavBar = () => {
               ? "bg-app-blue w-full h-[75px]"
               : "bg-app-gray h-[60px] w-[100px]"
           } rounded-t-none border-none mr-2`}
-          href="/admins/records"
+          href="/admins/records/timesheets"
         >
           {isRecordsPage ? (
             screenWidth < 1300 ? (
