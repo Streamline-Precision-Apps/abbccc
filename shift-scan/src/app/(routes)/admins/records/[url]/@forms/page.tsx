@@ -5,7 +5,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../pageSelector";
+import PageSelector from "../_components/pageSelector";
 
 export default function AdminForms() {
   return (
@@ -40,7 +40,7 @@ export default function AdminForms() {
           <Selects
             defaultValue="all"
             onChange={(e) => console.log(e)}
-            className="w-full h-full text-xs border-none outline-none px-2 "
+            className="w-full h-full text-xs border-none outline-hidden px-2 "
           >
             <option value="all">All Forms</option>
             <option value="incident">Incident Report</option>

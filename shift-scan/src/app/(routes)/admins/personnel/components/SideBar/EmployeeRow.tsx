@@ -74,7 +74,7 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
             !isCrew && "hover:opacity-80"
           } relative ${
             isSelected &&
-            "w-full h-full outline outline-[2px] outline-black justify-center"
+            "w-full h-full outline-solid outline-2 outline-black justify-center"
           } rounded-[10px]`}
         >
           <Texts position="left" size="xs">
