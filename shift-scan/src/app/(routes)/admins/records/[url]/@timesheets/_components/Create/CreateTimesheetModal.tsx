@@ -6,6 +6,7 @@ import { TruckingSection } from "./TruckingSection";
 import { TascoSection } from "./TascoSection";
 import { LaborSection } from "./LaborSection";
 import GeneralSection from "./GeneralSection";
+import { adminCreateTimesheet } from "@/actions/records-timesheets";
 
 export function CreateTimesheetModal({
   onSubmit,
@@ -75,10 +76,12 @@ export function CreateTimesheetModal({
       equipmentId: "",
       startingMileage: "",
       endingMileage: "",
-      equipmentHauled: [],
+      equipmentHauled: [
+        { equipment: { id: "", name: "" }, jobsite: { id: "", name: "" } },
+      ],
       materials: [],
-      refuelLogs: [],
-      stateMileages: [],
+      refuelLogs: [{ gallonsRefueled: "", milesAtFueling: "" }],
+      stateMileages: [{ state: "", stateLineMileage: "" }],
     },
   ]);
   // Tasco log type
@@ -96,8 +99,8 @@ export function CreateTimesheetModal({
       laborType: "",
       materialType: "",
       loadQuantity: "",
-      refuelLogs: [],
-      equipment: [],
+      refuelLogs: [{ gallonsRefueled: "" }],
+      equipment: [{ id: "", name: "" }],
     },
   ]);
   // Labor log type
@@ -227,7 +230,7 @@ export function CreateTimesheetModal({
     fetchCostCodes();
   }, [form.jobsite.id]);
 
-  async function fetchMaterialTypes() {
+  const fetchMaterialTypes = async () => {
     try {
       const res = await fetch("/api/getMaterialTypes");
       if (!res.ok) throw new Error("Failed to fetch material types");
@@ -237,33 +240,33 @@ export function CreateTimesheetModal({
       console.error(error);
       setMaterialTypes([]);
     }
-  }
+  };
 
-  function handleChange(
+  const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  ) => {
     // If the field is costcode and not using the Combobox, update as string fallback
     if (e.target.name === "costcode") {
       setForm({ ...form, costcode: { id: "", name: e.target.value } });
     } else {
       setForm({ ...form, [e.target.name]: e.target.value });
     }
-  }
+  };
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    // const result = await createTimesheet({
-    //   ...form,
-    //   maintenanceLogs,
-    //   truckingLogs,
-    //   tascoLogs,
-    //   equipmentLogs,
-    // });
-    // onSubmit(result);
+    const data = {
+      form,
+      maintenanceLogs,
+      truckingLogs,
+      tascoLogs,
+      laborLogs,
+    };
+    await adminCreateTimesheet(data);
     setSubmitting(false);
     onClose();
-  }
+  };
 
   // Fetch material types and equipment when TASCO is selected
   useEffect(() => {
