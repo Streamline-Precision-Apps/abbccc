@@ -18,16 +18,7 @@ export async function GET() {
         id: true,
         firstName: true,
         lastName: true,
-        username: true,
-        permission: true,
-        DOB: true,
-        truckView: true,
-        mechanicView: true,
-        laborView: true,
-        tascoView: true,
-        image: true,
         terminationDate: true,
-        accountSetup: true,
       },
     });
 
@@ -38,7 +29,21 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(employees);
+    const activeEmployees = employees.filter((employee) => {
+      // Check if terminationDate is null or in the future
+      return (
+        !employee.terminationDate ||
+        new Date(employee.terminationDate) > new Date()
+      );
+    });
+
+    const activeEmployeeNames = activeEmployees.map((employee) => ({
+      id: employee.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+    }));
+
+    return NextResponse.json(activeEmployeeNames);
   } catch (error) {
     console.error("Error fetching employees:", error);
 
