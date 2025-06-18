@@ -44,6 +44,9 @@ export function CreateTimesheetModal({
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
     []
   );
+  const [materialTypes, setMaterialTypes] = useState<
+    { id: string; name: string }[]
+  >([]);
   const [submitting, setSubmitting] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
@@ -89,8 +92,34 @@ export function CreateTimesheetModal({
       stateMileages: [],
     },
   ]);
-  const [tascoLogs, setTascoLogs] = useState([{ description: "" }]);
-  const [equipmentLogs, setEquipmentLogs] = useState([{ description: "" }]);
+  // Tasco log type
+  type TascoLogDraft = {
+    shiftType: "ABCD Shift" | "E Shift" | "F Shift" | "";
+    laborType: "Equipment Operator" | "Labor" | "";
+    materialType: string; // id from materialTypes
+    loadQuantity: string;
+    refuelLogs: { gallonsRefueled: string }[];
+    equipment: { id: string; name: string }[];
+  };
+  const [tascoLogs, setTascoLogs] = useState<TascoLogDraft[]>([
+    {
+      shiftType: "",
+      laborType: "",
+      materialType: "",
+      loadQuantity: "",
+      refuelLogs: [],
+      equipment: [],
+    },
+  ]);
+  // Labor log type
+  type LaborLogDraft = {
+    equipment: { id: string; name: string };
+    startTime: string;
+    endTime: string;
+  };
+  const [laborLogs, setLaborLogs] = useState<LaborLogDraft[]>([
+    { equipment: { id: "", name: "" }, startTime: "", endTime: "" },
+  ]);
 
   // Equipment/project options for maintenance logs
   const [maintenanceEquipmentOptions, setMaintenanceEquipmentOptions] =
@@ -209,6 +238,18 @@ export function CreateTimesheetModal({
     fetchCostCodes();
   }, [form.jobsite.id]);
 
+  async function fetchMaterialTypes() {
+    try {
+      const res = await fetch("/api/getMaterialTypes");
+      if (!res.ok) throw new Error("Failed to fetch material types");
+      const data = await res.json();
+      setMaterialTypes(data);
+    } catch (error) {
+      console.error(error);
+      setMaterialTypes([]);
+    }
+  }
+
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
@@ -234,6 +275,19 @@ export function CreateTimesheetModal({
     setSubmitting(false);
     onClose();
   }
+
+  // Fetch material types and equipment when TASCO is selected
+  useEffect(() => {
+    if (form.workType === "TASCO") {
+      fetchMaterialTypes();
+      // Optionally re-fetch equipment if needed
+      if (equipment.length === 0) {
+        fetch("/api/getAllEquipment").then(async (res) => {
+          if (res.ok) setEquipment(await res.json());
+        });
+      }
+    }
+  }, [form.workType]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -379,12 +433,22 @@ export function CreateTimesheetModal({
 
           {/* Conditional log sections */}
           {form.workType === "MECHANIC" && (
-            <div className="col-span-2 border rounded p-4 mt-2">
-              <h3 className="font-semibold mb-2">Maintenance Logs</h3>
+            <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
+              <div className="mb-4">
+                <h3 className="font-semibold text-xl mb-1">
+                  Additional Maintenance Details
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Fill out the additional details for this timesheet to report
+                  more accurate maintenance logs.
+                </p>
+              </div>
               {maintenanceLogs.map((log, idx) => (
-                <>
-                  {/* Equipment*/}
-                  <div key={idx} className="flex gap-2 mb-2 items-end">
+                <div
+                  key={idx}
+                  className="flex flex-col gap-6 mb-4 border-b pb-4"
+                >
+                  <div className="flex gap-4 items-end py-2">
                     <Combobox
                       label="Equipment"
                       options={maintenanceEquipmentOptions}
@@ -400,6 +464,7 @@ export function CreateTimesheetModal({
                     />
                     <Input
                       type="time"
+                      placeholder="Start Time"
                       value={log.startTime}
                       onChange={(e) => {
                         const updated = [...maintenanceLogs];
@@ -411,6 +476,7 @@ export function CreateTimesheetModal({
                     />
                     <Input
                       type="time"
+                      placeholder="End Time"
                       value={log.endTime}
                       onChange={(e) => {
                         const updated = [...maintenanceLogs];
@@ -422,16 +488,17 @@ export function CreateTimesheetModal({
                     <Button
                       type="button"
                       variant="destructive"
+                      size="icon"
                       onClick={() =>
                         setMaintenanceLogs(
                           maintenanceLogs.filter((_, i) => i !== idx)
                         )
                       }
                     >
-                      Remove
+                      <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
                     </Button>
                   </div>
-                </>
+                </div>
               ))}
               <Button
                 type="button"
@@ -451,7 +518,6 @@ export function CreateTimesheetModal({
               </Button>
             </div>
           )}
-
           {form.workType === "TRUCK_DRIVER" && (
             <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
               <div className="mb-4">
@@ -463,9 +529,11 @@ export function CreateTimesheetModal({
                   more accurate trucking logs.
                 </p>
               </div>
-
               {truckingLogs.map((log, idx) => (
-                <div key={idx} className="flex flex-col gap-6">
+                <div
+                  key={idx}
+                  className="flex flex-col gap-6 mb-4 border-b pb-4"
+                >
                   <div className="flex gap-4 items-end py-2">
                     <Combobox
                       options={equipmentOptions}
@@ -560,6 +628,7 @@ export function CreateTimesheetModal({
                         <Button
                           type="button"
                           variant="destructive"
+                          size="icon"
                           onClick={() => {
                             const updated = [...truckingLogs];
                             updated[idx].equipmentHauled = updated[
@@ -865,79 +934,284 @@ export function CreateTimesheetModal({
               ))}
             </div>
           )}
-
           {form.workType === "TASCO" && (
-            <div className="col-span-2 border rounded p-4 mt-2">
-              <h3 className="font-semibold mb-2">Tasco Logs</h3>
+            <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
+              <div className="mb-4">
+                <h3 className="font-semibold text-xl mb-1">
+                  Additional Tasco Details
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Fill out the additional details for this timesheet to report
+                  more accurate Tasco logs.
+                </p>
+              </div>
               {tascoLogs.map((log, idx) => (
-                <div key={idx} className="flex gap-2 mb-2">
-                  <Input
-                    type="text"
-                    placeholder="Description"
-                    value={log.description}
-                    onChange={(e) => {
-                      const updated = [...tascoLogs];
-                      updated[idx].description = e.target.value;
-                      setTascoLogs(updated);
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() =>
-                      setTascoLogs(tascoLogs.filter((_, i) => i !== idx))
-                    }
-                  >
-                    Remove
-                  </Button>
+                <div key={idx} className="flex flex-col gap-6 mb-4  pb-4">
+                  <div className="flex gap-4 items-end py-2">
+                    <Select
+                      value={log.shiftType}
+                      onValueChange={(val) => {
+                        const updated = [...tascoLogs];
+                        updated[idx].shiftType =
+                          val as TascoLogDraft["shiftType"];
+                        setTascoLogs(updated);
+                      }}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Shift Type*" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ABCD Shift">ABCD Shift</SelectItem>
+                        <SelectItem value="E Shift">E Shift</SelectItem>
+                        <SelectItem value="F Shift">F Shift</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={log.laborType}
+                      onValueChange={(val) => {
+                        const updated = [...tascoLogs];
+                        updated[idx].laborType =
+                          val as TascoLogDraft["laborType"];
+                        setTascoLogs(updated);
+                      }}
+                    >
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Labor Type*" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Equipment Operator">
+                          Equipment Operator
+                        </SelectItem>
+                        <SelectItem value="Labor">Labor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Combobox
+                      options={materialTypes.map((m) => ({
+                        value: m.id,
+                        label: m.name,
+                      }))}
+                      value={log.materialType}
+                      onChange={(val) => {
+                        const updated = [...tascoLogs];
+                        updated[idx].materialType = val;
+                        setTascoLogs(updated);
+                      }}
+                      placeholder="Material Type*"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Load Quantity*"
+                      value={log.loadQuantity}
+                      onChange={(e) => {
+                        const updated = [...tascoLogs];
+                        updated[idx].loadQuantity = e.target.value;
+                        setTascoLogs(updated);
+                      }}
+                      className="w-[140px]"
+                    />
+                  </div>
+                  {/* Equipment selection */}
+                  <div className="py-4 border-b mb-2">
+                    <div className="flex flex-row justify-between items-center mb-2">
+                      <label className="block font-semibold text-md">
+                        Equipment
+                      </label>
+                      <Button
+                        type="button"
+                        size="icon"
+                        onClick={() => {
+                          const updated = [...tascoLogs];
+                          updated[idx].equipment.push({ id: "", name: "" });
+                          setTascoLogs(updated);
+                        }}
+                      >
+                        <img
+                          src="/plus-white.svg"
+                          alt="add"
+                          className="w-4 h-4"
+                        />
+                      </Button>
+                    </div>
+                    <div className="flex gap-2 flex-wrap mb-2">
+                      {log.equipment.map((eq, eqIdx) => (
+                        <div
+                          key={eq.id || eqIdx}
+                          className="flex gap-1 items-center"
+                        >
+                          <Combobox
+                            options={equipmentOptions}
+                            value={eq.id}
+                            onChange={(val, option) => {
+                              const updated = [...tascoLogs];
+                              updated[idx].equipment[eqIdx] = option
+                                ? { id: option.value, name: option.label }
+                                : { id: "", name: "" };
+                              setTascoLogs(updated);
+                            }}
+                            placeholder="Select equipment"
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => {
+                              const updated = [...tascoLogs];
+                              updated[idx].equipment = updated[
+                                idx
+                              ].equipment.filter((_, i) => i !== eqIdx);
+                              setTascoLogs(updated);
+                            }}
+                          >
+                            <img
+                              src="/trash.svg"
+                              alt="remove"
+                              className="w-4 h-4"
+                            />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Refuel Logs */}
+                  <div className="py-4 border-b mb-2">
+                    <div className="flex flex-row justify-between items-center mb-2">
+                      <label className="block font-semibold text-md">
+                        Refuel Logs
+                      </label>
+                      <Button
+                        type="button"
+                        size="icon"
+                        onClick={() => {
+                          const updated = [...tascoLogs];
+                          updated[idx].refuelLogs.push({
+                            gallonsRefueled: "",
+                          });
+                          setTascoLogs(updated);
+                        }}
+                      >
+                        <img
+                          src="/plus-white.svg"
+                          alt="add"
+                          className="w-4 h-4"
+                        />
+                      </Button>
+                    </div>
+                    {log.refuelLogs.map((ref, refIdx) => (
+                      <div key={refIdx} className="flex gap-4 mb-2 items-end">
+                        <Input
+                          type="number"
+                          placeholder="Gallons Refueled"
+                          value={ref.gallonsRefueled}
+                          onChange={(e) => {
+                            const updated = [...tascoLogs];
+                            updated[idx].refuelLogs[refIdx].gallonsRefueled =
+                              e.target.value;
+                            setTascoLogs(updated);
+                          }}
+                          className="w-[140px]"
+                        />
+
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => {
+                            const updated = [...tascoLogs];
+                            updated[idx].refuelLogs = updated[
+                              idx
+                            ].refuelLogs.filter((_, i) => i !== refIdx);
+                            setTascoLogs(updated);
+                          }}
+                        >
+                          <img
+                            src="/trash.svg"
+                            alt="remove"
+                            className="w-4 h-4"
+                          />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
-              <Button
-                type="button"
-                onClick={() =>
-                  setTascoLogs([...tascoLogs, { description: "" }])
-                }
-              >
-                Add Tasco Log
-              </Button>
             </div>
           )}
-
           {form.workType === "LABOR" && (
-            <div className="col-span-2 border rounded p-4 mt-2">
-              <h3 className="font-semibold mb-2">Equipment Logs</h3>
-              {equipmentLogs.map((log, idx) => (
-                <div key={idx} className="flex gap-2 mb-2">
-                  <Input
-                    type="text"
-                    placeholder="Description"
-                    value={log.description}
-                    onChange={(e) => {
-                      const updated = [...equipmentLogs];
-                      updated[idx].description = e.target.value;
-                      setEquipmentLogs(updated);
+            <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
+              <div className="mb-4">
+                <h3 className="font-semibold text-xl mb-1">
+                  Additional Labor Details
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Fill out the additional details for this timesheet to report
+                  more accurate labor logs.
+                </p>
+              </div>
+              {laborLogs.map((log, idx) => (
+                <div
+                  key={idx}
+                  className="flex gap-4 items-end py-2 mb-4 border-b pb-4"
+                >
+                  <Combobox
+                    options={equipmentOptions}
+                    value={log.equipment.id}
+                    onChange={(val, option) => {
+                      const updated = [...laborLogs];
+                      updated[idx].equipment = option
+                        ? { id: option.value, name: option.label }
+                        : { id: "", name: "" };
+                      setLaborLogs(updated);
                     }}
+                    placeholder="Select Equipment"
+                  />
+                  <Input
+                    type="time"
+                    placeholder="Start Time"
+                    value={log.startTime}
+                    onChange={(e) => {
+                      const updated = [...laborLogs];
+                      updated[idx].startTime = e.target.value;
+                      setLaborLogs(updated);
+                    }}
+                    className="w-[120px]"
+                  />
+                  <Input
+                    type="time"
+                    placeholder="End Time"
+                    value={log.endTime}
+                    onChange={(e) => {
+                      const updated = [...laborLogs];
+                      updated[idx].endTime = e.target.value;
+                      setLaborLogs(updated);
+                    }}
+                    className="w-[120px]"
                   />
                   <Button
                     type="button"
                     variant="destructive"
+                    size="icon"
                     onClick={() =>
-                      setEquipmentLogs(
-                        equipmentLogs.filter((_, i) => i !== idx)
-                      )
+                      setLaborLogs(laborLogs.filter((_, i) => i !== idx))
                     }
                   >
-                    Remove
+                    <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
                   </Button>
                 </div>
               ))}
               <Button
                 type="button"
                 onClick={() =>
-                  setEquipmentLogs([...equipmentLogs, { description: "" }])
+                  setLaborLogs([
+                    ...laborLogs,
+                    {
+                      equipment: { id: "", name: "" },
+                      startTime: "",
+                      endTime: "",
+                    },
+                  ])
                 }
               >
-                Add Equipment Log
+                Add Labor Log
               </Button>
             </div>
           )}
