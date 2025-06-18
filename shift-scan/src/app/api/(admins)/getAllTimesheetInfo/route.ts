@@ -71,7 +71,7 @@ export async function GET(req: Request) {
         updatedAt: true,
         workType: true,
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json({
