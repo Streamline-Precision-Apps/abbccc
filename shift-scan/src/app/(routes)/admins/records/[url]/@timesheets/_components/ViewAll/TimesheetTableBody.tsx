@@ -30,6 +30,17 @@ export function TimesheetTableBody({
   onDeleteClick,
   deletingId,
 }: TimesheetTableBodyProps) {
+  if (timesheets.length === 0) {
+    return (
+      <TableBody>
+        <TableRow>
+          <TableCell colSpan={14} className="text-center py-4 text-gray-400">
+            No timesheets found.
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    );
+  }
   return (
     <TableBody className="divide-y divide-gray-200 bg-white">
       {timesheets.map((timesheet) => (

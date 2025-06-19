@@ -104,8 +104,8 @@ export default function ViewAllTimesheets({
   }
 
   return (
-    <div className="h-full w-full flex flex-col grid-rows-[1fr_50px] rounded-lg  shadow-sm bg-white">
-      <HorizontalScrollArea className="h-[200px] w-[350px] rounded-t-lg  pr-2  overflow-hidden">
+    <div className="h-full w-full flex flex-col grid-rows-[1fr_50px] rounded-lg bg-white bg-opacity-20 shadow-sm">
+      <HorizontalScrollArea className="h-[200px] w-[350px] rounded-t-lg  pr-2  overflow-hidden bg-white">
         <Table className="min-w-max  text-left">
           <TableHeader className="sticky top-0 z-10 ">
             <TimesheetTableHeader headers={timesheetHeaders} />

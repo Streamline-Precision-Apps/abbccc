@@ -70,6 +70,9 @@ export default function AdminTimesheets() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
+    null
+  );
 
   // Move fetch functions out for reuse
   const fetchTimesheets = async () => {
@@ -148,41 +151,10 @@ export default function AdminTimesheets() {
     );
   });
 
-  // Sort filteredTimesheets before pagination
+  // Use filteredTimesheets, sorted by date descending
   const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
-    if (!sortField) return 0;
-    let aValue = a[sortField];
-    let bValue = b[sortField];
-    // Handle nested fields
-    if (sortField === "User") {
-      aValue = a.User.firstName + " " + a.User.lastName;
-      bValue = b.User.firstName + " " + b.User.lastName;
-    } else if (sortField === "Jobsite") {
-      aValue = a.Jobsite.name;
-      bValue = b.Jobsite.name;
-    } else if (sortField === "CostCode") {
-      aValue = a.CostCode.name;
-      bValue = b.CostCode.name;
-    }
-    if (aValue == null) return 1;
-    if (bValue == null) return -1;
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      if (sortDirection === "asc") {
-        return aValue.localeCompare(bValue);
-      } else {
-        return bValue.localeCompare(aValue);
-      }
-    }
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    return 0;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
-
-  // implement timesheet deletion functionality
-
-  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
-    null
-  );
 
   // implement timesheet approval and rejection functionality
   // implement timesheet editing functionality
@@ -209,6 +181,12 @@ export default function AdminTimesheets() {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  // Handler to reset page to 1 when page size changes
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPage(1);
+    setPageSize(Number(e.target.value));
   };
 
   return (
@@ -283,6 +261,13 @@ export default function AdminTimesheets() {
             </PopoverContent>
           </Popover>
         </div>
+        <div className=" w-[300px] h-full items-center flex text-xs text-white">
+          {pageSize === sortedTimesheets.length && (
+            <>
+              {pageSize} of {total} rows
+            </>
+          )}
+        </div>
         <div className="w-full flex flex-row max-w-[160px] h-full">
           <Texts
             position={"left"}
@@ -343,7 +328,7 @@ export default function AdminTimesheets() {
           </Button>
         </div>
       </div>
-      <div className="h-full w-full px-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+      <div className="h-full w-full px-4 overflow-auto ">
         <TimesheetViewAll
           timesheets={sortedTimesheets}
           loading={loading}
@@ -352,9 +337,7 @@ export default function AdminTimesheets() {
           total={total}
           pageSize={pageSize}
           pageSizeOptions={pageSizeOptions}
-          onPageSizeChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setPageSize(Number(e.target.value))
-          }
+          onPageSizeChange={handlePageSizeChange}
           onPageChange={setPage}
           onDeleteClick={handleDeleteClick}
           deletingId={deletingId}
