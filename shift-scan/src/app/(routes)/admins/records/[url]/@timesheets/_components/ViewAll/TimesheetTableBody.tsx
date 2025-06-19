@@ -21,9 +21,15 @@ interface Timesheet {
 
 interface TimesheetTableBodyProps {
   timesheets: Timesheet[];
+  onDeleteClick?: (id: string) => void;
+  deletingId?: string | null;
 }
 
-export function TimesheetTableBody({ timesheets }: TimesheetTableBodyProps) {
+export function TimesheetTableBody({
+  timesheets,
+  onDeleteClick,
+  deletingId,
+}: TimesheetTableBodyProps) {
   return (
     <TableBody className="divide-y divide-gray-200 bg-white">
       {timesheets.map((timesheet) => (
@@ -71,8 +77,8 @@ export function TimesheetTableBody({ timesheets }: TimesheetTableBodyProps) {
               className="border-none w-fit h-full"
             >
               <img
-                src="/export.svg"
-                alt="export Form"
+                src="/eye-blue.svg"
+                alt="View Form"
                 className="h-4 w-4 mr-4"
               />
             </Button>
@@ -90,9 +96,13 @@ export function TimesheetTableBody({ timesheets }: TimesheetTableBodyProps) {
             <Button
               size={"icon"}
               variant={"link"}
-              className="border-none w-fit h-full justify-center"
+              className={`border-none w-fit h-full justify-center ${
+                deletingId === timesheet.id ? "animate-pulse" : ""
+              }`}
+              onClick={() => onDeleteClick && onDeleteClick(timesheet.id)}
+              aria-label="Delete Timesheet"
             >
-              <img src="/trash-red.svg" alt="Edit Form" className="h-4 w-4" />
+              <img src="/trash-red.svg" alt="Delete Form" className="h-4 w-4" />
             </Button>
           </TableCell>
         </TableRow>

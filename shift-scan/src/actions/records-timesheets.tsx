@@ -217,3 +217,16 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
 }
+
+export async function adminDeleteTimesheet(id: string) {
+  try {
+    await prisma.timeSheet.delete({
+      where: { id },
+    });
+    revalidateTag("timesheets");
+    return true;
+  } catch (error) {
+    console.error(`Error deleting timesheet with ID ${id}:`, error);
+    throw error;
+  }
+}

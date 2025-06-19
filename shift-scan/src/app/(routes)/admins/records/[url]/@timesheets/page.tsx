@@ -18,6 +18,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
+import { adminDeleteTimesheet } from "@/actions/records-timesheets";
+import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 
 export type Timesheet = {
   id: string;
@@ -66,6 +68,8 @@ export default function AdminTimesheets() {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   function handleCreateSubmit(newTimesheet: Timesheet) {
     // Option 1: Add to state
@@ -175,6 +179,26 @@ export default function AdminTimesheets() {
   // implement timesheet approval and rejection functionality
   // implement timesheet editing functionality
   // implement timesheet download / export functionality
+
+  const handleDeleteClick = (id: string) => {
+    setDeletingId(id);
+  };
+  const handleDeleteCancel = () => {
+    setDeletingId(null);
+  };
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
+    try {
+      await adminDeleteTimesheet(deletingId);
+      setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
+      setDeletingId(null);
+    } catch (e) {
+      // Optionally show error
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div>
@@ -324,8 +348,18 @@ export default function AdminTimesheets() {
               setPageSize(Number(e.target.value))
             }
             onPageChange={setPage}
+            onDeleteClick={handleDeleteClick}
+            deletingId={deletingId}
+            isDeleting={isDeleting}
           />
         </Holds>
+        <TimesheetDeleteModal
+          isOpen={!!deletingId}
+          onClose={handleDeleteCancel}
+          onDelete={handleDeleteConfirm}
+          isDeleting={isDeleting}
+          itemName={deletingId || undefined}
+        />
       </Holds>
     </div>
   );
