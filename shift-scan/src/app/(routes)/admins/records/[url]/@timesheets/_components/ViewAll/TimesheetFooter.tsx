@@ -23,7 +23,7 @@ export function TimesheetFooter({
   timesheetsLength,
 }: TimesheetFooterProps) {
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-between px-4  w-full border-t border-gray-200 bg-white">
+    <div className="flex min-w-0 flex-wrap items-center justify-between px-4  w-full border-t border-gray-200 rounded-b-lg bg-white">
       <Texts size="xs" text="black">
         Showing {timesheetsLength} of {total} timesheets (Page {page} of{" "}
         {totalPages})

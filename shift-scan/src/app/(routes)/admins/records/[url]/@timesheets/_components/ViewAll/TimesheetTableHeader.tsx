@@ -15,7 +15,7 @@ export function TimesheetTableHeader({
       {headers.map((header) => (
         <TableHead
           key={header}
-          className="px-4 py-3 font-semibold text-gray-700 whitespace-nowrap border-r border-gray-200 last:border-r-0"
+          className="px-4 py-3 font-semibold text-gray-700 whitespace-nowrap border-r border-gray-200 last:border-r-0 text-xs"
         >
           {loading ? <Skeleton className="h-5 w-20" /> : header}
         </TableHead>

@@ -111,7 +111,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       const truckingLog = await tx.truckingLog.create({
         data: {
           timeSheetId: timesheet.id,
-          laborType: "trucking",
+          laborType: "truckDriver",
           equipmentId: tlog.equipmentId,
           startingMileage: tlog.startingMileage
             ? parseInt(tlog.startingMileage)

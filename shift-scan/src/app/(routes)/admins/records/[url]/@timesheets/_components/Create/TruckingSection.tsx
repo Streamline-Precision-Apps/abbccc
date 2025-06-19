@@ -1,6 +1,7 @@
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { StateOptions } from "@/data/stateValues";
 import {
   Select,
   SelectTrigger,
@@ -372,17 +373,25 @@ export function TruckingSection({
             </div>
             {log.stateMileages.map((sm, smIdx) => (
               <div key={smIdx} className="flex gap-4 mb-2 items-end">
-                <Input
-                  type="text"
-                  placeholder="State"
+                <Select
                   value={sm.state}
-                  onChange={(e) => {
+                  onValueChange={(val) => {
                     const updated = [...truckingLogs];
-                    updated[idx].stateMileages[smIdx].state = e.target.value;
+                    updated[idx].stateMileages[smIdx].state = val;
                     setTruckingLogs(updated);
                   }}
-                  className="w-[200px]"
-                />
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="State" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {StateOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
                   type="number"
                   placeholder="State Line Mileage"

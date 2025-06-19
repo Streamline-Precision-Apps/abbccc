@@ -7,9 +7,15 @@ import { TascoSection } from "./TascoSection";
 import { LaborSection } from "./LaborSection";
 import GeneralSection from "./GeneralSection";
 import { adminCreateTimesheet } from "@/actions/records-timesheets";
-import { Id } from "react-beautiful-dnd";
+import { toast } from "sonner";
 
-export function CreateTimesheetModal({ onClose }: { onClose: () => void }) {
+export function CreateTimesheetModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) {
   const [form, setForm] = useState({
     date: new Date(),
     user: { id: "", firstName: "", lastName: "" },
@@ -257,11 +263,14 @@ export function CreateTimesheetModal({ onClose }: { onClose: () => void }) {
         laborLogs,
       };
       await adminCreateTimesheet(data);
+      toast.success("Timesheet created successfully!");
+      onCreated(); // Notify parent to refetch
+      onClose();
     } catch (error) {
       console.error(error);
+      toast.error("Failed to create timesheet.");
     } finally {
       setSubmitting(false);
-      onClose();
     }
   };
 
