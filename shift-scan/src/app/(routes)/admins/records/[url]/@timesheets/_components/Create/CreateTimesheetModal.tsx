@@ -7,16 +7,11 @@ import { TascoSection } from "./TascoSection";
 import { LaborSection } from "./LaborSection";
 import GeneralSection from "./GeneralSection";
 import { adminCreateTimesheet } from "@/actions/records-timesheets";
+import { Id } from "react-beautiful-dnd";
 
-export function CreateTimesheetModal({
-  onSubmit,
-  onClose,
-}: {
-  onSubmit: (data: any) => void;
-  onClose: () => void;
-}) {
+export function CreateTimesheetModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({
-    date: "",
+    date: new Date(),
     user: { id: "", firstName: "", lastName: "" },
     jobsite: { id: "", name: "" },
     costcode: { id: "", name: "" },
@@ -44,11 +39,10 @@ export function CreateTimesheetModal({
   type MaintenanceLogDraft = {
     startTime: string;
     endTime: string;
-    equipmentId: string;
-    equipmentName: string;
+    maintenanceId: string;
   };
   const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceLogDraft[]>(
-    [{ startTime: "", endTime: "", equipmentId: "", equipmentName: "" }]
+    [{ maintenanceId: "", startTime: "", endTime: "" }]
   );
   // Trucking log type
   type TruckingMaterialDraft = {
@@ -112,10 +106,10 @@ export function CreateTimesheetModal({
   const [laborLogs, setLaborLogs] = useState<LaborLogDraft[]>([
     { equipment: { id: "", name: "" }, startTime: "", endTime: "" },
   ]);
-
   // Equipment/project options for maintenance logs
   const [maintenanceEquipmentOptions, setMaintenanceEquipmentOptions] =
     useState<{ value: string; label: string }[]>([]);
+
   useEffect(() => {
     async function fetchEquipment() {
       try {
@@ -123,12 +117,10 @@ export function CreateTimesheetModal({
         if (!res.ok) return setMaintenanceEquipmentOptions([]);
         const data = await res.json();
         // Flatten to [{ value: id, label: Equipment.name }]
-        const options = data
-          .filter((m: any) => m.Equipment && m.Equipment.name)
-          .map((m: any) => ({
-            value: m.Equipment.id,
-            label: m.Equipment.name,
-          }));
+        const options = data.map((m: any) => ({
+          value: m.id,
+          label: `#${m.id}`,
+        }));
         setMaintenanceEquipmentOptions(options);
       } catch {
         setMaintenanceEquipmentOptions([]);
@@ -164,8 +156,8 @@ export function CreateTimesheetModal({
     { value: "TASCO", label: "Tasco" },
   ];
 
+  // Fetch users and jobsites for dropdowns using your real API endpoints
   useEffect(() => {
-    // Fetch users and jobsites for dropdowns using your real API endpoints
     async function fetchDropdowns() {
       const usersRes = await fetch("/api/getAllActiveEmployeeName");
       const jobsitesRes = await fetch("/api/getJobsiteSummary");
@@ -256,16 +248,21 @@ export function CreateTimesheetModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    const data = {
-      form,
-      maintenanceLogs,
-      truckingLogs,
-      tascoLogs,
-      laborLogs,
-    };
-    await adminCreateTimesheet(data);
-    setSubmitting(false);
-    onClose();
+    try {
+      const data = {
+        form,
+        maintenanceLogs,
+        truckingLogs,
+        tascoLogs,
+        laborLogs,
+      };
+      await adminCreateTimesheet(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSubmitting(false);
+      onClose();
+    }
   };
 
   // Fetch material types and equipment when TASCO is selected
@@ -285,12 +282,11 @@ export function CreateTimesheetModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg p-6 min-w-[800px] max-h-[90vh] overflow-y-auto">
         <div className="mb-4">
-          <h2 className="text-xl font-bold ">Submit a New Timesheet</h2>
+          <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
           <p className="text-sm mb-1 text-gray-600">
             Use the form below to enter and submit a new timesheet on behalf of
             an employee.
-            <br /> Ensure all required fields are accurate for payroll and
-            recordkeeping purposes.
+            <br /> Ensure all required fields are accurate.
           </p>
         </div>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">

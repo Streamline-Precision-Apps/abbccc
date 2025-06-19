@@ -5,7 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 export type TimesheetSubmission = {
   form: {
-    date: string;
+    date: Date;
     user: { id: string; firstName: string; lastName: string };
     jobsite: { id: string; name: string };
     costcode: { id: string; name: string };
@@ -16,8 +16,7 @@ export type TimesheetSubmission = {
   maintenanceLogs: Array<{
     startTime: string;
     endTime: string;
-    equipmentId: string;
-    equipmentName: string;
+    maintenanceId: string;
   }>;
   truckingLogs: Array<{
     equipmentId: string;
@@ -66,13 +65,19 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Create the main timesheet
     const timesheet = await tx.timeSheet.create({
       data: {
-        date: new Date(data.form.date),
+        date: data.form.date.toISOString(),
         userId: data.form.user.id,
         jobsiteId: data.form.jobsite.id,
         costcode: data.form.costcode.name, // costcode is referenced by name in schema
-        startTime: new Date(`${data.form.date}T${data.form.startTime}`),
+        startTime: new Date(
+          `${data.form.date.toISOString().slice(0, 10)}T${data.form.startTime}`
+        ),
         endTime: data.form.endTime
-          ? new Date(`${data.form.date}T${data.form.endTime}`)
+          ? new Date(
+              `${data.form.date.toISOString().slice(0, 10)}T${
+                data.form.endTime
+              }`
+            )
           : null,
         workType: data.form.workType as WorkType,
         createdByAdmin: true,
@@ -82,15 +87,19 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
 
     // Maintenance Logs
     for (const log of data.maintenanceLogs) {
-      if (!log.equipmentId) continue;
+      if (!log.maintenanceId) continue;
       await tx.maintenanceLog.create({
         data: {
           timeSheetId: timesheet.id,
           userId: data.form.user.id,
-          maintenanceId: log.equipmentId, // Assuming equipmentId is maintenanceId
-          startTime: new Date(`${data.form.date}T${log.startTime}`),
+          maintenanceId: log.maintenanceId,
+          startTime: new Date(
+            `${data.form.date.toISOString().slice(0, 10)}T${log.startTime}`
+          ),
           endTime: log.endTime
-            ? new Date(`${data.form.date}T${log.endTime}`)
+            ? new Date(
+                `${data.form.date.toISOString().slice(0, 10)}T${log.endTime}`
+              )
             : null,
         },
       });
@@ -204,10 +213,14 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
           jobsiteId: data.form.jobsite.id,
           employeeId: data.form.user.id,
           startTime: log.startTime
-            ? new Date(`${data.form.date}T${log.startTime}`)
+            ? new Date(
+                `${data.form.date.toISOString().slice(0, 10)}T${log.startTime}`
+              )
             : null,
           endTime: log.endTime
-            ? new Date(`${data.form.date}T${log.endTime}`)
+            ? new Date(
+                `${data.form.date.toISOString().slice(0, 10)}T${log.endTime}`
+              )
             : null,
           timeSheetId: timesheet.id,
         },

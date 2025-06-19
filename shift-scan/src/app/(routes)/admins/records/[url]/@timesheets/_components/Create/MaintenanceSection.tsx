@@ -6,8 +6,7 @@ import React from "react";
 export type MaintenanceLogDraft = {
   startTime: string;
   endTime: string;
-  equipmentId: string;
-  equipmentName: string;
+  maintenanceId: string;
 };
 
 type Props = {
@@ -38,16 +37,15 @@ export function MaintenanceSection({
         <div key={idx} className="flex flex-col gap-6 mb-4 border-b pb-4">
           <div className="flex gap-4 items-end py-2">
             <Combobox
-              label="Equipment"
+              label="Project"
               options={maintenanceEquipmentOptions}
-              value={log.equipmentId}
+              value={log.maintenanceId}
               onChange={(val, option) => {
                 const updated = [...maintenanceLogs];
-                updated[idx].equipmentId = val;
-                updated[idx].equipmentName = option ? option.label : "";
+                updated[idx].maintenanceId = val;
                 setMaintenanceLogs(updated);
               }}
-              placeholder="Select equipment"
+              placeholder="Select Project Id"
               filterKeys={["label", "value"]}
             />
             <Input
@@ -94,8 +92,7 @@ export function MaintenanceSection({
             {
               startTime: "",
               endTime: "",
-              equipmentId: "",
-              equipmentName: "",
+              maintenanceId: "",
             },
           ])
         }

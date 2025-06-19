@@ -102,7 +102,7 @@ export default function ViewAllTimesheets({
   }
 
   return (
-    <div className="h-full w-full bg-gray-200 grid grid-rows-[1fr_60px] rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+    <div className="h-full w-full bg-gray-200 grid grid-rows-[1fr_50px] gap-2 rounded-lg border border-gray-200 shadow-sm ">
       <Table className="min-w-max text-sm text-left overflow-x-auto">
         <TableHeader className="sticky top-0 z-10 bg-gray-50 border-b-2 border-gray-300">
           <TimesheetTableHeader headers={timesheetHeaders} />

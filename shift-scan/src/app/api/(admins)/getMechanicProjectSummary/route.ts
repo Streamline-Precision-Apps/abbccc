@@ -22,12 +22,6 @@ export async function GET() {
     const maintenanceSummary = await prisma.maintenance.findMany({
       select: {
         id: true,
-        Equipment: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
       },
     });
 
