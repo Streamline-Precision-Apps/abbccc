@@ -26,7 +26,6 @@ export function TimesheetTableSkeleton({
             <div className="flex gap-2">
               <Skeleton className="h-6 w-6 rounded-full" />
               <Skeleton className="h-6 w-6 rounded-full" />
-              <Skeleton className="h-6 w-6 rounded-full" />
             </div>
           </TableCell>
         </TableRow>

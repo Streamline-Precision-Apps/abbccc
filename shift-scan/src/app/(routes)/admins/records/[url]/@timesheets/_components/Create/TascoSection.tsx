@@ -83,7 +83,7 @@ export function TascoSection({
             </Select>
             <Combobox
               options={materialTypes.map((m) => ({
-                value: m.id,
+                value: m.name,
                 label: m.name,
               }))}
               value={log.materialType}

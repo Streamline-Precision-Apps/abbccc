@@ -110,5 +110,5 @@ model EquipmentHauled {
   jobSiteId     String?
   Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
   JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
-  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id])
+  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
