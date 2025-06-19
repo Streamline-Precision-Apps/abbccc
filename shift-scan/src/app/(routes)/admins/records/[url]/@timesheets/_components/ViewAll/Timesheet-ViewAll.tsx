@@ -42,6 +42,9 @@ export default function ViewAllTimesheets({
   pageSizeOptions,
   onPageSizeChange,
   onPageChange,
+  onDeleteClick,
+  deletingId,
+  isDeleting,
 }: {
   timesheets: Timesheet[];
   loading: boolean;
@@ -52,6 +55,9 @@ export default function ViewAllTimesheets({
   pageSizeOptions: number[];
   onPageSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onPageChange: (page: number) => void;
+  onDeleteClick?: (id: string) => void;
+  deletingId?: string | null;
+  isDeleting?: boolean;
 }) {
   const timesheetHeaders = [
     "ID",
@@ -101,7 +107,11 @@ export default function ViewAllTimesheets({
         <TableHeader className="sticky top-0 z-10 bg-gray-50 border-b-2 border-gray-300">
           <TimesheetTableHeader headers={timesheetHeaders} />
         </TableHeader>
-        <TimesheetTableBody timesheets={timesheets} />
+        <TimesheetTableBody
+          timesheets={timesheets}
+          onDeleteClick={onDeleteClick}
+          deletingId={deletingId}
+        />
       </Table>
       <TimesheetFooter
         page={page}
