@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
+import { toast } from "sonner";
 
 export type Timesheet = {
   id: string;
@@ -70,25 +71,56 @@ export default function AdminTimesheets() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Move fetch functions out for reuse
+  const fetchTimesheets = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`,
+        {
+          next: {
+            tags: ["timesheets"],
+          },
+        }
+      );
+      const data = await response.json();
+      setAllTimesheets(data.timesheets);
+      setTotalPages(data.totalPages);
+      setTotal(data.total);
+    } catch (error) {
+      console.error("Error fetching timesheets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTimesheetsPending = async () => {
+    try {
+      const response = await fetch(`/api/getAllTimesheetsPending`, {
+        next: {
+          tags: ["timesheets"],
+        },
+      });
+      const data = await response.json();
+      setApprovalInbox(data);
+    } catch (error) {
+      console.error("Error fetching timesheets:", error);
+    }
+  };
+
+  // Refetch both after creation
+  const refetchAll = async () => {
+    await fetchTimesheets();
+    await fetchTimesheetsPending();
+  };
+
   useEffect(() => {
-    const fetchTimesheets = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`
-        );
-        const data = await response.json();
-        setAllTimesheets(data.timesheets);
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
-      } catch (error) {
-        console.error("Error fetching timesheets:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchTimesheets();
   }, [page, pageSize]);
+
+  useEffect(() => {
+    fetchTimesheetsPending();
+  }, [allTimesheets]);
 
   // Filter timesheets based on searchTerm and date range
   const filteredTimesheets = allTimesheets.filter((ts) => {
@@ -152,20 +184,6 @@ export default function AdminTimesheets() {
     null
   );
 
-  useEffect(() => {
-    const fetchTimesheetsPending = async () => {
-      try {
-        const response = await fetch(`/api/getAllTimesheetsPending`);
-        const data = await response.json();
-        setApprovalInbox(data);
-      } catch (error) {
-        console.error("Error fetching timesheets:", error);
-      }
-    };
-
-    fetchTimesheetsPending();
-  }, []);
-
   // implement timesheet approval and rejection functionality
   // implement timesheet editing functionality
   // implement timesheet download / export functionality
@@ -183,8 +201,11 @@ export default function AdminTimesheets() {
       await adminDeleteTimesheet(deletingId);
       setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
       setDeletingId(null);
+      toast.success("Timesheet deleted successfully!");
     } catch (e) {
       // Optionally show error
+      console.error("Error deleting timesheet:", e);
+      toast.error("Failed to delete timesheet. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -298,7 +319,10 @@ export default function AdminTimesheets() {
             </div>
           </Button>
           {showCreateModal && (
-            <CreateTimesheetModal onClose={() => setShowCreateModal(false)} />
+            <CreateTimesheetModal
+              onClose={() => setShowCreateModal(false)}
+              onCreated={refetchAll}
+            />
           )}
           <Button className="relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ">
             <div className="flex flex-row items-center">
@@ -319,7 +343,7 @@ export default function AdminTimesheets() {
           </Button>
         </div>
       </div>
-      <div className="h-full w-full px-4 overflow-auto">
+      <div className="h-full w-full px-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         <TimesheetViewAll
           timesheets={sortedTimesheets}
           loading={loading}

@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { Providers } from "../../../../providers";
 import { Holds } from "@/components/(reusable)/holds";
 import PageSelector from "./pageSelector";
+import { Toaster } from "sonner";
 
 export type LayoutProps = {
   forms: ReactNode;
@@ -27,6 +28,12 @@ export default async function PersonnelLayout({
     <Holds className="w-full h-full">
       <NextIntlClientProvider messages={messages}>
         <Providers>
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            duration={3000}
+          />
           {/* Dynamically render children based on the section */}
           {params.url.startsWith("forms") ? (
             forms // Use forms directly as a ReactNode

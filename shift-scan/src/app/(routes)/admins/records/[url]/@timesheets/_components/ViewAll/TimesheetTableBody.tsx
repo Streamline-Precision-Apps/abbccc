@@ -65,6 +65,9 @@ export function TimesheetTableBody({
             {timesheet.status}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
+            {timesheet.workType}
+          </TableCell>
+          <TableCell className="px-4 py-2 border-r border-gray-100">
             {format(timesheet.createdAt, "MM/dd/yyyy")}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
