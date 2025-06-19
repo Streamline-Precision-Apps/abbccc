@@ -27,9 +27,7 @@ export default function TimesheetDeleteModal({
           <AlertTriangle className="text-red-600 mb-3" size={40} />
 
           <Texts size="sm" className="text-gray-700">
-            {`Are you sure you want to delete ${
-              itemName ? `"${itemName}"` : "this timesheet"
-            }? This action cannot be undone.`}
+            {`Are you sure you want to delete this timesheet? This action cannot be undone.`}
           </Texts>
         </div>
 
@@ -43,7 +41,8 @@ export default function TimesheetDeleteModal({
             {isDeleting ? "Deleting..." : "Delete"}
           </Button>
           <Button
-            className="min-w-[120px] p-3 bg-muted text-black"
+            variant="outline"
+            className="min-w-[120px] p-3 bg-app-gray text-black"
             onClick={onClose}
             disabled={isDeleting}
           >

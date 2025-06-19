@@ -1,6 +1,10 @@
 "use client";
 import { Combobox } from "@/components/ui/combobox";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -12,8 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
-import React from "react";
-
+import React, { Dispatch, SetStateAction, use, useEffect } from "react";
 export default function GeneralSection({
   form,
   setForm,
@@ -27,9 +30,49 @@ export default function GeneralSection({
   users,
   jobsites,
 }: {
-  form: any;
-  setForm: (val: any) => void;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  form: {
+    date: Date;
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+    };
+    jobsite: {
+      id: string;
+      name: string;
+    };
+    costcode: {
+      id: string;
+      name: string;
+    };
+    startTime: string;
+    endTime: string;
+    workType: string;
+  };
+  setForm: Dispatch<
+    SetStateAction<{
+      date: Date;
+      user: {
+        id: string;
+        firstName: string;
+        lastName: string;
+      };
+      jobsite: {
+        id: string;
+        name: string;
+      };
+      costcode: {
+        id: string;
+        name: string;
+      };
+      startTime: string;
+      endTime: string;
+      workType: string;
+    }>
+  >;
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   userOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -39,6 +82,11 @@ export default function GeneralSection({
   users: { id: string; firstName: string; lastName: string }[];
   jobsites: { id: string; name: string }[];
 }) {
+  useEffect(() => {
+    if (form.date) {
+      console.log("Selected date:", form.date);
+    }
+  }, [form.date]);
   return (
     <>
       {/* Date */}
@@ -62,7 +110,7 @@ export default function GeneralSection({
               onSelect={(date) => {
                 setForm({
                   ...form,
-                  date: date ? date.toISOString().slice(0, 10) : "",
+                  date: date ? date : new Date(),
                 });
                 setDatePickerOpen(false);
               }}

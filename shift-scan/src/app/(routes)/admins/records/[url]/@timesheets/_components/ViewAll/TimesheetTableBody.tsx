@@ -77,17 +77,6 @@ export function TimesheetTableBody({
               className="border-none w-fit h-full"
             >
               <img
-                src="/eye-blue.svg"
-                alt="View Form"
-                className="h-4 w-4 mr-4"
-              />
-            </Button>
-            <Button
-              variant={"link"}
-              size={"icon"}
-              className="border-none w-fit h-full"
-            >
-              <img
                 src="/formEdit.svg"
                 alt="Edit Form"
                 className="h-4 w-4 mr-4"
