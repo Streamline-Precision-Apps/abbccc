@@ -11,7 +11,7 @@ model TimeSheet {
   comment               String?
   statusComment         String?
   location              String?
-  status                TimeSheetStatus        @default(PENDING)
+  status                ApprovalStatus         @default(PENDING)
   workType              WorkType
   editedByUserId        String?
   newTimeSheetId        String?
@@ -41,26 +41,27 @@ model MaintenanceLog {
 }
 
 model Maintenance {
-  id                     String                @id @default(uuid())
+  id                     String    @id @default(uuid())
   equipmentId            String
   equipmentIssue         String?
-  employeeEquipmentLogId String?               @unique
+  employeeEquipmentLogId String?   @unique
   additionalInfo         String?
   location               String?
   problemDiagnosis       String?
   solution               String?
   totalHoursLaboured     Float?
-  createdAt              DateTime              @default(now())
+  createdAt              DateTime  @default(now())
   priority               Priority
   delay                  DateTime?
   delayReasoning         String?
-  repaired               Boolean               @default(false)
-  selected               Boolean               @default(false)
-  hasBeenDelayed         Boolean               @default(false)
+  repaired               Boolean   @default(false)
+  selected               Boolean   @default(false)
+  hasBeenDelayed         Boolean   @default(false)
   createdBy              String?
-  EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
-  Equipment              Equipment             @relation(fields: [equipmentId], references: [id])
-  MaintenanceLogs        MaintenanceLog[]
+
+  Equipment            Equipment              @relation(fields: [equipmentId], references: [id])
+  MaintenanceLogs      MaintenanceLog[]
+  EmployeeEquipmentLog EmployeeEquipmentLog[]
 }
 
 model TascoLog {
@@ -144,4 +145,15 @@ model RefuelLog {
   EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
   TascoLog               TascoLog?             @relation(fields: [tascoLogId], references: [id])
   TruckingLog            TruckingLog?          @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+}
+
+model EquipmentHauled {
+  id            String      @id @default(uuid())
+  truckingLogId String
+  equipmentId   String?
+  createdAt     DateTime    @default(now())
+  jobSiteId     String?
+  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
+  JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
+  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }

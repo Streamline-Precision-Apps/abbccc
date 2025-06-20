@@ -1,38 +1,37 @@
 model User {
-  id                       String                 @id @default(uuid())
-  firstName                String
-  lastName                 String
-  username                 String                 @unique
-  email                    String                 @unique
-  password                 String
-  signature                String?
-  DOB                      DateTime
-  truckView                Boolean
-  tascoView                Boolean
-  laborView                Boolean
-  mechanicView             Boolean
-  permission               Permission             @default(USER)
-  image                    String?
-  startDate                DateTime?              @default(now())
-  terminationDate          DateTime?
-  accountSetup             Boolean                @default(false)
-  clockedIn                Boolean                @default(false)
-  companyId                String
-  passwordResetTokenId     String?
-  workTypeId               String?
-  AuditLogs                AuditLog[]
-  Contact                  Contacts?
-  EquipmentLogs            EmployeeEquipmentLog[]
-  FormApprovals            FormApproval[]
-  FormSubmissions          FormSubmission[]
-  MaintenanceLogs          MaintenanceLog[]
-  PasswordResetTokens      PasswordResetToken[]
-  PendingApprovalsApproved PendingApproval[]      @relation("PendingApprovalApprovedBy")
-  PendingApprovalsCreated  PendingApproval[]      @relation("PendingApprovalCreatedBy")
-  TimeSheets               TimeSheet[]
-  Company                  Company                @relation(fields: [companyId], references: [id])
-  UserSettings             UserSettings?
-  Crews                    Crew[]                 @relation("CrewToUser")
+  id                   String               @id @default(uuid())
+  firstName            String
+  lastName             String
+  username             String               @unique
+  email                String               @unique
+  password             String
+  signature            String?
+  DOB                  DateTime
+  truckView            Boolean
+  tascoView            Boolean
+  laborView            Boolean
+  mechanicView         Boolean
+  permission           Permission           @default(USER)
+  image                String?
+  startDate            DateTime?            @default(now())
+  terminationDate      DateTime?
+  accountSetup         Boolean              @default(false)
+  clockedIn            Boolean              @default(false)
+  companyId            String
+  passwordResetTokenId String?
+  workTypeId           String?
+  Contact              Contacts?
+  FormApprovals        FormApproval[]
+  FormSubmissions      FormSubmission[]
+  MaintenanceLogs      MaintenanceLog[]
+  PasswordResetTokens  PasswordResetToken[]
+  TimeSheets           TimeSheet[]
+  Company              Company              @relation(fields: [companyId], references: [id])
+  UserSettings         UserSettings?
+  Crews                Crew[]               @relation("CrewToUser")
+  Client               Client[]
+  Equipment            Equipment[]
+  Jobsite              Jobsite[]
 
   @@unique([firstName, lastName, DOB])
   @@index([email])
