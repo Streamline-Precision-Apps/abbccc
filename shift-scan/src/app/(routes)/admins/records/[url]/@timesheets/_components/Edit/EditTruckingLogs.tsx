@@ -65,8 +65,8 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
     <h3 className="font-semibold text-sm mb-2">Trucking Logs</h3>
     {logs.map((log, idx) => (
       <div key={log.id} className="border rounded p-2 mb-2">
-        <div className="grid grid-cols-4 gap-2 mb-2 items-end">
-          <div>
+        <div className="flex flex-row items-end gap-2 mb-2">
+          <div className="flex-1">
             <label className="block text-xs">Equipment ID</label>
             <input
               type="text"
@@ -74,6 +74,8 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               onChange={(e) => onLogChange(idx, "equipmentId", e.target.value)}
               className="border rounded px-2 py-1 w-full"
             />
+          </div>
+          <div>
             {originalLogs[idx] &&
               log.equipmentId !== originalLogs[idx].equipmentId &&
               onUndoLogField && (
@@ -87,7 +89,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 </Button>
               )}
           </div>
-          <div>
+          <div className="flex-1">
             <label className="block text-xs">Starting Mileage</label>
             <input
               type="number"
@@ -97,6 +99,8 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               }
               className="border rounded px-2 py-1 w-full"
             />
+          </div>
+          <div>
             {originalLogs[idx] &&
               log.startingMileage !== originalLogs[idx].startingMileage &&
               onUndoLogField && (
@@ -110,7 +114,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 </Button>
               )}
           </div>
-          <div>
+          <div className="flex-1">
             <label className="block text-xs">Ending Mileage</label>
             <input
               type="number"
@@ -120,6 +124,8 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               }
               className="border rounded px-2 py-1 w-full"
             />
+          </div>
+          <div>
             {originalLogs[idx] &&
               log.endingMileage !== originalLogs[idx].endingMileage &&
               onUndoLogField && (

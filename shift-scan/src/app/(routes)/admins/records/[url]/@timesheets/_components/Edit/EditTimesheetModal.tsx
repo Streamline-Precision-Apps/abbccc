@@ -4,11 +4,16 @@ import { EditMaintenanceLogs } from "./EditMaintenanceLogs";
 import { EditTruckingLogs } from "./EditTruckingLogs";
 import { EditTascoLogs } from "./EditTascoLogs";
 import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
+import { adminUpdateTimesheet } from "@/actions/records-timesheets";
+import EditGeneralSection, {
+  type EditGeneralSectionProps,
+} from "./EditGeneralSection";
 
 interface EditTimesheetModalProps {
   timesheetId: string;
   isOpen: boolean;
   onClose: () => void;
+  onUpdated?: () => void; // Optional callback for parent to refetch
 }
 
 // Types for nested logs
@@ -72,9 +77,9 @@ interface EmployeeEquipmentLog {
 interface TimesheetData {
   id: string;
   date: string;
-  user: { id: string; firstName: string; lastName: string };
-  jobsite: { id: string; name: string };
-  costcode: { id: string; name: string };
+  User: { id: string; firstName: string; lastName: string };
+  Jobsite: { id: string; name: string };
+  CostCode: { id: string; name: string };
   startTime: string;
   endTime: string;
   workType: string;
@@ -88,16 +93,102 @@ interface TimesheetData {
   EmployeeEquipmentLogs: EmployeeEquipmentLog[];
 }
 
+// Utility to merge a new HH:mm time into a date string, but keep the value as 'YYYY-MM-DDTHH:mm' (no Z/ISO)
+function mergeTimeIntoDateString(dateStr: string, time: string) {
+  const dateObj = new Date(dateStr);
+  const [hours, minutes] = time.split(":");
+  dateObj.setHours(Number(hours), Number(minutes), 0, 0);
+  // Return as 'YYYY-MM-DDTHH:mm' (local, no seconds, no Z)
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
+    dateObj.getDate()
+  )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
+}
+
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   timesheetId,
   isOpen,
   onClose,
+  onUpdated,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<TimesheetData | null>(null);
   const [form, setForm] = useState<TimesheetData | null>(null);
   const [originalForm, setOriginalForm] = useState<TimesheetData | null>(null);
+
+  // Dropdown state for users, jobsites, cost codes
+  const [users, setUsers] = useState<
+    { id: string; firstName: string; lastName: string }[]
+  >([]);
+  const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
+  const [costCode, setCostCode] = useState<{ value: string; label: string }[]>(
+    []
+  );
+
+  // Options for comboboxes
+  const userOptions = users.map((u) => ({
+    value: u.id,
+    label: `${u.firstName} ${u.lastName}`,
+  }));
+  const jobsiteOptions = jobsites.map((j) => ({ value: j.id, label: j.name }));
+  const costCodeOptions = costCode.map((c) => ({
+    value: c.value,
+    label: c.label,
+  }));
+
+  // Fetch cost codes when jobsite changes
+  useEffect(() => {
+    async function fetchCostCodes() {
+      if (!form?.Jobsite?.id) {
+        setCostCode([]);
+        if (form)
+          setForm(
+            (prev) => prev && { ...prev, CostCode: { id: "", name: "" } }
+          );
+        return;
+      }
+      try {
+        const res = await fetch(
+          `/api/getAllCostCodesByJobSites?jobsiteId=${form.Jobsite.id}`
+        );
+        if (!res.ok) {
+          setCostCode([]);
+          if (form)
+            setForm(
+              (prev) => prev && { ...prev, CostCode: { id: "", name: "" } }
+            );
+          return;
+        }
+        const codes = await res.json();
+        const options = codes.map((c: { id: string; name: string }) => ({
+          value: c.id,
+          label: c.name,
+        }));
+        setCostCode(options);
+        // Optionally reset costcode if not in new list
+        if (
+          form &&
+          !options.find(
+            (c: { value: string; label: string }) =>
+              c.value === form.CostCode.id
+          )
+        ) {
+          setForm(
+            (prev) => prev && { ...prev, CostCode: { id: "", name: "" } }
+          );
+        }
+      } catch (e) {
+        setCostCode([]);
+        if (form)
+          setForm(
+            (prev) => prev && { ...prev, CostCode: { id: "", name: "" } }
+          );
+      }
+    }
+    fetchCostCodes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form?.Jobsite?.id]);
 
   useEffect(() => {
     if (!isOpen || !timesheetId) return;
@@ -118,12 +209,40 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       .finally(() => setLoading(false));
   }, [isOpen, timesheetId]);
 
+  // Fetch users and jobsites for dropdowns
+  useEffect(() => {
+    async function fetchDropdowns() {
+      const usersRes = await fetch("/api/getAllActiveEmployeeName");
+      const jobsitesRes = await fetch("/api/getJobsiteSummary");
+      const users = await usersRes.json();
+      const jobsite = await jobsitesRes.json();
+      const filteredJobsite = jobsite.filter(
+        (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED"
+      );
+      const filteredJobsites = filteredJobsite.map(
+        (j: { id: string; name: string }) => ({ id: j.id, name: j.name })
+      );
+      setUsers(users);
+      setJobsites(filteredJobsites);
+    }
+    fetchDropdowns();
+  }, []);
+
   // General field change handler
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     if (!form) return;
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if ((name === "startTime" || name === "endTime") && form.date) {
+      // Use the current value or fallback to the date
+      const base = form[name] || form.date;
+      setForm({ ...form, [name]: mergeTimeIntoDateString(base, value) });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   // Log field change handler (for nested logs)
@@ -288,6 +407,88 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     setForm({ ...form, [field]: originalForm[field] });
   };
 
+  // Transform TimesheetData to TimesheetSubmission
+  function toSubmission(form: TimesheetData): any {
+    return {
+      form: {
+        date: new Date(form.date),
+        user: form.User, // ensure user is included
+        jobsite: form.Jobsite, // ensure jobsite is included
+        costcode: form.CostCode, // ensure costcode is included
+        startTime: form.startTime?.slice(11, 16) || "",
+        endTime: form.endTime?.slice(11, 16) || "",
+        workType: form.workType,
+        comment: form.comment,
+      },
+      maintenanceLogs: form.MaintenanceLogs.map((log) => ({
+        startTime: log.startTime?.slice(11, 16) || "",
+        endTime: log.endTime?.slice(11, 16) || "",
+        maintenanceId: log.maintenanceId,
+      })),
+      truckingLogs: form.TruckingLogs.map((log) => ({
+        equipmentId: log.equipmentId,
+        startingMileage: log.startingMileage?.toString() || "",
+        endingMileage: log.endingMileage?.toString() || "",
+        equipmentHauled: log.EquipmentHauled.map((eq) => ({
+          equipment: { id: eq.equipmentId, name: "" },
+          jobsite: { id: eq.jobSiteId, name: "" },
+        })),
+        materials: log.Materials.map((mat) => ({
+          location: mat.LocationOfMaterial,
+          name: mat.name,
+          materialWeight: mat.materialWeight?.toString() || "",
+          lightWeight: mat.lightWeight?.toString() || "",
+          grossWeight: mat.grossWeight?.toString() || "",
+          loadType: mat.loadType || "",
+        })),
+        refuelLogs: log.RefuelLogs.map((ref) => ({
+          gallonsRefueled: ref.gallonsRefueled?.toString() || "",
+          milesAtFueling: ref.milesAtFueling?.toString() || "",
+        })),
+        stateMileages: log.StateMileages.map((sm) => ({
+          state: sm.state,
+          stateLineMileage: sm.stateLineMileage?.toString() || "",
+        })),
+      })),
+      tascoLogs: form.TascoLogs.map((log) => ({
+        shiftType: log.shiftType,
+        laborType: log.laborType,
+        materialType: log.materialType,
+        loadQuantity: log.LoadQuantity?.toString() || "",
+        refuelLogs: log.RefuelLogs.map((ref) => ({
+          gallonsRefueled: ref.gallonsRefueled?.toString() || "",
+        })),
+        equipment: log.Equipment
+          ? [{ id: log.Equipment.id, name: log.Equipment.name }]
+          : [],
+      })),
+      laborLogs: form.EmployeeEquipmentLogs.map((log) => ({
+        equipment: log.Equipment
+          ? { id: log.Equipment.id, name: log.Equipment.name }
+          : { id: log.equipmentId, name: "" },
+        startTime: log.startTime?.slice(11, 16) || "",
+        endTime: log.endTime?.slice(11, 16) || "",
+      })),
+    };
+  }
+
+  // Submit handler
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form) return;
+    setLoading(true);
+    setError(null);
+    try {
+      await adminUpdateTimesheet(timesheetId, toSubmission(form));
+      if (onUpdated) onUpdated();
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "Failed to update timesheet");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -301,120 +502,150 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         {loading && <div className="text-gray-500">Loading...</div>}
         {error && <div className="text-red-500">{error}</div>}
         {form && (
-          <form className="grid grid-cols-2 gap-4">
+          <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit}>
+            {/* General fields: user, jobsite, costcode */}
+            <EditGeneralSection
+              form={form}
+              setForm={setForm}
+              userOptions={userOptions}
+              jobsiteOptions={jobsiteOptions}
+              costCodeOptions={costCodeOptions}
+              users={users}
+              jobsites={jobsites}
+            />
             {/* General fields */}
-            <div>
-              <label className="block text-xs font-semibold mb-1">Date</label>
-              <input
-                type="date"
-                name="date"
-                value={form.date ? form.date.toString().slice(0, 10) : ""}
-                onChange={handleChange}
-                className="border rounded px-2 py-1 w-full"
-              />
-              {originalForm && form.date !== originalForm.date && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => handleUndoField("date")}
-                >
-                  Undo
-                </Button>
-              )}
+            <div className="flex flex-row items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold mb-1">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={form.date ? form.date.toString().slice(0, 10) : ""}
+                  onChange={handleChange}
+                  className="border rounded px-2 py-1 w-full"
+                />
+              </div>
+              <div>
+                {originalForm && form.date !== originalForm.date && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => handleUndoField("date")}
+                  >
+                    Undo
+                  </Button>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1">
-                Start Time
-              </label>
-              <input
-                type="time"
-                name="startTime"
-                value={form.startTime ? form.startTime.slice(11, 16) : ""}
-                onChange={handleChange}
-                className="border rounded px-2 py-1 w-full"
-              />
-              {originalForm && form.startTime !== originalForm.startTime && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => handleUndoField("startTime")}
-                >
-                  Undo
-                </Button>
-              )}
+            <div className="flex flex-row items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold mb-1">
+                  Start Time
+                </label>
+                <input
+                  type="time"
+                  name="startTime"
+                  value={form.startTime ? form.startTime.slice(11, 16) : ""}
+                  onChange={handleChange}
+                  className="border rounded px-2 py-1 w-full"
+                />
+              </div>
+              <div>
+                {originalForm && form.startTime !== originalForm.startTime && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => handleUndoField("startTime")}
+                  >
+                    Undo
+                  </Button>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1">
-                End Time
-              </label>
-              <input
-                type="time"
-                name="endTime"
-                value={form.endTime ? form.endTime.slice(11, 16) : ""}
-                onChange={handleChange}
-                className="border rounded px-2 py-1 w-full"
-              />
-              {originalForm && form.endTime !== originalForm.endTime && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => handleUndoField("endTime")}
-                >
-                  Undo
-                </Button>
-              )}
+            <div className="flex flex-row items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold mb-1">
+                  End Time
+                </label>
+                <input
+                  type="time"
+                  name="endTime"
+                  value={form.endTime ? form.endTime.slice(11, 16) : ""}
+                  onChange={handleChange}
+                  className="border rounded px-2 py-1 w-full"
+                />
+              </div>
+              <div>
+                {originalForm && form.endTime !== originalForm.endTime && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => handleUndoField("endTime")}
+                  >
+                    Undo
+                  </Button>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1">
-                Work Type
-              </label>
-              <select
-                name="workType"
-                value={form.workType || ""}
-                onChange={(e) => handleChange(e as any)}
-                className="border rounded px-2 py-1 w-full"
-              >
-                <option value="">Select work type</option>
-                {workTypeOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              {originalForm && form.workType !== originalForm.workType && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => handleUndoField("workType")}
+            <div className="flex flex-row items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold mb-1">
+                  Work Type
+                </label>
+                <select
+                  name="workType"
+                  value={form.workType || ""}
+                  onChange={(e) => handleChange(e as any)}
+                  className="border rounded px-2 py-1 w-full"
                 >
-                  Undo
-                </Button>
-              )}
+                  <option value="">Select work type</option>
+                  {workTypeOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                {originalForm && form.workType !== originalForm.workType && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => handleUndoField("workType")}
+                  >
+                    Undo
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-semibold mb-1">
-                Comment
-              </label>
-              <textarea
-                name="comment"
-                value={form.comment || ""}
-                onChange={handleChange}
-                className="border rounded px-2 py-1 w-full"
-              />
-              {originalForm && form.comment !== originalForm.comment && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => handleUndoField("comment")}
-                >
-                  Undo
-                </Button>
-              )}
+            <div className="flex flex-row items-end col-span-2">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold mb-1">
+                  Comment
+                </label>
+                <textarea
+                  name="comment"
+                  value={form.comment || ""}
+                  onChange={handleChange}
+                  className="border rounded px-2 py-1 w-full"
+                />
+              </div>
+              <div>
+                {originalForm && form.comment !== originalForm.comment && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => handleUndoField("comment")}
+                  >
+                    Undo
+                  </Button>
+                )}
+              </div>
             </div>
             {/* Related logs - conditional rendering by workType */}
             {showMaintenance && (
@@ -575,15 +806,16 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 variant="outline"
                 className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
                 onClick={onClose}
+                disabled={loading}
               >
                 Cancel
               </Button>
               <Button
-                type="button"
+                type="submit"
                 className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
-                disabled
+                disabled={loading}
               >
-                Save
+                {loading ? "Saving..." : "Save"}
               </Button>
             </div>
           </form>

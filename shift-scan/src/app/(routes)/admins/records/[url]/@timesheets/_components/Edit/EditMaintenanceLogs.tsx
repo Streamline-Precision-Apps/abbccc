@@ -32,41 +32,53 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
         key={log.id}
         className="border rounded p-2 mb-2 grid grid-cols-4 gap-2 items-end"
       >
-        <div>
-          <label className="block text-xs">Start Time</label>
-          <input
-            type="time"
-            value={log.startTime ? log.startTime.slice(11, 16) : ""}
-            onChange={(e) => onLogChange(idx, "startTime", e.target.value)}
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] && log.startTime !== originalLogs[idx].startTime && onUndoLogField && (
-            <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "startTime")}>Undo</Button>
-          )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">Start Time</label>
+            <input
+              type="time"
+              value={log.startTime ? log.startTime.slice(11, 16) : ""}
+              onChange={(e) => onLogChange(idx, "startTime", e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] && log.startTime !== originalLogs[idx].startTime && onUndoLogField && (
+              <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "startTime")}>Undo</Button>
+            )}
+          </div>
         </div>
-        <div>
-          <label className="block text-xs">End Time</label>
-          <input
-            type="time"
-            value={log.endTime ? log.endTime.slice(11, 16) : ""}
-            onChange={(e) => onLogChange(idx, "endTime", e.target.value)}
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] && log.endTime !== originalLogs[idx].endTime && onUndoLogField && (
-            <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "endTime")}>Undo</Button>
-          )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">End Time</label>
+            <input
+              type="time"
+              value={log.endTime ? log.endTime.slice(11, 16) : ""}
+              onChange={(e) => onLogChange(idx, "endTime", e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] && log.endTime !== originalLogs[idx].endTime && onUndoLogField && (
+              <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "endTime")}>Undo</Button>
+            )}
+          </div>
         </div>
-        <div>
-          <label className="block text-xs">Maintenance ID</label>
-          <input
-            type="text"
-            value={log.maintenanceId}
-            onChange={(e) => onLogChange(idx, "maintenanceId", e.target.value)}
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] && log.maintenanceId !== originalLogs[idx].maintenanceId && onUndoLogField && (
-            <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "maintenanceId")}>Undo</Button>
-          )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">Maintenance ID</label>
+            <input
+              type="text"
+              value={log.maintenanceId}
+              onChange={(e) => onLogChange(idx, "maintenanceId", e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] && log.maintenanceId !== originalLogs[idx].maintenanceId && onUndoLogField && (
+              <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "maintenanceId")}>Undo</Button>
+            )}
+          </div>
         </div>
         <Button
           type="button"

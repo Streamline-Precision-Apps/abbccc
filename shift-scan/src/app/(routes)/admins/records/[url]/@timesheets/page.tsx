@@ -359,6 +359,7 @@ export default function AdminTimesheets() {
           timesheetId={editingId || ""}
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
+          onUpdated={refetchAll}
         />
       )}
       <TimesheetDeleteModal
