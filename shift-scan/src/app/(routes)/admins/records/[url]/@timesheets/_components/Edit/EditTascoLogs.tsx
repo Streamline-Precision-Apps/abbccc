@@ -28,6 +28,8 @@ interface EditTascoLogsProps {
     field: string,
     value: any
   ) => void;
+  originalLogs?: TascoLog[];
+  onUndoLogField?: (idx: number, field: keyof TascoLog) => void;
 }
 
 export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
@@ -36,6 +38,8 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   onAddLog,
   onRemoveLog,
   handleNestedLogChange,
+  originalLogs = [],
+  onUndoLogField,
 }) => (
   <div className="col-span-2 mt-4">
     <h3 className="font-semibold text-sm mb-2">Tasco Logs</h3>
@@ -52,6 +56,18 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
             onChange={(e) => onLogChange(idx, "shiftType", e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] &&
+            log.shiftType !== originalLogs[idx].shiftType &&
+            onUndoLogField && (
+              <Button
+                type="button"
+                size="sm"
+                className="ml-2"
+                onClick={() => onUndoLogField(idx, "shiftType")}
+              >
+                Undo
+              </Button>
+            )}
         </div>
         <div>
           <label className="block text-xs">Labor Type</label>
@@ -61,6 +77,18 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
             onChange={(e) => onLogChange(idx, "laborType", e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] &&
+            log.laborType !== originalLogs[idx].laborType &&
+            onUndoLogField && (
+              <Button
+                type="button"
+                size="sm"
+                className="ml-2"
+                onClick={() => onUndoLogField(idx, "laborType")}
+              >
+                Undo
+              </Button>
+            )}
         </div>
         <div>
           <label className="block text-xs">Material Type</label>
@@ -70,6 +98,18 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
             onChange={(e) => onLogChange(idx, "materialType", e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] &&
+            log.materialType !== originalLogs[idx].materialType &&
+            onUndoLogField && (
+              <Button
+                type="button"
+                size="sm"
+                className="ml-2"
+                onClick={() => onUndoLogField(idx, "materialType")}
+              >
+                Undo
+              </Button>
+            )}
         </div>
         <div>
           <label className="block text-xs">Load Quantity</label>
@@ -81,6 +121,18 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
             }
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] &&
+            log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
+            onUndoLogField && (
+              <Button
+                type="button"
+                size="sm"
+                className="ml-2"
+                onClick={() => onUndoLogField(idx, "LoadQuantity")}
+              >
+                Undo
+              </Button>
+            )}
         </div>
         <Button
           type="button"

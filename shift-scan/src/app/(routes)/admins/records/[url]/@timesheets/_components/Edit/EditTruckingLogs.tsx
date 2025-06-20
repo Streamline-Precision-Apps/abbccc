@@ -48,6 +48,8 @@ interface EditTruckingLogsProps {
     field: string,
     value: any
   ) => void;
+  originalLogs?: TruckingLog[];
+  onUndoLogField?: (idx: number, field: keyof TruckingLog) => void;
 }
 
 export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
@@ -56,6 +58,8 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
   onAddLog,
   onRemoveLog,
   handleNestedLogChange,
+  originalLogs = [],
+  onUndoLogField,
 }) => (
   <div className="col-span-2 mt-4">
     <h3 className="font-semibold text-sm mb-2">Trucking Logs</h3>
@@ -70,6 +74,18 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               onChange={(e) => onLogChange(idx, "equipmentId", e.target.value)}
               className="border rounded px-2 py-1 w-full"
             />
+            {originalLogs[idx] &&
+              log.equipmentId !== originalLogs[idx].equipmentId &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "equipmentId")}
+                >
+                  Undo
+                </Button>
+              )}
           </div>
           <div>
             <label className="block text-xs">Starting Mileage</label>
@@ -81,6 +97,18 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               }
               className="border rounded px-2 py-1 w-full"
             />
+            {originalLogs[idx] &&
+              log.startingMileage !== originalLogs[idx].startingMileage &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "startingMileage")}
+                >
+                  Undo
+                </Button>
+              )}
           </div>
           <div>
             <label className="block text-xs">Ending Mileage</label>
@@ -92,6 +120,18 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               }
               className="border rounded px-2 py-1 w-full"
             />
+            {originalLogs[idx] &&
+              log.endingMileage !== originalLogs[idx].endingMileage &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "endingMileage")}
+                >
+                  Undo
+                </Button>
+              )}
           </div>
           <Button
             type="button"
