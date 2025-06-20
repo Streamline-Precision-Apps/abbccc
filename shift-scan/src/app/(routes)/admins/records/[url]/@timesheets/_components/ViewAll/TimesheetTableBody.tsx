@@ -23,12 +23,16 @@ interface TimesheetTableBodyProps {
   timesheets: Timesheet[];
   onDeleteClick?: (id: string) => void;
   deletingId?: string | null;
+  onEditClick?: (id: string) => void;
+  editingId?: string | null;
 }
 
 export function TimesheetTableBody({
   timesheets,
   onDeleteClick,
   deletingId,
+  onEditClick,
+  editingId,
 }: TimesheetTableBodyProps) {
   if (timesheets.length === 0) {
     return (
@@ -88,7 +92,11 @@ export function TimesheetTableBody({
             <Button
               variant={"link"}
               size={"icon"}
-              className="border-none w-fit h-full"
+              className={`border-none w-fit h-full ${
+                editingId === timesheet.id ? "animate-pulse" : ""
+              }`}
+              onClick={() => onEditClick && onEditClick(timesheet.id)}
+              aria-label="Edit Timesheet"
             >
               <img
                 src="/formEdit.svg"
