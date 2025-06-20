@@ -20,6 +20,7 @@ import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal"
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 import { toast } from "sonner";
+import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
 
 export type Timesheet = {
   id: string;
@@ -70,6 +71,11 @@ export default function AdminTimesheets() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
   const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
     null
   );
@@ -342,8 +348,19 @@ export default function AdminTimesheets() {
           onDeleteClick={handleDeleteClick}
           deletingId={deletingId}
           isDeleting={isDeleting}
+          onEditClick={(id: string) => {
+            setEditingId(id);
+            setShowEditModal(true);
+          }}
         />
       </div>
+      {showEditModal && (
+        <EditTimesheetModal
+          timesheetId={editingId || ""}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
       <TimesheetDeleteModal
         isOpen={!!deletingId}
         onClose={handleDeleteCancel}

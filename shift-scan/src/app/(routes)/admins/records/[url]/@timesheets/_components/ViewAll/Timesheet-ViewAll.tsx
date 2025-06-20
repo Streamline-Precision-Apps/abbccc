@@ -45,7 +45,10 @@ export default function ViewAllTimesheets({
   onPageChange,
   onDeleteClick,
   deletingId,
+  editingId,
+  onEditClick,
   isDeleting,
+  isEditing,
 }: {
   timesheets: Timesheet[];
   loading: boolean;
@@ -59,6 +62,9 @@ export default function ViewAllTimesheets({
   onDeleteClick?: (id: string) => void;
   deletingId?: string | null;
   isDeleting?: boolean;
+  onEditClick?: (id: string) => void;
+  editingId?: string | null;
+  isEditing?: boolean;
 }) {
   const timesheetHeaders = [
     "ID",
@@ -114,6 +120,8 @@ export default function ViewAllTimesheets({
             timesheets={timesheets}
             onDeleteClick={onDeleteClick}
             deletingId={deletingId}
+            onEditClick={onEditClick}
+            editingId={editingId}
           />
         </Table>
       </HorizontalScrollArea>
