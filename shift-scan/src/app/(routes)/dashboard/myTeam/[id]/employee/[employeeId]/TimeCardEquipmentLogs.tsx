@@ -27,7 +27,8 @@ type ValidEquipmentLog = EmployeeEquipmentLog & {
   };
   startTime: string;
   endTime: string;
-  Jobsite: JobsiteData; // Add this line
+  Jobsite: JobsiteData;
+  RefuelLogs?: any; // Add RefuelLogs with any type since it can be object or array
 };
 
 type ProcessedEquipmentLog = {
@@ -127,9 +128,70 @@ export default function TimeCardEquipmentLogs({
     ProcessedEquipmentLog[]
   >([]);
 
+  // Helper function to ensure RefuelLogs is always an array
+  const normalizeRefuelLogs = (refuelLogs: any): any[] => {
+    if (!refuelLogs) return [];
+    if (Array.isArray(refuelLogs)) return refuelLogs;
+    // Handle case where RefuelLogs is an object, not an array
+    return [refuelLogs];
+  };
+  // Helper function to safely create date objects
+  const createSafeDate = (
+    dateString: string
+  ): { date: Date | null; formatted: string } => {
+    try {
+      // Check if dateString is valid and not empty
+      if (!dateString || dateString === "Invalid Date") {
+        console.error("Invalid date string provided:", dateString);
+        return { date: null, formatted: "N/A" };
+      }
+
+      // Ensure Z is appended for UTC parsing
+      const utcString = dateString.endsWith("Z")
+        ? dateString
+        : dateString + "Z";
+      const dateUTC = new Date(utcString);
+
+      // Verify the date is valid
+      if (isNaN(dateUTC.getTime())) {
+        console.error("Date parsing resulted in invalid date:", dateString);
+        return { date: null, formatted: "N/A" };
+      }
+
+      // Convert to local time
+      const localDate = new Date(
+        dateUTC.getTime() +
+          dateUTC.getTimezoneOffset() * 60000 -
+          new Date().getTimezoneOffset() * 60000
+      );
+
+      // Format the date
+      const formattedTime = localDate ? format(localDate, "HH:mm") : "N/A";
+
+      return { date: localDate, formatted: formattedTime };
+    } catch (error) {
+      console.error("Error parsing date:", dateString, error);
+      return { date: null, formatted: "N/A" };
+    }
+  };
   const processLogs = useCallback((): ProcessedEquipmentLog[] => {
     return equipmentLogs
-      .flatMap((log) => log.EmployeeEquipmentLogs)
+      .flatMap((log) => {
+        // Apply normalizeRefuelLogs to each EmployeeEquipmentLog's RefuelLogs
+        if (log.EmployeeEquipmentLogs) {
+          // Use a separate array to avoid modifying original data structure
+          return log.EmployeeEquipmentLogs.map((eqLog) => {
+            // Use type assertion for RefuelLogs
+            const logAny = eqLog as any;
+            if (logAny.RefuelLogs && !Array.isArray(logAny.RefuelLogs)) {
+              // Convert to array if it's an object
+              logAny.RefuelLogs = [logAny.RefuelLogs];
+            }
+            return eqLog;
+          });
+        }
+        return [];
+      })
       .filter((log): log is ValidEquipmentLog => {
         return (
           log !== null &&
@@ -140,38 +202,43 @@ export default function TimeCardEquipmentLogs({
         );
       })
       .map((log) => {
-        // Parse as UTC and convert to local time
-        const startUTC = new Date(log.startTime + "Z");
-        const endUTC = new Date(log.endTime + "Z");
-        const start = new Date(
-          startUTC.getTime() +
-            startUTC.getTimezoneOffset() * 60000 -
-            new Date().getTimezoneOffset() * 60000
+        // Safely parse dates
+        const { date: start, formatted: formattedStart } = createSafeDate(
+          log.startTime
         );
-        const end = new Date(
-          endUTC.getTime() +
-            endUTC.getTimezoneOffset() * 60000 -
-            new Date().getTimezoneOffset() * 60000
+        const { date: end, formatted: formattedEnd } = createSafeDate(
+          log.endTime
         );
 
-        const durationMinutes = differenceInMinutes(end, start);
-        const durationHours = differenceInHours(end, start);
-        const remainingMinutes = durationMinutes % 60;
+        // Calculate duration only if both dates are valid
+        let usageTime = "N/A";
+        if (start && end) {
+          try {
+            const durationMinutes = differenceInMinutes(end, start);
+            const durationHours = differenceInHours(end, start);
+            const remainingMinutes = durationMinutes % 60;
+
+            usageTime = `${
+              durationHours > 0 ? `${durationHours} hrs ` : ""
+            }${remainingMinutes} min`;
+          } catch (error) {
+            console.error("Error calculating duration:", error);
+            usageTime = "N/A";
+          }
+        }
 
         return {
           id: log.id,
           equipmentId: log.Equipment!.id,
           equipmentName: log.Equipment!.name,
-          usageTime: `${
-            durationHours > 0 ? `${durationHours} hrs ` : ""
-          }${remainingMinutes} min`,
-          startTime: format(start, "HH:mm"),
-          endTime: format(end, "HH:mm"),
+          usageTime: usageTime,
+          startTime: formattedStart,
+          endTime: formattedEnd,
           jobsite: log.Jobsite?.name || "N/A",
           fullStartTime: log.startTime,
           fullEndTime: log.endTime,
-          originalStart: start,
-          originalEnd: end,
+          originalStart: start || new Date(), // Use default date if null
+          originalEnd: end || new Date(), // Use default date if null
         };
       });
   }, [equipmentLogs]);
@@ -186,24 +253,71 @@ export default function TimeCardEquipmentLogs({
 
   // If you use local state, sync it here
   // setEditedEquipmentLogs(equipmentLogs ?? []);
-
   const handleTimeChange = useCallback(
     (id: string, field: "startTime" | "endTime", timeString: string) => {
       const updatedLogs = editedEquipmentLogs.map((log) => {
         if (log.id === id) {
           try {
+            // Validate that originalStart is a valid date before using it for formatting
+            if (!log.originalStart || isNaN(log.originalStart.getTime())) {
+              console.error("Invalid originalStart date:", log.originalStart);
+              return log;
+            }
+
+            // Extract date part safely
             const datePart = format(log.originalStart, "yyyy-MM-dd");
+
+            // Validate timeString
+            if (
+              !timeString ||
+              !timeString.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
+            ) {
+              console.error("Invalid time string:", timeString);
+              return log;
+            }
+
+            // Parse new date time safely
             const newDateTime = parse(
               `${datePart} ${timeString}`,
               "yyyy-MM-dd HH:mm",
               new Date()
             );
+
+            // Validate parsing result
+            if (isNaN(newDateTime.getTime())) {
+              console.error(
+                "Failed to parse new date time:",
+                datePart,
+                timeString
+              );
+              return log;
+            }
+
+            // Determine start and end dates safely
             const start =
               field === "startTime" ? newDateTime : log.originalStart;
             const end = field === "endTime" ? newDateTime : log.originalEnd;
+
+            // Ensure both dates are valid before calculating duration
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+              console.error("Invalid date for duration calculation:", {
+                start,
+                end,
+              });
+              return {
+                ...log,
+                [field]: timeString,
+                usageTime: "N/A", // Use N/A for invalid duration
+                originalStart: start,
+                originalEnd: end,
+              };
+            }
+
+            // Calculate duration
             const durationMinutes = differenceInMinutes(end, start);
             const durationHours = differenceInHours(end, start);
             const remainingMinutes = durationMinutes % 60;
+
             return {
               ...log,
               [field]: timeString,
@@ -220,25 +334,44 @@ export default function TimeCardEquipmentLogs({
         }
         return log;
       });
-      setEditedEquipmentLogs(updatedLogs);
-
-      // Reconstruct the nested EquipmentLogsData structure with updated times
+      setEditedEquipmentLogs(updatedLogs); // Reconstruct the nested EquipmentLogsData structure with updated times
       const updatedNested = equipmentLogs.map((group) => ({
         ...group,
         EmployeeEquipmentLogs: group.EmployeeEquipmentLogs.map((log) => {
           const updated = updatedLogs.find((l) => l.id === log.id);
           if (updated) {
-            return {
-              ...log,
-              startTime: updated.originalStart
-                .toISOString()
-                .replace("T", " ")
-                .slice(0, 19),
-              endTime: updated.originalEnd
-                .toISOString()
-                .replace("T", " ")
-                .slice(0, 19),
-            };
+            try {
+              // Validate dates before using them
+              const validStart =
+                updated.originalStart &&
+                !isNaN(updated.originalStart.getTime());
+              const validEnd =
+                updated.originalEnd && !isNaN(updated.originalEnd.getTime());
+
+              // Safely format dates or use original values
+              const formattedStart = validStart
+                ? updated.originalStart
+                    .toISOString()
+                    .replace("T", " ")
+                    .slice(0, 19)
+                : log.startTime;
+
+              const formattedEnd = validEnd
+                ? updated.originalEnd
+                    .toISOString()
+                    .replace("T", " ")
+                    .slice(0, 19)
+                : log.endTime;
+
+              return {
+                ...log,
+                startTime: formattedStart,
+                endTime: formattedEnd,
+              };
+            } catch (error) {
+              console.error("Error formatting dates for update:", error);
+              return log;
+            }
           }
           return log;
         }),

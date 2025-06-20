@@ -15,7 +15,6 @@ interface ReviewTabOptionsProps {
   setActiveTab: (tab: TimesheetFilter) => void;
   tabs: TabType[];
   isLoading: boolean;
-  isComplete?: boolean;
 }
 
 export default function ReviewTabOptions({
@@ -23,7 +22,6 @@ export default function ReviewTabOptions({
   setActiveTab,
   tabs,
   isLoading,
-  isComplete = true,
 }: ReviewTabOptionsProps) {
   const t = useTranslations("Clock");
 
@@ -36,7 +34,7 @@ export default function ReviewTabOptions({
           titleImageAlt={tab.label}
           onClick={() => setActiveTab(tab.value)}
           isActive={activeTab === tab.value}
-          isComplete={isComplete}
+          isComplete={true}
           isLoading={isLoading}
           animatePulse={isLoading}
           activeColor="white"

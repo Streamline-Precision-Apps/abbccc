@@ -61,6 +61,24 @@ export default function TimeCardTascoHaulLogs({
 }: TimeCardTascoHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTascoHaulLogs");
 
+  // Debug the received data structure
+  console.log("TimeCardTascoHaulLogs received:", {
+    isReviewYourTeam,
+    tascoHaulLogsType: typeof tascoHaulLogs,
+    isArray: Array.isArray(tascoHaulLogs),
+    dataLength: Array.isArray(tascoHaulLogs)
+      ? tascoHaulLogs.length
+      : "not an array",
+    firstItem:
+      Array.isArray(tascoHaulLogs) && tascoHaulLogs.length > 0
+        ? tascoHaulLogs[0]
+        : "no items",
+    hasTascoLogs:
+      Array.isArray(tascoHaulLogs) &&
+      tascoHaulLogs.length > 0 &&
+      "TascoLogs" in tascoHaulLogs[0],
+  });
+
   // Add state to store local input values to prevent losing focus while typing
   const [inputValues, setInputValues] = useState<
     Record<string, string | number | null>
@@ -108,8 +126,11 @@ export default function TimeCardTascoHaulLogs({
     }
   };
 
+  // Defensive: Ensure tascoHaulLogs is always an array before calling flatMap
+  const safeTascoHaulLogs = Array.isArray(tascoHaulLogs) ? tascoHaulLogs : [];
+
   // Process the tasco haul logs
-  const allTascoHaulLogs: ProcessedTascoHaulLog[] = tascoHaulLogs
+  const allTascoHaulLogs: ProcessedTascoHaulLog[] = safeTascoHaulLogs
     .flatMap((log) => log.TascoLogs)
     .filter(
       (log): log is TascoHaulLogs => log !== null && log?.id !== undefined
@@ -212,7 +233,8 @@ export default function TimeCardTascoHaulLogs({
                     setFocusIds([...focusIds, log.id]);
                   }
                 };
-                return (                  <Holds
+                return (
+                  <Holds
                     key={log.id}
                     background={isFocused ? "orange" : "white"}
                     className={`relative border-black border-[3px] rounded-lg mb-2 
@@ -254,7 +276,8 @@ export default function TimeCardTascoHaulLogs({
                                 </option>
                               ))}
                             </select>
-                          ) : (                            <Inputs
+                          ) : (
+                            <Inputs
                               value={log.shiftType}
                               disabled={true}
                               background={isFocused ? "orange" : "white"}
@@ -263,7 +286,9 @@ export default function TimeCardTascoHaulLogs({
                             />
                           )}
                         </Holds>
-                        <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">                          <Inputs
+                        <Holds className="size-full col-start-1 col-end-2 row-start-2 row-end-3 border-r-[3px] border-black">
+                          {" "}
+                          <Inputs
                             value={log.equipmentId || "N/A"}
                             onChange={(e) =>
                               handleTascoHaulChange(
@@ -297,7 +322,8 @@ export default function TimeCardTascoHaulLogs({
                                 </option>
                               ))}
                             </select>
-                          ) : (                            <Inputs
+                          ) : (
+                            <Inputs
                               value={log.materialType}
                               disabled={true}
                               background={isFocused ? "orange" : "white"}
@@ -307,7 +333,8 @@ export default function TimeCardTascoHaulLogs({
                           )}
                         </Holds>
                         <Holds className="size-full col-start-2 col-end-3 row-start-2 row-end-3">
-                          {" "}                          <Inputs
+                          {" "}
+                          <Inputs
                             type="number"
                             value={getDisplayValue(
                               log.id,
