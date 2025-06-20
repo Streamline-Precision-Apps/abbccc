@@ -31,6 +31,7 @@ import {
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
+import { MaintenanceLogData } from "./TimeCardMechanicLogs";
 import TimeSheetRenderer from "./timeSheetRenderer";
 import { set } from "date-fns";
 import { flattenMaterialLogs } from "./TimeCardTruckingMaterialLogs";
@@ -42,6 +43,7 @@ import { updateTascoRefuelLogs } from "@/actions/myTeamsActions";
 import { updateEquipmentRefuelLogs } from "@/actions/myTeamsActions";
 import { flattenEquipmentLogs, isEquipmentLogsData } from "@/lib/types";
 import { flattenEquipmentRefuelLogs } from "@/lib/types";
+import { useAllEquipment } from "@/hooks/useAllEquipment";
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -70,6 +72,7 @@ export type EmployeeTimesheetData =
   | TascoRefuelLogData
   | EquipmentLogsData
   | EmployeeEquipmentLogWithRefuel[]
+  | MaintenanceLogData
   | null;
 
 export interface EmployeeTimeSheetsProps {
@@ -90,8 +93,8 @@ export interface EmployeeTimeSheetsProps {
       | TimesheetHighlights[]
       | TimesheetHighlights
       | TruckingMaterialHaulLog[]
-      | TruckingMaterialHaulLogData // <-- allow nested structure
-      | TruckingRefuelLogData // <-- allow nested structure
+      | TruckingMaterialHaulLogData
+      | TruckingRefuelLogData
       | EquipmentLogChange[]
       | {
           id: string;
@@ -112,6 +115,7 @@ export interface EmployeeTimeSheetsProps {
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
   fetchTimesheetsForFilter: (filter: TimesheetFilter) => Promise<void>;
+  allEquipment: { id: string; qrId: string; name: string }[]; // <-- Add this
 }
 
 export const EmployeeTimeSheets = ({
@@ -131,6 +135,7 @@ export const EmployeeTimeSheets = ({
   onCancelEdits,
   fetchTimesheetsForDate,
   fetchTimesheetsForFilter,
+  allEquipment,
 }: EmployeeTimeSheetsProps) => {
   const t = useTranslations("MyTeam");
   // Fix: Ensure changes is always an array and never null
@@ -373,17 +378,12 @@ export const EmployeeTimeSheets = ({
         return;
       }
       if (timeSheetFilter === "equipmentRefuelLogs") {
-        // changes is the full nested structure (EmployeeEquipmentLogWithRefuel[])
-        const flattened: { id: string; gallonsRefueled: number | null }[] =
-          flattenEquipmentRefuelLogs(
-            changes as EmployeeEquipmentLogWithRefuel[]
-          );
-        const updates = flattened.filter(
-          (log: { id: string; gallonsRefueled: number | null }) =>
-            log &&
-            log.id &&
-            log.gallonsRefueled !== null &&
-            log.gallonsRefueled !== undefined
+        // changes is now a flat array from the UI
+        const updates = (Array.isArray(changes) ? changes : []).map(
+          (log: any) => ({
+            id: log.id,
+            gallonsRefueled: log.gallonsRefueled,
+          })
         );
         if (updates.length === 0) {
           console.warn("No valid equipment refuel logs to update.");
@@ -767,7 +767,8 @@ export const EmployeeTimeSheets = ({
                 <option value="equipmentLogs">{t("equipmentLogs")}</option>
                 <option value="equipmentRefuelLogs">
                   {t("equipmentRefuelLogs")}
-                </option>
+                </option>{" "}
+                <option value="mechanicLogs">{t("mechanicLogs")}</option>
               </Selects>
             </Holds>
             <Holds
@@ -846,6 +847,7 @@ export const EmployeeTimeSheets = ({
               key={`${edit}-${JSON.stringify(newData)}`}
               filter={timeSheetFilter}
               data={newData}
+              setData={setNewData}
               edit={edit}
               manager={manager}
               onDataChange={handleDataChange}
@@ -854,6 +856,7 @@ export const EmployeeTimeSheets = ({
               setFocusIds={setFocusIds}
               handleSelectEntity={handleSelectEntity}
               isReviewYourTeam={isReviewYourTeam}
+              allEquipment={allEquipment}
             />
           )}
         </Contents>

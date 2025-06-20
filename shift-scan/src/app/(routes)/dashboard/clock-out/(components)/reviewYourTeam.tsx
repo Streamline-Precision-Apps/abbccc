@@ -16,6 +16,8 @@ import TinderSwipe, {
   TinderSwipeRef,
 } from "@/components/(animations)/tinderSwipe";
 import ReviewTabOptions from "./ReviewTabOptions";
+import { useAllEquipment } from "@/hooks/useAllEquipment";
+import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 
 const FILTER_OPTIONS: {
   value: TimesheetFilter | "trucking" | "tasco";
@@ -25,6 +27,7 @@ const FILTER_OPTIONS: {
   { value: "trucking", label: "Trucking" },
   { value: "tasco", label: "TASCO" },
   { value: "equipmentLogs", label: "Equipment Logs" },
+  { value: "mechanicLogs", label: "Mechanic Logs" },
 ];
 
 const TRUCKING_TABS: { value: TimesheetFilter; label: string; icon: string }[] =
@@ -82,13 +85,18 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   const [dataLoaded, setDataLoaded] = useState(false); // Track when data is loaded
   const [focusIndex, setFocusIndex] = useState(0);
   const [filter, setFilter] = useState<
-    "timesheetHighlights" | "trucking" | "tasco" | "equipmentLogs"
+    | "timesheetHighlights"
+    | "trucking"
+    | "tasco"
+    | "equipmentLogs"
+    | "mechanicLogs"
   >("timesheetHighlights");
   const [truckingTab, setTruckingTab] = useState<TimesheetFilter>(
     "truckingEquipmentHaulLogs"
   );
   const [tascoTab, setTascoTab] = useState<TimesheetFilter>("tascoHaulLogs");
   const tinderRef = useRef<TinderSwipeRef>(null);
+  const allEquipment = useAllEquipment();
 
   // Track tab completion status
   const [tabsComplete, setTabsComplete] = useState({
@@ -118,7 +126,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   useEffect(() => {
     const fetchPending = async () => {
       if (!crewMembers.length) {
-        console.log("No crew members provided, marking as loaded");
         setHasNoMembers(true);
         return;
       }
@@ -131,12 +138,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
           body: JSON.stringify({ userIds }),
         });
         const data = await res.json();
-        console.log(
-          "Fetched pending timesheets:",
-          Object.keys(data).length > 0
-            ? `${Object.keys(data).length} users with data`
-            : "No pending timesheets"
-        );
         setPendingTimesheets(data);
         setDataLoaded(true); // Mark data as loaded after successful fetch
       } catch (error) {
@@ -253,45 +254,59 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     return Math.round((totalMinutes / 60) * 10) / 10;
   };
 
-  // Render correct data for filter/tab
-  const getTimesheetData = () => {
-    // Show only timesheets for the focus user that have an endTime
-    const allUserTimesheets = pendingTimesheets[focusUser?.id] || [];
+  // Add state for date (default to today)
+  const today = new Date().toISOString().slice(0, 10);
+  const [date, setDate] = useState<string>(today);
 
-    // Filter out timesheets without an endTime
-    const userTimesheets = allUserTimesheets.filter(
-      (ts) => ts.endTime !== null && ts.endTime !== undefined
-    );
-
-    console.log(
-      `Filtered timesheets: ${userTimesheets.length} of ${allUserTimesheets.length} have endTime`
-    );
-
-    //       TruckingLogs: ts.TruckingLogs?.map(tl => ({
-    //         id: tl.id,
-    //         Equipment: tl.Equipment,
-    //         startingMileage: tl.startingMileage,
-    //         endingMileage: tl.endingMileage
-    //       }))
-    //     }))
-    //   });
-    // }
-
-    if (filter === "trucking") {
-      return { filter: truckingTab, data: userTimesheets };
-    }
-    if (filter === "tasco") {
-      return { filter: tascoTab, data: userTimesheets };
-    }
-    return { filter, data: userTimesheets };
+  // Determine the current filter to use for the hook
+  const getCurrentTimesheetFilter = () => {
+    if (filter === "trucking") return truckingTab;
+    if (filter === "tasco") return tascoTab;
+    return filter as TimesheetFilter;
   };
 
-  // Helper to toggle selection for entity IDs (not employee IDs)
-  const handleSelectEntity = (id: string) => {
-    if (focusIds.includes(id)) {
-      setFocusIds(focusIds.filter((fid) => fid !== id));
-    } else {
-      setFocusIds([...focusIds, id]);
+  // Use the hook for the currently focused user
+  const focusUserId = focusUser?.id;
+  const {
+    data: timesheetData,
+    setData: setTimesheetData,
+    loading: timesheetLoading,
+    error: timesheetError,
+    updateDate: fetchTimesheetsForDate,
+    updateFilter: fetchTimesheetsForFilter,
+  } = useTimesheetData(focusUserId, date, getCurrentTimesheetFilter(), true);
+
+  // Debug effect for timesheetData changes
+  useEffect(() => {
+    if (timesheetData) {
+      console.log('ReviewYourTeam - timesheetData updated:', {
+        filter: getCurrentTimesheetFilter(),
+        isArray: Array.isArray(timesheetData),
+        length: Array.isArray(timesheetData) ? timesheetData.length : 'not array',
+        data: timesheetData,
+      });
+    }
+  }, [timesheetData, getCurrentTimesheetFilter]);
+
+  // When filter/tab changes, update the hook's filter
+  useEffect(() => {
+    if (focusUserId) {
+      fetchTimesheetsForFilter(getCurrentTimesheetFilter());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, truckingTab, tascoTab, focusUserId]);
+
+  // Ensure API is called on tab click (immediate fetch)
+  const handleTruckingTabChange = (tab: TimesheetFilter) => {
+    setTruckingTab(tab);
+    if (focusUserId) {
+      fetchTimesheetsForFilter(tab);
+    }
+  };
+  const handleTascoTabChange = (tab: TimesheetFilter) => {
+    setTascoTab(tab);
+    if (focusUserId) {
+      fetchTimesheetsForFilter(tab);
     }
   };
 
@@ -330,32 +345,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
 
     // Update state
     setTabsComplete(updatedTabsComplete);
-  };
-
-  // Get tab completion status based on the current active tab
-  const getTabCompletionStatus = () => {
-    if (filter === "trucking") {
-      // Check if the current trucking tab is complete
-      if (truckingTab === "truckingEquipmentHaulLogs") {
-        return tabsComplete.truckingEquipmentHaulLogs;
-      } else if (truckingTab === "truckingMaterialHaulLogs") {
-        return tabsComplete.truckingMaterialHaulLogs;
-      } else if (truckingTab === "truckingRefuelLogs") {
-        return tabsComplete.truckingRefuelLogs;
-      } else if (truckingTab === "truckingStateLogs") {
-        return tabsComplete.truckingStateLogs;
-      }
-    } else if (filter === "tasco") {
-      // Check if the current tasco tab is complete
-      if (tascoTab === "tascoHaulLogs") {
-        return tabsComplete.tascoHaulLogs;
-      } else if (tascoTab === "tascoRefuelLogs") {
-        return tabsComplete.tascoRefuelLogs;
-      }
-    }
-
-    // Default to true for other filters
-    return true;
   };
 
   // Clear focusIds when returning from edit (when focusIds changes from non-empty to empty)
@@ -397,6 +386,15 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     }
   }, [hasNoMembers, setEditFilter, handleClick]);
 
+  // Helper to toggle selection for entity IDs (not employee IDs)
+  const handleSelectEntity = (id: string) => {
+    if (focusIds.includes(id)) {
+      setFocusIds(focusIds.filter((fid) => fid !== id));
+    } else {
+      setFocusIds([...focusIds, id]);
+    }
+  };
+
   if (loading) {
     return (
       <Bases>
@@ -435,8 +433,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     );
   }
 
-  // Get data for rendering after all hooks have been called
-  const { filter: renderFilter, data: renderData } = getTimesheetData();
   // Calculate total hours for the focus user from ALL completed timesheets regardless of filter
   const totalHours = calculateTotalHours(
     pendingTimesheets[focusUser?.id]?.filter(
@@ -461,7 +457,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
               </Holds>
               {/* Main content area with TinderSwipe - Fixed height container */}
               <Holds
-                className="row-start-2 row-end-8 w-full"
+                className="row-start-2 row-end-8 w-full items-start" // changed from default to items-start
                 style={{ height: "calc(100% - 10px)" }}
               >
                 <TinderSwipe
@@ -470,11 +466,14 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                   onSwipeRight={handleApprove}
                   swipeThreshold={100}
                 >
-                  <Holds className="h-full w-full">
+                  <Holds className="h-full w-full items-start">
                     {" "}
-                    <div className="flex flex-col h-full bg-orange-200 rounded-lg overflow-hidden border-2 border-black shadow-md">
-                      {" "}                      {/* User info header with name and hours - updated styling */}
-                      <div className="flex justify-between items-center w-full px-2 py-3 bg-orange-200 border-b-2 border-black">
+                    {/* added items-start */}
+                    <div className="flex flex-col h-full w-full bg-orange-200 rounded-lg overflow-hidden border-2 border-black shadow-md">
+                      {/* User info header with name and hours - updated styling */}
+                      <div className="flex justify-between w-full px-2 py-3 bg-orange-200 border-b-2 border-black">
+                        {" "}
+                        {/* removed items-center */}
                         <Titles
                           size="h3"
                           className="text-left font-bold text-gray-800"
@@ -486,7 +485,8 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                         <Texts size="p4" className="font-bold text-gray-800">
                           {totalHours} {t("Hrs")}
                         </Texts>
-                      </div>{" "}                      {/* Filter dropdown with reduced padding */}
+                      </div>
+                      {/* Filter dropdown with reduced padding */}
                       <div className="w-full px-2 pt-2 pb-2 bg-orange-200">
                         <div className="flex flex-row items-center">
                           <select
@@ -501,7 +501,8 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                             ))}
                           </select>
                         </div>
-                      </div>{" "}                      {/* Tabs for Trucking/TASCO using the new NewTab component */}{" "}
+                      </div>
+                      {/* Tabs for Trucking/TASCO using the new NewTab component */}
                       {(filter === "trucking" || filter === "tasco") && (
                         <div className="w-full px-2 pt-1 pb-1 bg-orange-200">
                           <Holds className="h-12">
@@ -511,20 +512,20 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                               }
                               setActiveTab={
                                 filter === "trucking"
-                                  ? setTruckingTab
-                                  : setTascoTab
+                                  ? handleTruckingTabChange
+                                  : handleTascoTabChange
                               }
                               tabs={
                                 filter === "trucking"
                                   ? TRUCKING_TABS
                                   : TASCO_TABS
                               }
-                              isLoading={loading}
-                              isComplete={getTabCompletionStatus()}
+                              isLoading={timesheetLoading}
                             />
                           </Holds>
                         </div>
-                      )}{" "}                      <div
+                      )}
+                      <div
                         className="flex-1 w-full bg-orange-200 rounded-b-lg px-2 py-2"
                         style={{
                           maxHeight: "calc(100% - 120px)",
@@ -532,25 +533,24 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                           overflowY: "auto",
                         }}
                       >
-                        <div className="bg-white rounded-lg w-full h-full">
-                          <TimeSheetRenderer
-                            filter={renderFilter}
-                            data={renderData}
-                            edit={false}
-                            manager={manager}
-                            onDataChange={() => {}}
-                            date={new Date().toISOString().slice(0, 10)}
-                            focusIds={focusIds}
-                            setFocusIds={setFocusIds}
-                            handleSelectEntity={handleSelectEntity}
-                            isReviewYourTeam={true}
-                          />
-                        </div>
+                        <TimeSheetRenderer
+                          filter={getCurrentTimesheetFilter()}
+                          data={timesheetData}
+                          edit={false}
+                          manager={manager}
+                          onDataChange={() => {}}
+                          date={date}
+                          focusIds={focusIds}
+                          setFocusIds={setFocusIds}
+                          handleSelectEntity={handleSelectEntity}
+                          isReviewYourTeam={true}
+                          allEquipment={allEquipment}
+                        />
                       </div>
                     </div>
                   </Holds>
                 </TinderSwipe>
-              </Holds>{" "}
+              </Holds>
               {/* Action Buttons - improved styling */}
               <Holds className="row-start-8 row-end-9 w-full px-4 py-2">
                 <div className="flex flex-row w-full justify-between gap-4">

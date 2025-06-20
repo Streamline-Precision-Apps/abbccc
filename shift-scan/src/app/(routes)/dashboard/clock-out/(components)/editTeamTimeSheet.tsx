@@ -26,6 +26,7 @@ import {
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
+import { MaintenanceLogData } from "../../myTeam/[id]/employee/[employeeId]/TimeCardMechanicLogs";
 import {
   updateTruckingHaulLogs,
   updateTimesheetHighlights,
@@ -45,6 +46,7 @@ import { z } from "zod";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { useAllEquipment } from "@/hooks/useAllEquipment";
 
 // Zod schema for Team data
 const countSchema = z.object({
@@ -162,7 +164,6 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
   const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
 
-
   const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
     editFilter || "timesheetHighlights"
   );
@@ -181,6 +182,8 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
     updateDate: fetchTimesheetsForDate,
     updateFilter: fetchTimesheetsForFilter,
   } = useTimesheetData(employeeId, date, timeSheetFilter);
+
+  const allEquipment = useAllEquipment();
 
   const loading = loadingEmployee || loadingTimesheets;
 
@@ -472,6 +475,58 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
               console.error("Invalid changes type");
             }
             break;
+
+          // Handle mechanicLogs (MaintenanceLog data)
+          case "mechanicLogs": {
+            if (!Array.isArray(changes)) {
+              console.warn("Invalid maintenance log changes");
+              return;
+            }
+
+            // Create a server action to update MaintenanceLog data
+            const updateMaintenanceLogs = async (logs: any[]) => {
+              const formData = new FormData();
+              logs.forEach((log, index) => {
+                formData.append(`logs[${index}].id`, log.id);
+                formData.append(
+                  `logs[${index}].startTime`,
+                  log.startTime ? new Date(log.startTime).toISOString() : ""
+                );
+                formData.append(
+                  `logs[${index}].endTime`,
+                  log.endTime ? new Date(log.endTime).toISOString() : ""
+                );
+              });
+
+              try {
+                const response = await fetch("/api/updateMaintenanceLogs", {
+                  method: "POST",
+                  body: formData,
+                });
+
+                if (!response.ok) {
+                  throw new Error("Failed to update maintenance logs");
+                }
+
+                const result = await response.json();
+                return { success: true, data: result };
+              } catch (error) {
+                console.error("Error updating maintenance logs:", error);
+                return { success: false, error };
+              }
+            };
+
+            const result = await updateMaintenanceLogs(changes);
+
+            if (result?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            }
+            break;
+          }
         }
 
         await Promise.all([
@@ -547,6 +602,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                     onCancelEdits={onCancelEdits}
                     fetchTimesheetsForDate={fetchTimesheetsForDate}
                     fetchTimesheetsForFilter={fetchTimesheetsForFilter}
+                    allEquipment={allEquipment}
                   />
                 </Holds>
                 <Holds className="h-full w-full row-start-12 row-end-13">

@@ -12,6 +12,7 @@ import {
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
+import { MaintenanceLogData } from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/TimeCardMechanicLogs";
 
 // Union type for all possible timesheet data
 export type TimesheetDataUnion =
@@ -25,6 +26,7 @@ export type TimesheetDataUnion =
   | TascoRefuelLogData
   | EquipmentLogsData
   | EmployeeEquipmentLogWithRefuel[]
+  | MaintenanceLogData
   | null;
 
 interface TimesheetDataResponse {
@@ -39,7 +41,8 @@ interface TimesheetDataResponse {
 export const useTimesheetData = (
   employeeId: string | undefined,
   initialDate: string,
-  initialFilter: TimesheetFilter
+  initialFilter: TimesheetFilter,
+  pendingOnly: boolean = false // new parameter, default false
 ): TimesheetDataResponse => {
   const [data, setData] = useState<TimesheetDataUnion>(null);
   const [loading, setLoading] = useState(false);
@@ -54,14 +57,16 @@ export const useTimesheetData = (
     setError(null);
 
     try {
-      const response = await fetch(
-        `/api/getTimesheetsByDate?employeeId=${employeeId}&date=${currentDate}&type=${currentFilter}`
-      );
-      
+      let url = '';
+      if (pendingOnly) {
+        url = `/api/getTimesheetsByDate?employeeId=${employeeId}&type=${currentFilter}&pendingOnly=true`;
+      } else {
+        url = `/api/getTimesheetsByDate?employeeId=${employeeId}&date=${currentDate}&type=${currentFilter}`;
+      }
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const result = await response.json();
       setData(result);
     } catch (err) {
@@ -83,7 +88,7 @@ export const useTimesheetData = (
 
   useEffect(() => {
     fetchTimesheets();
-  }, [employeeId, currentDate, currentFilter]);
+  }, [employeeId, currentDate, currentFilter, pendingOnly]);
 
   return {
     data,

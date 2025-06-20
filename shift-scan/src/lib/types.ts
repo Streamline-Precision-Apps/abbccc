@@ -373,7 +373,6 @@ export type EquipmentHauledItem = {
     name: string;
   };
   JobSite: {
-    // Changed from JobSiteHauledName to JobSite
     id: string;
     name: string;
   };
@@ -995,7 +994,8 @@ export type TimesheetFilter =
   | "tascoHaulLogs"
   | "tascoRefuelLogs"
   | "equipmentLogs"
-  | "equipmentRefuelLogs";
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
 
 // Helper: Flatten EquipmentLogsData to array of { id, startTime, endTime }
 export function flattenEquipmentLogs(logs: EquipmentLogsData): { id: string; startTime: Date; endTime: Date }[] {

@@ -1,5 +1,4 @@
 "use client";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -8,12 +7,14 @@ import { Titles } from "@/components/(reusable)/titles";
 import {
   TruckingEquipmentHaulLog,
   TruckingEquipmentHaulLogData,
+  EquipmentHauledItem,
 } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
 import { useTranslations } from "next-intl";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 type TimeCardTruckingHaulLogsProps = {
   edit: boolean;
@@ -23,6 +24,7 @@ type TimeCardTruckingHaulLogsProps = {
   focusIds: string[];
   setFocusIds: (ids: string[]) => void;
   isReviewYourTeam?: boolean;
+  allEquipment: { id: string; qrId: string; name: string }[]; // <-- Add this
 };
 
 export default function TimeCardTruckingHaulLogs({
@@ -33,6 +35,7 @@ export default function TimeCardTruckingHaulLogs({
   focusIds,
   setFocusIds,
   isReviewYourTeam,
+  allEquipment, // <-- Add this
 }: TimeCardTruckingHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTruckingHaulLogs");
 
@@ -164,15 +167,23 @@ export default function TimeCardTruckingHaulLogs({
     label: string;
   } | null>(null);
 
-  const openJobsiteModal = (logId: string, equipmentIndex: number) => {
+  const openJobsiteModal = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number
+  ) => {
     if (!edit) return;
-    setCurrentEditingLog({ logId, equipmentIndex });
+    setCurrentEditingLog({ itemIdx, logIdx, hauledIdx });
     setJobsiteModalOpen(true);
   };
 
-  const openEquipmentModal = (logId: string, equipmentIndex: number) => {
+  const openEquipmentModal = (
+    itemIdx: number,
+    logIdx: number,
+    hauledIdx: number
+  ) => {
     if (!edit) return;
-    setCurrentEditingLog({ logId, equipmentIndex });
+    setCurrentEditingLog({ itemIdx, logIdx, hauledIdx });
     setEquipmentModalOpen(true);
   };
 
@@ -180,11 +191,12 @@ export default function TimeCardTruckingHaulLogs({
     jobsite: { code: string; label: string } | null
   ) => {
     if (currentEditingLog && jobsite) {
-      handleJobsiteChange(
-        currentEditingLog.logId,
-        currentEditingLog.equipmentIndex,
-        jobsite.code,
-        jobsite.label
+      handleEquipmentHauledChange(
+        currentEditingLog.itemIdx,
+        currentEditingLog.logIdx,
+        currentEditingLog.hauledIdx,
+        "JobSite",
+        { id: jobsite.code, name: jobsite.label }
       );
     }
     setJobsiteModalOpen(false);
@@ -194,22 +206,33 @@ export default function TimeCardTruckingHaulLogs({
     equipment: { code: string; label: string } | null
   ) => {
     if (currentEditingLog && equipment) {
-      handleEquipmentChange(
-        currentEditingLog.logId,
-        currentEditingLog.equipmentIndex,
-        equipment.code,
-        equipment.label
+      // Find the Equipment by qrId (code)
+      const found = allEquipment.find((eq) => eq.qrId === equipment.code);
+      if (!found) {
+        setEquipmentModalOpen(false);
+        return;
+      }
+      handleEquipmentHauledChange(
+        currentEditingLog.itemIdx,
+        currentEditingLog.logIdx,
+        currentEditingLog.hauledIdx,
+        "Equipment",
+        { id: found.id, name: found.name }
       );
     }
     setEquipmentModalOpen(false);
   };
 
-  const isEmptyData = editedTruckingHaulLogs.length === 0;
+  const isEmptyData = truckingEquipmentHaulLogs.length === 0;
 
   return (
-    <Holds className="w-full h-full">
+    <Holds className="w-full">
+      {" "}
+      {/* removed h-full */}
       <Grids rows={"7"}>
-        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
+        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full items-start">
+          {" "}
+          {/* added items-start */}
           {!isEmptyData ? (
             <>
               <Grids cols={"3"} className="w-full h-fit">
@@ -231,7 +254,7 @@ export default function TimeCardTruckingHaulLogs({
               </Grids>
 
               {truckingEquipmentHaulLogs.map((item, itemIdx) =>
-                item.TruckingLogs.map((log, logIdx) => {
+                (item.TruckingLogs || []).map((log, logIdx) => {
                   if (!log) return null;
                   const isFocused = focusIds.includes(log.id);
                   const handleToggleFocus = () => {
@@ -241,57 +264,59 @@ export default function TimeCardTruckingHaulLogs({
                       setFocusIds([...focusIds, log.id]);
                     }
                   };
-                  const rowContent = (
+                  return (
                     <Holds
                       key={`${log.id}-${logIdx}`}
                       background={isFocused ? "orange" : "white"}
-                      className="border-black border-[3px] rounded-lg mb-2"
+                      className={`relative border-black border-[3px] rounded-lg mb-2 ${
+                        isReviewYourTeam ? "cursor-pointer" : ""
+                      }`}
+                      onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                     >
+                      {isReviewYourTeam && (
+                        <div
+                          className="absolute top-0 left-0 w-full h-full z-10 cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleToggleFocus();
+                          }}
+                        />
+                      )}
                       <Buttons
-                        shadow={"none"}
-                        background={"none"}
+                        shadow="none"
+                        background="none"
                         className="w-full h-full text-left"
                       >
                         <Grids cols={"3"} className="w-full h-full">
-                          <Holds className="col-start-1 col-end-2">
-                            {" "}
+                          <Holds className="w-full h-full col-start-1 col-end-2 border-r-[3px] border-black">
                             <Inputs
-                              type={"text"}
+                              type="text"
                               value={log.Equipment?.name || ""}
-                              className="text-xs border-none rounded-md h-full rounded-br-none rounded-tr-none p-3 text-left"
+                              className="pl-1 py-2 w-full h-full text-xs border-none rounded-none rounded-tl-md rounded-bl-md"
                               background={isFocused ? "orange" : "white"}
                               disabled={true}
                               readOnly
                             />
                           </Holds>
-                          <Holds className="col-start-2 col-end-3 border-x-[3px] border-black h-full">
-                            {" "}
+                          <Holds className="w-full h-full col-start-2 col-end-3 border-r-[3px] border-black">
                             <Inputs
-                              type={"text"}
-                              value={
-                                log.EquipmentHauled?.[0]?.Equipment?.name || ""
-                              }
-                              className="text-xs border-none h-full rounded-none justify-center text-center"
+                              type="text"
+                              value={log.EquipmentHauled?.[0]?.Equipment?.name || ""}
+                              className="py-2 w-full h-full text-xs border-none rounded-none text-center"
                               background={isFocused ? "orange" : "white"}
-                              onClick={() =>
-                                openEquipmentModal(itemIdx, logIdx, 0)
-                              }
+                              onClick={() => openEquipmentModal(itemIdx, logIdx, 0)}
                               disabled={!edit}
                               readOnly
                             />
                           </Holds>
-                          <Holds className="col-start-3 col-end-4 h-full">
-                            {" "}
+                          <Holds className="w-full h-full col-start-3 col-end-4">
                             <Inputs
-                              type={"text"}
-                              value={
-                                log.EquipmentHauled?.[0]?.JobSite?.name || ""
-                              }
-                              className="text-xs border-none rounded-md h-full rounded-bl-none rounded-t-none justify-center text-right"
+                              type="text"
+                              value={log.EquipmentHauled?.[0]?.JobSite?.name || ""}
+                              className="py-2 w-full h-full text-xs border-none rounded-none rounded-tr-md rounded-br-md text-right"
                               background={isFocused ? "orange" : "white"}
-                              onClick={() =>
-                                openJobsiteModal(itemIdx, logIdx, 0)
-                              }
+                              onClick={() => openJobsiteModal(itemIdx, logIdx, 0)}
                               disabled={!edit}
                               readOnly
                             />
@@ -300,25 +325,11 @@ export default function TimeCardTruckingHaulLogs({
                       </Buttons>
                     </Holds>
                   );
-                  return isReviewYourTeam ? (
-                    <button
-                      key={`${log.id}-${logIdx}`}
-                      type="button"
-                      className="w-full h-full bg-transparent p-0 border-none"
-                      onClick={handleToggleFocus}
-                      tabIndex={0}
-                      aria-label={isFocused ? "Unselect row" : "Select row"}
-                    >
-                      {rowContent}
-                    </button>
-                  ) : (
-                    rowContent
-                  );
                 })
               )}
             </>
           ) : (
-            <Holds className="w-full h-full flex items-center justify-center">
+            <Holds className="w-full flex items-center justify-center">
               <Texts size="p6" className="text-gray-500 italic">
                 {t("NoHaulLogsAvailable")}
               </Texts>
@@ -326,7 +337,6 @@ export default function TimeCardTruckingHaulLogs({
           )}
         </Holds>
       </Grids>
-
       {/* Jobsite Selector Modal */}
       <NModals
         background={"white"}
@@ -342,27 +352,26 @@ export default function TimeCardTruckingHaulLogs({
               currentEditingLog
                 ? {
                     id:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.JobSite?.id || "",
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        ?.TruckingLogs[currentEditingLog.logIdx]
+                        ?.EquipmentHauled[currentEditingLog.hauledIdx]?.JobSite
+                        ?.id || "",
                     code:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.JobSite?.id || "",
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        ?.TruckingLogs[currentEditingLog.logIdx]
+                        ?.EquipmentHauled[currentEditingLog.hauledIdx]?.JobSite
+                        ?.id || "",
                     label:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
-                        ?.JobSite?.name || "",
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        ?.TruckingLogs[currentEditingLog.logIdx]
+                        ?.EquipmentHauled[currentEditingLog.hauledIdx]?.JobSite
+                        ?.name || "",
                   }
                 : undefined
             }
           />
         </Holds>
       </NModals>
-
       {/* Equipment Selector Modal */}
       <NModals
         background={"white"}
@@ -377,19 +386,19 @@ export default function TimeCardTruckingHaulLogs({
               currentEditingLog
                 ? {
                     id:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        ?.TruckingLogs[currentEditingLog.logIdx]
+                        ?.EquipmentHauled[currentEditingLog.hauledIdx]
                         ?.Equipment?.id || "",
                     code:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        ?.TruckingLogs[currentEditingLog.logIdx]
+                        ?.EquipmentHauled[currentEditingLog.hauledIdx]
                         ?.Equipment?.id || "",
                     label:
-                      editedTruckingHaulLogs.find(
-                        (log) => log.id === currentEditingLog.logId
-                      )?.EquipmentHauled[currentEditingLog.equipmentIndex]
+                      truckingEquipmentHaulLogs[currentEditingLog.itemIdx]
+                        ?.TruckingLogs[currentEditingLog.logIdx]
+                        ?.EquipmentHauled[currentEditingLog.hauledIdx]
                         ?.Equipment?.name || "",
                   }
                 : undefined

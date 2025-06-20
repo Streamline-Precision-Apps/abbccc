@@ -42,6 +42,7 @@ import {
 } from "@/actions/myTeamsActions";
 import { flattenMaterialLogs } from "./TimeCardTruckingMaterialLogs";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
+import { useAllEquipment } from "@/hooks/useAllEquipment";
 
 // Helper to flatten nested refuel logs for server submission
 const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
@@ -153,6 +154,10 @@ export default function EmployeeTabs() {
     updateDate: fetchTimesheetsForDate,
     updateFilter: fetchTimesheetsForFilter,
   } = useTimesheetData(employeeId as string | undefined, date, timeSheetFilter);
+
+  console.log("EmployeeTabs - Timesheet Data:", timesheetData);
+
+  const allEquipment = useAllEquipment();
 
   const loading = loadingEmployee || loadingTimesheets;
 
@@ -483,6 +488,52 @@ export default function EmployeeTabs() {
               console.error("Invalid changes type");
             }
             break;
+
+          // Handle mechanicLogs (MaintenanceLog data)
+          case "mechanicLogs": {
+            if (!Array.isArray(changes)) {
+              console.warn("Invalid maintenance log changes");
+              return;
+            }
+
+            // Create a server action to update MaintenanceLog data
+            const updateMaintenanceLogs = async (logs: any[]) => {
+              const formData = new FormData();
+              logs.forEach((log, index) => {
+                formData.append(`logs[${index}].id`, log.id);
+                formData.append(`logs[${index}].startTime`, log.startTime ? new Date(log.startTime).toISOString() : '');
+                formData.append(`logs[${index}].endTime`, log.endTime ? new Date(log.endTime).toISOString() : '');
+              });
+
+              try {
+                const response = await fetch('/api/updateMaintenanceLogs', {
+                  method: 'POST',
+                  body: formData,
+                });
+                
+                if (!response.ok) {
+                  throw new Error('Failed to update maintenance logs');
+                }
+                
+                const result = await response.json();
+                return { success: true, data: result };
+              } catch (error) {
+                console.error('Error updating maintenance logs:', error);
+                return { success: false, error };
+              }
+            };
+
+            const result = await updateMaintenanceLogs(changes);
+            
+            if (result?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            }
+            break;
+          }
         }
 
         await Promise.all([
@@ -592,6 +643,7 @@ export default function EmployeeTabs() {
                   onCancelEdits={onCancelEdits}
                   fetchTimesheetsForDate={fetchTimesheetsForDate}
                   fetchTimesheetsForFilter={fetchTimesheetsForFilter}
+                  allEquipment={allEquipment}
                 />
               )}
             </Holds>
