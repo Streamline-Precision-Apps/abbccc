@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Button } from "@/components/ui/button";
 
 interface MaintenanceLog {
@@ -14,6 +13,8 @@ interface EditMaintenanceLogsProps {
   onLogChange: (idx: number, field: keyof MaintenanceLog, value: any) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;
+  originalLogs?: MaintenanceLog[];
+  onUndoLogField?: (idx: number, field: keyof MaintenanceLog) => void;
 }
 
 export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
@@ -21,6 +22,8 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
   onLogChange,
   onAddLog,
   onRemoveLog,
+  originalLogs = [],
+  onUndoLogField,
 }) => (
   <div className="col-span-2 mt-4">
     <h3 className="font-semibold text-sm mb-2">Maintenance Logs</h3>
@@ -37,6 +40,9 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
             onChange={(e) => onLogChange(idx, "startTime", e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] && log.startTime !== originalLogs[idx].startTime && onUndoLogField && (
+            <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "startTime")}>Undo</Button>
+          )}
         </div>
         <div>
           <label className="block text-xs">End Time</label>
@@ -46,6 +52,9 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
             onChange={(e) => onLogChange(idx, "endTime", e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] && log.endTime !== originalLogs[idx].endTime && onUndoLogField && (
+            <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "endTime")}>Undo</Button>
+          )}
         </div>
         <div>
           <label className="block text-xs">Maintenance ID</label>
@@ -55,6 +64,9 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
             onChange={(e) => onLogChange(idx, "maintenanceId", e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
+          {originalLogs[idx] && log.maintenanceId !== originalLogs[idx].maintenanceId && onUndoLogField && (
+            <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "maintenanceId")}>Undo</Button>
+          )}
         </div>
         <Button
           type="button"

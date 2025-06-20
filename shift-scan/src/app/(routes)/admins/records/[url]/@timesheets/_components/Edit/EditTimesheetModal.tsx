@@ -97,6 +97,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<TimesheetData | null>(null);
   const [form, setForm] = useState<TimesheetData | null>(null);
+  const [originalForm, setOriginalForm] = useState<TimesheetData | null>(null);
 
   useEffect(() => {
     if (!isOpen || !timesheetId) return;
@@ -111,6 +112,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       .then((json) => {
         setData(json);
         setForm(json); // Pre-populate form
+        setOriginalForm(json); // Store original for undo
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -172,7 +174,12 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       ...form,
       MaintenanceLogs: [
         ...form.MaintenanceLogs,
-        { id: Date.now().toString(), startTime: "", endTime: "", maintenanceId: "" },
+        {
+          id: Date.now().toString(),
+          startTime: "",
+          endTime: "",
+          maintenanceId: "",
+        },
       ],
     });
   };
@@ -257,8 +264,28 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     if (!form) return;
     setForm({
       ...form,
-      EmployeeEquipmentLogs: form.EmployeeEquipmentLogs.filter((_, i) => i !== idx),
+      EmployeeEquipmentLogs: form.EmployeeEquipmentLogs.filter(
+        (_, i) => i !== idx
+      ),
     });
+  };
+
+  // Work type options and log section mapping
+  const workTypeOptions = [
+    { value: "MECHANIC", label: "Maintenance" },
+    { value: "TRUCK_DRIVER", label: "Trucking" },
+    { value: "TASCO", label: "Tasco" },
+    { value: "LABOR", label: "General" },
+  ];
+  const showMaintenance = form?.workType === "MECHANIC";
+  const showTrucking = form?.workType === "TRUCK_DRIVER";
+  const showTasco = form?.workType === "TASCO";
+  const showEquipment = form?.workType === "LABOR";
+
+  // Undo handler for general fields
+  const handleUndoField = (field: keyof TimesheetData) => {
+    if (!form || !originalForm) return;
+    setForm({ ...form, [field]: originalForm[field] });
   };
 
   if (!isOpen) return null;
@@ -285,6 +312,16 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 onChange={handleChange}
                 className="border rounded px-2 py-1 w-full"
               />
+              {originalForm && form.date !== originalForm.date && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => handleUndoField("date")}
+                >
+                  Undo
+                </Button>
+              )}
             </div>
             <div>
               <label className="block text-xs font-semibold mb-1">
@@ -297,6 +334,16 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 onChange={handleChange}
                 className="border rounded px-2 py-1 w-full"
               />
+              {originalForm && form.startTime !== originalForm.startTime && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => handleUndoField("startTime")}
+                >
+                  Undo
+                </Button>
+              )}
             </div>
             <div>
               <label className="block text-xs font-semibold mb-1">
@@ -309,18 +356,44 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 onChange={handleChange}
                 className="border rounded px-2 py-1 w-full"
               />
+              {originalForm && form.endTime !== originalForm.endTime && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => handleUndoField("endTime")}
+                >
+                  Undo
+                </Button>
+              )}
             </div>
             <div>
               <label className="block text-xs font-semibold mb-1">
                 Work Type
               </label>
-              <input
-                type="text"
+              <select
                 name="workType"
                 value={form.workType || ""}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e as any)}
                 className="border rounded px-2 py-1 w-full"
-              />
+              >
+                <option value="">Select work type</option>
+                {workTypeOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              {originalForm && form.workType !== originalForm.workType && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => handleUndoField("workType")}
+                >
+                  Undo
+                </Button>
+              )}
             </div>
             <div className="col-span-2">
               <label className="block text-xs font-semibold mb-1">
@@ -332,42 +405,169 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 onChange={handleChange}
                 className="border rounded px-2 py-1 w-full"
               />
+              {originalForm && form.comment !== originalForm.comment && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => handleUndoField("comment")}
+                >
+                  Undo
+                </Button>
+              )}
             </div>
-            {/* Related logs */}
-            {/* Maintenance Logs */}
-            <EditMaintenanceLogs
-              logs={form.MaintenanceLogs}
-              onLogChange={(idx, field, value) => handleLogChange<MaintenanceLog>("MaintenanceLogs", idx, field, value)}
-              onAddLog={addMaintenanceLog}
-              onRemoveLog={removeMaintenanceLog}
-            />
-            {/* Trucking Logs */}
-            <EditTruckingLogs
-              logs={form.TruckingLogs}
-              onLogChange={(idx, field, value) => handleLogChange<TruckingLog>("TruckingLogs", idx, field, value)}
-              onAddLog={addTruckingLog}
-              onRemoveLog={removeTruckingLog}
-              handleNestedLogChange={(logIndex, nestedType, nestedIndex, field, value) =>
-                handleNestedLogChange<any>("TruckingLogs", logIndex, nestedType, nestedIndex, field, value)
-              }
-            />
-            {/* Tasco Logs */}
-            <EditTascoLogs
-              logs={form.TascoLogs}
-              onLogChange={(idx, field, value) => handleLogChange<TascoLog>("TascoLogs", idx, field, value)}
-              onAddLog={addTascoLog}
-              onRemoveLog={removeTascoLog}
-              handleNestedLogChange={(logIndex, nestedType, nestedIndex, field, value) =>
-                handleNestedLogChange<any>("TascoLogs", logIndex, nestedType, nestedIndex, field, value)
-              }
-            />
-            {/* Employee Equipment Logs */}
-            <EditEmployeeEquipmentLogs
-              logs={form.EmployeeEquipmentLogs}
-              onLogChange={(idx, field, value) => handleLogChange<EmployeeEquipmentLog>("EmployeeEquipmentLogs", idx, field, value)}
-              onAddLog={addEmployeeEquipmentLog}
-              onRemoveLog={removeEmployeeEquipmentLog}
-            />
+            {/* Related logs - conditional rendering by workType */}
+            {showMaintenance && (
+              <EditMaintenanceLogs
+                logs={form.MaintenanceLogs}
+                onLogChange={(idx, field, value) =>
+                  handleLogChange<MaintenanceLog>(
+                    "MaintenanceLogs",
+                    idx,
+                    field,
+                    value
+                  )
+                }
+                onAddLog={addMaintenanceLog}
+                onRemoveLog={removeMaintenanceLog}
+                originalLogs={originalForm?.MaintenanceLogs || []}
+                onUndoLogField={(idx, field) => {
+                  if (!form || !originalForm) return;
+                  setForm({
+                    ...form,
+                    MaintenanceLogs: form.MaintenanceLogs.map((log, i) =>
+                      i === idx
+                        ? {
+                            ...log,
+                            [field]: originalForm.MaintenanceLogs[idx]?.[field],
+                          }
+                        : log
+                    ),
+                  });
+                }}
+              />
+            )}
+            {showTrucking && (
+              <EditTruckingLogs
+                logs={form.TruckingLogs}
+                onLogChange={(idx, field, value) =>
+                  handleLogChange<TruckingLog>(
+                    "TruckingLogs",
+                    idx,
+                    field,
+                    value
+                  )
+                }
+                onAddLog={addTruckingLog}
+                onRemoveLog={removeTruckingLog}
+                handleNestedLogChange={(
+                  logIndex,
+                  nestedType,
+                  nestedIndex,
+                  field,
+                  value
+                ) =>
+                  handleNestedLogChange<any>(
+                    "TruckingLogs",
+                    logIndex,
+                    nestedType,
+                    nestedIndex,
+                    field,
+                    value
+                  )
+                }
+                originalLogs={originalForm?.TruckingLogs || []}
+                onUndoLogField={(idx, field) => {
+                  if (!form || !originalForm) return;
+                  setForm({
+                    ...form,
+                    TruckingLogs: form.TruckingLogs.map((log, i) =>
+                      i === idx
+                        ? {
+                            ...log,
+                            [field]: originalForm.TruckingLogs[idx]?.[field],
+                          }
+                        : log
+                    ),
+                  });
+                }}
+              />
+            )}
+            {showTasco && (
+              <EditTascoLogs
+                logs={form.TascoLogs}
+                onLogChange={(idx, field, value) =>
+                  handleLogChange<TascoLog>("TascoLogs", idx, field, value)
+                }
+                onAddLog={addTascoLog}
+                onRemoveLog={removeTascoLog}
+                handleNestedLogChange={(
+                  logIndex,
+                  nestedType,
+                  nestedIndex,
+                  field,
+                  value
+                ) =>
+                  handleNestedLogChange<any>(
+                    "TascoLogs",
+                    logIndex,
+                    nestedType,
+                    nestedIndex,
+                    field,
+                    value
+                  )
+                }
+                originalLogs={originalForm?.TascoLogs || []}
+                onUndoLogField={(idx, field) => {
+                  if (!form || !originalForm) return;
+                  setForm({
+                    ...form,
+                    TascoLogs: form.TascoLogs.map((log, i) =>
+                      i === idx
+                        ? {
+                            ...log,
+                            [field]: originalForm.TascoLogs[idx]?.[field],
+                          }
+                        : log
+                    ),
+                  });
+                }}
+              />
+            )}
+            {showEquipment && (
+              <EditEmployeeEquipmentLogs
+                logs={form.EmployeeEquipmentLogs}
+                onLogChange={(idx, field, value) =>
+                  handleLogChange<EmployeeEquipmentLog>(
+                    "EmployeeEquipmentLogs",
+                    idx,
+                    field,
+                    value
+                  )
+                }
+                onAddLog={addEmployeeEquipmentLog}
+                onRemoveLog={removeEmployeeEquipmentLog}
+                originalLogs={originalForm?.EmployeeEquipmentLogs || []}
+                onUndoLogField={(idx, field) => {
+                  if (!form || !originalForm) return;
+                  setForm({
+                    ...form,
+                    EmployeeEquipmentLogs: form.EmployeeEquipmentLogs.map(
+                      (log, i) =>
+                        i === idx
+                          ? {
+                              ...log,
+                              [field]:
+                                originalForm.EmployeeEquipmentLogs[idx]?.[
+                                  field
+                                ],
+                            }
+                          : log
+                    ),
+                  });
+                }}
+              />
+            )}
             {/* Actions */}
             <div className="col-span-2 flex justify-end gap-2 mt-4">
               <Button
