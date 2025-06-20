@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 interface MaintenanceLog {
   id: string;
@@ -37,15 +38,24 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
             <label className="block text-xs">Start Time</label>
             <input
               type="time"
-              value={log.startTime ? log.startTime.slice(11, 16) : ""}
+              value={log.startTime ? format(log.startTime, "HH:mm") : ""}
               onChange={(e) => onLogChange(idx, "startTime", e.target.value)}
               className="border rounded px-2 py-1 w-full"
             />
           </div>
           <div>
-            {originalLogs[idx] && log.startTime !== originalLogs[idx].startTime && onUndoLogField && (
-              <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "startTime")}>Undo</Button>
-            )}
+            {originalLogs[idx] &&
+              log.startTime !== originalLogs[idx].startTime &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "startTime")}
+                >
+                  Undo
+                </Button>
+              )}
           </div>
         </div>
         <div className="flex flex-row items-end">
@@ -53,15 +63,24 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
             <label className="block text-xs">End Time</label>
             <input
               type="time"
-              value={log.endTime ? log.endTime.slice(11, 16) : ""}
+              value={log.endTime ? format(log.endTime, "HH:mm") : ""}
               onChange={(e) => onLogChange(idx, "endTime", e.target.value)}
               className="border rounded px-2 py-1 w-full"
             />
           </div>
           <div>
-            {originalLogs[idx] && log.endTime !== originalLogs[idx].endTime && onUndoLogField && (
-              <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "endTime")}>Undo</Button>
-            )}
+            {originalLogs[idx] &&
+              log.endTime !== originalLogs[idx].endTime &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "endTime")}
+                >
+                  Undo
+                </Button>
+              )}
           </div>
         </div>
         <div className="flex flex-row items-end">
@@ -70,14 +89,25 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
             <input
               type="text"
               value={log.maintenanceId}
-              onChange={(e) => onLogChange(idx, "maintenanceId", e.target.value)}
+              onChange={(e) =>
+                onLogChange(idx, "maintenanceId", e.target.value)
+              }
               className="border rounded px-2 py-1 w-full"
             />
           </div>
           <div>
-            {originalLogs[idx] && log.maintenanceId !== originalLogs[idx].maintenanceId && onUndoLogField && (
-              <Button type="button" size="sm" className="ml-2" onClick={() => onUndoLogField(idx, "maintenanceId")}>Undo</Button>
-            )}
+            {originalLogs[idx] &&
+              log.maintenanceId !== originalLogs[idx].maintenanceId &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "maintenanceId")}
+                >
+                  Undo
+                </Button>
+              )}
           </div>
         </div>
         <Button

@@ -8,6 +8,7 @@ import { adminUpdateTimesheet } from "@/actions/records-timesheets";
 import EditGeneralSection, {
   type EditGeneralSectionProps,
 } from "./EditGeneralSection";
+import { format } from "date-fns";
 
 interface EditTimesheetModalProps {
   timesheetId: string;
@@ -93,16 +94,13 @@ interface TimesheetData {
   EmployeeEquipmentLogs: EmployeeEquipmentLog[];
 }
 
-// Utility to merge a new HH:mm time into a date string, but keep the value as 'YYYY-MM-DDTHH:mm' (no Z/ISO)
-function mergeTimeIntoDateString(dateStr: string, time: string) {
-  const dateObj = new Date(dateStr);
+// Utility to merge a new HH:mm time into a date string and return ISO string
+function mergeTimeIntoDateISO(dateStr: string, time: string) {
+  const datePart = dateStr.slice(0, 10); // 'YYYY-MM-DD'
   const [hours, minutes] = time.split(":");
-  dateObj.setHours(Number(hours), Number(minutes), 0, 0);
-  // Return as 'YYYY-MM-DDTHH:mm' (local, no seconds, no Z)
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
-    dateObj.getDate()
-  )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
+  const date = new Date(datePart);
+  date.setHours(Number(hours), Number(minutes), 0, 0);
+  return date.toISOString();
 }
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
@@ -237,9 +235,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     if (!form) return;
     const { name, value } = e.target;
     if ((name === "startTime" || name === "endTime") && form.date) {
-      // Use the current value or fallback to the date
-      const base = form[name] || form.date;
-      setForm({ ...form, [name]: mergeTimeIntoDateString(base, value) });
+      setForm({ ...form, [name]: mergeTimeIntoDateISO(form.date, value) });
     } else {
       setForm({ ...form, [name]: value });
     }
@@ -250,17 +246,26 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     logType: keyof TimesheetData,
     logIndex: number,
     field: keyof T,
-    value: any
+    value: any,
+    date?: string // pass the parent date if needed
   ) => {
     if (!form) return;
     setForm({
       ...form,
       [logType]: (form[logType] as T[]).map((log, idx) =>
-        idx === logIndex ? { ...log, [field]: value } : log
+        idx === logIndex
+          ? {
+              ...log,
+              [field]:
+                (field === "startTime" || field === "endTime") &&
+                (date || form.date)
+                  ? mergeTimeIntoDateISO(date || form.date, value)
+                  : value,
+            }
+          : log
       ),
     });
   };
-
   // Nested array change handler (e.g., Materials in TruckingLogs)
   const handleNestedLogChange = <T extends object>(
     logType: keyof TimesheetData,
@@ -285,7 +290,6 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       ),
     });
   };
-
   // Add/Remove handlers for each log type
   const addMaintenanceLog = () => {
     if (!form) return;
@@ -546,7 +550,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 <input
                   type="time"
                   name="startTime"
-                  value={form.startTime ? form.startTime.slice(11, 16) : ""}
+                  value={form.startTime ? format(form.startTime, "HH:mm") : ""}
                   onChange={handleChange}
                   className="border rounded px-2 py-1 w-full"
                 />
@@ -572,7 +576,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 <input
                   type="time"
                   name="endTime"
-                  value={form.endTime ? form.endTime.slice(11, 16) : ""}
+                  value={form.endTime ? format(form.endTime, "HH:mm") : ""}
                   onChange={handleChange}
                   className="border rounded px-2 py-1 w-full"
                 />
@@ -656,7 +660,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                     "MaintenanceLogs",
                     idx,
                     field,
-                    value
+                    value,
+                    form.date
                   )
                 }
                 onAddLog={addMaintenanceLog}

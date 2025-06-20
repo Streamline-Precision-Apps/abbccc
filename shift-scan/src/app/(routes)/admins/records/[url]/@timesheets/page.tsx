@@ -1,5 +1,11 @@
 "use client";
 
+//*
+// Tasks:
+// implement timesheet editing functionality - currently in progress
+// implement timesheet approval and rejection functionality
+// implement timesheet download / export functionality
+// */
 import { Texts } from "@/components/(reusable)/texts";
 import { Button } from "@/components/ui/button";
 import SearchBar from "../../../personnel/components/SearchBar";
@@ -161,10 +167,6 @@ export default function AdminTimesheets() {
   const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
-
-  // implement timesheet approval and rejection functionality
-  // implement timesheet editing functionality
-  // implement timesheet download / export functionality
 
   const handleDeleteClick = (id: string) => {
     setDeletingId(id);
