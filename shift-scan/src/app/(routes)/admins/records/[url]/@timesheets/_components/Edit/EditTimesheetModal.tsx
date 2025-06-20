@@ -9,6 +9,13 @@ import EditGeneralSection, {
   type EditGeneralSectionProps,
 } from "./EditGeneralSection";
 import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface EditTimesheetModalProps {
   timesheetId: string;
@@ -77,7 +84,7 @@ interface EmployeeEquipmentLog {
 
 interface TimesheetData {
   id: string;
-  date: string;
+  date: Date | string;
   User: { id: string; firstName: string; lastName: string };
   Jobsite: { id: string; name: string };
   CostCode: { id: string; name: string };
@@ -92,15 +99,6 @@ interface TimesheetData {
   TruckingLogs: TruckingLog[];
   TascoLogs: TascoLog[];
   EmployeeEquipmentLogs: EmployeeEquipmentLog[];
-}
-
-// Utility to merge a new HH:mm time into a date string and return ISO string
-function mergeTimeIntoDateISO(dateStr: string, time: string) {
-  const datePart = dateStr.slice(0, 10); // 'YYYY-MM-DD'
-  const [hours, minutes] = time.split(":");
-  const date = new Date(datePart);
-  date.setHours(Number(hours), Number(minutes), 0, 0);
-  return date.toISOString();
 }
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
@@ -234,11 +232,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   ) => {
     if (!form) return;
     const { name, value } = e.target;
-    if ((name === "startTime" || name === "endTime") && form.date) {
-      setForm({ ...form, [name]: mergeTimeIntoDateISO(form.date, value) });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
+
+    setForm({ ...form, [name]: value });
   };
 
   // Log field change handler (for nested logs)
@@ -256,11 +251,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         idx === logIndex
           ? {
               ...log,
-              [field]:
-                (field === "startTime" || field === "endTime") &&
-                (date || form.date)
-                  ? mergeTimeIntoDateISO(date || form.date, value)
-                  : value,
+              [field]: value,
             }
           : log
       ),
@@ -415,18 +406,18 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   function toSubmission(form: TimesheetData): any {
     return {
       form: {
-        date: new Date(form.date),
+        date: form.date,
         user: form.User, // ensure user is included
         jobsite: form.Jobsite, // ensure jobsite is included
         costcode: form.CostCode, // ensure costcode is included
-        startTime: form.startTime?.slice(11, 16) || "",
-        endTime: form.endTime?.slice(11, 16) || "",
+        startTime: form.startTime || "",
+        endTime: form.endTime || "",
         workType: form.workType,
         comment: form.comment,
       },
       maintenanceLogs: form.MaintenanceLogs.map((log) => ({
-        startTime: log.startTime?.slice(11, 16) || "",
-        endTime: log.endTime?.slice(11, 16) || "",
+        startTime: log.startTime || "",
+        endTime: log.endTime || "",
         maintenanceId: log.maintenanceId,
       })),
       truckingLogs: form.TruckingLogs.map((log) => ({
@@ -470,8 +461,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         equipment: log.Equipment
           ? { id: log.Equipment.id, name: log.Equipment.name }
           : { id: log.equipmentId, name: "" },
-        startTime: log.startTime?.slice(11, 16) || "",
-        endTime: log.endTime?.slice(11, 16) || "",
+        startTime: log.startTime || "",
+        endTime: log.endTime || "",
       })),
     };
   }
@@ -493,6 +484,74 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     }
   };
 
+  // DateTimePicker component for date and time selection
+  function DateTimePicker({
+    value,
+    onChange,
+    label,
+  }: {
+    value?: string;
+    onChange: (val: string) => void;
+    label: string;
+  }) {
+    // Always derive date and time from value prop
+    const dateValue = value ? new Date(value) : undefined;
+    const timeValue = value ? format(new Date(value), "HH:mm") : "";
+
+    // Handlers update only the changed part and call onChange
+    const handleDateChange = (date: Date | undefined) => {
+      if (!date) return;
+      const [hours, minutes] = timeValue ? timeValue.split(":") : ["00", "00"];
+      date.setHours(Number(hours), Number(minutes), 0, 0);
+      onChange(date.toISOString());
+    };
+    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const time = e.target.value;
+      if (!dateValue) return;
+      const [hours, minutes] = time.split(":");
+      const newDate = new Date(dateValue);
+      newDate.setHours(Number(hours), Number(minutes), 0, 0);
+      onChange(newDate.toISOString());
+    };
+
+    return (
+      <div>
+        <label className="block text-xs font-semibold mb-1">{label}</label>
+        <div className="flex gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[160px] justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateValue ? (
+                  format(dateValue, "PPP")
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={dateValue}
+                onSelect={handleDateChange}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <input
+            type="time"
+            value={timeValue}
+            onChange={handleTimeChange}
+            className="border rounded px-2 py-1"
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -508,6 +567,20 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         {form && (
           <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit}>
             {/* General fields: user, jobsite, costcode */}
+            <div className="flex flex-row items-end col-span-2">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold mb-1">
+                  Created On
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={form.date ? form.date.toString().slice(0, 10) : ""}
+                  disabled
+                  className="border rounded px-2 py-1 w-full bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+            </div>
             <EditGeneralSection
               form={form}
               setForm={setForm}
@@ -518,82 +591,17 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               jobsites={jobsites}
             />
             {/* General fields */}
-            <div className="flex flex-row items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-semibold mb-1">Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={form.date ? form.date.toString().slice(0, 10) : ""}
-                  onChange={handleChange}
-                  className="border rounded px-2 py-1 w-full"
-                />
-              </div>
-              <div>
-                {originalForm && form.date !== originalForm.date && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="ml-2"
-                    onClick={() => handleUndoField("date")}
-                  >
-                    Undo
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-row items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-semibold mb-1">
-                  Start Time
-                </label>
-                <input
-                  type="time"
-                  name="startTime"
-                  value={form.startTime ? format(form.startTime, "HH:mm") : ""}
-                  onChange={handleChange}
-                  className="border rounded px-2 py-1 w-full"
-                />
-              </div>
-              <div>
-                {originalForm && form.startTime !== originalForm.startTime && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="ml-2"
-                    onClick={() => handleUndoField("startTime")}
-                  >
-                    Undo
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-row items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-semibold mb-1">
-                  End Time
-                </label>
-                <input
-                  type="time"
-                  name="endTime"
-                  value={form.endTime ? format(form.endTime, "HH:mm") : ""}
-                  onChange={handleChange}
-                  className="border rounded px-2 py-1 w-full"
-                />
-              </div>
-              <div>
-                {originalForm && form.endTime !== originalForm.endTime && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="ml-2"
-                    onClick={() => handleUndoField("endTime")}
-                  >
-                    Undo
-                  </Button>
-                )}
-              </div>
-            </div>
+
+            <DateTimePicker
+              label="Start Time"
+              value={form.startTime}
+              onChange={(val) => setForm({ ...form, startTime: val })}
+            />
+            <DateTimePicker
+              label="End Time"
+              value={form.endTime}
+              onChange={(val) => setForm({ ...form, endTime: val })}
+            />
             <div className="flex flex-row items-end">
               <div className="flex-1">
                 <label className="block text-xs font-semibold mb-1">
@@ -661,7 +669,9 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                     idx,
                     field,
                     value,
-                    form.date
+                    typeof form.date === "string"
+                      ? form.date
+                      : form.date.toISOString().slice(0, 10)
                   )
                 }
                 onAddLog={addMaintenanceLog}
