@@ -48,91 +48,107 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
         key={log.id}
         className="border rounded p-2 mb-2 grid grid-cols-4 gap-2 items-end"
       >
-        <div>
-          <label className="block text-xs">Shift Type</label>
-          <input
-            type="text"
-            value={log.shiftType}
-            onChange={(e) => onLogChange(idx, "shiftType", e.target.value)}
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] &&
-            log.shiftType !== originalLogs[idx].shiftType &&
-            onUndoLogField && (
-              <Button
-                type="button"
-                size="sm"
-                className="ml-2"
-                onClick={() => onUndoLogField(idx, "shiftType")}
-              >
-                Undo
-              </Button>
-            )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">Shift Type</label>
+            <input
+              type="text"
+              value={log.shiftType}
+              onChange={(e) => onLogChange(idx, "shiftType", e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] &&
+              log.shiftType !== originalLogs[idx].shiftType &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "shiftType")}
+                >
+                  Undo
+                </Button>
+              )}
+          </div>
         </div>
-        <div>
-          <label className="block text-xs">Labor Type</label>
-          <input
-            type="text"
-            value={log.laborType}
-            onChange={(e) => onLogChange(idx, "laborType", e.target.value)}
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] &&
-            log.laborType !== originalLogs[idx].laborType &&
-            onUndoLogField && (
-              <Button
-                type="button"
-                size="sm"
-                className="ml-2"
-                onClick={() => onUndoLogField(idx, "laborType")}
-              >
-                Undo
-              </Button>
-            )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">Labor Type</label>
+            <input
+              type="text"
+              value={log.laborType}
+              onChange={(e) => onLogChange(idx, "laborType", e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] &&
+              log.laborType !== originalLogs[idx].laborType &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "laborType")}
+                >
+                  Undo
+                </Button>
+              )}
+          </div>
         </div>
-        <div>
-          <label className="block text-xs">Material Type</label>
-          <input
-            type="text"
-            value={log.materialType}
-            onChange={(e) => onLogChange(idx, "materialType", e.target.value)}
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] &&
-            log.materialType !== originalLogs[idx].materialType &&
-            onUndoLogField && (
-              <Button
-                type="button"
-                size="sm"
-                className="ml-2"
-                onClick={() => onUndoLogField(idx, "materialType")}
-              >
-                Undo
-              </Button>
-            )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">Material Type</label>
+            <input
+              type="text"
+              value={log.materialType}
+              onChange={(e) => onLogChange(idx, "materialType", e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] &&
+              log.materialType !== originalLogs[idx].materialType &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "materialType")}
+                >
+                  Undo
+                </Button>
+              )}
+          </div>
         </div>
-        <div>
-          <label className="block text-xs">Load Quantity</label>
-          <input
-            type="number"
-            value={log.LoadQuantity}
-            onChange={(e) =>
-              onLogChange(idx, "LoadQuantity", Number(e.target.value))
-            }
-            className="border rounded px-2 py-1 w-full"
-          />
-          {originalLogs[idx] &&
-            log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
-            onUndoLogField && (
-              <Button
-                type="button"
-                size="sm"
-                className="ml-2"
-                onClick={() => onUndoLogField(idx, "LoadQuantity")}
-              >
-                Undo
-              </Button>
-            )}
+        <div className="flex flex-row items-end">
+          <div className="flex-1">
+            <label className="block text-xs">Load Quantity</label>
+            <input
+              type="number"
+              value={log.LoadQuantity}
+              onChange={(e) =>
+                onLogChange(idx, "LoadQuantity", Number(e.target.value))
+              }
+              className="border rounded px-2 py-1 w-full"
+            />
+          </div>
+          <div>
+            {originalLogs[idx] &&
+              log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
+              onUndoLogField && (
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => onUndoLogField(idx, "LoadQuantity")}
+                >
+                  Undo
+                </Button>
+              )}
+          </div>
         </div>
         <Button
           type="button"
