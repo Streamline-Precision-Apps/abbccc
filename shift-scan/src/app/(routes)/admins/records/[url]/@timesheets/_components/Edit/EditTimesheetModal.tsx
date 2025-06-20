@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { EditMaintenanceLogs } from "./EditMaintenanceLogs";
+import { EditTruckingLogs } from "./EditTruckingLogs";
+import { EditTascoLogs } from "./EditTascoLogs";
+import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
 
 interface EditTimesheetModalProps {
   timesheetId: string;
@@ -161,6 +165,102 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     });
   };
 
+  // Add/Remove handlers for each log type
+  const addMaintenanceLog = () => {
+    if (!form) return;
+    setForm({
+      ...form,
+      MaintenanceLogs: [
+        ...form.MaintenanceLogs,
+        { id: Date.now().toString(), startTime: "", endTime: "", maintenanceId: "" },
+      ],
+    });
+  };
+  const removeMaintenanceLog = (idx: number) => {
+    if (!form) return;
+    setForm({
+      ...form,
+      MaintenanceLogs: form.MaintenanceLogs.filter((_, i) => i !== idx),
+    });
+  };
+
+  const addTruckingLog = () => {
+    if (!form) return;
+    setForm({
+      ...form,
+      TruckingLogs: [
+        ...form.TruckingLogs,
+        {
+          id: Date.now().toString(),
+          equipmentId: "",
+          startingMileage: 0,
+          endingMileage: 0,
+          EquipmentHauled: [],
+          Materials: [],
+          RefuelLogs: [],
+          StateMileages: [],
+        },
+      ],
+    });
+  };
+  const removeTruckingLog = (idx: number) => {
+    if (!form) return;
+    setForm({
+      ...form,
+      TruckingLogs: form.TruckingLogs.filter((_, i) => i !== idx),
+    });
+  };
+
+  const addTascoLog = () => {
+    if (!form) return;
+    setForm({
+      ...form,
+      TascoLogs: [
+        ...form.TascoLogs,
+        {
+          id: Date.now().toString(),
+          shiftType: "",
+          laborType: "",
+          materialType: "",
+          LoadQuantity: 0,
+          RefuelLogs: [],
+          Equipment: null,
+        },
+      ],
+    });
+  };
+  const removeTascoLog = (idx: number) => {
+    if (!form) return;
+    setForm({
+      ...form,
+      TascoLogs: form.TascoLogs.filter((_, i) => i !== idx),
+    });
+  };
+
+  const addEmployeeEquipmentLog = () => {
+    if (!form) return;
+    setForm({
+      ...form,
+      EmployeeEquipmentLogs: [
+        ...form.EmployeeEquipmentLogs,
+        {
+          id: Date.now().toString(),
+          equipmentId: "",
+          startTime: "",
+          endTime: "",
+          Equipment: null,
+        },
+      ],
+    });
+  };
+  const removeEmployeeEquipmentLog = (idx: number) => {
+    if (!form) return;
+    setForm({
+      ...form,
+      EmployeeEquipmentLogs: form.EmployeeEquipmentLogs.filter((_, i) => i !== idx),
+    });
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -235,497 +335,39 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             </div>
             {/* Related logs */}
             {/* Maintenance Logs */}
-            {form.MaintenanceLogs.length > 0 && (
-              <div className="col-span-2 mt-4">
-                <h3 className="font-semibold text-sm mb-2">Maintenance Logs</h3>
-                {form.MaintenanceLogs.map((log, idx) => (
-                  <div
-                    key={log.id}
-                    className="border rounded p-2 mb-2 grid grid-cols-4 gap-2"
-                  >
-                    <div>
-                      <label className="block text-xs">Start Time</label>
-                      <input
-                        type="time"
-                        value={log.startTime ? log.startTime.slice(11, 16) : ""}
-                        onChange={(e) =>
-                          handleLogChange<MaintenanceLog>(
-                            "MaintenanceLogs",
-                            idx,
-                            "startTime",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">End Time</label>
-                      <input
-                        type="time"
-                        value={log.endTime ? log.endTime.slice(11, 16) : ""}
-                        onChange={(e) =>
-                          handleLogChange<MaintenanceLog>(
-                            "MaintenanceLogs",
-                            idx,
-                            "endTime",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">Maintenance ID</label>
-                      <input
-                        type="text"
-                        value={log.maintenanceId}
-                        onChange={(e) =>
-                          handleLogChange<MaintenanceLog>(
-                            "MaintenanceLogs",
-                            idx,
-                            "maintenanceId",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <EditMaintenanceLogs
+              logs={form.MaintenanceLogs}
+              onLogChange={(idx, field, value) => handleLogChange<MaintenanceLog>("MaintenanceLogs", idx, field, value)}
+              onAddLog={addMaintenanceLog}
+              onRemoveLog={removeMaintenanceLog}
+            />
             {/* Trucking Logs */}
-            {form.TruckingLogs.length > 0 && (
-              <div className="col-span-2 mt-4">
-                <h3 className="font-semibold text-sm mb-2">Trucking Logs</h3>
-                {form.TruckingLogs.map((log, idx) => (
-                  <div key={log.id} className="border rounded p-2 mb-2">
-                    <div className="grid grid-cols-4 gap-2 mb-2">
-                      <div>
-                        <label className="block text-xs">Equipment ID</label>
-                        <input
-                          type="text"
-                          value={log.equipmentId}
-                          onChange={(e) =>
-                            handleLogChange<TruckingLog>(
-                              "TruckingLogs",
-                              idx,
-                              "equipmentId",
-                              e.target.value
-                            )
-                          }
-                          className="border rounded px-2 py-1 w-full"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs">
-                          Starting Mileage
-                        </label>
-                        <input
-                          type="number"
-                          value={log.startingMileage}
-                          onChange={(e) =>
-                            handleLogChange<TruckingLog>(
-                              "TruckingLogs",
-                              idx,
-                              "startingMileage",
-                              Number(e.target.value)
-                            )
-                          }
-                          className="border rounded px-2 py-1 w-full"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs">Ending Mileage</label>
-                        <input
-                          type="number"
-                          value={log.endingMileage}
-                          onChange={(e) =>
-                            handleLogChange<TruckingLog>(
-                              "TruckingLogs",
-                              idx,
-                              "endingMileage",
-                              Number(e.target.value)
-                            )
-                          }
-                          className="border rounded px-2 py-1 w-full"
-                        />
-                      </div>
-                    </div>
-                    {/* Equipment Hauled */}
-                    {log.EquipmentHauled.length > 0 && (
-                      <div className="mb-2">
-                        <div className="font-semibold text-xs">
-                          Equipment Hauled
-                        </div>
-                        {log.EquipmentHauled.map((eq, nidx) => (
-                          <div
-                            key={eq.id}
-                            className="grid grid-cols-2 gap-2 mb-1"
-                          >
-                            <input
-                              type="text"
-                              value={eq.equipmentId}
-                              onChange={(e) =>
-                                handleNestedLogChange<EquipmentHauled>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "EquipmentHauled",
-                                  nidx,
-                                  "equipmentId",
-                                  e.target.value
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Equipment ID"
-                            />
-                            <input
-                              type="text"
-                              value={eq.jobSiteId}
-                              onChange={(e) =>
-                                handleNestedLogChange<EquipmentHauled>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "EquipmentHauled",
-                                  nidx,
-                                  "jobSiteId",
-                                  e.target.value
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Jobsite ID"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* Materials */}
-                    {log.Materials.length > 0 && (
-                      <div className="mb-2">
-                        <div className="font-semibold text-xs">Materials</div>
-                        {log.Materials.map((mat, nidx) => (
-                          <div
-                            key={mat.id}
-                            className="grid grid-cols-3 gap-2 mb-1"
-                          >
-                            <input
-                              type="text"
-                              value={mat.name}
-                              onChange={(e) =>
-                                handleNestedLogChange<Material>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "Materials",
-                                  nidx,
-                                  "name",
-                                  e.target.value
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Name"
-                            />
-                            <input
-                              type="number"
-                              value={mat.materialWeight}
-                              onChange={(e) =>
-                                handleNestedLogChange<Material>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "Materials",
-                                  nidx,
-                                  "materialWeight",
-                                  Number(e.target.value)
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Weight"
-                            />
-                            <input
-                              type="text"
-                              value={mat.LocationOfMaterial}
-                              onChange={(e) =>
-                                handleNestedLogChange<Material>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "Materials",
-                                  nidx,
-                                  "LocationOfMaterial",
-                                  e.target.value
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Location"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* Refuel Logs */}
-                    {log.RefuelLogs.length > 0 && (
-                      <div className="mb-2">
-                        <div className="font-semibold text-xs">Refuel Logs</div>
-                        {log.RefuelLogs.map((rf, nidx) => (
-                          <div
-                            key={rf.id}
-                            className="grid grid-cols-2 gap-2 mb-1"
-                          >
-                            <input
-                              type="number"
-                              value={rf.gallonsRefueled}
-                              onChange={(e) =>
-                                handleNestedLogChange<RefuelLog>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "RefuelLogs",
-                                  nidx,
-                                  "gallonsRefueled",
-                                  Number(e.target.value)
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Gallons"
-                            />
-                            <input
-                              type="number"
-                              value={rf.milesAtFueling || ""}
-                              onChange={(e) =>
-                                handleNestedLogChange<RefuelLog>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "RefuelLogs",
-                                  nidx,
-                                  "milesAtFueling",
-                                  Number(e.target.value)
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Miles at Fueling"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* State Mileages */}
-                    {log.StateMileages.length > 0 && (
-                      <div className="mb-2">
-                        <div className="font-semibold text-xs">
-                          State Mileages
-                        </div>
-                        {log.StateMileages.map((sm, nidx) => (
-                          <div
-                            key={sm.id}
-                            className="grid grid-cols-2 gap-2 mb-1"
-                          >
-                            <input
-                              type="text"
-                              value={sm.state}
-                              onChange={(e) =>
-                                handleNestedLogChange<StateMileage>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "StateMileages",
-                                  nidx,
-                                  "state",
-                                  e.target.value
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="State"
-                            />
-                            <input
-                              type="number"
-                              value={sm.stateLineMileage}
-                              onChange={(e) =>
-                                handleNestedLogChange<StateMileage>(
-                                  "TruckingLogs",
-                                  idx,
-                                  "StateMileages",
-                                  nidx,
-                                  "stateLineMileage",
-                                  Number(e.target.value)
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Mileage"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            <EditTruckingLogs
+              logs={form.TruckingLogs}
+              onLogChange={(idx, field, value) => handleLogChange<TruckingLog>("TruckingLogs", idx, field, value)}
+              onAddLog={addTruckingLog}
+              onRemoveLog={removeTruckingLog}
+              handleNestedLogChange={(logIndex, nestedType, nestedIndex, field, value) =>
+                handleNestedLogChange<any>("TruckingLogs", logIndex, nestedType, nestedIndex, field, value)
+              }
+            />
             {/* Tasco Logs */}
-            {form.TascoLogs.length > 0 && (
-              <div className="col-span-2 mt-4">
-                <h3 className="font-semibold text-sm mb-2">Tasco Logs</h3>
-                {form.TascoLogs.map((log, idx) => (
-                  <div
-                    key={log.id}
-                    className="border rounded p-2 mb-2 grid grid-cols-4 gap-2"
-                  >
-                    <div>
-                      <label className="block text-xs">Shift Type</label>
-                      <input
-                        type="text"
-                        value={log.shiftType}
-                        onChange={(e) =>
-                          handleLogChange<TascoLog>(
-                            "TascoLogs",
-                            idx,
-                            "shiftType",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">Labor Type</label>
-                      <input
-                        type="text"
-                        value={log.laborType}
-                        onChange={(e) =>
-                          handleLogChange<TascoLog>(
-                            "TascoLogs",
-                            idx,
-                            "laborType",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">Material Type</label>
-                      <input
-                        type="text"
-                        value={log.materialType}
-                        onChange={(e) =>
-                          handleLogChange<TascoLog>(
-                            "TascoLogs",
-                            idx,
-                            "materialType",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">Load Quantity</label>
-                      <input
-                        type="number"
-                        value={log.LoadQuantity}
-                        onChange={(e) =>
-                          handleLogChange<TascoLog>(
-                            "TascoLogs",
-                            idx,
-                            "LoadQuantity",
-                            Number(e.target.value)
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    {/* Refuel Logs */}
-                    {log.RefuelLogs.length > 0 && (
-                      <div className="col-span-4 mt-2">
-                        <div className="font-semibold text-xs">Refuel Logs</div>
-                        {log.RefuelLogs.map((rf, nidx) => (
-                          <div
-                            key={rf.id}
-                            className="grid grid-cols-2 gap-2 mb-1"
-                          >
-                            <input
-                              type="number"
-                              value={rf.gallonsRefueled}
-                              onChange={(e) =>
-                                handleNestedLogChange<RefuelLog>(
-                                  "TascoLogs",
-                                  idx,
-                                  "RefuelLogs",
-                                  nidx,
-                                  "gallonsRefueled",
-                                  Number(e.target.value)
-                                )
-                              }
-                              className="border rounded px-2 py-1 w-full"
-                              placeholder="Gallons"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            <EditTascoLogs
+              logs={form.TascoLogs}
+              onLogChange={(idx, field, value) => handleLogChange<TascoLog>("TascoLogs", idx, field, value)}
+              onAddLog={addTascoLog}
+              onRemoveLog={removeTascoLog}
+              handleNestedLogChange={(logIndex, nestedType, nestedIndex, field, value) =>
+                handleNestedLogChange<any>("TascoLogs", logIndex, nestedType, nestedIndex, field, value)
+              }
+            />
             {/* Employee Equipment Logs */}
-            {form.EmployeeEquipmentLogs.length > 0 && (
-              <div className="col-span-2 mt-4">
-                <h3 className="font-semibold text-sm mb-2">
-                  Employee Equipment Logs
-                </h3>
-                {form.EmployeeEquipmentLogs.map((log, idx) => (
-                  <div
-                    key={log.id}
-                    className="border rounded p-2 mb-2 grid grid-cols-4 gap-2"
-                  >
-                    <div>
-                      <label className="block text-xs">Equipment ID</label>
-                      <input
-                        type="text"
-                        value={log.equipmentId}
-                        onChange={(e) =>
-                          handleLogChange<EmployeeEquipmentLog>(
-                            "EmployeeEquipmentLogs",
-                            idx,
-                            "equipmentId",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">Start Time</label>
-                      <input
-                        type="time"
-                        value={log.startTime ? log.startTime.slice(11, 16) : ""}
-                        onChange={(e) =>
-                          handleLogChange<EmployeeEquipmentLog>(
-                            "EmployeeEquipmentLogs",
-                            idx,
-                            "startTime",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs">End Time</label>
-                      <input
-                        type="time"
-                        value={log.endTime ? log.endTime.slice(11, 16) : ""}
-                        onChange={(e) =>
-                          handleLogChange<EmployeeEquipmentLog>(
-                            "EmployeeEquipmentLogs",
-                            idx,
-                            "endTime",
-                            e.target.value
-                          )
-                        }
-                        className="border rounded px-2 py-1 w-full"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <EditEmployeeEquipmentLogs
+              logs={form.EmployeeEquipmentLogs}
+              onLogChange={(idx, field, value) => handleLogChange<EmployeeEquipmentLog>("EmployeeEquipmentLogs", idx, field, value)}
+              onAddLog={addEmployeeEquipmentLog}
+              onRemoveLog={removeEmployeeEquipmentLog}
+            />
             {/* Actions */}
             <div className="col-span-2 flex justify-end gap-2 mt-4">
               <Button
