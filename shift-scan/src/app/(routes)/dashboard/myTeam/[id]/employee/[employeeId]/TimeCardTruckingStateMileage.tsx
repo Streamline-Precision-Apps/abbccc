@@ -49,13 +49,23 @@ export default function TimeCardTruckingStateMileageLogs({
   };
 
   // Get the current value from local state or use the original value
-  const getDisplayValue = (logId: string, mileageId: string, fieldName: string, originalValue: any) => {
+  const getDisplayValue = (
+    logId: string,
+    mileageId: string,
+    fieldName: string,
+    originalValue: string | number | null
+  ) => {
     const key = getInputKey(logId, mileageId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, mileageId: string, fieldName: string, value: any) => {
+  const handleLocalChange = (
+    logId: string,
+    mileageId: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, mileageId, fieldName)]: value,
@@ -234,7 +244,7 @@ export default function TimeCardTruckingStateMileageLogs({
                         <Holds className="col-start-3 col-end-4 w-full h-full">
                           {edit ? (
                             <select
-                              value={getDisplayValue(mileage.truckingLogId, mileage.id, "state", mileage.state)}
+                              value={getDisplayValue(mileage.truckingLogId, mileage.id, "state", mileage.state) ?? ''}
                               onChange={(e) =>
                                 handleLocalChange(
                                   mileage.truckingLogId,
@@ -266,22 +276,22 @@ export default function TimeCardTruckingStateMileageLogs({
                         </Holds>                        <Holds className="col-start-4 col-end-5 w-full h-full border-l-[3px] border-black">
                         <Inputs
                           type="number"
-                          value={getDisplayValue(mileage.truckingLogId, mileage.id, "stateLineMileage", mileage.stateLineMileage?.toString() || "")}
+                          value={getDisplayValue(mileage.truckingLogId, mileage.id, "stateLineMileage", mileage.stateLineMileage?.toString() ?? '') ?? ''}
                           background={isFocused ? "orange" : "white"}
-                            onChange={(e) =>
-                              handleLocalChange(
-                                mileage.truckingLogId,
-                                mileage.id,
-                                "stateLineMileage",
-                                e.target.value
-                              )
-                            }
-                            disabled={!edit}
-                            className="w-full h-full py-2 border-none rounded-none rounded-tr-md rounded-br-md text-right text-xs"
-                            onBlur={() =>
-                              handleBlur(mileage.truckingLogId, mileage.id, "stateLineMileage")
-                            }
-                          />
+                          onChange={(e) =>
+                            handleLocalChange(
+                              mileage.truckingLogId,
+                              mileage.id,
+                              "stateLineMileage",
+                              e.target.value
+                            )
+                          }
+                          disabled={!edit}
+                          className="w-full h-full py-2 border-none rounded-none rounded-tr-md rounded-br-md text-right text-xs"
+                          onBlur={() =>
+                            handleBlur(mileage.truckingLogId, mileage.id, "stateLineMileage")
+                          }
+                        />
                         </Holds>
                       </Grids>
                     </Buttons>

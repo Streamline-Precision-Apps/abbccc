@@ -54,7 +54,7 @@ export default function TimeCardEquipmentRefuelLogs({
     refuelId: string,
     logId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(refuelId, logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -65,7 +65,7 @@ export default function TimeCardEquipmentRefuelLogs({
     refuelId: string,
     logId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -200,12 +200,14 @@ export default function TimeCardEquipmentRefuelLogs({
                           {" "}
                           <Inputs
                             type="number"
-                            value={getDisplayValue(
-                              log.id,
-                              log.employeeEquipmentLogId,
-                              "gallonsRefueled",
-                              log.gallonsRefueled?.toString() || ""
-                            )}
+                            value={
+                              getDisplayValue(
+                                log.id,
+                                log.employeeEquipmentLogId,
+                                "gallonsRefueled",
+                                log.gallonsRefueled?.toString() || ""
+                              ) ?? ""
+                            }
                             background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(

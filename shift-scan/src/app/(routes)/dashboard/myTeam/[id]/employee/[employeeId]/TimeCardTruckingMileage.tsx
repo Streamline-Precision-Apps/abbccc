@@ -57,14 +57,14 @@ export default function TimeCardTruckingMileage({
   const getDisplayValue = (
     logId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: any) => {
+  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -102,7 +102,7 @@ export default function TimeCardTruckingMileage({
   const handleMileageChange = (
     id: string,
     field: keyof TruckingMileageUpdate,
-    value: any
+    value: number | null | string | undefined
   ) => {
     const updated = truckingMileage
       .map((item) => {
@@ -213,7 +213,7 @@ export default function TimeCardTruckingMileage({
                                 sheet.id,
                                 "startingMileage",
                                 sheet.startingMileage
-                              )}
+                              ) ?? ''}
                               className="text-xs border-none h-full rounded-none justify-center p-2.5"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}
@@ -240,7 +240,7 @@ export default function TimeCardTruckingMileage({
                                 sheet.id,
                                 "endingMileage",
                                 sheet.endingMileage || ""
-                              )}
+                              ) ?? ''}
                               className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right p-2.5"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}

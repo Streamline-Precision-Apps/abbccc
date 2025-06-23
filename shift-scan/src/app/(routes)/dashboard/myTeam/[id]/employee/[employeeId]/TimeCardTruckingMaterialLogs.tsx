@@ -9,12 +9,14 @@ import {
   MaterialType,
   TruckingMaterialHaulLog,
   TruckingMaterialHaulLogData,
+  TruckingMaterialHaulLogItem,
+  TruckingMaterial,
 } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 // Define the type for processed material data
-type ProcessedMaterialLog = {
+export type ProcessedMaterialLog = {
   id: string;
   name: string;
   LocationOfMaterial: string;
@@ -97,7 +99,7 @@ export default function TimeCardTruckingMaterialLogs({
     logId: string,
     materialId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, materialId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -108,7 +110,7 @@ export default function TimeCardTruckingMaterialLogs({
     logId: string,
     materialId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -142,7 +144,7 @@ export default function TimeCardTruckingMaterialLogs({
     truckingLogId: string,
     materialId: string,
     field: keyof ProcessedMaterialLog,
-    value: any
+    value: string | number | null
   ) => {
     const updated = truckingMaterialHaulLogs.map((item, idx) => {
       if (idx === truckingLogItemIndex) {
@@ -187,12 +189,10 @@ export default function TimeCardTruckingMaterialLogs({
                     {t("Weight")}
                   </Titles>
                 </Holds>
-              </Grids>
-
-              {truckingMaterialHaulLogs.map((item: any, itemIdx: number) =>
-                (item.TruckingLogs ?? []).map((log: any, logIdx: number) => {
+              </Grids>              {truckingMaterialHaulLogs.map((item: TruckingMaterialHaulLogItem, itemIdx: number) =>
+                (item.TruckingLogs ?? []).map((log: TruckingMaterialHaulLog | null, logIdx: number) => {
                   if (!log) return null;
-                  return (log.Materials ?? []).map((material: any, matIdx: number) => {
+                  return (log.Materials ?? []).map((material: TruckingMaterial | null, matIdx: number) => {
                     if (!material) return null;
                     const isFocused = focusIds.includes(material.id);
                     const handleToggleFocus = () => {
@@ -238,7 +238,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "name",
                                         material.name
-                                      )}
+                                      ) ?? ''}
                                       background={
                                         focusIds.includes(material.id)
                                           ? "orange"
@@ -295,7 +295,7 @@ export default function TimeCardTruckingMaterialLogs({
                                       material.id,
                                       "LocationOfMaterial",
                                       material.LocationOfMaterial
-                                    )}
+                                    ) ?? ''}
                                     onChange={(e) =>
                                       handleLocalChange(
                                         log.id,
@@ -346,7 +346,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "materialWeight",
                                         material.materialWeight
-                                      ) || ""
+                                      )?.toString() ?? ''
                                     }
                                     onChange={(e) =>
                                       handleLocalChange(
@@ -396,7 +396,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "lightWeight",
                                         material.lightWeight
-                                      ) || ""
+                                      )?.toString() ?? ''
                                     }
                                     onChange={(e) =>
                                       handleLocalChange(
@@ -446,7 +446,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "grossWeight",
                                         material.grossWeight
-                                      ) || ""
+                                      )?.toString() ?? ''
                                     }
                                     onChange={(e) =>
                                       handleLocalChange(
