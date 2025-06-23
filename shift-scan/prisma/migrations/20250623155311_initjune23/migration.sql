@@ -1,23 +1,11 @@
 -- CreateEnum
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
-
--- CreateEnum
-CREATE TYPE "FieldType" AS ENUM ('TEXT', 'TEXTAREA', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
-
--- CreateEnum
-CREATE TYPE "ReportStatus" AS ENUM ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELED');
-
--- CreateEnum
-CREATE TYPE "ReportVisibility" AS ENUM ('PRIVATE', 'MANAGEMENT', 'COMPANY');
+CREATE TYPE "CreatedVia" AS ENUM ('ADMIN', 'MOBILE');
 
 -- CreateEnum
 CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
 CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'VEHICLE', 'EQUIPMENT');
-
--- CreateEnum
-CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
 
 -- CreateEnum
 CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
@@ -32,40 +20,41 @@ CREATE TYPE "Priority" AS ENUM ('PENDING', 'LOW', 'MEDIUM', 'HIGH', 'TODAY');
 CREATE TYPE "LoadType" AS ENUM ('UNSCREENED', 'SCREENED');
 
 -- CreateEnum
-CREATE TYPE "TimeSheetStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
-
--- CreateEnum
-CREATE TYPE "EquipmentUsageType" AS ENUM ('TASCO', 'TRUCKING', 'MAINTENANCE', 'LABOR', 'GENERAL');
-
--- CreateEnum
 CREATE TYPE "EquipmentState" AS ENUM ('AVAILABLE', 'IN_USE', 'MAINTENANCE', 'NEEDS_REPAIR', 'RETIRED');
 
 -- CreateEnum
-CREATE TYPE "AuditAction" AS ENUM ('CREATED', 'UPDATED', 'DELETED', 'APPROVED', 'REJECTED');
+CREATE TYPE "ApprovalStatus" AS ENUM ('IN_PROGRESS', 'PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
-CREATE TYPE "EntityType" AS ENUM ('EQUIPMENT', 'JOBSITE', 'USER', 'COMPANY', 'TIMESHEET');
+CREATE TYPE "ReportStatus" AS ENUM ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELED');
 
 -- CreateEnum
-CREATE TYPE "ApprovalStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'CHANGES_REQUESTED');
+CREATE TYPE "ReportVisibility" AS ENUM ('PRIVATE', 'MANAGEMENT', 'COMPANY');
+
+-- CreateEnum
+CREATE TYPE "FormStatus" AS ENUM ('DRAFT', 'PENDING', 'APPROVED', 'DENIED');
+
+-- CreateEnum
+CREATE TYPE "FieldType" AS ENUM ('TEXT', 'TEXTAREA', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
 
 -- CreateTable
 CREATE TABLE "Client" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "address" TEXT,
-    "city" TEXT,
-    "state" TEXT,
-    "zipCode" TEXT,
-    "country" TEXT NOT NULL DEFAULT 'US',
-    "phone" TEXT,
-    "email" TEXT,
+    "creationReason" TEXT,
+    "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
     "contactPerson" TEXT,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "contactEmail" TEXT,
+    "contactPhone" TEXT,
+    "hasProject" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "companyId" TEXT NOT NULL,
+    "createdById" TEXT,
+    "createdVia" "CreatedVia" NOT NULL DEFAULT 'ADMIN',
+    "jobsiteId" TEXT,
+    "addressId" TEXT,
 
     CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
 );
@@ -74,10 +63,7 @@ CREATE TABLE "Client" (
 CREATE TABLE "Company" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "zipCode" TEXT NOT NULL,
+    "addressId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "SubscriptionDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -147,50 +133,19 @@ CREATE TABLE "Equipment" (
     "qrId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "creationReason" TEXT,
     "equipmentTag" "EquipmentTags" NOT NULL DEFAULT 'EQUIPMENT',
     "state" "EquipmentState" NOT NULL DEFAULT 'AVAILABLE',
     "isDisabledByAdmin" BOOLEAN NOT NULL DEFAULT false,
-    "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'APPROVED',
+    "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "overWeight" BOOLEAN DEFAULT false,
     "currentWeight" DOUBLE PRECISION DEFAULT 0,
+    "createdById" TEXT,
+    "createdVia" "CreatedVia" NOT NULL DEFAULT 'MOBILE',
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PendingApproval" (
-    "id" TEXT NOT NULL,
-    "entityType" "EntityType" NOT NULL,
-    "equipmentId" TEXT,
-    "jobsiteId" TEXT,
-    "createdById" TEXT NOT NULL,
-    "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
-    "approvedById" TEXT,
-    "comment" TEXT,
-    "approvalComment" TEXT,
-    "proposedChanges" JSONB,
-    "officeChanges" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "approvedAt" TIMESTAMP(3),
-
-    CONSTRAINT "PendingApproval_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "AuditLog" (
-    "id" TEXT NOT NULL,
-    "entityType" "EntityType" NOT NULL,
-    "equipmentId" TEXT,
-    "jobsiteId" TEXT,
-    "action" "AuditAction" NOT NULL,
-    "userId" TEXT,
-    "changes" JSONB,
-    "comment" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "AuditLog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -209,32 +164,14 @@ CREATE TABLE "EquipmentVehicleInfo" (
 -- CreateTable
 CREATE TABLE "EmployeeEquipmentLog" (
     "id" TEXT NOT NULL,
-    "equipmentId" TEXT NOT NULL,
-    "jobsiteId" TEXT NOT NULL,
-    "employeeId" TEXT NOT NULL,
-    "startTime" TIMESTAMP(3),
+    "timeSheetId" TEXT NOT NULL,
+    "equipmentId" TEXT,
+    "maintenanceId" TEXT,
+    "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endTime" TIMESTAMP(3),
     "comment" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "isFinished" BOOLEAN NOT NULL DEFAULT false,
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
-    "timeSheetId" TEXT,
-    "workType" "EquipmentUsageType" NOT NULL DEFAULT 'GENERAL',
-    "relatedLogId" TEXT,
 
     CONSTRAINT "EmployeeEquipmentLog_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "EquipmentHauled" (
-    "id" TEXT NOT NULL,
-    "truckingLogId" TEXT NOT NULL,
-    "equipmentId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "jobSiteId" TEXT,
-
-    CONSTRAINT "EquipmentHauled_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -333,19 +270,17 @@ CREATE TABLE "Jobsite" (
     "qrId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'APPROVED',
+    "creationReason" TEXT,
+    "approvalStatus" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "address" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "zipCode" TEXT NOT NULL,
-    "country" TEXT NOT NULL DEFAULT 'US',
+    "addressId" TEXT,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "archiveDate" TIMESTAMP(3),
-    "companyId" TEXT,
     "clientId" TEXT NOT NULL,
+    "createdById" TEXT,
+    "createdVia" "CreatedVia" NOT NULL DEFAULT 'ADMIN',
 
     CONSTRAINT "Jobsite_pkey" PRIMARY KEY ("id")
 );
@@ -397,7 +332,7 @@ CREATE TABLE "TimeSheet" (
     "comment" TEXT,
     "statusComment" TEXT,
     "location" TEXT,
-    "status" "TimeSheetStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
     "workType" "WorkType" NOT NULL,
     "editedByUserId" TEXT,
     "newTimeSheetId" TEXT,
@@ -529,6 +464,17 @@ CREATE TABLE "RefuelLog" (
 );
 
 -- CreateTable
+CREATE TABLE "EquipmentHauled" (
+    "id" TEXT NOT NULL,
+    "truckingLogId" TEXT NOT NULL,
+    "equipmentId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "jobSiteId" TEXT,
+
+    CONSTRAINT "EquipmentHauled_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
@@ -593,6 +539,18 @@ CREATE TABLE "PasswordResetToken" (
 );
 
 -- CreateTable
+CREATE TABLE "Address" (
+    "id" TEXT NOT NULL,
+    "street" TEXT NOT NULL,
+    "city" TEXT NOT NULL,
+    "state" TEXT NOT NULL,
+    "zipCode" TEXT NOT NULL,
+    "country" TEXT NOT NULL DEFAULT 'US',
+
+    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_CCTagToCostCode" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -647,7 +605,7 @@ CREATE UNIQUE INDEX "Client_name_key" ON "Client"("name");
 CREATE INDEX "Client_companyId_name_idx" ON "Client"("companyId", "name");
 
 -- CreateIndex
-CREATE INDEX "Client_isActive_idx" ON "Client"("isActive");
+CREATE INDEX "Client_hasProject_idx" ON "Client"("hasProject");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CostCode_name_key" ON "CostCode"("name");
@@ -677,16 +635,7 @@ CREATE INDEX "Equipment_state_isDisabledByAdmin_idx" ON "Equipment"("state", "is
 CREATE INDEX "Equipment_approvalStatus_idx" ON "Equipment"("approvalStatus");
 
 -- CreateIndex
-CREATE INDEX "PendingApproval_entityType_equipmentId_jobsiteId_idx" ON "PendingApproval"("entityType", "equipmentId", "jobsiteId");
-
--- CreateIndex
-CREATE INDEX "PendingApproval_approvalStatus_createdAt_idx" ON "PendingApproval"("approvalStatus", "createdAt");
-
--- CreateIndex
-CREATE INDEX "AuditLog_entityType_equipmentId_jobsiteId_createdAt_idx" ON "AuditLog"("entityType", "equipmentId", "jobsiteId", "createdAt");
-
--- CreateIndex
-CREATE INDEX "EmployeeEquipmentLog_workType_relatedLogId_idx" ON "EmployeeEquipmentLog"("workType", "relatedLogId");
+CREATE INDEX "EmployeeEquipmentLog_timeSheetId_equipmentId_maintenanceId_idx" ON "EmployeeEquipmentLog"("timeSheetId", "equipmentId", "maintenanceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
@@ -695,10 +644,7 @@ CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
 CREATE INDEX "Jobsite_qrId_idx" ON "Jobsite"("qrId");
 
 -- CreateIndex
-CREATE INDEX "Jobsite_clientId_companyId_idx" ON "Jobsite"("clientId", "companyId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Jobsite_name_address_city_state_key" ON "Jobsite"("name", "address", "city", "state");
+CREATE INDEX "Jobsite_clientId_idx" ON "Jobsite"("clientId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Report_name_key" ON "Report"("name");
@@ -755,52 +701,31 @@ CREATE INDEX "_DocumentTagToPdfDocument_B_index" ON "_DocumentTagToPdfDocument"(
 CREATE INDEX "_FormGroupingToFormTemplate_B_index" ON "_FormGroupingToFormTemplate"("B");
 
 -- AddForeignKey
+ALTER TABLE "Client" ADD CONSTRAINT "Client_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Client" ADD CONSTRAINT "Client_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_approvedById_fkey" FOREIGN KEY ("approvedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Client" ADD CONSTRAINT "Client_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Company" ADD CONSTRAINT "Company_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PendingApproval" ADD CONSTRAINT "PendingApproval_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Equipment" ADD CONSTRAINT "Equipment_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EquipmentVehicleInfo" ADD CONSTRAINT "EquipmentVehicleInfo_id_fkey" FOREIGN KEY ("id") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_jobSiteId_fkey" FOREIGN KEY ("jobSiteId") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_maintenanceId_fkey" FOREIGN KEY ("maintenanceId") REFERENCES "Maintenance"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FormTemplate" ADD CONSTRAINT "FormTemplate_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -824,10 +749,13 @@ ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_formSubmissionId_fkey" F
 ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_signedBy_fkey" FOREIGN KEY ("signedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Report" ADD CONSTRAINT "Report_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -854,9 +782,6 @@ ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_timeSheetId_fkey" FO
 ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -875,13 +800,13 @@ ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_equipmentId_fkey" FOREIGN 
 ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TruckLaborLogs" ADD CONSTRAINT "TruckLaborLogs_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TruckLaborLogs" ADD CONSTRAINT "TruckLaborLogs_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Material" ADD CONSTRAINT "Material_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Material" ADD CONSTRAINT "Material_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -890,7 +815,16 @@ ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_employeeEquipmentLogId_fkey" F
 ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "RefuelLog" ADD CONSTRAINT "RefuelLog_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_jobSiteId_fkey" FOREIGN KEY ("jobSiteId") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

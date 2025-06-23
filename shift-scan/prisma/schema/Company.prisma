@@ -1,16 +1,13 @@
 model Company {
   id               String         @id @default(uuid())
   name             String
-  address          String
-  city             String
-  state            String
-  zipCode          String
+  addressId        String?
+  Address          Address?       @relation(fields: [addressId], references: [id])
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   SubscriptionDate DateTime       @default(now())
   Clients          Client[]
   FormTemplates    FormTemplate[]
   Reports          Report[]
-  Jobsites         Jobsite[]
   Users            User[]
 }

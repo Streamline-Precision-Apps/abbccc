@@ -1,212 +1,376 @@
 "use client";
 
-import { Holds } from "@/components/(reusable)/holds";
+//*
+// Tasks:
+// implement timesheet editing functionality - currently in progress
+// implement timesheet approval and rejection functionality
+// implement timesheet download / export functionality
+// */
 import { Texts } from "@/components/(reusable)/texts";
-import Button from "@mui/material/Button";
+import { Button } from "@/components/ui/button";
 import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../_components/pageSelector";
+import PageSelector from "../pageSelector";
+import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
+import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
+import { TimeSheetStatus, WorkType } from "@/lib/enums";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
+import { adminDeleteTimesheet } from "@/actions/records-timesheets";
+import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
+import { toast } from "sonner";
+import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
+
+export type Timesheet = {
+  id: string;
+  date: Date | string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  Jobsite: {
+    id: string;
+    name: string;
+  };
+  CostCode: {
+    id: string;
+    name: string;
+  };
+  nu: string;
+  Fp: string;
+  startTime: Date | string;
+  endTime: Date | string;
+  comment: string;
+  status: TimeSheetStatus;
+  workType: WorkType;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
+type timesheetPending = {
+  length: number;
+};
+// Updated CreateTimesheetModal with user/jobsite dropdowns and removed nu, Fp, location, status
 
 export default function AdminTimesheets() {
-  const timesheetHeaders = [
-    "Timesheet Id",
-    "Date",
-    "Employee Name",
-    "Profit Id",
-    "Cost Code",
-    "Start Time",
-    "End Time",
-    "Comment",
-    "Status",
-    "Created At",
-    "Last modified",
-  ];
-  const timesheetObjects = [
-    {
-      id: "1",
-      date: "2023-01-01",
-      employeeName: "John Doe",
-      profitId: "P123",
-      costCode: "C456",
-      startTime: "08:00AM",
-      endTime: "05:00PM",
-      comment: "Worked on project X",
-      status: "Approved",
-      createdAt: "2023-01-01",
-      lastModified: "2023-01-01",
-    },
-    {
-      id: "2",
-      date: "2023-01-01",
-      employeeName: "John Doe",
-      profitId: "P123",
-      costCode: "C456",
-      startTime: "08:00AM",
-      endTime: "05:00PM",
-      comment: "Worked on project X",
-      status: "Approved",
-      createdAt: "2023-01-01",
-      lastModified: "2023-01-01",
-    },
-    {
-      id: "3",
-      date: "2023-01-01",
-      employeeName: "John Doe",
-      profitId: "P123",
-      costCode: "C456",
-      startTime: "08:00AM",
-      endTime: "05:00PM",
-      comment: "Worked on project X",
-      status: "Approved",
-      createdAt: "2023-01-01",
-      lastModified: "2023-01-01",
-    },
-    // Add more timesheet objects as needed
-  ];
-  const numOfTimesheets = timesheetObjects.length;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const pageSizeOptions = [25, 50, 75, 100];
+  const [sortField, setSortField] = useState<keyof Timesheet | "">("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({ from: undefined, to: undefined });
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  //todo: Implement search functionality
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-  //todo: Implement pagination functionality
+  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
+    null
+  );
 
-  //todo: Implement sorting functionality
+  // Move fetch functions out for reuse
+  const fetchTimesheets = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`,
+        {
+          next: {
+            tags: ["timesheets"],
+          },
+        }
+      );
+      const data = await response.json();
+      setAllTimesheets(data.timesheets);
+      setTotalPages(data.totalPages);
+      setTotal(data.total);
+    } catch (error) {
+      console.error("Error fetching timesheets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // implement timesheet creation functionality
+  const fetchTimesheetsPending = async () => {
+    try {
+      const response = await fetch(`/api/getAllTimesheetsPending`, {
+        next: {
+          tags: ["timesheets"],
+        },
+      });
+      const data = await response.json();
+      setApprovalInbox(data);
+    } catch (error) {
+      console.error("Error fetching timesheets:", error);
+    }
+  };
 
-  // implement timesheet deletion functionality
+  // Refetch both after creation
+  const refetchAll = async () => {
+    await fetchTimesheets();
+    await fetchTimesheetsPending();
+  };
 
-  // implement timesheet approval and rejection functionality
+  useEffect(() => {
+    fetchTimesheets();
+  }, [page, pageSize]);
 
-  // implement timesheet editing functionality
+  useEffect(() => {
+    fetchTimesheetsPending();
+  }, [allTimesheets]);
 
-  // implement timesheet download / export functionality
+  // Filter timesheets based on searchTerm and date range
+  const filteredTimesheets = allTimesheets.filter((ts) => {
+    const id = ts.id || "";
+    const firstName = ts?.User?.firstName || "";
+    const lastName = ts?.User?.lastName || "";
+    const jobsite = ts?.Jobsite?.name || "";
+    const costCode = ts?.CostCode?.name || "";
+    const term = searchTerm.toLowerCase();
+    // Date range filter
+    let inDateRange = true;
+    if (dateRange.from) {
+      inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
+    }
+    if (dateRange.to) {
+      inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
+    }
+    return (
+      inDateRange &&
+      (id.toLowerCase().includes(term) ||
+        firstName.toLowerCase().includes(term) ||
+        lastName.toLowerCase().includes(term) ||
+        jobsite.toLowerCase().includes(term) ||
+        costCode.toLowerCase().includes(term))
+    );
+  });
+
+  // Use filteredTimesheets, sorted by date descending
+  const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  const handleDeleteClick = (id: string) => {
+    setDeletingId(id);
+  };
+  const handleDeleteCancel = () => {
+    setDeletingId(null);
+  };
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
+    try {
+      await adminDeleteTimesheet(deletingId);
+      setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
+      setDeletingId(null);
+      toast.success("Timesheet deleted successfully!");
+    } catch (e) {
+      // Optionally show error
+      console.error("Error deleting timesheet:", e);
+      toast.error("Failed to delete timesheet. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handler to reset page to 1 when page size changes
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPage(1);
+    setPageSize(Number(e.target.value));
+  };
 
   return (
-    <Holds className="h-full w-full flex-col gap-4">
-      <Holds className="h-fit w-full gap-1 p-4">
-        <Texts size={"md"} text={"white"} className="text-left font-bold">
-          Timesheets Management
-        </Texts>
-        <Texts size={"sm"} text={"white"} className="text-left">
-          Create, manage, and track timesheet submissions
-        </Texts>
-      </Holds>
-      <Holds position={"row"} className="h-fit w-full px-4 gap-4">
-        <Holds
-          position={"left"}
-          background={"white"}
-          className="h-full w-full max-w-[250px] py-2"
-        >
+    <div className="h-full w-full flex flex-col gap-4">
+      <TimesheetDescription />
+      {/*Timesheet search, filter and navigation*/}
+      <div className="h-fit w-full flex flex-row px-4 gap-4">
+        <div className="bg-white rounded-lg h-full w-full max-w-[450px] py-2">
           <SearchBar
-            term={""}
-            handleSearchChange={(e) => console.log(e)}
-            placeholder={"Search forms..."}
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={"Search by id, employee, Profit Id or cost code..."}
             textSize="xs"
             imageSize="6"
           />
-        </Holds>
-        <Holds position={"row"} className="w-fit min-w-[40px] h-full">
-          <Holds
-            position={"left"}
-            background={"white"}
-            className="h-full w-full max-w-[40px] justify-center items-center"
-          >
-            <img src="/filterDials.svg" alt="Filter" className="h-4 w-4 " />
-          </Holds>
-        </Holds>
-        <Holds position={"row"} className="w-full max-w-[160px] h-full">
+        </div>
+        <div className="w-fit min-w-[40px] h-full flex flex-row">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white h-full w-full max-w-[40px] justify-center items-center"
+              >
+                <img src="/filterDials.svg" alt="Filter" className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="min-w-[320px] p-4 ">
+              <div className="">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block mb-1 font-semibold">Date Range</label>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-2 flex-shrink-0"
+                    onClick={() =>
+                      setDateRange({ from: undefined, to: undefined })
+                    }
+                    aria-label="Clear date range"
+                  >
+                    <img
+                      src="/trash-red.svg"
+                      alt="Clear date range"
+                      className="h-5 w-5"
+                    />
+                  </Button>
+                </div>
+
+                <div className="mt-2 text-xs text-center text-muted-foreground">
+                  {dateRange.from && dateRange.to ? (
+                    `${format(dateRange.from, "PPP")} - ${format(
+                      dateRange.to,
+                      "PPP"
+                    )}`
+                  ) : dateRange.from ? (
+                    `${format(dateRange.from, "PPP")} - ...`
+                  ) : (
+                    <span>Pick a date range</span>
+                  )}
+                </div>
+                <div className="flex items-center justify-center gap-2 overflow-visible">
+                  <Calendar
+                    mode="range"
+                    selected={dateRange}
+                    onSelect={(value) =>
+                      setDateRange({ from: value?.from, to: value?.to })
+                    }
+                    autoFocus
+                  />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className=" w-[300px] h-full items-center flex text-xs text-white">
+          {pageSize === sortedTimesheets.length && (
+            <>
+              {pageSize} of {total} rows
+            </>
+          )}
+        </div>
+        <div className="w-full flex flex-row max-w-[160px] h-full">
           <Texts
             position={"left"}
             size={"sm"}
             text={"white"}
             className="font-bold"
           >
-            {numOfTimesheets} of {numOfTimesheets} forms
+            {/* {numOfTimesheets} of {numOfTimesheets} forms */}
           </Texts>
-        </Holds>
-        <Holds position={"row"} className="w-full justify-end h-full">
+        </div>
+        <div className="w-full flex flex-row justify-end h-full">
           <PageSelector />
-          <Button className="border-none w-fit h-full px-4  bg-gray-900 hover:bg-gray-800 text-white">
-            <Holds position={"row"} className="items-center">
+          <Button
+            size={"icon"}
+            className=" relative border-none hover:bg-gray-800 text-white mr-2"
+          >
+            <div className="flex w-fit h-fit flex-row items-center">
+              <img src="/export-white.svg" alt="Export" className="h-4 w-4 " />
+            </div>
+          </Button>
+          <Button
+            className="border-none w-fit h-fit px-4  hover:bg-gray-800 text-white mr-2"
+            onClick={() => setShowCreateModal(true)}
+          >
+            <div className="items-center flex flex-row">
               <img
-                src="/plus-stroke-white.svg"
-                alt="white Plus icon"
+                src="/plus-white.svg"
+                alt="Create New Form"
                 className="h-4 w-4 mr-2"
               />
-
-              <p className="rounded-lg p-2">Create New Timesheet</p>
-            </Holds>
+              <Texts size={"sm"} text={"white"} className="font-extrabold">
+                New Timesheet
+              </Texts>
+            </div>
           </Button>
-        </Holds>
-      </Holds>
-      <Holds className="h-full w-full px-4 ">
-        <Holds background={"white"} className="h-full w-full overflow-x-auto">
-          <table className="w-full table-auto overflow-auto min-w-max">
-            <thead className="w-full overflow-x-auto">
-              <tr className="border-b">
-                {timesheetHeaders.map((header) => (
-                  <th className="px-4 py-2 text-left">{header}</th>
-                ))}
-                <th className="px-4 py-2 text-left sticky right-0 bg-white z-10">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="w-full overflow-auto">
-              {timesheetObjects.map((timesheet) => (
-                <tr className="border-b" key={timesheet.id}>
-                  <td className="px-4 py-2 text-left">{timesheet.id}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.date}</td>
-                  <td className="px-4 py-2 text-left">
-                    {timesheet.employeeName}
-                  </td>
-                  <td className="px-4 py-2 text-left">{timesheet.profitId}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.costCode}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.startTime}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.endTime}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.comment}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.status}</td>
-                  <td className="px-4 py-2 text-left">{timesheet.createdAt}</td>
-                  <td className="px-4 py-2 text-left">
-                    {timesheet.lastModified}
-                  </td>
-                  <td className="p-4 py-2 text-left sticky right-0 bg-white z-10">
-                    <Button className="border-none w-fit h-full  ">
-                      <img
-                        src="/export.svg"
-                        alt="export Form"
-                        className="h-4 w-4 mr-4"
-                      />
-                    </Button>
-                    <Button className="border-none w-fit h-full  ">
-                      <img
-                        src="/formEdit.svg"
-                        alt="Edit Form"
-                        className="h-4 w-4 mr-4"
-                      />
-                    </Button>
-                    <Button className="border-none w-fit h-full  ">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 80 100"
-                        className="h-4 w-4  fill-red-600"
-                      >
-                        <path
-                          d="M76.1035 24.0039C77.6888 24.0841 78.9492 25.3948 78.9492 27C78.9492 28.6052 77.6888 29.9159 76.1035 29.9961L75.9492 30H4.05078C2.39393 30 1.05078 28.6569 1.05078 27C1.05078 25.3431 2.39393 24 4.05078 24H75.9492L76.1035 24.0039Z"
-                          fill=""
-                        />
-                        <path
-                          d="M70.3613 24.0098C73.8523 24.2036 76.4709 27.3605 75.958 30.8682L66.5977 94.8682L66.5518 95.1426C66.0263 97.8592 63.7035 99.8663 60.9395 99.9932L60.6611 100H20.3516L20.0742 99.9932C17.3099 99.8666 14.9864 97.8594 14.4609 95.1426L14.415 94.8682L5.05566 30.8682C4.54271 27.3606 7.16047 24.2038 10.6514 24.0098L10.9922 24H70.0205L70.3613 24.0098ZM20.3516 94H60.6611L70.0205 30H10.9922L20.3516 94ZM40.5059 39C42.1627 39 43.5059 40.3431 43.5059 42V86C43.5059 87.6569 42.1627 89 40.5059 89C38.849 89 37.5059 87.6569 37.5059 86V42C37.5059 40.3431 38.849 39 40.5059 39ZM24.0391 39.0117C25.6388 38.88 27.0566 40.0281 27.2764 41.6006L27.2939 41.7539L31.1152 84.8848C31.2613 86.5351 30.0408 87.9831 28.3896 88.1191C26.7384 88.2551 25.281 87.0273 25.1348 85.377L21.3135 42.2461L21.3037 42.0918C21.244 40.5063 22.4394 39.1435 24.0391 39.0117ZM53.4893 41.7539C53.6355 40.1036 55.0929 38.8758 56.7441 39.0117C58.3953 39.1477 59.6158 40.5958 59.4697 42.2461L55.6484 85.377L55.6309 85.5303C55.4111 87.1028 53.9933 88.2509 52.3936 88.1191C50.7939 87.9874 49.5984 86.6245 49.6582 85.0391L49.668 84.8848L53.4893 41.7539ZM50.709 0C54.0227 0 56.709 2.68629 56.709 6V9L56.7168 9.30859C56.8774 12.4789 59.4988 15 62.709 15H75.9492L76.1035 15.0039C77.6888 15.0841 78.9492 16.3948 78.9492 18C78.9492 19.6052 77.6888 20.9159 76.1035 20.9961L75.9492 21H4.05078C2.39393 21 1.05078 19.6569 1.05078 18C1.05078 16.3431 2.39393 15 4.05078 15H17.291L17.5996 14.9922C20.6677 14.8367 23.1278 12.3767 23.2832 9.30859L23.291 9V6C23.291 2.68638 25.9774 0.000147198 29.291 0H50.709ZM29.291 9C29.291 11.1864 28.7033 13.2346 27.6816 15H52.3184C51.2967 13.2346 50.709 11.1864 50.709 9V6H29.291V9Z"
-                          fill=""
-                        />
-                      </svg>
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Holds>
-      </Holds>
-    </Holds>
+          {showCreateModal && (
+            <CreateTimesheetModal
+              onClose={() => setShowCreateModal(false)}
+              onCreated={refetchAll}
+            />
+          )}
+          <Button className="relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ">
+            <div className="flex flex-row items-center">
+              <img
+                src="/inbox-white.svg"
+                alt="Approval"
+                className="h-4 w-4 mr-2"
+              />
+              <Texts size={"sm"} text={"white"} className="font-extrabold">
+                Approval
+              </Texts>
+              {approvalInbox && approvalInbox.length > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                  {approvalInbox.length}
+                </Badge>
+              )}
+            </div>
+          </Button>
+        </div>
+      </div>
+      <div className="h-full w-full px-4 overflow-auto ">
+        <TimesheetViewAll
+          timesheets={sortedTimesheets}
+          loading={loading}
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={handlePageSizeChange}
+          onPageChange={setPage}
+          onDeleteClick={handleDeleteClick}
+          deletingId={deletingId}
+          isDeleting={isDeleting}
+          onEditClick={(id: string) => {
+            setEditingId(id);
+            setShowEditModal(true);
+          }}
+        />
+      </div>
+      {showEditModal && (
+        <EditTimesheetModal
+          timesheetId={editingId || ""}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdated={refetchAll}
+        />
+      )}
+      <TimesheetDeleteModal
+        isOpen={!!deletingId}
+        onClose={handleDeleteCancel}
+        onDelete={handleDeleteConfirm}
+        isDeleting={isDeleting}
+        itemName={deletingId || undefined}
+      />
+    </div>
   );
 }
