@@ -8,7 +8,7 @@ import {
   initialJobsites,
   initialCostCodes,
   initialCCTags,
-  updatedEquipment, // updated equipment seed values from dataValues.ts
+  updatedEquipment,
   initialCrews,
   initialUserSettings,
   initialTimeSheets,
@@ -25,12 +25,9 @@ import {
   initialMaterials,
   initialRefueled,
   initialStateMileage,
-  // New seed arrays for the new models:
   initialDocumentTags,
   initialPdfDocuments,
-  // Replacement for CreationLogs:
-  initialPendingApprovals,
-  initialAuditLogs,
+  initialAddresses,
 } from "../src/data/dataValues";
 
 const prisma = new PrismaClient();
@@ -39,7 +36,46 @@ async function main() {
   console.log("Seeding...");
 
   try {
+    // 1. Upsert Addresses
+    for (const address of initialAddresses) {
+      try {
+        await prisma.address.upsert({
+          where: { id: address.id },
+          update: address,
+          create: address,
+        });
+      } catch (error) {
+        console.error(
+          "Error upserting address:",
+          error instanceof Error ? error.stack || error : error
+        );
+        continue;
+      } finally {
+        console.log("Address upsert operation completed.");
+      }
+    }
+
     // 1. Upsert Companies
+
+    for (const company of initialCompany) {
+      try {
+        const upsertedCompany = await prisma.company.upsert({
+          where: { id: company.id },
+          update: company,
+          create: company,
+        });
+        console.log("Upserted company with id:", upsertedCompany.id);
+      } catch (error) {
+        console.error(
+          "Error upserting company:",
+          error instanceof Error ? error.stack || error : error
+        );
+        continue;
+      }
+    }
+
+    // 1. Upsert Companies
+
     for (const company of initialCompany) {
       try {
         const upsertedCompany = await prisma.company.upsert({
@@ -58,6 +94,7 @@ async function main() {
     }
 
     // 2. Insert Form Templates
+
     for (const formTemplate of initialFormTemplates) {
       try {
         const newTemplate = await prisma.formTemplate.create({
@@ -92,15 +129,29 @@ async function main() {
     }
 
     // 3.5. Upsert Contacts
+
     for (const contact of initialContacts) {
-      const userId = contact.User?.connect?.id;
-      if (!userId) {
+      if (!contact.User?.connect?.id) {
         console.log("Skipping contact: missing userId");
+        continue;
+      }
+      try {
+        await prisma.contacts.upsert({
+          where: { id: contact.id },
+          update: contact,
+          create: contact,
+        });
+      } catch (error) {
+        console.error(
+          "Error upserting contact:",
+          error instanceof Error ? error.stack || error : error
+        );
         continue;
       }
     }
 
     // 3.6. Insert Clients
+
     for (const client of initialClients) {
       try {
         const newClient = await prisma.client.create({ data: client });
@@ -112,6 +163,7 @@ async function main() {
     }
 
     // 4. Insert Jobsites
+
     for (const jobsite of initialJobsites) {
       try {
         const newJobsite = await prisma.jobsite.create({ data: jobsite });
@@ -126,6 +178,7 @@ async function main() {
     }
 
     // 5. Insert Cost Codes
+
     for (const costCode of initialCostCodes) {
       try {
         const newCostCode = await prisma.costCode.create({ data: costCode });
@@ -140,6 +193,7 @@ async function main() {
     }
 
     // 6. Insert CCTags
+
     for (const cctag of initialCCTags) {
       try {
         const newCCTag = await prisma.cCTag.create({ data: cctag });
@@ -154,6 +208,7 @@ async function main() {
     }
 
     // 7. Insert Document Tags (new model)
+
     for (const documentTag of initialDocumentTags) {
       try {
         const newDocTag = await prisma.documentTag.create({
@@ -170,6 +225,7 @@ async function main() {
     }
 
     // 8. Insert PDF Documents (new model)
+
     for (const pdfDocument of initialPdfDocuments) {
       try {
         const newPdfDoc = await prisma.pdfDocument.create({
@@ -186,8 +242,8 @@ async function main() {
     }
 
     // 9. Insert Equipment (using updatedEquipment seed values)
+
     for (const equip of updatedEquipment) {
-      // Example: check for DocumentTags references
       if (equip.DocumentTags && equip.DocumentTags.connect) {
         const connectValue = equip.DocumentTags.connect;
         const connectArray = Array.isArray(connectValue)
@@ -224,6 +280,7 @@ async function main() {
     }
 
     // 10. Insert Crews
+
     for (const crew of initialCrews) {
       try {
         const newCrew = await prisma.crew.create({ data: crew });
@@ -238,6 +295,7 @@ async function main() {
     }
 
     // 11. Insert User Settings
+
     for (const settings of initialUserSettings) {
       try {
         const newSettings = await prisma.userSettings.create({
@@ -254,9 +312,12 @@ async function main() {
     }
 
     // 12. Insert TimeSheets
+
     for (const timesheet of initialTimeSheets) {
       try {
-        const newTimeSheet = await prisma.timeSheet.create({ data: timesheet });
+        const newTimeSheet = await prisma.timeSheet.create({
+          data: timesheet,
+        });
         console.log("Created timesheet with id:", newTimeSheet.id);
       } catch (error) {
         console.error(
@@ -268,12 +329,15 @@ async function main() {
     }
 
     // 13. Insert Trucking Logs
+
     for (const truckingLog of initialTruckingLogs) {
       if (truckingLog.Equipment && truckingLog.Equipment.connect) {
         const eq = truckingLog.Equipment.connect;
         let exists = null;
         if (eq.id) {
-          exists = await prisma.equipment.findUnique({ where: { id: eq.id } });
+          exists = await prisma.equipment.findUnique({
+            where: { id: eq.id },
+          });
         } else if (eq.qrId) {
           exists = await prisma.equipment.findUnique({
             where: { qrId: eq.qrId },
@@ -304,12 +368,15 @@ async function main() {
     }
 
     // 14. Insert Employee Equipment Logs
+
     for (const log of initialEmployeeEquipmentLogs) {
       if (log.Equipment && log.Equipment.connect) {
         const eq = log.Equipment.connect;
         let exists = null;
         if (eq.id) {
-          exists = await prisma.equipment.findUnique({ where: { id: eq.id } });
+          exists = await prisma.equipment.findUnique({
+            where: { id: eq.id },
+          });
         } else if (eq.qrId) {
           exists = await prisma.equipment.findUnique({
             where: { qrId: eq.qrId },
@@ -324,27 +391,10 @@ async function main() {
           continue;
         }
       }
-      if (log.Jobsite && log.Jobsite.connect) {
-        const js = log.Jobsite.connect;
-        let exists = null;
-        if (js.id) {
-          exists = await prisma.jobsite.findUnique({ where: { id: js.id } });
-        } else if (js.qrId) {
-          exists = await prisma.jobsite.findUnique({
-            where: { qrId: js.qrId },
-          });
-        }
-        if (!exists) {
-          console.warn(
-            `Skipping employeeEquipmentLog: missing Jobsite (id: ${
-              js.id || ""
-            }, qrId: ${js.qrId || ""})`
-          );
-          continue;
-        }
-      }
       try {
-        const newLog = await prisma.employeeEquipmentLog.create({ data: log });
+        const newLog = await prisma.employeeEquipmentLog.create({
+          data: log,
+        });
         console.log("Created employee equipment log with id:", newLog.id);
       } catch (error) {
         console.error(
@@ -357,6 +407,7 @@ async function main() {
     }
 
     // 15. Insert Equipment Hauled
+
     for (const equipmentHauled of initialEquipmentHauled) {
       if (equipmentHauled.TruckingLog && equipmentHauled.TruckingLog.connect) {
         const tl = equipmentHauled.TruckingLog.connect;
@@ -377,7 +428,9 @@ async function main() {
         const eq = equipmentHauled.Equipment.connect;
         let exists = null;
         if (eq.id) {
-          exists = await prisma.equipment.findUnique({ where: { id: eq.id } });
+          exists = await prisma.equipment.findUnique({
+            where: { id: eq.id },
+          });
         } else if (eq.qrId) {
           exists = await prisma.equipment.findUnique({
             where: { qrId: eq.qrId },
@@ -427,6 +480,7 @@ async function main() {
     }
 
     // 16. Insert Errors
+
     for (const errorRecord of initialErrors) {
       try {
         const newError = await prisma.error.create({ data: errorRecord });
@@ -441,6 +495,7 @@ async function main() {
     }
 
     // 17. Insert Form Submissions
+
     for (const submission of initialFormSubmissions) {
       try {
         const newSubmission = await prisma.formSubmission.create({
@@ -457,6 +512,7 @@ async function main() {
     }
 
     // 18. Insert Form Approvals
+
     for (const approval of initialFormApprovals) {
       try {
         const newApproval = await prisma.formApproval.create({
@@ -473,6 +529,7 @@ async function main() {
     }
 
     // 19. Insert Maintenances
+
     for (const maintenance of initialMaintenances) {
       try {
         const newMaintenance = await prisma.maintenance.create({
@@ -489,6 +546,7 @@ async function main() {
     }
 
     // 20. Insert Maintenance Logs
+
     for (const maintenanceLog of initialMaintenanceLogs) {
       try {
         const newMaintenanceLog = await prisma.maintenanceLog.create({
@@ -505,6 +563,7 @@ async function main() {
     }
 
     // 21. Insert Tasco Material Types
+
     for (const tascoType of initialTascoMaterialTypes) {
       try {
         const newTascoType = await prisma.tascoMaterialTypes.create({
@@ -521,12 +580,15 @@ async function main() {
     }
 
     // 22. Insert Tasco Logs
+
     for (const tascoLog of initialTascoLogs) {
       if (tascoLog.Equipment && tascoLog.Equipment.connect) {
         const eq = tascoLog.Equipment.connect;
         let exists = null;
         if (eq.id) {
-          exists = await prisma.equipment.findUnique({ where: { id: eq.id } });
+          exists = await prisma.equipment.findUnique({
+            where: { id: eq.id },
+          });
         } else if (eq.qrId) {
           exists = await prisma.equipment.findUnique({
             where: { qrId: eq.qrId },
@@ -555,6 +617,7 @@ async function main() {
     }
 
     // 23. Insert Materials
+
     for (const material of initialMaterials) {
       if (material.TruckingLog && material.TruckingLog.connect) {
         const tl = material.TruckingLog.connect;
@@ -586,7 +649,6 @@ async function main() {
 
     // 24. Insert Refuel Logs
     for (const refuel of initialRefueled) {
-      // Check TruckingLog relation
       if (refuel.TruckingLog && refuel.TruckingLog.connect) {
         const tl = refuel.TruckingLog.connect;
         let exists = null;
@@ -602,12 +664,13 @@ async function main() {
           continue;
         }
       }
-      // Check TascoLog relation
       if (refuel.TascoLog && refuel.TascoLog.connect) {
         const tlog = refuel.TascoLog.connect;
         let exists = null;
         if (tlog.id) {
-          exists = await prisma.tascoLog.findUnique({ where: { id: tlog.id } });
+          exists = await prisma.tascoLog.findUnique({
+            where: { id: tlog.id },
+          });
         }
         if (!exists) {
           console.warn(
@@ -656,103 +719,15 @@ async function main() {
         continue;
       }
     }
-
-    // 26. Insert Pending Approvals (with foreign key checks for nested relations)
-    for (const pendingApproval of initialPendingApprovals) {
-      try {
-        // Check CreatedBy
-        let createdByOk = true;
-        if (
-          pendingApproval.CreatedBy &&
-          pendingApproval.CreatedBy.connect &&
-          pendingApproval.CreatedBy.connect.id
-        ) {
-          createdByOk = !!(await prisma.user.findUnique({
-            where: { id: pendingApproval.CreatedBy.connect.id },
-          }));
-        }
-        // Check ApprovedBy
-        let approvedByOk = true;
-        if (
-          pendingApproval.ApprovedBy &&
-          pendingApproval.ApprovedBy.connect &&
-          pendingApproval.ApprovedBy.connect.id
-        ) {
-          approvedByOk = !!(await prisma.user.findUnique({
-            where: { id: pendingApproval.ApprovedBy.connect.id },
-          }));
-        }
-        // Check entity relation (Equipment, Jobsite) and ensure only one is set
-        let entityOk = false;
-        let entityType = pendingApproval.entityType;
-        if (
-          entityType === "EQUIPMENT" &&
-          pendingApproval.Equipment &&
-          pendingApproval.Equipment.connect &&
-          pendingApproval.Equipment.connect.id
-        ) {
-          entityOk = !!(await prisma.equipment.findUnique({
-            where: { id: pendingApproval.Equipment.connect.id },
-          }));
-        } else if (
-          entityType === "JOBSITE" &&
-          pendingApproval.Jobsite &&
-          pendingApproval.Jobsite.connect &&
-          pendingApproval.Jobsite.connect.id
-        ) {
-          entityOk = !!(await prisma.jobsite.findUnique({
-            where: { id: pendingApproval.Jobsite.connect.id },
-          }));
-        }
-        if (!createdByOk || !approvedByOk || !entityOk) {
-          console.warn(
-            "Skipping pending approval due to missing or mismatched foreign key:",
-            pendingApproval
-          );
-          continue;
-        }
-        // Remove the unused relation to avoid setting both Equipment and Jobsite
-        let data = { ...pendingApproval };
-        if (entityType === "EQUIPMENT") {
-          delete data.Jobsite;
-        } else if (entityType === "JOBSITE") {
-          delete data.Equipment;
-        }
-        const newPendingApproval = await prisma.pendingApproval.create({
-          data,
-        });
-        console.log("Created pending approval with id:", newPendingApproval.id);
-      } catch (error) {
-        console.log("Error creating pending approval:", error);
-        continue;
-      }
-    }
-
-    // 27. Insert Audit Logs (with foreign key checks for nested relations)
-    for (const auditLog of initialAuditLogs) {
-      try {
-        const newAuditLog = await prisma.auditLog.create({
-          data: auditLog,
-        });
-        console.log("Created audit log with id:", newAuditLog.id);
-      } catch (error) {
-        console.log("Error creating audit log:", error);
-        continue;
-      }
-    }
-
-    console.log("Sample data upserted successfully!");
-  } catch (error) {
-    console.log("An error occurred during seeding:", error);
+    console.log("Seeding completed successfully.");
+  } catch (e) {
+    console.error("Seeding failed:", e);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

@@ -10,6 +10,7 @@
     "lint": "next lint",
     "seed": "ts-node ./prisma/seed.ts",
     "prisma:migrate": "prisma migrate dev --skip-seed --schema=prisma/schema/schema.prisma",
+    "prisma:migrate:reset": "prisma migrate reset --skip-seed --schema=prisma/schema/schema.prisma",
     "prisma:studio": "prisma studio --schema=prisma/schema/schema.prisma"
   },
   "prisma": {
