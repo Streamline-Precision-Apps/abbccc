@@ -70,20 +70,3 @@ model FormApproval {
   FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   Approver         User?          @relation(fields: [signedBy], references: [id])
 }
-
-enum FormStatus {
-  PENDING
-  APPROVED
-  DENIED
-  DRAFT
-}
-
-enum FieldType {
-  TEXT
-  TEXTAREA
-  NUMBER
-  DATE
-  FILE
-  DROPDOWN
-  CHECKBOX
-}

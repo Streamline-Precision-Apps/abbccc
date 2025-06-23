@@ -35,17 +35,3 @@ model ReportRun {
 
     Report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }
-
-enum ReportStatus {
-    PENDING // Report is queued but not yet processed
-    RUNNING // Report is currently being generated
-    COMPLETED // Report has finished successfully
-    FAILED // Report encountered an error
-    CANCELED // Report was manually canceled
-}
-
-enum ReportVisibility {
-    PRIVATE // Only the creator can view the report
-    MANAGEMENT // All users with manager role can access
-    COMPANY // Visible to all company users
-}
