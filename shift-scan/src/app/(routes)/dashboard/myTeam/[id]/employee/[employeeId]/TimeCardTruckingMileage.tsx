@@ -64,7 +64,11 @@ export default function TimeCardTruckingMileage({
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
+  const handleLocalChange = (
+    logId: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -209,11 +213,13 @@ export default function TimeCardTruckingMileage({
                             {" "}
                             <Inputs
                               type={"number"}
-                              value={getDisplayValue(
-                                sheet.id,
-                                "startingMileage",
-                                sheet.startingMileage
-                              ) ?? ''}
+                              value={
+                                getDisplayValue(
+                                  sheet.id,
+                                  "startingMileage",
+                                  sheet.startingMileage
+                                ) ?? ""
+                              }
                               className="text-xs border-none h-full rounded-none justify-center p-2.5"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}
@@ -236,11 +242,13 @@ export default function TimeCardTruckingMileage({
                             {" "}
                             <Inputs
                               type={"number"}
-                              value={getDisplayValue(
-                                sheet.id,
-                                "endingMileage",
-                                sheet.endingMileage || ""
-                              ) ?? ''}
+                              value={
+                                getDisplayValue(
+                                  sheet.id,
+                                  "endingMileage",
+                                  sheet.endingMileage || ""
+                                ) ?? ""
+                              }
                               className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right p-2.5"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}

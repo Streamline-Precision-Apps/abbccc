@@ -312,18 +312,27 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
             if (
               Array.isArray(changes) &&
               changes.every(
-                (item) => typeof item === 'object' && Array.isArray((item as { TruckingLogs?: unknown[] }).TruckingLogs)
+                (item) =>
+                  typeof item === "object" &&
+                  Array.isArray(
+                    (item as { TruckingLogs?: unknown[] }).TruckingLogs
+                  )
               )
             ) {
-              const haulLogChanges = changes as unknown as Array<{ TruckingLogs: TruckingEquipmentHaulLog[] }>;
+              const haulLogChanges = changes as unknown as Array<{
+                TruckingLogs: TruckingEquipmentHaulLog[];
+              }>;
 
               const updates = haulLogChanges.flatMap((item) =>
-                (item.TruckingLogs || []).flatMap((log: TruckingEquipmentHaulLog) =>
-                  (log.EquipmentHauled || []).map((hauledItem: EquipmentHauledItem) => ({
-                    id: hauledItem.id,
-                    equipmentId: hauledItem.Equipment?.id,
-                    jobSiteId: hauledItem.JobSite?.id,
-                  }))
+                (item.TruckingLogs || []).flatMap(
+                  (log: TruckingEquipmentHaulLog) =>
+                    (log.EquipmentHauled || []).map(
+                      (hauledItem: EquipmentHauledItem) => ({
+                        id: hauledItem.id,
+                        equipmentId: hauledItem.Equipment?.id,
+                        jobSiteId: hauledItem.JobSite?.id,
+                      })
+                    )
                 )
               );
 
@@ -349,7 +358,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
             if (
               Array.isArray(changes) &&
               changes.length > 0 &&
-              'TruckingLogs' in changes[0]
+              "TruckingLogs" in changes[0]
             ) {
               formattedChanges = flattenMaterialLogs(
                 changes as unknown as TruckingMaterialHaulLogData
@@ -367,7 +376,10 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
           }
           case "truckingRefuelLogs": {
             // Accept both flat and nested structure
-            let formattedChanges: { id: string; gallonsRefueled?: number | null }[] = [];
+            let formattedChanges: {
+              id: string;
+              gallonsRefueled?: number | null;
+            }[] = [];
             if (
               Array.isArray(changes) &&
               changes.length > 0 &&
@@ -477,17 +489,19 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
 
           // Handle mechanicLogs (MaintenanceLog data)
           case "mechanicLogs": {
-            const updateMaintenanceLogs = async (logs: MaintenanceLogData): Promise<{ success: boolean }> => {
+            const updateMaintenanceLogs = async (
+              logs: MaintenanceLogData
+            ): Promise<{ success: boolean }> => {
               const formData = new FormData();
               logs.forEach((log, index) => {
                 formData.append(`logs[${index}].id`, log.id);
                 formData.append(
                   `logs[${index}].startTime`,
-                  log.startTime ? new Date(log.startTime).toISOString() : ''
+                  log.startTime ? new Date(log.startTime).toISOString() : ""
                 );
                 formData.append(
                   `logs[${index}].endTime`,
-                  log.endTime ? new Date(log.endTime).toISOString() : ''
+                  log.endTime ? new Date(log.endTime).toISOString() : ""
                 );
               });
               // ...existing code for submitting the formData...
@@ -499,15 +513,17 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
               Array.isArray(changes) &&
               changes.every(
                 (log) =>
-                  typeof log === 'object' &&
-                  'id' in log &&
-                  'maintenanceId' in log &&
-                  'startTime' in log &&
-                  'endTime' in log &&
-                  'Maintenance' in log
+                  typeof log === "object" &&
+                  "id" in log &&
+                  "maintenanceId" in log &&
+                  "startTime" in log &&
+                  "endTime" in log &&
+                  "Maintenance" in log
               )
             ) {
-              const result = await updateMaintenanceLogs(changes as unknown as MaintenanceLogData);
+              const result = await updateMaintenanceLogs(
+                changes as unknown as MaintenanceLogData
+              );
 
               if (result?.success) {
                 await Promise.all([
@@ -675,15 +691,17 @@ type ProcessedMaterialLog = {
 };
 
 // Helper type guard for refuel log array
-function isRefuelLogArray(arr: unknown): arr is { id: string; gallonsRefueled?: number | null }[] {
+function isRefuelLogArray(
+  arr: unknown
+): arr is { id: string; gallonsRefueled?: number | null }[] {
   return (
     Array.isArray(arr) &&
     arr.every(
       (item) =>
         item &&
-        typeof item === 'object' &&
-        'id' in item &&
-        typeof (item as { id: unknown }).id === 'string'
+        typeof item === "object" &&
+        "id" in item &&
+        typeof (item as { id: unknown }).id === "string"
     )
   );
 }

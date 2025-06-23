@@ -238,12 +238,14 @@ export default function TimeCardTascoRefuelLogs({
                           {" "}
                           <Inputs
                             type="number"
-                            value={getDisplayValue(
-                              log.tascoLogId,
-                              log.id,
-                              "gallonsRefueled",
-                              log.gallonsRefueled?.toString() || ""
-                            ) ?? ''}
+                            value={
+                              getDisplayValue(
+                                log.tascoLogId,
+                                log.id,
+                                "gallonsRefueled",
+                                log.gallonsRefueled?.toString() || ""
+                              ) ?? ""
+                            }
                             background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(

@@ -60,11 +60,13 @@ export default function TimeCardMechanicLogs({
   >({});
 
   // Type guard to check for MaintenanceLogs property
-  function hasMaintenanceLogs(obj: unknown): obj is { MaintenanceLogs: MaintenanceLogData } {
+  function hasMaintenanceLogs(
+    obj: unknown
+  ): obj is { MaintenanceLogs: MaintenanceLogData } {
     return (
-      typeof obj === 'object' &&
+      typeof obj === "object" &&
       obj !== null &&
-      'MaintenanceLogs' in obj &&
+      "MaintenanceLogs" in obj &&
       Array.isArray((obj as { MaintenanceLogs: unknown }).MaintenanceLogs)
     );
   }
@@ -78,7 +80,8 @@ export default function TimeCardMechanicLogs({
       : maintenanceLogs;
 
   // Local state for editing mechanic logs
-  const [editedMechanicLogs, setEditedMechanicLogs] = useState<MaintenanceLogData>(normalizedLogs);
+  const [editedMechanicLogs, setEditedMechanicLogs] =
+    useState<MaintenanceLogData>(normalizedLogs);
 
   // Create a unique key for each input field
   const getInputKey = (logId: string, fieldName: string) => {
@@ -96,7 +99,11 @@ export default function TimeCardMechanicLogs({
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
+  const handleLocalChange = (
+    logId: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -222,7 +229,7 @@ export default function TimeCardMechanicLogs({
     startTime?: Date | string | null;
     endTime?: Date | string | null;
   }
-  
+
   // Find equipment name from allEquipment by id or qrId, checking all possible fields
   const getEquipmentName = (log: MechanicLogWithOptionalFields): string => {
     const eqId = log.Maintenance?.Equipment?.id;
@@ -321,11 +328,13 @@ export default function TimeCardMechanicLogs({
                           <Holds className="h-full justify-left">
                             <Inputs
                               type={"time"}
-                              value={getDisplayValue(
-                                log.id,
-                                "startTime",
-                                formatTimeForDisplay(log.startTime)
-                              ) ?? ''}
+                              value={
+                                getDisplayValue(
+                                  log.id,
+                                  "startTime",
+                                  formatTimeForDisplay(log.startTime)
+                                ) ?? ""
+                              }
                               className="text-xs border-none h-full rounded-none justify-left"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}
@@ -345,11 +354,13 @@ export default function TimeCardMechanicLogs({
                           <Holds className="h-full justify-left">
                             <Inputs
                               type={"time"}
-                              value={getDisplayValue(
-                                log.id,
-                                "endTime",
-                                formatTimeForDisplay(log.endTime)
-                              ) ?? ''}
+                              value={
+                                getDisplayValue(
+                                  log.id,
+                                  "endTime",
+                                  formatTimeForDisplay(log.endTime)
+                                ) ?? ""
+                              }
                               className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}
