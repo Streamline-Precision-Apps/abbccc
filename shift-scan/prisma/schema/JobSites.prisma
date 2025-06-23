@@ -6,11 +6,8 @@ model Jobsite {
   creationReason  String? // Reason for creating the jobsite
   approvalStatus  ApprovalStatus    @default(PENDING) // PENDING, APPROVED, REJECTED
   isActive        Boolean           @default(true)
-  address         String
-  city            String
-  state           String
-  zipCode         String
-  country         String            @default("US")
+  addressId       String?           @unique
+  Address         Address?
   comment         String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -24,7 +21,7 @@ model Jobsite {
   TimeSheets      TimeSheet[]
   CCTags          CCTag[]           @relation("CCTagToJobsite")
 
-  @@unique([name, address, city, state])
+  @@unique([name, addressId]) //prevent duplicate jobsite names with the same address.
   @@index([qrId])
   @@index([clientId])
 }

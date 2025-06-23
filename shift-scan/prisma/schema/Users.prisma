@@ -14,7 +14,7 @@ model User {
   permission           Permission           @default(USER)
   image                String?
   startDate            DateTime?            @default(now())
-  terminationDate      DateTime?
+  terminationDate      DateTime? // Nullable, used for terminated users
   accountSetup         Boolean              @default(false)
   clockedIn            Boolean              @default(false)
   companyId            String

@@ -1,0 +1,14 @@
+model Address {
+    id        String   @id @default(uuid())
+    clientId  String?  @unique
+    companyId String?  @unique
+    jobsiteId String?  @unique
+    street    String
+    city      String
+    state     String
+    zipCode   String
+    country   String   @default("US")
+    Client    Client?  @relation(fields: [clientId], references: [id])
+    Company   Company? @relation(fields: [companyId], references: [id])
+    Jobsite   Jobsite? @relation(fields: [jobsiteId], references: [id])
+}
