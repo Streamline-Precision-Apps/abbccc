@@ -1,18 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { EquipmentTags } from "@/lib/types";
-import { Priority } from "@prisma/client";
+import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
-import { EquipmentState } from "@prisma/client";
-import { number } from "zod";
-
-type EquipmentStateType =
-  | "AVAILABLE"
-  | "IN_USE"
-  | "MAINTENANCE"
-  | "NEEDS_REPAIR"
-  | "RETIRED";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -245,46 +235,41 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
     console.log(formData);
 
     const employeeId = formData.get("employeeId") as string;
-    const equipmentQRId = formData.get("equipmentId") as string;
+    const equipmentId = formData.get("equipmentId") as string;
     const jobsiteId = formData.get("jobsiteId") as string; // Execute all operations in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Check if related records exist
-      const [employee, equipment, jobsite] = await Promise.all([
-        tx.user.findUnique({ where: { id: employeeId } }),
-        tx.equipment.findUnique({ where: { qrId: equipmentQRId } }),
-        tx.jobsite.findUnique({ where: { qrId: jobsiteId } }),
-      ]);
-      if (!employee) {
-        throw new Error(`Employee with id ${employeeId} does not exist`);
-      }
-      if (!equipment) {
-        throw new Error(`Equipment with QR ID ${equipmentQRId} does not exist`);
-      }
-      if (!jobsite) {
-        throw new Error(`Jobsite with QR ID ${jobsiteId} does not exist`);
-      }
+      // 1. CHECK TO SEE IF A QR WAS SCANNED
 
-      console.log("Found jobsite:", jobsite);
+      //2. find timesheet info
 
-      // 2. Find the timesheet
       const timeSheet = await tx.timeSheet.findFirst({
         where: { userId: employeeId, endTime: null },
-        select: { id: true },
+        select: { id: true, workType: true },
       });
 
+      // pulling current work type from current timesheet
+      const workType =
+        timeSheet?.workType === "MECHANIC"
+          ? "MAINTENANCE"
+          : timeSheet?.workType === "TRUCK_DRIVER"
+          ? "TRUCKING"
+          : timeSheet?.workType === "LABOR"
+          ? "LABOR"
+          : timeSheet?.workType === "TASCO"
+          ? "TASCO"
+          : "GENERAL";
       // 3. Create the EmployeeEquipmentLog entry
       const newLog = await tx.employeeEquipmentLog.create({
         data: {
           employeeId,
-          equipmentId: equipment.id,
+          equipmentId,
           timeSheetId: timeSheet?.id || null,
-          jobsiteId: jobsite.id, // Using the jobsite.id from the found jobsite
-          startTime: formData.get("startTime")
-            ? new Date(formData.get("startTime") as string)
-            : null,
+          jobsiteId,
+          startTime: new Date().toISOString(),
           endTime: formData.get("endTime")
             ? new Date(formData.get("endTime") as string)
             : null,
+          workType: workType,
           comment: formData.get("comment") as string,
           isFinished: false,
           status: "PENDING",
@@ -316,7 +301,7 @@ export async function createMaintenanceRequest(formData: FormData) {
     const equipmentId = formData.get("equipmentId") as string;
     const equipmentIssue = formData.get("equipmentIssue") as string;
     const additionalInfo = formData.get("additionalInfo") as string;
-    const priority = formData.get("priority") as Priority;
+    const priority = formData.get("priority") as string;
     const createdBy = formData.get("createdBy") as string;
 
     const maintenance = await prisma.maintenance.create({
@@ -324,7 +309,7 @@ export async function createMaintenanceRequest(formData: FormData) {
         equipmentId,
         equipmentIssue,
         additionalInfo,
-        priority,
+        priority: priority as Priority,
         createdBy,
       },
     });

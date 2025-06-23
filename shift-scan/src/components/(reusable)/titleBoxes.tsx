@@ -72,7 +72,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         <Images
           titleImg="/arrowBack.svg"
           titleImgAlt={"Turn Back"}
-          className="max-w-8 h-auto object-contain"
+          className="w-8 h-auto object-contain"
         />
       </Buttons>
 

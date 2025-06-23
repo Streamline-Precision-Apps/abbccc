@@ -8,7 +8,7 @@ import EditedCrew from "./UserSelected/editedCrew";
 import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
 import { useUserData } from "../hooks/useUserData";
-import { PersonnelView, UserData } from "./types/personnel";
+import { CrewData, PersonnelView, UserData } from "./types/personnel";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { NModals } from "@/components/(reusable)/newmodals";
@@ -49,7 +49,7 @@ const UserSelected = ({
   setView: () => void;
   setRegistration: () => void;
   userid: string;
-  crew: SearchCrew[];
+  crew: CrewData[];
   editState: {
     user: UserData | null;
     originalUser: UserData | null;

@@ -47,7 +47,7 @@ export default function JobsiteRow({
           jobsite.approvalStatus === "PENDING" ? "orange" : "lightGray"
         }
         className={`w-full h-[40px] justify-center flex  hover:opacity-80 cursor-pointer relative ${
-          isSelected && "outline outline-[2px] outline-black"
+          isSelected && "outline-solid outline-2 outline-black"
         } rounded-[10px] mb-3 px-4`}
         onClick={handleJobsiteClick}
       >

@@ -82,12 +82,12 @@ const Topbar = () => {
             {pathname === "/admins" ? (
               <Holds
                 background={"lightBlue"}
-                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
+                className="flex flex-row justify-center items-center rounded-sm border-[3px] border-black w-[90%] h-full relative"
               ></Holds>
             ) : (
               <Holds
                 background={"lightBlue"}
-                className="flex flex-row z-1 justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
+                className="flex flex-row z-1 justify-center items-center rounded-sm border-[3px] border-black w-[90%] h-full relative"
               >
                 <Holds className="w-[15%] absolute left-5">
                   <Holds position={"row"} className="hidden md:flex">
@@ -171,7 +171,7 @@ const Topbar = () => {
             ></Holds>
             <Holds
               background={"white"}
-              className="h-3/5 w-[99%] flex justify-start flex-row rounded"
+              className="h-3/5 w-[99%] flex justify-start flex-row rounded-sm"
             >
               <Holds
                 position={"row"}
@@ -256,7 +256,7 @@ const Topbar = () => {
                     <Images
                       titleImg="/arrowRightSymbol.svg"
                       titleImgAlt="Home Icon"
-                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      className="m-auto rotate-270 cursor-pointer h-16 w-16"
                       onClick={handleClockClick}
                     />
                   </Holds>
@@ -280,7 +280,7 @@ const Topbar = () => {
                     <Images
                       titleImg="/arrowRightSymbol.svg"
                       titleImgAlt="Home Icon"
-                      className="my-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      className="my-auto rotate-270 cursor-pointer h-16 w-16"
                       onClick={handleClockClick}
                     />
                   </Holds>

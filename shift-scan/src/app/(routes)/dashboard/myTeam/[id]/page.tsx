@@ -29,7 +29,6 @@ const CrewApiResponseSchema = z.tuple([
 ]);
 
 type CrewMember = z.infer<typeof CrewMemberSchema>;
-type CrewApiResponse = z.infer<typeof CrewApiResponseSchema>;
 
 export default function Content() {
   const [crewMembers, setCrewMembers] = useState<CrewMember[]>([]);

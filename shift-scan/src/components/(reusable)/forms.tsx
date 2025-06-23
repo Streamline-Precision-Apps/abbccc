@@ -21,7 +21,7 @@ const FormVariants = cva(
       },
       size: {
         //only width and height
-        full: "w-[100%]",
+        full: "w-full",
         half: "w-[50%]",
       },
     },

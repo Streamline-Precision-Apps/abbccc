@@ -88,7 +88,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   return (
     <div>
       <div
-        className={`h-2 mt-2 rounded ${getStrengthColor()} ${getStrengthWidthClass()}`}
+        className={`h-2 mt-2 rounded-sm ${getStrengthColor()} ${getStrengthWidthClass()}`}
       ></div>
       <p className={`text-xs ${getStrengthLabelColor()}  mt-1`}>
         {getStrengthLabel()}

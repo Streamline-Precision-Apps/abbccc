@@ -1,9 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
-
 import { revalidatePath, revalidateTag } from "next/cache";
-export type LoadType = "UNSCREENED" | "SCREENED";
 
 /* EQUIPMENT Hauled */
 //------------------------------------------------------------------

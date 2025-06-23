@@ -23,12 +23,6 @@ enum EquipmentTags {
   EQUIPMENT
 }
 
-enum EquipmentStatus {
-  OPERATIONAL
-  NEEDS_REPAIR
-  NEEDS_MAINTENANCE
-}
-
 enum IsActive {
   ACTIVE
   INACTIVE
@@ -54,20 +48,6 @@ enum LoadType {
   SCREENED
 }
 
-enum TimeSheetStatus {
-  PENDING
-  APPROVED
-  DENIED
-}
-
-enum EquipmentUsageType {
-  TASCO
-  TRUCKING
-  MAINTENANCE
-  LABOR
-  GENERAL
-}
-
 enum EquipmentState {
   AVAILABLE
   IN_USE
@@ -76,25 +56,51 @@ enum EquipmentState {
   RETIRED
 }
 
-enum AuditAction {
-  CREATED
-  UPDATED
-  DELETED
-  APPROVED
-  REJECTED
-}
-
-enum EntityType {
-  EQUIPMENT
-  JOBSITE
-  USER
-  COMPANY
-  TIMESHEET
-}
-
+// used to track status process
+//* IN_PROGRESS: The process is currently ongoing.
+//* PENDING: The process is waiting for approval or action.
+//* APPROVED: The process has been approved.
+//* REJECTED: The process has been rejected or denied.
 enum ApprovalStatus {
+  IN_PROGRESS
   PENDING
   APPROVED
   REJECTED
-  CHANGES_REQUESTED
+}
+
+enum ReportStatus {
+  PENDING // Report is queued but not yet processed
+  RUNNING // Report is currently being generated
+  COMPLETED // Report has finished successfully
+  FAILED // Report encountered an error
+  CANCELED // Report was manually canceled
+}
+
+enum ReportVisibility {
+  PRIVATE // Only the creator can view the report
+  MANAGEMENT // All users with manager role can access
+  COMPANY // Visible to all company users
+}
+
+// used to track status process similar to ApprovalStatus but for forms
+//* DRAFT: The form is being created and not yet submitted.
+//* PENDING: The form has been submitted and is awaiting review.
+//* APPROVED: The form has been reviewed and approved.
+//* DENIED: The form has been reviewed and denied.
+
+enum FormStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  DENIED
+}
+
+enum FieldType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  DATE
+  FILE
+  DROPDOWN
+  CHECKBOX
 }

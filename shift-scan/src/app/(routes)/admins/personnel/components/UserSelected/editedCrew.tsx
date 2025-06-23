@@ -3,10 +3,8 @@ import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { PersonnelView, UserData } from "../types/personnel";
-import { SearchCrew } from "@/lib/types";
+import { CrewData, PersonnelView, UserData } from "../types/personnel";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Buttons } from "@/components/(reusable)/buttons";
 
 export default function EditedCrew({
   edited,
@@ -24,7 +22,7 @@ export default function EditedCrew({
   edited: {
     [key: string]: boolean;
   };
-  crew: SearchCrew[];
+  crew: CrewData[];
   selectedCrews: string[];
   crewLeads: Record<string, boolean>;
   handleCrewCheckbox: (id: string) => void;

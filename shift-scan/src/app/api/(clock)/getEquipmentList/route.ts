@@ -27,19 +27,7 @@ export async function GET() {
         id: true,
         qrId: true,
         name: true,
-        description: true,
-        equipmentTag: true,
         state: true,
-        currentWeight: true,
-        overWeight: true,
-        equipmentVehicleInfo: {
-          select: {
-            make: true,
-            model: true,
-            year: true,
-            licensePlate: true,
-          },
-        },
       },
       orderBy: {
         name: "asc",

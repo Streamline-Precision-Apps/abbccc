@@ -223,7 +223,7 @@ export default function TimeCardTruckingMaterialLogs({
                           className="w-full h-full text-left"
                         >
                           <Grids cols={"2"} className="w-full h-full">
-                            <Holds className="col-start-1 col-end-2 h-full border-r-[2px] border-black">
+                            <Holds className="col-start-1 col-end-2 h-full border-r-2 border-black">
                               <Grids
                                 rows={"2"}
                                 className="w-full h-full rounded-none"
