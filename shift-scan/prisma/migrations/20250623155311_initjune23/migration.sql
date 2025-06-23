@@ -541,9 +541,6 @@ CREATE TABLE "PasswordResetToken" (
 -- CreateTable
 CREATE TABLE "Address" (
     "id" TEXT NOT NULL,
-    "clientId" TEXT,
-    "companyId" TEXT,
-    "jobsiteId" TEXT,
     "street" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "state" TEXT NOT NULL,
@@ -605,16 +602,10 @@ CREATE TABLE "_FormGroupingToFormTemplate" (
 CREATE UNIQUE INDEX "Client_name_key" ON "Client"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Client_addressId_key" ON "Client"("addressId");
-
--- CreateIndex
 CREATE INDEX "Client_companyId_name_idx" ON "Client"("companyId", "name");
 
 -- CreateIndex
 CREATE INDEX "Client_hasProject_idx" ON "Client"("hasProject");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Company_addressId_key" ON "Company"("addressId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CostCode_name_key" ON "CostCode"("name");
@@ -650,16 +641,10 @@ CREATE INDEX "EmployeeEquipmentLog_timeSheetId_equipmentId_maintenanceId_idx" ON
 CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Jobsite_addressId_key" ON "Jobsite"("addressId");
-
--- CreateIndex
 CREATE INDEX "Jobsite_qrId_idx" ON "Jobsite"("qrId");
 
 -- CreateIndex
 CREATE INDEX "Jobsite_clientId_idx" ON "Jobsite"("clientId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Jobsite_name_addressId_key" ON "Jobsite"("name", "addressId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Report_name_key" ON "Report"("name");
@@ -698,15 +683,6 @@ CREATE UNIQUE INDEX "PasswordResetToken_token_key" ON "PasswordResetToken"("toke
 CREATE UNIQUE INDEX "PasswordResetToken_email_token_key" ON "PasswordResetToken"("email", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Address_clientId_key" ON "Address"("clientId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Address_companyId_key" ON "Address"("companyId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Address_jobsiteId_key" ON "Address"("jobsiteId");
-
--- CreateIndex
 CREATE INDEX "_CCTagToCostCode_B_index" ON "_CCTagToCostCode"("B");
 
 -- CreateIndex
@@ -729,6 +705,12 @@ ALTER TABLE "Client" ADD CONSTRAINT "Client_createdById_fkey" FOREIGN KEY ("crea
 
 -- AddForeignKey
 ALTER TABLE "Client" ADD CONSTRAINT "Client_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Client" ADD CONSTRAINT "Client_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Company" ADD CONSTRAINT "Company_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Equipment" ADD CONSTRAINT "Equipment_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -765,6 +747,9 @@ ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_formSubmissionId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_signedBy_fkey" FOREIGN KEY ("signedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -852,15 +837,6 @@ ALTER TABLE "Contacts" ADD CONSTRAINT "Contacts_employeeId_fkey" FOREIGN KEY ("e
 
 -- AddForeignKey
 ALTER TABLE "PasswordResetToken" ADD CONSTRAINT "PasswordResetToken_email_fkey" FOREIGN KEY ("email") REFERENCES "User"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CCTagToCostCode" ADD CONSTRAINT "_CCTagToCostCode_A_fkey" FOREIGN KEY ("A") REFERENCES "CCTag"("id") ON DELETE CASCADE ON UPDATE CASCADE;

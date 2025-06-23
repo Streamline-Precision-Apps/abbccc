@@ -3,7 +3,6 @@ import {
   initialCompany,
   initialFormTemplates,
   initialUsers,
-  initialContacts,
   initialClients,
   initialJobsites,
   initialCostCodes,
@@ -50,21 +49,19 @@ async function main() {
           error instanceof Error ? error.stack || error : error
         );
         continue;
-      } finally {
-        console.log("Address upsert operation completed.");
       }
     }
+    console.log("Address upsert operation completed.");
 
     // 1. Upsert Companies
 
     for (const company of initialCompany) {
       try {
-        const upsertedCompany = await prisma.company.upsert({
+        await prisma.company.upsert({
           where: { id: company.id },
           update: company,
           create: company,
         });
-        console.log("Upserted company with id:", upsertedCompany.id);
       } catch (error) {
         console.error(
           "Error upserting company:",
@@ -73,25 +70,7 @@ async function main() {
         continue;
       }
     }
-
-    // 1. Upsert Companies
-
-    for (const company of initialCompany) {
-      try {
-        const upsertedCompany = await prisma.company.upsert({
-          where: { id: company.id },
-          update: company,
-          create: company,
-        });
-        console.log("Upserted company with id:", upsertedCompany.id);
-      } catch (error) {
-        console.error(
-          "Error upserting company:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
+    console.log("Company upsert operation completed.");
 
     // 2. Insert Form Templates
 
@@ -100,7 +79,7 @@ async function main() {
         const newTemplate = await prisma.formTemplate.create({
           data: formTemplate,
         });
-        console.log("Created form template with id:", newTemplate.id);
+        // console.log("Created form template with id:", newTemplate.id);
       } catch (error) {
         console.error(
           "Error creating form template:",
@@ -109,6 +88,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Form templates inserted successfully.");
 
     // 3. Upsert Users
     for (const user of initialUsers) {
@@ -118,7 +98,7 @@ async function main() {
           update: user,
           create: user,
         });
-        console.log("Upserted user with id:", upsertedUser.id);
+        // console.log("Upserted user with id:", upsertedUser.id);
       } catch (error) {
         console.error(
           "Error upserting user:",
@@ -127,47 +107,27 @@ async function main() {
         continue;
       }
     }
-
-    // 3.5. Upsert Contacts
-
-    for (const contact of initialContacts) {
-      if (!contact.User?.connect?.id) {
-        console.log("Skipping contact: missing userId");
-        continue;
-      }
-      try {
-        await prisma.contacts.upsert({
-          where: { id: contact.id },
-          update: contact,
-          create: contact,
-        });
-      } catch (error) {
-        console.error(
-          "Error upserting contact:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
+    console.log("Users upsert operation completed.");
 
     // 3.6. Insert Clients
 
     for (const client of initialClients) {
       try {
         const newClient = await prisma.client.create({ data: client });
-        console.log("Created client with id:", newClient.id);
+        // console.log("Created client with id:", newClient.id);
       } catch (error) {
         console.log("Error creating client:", error);
         continue;
       }
     }
+    console.log("Clients inserted successfully.");
 
     // 4. Insert Jobsites
 
     for (const jobsite of initialJobsites) {
       try {
         const newJobsite = await prisma.jobsite.create({ data: jobsite });
-        console.log("Created jobsite with id:", newJobsite.id);
+        // console.log("Created jobsite with id:", newJobsite.id);
       } catch (error) {
         console.error(
           "Error creating jobsite:",
@@ -176,13 +136,14 @@ async function main() {
         continue;
       }
     }
+    console.log("Jobsites inserted successfully.");
 
     // 5. Insert Cost Codes
 
     for (const costCode of initialCostCodes) {
       try {
         const newCostCode = await prisma.costCode.create({ data: costCode });
-        console.log("Created cost code with id:", newCostCode.id);
+        // console.log("Created cost code with id:", newCostCode.id);
       } catch (error) {
         console.error(
           "Error creating cost code:",
@@ -191,13 +152,14 @@ async function main() {
         continue;
       }
     }
+    console.log("Cost codes inserted successfully.");
 
     // 6. Insert CCTags
 
     for (const cctag of initialCCTags) {
       try {
         const newCCTag = await prisma.cCTag.create({ data: cctag });
-        console.log("Created CCTag with id:", newCCTag.id);
+        // console.log("Created CCTag with id:", newCCTag.id);
       } catch (error) {
         console.error(
           "Error creating CCTag:",
@@ -206,6 +168,7 @@ async function main() {
         continue;
       }
     }
+    console.log("CCTags inserted successfully.");
 
     // 7. Insert Document Tags (new model)
 
@@ -214,7 +177,7 @@ async function main() {
         const newDocTag = await prisma.documentTag.create({
           data: documentTag,
         });
-        console.log("Created document tag with id:", newDocTag.id);
+        // console.log("Created document tag with id:", newDocTag.id);
       } catch (error) {
         console.error(
           "Error creating document tag:",
@@ -223,6 +186,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Document tags inserted successfully.");
 
     // 8. Insert PDF Documents (new model)
 
@@ -231,7 +195,7 @@ async function main() {
         const newPdfDoc = await prisma.pdfDocument.create({
           data: pdfDocument,
         });
-        console.log("Created PDF document with id:", newPdfDoc.id);
+        // console.log("Created PDF document with id:", newPdfDoc.id);
       } catch (error) {
         console.error(
           "Error creating PDF document:",
@@ -240,6 +204,7 @@ async function main() {
         continue;
       }
     }
+    console.log("PDF documents inserted successfully.");
 
     // 9. Insert Equipment (using updatedEquipment seed values)
 
@@ -268,7 +233,7 @@ async function main() {
       }
       try {
         const newEquipment = await prisma.equipment.create({ data: equip });
-        console.log("Created equipment with id:", newEquipment.id);
+        // console.log("Created equipment with id:", newEquipment.id);
       } catch (error) {
         console.error(
           "Error creating equipment (check referenced IDs):",
@@ -278,13 +243,14 @@ async function main() {
         continue;
       }
     }
+    console.log("Equipment inserted successfully.");
 
     // 10. Insert Crews
 
     for (const crew of initialCrews) {
       try {
         const newCrew = await prisma.crew.create({ data: crew });
-        console.log("Created crew with id:", newCrew.id);
+        // console.log("Created crew with id:", newCrew.id);
       } catch (error) {
         console.error(
           "Error creating crew:",
@@ -293,6 +259,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Crews inserted successfully.");
 
     // 11. Insert User Settings
 
@@ -301,7 +268,7 @@ async function main() {
         const newSettings = await prisma.userSettings.create({
           data: settings,
         });
-        console.log("Created user settings with id:", newSettings.id);
+        // console.log("Created user settings with id:", newSettings.id);
       } catch (error) {
         console.error(
           "Error creating user settings:",
@@ -310,6 +277,7 @@ async function main() {
         continue;
       }
     }
+    console.log("User settings inserted successfully.");
 
     // 12. Insert TimeSheets
 
@@ -318,7 +286,7 @@ async function main() {
         const newTimeSheet = await prisma.timeSheet.create({
           data: timesheet,
         });
-        console.log("Created timesheet with id:", newTimeSheet.id);
+        // console.log("Created timesheet with id:", newTimeSheet.id);
       } catch (error) {
         console.error(
           "Error creating timesheet:",
@@ -327,6 +295,7 @@ async function main() {
         continue;
       }
     }
+    console.log("TimeSheets inserted successfully.");
 
     // 13. Insert Trucking Logs
 
@@ -366,6 +335,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Trucking logs inserted successfully.");
 
     // 14. Insert Employee Equipment Logs
 
@@ -395,7 +365,7 @@ async function main() {
         const newLog = await prisma.employeeEquipmentLog.create({
           data: log,
         });
-        console.log("Created employee equipment log with id:", newLog.id);
+        //console.log("Created employee equipment log with id:", newLog.id);
       } catch (error) {
         console.error(
           "Error creating employee equipment log (check referenced IDs):",
@@ -405,6 +375,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Employee equipment logs inserted successfully.");
 
     // 15. Insert Equipment Hauled
 
@@ -468,7 +439,7 @@ async function main() {
         const newEquipmentHauled = await prisma.equipmentHauled.create({
           data: equipmentHauled,
         });
-        console.log("Created equipment hauled with id:", newEquipmentHauled.id);
+        //console.log("Created equipment hauled with id:", newEquipmentHauled.id);
       } catch (error) {
         console.error(
           "Error creating equipment hauled (check referenced IDs):",
@@ -478,13 +449,14 @@ async function main() {
         continue;
       }
     }
+    console.log("Equipment hauled inserted successfully.");
 
     // 16. Insert Errors
 
     for (const errorRecord of initialErrors) {
       try {
         const newError = await prisma.error.create({ data: errorRecord });
-        console.log("Created error with id:", newError.id);
+        //console.log("Created error with id:", newError.id);
       } catch (error) {
         console.error(
           "Error creating error record:",
@@ -493,6 +465,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Errors inserted successfully.");
 
     // 17. Insert Form Submissions
 
@@ -501,7 +474,7 @@ async function main() {
         const newSubmission = await prisma.formSubmission.create({
           data: submission,
         });
-        console.log("Created form submission with id:", newSubmission.id);
+        //console.log("Created form submission with id:", newSubmission.id);
       } catch (error) {
         console.error(
           "Error creating form submission:",
@@ -510,6 +483,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Form submissions inserted successfully.");
 
     // 18. Insert Form Approvals
 
@@ -518,7 +492,7 @@ async function main() {
         const newApproval = await prisma.formApproval.create({
           data: approval,
         });
-        console.log("Created form approval with id:", newApproval.id);
+        //console.log("Created form approval with id:", newApproval.id);
       } catch (error) {
         console.error(
           "Error creating form approval:",
@@ -527,6 +501,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Form approvals inserted successfully.");
 
     // 19. Insert Maintenances
 
@@ -535,7 +510,7 @@ async function main() {
         const newMaintenance = await prisma.maintenance.create({
           data: maintenance,
         });
-        console.log("Created maintenance with id:", newMaintenance.id);
+        //console.log("Created maintenance with id:", newMaintenance.id);
       } catch (error) {
         console.error(
           "Error creating maintenance:",
@@ -544,6 +519,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Maintenances inserted successfully.");
 
     // 20. Insert Maintenance Logs
 
@@ -552,7 +528,7 @@ async function main() {
         const newMaintenanceLog = await prisma.maintenanceLog.create({
           data: maintenanceLog,
         });
-        console.log("Created maintenance log with id:", newMaintenanceLog.id);
+        //console.log("Created maintenance log with id:", newMaintenanceLog.id);
       } catch (error) {
         console.error(
           "Error creating maintenance log:",
@@ -561,6 +537,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Maintenance logs inserted successfully.");
 
     // 21. Insert Tasco Material Types
 
@@ -569,7 +546,7 @@ async function main() {
         const newTascoType = await prisma.tascoMaterialTypes.create({
           data: tascoType,
         });
-        console.log("Created Tasco Material Type with id:", newTascoType.id);
+        //console.log("Created Tasco Material Type with id:", newTascoType.id);
       } catch (error) {
         console.error(
           "Error creating Tasco Material Type:",
@@ -578,6 +555,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Tasco Material Types inserted successfully.");
 
     // 22. Insert Tasco Logs
 
@@ -605,7 +583,7 @@ async function main() {
       }
       try {
         const newTascoLog = await prisma.tascoLog.create({ data: tascoLog });
-        console.log("Created Tasco log with id:", newTascoLog.id);
+        //console.log("Created Tasco log with id:", newTascoLog.id);
       } catch (error) {
         console.error(
           "Error creating Tasco log (check referenced IDs):",
@@ -615,6 +593,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Tasco logs inserted successfully.");
 
     // 23. Insert Materials
 
@@ -636,7 +615,7 @@ async function main() {
       }
       try {
         const newMaterial = await prisma.material.create({ data: material });
-        console.log("Created material with id:", newMaterial.id);
+        //console.log("Created material with id:", newMaterial.id);
       } catch (error) {
         console.error(
           "Error creating material (check referenced IDs):",
@@ -646,6 +625,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Materials inserted successfully.");
 
     // 24. Insert Refuel Logs
     for (const refuel of initialRefueled) {
@@ -681,7 +661,7 @@ async function main() {
       }
       try {
         const newRefuel = await prisma.refuelLog.create({ data: refuel });
-        console.log("Created refuel log with id:", newRefuel.id);
+        //console.log("Created refuel log with id:", newRefuel.id);
       } catch (error) {
         console.error(
           "Error creating refuel log (check referenced IDs):",
@@ -691,6 +671,7 @@ async function main() {
         continue;
       }
     }
+    console.log("Refuel logs inserted successfully.");
 
     // 25. Insert State Mileage
     for (const stateMileage of initialStateMileage) {
@@ -713,13 +694,16 @@ async function main() {
         const newStateMileage = await prisma.stateMileage.create({
           data: stateMileage,
         });
-        console.log("Created state mileage with id:", newStateMileage.id);
+        //console.log("Created state mileage with id:", newStateMileage.id);
       } catch (error) {
         console.log("Error creating state mileage:", error);
         continue;
       }
     }
+    console.log("State mileage inserted successfully.");
+    console.log("---------------------------------");
     console.log("Seeding completed successfully.");
+    console.log("---------------------------------");
   } catch (e) {
     console.error("Seeding failed:", e);
   } finally {
