@@ -91,7 +91,7 @@ export function ViewDocumentContent({ id }: { id: string }) {
   return (
     <div className="flex flex-col h-full">
       {/* PDF Viewer Section - Takes up most space */}
-      <Holds className="flex-grow h-full w-full">
+      <Holds className="grow h-full w-full">
         {pdfUrl ? (
           <iframe
             src={pdfUrl}

@@ -6,7 +6,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { cookies } from "next/headers";
 import { Grids } from "@/components/(reusable)/grids";
 import { redirect } from "next/navigation";
-import NewClockProcess from "@/components/(clock)/newclockProcess";
 import ScanEquipment from "./scanEquipmentSteps";
 
 export default async function SwitchJobs() {
@@ -15,10 +14,7 @@ export default async function SwitchJobs() {
   if (!session) {
     redirect("/signin");
   }
-  //   const equipment = await prisma.equipment.findMany();
 
-  const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en"; // Default to English
   return (
     <Bases>
       <Contents>

@@ -32,7 +32,7 @@ export function SearchBar({
         <input
           ref={inputRef}
           type="text"
-          className="border-none focus:outline-none"
+          className="border-none focus:outline-hidden"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search projects..."

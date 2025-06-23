@@ -20,7 +20,7 @@ import CrewSelected from "./CrewSelected/CrewSelected";
 
 interface PersonnelMainContentProps {
   view: PersonnelView;
-  crew: SearchCrew[];
+  crew: CrewData[];
   setView: Dispatch<SetStateAction<PersonnelView>>;
   registrationState: RegistrationState;
   updateRegistrationForm: (updates: Partial<RegistrationState["form"]>) => void;

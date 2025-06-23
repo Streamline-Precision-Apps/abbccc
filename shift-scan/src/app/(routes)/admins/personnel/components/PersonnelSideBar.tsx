@@ -11,14 +11,11 @@ import {
   CrewEditState,
   PersonnelView,
   UserEditState,
+  CrewData,
 } from "./types/personnel";
 import { SearchCrew } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
 import Spinner from "@/components/(animations)/spinner";
 import EmployeeRow from "./SideBar/EmployeeRow";
 import { useEmployeeHandlers } from "../hooks/useEmployeeHandlers";
@@ -51,7 +48,7 @@ export default function PersonnelSideBar({
 }: {
   view: PersonnelView;
   setView: (view: PersonnelView) => void;
-  crew: SearchCrew[];
+  crew: CrewData[];
   loading: boolean;
   term: string;
   setTerm: Dispatch<SetStateAction<string>>;
@@ -140,7 +137,7 @@ export default function PersonnelSideBar({
       }
       // Handle registration form discards
       else if (
-        view.mode === "registerUser" || 
+        view.mode === "registerUser" ||
         view.mode === "registerUser+crew"
       ) {
         resetRegistrationState();
@@ -148,7 +145,7 @@ export default function PersonnelSideBar({
       // Handle crew creation form discards
       else if (
         view.mode === "registerCrew" ||
-        view.mode === "registerCrew+user" 
+        view.mode === "registerCrew+user"
       ) {
         resetCrewCreationState();
       }
@@ -235,20 +232,21 @@ export default function PersonnelSideBar({
                   (view.mode === "crew" || view.mode === "user+crew") &&
                   "crewId" in view &&
                   isCrewEditStateDirty(view.crewId);
-                  
+
                 // Check if there are unsaved registration form changes
-                const hasUnsavedRegistrationChanges = 
-                  (view.mode === "registerUser" || 
-                   view.mode === "registerUser+crew" || 
-                   view.mode === "registerBoth") && 
+                const hasUnsavedRegistrationChanges =
+                  (view.mode === "registerUser" ||
+                    view.mode === "registerUser+crew" ||
+                    view.mode === "registerBoth") &&
                   isRegistrationFormDirty();
-                  
+
                 // Check if there are unsaved crew creation form changes
                 const hasUnsavedCrewCreationChanges =
                   (view.mode === "registerCrew" ||
-                   view.mode === "registerCrew+user" ||
-                   view.mode === "registerBoth") &&
-                  isCrewCreationFormDirty && isCrewCreationFormDirty();
+                    view.mode === "registerCrew+user" ||
+                    view.mode === "registerBoth") &&
+                  isCrewCreationFormDirty &&
+                  isCrewCreationFormDirty();
 
                 // Determine if we're switching from crew to user+crew (adding a user to the view)
                 const isCrewToUserView =
@@ -260,9 +258,11 @@ export default function PersonnelSideBar({
                 // 1. There are unsaved crew changes (and we're not just adding a user to the view)
                 // 2. There are unsaved registration changes
                 // 3. There are unsaved crew creation changes
-                if ((hasUnsavedCrewChanges && !isCrewToUserView) || 
-                    hasUnsavedRegistrationChanges || 
-                    hasUnsavedCrewCreationChanges) {
+                if (
+                  (hasUnsavedCrewChanges && !isCrewToUserView) ||
+                  hasUnsavedRegistrationChanges ||
+                  hasUnsavedCrewCreationChanges
+                ) {
                   // Store target view and show confirmation modal
                   setNextView(targetView);
                   setIsDiscardChangesModalOpen(true);
@@ -298,7 +298,7 @@ export default function PersonnelSideBar({
               placeholder={t("PersonalSearchPlaceholder")}
               value={term}
               onChange={handleSearchChange}
-              className="border-none outline-none text-sm text-left w-full h-full rounded-md bg-white"
+              className="border-none outline-hidden text-sm text-left w-full h-full rounded-md bg-white"
             />
           </Holds>
 

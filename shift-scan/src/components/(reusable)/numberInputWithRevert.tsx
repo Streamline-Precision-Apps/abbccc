@@ -54,7 +54,7 @@ const NumberInputWithRevert: React.FC<NumberInputWithRevertProps> = ({
         >
           <input
             type="number"
-            className="h-full w-full border-none focus:outline-none px-2"
+            className="h-full w-full border-none focus:outline-hidden px-2"
             value={value}
             onChange={(e) => handleChange(e.target.value)}
           />

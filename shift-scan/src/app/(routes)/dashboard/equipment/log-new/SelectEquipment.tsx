@@ -29,15 +29,16 @@ export default function SelectEquipment({
   }, [error]);
 
   return (
-    <Holds className="h-full pb-5">
+    <Holds className="h-full">
       <Grids rows={"7"} gap={"5"}>
-        <Holds className="row-start-1 row-end-2">
-          <TitleBoxes
-            onClick={() => router.push("/dashboard/equipment")}
-          ></TitleBoxes>
+        <Holds className="h-full row-start-1 row-end-2 ">
+          <TitleBoxes onClick={() => router.push("/dashboard/equipment")}>
+            <Holds className="h-full justify-end">
+              <Titles size={"h2"}>Scan Equipment</Titles>
+            </Holds>
+          </TitleBoxes>
         </Holds>
         <Holds className="row-start-2 row-end-3 h-full">
-          <Titles size={"h1"}>Select Equipment</Titles>
           {error && (
             <Holds className="h-full pt-2 justify-center">
               <Texts className="text-app-red " size={"p6"}>
@@ -46,7 +47,7 @@ export default function SelectEquipment({
             </Holds>
           )}
         </Holds>
-        <Holds className="row-start-3 row-end-6">
+        <Holds className="h-full row-start-3 row-end-6 justify-center">
           <Images
             titleImg="/camera.svg"
             titleImgAlt="clockIn"
@@ -58,24 +59,24 @@ export default function SelectEquipment({
           <Contents width={"section"}>
             <Holds className="pb-5">
               <Buttons
-                className="py-4"
+                className="py-3"
                 onClick={() => {
                   setStep(2);
                   setMethod("Scan");
                 }}
               >
-                <Titles size={"h3"}>Scan Equipment</Titles>
+                <Titles size={"h4"}>Scan QR</Titles>
               </Buttons>
             </Holds>
             <Holds>
               <Buttons
-                className="py-4"
+                className="py-3"
                 onClick={() => {
                   setStep(2);
                   setMethod("Select");
                 }}
               >
-                <Titles size={"h3"}>Select Manually</Titles>
+                <Titles size={"h4"}>Select Manually</Titles>
               </Buttons>
             </Holds>
           </Contents>

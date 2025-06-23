@@ -70,7 +70,7 @@ export default function RefuelLogsList({
                 value={rL.gallonsRefueled || ""}
                 onChange={(e) => handleGallonsChange(index, e.target.value)}
                 onBlur={() => handleUpdateRefuelLog(rL)}
-                className={`border-none text-center text-sm focus:outline-none focus:ring-0 ${
+                className={`border-none text-center text-sm focus:outline-hidden focus:ring-0 ${
                   rL.gallonsRefueled === 0 ? "placeholder:text-app-red " : ""
                 }`}
               />
