@@ -140,7 +140,9 @@ const getTypedOnDataChange = <T,>(
     : undefined;
 };
 
-const renderValueOrNA = (value: string | number | boolean | Date | null | undefined) => {
+const renderValueOrNA = (
+  value: string | number | boolean | Date | null | undefined
+) => {
   if (value === null || value === undefined || value === "") {
     return "N/A";
   }
@@ -709,22 +711,28 @@ export default function TimeSheetRenderer({
             formattedData = [
               {
                 TascoLogs: (data[0].TascoLogs || [])
-                  .filter((log: unknown): log is TascoLog =>
-                    !!log && typeof log === "object" && Array.isArray((log as TascoLog).RefuelLogs) && (log as TascoLog).RefuelLogs!.length > 0
+                  .filter(
+                    (log: unknown): log is TascoLog =>
+                      !!log &&
+                      typeof log === "object" &&
+                      Array.isArray((log as TascoLog).RefuelLogs) &&
+                      (log as TascoLog).RefuelLogs!.length > 0
                   )
                   .map((tl) => {
                     const tascoLog = tl as TascoLog;
                     return {
                       id: tascoLog.id,
                       Equipment: tascoLog.Equipment ?? null,
-                      RefuelLogs: (tascoLog.RefuelLogs || []).map((refuel: unknown) => {
-                        const refuelLog = refuel as RefuelLog;
-                        return {
-                          id: refuelLog.id,
-                          tascoLogId: refuelLog.tascoLogId || tascoLog.id,
-                          gallonsRefueled: refuelLog.gallonsRefueled || 0,
-                        };
-                      }),
+                      RefuelLogs: (tascoLog.RefuelLogs || []).map(
+                        (refuel: unknown) => {
+                          const refuelLog = refuel as RefuelLog;
+                          return {
+                            id: refuelLog.id,
+                            tascoLogId: refuelLog.tascoLogId || tascoLog.id,
+                            gallonsRefueled: refuelLog.gallonsRefueled || 0,
+                          };
+                        }
+                      ),
                     };
                   }),
               },
@@ -772,7 +780,9 @@ export default function TimeSheetRenderer({
             };
 
             // Convert data with proper type checking
-            const validTimesheets = (data as unknown[]).filter(hasTascoRefuelLogs);
+            const validTimesheets = (data as unknown[]).filter(
+              hasTascoRefuelLogs
+            );
             formattedData = [
               {
                 TascoLogs: validTimesheets.flatMap((ts) =>
@@ -843,8 +853,10 @@ export default function TimeSheetRenderer({
               !!item &&
               typeof item === "object" &&
               "EmployeeEquipmentLogs" in item &&
-              Array.isArray((item as { EmployeeEquipmentLogs: unknown[] })
-                .EmployeeEquipmentLogs)
+              Array.isArray(
+                (item as { EmployeeEquipmentLogs: unknown[] })
+                  .EmployeeEquipmentLogs
+              )
             );
           };
 
@@ -952,8 +964,12 @@ export default function TimeSheetRenderer({
           } else {
             logs = (data as unknown[]).flatMap((log) => {
               const equipmentLog = log as EquipmentLog;
-              const equipmentId = equipmentLog.Equipment?.id || equipmentLog.equipmentId || "";
-              const equipmentName = equipmentLog.Equipment?.name || equipmentLog.equipmentName || "";
+              const equipmentId =
+                equipmentLog.Equipment?.id || equipmentLog.equipmentId || "";
+              const equipmentName =
+                equipmentLog.Equipment?.name ||
+                equipmentLog.equipmentName ||
+                "";
               if (equipmentLog && Array.isArray(equipmentLog.RefuelLogs)) {
                 return equipmentLog.RefuelLogs.map((refuel: unknown) => {
                   const refuelLog = refuel as RefuelLog;
@@ -966,7 +982,10 @@ export default function TimeSheetRenderer({
                   };
                 });
               } else if (
-                equipmentLog && equipmentLog.RefuelLogs && !Array.isArray(equipmentLog.RefuelLogs) && typeof equipmentLog.RefuelLogs === "object"
+                equipmentLog &&
+                equipmentLog.RefuelLogs &&
+                !Array.isArray(equipmentLog.RefuelLogs) &&
+                typeof equipmentLog.RefuelLogs === "object"
               ) {
                 const refuel = equipmentLog.RefuelLogs as RefuelLog;
                 return [
@@ -994,28 +1013,49 @@ export default function TimeSheetRenderer({
         } else if (data && typeof data === "object") {
           const log = data as unknown;
           if (log && Array.isArray((log as EquipmentLog).RefuelLogs)) {
-            logs = ((log as EquipmentLog).RefuelLogs ?? []).map((refuel: unknown) => {
-              const refuelLog = refuel as RefuelLog;
-              return {
-                id: refuelLog.id,
-                equipmentId: refuelLog.equipmentId || (log as EquipmentLog).equipmentId || "",
-                equipmentName: refuelLog.equipmentName || (log as EquipmentLog).equipmentName || "",
-                gallonsRefueled: refuelLog.gallonsRefueled ?? null,
-                employeeEquipmentLogId: (log as EquipmentLog).id,
-              };
-            });
+            logs = ((log as EquipmentLog).RefuelLogs ?? []).map(
+              (refuel: unknown) => {
+                const refuelLog = refuel as RefuelLog;
+                return {
+                  id: refuelLog.id,
+                  equipmentId:
+                    refuelLog.equipmentId ||
+                    (log as EquipmentLog).equipmentId ||
+                    "",
+                  equipmentName:
+                    refuelLog.equipmentName ||
+                    (log as EquipmentLog).equipmentName ||
+                    "",
+                  gallonsRefueled: refuelLog.gallonsRefueled ?? null,
+                  employeeEquipmentLogId: (log as EquipmentLog).id,
+                };
+              }
+            );
           } else if (
-            log && (log as EquipmentLog).RefuelLogs && !Array.isArray((log as EquipmentLog).RefuelLogs) && typeof (log as EquipmentLog).RefuelLogs === "object"
+            log &&
+            (log as EquipmentLog).RefuelLogs &&
+            !Array.isArray((log as EquipmentLog).RefuelLogs) &&
+            typeof (log as EquipmentLog).RefuelLogs === "object"
           ) {
             const refuelObj = (log as EquipmentLog).RefuelLogs;
             // Defensive: Only treat as RefuelLog if it has an id property
-            if (refuelObj && typeof refuelObj === "object" && 'id' in refuelObj) {
+            if (
+              refuelObj &&
+              typeof refuelObj === "object" &&
+              "id" in refuelObj
+            ) {
               const refuel = refuelObj as RefuelLog;
               logs = [
                 {
                   id: refuel.id,
-                  equipmentId: refuel.equipmentId || (log as EquipmentLog).equipmentId || "",
-                  equipmentName: refuel.equipmentName || (log as EquipmentLog).equipmentName || "",
+                  equipmentId:
+                    refuel.equipmentId ||
+                    (log as EquipmentLog).equipmentId ||
+                    "",
+                  equipmentName:
+                    refuel.equipmentName ||
+                    (log as EquipmentLog).equipmentName ||
+                    "",
                   gallonsRefueled: refuel.gallonsRefueled ?? null,
                   employeeEquipmentLogId: (log as EquipmentLog).id,
                 },
@@ -1105,6 +1145,22 @@ export default function TimeSheetRenderer({
 }
 
 // --- Define local interfaces for type safety ---
-interface RefuelLog { id: string; tascoLogId?: string; gallonsRefueled?: number; equipmentId?: string; equipmentName?: string; }
-interface TascoLog { id: string; Equipment?: { id: string; name: string } | null; RefuelLogs?: RefuelLog[]; }
-interface EquipmentLog { id: string; Equipment?: { id: string; name: string } | null; equipmentId?: string; equipmentName?: string; RefuelLogs?: RefuelLog[]; }
+interface RefuelLog {
+  id: string;
+  tascoLogId?: string;
+  gallonsRefueled?: number;
+  equipmentId?: string;
+  equipmentName?: string;
+}
+interface TascoLog {
+  id: string;
+  Equipment?: { id: string; name: string } | null;
+  RefuelLogs?: RefuelLog[];
+}
+interface EquipmentLog {
+  id: string;
+  Equipment?: { id: string; name: string } | null;
+  equipmentId?: string;
+  equipmentName?: string;
+  RefuelLogs?: RefuelLog[];
+}

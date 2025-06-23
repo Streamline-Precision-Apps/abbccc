@@ -85,7 +85,11 @@ export default function TimeCardTruckingHaulLogs({
     const key = getInputKey(logId, hauledId, field);
 
     if (key in inputValues) {
-      const value = inputValues[key] as string | number | { id: string; name: string } | null;
+      const value = inputValues[key] as
+        | string
+        | number
+        | { id: string; name: string }
+        | null;
       handleEquipmentHauledChange(itemIdx, logIdx, hauledIdx, field, value);
 
       // Clear from local state to avoid duplicate processing
@@ -302,10 +306,14 @@ export default function TimeCardTruckingHaulLogs({
                           <Holds className="w-full h-full col-start-2 col-end-3 border-r-[3px] border-black">
                             <Inputs
                               type="text"
-                              value={log.EquipmentHauled?.[0]?.Equipment?.name || ""}
+                              value={
+                                log.EquipmentHauled?.[0]?.Equipment?.name || ""
+                              }
                               className="py-2 w-full h-full text-xs border-none rounded-none text-center"
                               background={isFocused ? "orange" : "white"}
-                              onClick={() => openEquipmentModal(itemIdx, logIdx, 0)}
+                              onClick={() =>
+                                openEquipmentModal(itemIdx, logIdx, 0)
+                              }
                               disabled={!edit}
                               readOnly
                             />
@@ -313,10 +321,14 @@ export default function TimeCardTruckingHaulLogs({
                           <Holds className="w-full h-full col-start-3 col-end-4">
                             <Inputs
                               type="text"
-                              value={log.EquipmentHauled?.[0]?.JobSite?.name || ""}
+                              value={
+                                log.EquipmentHauled?.[0]?.JobSite?.name || ""
+                              }
                               className="py-2 w-full h-full text-xs border-none rounded-none rounded-tr-md rounded-br-md text-right"
                               background={isFocused ? "orange" : "white"}
-                              onClick={() => openJobsiteModal(itemIdx, logIdx, 0)}
+                              onClick={() =>
+                                openJobsiteModal(itemIdx, logIdx, 0)
+                              }
                               disabled={!edit}
                               readOnly
                             />

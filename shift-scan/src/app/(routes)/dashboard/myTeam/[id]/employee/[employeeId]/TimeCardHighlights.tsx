@@ -61,7 +61,11 @@ export default function TimeCardHighlights({
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (id: string, fieldName: string, value: string | number | null) => {
+  const handleLocalChange = (
+    id: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(id, fieldName)]: value,
@@ -324,37 +328,40 @@ export default function TimeCardHighlights({
     setCostCodeModalOpen(false);
   };
   // Add debugging function to log date values
-  const debugLogDate = useCallback((context: string, dateValue: Date | string | number | null | undefined) => {
-    if (!dateValue) {
-      console.log(`${context}: undefined or null`);
-      return;
-    }
-
-    try {
-      if (dateValue instanceof Date) {
-        console.log(
-          `${context}: Date object - ${dateValue.toISOString()} - Valid: ${!isNaN(
-            dateValue.getTime()
-          )}`
-        );
-      } else if (typeof dateValue === "string") {
-        const parsed = new Date(dateValue);
-        console.log(
-          `${context}: String - ${dateValue} - Parsed to: ${parsed.toISOString()} - Valid: ${!isNaN(
-            parsed.getTime()
-          )}`
-        );
-      } else {
-        console.log(
-          `${context}: Unknown type - ${typeof dateValue} - ${String(
-            dateValue
-          )}`
-        );
+  const debugLogDate = useCallback(
+    (context: string, dateValue: Date | string | number | null | undefined) => {
+      if (!dateValue) {
+        console.log(`${context}: undefined or null`);
+        return;
       }
-    } catch (error) {
-      console.error(`${context}: Error logging date:`, error);
-    }
-  }, []);
+
+      try {
+        if (dateValue instanceof Date) {
+          console.log(
+            `${context}: Date object - ${dateValue.toISOString()} - Valid: ${!isNaN(
+              dateValue.getTime()
+            )}`
+          );
+        } else if (typeof dateValue === "string") {
+          const parsed = new Date(dateValue);
+          console.log(
+            `${context}: String - ${dateValue} - Parsed to: ${parsed.toISOString()} - Valid: ${!isNaN(
+              parsed.getTime()
+            )}`
+          );
+        } else {
+          console.log(
+            `${context}: Unknown type - ${typeof dateValue} - ${String(
+              dateValue
+            )}`
+          );
+        }
+      } catch (error) {
+        console.error(`${context}: Error logging date:`, error);
+      }
+    },
+    []
+  );
 
   return (
     <Holds className="w-full h-full">

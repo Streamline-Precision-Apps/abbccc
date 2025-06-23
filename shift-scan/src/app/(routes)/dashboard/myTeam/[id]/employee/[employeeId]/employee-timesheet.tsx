@@ -472,7 +472,9 @@ export function EmployeeTimeSheets({
       if (timeSheetFilter === "equipmentRefuelLogs") {
         // Use flattenEquipmentRefuelLogs to get the correct flat array
         const updates = flattenEquipmentRefuelLogs(
-          Array.isArray(changes) ? (changes as EmployeeEquipmentLogWithRefuel[]) : []
+          Array.isArray(changes)
+            ? (changes as EmployeeEquipmentLogWithRefuel[])
+            : []
         );
         if (updates.length === 0) {
           console.warn("No valid equipment refuel logs to update.");
@@ -504,7 +506,9 @@ export function EmployeeTimeSheets({
         );
 
       // Type guard for TimesheetHighlights
-      function isTimesheetHighlightsArray(arr: unknown): arr is TimesheetHighlights[] {
+      function isTimesheetHighlightsArray(
+        arr: unknown
+      ): arr is TimesheetHighlights[] {
         return (
           Array.isArray(arr) &&
           arr.every(
@@ -520,54 +524,56 @@ export function EmployeeTimeSheets({
 
       if (isTimesheetHighlightsArray(changes)) {
         // Handle as TimesheetHighlights
-        const validatedTimesheets = (changes as TimesheetHighlights[]).map((item) => {
-          const timesheet = item;
-          const result: Partial<TimesheetHighlights> = {
-            id: timesheet.id,
-            jobsiteId: timesheet.jobsiteId,
-            costcode: timesheet.costcode,
-          };
+        const validatedTimesheets = (changes as TimesheetHighlights[]).map(
+          (item) => {
+            const timesheet = item;
+            const result: Partial<TimesheetHighlights> = {
+              id: timesheet.id,
+              jobsiteId: timesheet.jobsiteId,
+              costcode: timesheet.costcode,
+            };
 
-          // Process startTime
-          if (timesheet.startTime) {
-            try {
-              const startDate =
-                timesheet.startTime instanceof Date
-                  ? timesheet.startTime
-                  : new Date(timesheet.startTime as string);
+            // Process startTime
+            if (timesheet.startTime) {
+              try {
+                const startDate =
+                  timesheet.startTime instanceof Date
+                    ? timesheet.startTime
+                    : new Date(timesheet.startTime as string);
 
-              if (!isNaN(startDate.getTime())) {
-                result.startTime = startDate;
+                if (!isNaN(startDate.getTime())) {
+                  result.startTime = startDate;
+                }
+              } catch (error) {
+                console.warn(
+                  `Invalid startTime for timesheet ${timesheet.id}`,
+                  error
+                );
               }
-            } catch (error) {
-              console.warn(
-                `Invalid startTime for timesheet ${timesheet.id}`,
-                error
-              );
             }
-          }
 
-          // Process endTime
-          if (timesheet.endTime) {
-            try {
-              const endDate =
-                timesheet.endTime instanceof Date
-                  ? timesheet.endTime
-                  : new Date(timesheet.endTime as string);
+            // Process endTime
+            if (timesheet.endTime) {
+              try {
+                const endDate =
+                  timesheet.endTime instanceof Date
+                    ? timesheet.endTime
+                    : new Date(timesheet.endTime as string);
 
-              if (!isNaN(endDate.getTime())) {
-                result.endTime = endDate;
+                if (!isNaN(endDate.getTime())) {
+                  result.endTime = endDate;
+                }
+              } catch (error) {
+                console.warn(
+                  `Invalid endTime for timesheet ${timesheet.id}`,
+                  error
+                );
               }
-            } catch (error) {
-              console.warn(
-                `Invalid endTime for timesheet ${timesheet.id}`,
-                error
-              );
             }
-          }
 
-          return result as TimesheetHighlights;
-        });
+            return result as TimesheetHighlights;
+          }
+        );
         await parentOnSaveChanges(validatedTimesheets as TimesheetHighlights[]);
       } else {
         // For other types, pass through as-is

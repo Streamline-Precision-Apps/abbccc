@@ -100,7 +100,11 @@ export default function TimeCardTascoHaulLogs({
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
+  const handleLocalChange = (
+    logId: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -336,11 +340,13 @@ export default function TimeCardTascoHaulLogs({
                           {" "}
                           <Inputs
                             type="number"
-                            value={getDisplayValue(
-                              log.id,
-                              "LoadQuantity",
-                              log.LoadQuantity?.toString() || ""
-                            ) ?? ''}
+                            value={
+                              getDisplayValue(
+                                log.id,
+                                "LoadQuantity",
+                                log.LoadQuantity?.toString() || ""
+                              ) ?? ""
+                            }
                             background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(

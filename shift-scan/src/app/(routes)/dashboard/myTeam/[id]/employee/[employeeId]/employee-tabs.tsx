@@ -42,7 +42,10 @@ import {
   updateEquipmentRefuelLogs,
   updateTruckingMileage,
 } from "@/actions/myTeamsActions";
-import { flattenMaterialLogs, ProcessedMaterialLog } from "./TimeCardTruckingMaterialLogs";
+import {
+  flattenMaterialLogs,
+  ProcessedMaterialLog,
+} from "./TimeCardTruckingMaterialLogs";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useAllEquipment } from "@/hooks/useAllEquipment";
 
@@ -131,11 +134,15 @@ function isHaulLogChangeArray(arr: unknown): arr is HaulLogChange[] {
     arr.every(
       (item) =>
         item &&
-        typeof item === 'object' &&
-        'TruckingLogs' in item &&
+        typeof item === "object" &&
+        "TruckingLogs" in item &&
         Array.isArray((item as HaulLogChange).TruckingLogs) &&
         (item as HaulLogChange).TruckingLogs.every(
-          (log) => log && typeof log === 'object' && 'EquipmentHauled' in log && Array.isArray(log.EquipmentHauled)
+          (log) =>
+            log &&
+            typeof log === "object" &&
+            "EquipmentHauled" in log &&
+            Array.isArray(log.EquipmentHauled)
         )
     )
   );
@@ -351,12 +358,15 @@ export default function EmployeeTabs() {
             }
             const haulLogChanges = changes;
             const updates = haulLogChanges.flatMap((item) =>
-              (item.TruckingLogs || []).flatMap((log: TruckingEquipmentHaulLog) =>
-                (log.EquipmentHauled || []).map((hauledItem: EquipmentHauledItem) => ({
-                  id: hauledItem.id,
-                  equipmentId: hauledItem.Equipment?.id,
-                  jobSiteId: hauledItem.JobSite?.id,
-                }))
+              (item.TruckingLogs || []).flatMap(
+                (log: TruckingEquipmentHaulLog) =>
+                  (log.EquipmentHauled || []).map(
+                    (hauledItem: EquipmentHauledItem) => ({
+                      id: hauledItem.id,
+                      equipmentId: hauledItem.Equipment?.id,
+                      jobSiteId: hauledItem.JobSite?.id,
+                    })
+                  )
               )
             );
 
@@ -374,7 +384,8 @@ export default function EmployeeTabs() {
               setEdit(false);
             }
             break;
-          }          case "truckingMaterialHaulLogs": {
+          }
+          case "truckingMaterialHaulLogs": {
             // Accept both flat and nested structure
             let formattedChanges: ProcessedMaterialLog[] = [];
             if (
@@ -396,7 +407,8 @@ export default function EmployeeTabs() {
             }
             break;
           }
-          case "truckingRefuelLogs": {            // Accept both flat and nested structure
+          case "truckingRefuelLogs": {
+            // Accept both flat and nested structure
             let formattedChanges: {
               id: string;
               gallonsRefueled?: number | null;
@@ -410,7 +422,8 @@ export default function EmployeeTabs() {
               formattedChanges = flattenRefuelLogs(
                 changes as TruckingRefuelLogData
               );
-            } else if (Array.isArray(changes)) {              formattedChanges = changes as {
+            } else if (Array.isArray(changes)) {
+              formattedChanges = changes as {
                 id: string;
                 gallonsRefueled?: number | null;
                 milesAtFueling?: number | null;
@@ -515,35 +528,43 @@ export default function EmployeeTabs() {
             if (!Array.isArray(changes)) {
               console.warn("Invalid maintenance log changes");
               return;
-            }            // Create a server action to update MaintenanceLog data
+            } // Create a server action to update MaintenanceLog data
             const updateMaintenanceLogs = async (logs: MaintenanceLog[]) => {
               const formData = new FormData();
               logs.forEach((log, index) => {
                 formData.append(`logs[${index}].id`, log.id);
-                formData.append(`logs[${index}].startTime`, log.startTime ? new Date(log.startTime).toISOString() : '');
-                formData.append(`logs[${index}].endTime`, log.endTime ? new Date(log.endTime).toISOString() : '');
+                formData.append(
+                  `logs[${index}].startTime`,
+                  log.startTime ? new Date(log.startTime).toISOString() : ""
+                );
+                formData.append(
+                  `logs[${index}].endTime`,
+                  log.endTime ? new Date(log.endTime).toISOString() : ""
+                );
               });
 
               try {
-                const response = await fetch('/api/updateMaintenanceLogs', {
-                  method: 'POST',
+                const response = await fetch("/api/updateMaintenanceLogs", {
+                  method: "POST",
                   body: formData,
                 });
-                
+
                 if (!response.ok) {
-                  throw new Error('Failed to update maintenance logs');
+                  throw new Error("Failed to update maintenance logs");
                 }
-                
+
                 const result = await response.json();
                 return { success: true, data: result };
               } catch (error) {
-                console.error('Error updating maintenance logs:', error);
+                console.error("Error updating maintenance logs:", error);
                 return { success: false, error };
               }
             };
 
-            const result = await updateMaintenanceLogs(changes as MaintenanceLog[]);
-            
+            const result = await updateMaintenanceLogs(
+              changes as MaintenanceLog[]
+            );
+
             if (result?.success) {
               await Promise.all([
                 fetchTimesheetsForDate(date),

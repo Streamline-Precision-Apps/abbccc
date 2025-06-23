@@ -95,7 +95,11 @@ export default function TimeCardEquipmentLogs({
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
+  const handleLocalChange = (
+    logId: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -130,7 +134,13 @@ export default function TimeCardEquipmentLogs({
   >([]);
 
   // Helper function to ensure RefuelLogs is always an array
-  const normalizeRefuelLogs = (refuelLogs: EquipmentRefuelLogItem | EquipmentRefuelLogItem[] | null | undefined): EquipmentRefuelLogItem[] => {
+  const normalizeRefuelLogs = (
+    refuelLogs:
+      | EquipmentRefuelLogItem
+      | EquipmentRefuelLogItem[]
+      | null
+      | undefined
+  ): EquipmentRefuelLogItem[] => {
     if (!refuelLogs) return [];
     if (Array.isArray(refuelLogs)) return refuelLogs;
     // Handle case where RefuelLogs is an object, not an array
@@ -379,13 +389,13 @@ export default function TimeCardEquipmentLogs({
           }
           return log;
         }),
-      }));      // Cast to the expected type for onDataChange
+      })); // Cast to the expected type for onDataChange
       onDataChange(
-        updatedNested.flatMap(group =>
+        updatedNested.flatMap((group) =>
           group.EmployeeEquipmentLogs.map((log: EmployeeEquipmentLogData) => ({
             id: log.id,
             startTime: log.startTime ? new Date(log.startTime) : undefined,
-            endTime: log.endTime ? new Date(log.endTime) : undefined
+            endTime: log.endTime ? new Date(log.endTime) : undefined,
           }))
         )
       );
@@ -490,11 +500,13 @@ export default function TimeCardEquipmentLogs({
                               {" "}
                               <Inputs
                                 type="time"
-                                value={getDisplayValue(
-                                  log.id,
-                                  "startTime",
-                                  log.startTime
-                                ) ?? ''}
+                                value={
+                                  getDisplayValue(
+                                    log.id,
+                                    "startTime",
+                                    log.startTime
+                                  ) ?? ""
+                                }
                                 onChange={(e) =>
                                   handleLocalChange(
                                     log.id,
@@ -512,11 +524,13 @@ export default function TimeCardEquipmentLogs({
                               {" "}
                               <Inputs
                                 type="time"
-                                value={getDisplayValue(
-                                  log.id,
-                                  "endTime",
-                                  log.endTime
-                                ) ?? ''}
+                                value={
+                                  getDisplayValue(
+                                    log.id,
+                                    "endTime",
+                                    log.endTime
+                                  ) ?? ""
+                                }
                                 background={isFocused ? "orange" : "white"}
                                 onChange={(e) =>
                                   handleLocalChange(
