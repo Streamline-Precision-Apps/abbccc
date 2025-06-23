@@ -4,14 +4,6 @@ model Client {
   description    String?
   creationReason String? // Reason for creating the client
   approvalStatus ApprovalStatus @default(PENDING) // PENDING, APPROVED, REJECTED
-  jobsiteId      String?
-  address        String?
-  city           String?
-  state          String?
-  zipCode        String?
-  country        String         @default("US")
-  phone          String?
-  email          String?
   contactPerson  String?
   hasProject     Boolean        @default(true)
   createdAt      DateTime       @default(now())
@@ -21,7 +13,10 @@ model Client {
   createdBy      User?          @relation(fields: [createdById], references: [id])
   createdVia     CreatedVia     @default(ADMIN)
   Company        Company        @relation(fields: [companyId], references: [id])
+  jobsiteId      String?
   Jobsites       Jobsite[]
+  addressId      String?        @unique
+  Address        Address?
 
   @@index([companyId, name])
   @@index([hasProject])
