@@ -1,8 +1,8 @@
 model Company {
   id               String         @id @default(uuid())
   name             String
-  addressId        String?        @unique
-  Address          Address?
+  addressId        String?
+  Address          Address?       @relation(fields: [addressId], references: [id])
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   SubscriptionDate DateTime       @default(now())

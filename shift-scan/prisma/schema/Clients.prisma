@@ -17,8 +17,8 @@ model Client {
   Company        Company        @relation(fields: [companyId], references: [id])
   jobsiteId      String?
   Jobsites       Jobsite[]
-  addressId      String?        @unique
-  Address        Address?
+  addressId      String?
+  Address        Address?       @relation(fields: [addressId], references: [id])
 
   @@index([companyId, name])
   @@index([hasProject])
