@@ -21,8 +21,8 @@ export function CreateTimesheetModal({
     user: { id: "", firstName: "", lastName: "" },
     jobsite: { id: "", name: "" },
     costcode: { id: "", name: "" },
-    startTime: "",
-    endTime: "",
+    startTime: { date: "", time: "" },
+    endTime: { date: "", time: "" },
     workType: "",
   });
   const [users, setUsers] = useState<
@@ -40,6 +40,8 @@ export function CreateTimesheetModal({
   >([]);
   const [submitting, setSubmitting] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [startTimePickerOpen, setStartTimePickerOpen] = useState(false);
+  const [endTimePickerOpen, setEndTimePickerOpen] = useState(false);
 
   // New states for logs
   type MaintenanceLogDraft = {
@@ -295,7 +297,7 @@ export function CreateTimesheetModal({
           <p className="text-sm mb-1 text-gray-600">
             Use the form below to enter and submit a new timesheet on behalf of
             an employee.
-            <br /> Ensure all required fields are accurate.
+            <br /> Ensure all required fields are accurates.
           </p>
         </div>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
@@ -309,6 +311,10 @@ export function CreateTimesheetModal({
             workTypeOptions={workTypeOptions}
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
+            startTimePickerOpen={startTimePickerOpen}
+            setStartTimePickerOpen={setStartTimePickerOpen}
+            endTimePickerOpen={endTimePickerOpen}
+            setEndTimePickerOpen={setEndTimePickerOpen}
             users={users}
             jobsites={jobsites}
           />

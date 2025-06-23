@@ -15,8 +15,10 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { format } from "date-fns";
+import { format as formatDate, parseISO } from "date-fns";
 import React, { Dispatch, SetStateAction, use, useEffect } from "react";
+import { Label } from "@/components/ui/label";
+import { CalendarIcon } from "lucide-react";
 export default function GeneralSection({
   form,
   setForm,
@@ -29,6 +31,10 @@ export default function GeneralSection({
   setDatePickerOpen,
   users,
   jobsites,
+  startTimePickerOpen,
+  setStartTimePickerOpen,
+  endTimePickerOpen,
+  setEndTimePickerOpen,
 }: {
   form: {
     date: Date;
@@ -45,8 +51,14 @@ export default function GeneralSection({
       id: string;
       name: string;
     };
-    startTime: string;
-    endTime: string;
+    startTime: {
+      date: string;
+      time: string;
+    };
+    endTime: {
+      date: string;
+      time: string;
+    };
     workType: string;
   };
   setForm: Dispatch<
@@ -65,14 +77,24 @@ export default function GeneralSection({
         id: string;
         name: string;
       };
-      startTime: string;
-      endTime: string;
+      startTime: {
+        date: string;
+        time: string;
+      };
+      endTime: {
+        date: string;
+        time: string;
+      };
       workType: string;
     }>
   >;
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
+  startTimePickerOpen: boolean;
+  setStartTimePickerOpen: (open: boolean) => void;
+  endTimePickerOpen: boolean;
+  setEndTimePickerOpen: (open: boolean) => void;
   userOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -89,18 +111,20 @@ export default function GeneralSection({
   }, [form.date]);
   return (
     <>
-      {/* Date */}
-      <div>
-        <label className="block font-semibold mb-1">Date*</label>
+      {/* Creation Date (disabled) */}
+      <div className="col-span-2">
+        <label className="block font-semibold mb-1">Creation Date</label>
         <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
           <PopoverTrigger asChild>
             <Button
-              type="button"
               variant="outline"
-              className="w-full justify-between"
-              onClick={() => setDatePickerOpen(true)}
+              className="w-fit justify-start text-left font-normal"
+              disabled
             >
-              {form.date ? format(new Date(form.date), "PPP") : "Pick a date"}
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {form.date
+                ? formatDate(new Date(form.date), "PPP")
+                : "Pick a date"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -122,7 +146,7 @@ export default function GeneralSection({
       {/* User */}
       <div>
         <Combobox
-          label="User*"
+          label="User"
           options={userOptions}
           value={form.user.id}
           onChange={(val, option) => {
@@ -139,7 +163,7 @@ export default function GeneralSection({
       {/* Jobsite */}
       <div>
         <Combobox
-          label="Jobsite*"
+          label="Jobsite"
           options={jobsiteOptions}
           value={form.jobsite.id}
           onChange={(val, option) => {
@@ -157,7 +181,7 @@ export default function GeneralSection({
       {/* Costcode */}
       <div>
         <Combobox
-          label="Cost Code *"
+          label="Cost Code"
           options={costCodeOptions}
           value={form.costcode.id}
           onChange={(val, option) => {
@@ -172,28 +196,117 @@ export default function GeneralSection({
           filterKeys={["value", "label"]}
         />
       </div>
-      {/* start time */}
+      {/* Start Date & Time */}
       <div>
         <label className="block font-semibold mb-1">Start Time*</label>
-        <Input
-          type="time"
-          name="startTime"
-          value={form.startTime}
-          onChange={handleChange}
-          required
-          className="w-full"
-        />
+        <div className="flex gap-x-2">
+          <Popover
+            open={startTimePickerOpen}
+            onOpenChange={setStartTimePickerOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-between"
+                onClick={() => setStartTimePickerOpen(true)}
+              >
+                {form.startTime.date ? form.startTime.date : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={
+                  form.startTime.date
+                    ? new Date(form.startTime.date + "T00:00:00")
+                    : undefined
+                }
+                onSelect={(date) => {
+                  setForm({
+                    ...form,
+                    startTime: {
+                      ...form.startTime,
+                      date: date ? formatDate(date, "MM/dd/yyyy") : "",
+                    },
+                  });
+                  setStartTimePickerOpen(false);
+                }}
+                autoFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <Input
+            type="time"
+            name="startTime"
+            value={form.startTime.time}
+            onChange={(e) => {
+              setForm({
+                ...form,
+                startTime: {
+                  ...form.startTime,
+                  time: e.target.value,
+                },
+              });
+            }}
+            required
+            className="w-full"
+          />
+        </div>
       </div>
-      {/* end time */}
+      {/* End Date & Time */}
       <div>
         <label className="block font-semibold mb-1">End Time</label>
-        <Input
-          type="time"
-          name="endTime"
-          value={form.endTime}
-          onChange={handleChange}
-          className="w-full"
-        />
+        <div className="flex gap-2">
+          <Popover open={endTimePickerOpen} onOpenChange={setEndTimePickerOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-between"
+                onClick={() => setEndTimePickerOpen(true)}
+              >
+                {form.endTime.date ? form.endTime.date : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={
+                  form.endTime.date
+                    ? new Date(form.endTime.date + "T00:00:00")
+                    : undefined
+                }
+                onSelect={(date) => {
+                  setForm({
+                    ...form,
+                    endTime: {
+                      ...form.endTime,
+                      date: date ? formatDate(date, "MM/dd/yyyy") : "",
+                    },
+                  });
+                  setEndTimePickerOpen(false);
+                }}
+                autoFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <Input
+            type="time"
+            name="endTime"
+            value={form.endTime.time}
+            onChange={(e) => {
+              setForm({
+                ...form,
+                endTime: {
+                  ...form.endTime,
+                  time: e.target.value,
+                },
+              });
+            }}
+            className="w-full"
+          />
+        </div>
       </div>
       {/* work type */}
       <div className="mb-4">
