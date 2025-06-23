@@ -55,7 +55,7 @@ export default function TimeCardTruckingRefuelLogs({
     logId: string,
     refuelId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, refuelId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -66,7 +66,7 @@ export default function TimeCardTruckingRefuelLogs({
     logId: string,
     refuelId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -121,7 +121,7 @@ export default function TimeCardTruckingRefuelLogs({
     truckingLogId: string,
     refuelId: string,
     field: string,
-    value: any
+    value: number | string | null | undefined
   ) => {
     // Update the flat UI state
     setEditedRefuelLogs((prev) =>

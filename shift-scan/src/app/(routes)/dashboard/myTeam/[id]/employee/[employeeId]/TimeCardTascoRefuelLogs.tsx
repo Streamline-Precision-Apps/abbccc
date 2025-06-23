@@ -78,7 +78,7 @@ export default function TimeCardTascoRefuelLogs({
     tascoLogId: string,
     refuelId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(tascoLogId, refuelId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -89,7 +89,7 @@ export default function TimeCardTascoRefuelLogs({
     tascoLogId: string,
     refuelId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -243,7 +243,7 @@ export default function TimeCardTascoRefuelLogs({
                               log.id,
                               "gallonsRefueled",
                               log.gallonsRefueled?.toString() || ""
-                            )}
+                            ) ?? ''}
                             background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(

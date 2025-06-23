@@ -7,8 +7,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import {
   EquipmentLogsData,
-  EmployeeEquipmentLog,
+  EmployeeEquipmentLogData,
   JobsiteData,
+  EquipmentRefuelLogItem,
 } from "@/lib/types";
 import {
   differenceInHours,
@@ -20,7 +21,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 
 // Define a type that represents a valid equipment log with all required properties
-type ValidEquipmentLog = EmployeeEquipmentLog & {
+type ValidEquipmentLog = EmployeeEquipmentLogData & {
   Equipment: {
     id: string;
     name: string;
@@ -28,7 +29,7 @@ type ValidEquipmentLog = EmployeeEquipmentLog & {
   startTime: string;
   endTime: string;
   Jobsite: JobsiteData;
-  RefuelLogs?: any; // Add RefuelLogs with any type since it can be object or array
+  RefuelLogs?: EquipmentRefuelLogItem[] | EquipmentRefuelLogItem; // Can be object or array
 };
 
 type ProcessedEquipmentLog = {
@@ -87,14 +88,14 @@ export default function TimeCardEquipmentLogs({
   const getDisplayValue = (
     logId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: any) => {
+  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -129,7 +130,7 @@ export default function TimeCardEquipmentLogs({
   >([]);
 
   // Helper function to ensure RefuelLogs is always an array
-  const normalizeRefuelLogs = (refuelLogs: any): any[] => {
+  const normalizeRefuelLogs = (refuelLogs: EquipmentRefuelLogItem | EquipmentRefuelLogItem[] | null | undefined): EquipmentRefuelLogItem[] => {
     if (!refuelLogs) return [];
     if (Array.isArray(refuelLogs)) return refuelLogs;
     // Handle case where RefuelLogs is an object, not an array
@@ -181,11 +182,14 @@ export default function TimeCardEquipmentLogs({
         if (log.EmployeeEquipmentLogs) {
           // Use a separate array to avoid modifying original data structure
           return log.EmployeeEquipmentLogs.map((eqLog) => {
-            // Use type assertion for RefuelLogs
-            const logAny = eqLog as any;
-            if (logAny.RefuelLogs && !Array.isArray(logAny.RefuelLogs)) {
+            // Normalize RefuelLogs to array format
+            type EquipmentLogData = EmployeeEquipmentLogData & {
+              RefuelLogs?: EquipmentRefuelLogItem[] | EquipmentRefuelLogItem;
+            };
+            const typedLog = eqLog as EquipmentLogData;
+            if (typedLog.RefuelLogs && !Array.isArray(typedLog.RefuelLogs)) {
               // Convert to array if it's an object
-              logAny.RefuelLogs = [logAny.RefuelLogs];
+              typedLog.RefuelLogs = [typedLog.RefuelLogs];
             }
             return eqLog;
           });
@@ -375,9 +379,16 @@ export default function TimeCardEquipmentLogs({
           }
           return log;
         }),
-      }));
-      // Cast to any to satisfy the onDataChange signature, which expects EquipmentLogUpdate[]
-      onDataChange(updatedNested as any);
+      }));      // Cast to the expected type for onDataChange
+      onDataChange(
+        updatedNested.flatMap(group =>
+          group.EmployeeEquipmentLogs.map((log: EmployeeEquipmentLogData) => ({
+            id: log.id,
+            startTime: log.startTime ? new Date(log.startTime) : undefined,
+            endTime: log.endTime ? new Date(log.endTime) : undefined
+          }))
+        )
+      );
     },
     [editedEquipmentLogs, equipmentLogs, onDataChange]
   );
@@ -483,7 +494,7 @@ export default function TimeCardEquipmentLogs({
                                   log.id,
                                   "startTime",
                                   log.startTime
-                                )}
+                                ) ?? ''}
                                 onChange={(e) =>
                                   handleLocalChange(
                                     log.id,
@@ -505,7 +516,7 @@ export default function TimeCardEquipmentLogs({
                                   log.id,
                                   "endTime",
                                   log.endTime
-                                )}
+                                ) ?? ''}
                                 background={isFocused ? "orange" : "white"}
                                 onChange={(e) =>
                                   handleLocalChange(

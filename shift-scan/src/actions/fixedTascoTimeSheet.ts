@@ -41,7 +41,12 @@ export async function handleTascoTimeSheet(formData: FormData) {
       console.log("Equipment ID for connection:", equipmentId);
 
       // Create TascoLog create data without equipment initially
-      let tascoLogCreateData: any = {
+      type TascoLogCreateData = {
+        shiftType: string;
+        laborType: string;
+        TascoMaterialTypes?: { connect: { name: string } };
+        Equipment?: { connect: { id: string } };
+      };      const tascoLogCreateData: TascoLogCreateData = {
         shiftType,
         laborType
       };
@@ -68,7 +73,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
         if (equipment) {
           console.log("Found equipment:", equipment);
           // Use the actual equipment ID for the connection
-          tascoLogCreateData.equipmentId = equipment.id;
+          tascoLogCreateData.Equipment = { connect: { id: equipment.id } };
         } else {
           console.warn(`No equipment found with ID: ${equipmentId}`);
           // Continue without equipment connection

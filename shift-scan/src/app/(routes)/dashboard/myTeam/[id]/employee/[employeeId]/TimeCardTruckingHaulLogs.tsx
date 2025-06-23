@@ -41,7 +41,7 @@ export default function TimeCardTruckingHaulLogs({
 
   // Add state to store local input values to prevent losing focus while typing
   const [inputValues, setInputValues] = useState<
-    Record<string, string | number | null>
+    Record<string, string | number | { id: string; name: string } | null>
   >({});
 
   // Create a unique key for each input field
@@ -54,7 +54,7 @@ export default function TimeCardTruckingHaulLogs({
     logId: string,
     hauledId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, hauledId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -65,7 +65,7 @@ export default function TimeCardTruckingHaulLogs({
     logId: string,
     hauledId: string,
     fieldName: string,
-    value: any
+    value: string | number | { id: string; name: string } | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -85,7 +85,7 @@ export default function TimeCardTruckingHaulLogs({
     const key = getInputKey(logId, hauledId, field);
 
     if (key in inputValues) {
-      const value = inputValues[key];
+      const value = inputValues[key] as string | number | { id: string; name: string } | null;
       handleEquipmentHauledChange(itemIdx, logIdx, hauledIdx, field, value);
 
       // Clear from local state to avoid duplicate processing
@@ -102,7 +102,7 @@ export default function TimeCardTruckingHaulLogs({
     itemIndex: number,
     logId: string,
     field: keyof TruckingEquipmentHaulLog,
-    value: any
+    value: string | number | { id: string; name: string } | null
   ) => {
     const updated = truckingEquipmentHaulLogs.map((item, idx) => {
       if (idx === itemIndex) {
@@ -131,7 +131,7 @@ export default function TimeCardTruckingHaulLogs({
     logIdx: number,
     hauledIdx: number,
     field: keyof EquipmentHauledItem,
-    value: any
+    value: string | number | { id: string; name: string } | null
   ) => {
     const updated = truckingEquipmentHaulLogs.map((item, i) => {
       if (i !== itemIdx) return item;

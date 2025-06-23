@@ -54,14 +54,14 @@ export default function TimeCardHighlights({
   const getDisplayValue = (
     id: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(id, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (id: string, fieldName: string, value: any) => {
+  const handleLocalChange = (id: string, fieldName: string, value: string | number | null) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(id, fieldName)]: value,
@@ -323,9 +323,8 @@ export default function TimeCardHighlights({
     }
     setCostCodeModalOpen(false);
   };
-
   // Add debugging function to log date values
-  const debugLogDate = useCallback((context: string, dateValue: any) => {
+  const debugLogDate = useCallback((context: string, dateValue: Date | string | number | null | undefined) => {
     if (!dateValue) {
       console.log(`${context}: undefined or null`);
       return;

@@ -140,11 +140,14 @@ const getTypedOnDataChange = <T,>(
     : undefined;
 };
 
-const renderValueOrNA = (value: any) => {
+const renderValueOrNA = (value: string | number | boolean | Date | null | undefined) => {
   if (value === null || value === undefined || value === "") {
     return "N/A";
   }
-  return value;
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  return String(value);
 };
 
 export default function TimeSheetRenderer({
@@ -213,13 +216,13 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: any
-          ): item is { TruckingLogs: any[] } => {
+            item: unknown
+          ): item is { TruckingLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TruckingLogs" in item &&
-              Array.isArray(item.TruckingLogs)
+              Array.isArray((item as { TruckingLogs: unknown[] }).TruckingLogs)
             );
           };
 
@@ -251,26 +254,26 @@ export default function TimeSheetRenderer({
 
             // Type guard to check if object has TruckingLogs
             const hasTruckingLogs = (
-              item: any
+              item: unknown
             ): item is ReviewTimesheet & {
               TruckingLogs: ReviewTruckingLog[];
             } => {
               return (
-                item &&
+                !!item &&
                 typeof item === "object" &&
                 "id" in item &&
                 "TruckingLogs" in item &&
-                Array.isArray(item.TruckingLogs) &&
-                item.TruckingLogs.length > 0
+                Array.isArray((item as ReviewTimesheet).TruckingLogs) &&
+                (item as ReviewTimesheet).TruckingLogs!.length > 0
               );
             };
 
             // Convert data with proper type checking
-            const validTimesheets = (data as any[]).filter(hasTruckingLogs);
+            const validTimesheets = (data as unknown[]).filter(hasTruckingLogs);
             console.log("Valid timesheets after filter:", validTimesheets);
 
             formattedData = validTimesheets.map((ts) => ({
-              TruckingLogs: ts.TruckingLogs.map((tl: any) => ({
+              TruckingLogs: ts.TruckingLogs.map((tl) => ({
                 id: tl.id,
                 timeSheetId: tl.timeSheetId || ts.id, // Use timesheet id if log id is not available
                 equipmentId: tl.equipmentId || tl.Equipment?.id || null,
@@ -326,13 +329,13 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: any
-          ): item is { TruckingLogs: any[] } => {
+            item: unknown
+          ): item is { TruckingLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TruckingLogs" in item &&
-              Array.isArray(item.TruckingLogs)
+              Array.isArray((item as { TruckingLogs: unknown[] }).TruckingLogs)
             );
           };
 
@@ -386,13 +389,13 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: any
-          ): item is { TruckingLogs: any[] } => {
+            item: unknown
+          ): item is { TruckingLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TruckingLogs" in item &&
-              Array.isArray(item.TruckingLogs)
+              Array.isArray((item as { TruckingLogs: unknown[] }).TruckingLogs)
             );
           };
 
@@ -446,13 +449,13 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: any
-          ): item is { TruckingLogs: any[] } => {
+            item: unknown
+          ): item is { TruckingLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TruckingLogs" in item &&
-              Array.isArray(item.TruckingLogs)
+              Array.isArray((item as { TruckingLogs: unknown[] }).TruckingLogs)
             );
           };
 
@@ -504,13 +507,13 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: any
-          ): item is { TruckingLogs: any[] } => {
+            item: unknown
+          ): item is { TruckingLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TruckingLogs" in item &&
-              Array.isArray(item.TruckingLogs)
+              Array.isArray((item as { TruckingLogs: unknown[] }).TruckingLogs)
             );
           };
 
@@ -566,13 +569,13 @@ export default function TimeSheetRenderer({
 
           // Type guard for ReviewYourTeam format (directly from API)
           const hasDirectTascoLogs = (
-            item: any
-          ): item is { TascoLogs: any[] } => {
+            item: unknown
+          ): item is { TascoLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TascoLogs" in item &&
-              Array.isArray(item.TascoLogs)
+              Array.isArray((item as { TascoLogs: unknown[] }).TascoLogs)
             );
           };
 
@@ -606,20 +609,20 @@ export default function TimeSheetRenderer({
 
             // Type guard for EditTeamTimeSheet format
             const hasTascoLogs = (
-              item: any
+              item: unknown
             ): item is ReviewTimesheet & { TascoLogs: ReviewTascoLog[] } => {
               return (
-                item &&
+                !!item &&
                 typeof item === "object" &&
                 "id" in item &&
                 "TascoLogs" in item &&
-                Array.isArray(item.TascoLogs) &&
-                item.TascoLogs.length > 0
+                Array.isArray((item as ReviewTimesheet).TascoLogs) &&
+                (item as ReviewTimesheet).TascoLogs!.length > 0
               );
             };
 
             // Convert data with proper type checking
-            const validTimesheets = (data as any[]).filter(hasTascoLogs);
+            const validTimesheets = (data as unknown[]).filter(hasTascoLogs);
             console.log("Valid timesheets after filter:", validTimesheets);
 
             formattedData = [
@@ -686,13 +689,13 @@ export default function TimeSheetRenderer({
 
           // Type guard for ReviewYourTeam format (directly from API)
           const hasDirectTascoLogs = (
-            item: any
-          ): item is { TascoLogs: any[] } => {
+            item: unknown
+          ): item is { TascoLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "TascoLogs" in item &&
-              Array.isArray(item.TascoLogs)
+              Array.isArray((item as { TascoLogs: unknown[] }).TascoLogs)
             );
           };
 
@@ -706,18 +709,24 @@ export default function TimeSheetRenderer({
             formattedData = [
               {
                 TascoLogs: (data[0].TascoLogs || [])
-                  .filter(
-                    (log: any) => log.RefuelLogs && log.RefuelLogs.length > 0
+                  .filter((log: unknown): log is TascoLog =>
+                    !!log && typeof log === "object" && Array.isArray((log as TascoLog).RefuelLogs) && (log as TascoLog).RefuelLogs!.length > 0
                   )
-                  .map((tl: any) => ({
-                    id: tl.id,
-                    Equipment: tl.Equipment,
-                    RefuelLogs: (tl.RefuelLogs || []).map((refuel: any) => ({
-                      id: refuel.id,
-                      tascoLogId: refuel.tascoLogId || tl.id,
-                      gallonsRefueled: refuel.gallonsRefueled || 0,
-                    })),
-                  })),
+                  .map((tl) => {
+                    const tascoLog = tl as TascoLog;
+                    return {
+                      id: tascoLog.id,
+                      Equipment: tascoLog.Equipment ?? null,
+                      RefuelLogs: (tascoLog.RefuelLogs || []).map((refuel: unknown) => {
+                        const refuelLog = refuel as RefuelLog;
+                        return {
+                          id: refuelLog.id,
+                          tascoLogId: refuelLog.tascoLogId || tascoLog.id,
+                          gallonsRefueled: refuelLog.gallonsRefueled || 0,
+                        };
+                      }),
+                    };
+                  }),
               },
             ];
           } else {
@@ -744,18 +753,18 @@ export default function TimeSheetRenderer({
 
             // Type guard to check if object has TascoLogs with RefuelLogs
             const hasTascoRefuelLogs = (
-              item: any
+              item: unknown
             ): item is ReviewTimesheet & { TascoLogs: ReviewTascoLog[] } => {
               return (
-                item &&
+                !!item &&
                 typeof item === "object" &&
                 "id" in item &&
                 "TascoLogs" in item &&
-                Array.isArray(item.TascoLogs) &&
-                item.TascoLogs.length > 0 &&
-                item.TascoLogs.some(
+                Array.isArray((item as ReviewTimesheet).TascoLogs) &&
+                (item as ReviewTimesheet).TascoLogs!.length > 0 &&
+                (item as ReviewTimesheet).TascoLogs!.some(
                   (log: ReviewTascoLog) =>
-                    log.RefuelLogs &&
+                    !!log &&
                     Array.isArray(log.RefuelLogs) &&
                     log.RefuelLogs.length > 0
                 )
@@ -763,7 +772,7 @@ export default function TimeSheetRenderer({
             };
 
             // Convert data with proper type checking
-            const validTimesheets = (data as any[]).filter(hasTascoRefuelLogs);
+            const validTimesheets = (data as unknown[]).filter(hasTascoRefuelLogs);
             formattedData = [
               {
                 TascoLogs: validTimesheets.flatMap((ts) =>
@@ -828,13 +837,14 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with EmployeeEquipmentLogs
           const hasDirectEmployeeEquipmentLogs = (
-            item: any
-          ): item is { EmployeeEquipmentLogs: any[] } => {
+            item: unknown
+          ): item is { EmployeeEquipmentLogs: unknown[] } => {
             return (
-              item &&
+              !!item &&
               typeof item === "object" &&
               "EmployeeEquipmentLogs" in item &&
-              Array.isArray(item.EmployeeEquipmentLogs)
+              Array.isArray((item as { EmployeeEquipmentLogs: unknown[] })
+                .EmployeeEquipmentLogs)
             );
           };
 
@@ -940,32 +950,32 @@ export default function TimeSheetRenderer({
           if (isEquipmentRefuelLogArray(data)) {
             logs = data;
           } else {
-            logs = (data as any[]).flatMap((log) => {
-              // Defensive: extract equipmentId and equipmentName from nested Equipment object if present
-              const equipmentId = log.Equipment?.id || log.equipmentId || "";
-              const equipmentName =
-                log.Equipment?.name || log.equipmentName || "";
-              if (log && Array.isArray(log.RefuelLogs)) {
-                return log.RefuelLogs.map((refuel: any) => ({
-                  id: refuel.id,
-                  equipmentId,
-                  equipmentName,
-                  gallonsRefueled: refuel.gallonsRefueled ?? null,
-                  employeeEquipmentLogId: log.id,
-                }));
+            logs = (data as unknown[]).flatMap((log) => {
+              const equipmentLog = log as EquipmentLog;
+              const equipmentId = equipmentLog.Equipment?.id || equipmentLog.equipmentId || "";
+              const equipmentName = equipmentLog.Equipment?.name || equipmentLog.equipmentName || "";
+              if (equipmentLog && Array.isArray(equipmentLog.RefuelLogs)) {
+                return equipmentLog.RefuelLogs.map((refuel: unknown) => {
+                  const refuelLog = refuel as RefuelLog;
+                  return {
+                    id: refuelLog.id,
+                    equipmentId,
+                    equipmentName,
+                    gallonsRefueled: refuelLog.gallonsRefueled ?? null,
+                    employeeEquipmentLogId: equipmentLog.id,
+                  };
+                });
               } else if (
-                log &&
-                log.RefuelLogs &&
-                typeof log.RefuelLogs === "object"
+                equipmentLog && equipmentLog.RefuelLogs && !Array.isArray(equipmentLog.RefuelLogs) && typeof equipmentLog.RefuelLogs === "object"
               ) {
-                const refuel = log.RefuelLogs;
+                const refuel = equipmentLog.RefuelLogs as RefuelLog;
                 return [
                   {
                     id: refuel.id,
                     equipmentId,
                     equipmentName,
                     gallonsRefueled: refuel.gallonsRefueled ?? null,
-                    employeeEquipmentLogId: log.id,
+                    employeeEquipmentLogId: equipmentLog.id,
                   },
                 ];
               } else {
@@ -975,45 +985,52 @@ export default function TimeSheetRenderer({
                     equipmentId,
                     equipmentName,
                     gallonsRefueled: null,
-                    employeeEquipmentLogId: log.id,
+                    employeeEquipmentLogId: equipmentLog.id,
                   },
                 ];
               }
             });
           }
         } else if (data && typeof data === "object") {
-          const log = data as any;
-          if (log && Array.isArray(log.RefuelLogs)) {
-            logs = log.RefuelLogs.map((refuel: any) => ({
-              id: refuel.id,
-              equipmentId: refuel.equipmentId || log.equipmentId || "",
-              equipmentName: refuel.equipmentName || log.equipmentName || "",
-              gallonsRefueled: refuel.gallonsRefueled ?? null,
-              employeeEquipmentLogId: log.id,
-            }));
+          const log = data as unknown;
+          if (log && Array.isArray((log as EquipmentLog).RefuelLogs)) {
+            logs = ((log as EquipmentLog).RefuelLogs ?? []).map((refuel: unknown) => {
+              const refuelLog = refuel as RefuelLog;
+              return {
+                id: refuelLog.id,
+                equipmentId: refuelLog.equipmentId || (log as EquipmentLog).equipmentId || "",
+                equipmentName: refuelLog.equipmentName || (log as EquipmentLog).equipmentName || "",
+                gallonsRefueled: refuelLog.gallonsRefueled ?? null,
+                employeeEquipmentLogId: (log as EquipmentLog).id,
+              };
+            });
           } else if (
-            log &&
-            log.RefuelLogs &&
-            typeof log.RefuelLogs === "object"
+            log && (log as EquipmentLog).RefuelLogs && !Array.isArray((log as EquipmentLog).RefuelLogs) && typeof (log as EquipmentLog).RefuelLogs === "object"
           ) {
-            const refuel = log.RefuelLogs;
-            logs = [
-              {
-                id: refuel.id,
-                equipmentId: refuel.equipmentId || log.equipmentId || "",
-                equipmentName: refuel.equipmentName || log.equipmentName || "",
-                gallonsRefueled: refuel.gallonsRefueled ?? null,
-                employeeEquipmentLogId: log.id,
-              },
-            ];
+            const refuelObj = (log as EquipmentLog).RefuelLogs;
+            // Defensive: Only treat as RefuelLog if it has an id property
+            if (refuelObj && typeof refuelObj === "object" && 'id' in refuelObj) {
+              const refuel = refuelObj as RefuelLog;
+              logs = [
+                {
+                  id: refuel.id,
+                  equipmentId: refuel.equipmentId || (log as EquipmentLog).equipmentId || "",
+                  equipmentName: refuel.equipmentName || (log as EquipmentLog).equipmentName || "",
+                  gallonsRefueled: refuel.gallonsRefueled ?? null,
+                  employeeEquipmentLogId: (log as EquipmentLog).id,
+                },
+              ];
+            } else {
+              logs = [];
+            }
           } else {
             logs = [
               {
                 id: "",
-                equipmentId: log.equipmentId || "",
-                equipmentName: log.equipmentName || "",
+                equipmentId: (log as EquipmentLog).equipmentId || "",
+                equipmentName: (log as EquipmentLog).equipmentName || "",
                 gallonsRefueled: null,
-                employeeEquipmentLogId: log.id,
+                employeeEquipmentLogId: (log as EquipmentLog).id,
               },
             ];
           }
@@ -1086,3 +1103,8 @@ export default function TimeSheetRenderer({
     </Holds>
   );
 }
+
+// --- Define local interfaces for type safety ---
+interface RefuelLog { id: string; tascoLogId?: string; gallonsRefueled?: number; equipmentId?: string; equipmentName?: string; }
+interface TascoLog { id: string; Equipment?: { id: string; name: string } | null; RefuelLogs?: RefuelLog[]; }
+interface EquipmentLog { id: string; Equipment?: { id: string; name: string } | null; equipmentId?: string; equipmentName?: string; RefuelLogs?: RefuelLog[]; }

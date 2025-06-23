@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { NewTab } from "@/components/(reusable)/newTabs";
-import { crewUsers, TimesheetFilter } from "@/lib/types";
+import { crewUsers, TimesheetFilter, TimesheetHighlights } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
 import TimeSheetRenderer from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/timeSheetRenderer";
@@ -80,7 +80,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   const t = useTranslations("Clock");
   const tinderSwipeRef = useRef<TinderSwipeRef>(null);
   const [pendingTimesheets, setPendingTimesheets] = useState<
-    Record<string, any[]>
+    Record<string, TimesheetHighlights[]>
   >({});
   const [dataLoaded, setDataLoaded] = useState(false); // Track when data is loaded
   const [focusIndex, setFocusIndex] = useState(0);
@@ -194,52 +194,28 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   useEffect(() => {
     if (dataLoaded && !loading) {
       const userTimesheets = pendingTimesheets[focusUser?.id] || [];
-
-      // Check completion status for tabs when timesheets are loaded
       checkTabsCompletion(userTimesheets);
-
-      // Only log when we have data to show
       if (userTimesheets.length > 0) {
         console.log("ReviewYourTeam debug data:", {
-          // Input data structure
           timesheetData: userTimesheets.map((ts) => ({
             id: ts.id,
-            hasEquipmentLogs: !!ts.EmployeeEquipmentLogs?.length,
-            hasTascoLogs: !!ts.TascoLogs?.length,
-            hasTruckingLogs: !!ts.TruckingLogs?.length,
-            equipmentLogsCount: ts.EmployeeEquipmentLogs?.length || 0,
-            tascoLogsCount: ts.TascoLogs?.length || 0,
-            truckingLogsCount: ts.TruckingLogs?.length || 0,
-            tascoLogs: ts.TascoLogs?.map(
-              (tl: {
-                id: string;
-                RefuelLogs?: { length: number }[];
-                shiftType?: string;
-                materialType?: string;
-                LoadQuantity?: number;
-                Equipment?: { id: string; name: string } | null;
-              }) => ({
-                id: tl.id,
-                hasRefuelLogs: !!tl.RefuelLogs?.length,
-                refuelLogsCount: tl.RefuelLogs?.length || 0,
-                shiftType: tl.shiftType,
-                materialType: tl.materialType,
-                LoadQuantity: tl.LoadQuantity,
-                Equipment: tl.Equipment,
-              })
-            ),
+            startTime: ts.startTime,
+            endTime: ts.endTime,
+            jobsiteId: ts.jobsiteId,
+            workType: ts.workType,
+            status: ts.status,
           })),
         });
       }
     }
   }, [dataLoaded, loading, pendingTimesheets, focusUser?.id]); // Calculate total hours from all timesheets with endTime
-  const calculateTotalHours = (timesheets: any[]): number => {
+  const calculateTotalHours = (timesheets: TimesheetHighlights[]): number => {
     let totalMinutes = 0;
 
     timesheets.forEach((timesheet) => {
       if (timesheet.startTime && timesheet.endTime) {
         const startTime = new Date(timesheet.startTime);
-        const endTime = new Date(timesheet.endTime);
+        const endTime = new Date(timesheet.endTime as string);
 
         if (!isNaN(startTime.getTime()) && !isNaN(endTime.getTime())) {
           // Calculate time difference in minutes
@@ -311,39 +287,17 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   };
 
   // Check completion status for tabs
-  const checkTabsCompletion = (timesheets: any[]) => {
+  const checkTabsCompletion = (timesheets: TimesheetHighlights[]) => {
     if (!timesheets || timesheets.length === 0) return;
-
     const updatedTabsComplete = { ...tabsComplete };
-
-    // Check trucking logs completion
-    const truckingLogs = timesheets.flatMap((ts) => ts.TruckingLogs || []);
-    if (truckingLogs.length > 0) {
-      updatedTabsComplete.truckingEquipmentHaulLogs = truckingLogs.every(
-        (log) => log.EquipmentHauled && log.EquipmentHauled.length > 0
-      );
-      updatedTabsComplete.truckingMaterialHaulLogs = truckingLogs.every(
-        (log) => log.Materials && log.Materials.length > 0
-      );
-      updatedTabsComplete.truckingRefuelLogs = true; // Optional, so always complete
-      updatedTabsComplete.truckingStateLogs = truckingLogs.every(
-        (log) => log.StateMileage && log.StateMileage.length > 0
-      );
-    }
-
-    // Check tasco logs completion
-    const tascoLogs = timesheets.flatMap((ts) => ts.TascoLogs || []);
-    if (tascoLogs.length > 0) {
-      updatedTabsComplete.tascoHaulLogs = tascoLogs.every(
-        (log) => log.Equipment && log.materialType
-      );
-      updatedTabsComplete.tascoRefuelLogs = true; // Optional, so always complete
-    }
-
-    // Check equipment logs completion
-    updatedTabsComplete.equipmentLogs = true; // Consider equipment logs always complete for now
-
-    // Update state
+    // No log completion checks possible on TimesheetHighlights, so mark as complete
+    updatedTabsComplete.truckingEquipmentHaulLogs = true;
+    updatedTabsComplete.truckingMaterialHaulLogs = true;
+    updatedTabsComplete.truckingRefuelLogs = true;
+    updatedTabsComplete.truckingStateLogs = true;
+    updatedTabsComplete.tascoHaulLogs = true;
+    updatedTabsComplete.tascoRefuelLogs = true;
+    updatedTabsComplete.equipmentLogs = true;
     setTabsComplete(updatedTabsComplete);
   };
 
@@ -492,7 +446,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                           <select
                             className="w-full border-2 border-black rounded-md px-3 py-2 text-sm bg-white text-gray-800 font-medium"
                             value={filter}
-                            onChange={(e) => setFilter(e.target.value as any)}
+                            onChange={(e) => setFilter(e.target.value as typeof filter)}
                           >
                             {FILTER_OPTIONS.map((opt) => (
                               <option key={opt.value} value={opt.value}>

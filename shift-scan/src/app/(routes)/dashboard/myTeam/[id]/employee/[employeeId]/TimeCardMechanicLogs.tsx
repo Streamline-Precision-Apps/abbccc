@@ -59,12 +59,22 @@ export default function TimeCardMechanicLogs({
     Record<string, string | number | null>
   >({});
 
+  // Type guard to check for MaintenanceLogs property
+  function hasMaintenanceLogs(obj: unknown): obj is { MaintenanceLogs: MaintenanceLogData } {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'MaintenanceLogs' in obj &&
+      Array.isArray((obj as { MaintenanceLogs: unknown }).MaintenanceLogs)
+    );
+  }
+
   // Normalize maintenanceLogs to handle both API shapes
   const normalizedLogs: MaintenanceLogData =
     Array.isArray(maintenanceLogs) &&
     maintenanceLogs.length > 0 &&
-    (maintenanceLogs as any)[0]?.MaintenanceLogs
-      ? (maintenanceLogs as any)[0].MaintenanceLogs
+    hasMaintenanceLogs(maintenanceLogs[0])
+      ? maintenanceLogs[0].MaintenanceLogs
       : maintenanceLogs;
 
   // Local state for editing mechanic logs
@@ -79,14 +89,14 @@ export default function TimeCardMechanicLogs({
   const getDisplayValue = (
     logId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (logId: string, fieldName: string, value: any) => {
+  const handleLocalChange = (logId: string, fieldName: string, value: string | number | null) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(logId, fieldName)]: value,
@@ -193,12 +203,31 @@ export default function TimeCardMechanicLogs({
     setEditedMechanicLogs(updated);
     onDataChange(updated);
   };
+  // Define a more specific type for the equipment in maintenance logs
+  interface EquipmentWithOptionalFields {
+    id?: string;
+    qrId?: string;
+    name?: string;
+  }
 
+  interface MaintenanceWithEquipment {
+    id?: string;
+    equipmentId?: string;
+    Equipment?: EquipmentWithOptionalFields;
+  }
+
+  interface MechanicLogWithOptionalFields {
+    id: string;
+    Maintenance?: MaintenanceWithEquipment;
+    startTime?: Date | string | null;
+    endTime?: Date | string | null;
+  }
+  
   // Find equipment name from allEquipment by id or qrId, checking all possible fields
-  const getEquipmentName = (log: (typeof normalizedLogs)[number]): string => {
+  const getEquipmentName = (log: MechanicLogWithOptionalFields): string => {
     const eqId = log.Maintenance?.Equipment?.id;
-    const eqQrId = (log.Maintenance?.Equipment as any)?.qrId;
-    const maintenanceEquipmentId = (log.Maintenance as any)?.equipmentId;
+    const eqQrId = log.Maintenance?.Equipment?.qrId;
+    const maintenanceEquipmentId = log.Maintenance?.equipmentId;
     // Try to match by all possible ids/qrIds
     const found = allEquipment.find(
       (eq) =>
@@ -296,7 +325,7 @@ export default function TimeCardMechanicLogs({
                                 log.id,
                                 "startTime",
                                 formatTimeForDisplay(log.startTime)
-                              )}
+                              ) ?? ''}
                               className="text-xs border-none h-full rounded-none justify-left"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}
@@ -320,7 +349,7 @@ export default function TimeCardMechanicLogs({
                                 log.id,
                                 "endTime",
                                 formatTimeForDisplay(log.endTime)
-                              )}
+                              ) ?? ''}
                               className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right"
                               background={isFocused ? "orange" : "white"}
                               disabled={!edit}
