@@ -102,7 +102,7 @@ export const initialCompany: Prisma.CompanyCreateInput[] = [
   {
     id: "1",
     name: "Streamline Precision LLC",
-    addressId: "1",
+    Address: { connect: { id: "1" } },
     Users: { connect: [] },
   },
 ];
@@ -215,7 +215,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j123",
     name: "Jobsite 1",
     description: "Description for Jobsite 1",
-    addressId: "2",
+    Address: { connect: { id: "1" } },
     comment: "Comments for Jobsite 1",
     Client: { connect: { id: "client1" } },
     TimeSheets: { connect: [] },
@@ -227,7 +227,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j234",
     name: "Jobsite 2",
     description: "Description for Jobsite 2",
-    addressId: "3",
+    Address: { connect: { id: "2" } },
     comment: "Comments for Jobsite 2",
     Client: { connect: { id: "client1" } },
     TimeSheets: { connect: [] },
@@ -238,7 +238,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j345",
     name: "Jobsite 3",
     description: "Description for Jobsite 3",
-    addressId: "3",
+    Address: { connect: { id: "3" } },
     comment: "Comments for Jobsite 3",
     Client: { connect: { id: "client1" } },
     TimeSheets: { connect: [] },
@@ -249,7 +249,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j456",
     name: "Jobsite 4",
     description: "Description for Jobsite 4",
-    addressId: "4",
+    Address: { connect: { id: "4" } },
     comment: "Comments for Jobsite 4",
     Client: { connect: { id: "client1" } },
     TimeSheets: { connect: [] },
@@ -260,7 +260,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j567",
     name: "Jobsite 5",
     description: "Description for Jobsite 5",
-    addressId: "5",
+    Address: { connect: { id: "5" } },
     comment: "Comments for Jobsite 5",
     Client: { connect: { id: "client1" } },
     TimeSheets: { connect: [] },
@@ -271,7 +271,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "TASCO",
     name: "Tasco Jobsite",
     description: "Tasco Jobsite",
-    addressId: "6",
+    Address: { connect: { id: "6" } },
     comment: "Comments for Jobsite 1",
     Client: { connect: { id: "client2" } },
     TimeSheets: { connect: [] },
@@ -282,7 +282,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "MECHANIC",
     name: "Mechanic Jobsite",
     description: "Mechanic Jobsite",
-    addressId: "7",
+    Address: { connect: { id: "7" } },
     comment: "Comments for Jobsite 2",
     Client: { connect: { id: "client2" } },
     TimeSheets: { connect: [] },
@@ -293,7 +293,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "TRUCK",
     name: "Truck Jobsite",
     description: "Truck Jobsite",
-    addressId: "8",
+    Address: { connect: { id: "8" } },
     comment: "Comments for Jobsite 3",
     Client: { connect: { id: "client2" } },
     TimeSheets: { connect: [] },
@@ -324,7 +324,7 @@ export const initialClients: Prisma.ClientCreateInput[] = [
     id: "client1",
     name: "ABC Construction",
     description: "Primary construction client",
-    addressId: "9",
+    Address: { connect: { id: "9" } },
     contactPhone: "555-555-0101",
     contactEmail: "contact@abcconstruction.com",
     contactPerson: "John Smith",
@@ -334,7 +334,7 @@ export const initialClients: Prisma.ClientCreateInput[] = [
     id: "client2",
     name: "Tasco Industries",
     description: "Secondary industrial client",
-    addressId: "10",
+    Address: { connect: { id: "10" } },
     contactPhone: "555-555-0202",
     contactEmail: "contact@tascoindustries.com",
     contactPerson: "Jane Johnson",
@@ -359,6 +359,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "123-456-7890",
+        emergencyContact: "Roger Rabbit",
+        emergencyContactNumber: "098-765-4321",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "2",
@@ -375,6 +384,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "Jane Doe",
+        emergencyContactNumber: "123-456-7890",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "3",
@@ -391,6 +409,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "John Doe",
+        emergencyContactNumber: "123-456-7890",
+        createdAt: new Date("2021-06-01T00:00:00.000Z"),
+        updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+      },
+    },
   },
   {
     id: "4",
@@ -407,6 +434,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "183-416-7890",
+        emergencyContact: "Lola Bunny",
+        emergencyContactNumber: "218-765-4021",
+        createdAt: new Date("2022-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2022-01-01T00:00:00.000Z"),
+      },
+    },
   },
   {
     id: "5",
@@ -423,6 +459,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "183-416-7890",
+        emergencyContact: "Buggs Bunny",
+        emergencyContactNumber: "218-765-4021",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "6",
@@ -439,6 +484,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "123-456-7890",
+        emergencyContact: "Jessica Rabbit",
+        emergencyContactNumber: "098-765-4321",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "7",
@@ -455,6 +509,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "8",
@@ -471,6 +534,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "9",
@@ -487,6 +559,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "10",
@@ -503,6 +584,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "11",
@@ -519,6 +609,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: new Date("2021-06-01T00:00:00.000Z"),
+        updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+      },
+    },
   },
   {
     id: "12",
@@ -535,109 +634,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
-  },
-];
-
-/* Contacts */
-/* CONTACTS */
-/* Assuming you have defined a Contacts model in your Prisma schema,
-   this array will seed one contact record per user. */
-export const initialContacts: Prisma.ContactsCreateInput[] = [
-  {
-    User: { connect: { id: "1" } },
-    phoneNumber: "123-456-7890",
-    emergencyContact: "Roger Rabbit",
-    emergencyContactNumber: "098-765-4321",
-    createdAt: new Date("2022-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "2" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "Jane Doe",
-    emergencyContactNumber: "123-456-7890",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "3" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "John Doe",
-    emergencyContactNumber: "123-456-7890",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "4" } },
-    phoneNumber: "183-416-7890",
-    emergencyContact: "Lola Bunny",
-    emergencyContactNumber: "218-765-4021",
-    createdAt: new Date("2022-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "5" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "Buggs Bunny",
-    emergencyContactNumber: "098-745-4121",
-    createdAt: new Date("2022-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "6" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "Jessica Rabbit",
-    emergencyContactNumber: "098-765-4321",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "7" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "8" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "9" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "10" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "11" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "12" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
 ];
 
