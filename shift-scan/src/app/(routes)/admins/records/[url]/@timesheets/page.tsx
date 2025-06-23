@@ -9,7 +9,7 @@
 import { Texts } from "@/components/(reusable)/texts";
 import { Button } from "@/components/ui/button";
 import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../pageSelector";
+import PageSelector from "../_components/pageSelector";
 import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";

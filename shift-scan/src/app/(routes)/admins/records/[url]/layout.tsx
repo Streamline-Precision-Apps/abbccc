@@ -4,7 +4,6 @@ import { getMessages } from "next-intl/server";
 import { ReactNode } from "react";
 import { Providers } from "../../../../providers";
 import { Holds } from "@/components/(reusable)/holds";
-import PageSelector from "./pageSelector";
 import { Toaster } from "sonner";
 
 export type LayoutProps = {
