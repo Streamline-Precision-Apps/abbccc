@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
+import { DateTimePicker } from "../DateTimePicker";
 
 interface EmployeeEquipmentLog {
   id: string;
@@ -20,6 +22,10 @@ interface EditEmployeeEquipmentLogsProps {
   onRemoveLog: (idx: number) => void;
   originalLogs?: EmployeeEquipmentLog[];
   onUndoLogField?: (idx: number, field: keyof EmployeeEquipmentLog) => void;
+  equipmentOptions: {
+    value: string;
+    label: string;
+  }[];
 }
 
 export const EditEmployeeEquipmentLogs: React.FC<
@@ -31,24 +37,28 @@ export const EditEmployeeEquipmentLogs: React.FC<
   onRemoveLog,
   originalLogs = [],
   onUndoLogField,
+  equipmentOptions = [],
 }) => (
   <div className="col-span-2 mt-4">
     <h3 className="font-semibold text-sm mb-2">Employee Equipment Logs</h3>
     {logs.map((log, idx) => (
       <div
         key={log.id}
-        className="border rounded p-2 mb-2 grid grid-cols-4 gap-2 items-end"
+        className="border rounded p-2 mb-2 grid grid-rows-2 grid-cols-3 gap-2 items-end"
       >
-        <div className="flex flex-row items-end">
+        <div className="flex flex-row row-start-1 row-end-2 col-span-2 items-end">
           <div className="flex-1">
-            <label className="block text-xs">Equipment ID</label>
-            <input
-              type="text"
+            <Combobox
+              font={"font-normal"}
+              label="Equipment ID"
+              options={equipmentOptions}
               value={log.equipmentId}
-              onChange={(e) => onLogChange(idx, "equipmentId", e.target.value)}
-              className="border rounded px-2 py-1 w-full"
+              onChange={(val, option) => onLogChange(idx, "equipmentId", val)}
+              placeholder="Select equipment ID"
+              filterKeys={["value", "label"]}
             />
           </div>
+
           <div>
             {originalLogs[idx] &&
               log.equipmentId !== originalLogs[idx].equipmentId &&
@@ -65,13 +75,22 @@ export const EditEmployeeEquipmentLogs: React.FC<
           </div>
         </div>
         <div className="flex flex-row items-end">
-          <div className="flex-1">
-            <label className="block text-xs">Start Time</label>
-            <input
-              type="time"
-              value={log.startTime ? log.startTime.slice(11, 16) : ""}
-              onChange={(e) => onLogChange(idx, "startTime", e.target.value)}
-              className="border rounded px-2 py-1 w-full"
+          <Button
+            type="button"
+            size={"icon"}
+            variant="destructive"
+            onClick={() => onRemoveLog(idx)}
+          >
+            <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className="flex flex-row items-end">
+          <div>
+            <DateTimePicker
+              font={"font-normal"}
+              value={log.startTime ? log.startTime : ""}
+              onChange={(val) => onLogChange(idx, "startTime", val)}
+              label="Start Time"
             />
           </div>
           <div>
@@ -90,13 +109,12 @@ export const EditEmployeeEquipmentLogs: React.FC<
           </div>
         </div>
         <div className="flex flex-row items-end">
-          <div className="flex-1">
-            <label className="block text-xs">End Time</label>
-            <input
-              type="time"
-              value={log.endTime ? log.endTime.slice(11, 16) : ""}
-              onChange={(e) => onLogChange(idx, "endTime", e.target.value)}
-              className="border rounded px-2 py-1 w-full"
+          <div>
+            <DateTimePicker
+              font={"font-normal"}
+              value={log.endTime ? log.endTime : ""}
+              onChange={(val) => onLogChange(idx, "endTime", val)}
+              label="End Time"
             />
           </div>
           <div>
@@ -114,13 +132,6 @@ export const EditEmployeeEquipmentLogs: React.FC<
               )}
           </div>
         </div>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={() => onRemoveLog(idx)}
-        >
-          Remove
-        </Button>
       </div>
     ))}
     <Button type="button" className="mt-2" onClick={onAddLog}>

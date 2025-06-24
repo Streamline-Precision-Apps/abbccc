@@ -10,49 +10,20 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  TruckingLog,
+  TruckingNestedType,
+  TruckingNestedTypeMap,
+} from "./types";
 
-interface EquipmentHauled {
-  id: string;
-  equipmentId: string;
-  jobSiteId: string;
-}
-interface Material {
-  id: string;
-  LocationOfMaterial: string;
-  name: string;
-  materialWeight: number;
-  lightWeight: number;
-  grossWeight: number;
-  loadType: string;
-}
-interface RefuelLog {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number;
-}
-interface StateMileage {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-}
-interface TruckingLog {
-  id: string;
-  equipmentId: string;
-  startingMileage: number;
-  endingMileage: number;
-  EquipmentHauled: EquipmentHauled[];
-  Materials: Material[];
-  RefuelLogs: RefuelLog[];
-  StateMileages: StateMileage[];
-}
 interface EditTruckingLogsProps {
   logs: TruckingLog[];
   onLogChange: (idx: number, field: keyof TruckingLog, value: any) => void;
-  handleNestedLogChange: (
+  handleNestedLogChange: <T extends TruckingNestedType>(
     logIndex: number,
-    nestedType: string,
+    nestedType: T,
     nestedIndex: number,
-    field: string,
+    field: keyof TruckingNestedTypeMap[T],
     value: any
   ) => void;
   originalLogs?: TruckingLog[];
@@ -131,7 +102,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 <label className="block text-xs">Starting Mileage</label>
                 <Input
                   type="number"
-                  value={log.startingMileage}
+                  value={log.startingMileage > 0 ? log.startingMileage : ""}
                   onChange={(e) =>
                     onLogChange(idx, "startingMileage", Number(e.target.value))
                   }
@@ -167,7 +138,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 <label className="block text-xs">Ending Mileage</label>
                 <Input
                   type="number"
-                  value={log.endingMileage}
+                  value={log.endingMileage > 0 ? log.endingMileage : ""}
                   onChange={(e) =>
                     onLogChange(idx, "endingMileage", Number(e.target.value))
                   }
@@ -305,106 +276,80 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
           <div className="border-b py-2">
             {log.Materials.map((mat, matIdx) => (
-              <div key={mat.id || matIdx} className="mt-2 ">
+              <div key={mat.id || matIdx} className="mt-2 border p-2 rounded">
                 <div className="flex flex-row gap-4 mb-2">
-                  <Input
-                    type="text"
-                    placeholder="Location"
-                    value={mat.LocationOfMaterial}
-                    onChange={(e) =>
-                      handleNestedLogChange(
-                        idx,
-                        "Materials",
-                        matIdx,
-                        "LocationOfMaterial",
-                        e.target.value
-                      )
-                    }
-                    className="w-[200px]"
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Material Name"
-                    value={mat.name}
-                    onChange={(e) =>
-                      handleNestedLogChange(
-                        idx,
-                        "Materials",
-                        matIdx,
-                        "name",
-                        e.target.value
-                      )
-                    }
-                    className="w-[200px]"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Material Weight"
-                    value={mat.materialWeight}
-                    onChange={(e) =>
-                      handleNestedLogChange(
-                        idx,
-                        "Materials",
-                        matIdx,
-                        "materialWeight",
-                        e.target.value
-                      )
-                    }
-                    className="w-[200px]"
-                  />
-                </div>
-                <div className="flex flex-row gap-4 mb-2">
-                  <Input
-                    type="number"
-                    placeholder="Light Weight"
-                    value={mat.lightWeight}
-                    onChange={(e) =>
-                      handleNestedLogChange(
-                        idx,
-                        "Materials",
-                        matIdx,
-                        "lightWeight",
-                        e.target.value
-                      )
-                    }
-                    className="w-[200px]"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Gross Weight"
-                    value={mat.grossWeight}
-                    onChange={(e) =>
-                      handleNestedLogChange(
-                        idx,
-                        "Materials",
-                        matIdx,
-                        "grossWeight",
-                        e.target.value
-                      )
-                    }
-                    className="w-[200px]"
-                  />
-                  <Select
-                    value={mat.loadType}
-                    onValueChange={(val) =>
-                      handleNestedLogChange(
-                        idx,
-                        "Materials",
-                        matIdx,
-                        "loadType",
-                        val
-                      )
-                    }
-                  >
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Load Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="screened">Screened</SelectItem>
-                      <SelectItem value="unscreened">Unscreened</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="flex justify-end ">
+                  <div>
+                    <label
+                      htmlFor="LocationOfMaterial"
+                      className="text-xs font-semibold"
+                    >
+                      Location of Material
+                    </label>
+                    <Input
+                      name="LocationOfMaterial"
+                      type="text"
+                      placeholder="Enter name of location"
+                      value={mat.LocationOfMaterial}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "Materials",
+                          matIdx,
+                          "LocationOfMaterial",
+                          e.target.value
+                        )
+                      }
+                      className="w-[200px]"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="lightWeight"
+                      className="text-xs font-semibold"
+                    >
+                      Material Name
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter Name"
+                      value={mat.name}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "Materials",
+                          matIdx,
+                          "name",
+                          e.target.value
+                        )
+                      }
+                      className="w-[200px]"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="materialWeight"
+                      className="text-xs font-semibold"
+                    >
+                      Material Weight
+                    </label>
+                    <Input
+                      name="materialWeight"
+                      type="number"
+                      placeholder="Enter Weight"
+                      value={mat.materialWeight > 0 ? mat.materialWeight : ""}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "Materials",
+                          matIdx,
+                          "materialWeight",
+                          e.target.value
+                        )
+                      }
+                      className="w-[200px]"
+                    />
+                  </div>
+                  <div className="flex items-end ">
                     <Button
                       type="button"
                       size="icon"
@@ -413,6 +358,82 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     >
                       <img src="/trash.svg" alt="remove" className="w-4 h-4" />
                     </Button>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-4 mb-2">
+                  <div>
+                    <label
+                      htmlFor="lightWeight"
+                      className="text-xs font-semibold"
+                    >
+                      Light Weight
+                    </label>
+                    <Input
+                      name="lightWeight"
+                      type="number"
+                      placeholder="Enter Weight"
+                      value={mat.lightWeight > 0 ? mat.lightWeight : ""}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "Materials",
+                          matIdx,
+                          "lightWeight",
+                          e.target.value
+                        )
+                      }
+                      className="w-[200px]"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="grossWeight"
+                      className="text-xs font-semibold"
+                    >
+                      Gross Weight
+                    </label>
+                    <Input
+                      name="grossWeight"
+                      type="number"
+                      placeholder="Enter Weight"
+                      value={mat.grossWeight > 0 ? mat.grossWeight : ""}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "Materials",
+                          matIdx,
+                          "grossWeight",
+                          e.target.value
+                        )
+                      }
+                      className="w-[200px]"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="loadType" className="text-xs font-semibold">
+                      Load Type
+                    </label>
+                    <Select
+                      name="loadType"
+                      value={mat.loadType}
+                      onValueChange={(val) =>
+                        handleNestedLogChange(
+                          idx,
+                          "Materials",
+                          matIdx,
+                          "loadType",
+                          val
+                        )
+                      }
+                    >
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Load Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="SCREENED">Screened</SelectItem>
+                        <SelectItem value="UNSCREENED">Unscreened</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -442,36 +463,53 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           <div className="border-b py-2">
             {log.RefuelLogs.map((ref, refIdx) => (
               <div key={ref.id || refIdx} className="flex gap-4 mb-2 items-end">
-                <Input
-                  type="number"
-                  placeholder="Total Gallons"
-                  value={ref.gallonsRefueled}
-                  onChange={(e) =>
-                    handleNestedLogChange(
-                      idx,
-                      "RefuelLogs",
-                      refIdx,
-                      "gallonsRefueled",
-                      e.target.value
-                    )
-                  }
-                  className="w-[200px]"
-                />
-                <Input
-                  type="number"
-                  placeholder="Current Mileage"
-                  value={ref.milesAtFueling}
-                  onChange={(e) =>
-                    handleNestedLogChange(
-                      idx,
-                      "RefuelLogs",
-                      refIdx,
-                      "milesAtFueling",
-                      e.target.value
-                    )
-                  }
-                  className="w-[200px]"
-                />
+                <div>
+                  <label
+                    htmlFor="gallonsRefueled"
+                    className="text-xs font-semibold"
+                  >
+                    Total Gallons Refueled
+                  </label>
+                  <Input
+                    name="gallonsRefueled"
+                    type="number"
+                    placeholder="Total Gallons"
+                    value={ref.gallonsRefueled}
+                    onChange={(e) =>
+                      handleNestedLogChange(
+                        idx,
+                        "RefuelLogs",
+                        refIdx,
+                        "gallonsRefueled",
+                        e.target.value
+                      )
+                    }
+                    className="w-[200px]"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="milesAtFueling"
+                    className="text-xs font-semibold"
+                  >
+                    Mileage at Refuel
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder="Current Mileage"
+                    value={ref.milesAtFueling ? ref.milesAtFueling : ""}
+                    onChange={(e) =>
+                      handleNestedLogChange(
+                        idx,
+                        "RefuelLogs",
+                        refIdx,
+                        "milesAtFueling",
+                        e.target.value
+                      )
+                    }
+                    className="w-[200px]"
+                  />
+                </div>
                 <Button
                   type="button"
                   variant="destructive"
@@ -488,8 +526,8 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
             <div className="flex-1">
               <p className="block font-semibold text-sm"> State Line Mileage</p>
               <p className="text-xs text-gray-500 pt-1 ">
-                This section logs the state line mileage and where the truck
-                crossed state lines.
+                Log all states truck traveled through and the mileage at each
+                state line.
               </p>
             </div>
             <div className="flex justify-end">
@@ -505,44 +543,62 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           <div className="pt-2">
             {log.StateMileages.map((sm, smIdx) => (
               <div key={sm.id || smIdx} className="flex gap-4 mb-2 items-end">
-                <Select
-                  value={sm.state}
-                  onValueChange={(val) =>
-                    handleNestedLogChange(
-                      idx,
-                      "StateMileages",
-                      smIdx,
-                      "state",
-                      val
-                    )
-                  }
-                >
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="State" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {StateOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="number"
-                  placeholder="State Line Mileage"
-                  value={sm.stateLineMileage}
-                  onChange={(e) =>
-                    handleNestedLogChange(
-                      idx,
-                      "StateMileages",
-                      smIdx,
-                      "stateLineMileage",
-                      e.target.value
-                    )
-                  }
-                  className="w-[200px]"
-                />
+                <div>
+                  <label
+                    htmlFor="state"
+                    className="text-xs font-semibold w-[200px]"
+                  >
+                    State
+                  </label>
+                  <Select
+                    name="state"
+                    value={sm.state}
+                    onValueChange={(val) =>
+                      handleNestedLogChange(
+                        idx,
+                        "StateMileages",
+                        smIdx,
+                        "state",
+                        val
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="State" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {StateOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="stateLineMileage"
+                    className="text-xs font-semibold"
+                  >
+                    State Line Mileage
+                  </label>
+                  <Input
+                    name="stateLineMileage"
+                    type="number"
+                    placeholder="State Line Mileage"
+                    value={sm.stateLineMileage > 0 ? sm.stateLineMileage : ""}
+                    onChange={(e) =>
+                      handleNestedLogChange(
+                        idx,
+                        "StateMileages",
+                        smIdx,
+                        "stateLineMileage",
+                        e.target.value
+                      )
+                    }
+                    className="w-[200px]"
+                  />
+                </div>
                 <Button
                   type="button"
                   variant="destructive"

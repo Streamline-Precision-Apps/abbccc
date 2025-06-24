@@ -37,34 +37,36 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
   disableAdd = false,
 }) => (
   <div className="col-span-2 mt-4">
-    <h3 className="font-semibold text-sm mb-2">Maintenance Logs</h3>
+    <h3 className="font-semibold text-lg mb-4">Maintenance Logs</h3>
     {logs.map((log, idx) => (
       <div
         key={log.id}
         className="border rounded p-2 mb-2 flex flex-row flex-wrap gap-2 items-end"
       >
         <div className="flex flex-row items-end">
-          <Combobox
-            label="Maintenance ID"
-            options={maintenanceOptions}
-            value={log.maintenanceId}
-            onChange={(val, option) => onLogChange(idx, "maintenanceId", val)}
-            placeholder="Select maintenance ID"
-            filterKeys={["value", "label"]}
-          />
-          <div>
-            {originalLogs[idx] &&
-              log.maintenanceId !== originalLogs[idx].maintenanceId &&
-              onUndoLogField && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => onUndoLogField(idx, "maintenanceId")}
-                >
-                  Undo
-                </Button>
-              )}
+          <div className="w-[200px]">
+            <Combobox
+              label="Maintenance ID"
+              options={maintenanceOptions}
+              value={log.maintenanceId}
+              onChange={(val, option) => onLogChange(idx, "maintenanceId", val)}
+              placeholder="Select maintenance ID"
+              filterKeys={["value", "label"]}
+            />
+            <div>
+              {originalLogs[idx] &&
+                log.maintenanceId !== originalLogs[idx].maintenanceId &&
+                onUndoLogField && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => onUndoLogField(idx, "maintenanceId")}
+                  >
+                    Undo
+                  </Button>
+                )}
+            </div>
           </div>
         </div>
         <div className="flex flex-row items-end">

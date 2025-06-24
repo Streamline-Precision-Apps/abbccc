@@ -1,35 +1,42 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-
-interface RefuelLog {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number;
-}
-interface TascoLog {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string;
-  LoadQuantity: number;
-  RefuelLogs: RefuelLog[];
-  Equipment: { id: string; name: string } | null;
-}
+import {
+  TascoLog,
+  TascoNestedType,
+  TascoNestedTypeMap,
+  RefuelLog,
+} from "./types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MaterialType } from "@/lib/types";
+import { Input } from "@/components/ui/input";
 
 interface EditTascoLogsProps {
   logs: TascoLog[];
   onLogChange: (idx: number, field: keyof TascoLog, value: any) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;
-  handleNestedLogChange: (
+  handleNestedLogChange: <T extends TascoNestedType>(
     logIndex: number,
-    nestedType: string,
+    nestedType: T,
     nestedIndex: number,
-    field: string,
+    field: keyof TascoNestedTypeMap[T],
     value: any
   ) => void;
   originalLogs?: TascoLog[];
   onUndoLogField?: (idx: number, field: keyof TascoLog) => void;
+  materialTypes: MaterialType[];
+  equipmentOptions: {
+    value: string;
+    label: string;
+  }[];
+  addTascoRefuelLog: (logIdx: number) => void;
+  deleteTascoRefuelLog: (logIdx: number, refIdx: number) => void;
 }
 
 export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
@@ -37,130 +44,187 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   onLogChange,
   onAddLog,
   onRemoveLog,
-  handleNestedLogChange,
   originalLogs = [],
   onUndoLogField,
+  materialTypes,
+  equipmentOptions,
+  handleNestedLogChange,
+  addTascoRefuelLog,
+  deleteTascoRefuelLog,
 }) => (
-  <div className="col-span-2 mt-4">
-    <h3 className="font-semibold text-sm mb-2">Tasco Logs</h3>
+  <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
+    <div className="mb-4">
+      <h3 className="font-semibold text-xl mb-1">Tasco Logs</h3>
+      <p className="text-sm text-gray-600">
+        Fill out the additional details for this timesheet to report more
+        accurate Tasco logs.
+      </p>
+    </div>
     {logs.map((log, idx) => (
-      <div
-        key={log.id}
-        className="border rounded p-2 mb-2 grid grid-cols-4 gap-2 items-end"
-      >
-        <div className="flex flex-row items-end">
-          <div className="flex-1">
-            <label className="block text-xs">Shift Type</label>
-            <input
-              type="text"
-              value={log.shiftType}
-              onChange={(e) => onLogChange(idx, "shiftType", e.target.value)}
-              className="border rounded px-2 py-1 w-full"
-            />
+      <div key={log.id} className="flex flex-col gap-6 mb-4 border-b pb-4">
+        <div className="flex gap-4 items-end py-2 flex-wrap">
+          {/* Equipment Combobox */}
+          <div className="flex-1 min-w-[180px]">
+            <label htmlFor="equipmentId" className="block text-xs">
+              Equipment
+            </label>
+            <Select
+              name="equipmentId"
+              value={log.Equipment?.id || ""}
+              onValueChange={(val) => {
+                const selected = equipmentOptions.find(
+                  (eq) => eq.value === val
+                );
+                onLogChange(
+                  idx,
+                  "Equipment",
+                  selected ? { id: selected.value, name: selected.label } : null
+                );
+              }}
+            >
+              <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
+                <SelectValue placeholder="Select Equipment" />
+              </SelectTrigger>
+              <SelectContent>
+                {equipmentOptions.map((eq) => (
+                  <SelectItem key={eq.value} value={eq.value}>
+                    {eq.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <div>
-            {originalLogs[idx] &&
-              log.shiftType !== originalLogs[idx].shiftType &&
-              onUndoLogField && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => onUndoLogField(idx, "shiftType")}
-                >
-                  Undo
-                </Button>
-              )}
+          <div className="flex-1 min-w-[180px]">
+            <label htmlFor="shiftType" className="block text-xs">
+              Shift Type
+            </label>
+            <Select
+              name="shiftType"
+              value={log.shiftType || ""}
+              onValueChange={(val) => onLogChange(idx, "shiftType", val)}
+            >
+              <SelectTrigger className="border rounded px-2 py-1 w-full">
+                <SelectValue placeholder="Select Shift Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ABCD Shift">ABCD Shift</SelectItem>
+                <SelectItem value="E Shift">E Shift</SelectItem>
+                <SelectItem value="F Shift">F Shift</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-        <div className="flex flex-row items-end">
-          <div className="flex-1">
-            <label className="block text-xs">Labor Type</label>
-            <input
-              type="text"
-              value={log.laborType}
-              onChange={(e) => onLogChange(idx, "laborType", e.target.value)}
-              className="border rounded px-2 py-1 w-full"
-            />
+          <div className="flex-1 min-w-[180px]">
+            <label htmlFor="laborType" className="block text-xs">
+              Labor Type
+            </label>
+            <Select
+              name="laborType"
+              value={log.laborType || ""}
+              onValueChange={(val) => onLogChange(idx, "laborType", val)}
+            >
+              <SelectTrigger className="border rounded px-2 py-1 w-full">
+                <SelectValue placeholder="Select Labor Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Operator">Operator</SelectItem>
+                <SelectItem value="Manual Labor">Manual Labor</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div>
-            {originalLogs[idx] &&
-              log.laborType !== originalLogs[idx].laborType &&
-              onUndoLogField && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => onUndoLogField(idx, "laborType")}
-                >
-                  Undo
-                </Button>
-              )}
+          <div className="flex-1 min-w-[180px]">
+            <label htmlFor="materialType" className="block text-xs">
+              Material Type
+            </label>
+            <Select
+              name="materialType"
+              value={log.materialType || ""}
+              onValueChange={(val) => onLogChange(idx, "materialType", val)}
+            >
+              <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
+                <SelectValue placeholder="Select Material" />
+              </SelectTrigger>
+              <SelectContent>
+                {materialTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.name}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-        <div className="flex flex-row items-end">
-          <div className="flex-1">
-            <label className="block text-xs">Material Type</label>
-            <input
-              type="text"
-              value={log.materialType}
-              onChange={(e) => onLogChange(idx, "materialType", e.target.value)}
-              className="border rounded px-2 py-1 w-full"
-            />
-          </div>
-          <div>
-            {originalLogs[idx] &&
-              log.materialType !== originalLogs[idx].materialType &&
-              onUndoLogField && (
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => onUndoLogField(idx, "materialType")}
-                >
-                  Undo
-                </Button>
-              )}
-          </div>
-        </div>
-        <div className="flex flex-row items-end">
-          <div className="flex-1">
-            <label className="block text-xs">Load Quantity</label>
-            <input
+          <div className="flex-1 min-w-[120px]">
+            <label className="block text-xs">Number of Loads</label>
+            <Input
               type="number"
-              value={log.LoadQuantity}
+              placeholder={"Enter number of loads"}
+              value={log.LoadQuantity ? log.LoadQuantity : ""}
               onChange={(e) =>
                 onLogChange(idx, "LoadQuantity", Number(e.target.value))
               }
-              className="border rounded px-2 py-1 w-full"
+              className="border rounded px-2 py-1 w-full text-xs"
             />
           </div>
-          <div>
-            {originalLogs[idx] &&
-              log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
-              onUndoLogField && (
+          <Button
+            type="button"
+            variant="destructive"
+            size="icon"
+            onClick={() => onRemoveLog(idx)}
+            className="ml-2"
+          >
+            <img src="/trash.svg" alt="Remove Log" className="h-4 w-4" />
+          </Button>
+        </div>
+        {/* Refuel Logs Section */}
+        <div className="pl-2 mt-2">
+          <div className="flex flex-row justify-between items-center mb-2">
+            <label className="block font-semibold text-md">Refuel Logs</label>
+            <Button
+              type="button"
+              size="icon"
+              onClick={() => addTascoRefuelLog(idx)}
+            >
+              <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+            </Button>
+          </div>
+          {log.RefuelLogs && log.RefuelLogs.length > 0 ? (
+            log.RefuelLogs.map((ref, refIdx) => (
+              <div key={ref.id || refIdx} className="flex gap-2 mb-2 items-end">
+                <div>
+                  <label className="block text-xs w-[120px]">
+                    Gallons Refueled
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder="Enter total gallons"
+                    value={ref.gallonsRefueled > 0 ? ref.gallonsRefueled : ""}
+                    onChange={(e) =>
+                      handleNestedLogChange(
+                        idx,
+                        "RefuelLogs",
+                        refIdx,
+                        "gallonsRefueled",
+                        Number(e.target.value)
+                      )
+                    }
+                    className="w-[200px]"
+                  />
+                </div>
+
                 <Button
                   type="button"
-                  size="sm"
-                  className="ml-2"
-                  onClick={() => onUndoLogField(idx, "LoadQuantity")}
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => deleteTascoRefuelLog(idx, refIdx)}
                 >
-                  Undo
+                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
                 </Button>
-              )}
-          </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-xs text-gray-500 italic">No refuel logs</div>
+          )}
         </div>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={() => onRemoveLog(idx)}
-        >
-          Remove
-        </Button>
       </div>
     ))}
-    <Button type="button" className="mt-2" onClick={onAddLog}>
-      Add Tasco Log
-    </Button>
   </div>
 );

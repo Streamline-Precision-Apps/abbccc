@@ -13,10 +13,12 @@ export function DateTimePicker({
   value,
   onChange,
   label,
+  font = "font-semibold",
 }: {
   value?: string;
   onChange: (val: string) => void;
   label: string;
+  font?: "font-semibold" | "font-bold" | "font-normal";
 }) {
   // Always derive date and time from value prop
   const dateValue = value ? new Date(value) : undefined;
@@ -40,7 +42,7 @@ export function DateTimePicker({
 
   return (
     <div>
-      <label className="block text-md font-semibold mb-1">{label}</label>
+      <label className={`block text-xs ${font} mb-1`}>{label}</label>
       <div className="flex gap-2">
         <Popover>
           <PopoverTrigger asChild>
@@ -49,10 +51,14 @@ export function DateTimePicker({
               className="w-[160px] justify-start text-left font-normal"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateValue ? format(dateValue, "PPP") : <span>Pick a date</span>}
+              {dateValue ? (
+                <p className="text-xs">{format(dateValue, "PPP")}</p>
+              ) : (
+                <span>Pick a date</span>
+              )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
+          <PopoverContent className="w-auto p-0 ">
             <Calendar
               mode="single"
               selected={dateValue}
@@ -65,7 +71,7 @@ export function DateTimePicker({
           type="time"
           value={timeValue}
           onChange={handleTimeChange}
-          className="border rounded px-2 py-1"
+          className="border rounded px-2 py-1 text-xs"
         />
       </div>
     </div>
