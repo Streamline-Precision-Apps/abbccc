@@ -1,13 +1,10 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Providers } from "../../providers";
 import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
 import LeftSidebar from "@/app/(routes)/admins/_pages/leftSideBar";
 import TopTabBar from "./_pages/topTabBar";
-import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
-import { User } from "@nextui-org/react";
 import { UserEditProvider } from "@/app/context/(admin)/UserEditContext";
 import { CrewEditProvider } from "@/app/context/(admin)/CrewEditContext";
 
@@ -35,10 +32,7 @@ export default async function RootLayout({
                 className="h-[calc(100dvh-60px)] min-h-0 w-full"
               >
                 {/* Sidebar */}
-                <Holds
-                  position={"test"}
-                  className="h-full w-[60px] shrink-0"
-                >
+                <Holds position={"test"} className="h-full w-[60px] shrink-0">
                   <LeftSidebar />
                 </Holds>
                 {/* Scrollable content area */}
