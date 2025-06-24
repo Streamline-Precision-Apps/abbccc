@@ -278,4 +278,143 @@ export async function adminDeleteTimesheet(id: string) {
 export async function adminUpdateTimesheet(id: string, data: any) {
   // Implementation for updating a timesheet
   console.log("Updating timesheet with ID:", id, "and data:", data);
+
+  if (!id || !data) {
+    throw new Error("Invalid timesheet ID or data");
+  }
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Update the main timesheet
+      await prisma.timeSheet.update({
+        where: { id },
+        data: {
+          jobsiteId: data.form.jobsite.id,
+          costcode: data.form.costcode.name,
+          startTime: data.form.startTime,
+          endTime: data.form.endTime,
+          workType: data.form.workType as WorkType,
+          EmployeeEquipmentLogs: {
+            update: [],
+          },
+          MaintenanceLogs: {
+            update: [],
+          },
+          TruckingLogs: {
+            update: [],
+          },
+          TascoLogs: {
+            update: [],
+          },
+        },
+      });
+
+      // Conditional log updates and deletions
+      if (data.form.workType === "MECHANIC") {
+        // Update or create MaintenanceLogs
+        await Promise.all(
+          data.maintenanceLogs.map((log: any) => {
+            if (log.id) {
+              return tx.maintenanceLog.update({
+                where: { id: log.id },
+                data: {
+                  startTime: log.startTime,
+                  endTime: log.endTime,
+                  maintenanceId: log.maintenanceId,
+                },
+              });
+            } else {
+              // Create new log if no id
+              return tx.maintenanceLog.create({
+                data: {
+                  timeSheetId: id,
+                  userId: data.form.user.id,
+                  startTime: log.startTime,
+                  endTime: log.endTime,
+                  maintenanceId: log.maintenanceId,
+                },
+              });
+            }
+          })
+        );
+        // Delete other logs
+        await tx.truckingLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.tascoLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.employeeEquipmentLog.deleteMany({
+          where: { timeSheetId: id },
+        });
+      } else if (data.form.workType === "TRUCK_DRIVER") {
+        // Delete all existing trucking logs for this timesheet
+        await tx.truckingLog.deleteMany({ where: { timeSheetId: id } });
+        // Create new trucking logs from payload
+        await Promise.all(
+          data.truckingLogs.map((log: any) =>
+            tx.truckingLog.create({
+              data: {
+                timeSheetId: id,
+                laborType: "truckDriver",
+                equipmentId: log.equipmentId,
+                startingMileage: log.startingMileage
+                  ? parseInt(log.startingMileage)
+                  : null,
+                endingMileage: log.endingMileage
+                  ? parseInt(log.endingMileage)
+                  : null,
+              },
+            })
+          )
+        );
+        // Delete other logs
+        await tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.tascoLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.employeeEquipmentLog.deleteMany({
+          where: { timeSheetId: id },
+        });
+      } else if (data.form.workType === "TASCO") {
+        // Update TascoLogs
+        await Promise.all(
+          data.tascoLogs.map((log: any) =>
+            tx.tascoLog.update({
+              where: { id: log.id },
+              data: {
+                shiftType: log.shiftType,
+                laborType: log.laborType,
+                materialType: log.materialType,
+                LoadQuantity: log.loadQuantity ? parseInt(log.loadQuantity) : 0,
+                equipmentId: log.equipment[0]?.id || null,
+              },
+            })
+          )
+        );
+        // Delete other logs
+        await tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.truckingLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.employeeEquipmentLog.deleteMany({
+          where: { timeSheetId: id },
+        });
+      } else if (data.form.workType === "LABOR") {
+        // Update EmployeeEquipmentLogs
+        await Promise.all(
+          data.laborLogs.map((log: any) =>
+            tx.employeeEquipmentLog.update({
+              where: { id: log.id },
+              data: {
+                equipmentId: log.equipment.id,
+                startTime: log.startTime,
+                endTime: log.endTime,
+              },
+            })
+          )
+        );
+        // Delete other logs
+        await tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.truckingLog.deleteMany({ where: { timeSheetId: id } });
+        await tx.tascoLog.deleteMany({ where: { timeSheetId: id } });
+      }
+    });
+    revalidateTag("timesheets");
+    return true;
+  } catch (error) {
+    console.error(`Error updating timesheet with ID ${id}:`, error);
+    throw error;
+  }
 }

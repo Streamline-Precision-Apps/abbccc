@@ -360,6 +360,8 @@ export default function AdminTimesheets() {
         <EditTimesheetModal
           timesheetId={editingId || ""}
           isOpen={showEditModal}
+          editingId={editingId}
+          isEditing={isEditing}
           onClose={() => setShowEditModal(false)}
           onUpdated={refetchAll}
         />

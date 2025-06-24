@@ -33,6 +33,7 @@ interface ComboboxProps {
   label?: string;
   disabled?: boolean;
   filterKeys?: string[]; // List of keys to filter on (e.g. ["label", "email"])
+  font?: "font-semibold" | "font-bold" | "font-normal"; // Optional font weight
 }
 
 export function Combobox({
@@ -43,6 +44,7 @@ export function Combobox({
   label,
   disabled = false,
   filterKeys = ["label"], // Default to label only
+  font = "font-semibold", // Default font weight
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -67,7 +69,7 @@ export function Combobox({
 
   return (
     <div>
-      {label && <label className="block font-semibold mb-1">{label}</label>}
+      {label && <label className={`block text-xs ${font} mb-1`}>{label}</label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
