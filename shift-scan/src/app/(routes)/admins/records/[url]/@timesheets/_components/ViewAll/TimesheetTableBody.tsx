@@ -11,7 +11,7 @@ interface Timesheet {
   nu: string;
   Fp: string;
   startTime: Date | string;
-  endTime: Date | string;
+  endTime: Date | string | null;
   comment: string;
   status: string;
   workType: string;
@@ -25,6 +25,7 @@ interface TimesheetTableBodyProps {
   deletingId?: string | null;
   onEditClick?: (id: string) => void;
   editingId?: string | null;
+  showPendingOnly: boolean;
 }
 
 export function TimesheetTableBody({
@@ -33,13 +34,22 @@ export function TimesheetTableBody({
   deletingId,
   onEditClick,
   editingId,
+  showPendingOnly,
 }: TimesheetTableBodyProps) {
   if (timesheets.length === 0) {
     return (
       <TableBody>
         <TableRow>
           <TableCell colSpan={14} className="text-center py-4 text-gray-400">
-            No timesheets found.
+            {showPendingOnly ? (
+              <div className=" justify-center flex flex-wrap ">
+                <p className="text-sm ">
+                  No Current Pending Timesheets requiring action.
+                </p>
+              </div>
+            ) : (
+              "No timesheets found."
+            )}
           </TableCell>
         </TableRow>
       </TableBody>
@@ -71,16 +81,32 @@ export function TimesheetTableBody({
             {format(timesheet.startTime, "hh:mm a")}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
-            {format(timesheet.endTime, "hh:mm a")}
+            {timesheet.endTime ? format(timesheet.endTime, "hh:mm a") : ""}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
             {timesheet.comment}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
-            {timesheet.status}
+            {timesheet.status === "PENDING" ? (
+              <span className="text-app-orange">Pending</span>
+            ) : timesheet.status === "APPROVED" ? (
+              <span className="text-app-dark-green">Approved</span>
+            ) : timesheet.status === "DRAFT" ? (
+              <span className="text-app-blue">In Progress</span>
+            ) : (
+              <span className="text-app-red">Rejected</span>
+            )}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
-            {timesheet.workType}
+            {timesheet.workType === "TRUCK_DRIVER" ? (
+              <span>Trucking</span>
+            ) : timesheet.workType === "TASCO" ? (
+              <span>Tasco</span>
+            ) : timesheet.workType === "LABOR" ? (
+              <span>General</span>
+            ) : timesheet.workType === "MECHANIC" ? (
+              <span>Mechanic</span>
+            ) : null}
           </TableCell>
           <TableCell className="px-4 py-2 border-r border-gray-100">
             {format(timesheet.createdAt, "MM/dd/yyyy")}

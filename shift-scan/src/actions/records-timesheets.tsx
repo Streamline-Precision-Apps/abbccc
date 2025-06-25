@@ -299,6 +299,7 @@ export async function adminUpdateTimesheet(id: string, data: TimesheetData) {
       jobsiteId: data.Jobsite?.id,
       costcode: data.CostCode?.name,
       workType: data.workType,
+      status: data.status,
     };
     if (data.startTime) timesheetData.startTime = new Date(data.startTime);
     if (data.endTime) timesheetData.endTime = new Date(data.endTime);
