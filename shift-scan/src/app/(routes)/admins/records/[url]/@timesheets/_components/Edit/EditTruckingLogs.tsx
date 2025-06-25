@@ -290,7 +290,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         <Button
                           type="button"
                           size="default"
-                          className="w-fit "
+                          className="w-fit"
                           onClick={() =>
                             onUndoNestedLogField(
                               idx,
@@ -335,7 +335,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         <Button
                           type="button"
                           size="default"
-                          className="w-fit "
+                          className="w-fit"
                           onClick={() =>
                             onUndoNestedLogField(
                               idx,
