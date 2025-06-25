@@ -55,16 +55,16 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
     <div className="mb-4">
       <h3 className="font-semibold text-xl mb-1">Tasco Logs</h3>
-      <p className="text-sm text-gray-600">
+      <p className="text-xs text-gray-600">
         Fill out the additional details for this timesheet to report more
         accurate Tasco logs.
       </p>
     </div>
     {logs.map((log, idx) => (
-      <div key={log.id} className="flex flex-col gap-6 mb-4 border-b pb-4">
-        <div className="flex gap-4 items-end py-2 flex-wrap">
+      <div key={log.id} className="flex flex-col gap-6 border-b ">
+        <div className="flex gap-4 items-end py-4 border-b">
           {/* Equipment Combobox */}
-          <div className="flex-1 min-w-[180px]">
+          <div className="flex-1 max-w-[180px]">
             <label htmlFor="equipmentId" className="block text-xs">
               Equipment
             </label>
@@ -94,7 +94,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex-1 min-w-[180px]">
+          <div className="flex-1 min-w-[100px]">
             <label htmlFor="shiftType" className="block text-xs">
               Shift Type
             </label>
@@ -103,7 +103,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               value={log.shiftType || ""}
               onValueChange={(val) => onLogChange(idx, "shiftType", val)}
             >
-              <SelectTrigger className="border rounded px-2 py-1 w-full">
+              <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
                 <SelectValue placeholder="Select Shift Type" />
               </SelectTrigger>
               <SelectContent>
@@ -113,7 +113,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex-1 min-w-[180px]">
+          <div className="flex-1 min-w-[100px]">
             <label htmlFor="laborType" className="block text-xs">
               Labor Type
             </label>
@@ -122,7 +122,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               value={log.laborType || ""}
               onValueChange={(val) => onLogChange(idx, "laborType", val)}
             >
-              <SelectTrigger className="border rounded px-2 py-1 w-full">
+              <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
                 <SelectValue placeholder="Select Labor Type" />
               </SelectTrigger>
               <SelectContent>
@@ -131,7 +131,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex-1 min-w-[180px]">
+          <div className="flex-1 max-w-[100px]">
             <label htmlFor="materialType" className="block text-xs">
               Material Type
             </label>
@@ -152,7 +152,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex-1 min-w-[120px]">
+          <div className="flex-1 max-w-[100px]">
             <label className="block text-xs">Number of Loads</label>
             <Input
               type="number"
@@ -164,20 +164,11 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               className="border rounded px-2 py-1 w-full text-xs"
             />
           </div>
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            onClick={() => onRemoveLog(idx)}
-            className="ml-2"
-          >
-            <img src="/trash.svg" alt="Remove Log" className="h-4 w-4" />
-          </Button>
         </div>
         {/* Refuel Logs Section */}
-        <div className="pl-2 mt-2">
-          <div className="flex flex-row justify-between items-center mb-2">
-            <label className="block font-semibold text-md">Refuel Logs</label>
+        <div className="mb-2">
+          <div className="flex flex-row justify-between ">
+            <p className="text-base font-semibold">Refuel Logs</p>
             <Button
               type="button"
               size="icon"
@@ -188,7 +179,10 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
           </div>
           {log.RefuelLogs && log.RefuelLogs.length > 0 ? (
             log.RefuelLogs.map((ref, refIdx) => (
-              <div key={ref.id || refIdx} className="flex gap-2 mb-2 items-end">
+              <div
+                key={ref.id || refIdx}
+                className="flex gap-2 mb-2 pt-2 items-end"
+              >
                 <div>
                   <label className="block text-xs w-[120px]">
                     Gallons Refueled
@@ -206,7 +200,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                         Number(e.target.value)
                       )
                     }
-                    className="w-[200px]"
+                    className="w-[200px] text-xs"
                   />
                 </div>
 
@@ -221,7 +215,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
               </div>
             ))
           ) : (
-            <div className="text-xs text-gray-500 italic">No refuel logs</div>
+            <div className="text-xs text-gray-500 italic"></div>
           )}
         </div>
       </div>
