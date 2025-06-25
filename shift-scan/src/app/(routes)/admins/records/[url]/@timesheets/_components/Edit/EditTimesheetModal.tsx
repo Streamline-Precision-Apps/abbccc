@@ -353,15 +353,15 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       type="button"
                       variant="outline"
                       className={`bg-red-200 hover:bg-red-300 text-red-800 px-4 py-2 rounded ${
-                        form.status !== "DENIED"
+                        form.status !== "REJECTED"
                           ? "bg-opacity-50 "
                           : " border-red-800 hover:border-red-900 border-2"
                       }`}
-                      onClick={() => setForm({ ...form, status: "DENIED" })}
+                      onClick={() => setForm({ ...form, status: "REJECTED" })}
                       disabled={loading}
                     >
-                      {form.status === "DENIED" ? "" : "Deny Timesheet"}
-                      {form.status === "DENIED" && (
+                      {form.status === "REJECTED" ? "" : "Reject Timesheet"}
+                      {form.status === "REJECTED" && (
                         <SquareXIcon className="text-red-800" />
                       )}
                     </Button>
@@ -416,8 +416,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                           ? " & Approve"
                           : originalForm &&
                             originalForm.status === "PENDING" &&
-                            form.status === "DENIED"
-                          ? " & Deny "
+                            form.status === "REJECTED"
+                          ? " & Reject "
                           : ""
                       }`}
                 </Button>

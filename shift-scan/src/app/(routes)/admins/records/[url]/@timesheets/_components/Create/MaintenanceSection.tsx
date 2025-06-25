@@ -2,6 +2,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { DateTimePicker } from "../DateTimePicker";
 
 export type MaintenanceLogDraft = {
   startTime: string;
@@ -23,7 +24,7 @@ export function MaintenanceSection({
   maintenanceEquipmentOptions,
 }: Props) {
   return (
-    <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
+    <div className=" border-t-2 border-black pt-4 pb-2">
       <div className="mb-4">
         <h3 className="font-semibold text-xl mb-1">
           Additional Maintenance Details
@@ -34,8 +35,11 @@ export function MaintenanceSection({
         </p>
       </div>
       {maintenanceLogs.map((log, idx) => (
-        <div key={idx} className="flex flex-col gap-6 mb-4 border-b pb-4">
-          <div className="flex gap-4 items-end py-2">
+        <div
+          key={idx}
+          className="flex flex-col gap-6 mb-4 border rounded p-4 relative"
+        >
+          <div className="flex flex-col gap-4 pt-4 pb-2">
             <Combobox
               label="Project"
               options={maintenanceEquipmentOptions}
@@ -48,29 +52,26 @@ export function MaintenanceSection({
               placeholder="Select Project Id"
               filterKeys={["label", "value"]}
             />
-            <Input
-              type="time"
-              placeholder="Start Time"
+            <DateTimePicker
+              label="Start Time"
               value={log.startTime}
-              onChange={(e) => {
+              onChange={(val) => {
                 const updated = [...maintenanceLogs];
-                updated[idx].startTime = e.target.value;
+                updated[idx].startTime = val;
                 setMaintenanceLogs(updated);
               }}
-              required
-              className="w-[120px]"
             />
-            <Input
-              type="time"
-              placeholder="End Time"
+
+            <DateTimePicker
+              label="End Time"
               value={log.endTime}
-              onChange={(e) => {
+              onChange={(val) => {
                 const updated = [...maintenanceLogs];
-                updated[idx].endTime = e.target.value;
+                updated[idx].endTime = val;
                 setMaintenanceLogs(updated);
               }}
-              className="w-[120px]"
             />
+
             <Button
               type="button"
               variant="destructive"
@@ -78,6 +79,7 @@ export function MaintenanceSection({
               onClick={() =>
                 setMaintenanceLogs(maintenanceLogs.filter((_, i) => i !== idx))
               }
+              className="absolute top-2 right-2"
             >
               <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
             </Button>

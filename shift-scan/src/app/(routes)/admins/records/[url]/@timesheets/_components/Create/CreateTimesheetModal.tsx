@@ -21,8 +21,8 @@ export function CreateTimesheetModal({
     user: { id: "", firstName: "", lastName: "" },
     jobsite: { id: "", name: "" },
     costcode: { id: "", name: "" },
-    startTime: { date: "", time: "" },
-    endTime: { date: "", time: "" },
+    startTime: null as Date | null,
+    endTime: null as Date | null,
     workType: "",
   });
   const [users, setUsers] = useState<
@@ -258,7 +258,11 @@ export function CreateTimesheetModal({
     setSubmitting(true);
     try {
       const data = {
-        form,
+        form: {
+          ...form,
+          startTime: form.startTime ? form.startTime.toISOString() : null,
+          endTime: form.endTime ? form.endTime.toISOString() : null,
+        },
         maintenanceLogs,
         truckingLogs,
         tascoLogs,
@@ -291,7 +295,7 @@ export function CreateTimesheetModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[800px] max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[700px] max-h-[90vh] overflow-y-auto">
         <div className="mb-4">
           <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
           <p className="text-sm mb-1 text-gray-600">
@@ -300,7 +304,7 @@ export function CreateTimesheetModal({
             <br /> Ensure all required fields are accurates.
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <GeneralSection
             form={form}
             setForm={setForm}
@@ -311,10 +315,6 @@ export function CreateTimesheetModal({
             workTypeOptions={workTypeOptions}
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
-            startTimePickerOpen={startTimePickerOpen}
-            setStartTimePickerOpen={setStartTimePickerOpen}
-            endTimePickerOpen={endTimePickerOpen}
-            setEndTimePickerOpen={setEndTimePickerOpen}
             users={users}
             jobsites={jobsites}
           />

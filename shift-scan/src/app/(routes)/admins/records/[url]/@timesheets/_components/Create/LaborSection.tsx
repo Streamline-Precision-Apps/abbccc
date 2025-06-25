@@ -32,19 +32,24 @@ export function LaborSection({
         </p>
       </div>
       {laborLogs.map((log, idx) => (
-        <div key={idx} className="flex gap-4 items-end py-2 mb-4 border-b pb-4">
-          <Combobox
-            options={equipmentOptions}
-            value={log.equipment.id}
-            onChange={(val, option) => {
-              const updated = [...laborLogs];
-              updated[idx].equipment = option
-                ? { id: option.value, name: option.label }
-                : { id: "", name: "" };
-              setLaborLogs(updated);
-            }}
-            placeholder="Select Equipment"
-          />
+        <div
+          key={idx}
+          className="flex flex-col gap-4 py-2 mb-4 border p-4 rounded relative "
+        >
+          <div className="w-[350px] mt-4">
+            <Combobox
+              options={equipmentOptions}
+              value={log.equipment.id}
+              onChange={(val, option) => {
+                const updated = [...laborLogs];
+                updated[idx].equipment = option
+                  ? { id: option.value, name: option.label }
+                  : { id: "", name: "" };
+                setLaborLogs(updated);
+              }}
+              placeholder="Select Equipment"
+            />
+          </div>
           <Input
             type="time"
             placeholder="Start Time"
@@ -54,7 +59,7 @@ export function LaborSection({
               updated[idx].startTime = e.target.value;
               setLaborLogs(updated);
             }}
-            className="w-[120px]"
+            className="w-[350px]"
           />
           <Input
             type="time"
@@ -65,12 +70,13 @@ export function LaborSection({
               updated[idx].endTime = e.target.value;
               setLaborLogs(updated);
             }}
-            className="w-[120px]"
+            className="w-[350px]"
           />
           <Button
             type="button"
             variant="destructive"
             size="icon"
+            className="absolute top-2 right-2"
             onClick={() => setLaborLogs(laborLogs.filter((_, i) => i !== idx))}
           >
             <img src="/trash.svg" alt="Delete" className="w-4 h-4" />

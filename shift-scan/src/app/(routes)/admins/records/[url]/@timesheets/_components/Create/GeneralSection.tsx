@@ -19,6 +19,7 @@ import { format as formatDate, parseISO } from "date-fns";
 import React, { Dispatch, SetStateAction, use, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
+import { DateTimePicker } from "../DateTimePicker";
 export default function GeneralSection({
   form,
   setForm,
@@ -31,10 +32,6 @@ export default function GeneralSection({
   setDatePickerOpen,
   users,
   jobsites,
-  startTimePickerOpen,
-  setStartTimePickerOpen,
-  endTimePickerOpen,
-  setEndTimePickerOpen,
 }: {
   form: {
     date: Date;
@@ -51,14 +48,8 @@ export default function GeneralSection({
       id: string;
       name: string;
     };
-    startTime: {
-      date: string;
-      time: string;
-    };
-    endTime: {
-      date: string;
-      time: string;
-    };
+    startTime: Date | null;
+    endTime: Date | null;
     workType: string;
   };
   setForm: Dispatch<
@@ -77,24 +68,14 @@ export default function GeneralSection({
         id: string;
         name: string;
       };
-      startTime: {
-        date: string;
-        time: string;
-      };
-      endTime: {
-        date: string;
-        time: string;
-      };
+      startTime: Date | null;
+      endTime: Date | null;
       workType: string;
     }>
   >;
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
-  startTimePickerOpen: boolean;
-  setStartTimePickerOpen: (open: boolean) => void;
-  endTimePickerOpen: boolean;
-  setEndTimePickerOpen: (open: boolean) => void;
   userOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -112,7 +93,7 @@ export default function GeneralSection({
   return (
     <>
       {/* Creation Date (disabled) */}
-      <div className="col-span-2">
+      <div className="min-w-[350px]">
         <label className="block font-semibold mb-1">Creation Date</label>
         <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
           <PopoverTrigger asChild>
@@ -144,7 +125,7 @@ export default function GeneralSection({
         </Popover>
       </div>
       {/* User */}
-      <div>
+      <div className="w-[350px]">
         <Combobox
           label="User"
           options={userOptions}
@@ -161,7 +142,7 @@ export default function GeneralSection({
         />
       </div>
       {/* Jobsite */}
-      <div>
+      <div className="w-[350px]">
         <Combobox
           label="Jobsite"
           options={jobsiteOptions}
@@ -179,7 +160,7 @@ export default function GeneralSection({
         />
       </div>
       {/* Costcode */}
-      <div>
+      <div className="w-[350px]">
         <Combobox
           label="Cost Code"
           options={costCodeOptions}
@@ -197,119 +178,29 @@ export default function GeneralSection({
         />
       </div>
       {/* Start Date & Time */}
-      <div>
-        <label className="block font-semibold mb-1">Start Time*</label>
-        <div className="flex gap-x-2">
-          <Popover
-            open={startTimePickerOpen}
-            onOpenChange={setStartTimePickerOpen}
-          >
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => setStartTimePickerOpen(true)}
-              >
-                {form.startTime.date ? form.startTime.date : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={
-                  form.startTime.date
-                    ? new Date(form.startTime.date + "T00:00:00")
-                    : undefined
-                }
-                onSelect={(date) => {
-                  setForm({
-                    ...form,
-                    startTime: {
-                      ...form.startTime,
-                      date: date ? formatDate(date, "MM/dd/yyyy") : "",
-                    },
-                  });
-                  setStartTimePickerOpen(false);
-                }}
-                autoFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <Input
-            type="time"
-            name="startTime"
-            value={form.startTime.time}
-            onChange={(e) => {
-              setForm({
-                ...form,
-                startTime: {
-                  ...form.startTime,
-                  time: e.target.value,
-                },
-              });
-            }}
-            required
-            className="w-full"
-          />
-        </div>
-      </div>
+      <DateTimePicker
+        label="Start Time"
+        value={form.startTime ? form.startTime.toISOString() : undefined}
+        onChange={(val) => {
+          setForm({
+            ...form,
+            startTime: val ? new Date(val) : null,
+          });
+        }}
+      />
       {/* End Date & Time */}
-      <div>
-        <label className="block font-semibold mb-1">End Time</label>
-        <div className="flex gap-2">
-          <Popover open={endTimePickerOpen} onOpenChange={setEndTimePickerOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => setEndTimePickerOpen(true)}
-              >
-                {form.endTime.date ? form.endTime.date : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={
-                  form.endTime.date
-                    ? new Date(form.endTime.date + "T00:00:00")
-                    : undefined
-                }
-                onSelect={(date) => {
-                  setForm({
-                    ...form,
-                    endTime: {
-                      ...form.endTime,
-                      date: date ? formatDate(date, "MM/dd/yyyy") : "",
-                    },
-                  });
-                  setEndTimePickerOpen(false);
-                }}
-                autoFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <Input
-            type="time"
-            name="endTime"
-            value={form.endTime.time}
-            onChange={(e) => {
-              setForm({
-                ...form,
-                endTime: {
-                  ...form.endTime,
-                  time: e.target.value,
-                },
-              });
-            }}
-            className="w-full"
-          />
-        </div>
-      </div>
+      <DateTimePicker
+        label="End Time"
+        value={form.endTime ? form.endTime.toISOString() : undefined}
+        onChange={(val) => {
+          setForm({
+            ...form,
+            endTime: val ? new Date(val) : null,
+          });
+        }}
+      />
       {/* work type */}
-      <div className="mb-4">
+      <div className="w-[350px] mb-4">
         <label className="block font-semibold mb-1">Work Type*</label>
         <Select
           value={form.workType}
