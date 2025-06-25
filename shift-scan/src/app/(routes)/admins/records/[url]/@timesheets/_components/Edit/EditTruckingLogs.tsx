@@ -73,6 +73,23 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
   deleteStateMileage,
   onUndoNestedLogField,
 }) => {
+  // Helper functions to check completeness of each nested log type
+  const isEquipmentHauledComplete = (eq: any) =>
+    !!(eq.equipmentId && eq.jobSiteId);
+  const isMaterialComplete = (mat: any) =>
+    !!(
+      mat.LocationOfMaterial &&
+      mat.name &&
+      mat.materialWeight &&
+      mat.lightWeight &&
+      mat.grossWeight &&
+      mat.loadType
+    );
+  const isRefuelLogComplete = (ref: any) =>
+    !!(ref.gallonsRefueled && ref.milesAtFueling);
+  const isStateMileageComplete = (sm: any) =>
+    !!(sm.state && sm.stateLineMileage);
+
   return (
     <div className="col-span-2 mt-4">
       <h3 className="font-semibold text-md mb-2">Trucking Logs</h3>
@@ -210,6 +227,28 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 size="icon"
                 type="button"
                 onClick={() => addEquipmentHauled(idx)}
+                disabled={
+                  log.EquipmentHauled.length > 0 &&
+                  !isEquipmentHauledComplete(
+                    log.EquipmentHauled[log.EquipmentHauled.length - 1]
+                  )
+                }
+                className={
+                  log.EquipmentHauled.length > 0 &&
+                  !isEquipmentHauledComplete(
+                    log.EquipmentHauled[log.EquipmentHauled.length - 1]
+                  )
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+                title={
+                  log.EquipmentHauled.length > 0 &&
+                  !isEquipmentHauledComplete(
+                    log.EquipmentHauled[log.EquipmentHauled.length - 1]
+                  )
+                    ? "Please complete the previous Equipment Hauled entry before adding another."
+                    : ""
+                }
               >
                 <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
               </Button>
@@ -339,6 +378,22 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 size="icon"
                 type="button"
                 onClick={() => addMaterial(idx)}
+                disabled={
+                  log.Materials.length > 0 &&
+                  !isMaterialComplete(log.Materials[log.Materials.length - 1])
+                }
+                className={
+                  log.Materials.length > 0 &&
+                  !isMaterialComplete(log.Materials[log.Materials.length - 1])
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+                title={
+                  log.Materials.length > 0 &&
+                  !isMaterialComplete(log.Materials[log.Materials.length - 1])
+                    ? "Please complete the previous Material entry before adding another."
+                    : ""
+                }
               >
                 <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
               </Button>
@@ -668,6 +723,28 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 size="icon"
                 type="button"
                 onClick={() => addRefuelLog(idx)}
+                disabled={
+                  log.RefuelLogs.length > 0 &&
+                  !isRefuelLogComplete(
+                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                  )
+                }
+                className={
+                  log.RefuelLogs.length > 0 &&
+                  !isRefuelLogComplete(
+                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                  )
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+                title={
+                  log.RefuelLogs.length > 0 &&
+                  !isRefuelLogComplete(
+                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                  )
+                    ? "Please complete the previous Refuel Log entry before adding another."
+                    : ""
+                }
               >
                 <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
               </Button>
@@ -799,6 +876,28 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 size="icon"
                 type="button"
                 onClick={() => addStateMileage(idx)}
+                disabled={
+                  log.StateMileages.length > 0 &&
+                  !isStateMileageComplete(
+                    log.StateMileages[log.StateMileages.length - 1]
+                  )
+                }
+                className={
+                  log.StateMileages.length > 0 &&
+                  !isStateMileageComplete(
+                    log.StateMileages[log.StateMileages.length - 1]
+                  )
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+                title={
+                  log.StateMileages.length > 0 &&
+                  !isStateMileageComplete(
+                    log.StateMileages[log.StateMileages.length - 1]
+                  )
+                    ? "Please complete the previous State Line Mileage entry before adding another."
+                    : ""
+                }
               >
                 <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
               </Button>
