@@ -6,6 +6,8 @@ import { EditTascoLogs } from "./EditTascoLogs";
 import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
 import { adminUpdateTimesheet } from "@/actions/records-timesheets";
 import EditGeneralSection from "./EditGeneralSection";
+import { SquareCheck, SquareXIcon } from "lucide-react";
+
 import {
   isMaintenanceLogComplete,
   isTruckingLogComplete,
@@ -18,14 +20,7 @@ import {
 } from "./utils/validation";
 import { useTimesheetData } from "./hooks/useTimesheetData";
 import { useTimesheetLogs } from "./hooks/useTimesheetLogs";
-import {
-  EditTimesheetModalProps,
-  TimesheetData,
-  TruckingNestedType,
-  TascoNestedType,
-  TruckingNestedTypeMap,
-  TascoNestedTypeMap,
-} from "./types";
+import { EditTimesheetModalProps, TimesheetData } from "./types";
 import { toast } from "sonner";
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
@@ -352,6 +347,45 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               )}
               {/* Actions */}
               <div className="col-span-2 flex justify-end gap-2 mt-4">
+                {originalForm && originalForm.status === "PENDING" && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={`bg-red-200 hover:bg-red-300 text-red-800 px-4 py-2 rounded ${
+                        form.status !== "DENIED"
+                          ? "bg-opacity-50 "
+                          : " border-red-800 hover:border-red-900 border-2"
+                      }`}
+                      onClick={() => setForm({ ...form, status: "DENIED" })}
+                      disabled={loading}
+                    >
+                      {form.status === "DENIED" ? "" : "Deny Timesheet"}
+                      {form.status === "DENIED" && (
+                        <SquareXIcon className="text-red-800" />
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={`bg-green-400 hover:bg-green-300 text-green-800 px-4 py-2 rounded ${
+                        form.status !== "APPROVED"
+                          ? "bg-opacity-50 "
+                          : " border-green-800 hover:border-green-900 border-2"
+                      }`}
+                      onClick={() => setForm({ ...form, status: "APPROVED" })}
+                      disabled={loading}
+                    >
+                      <div className="flex flex-row items-center gap-2">
+                        {form.status === "APPROVED" ? `` : "Approve Timesheet"}
+                        {form.status === "APPROVED" && (
+                          <SquareCheck className="text-green-800" />
+                        )}
+                      </div>
+                    </Button>
+                  </>
+                )}
+
                 <Button
                   type="button"
                   variant="outline"
@@ -373,7 +407,19 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       : ""
                   }
                 >
-                  {loading ? "Saving..." : "Save"}
+                  {loading
+                    ? "Saving..."
+                    : `Save${
+                        originalForm &&
+                        originalForm.status === "PENDING" &&
+                        form.status === "APPROVED"
+                          ? " & Approve"
+                          : originalForm &&
+                            originalForm.status === "PENDING" &&
+                            form.status === "DENIED"
+                          ? " & Deny "
+                          : ""
+                      }`}
                 </Button>
               </div>
             </form>

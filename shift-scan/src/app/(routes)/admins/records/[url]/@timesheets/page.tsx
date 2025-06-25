@@ -47,7 +47,7 @@ export type Timesheet = {
   nu: string;
   Fp: string;
   startTime: Date | string;
-  endTime: Date | string;
+  endTime: Date | string | null;
   comment: string;
   status: TimeSheetStatus;
   workType: WorkType;
@@ -85,6 +85,7 @@ export default function AdminTimesheets() {
   const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
     null
   );
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   // Move fetch functions out for reuse
   const fetchTimesheets = async () => {
@@ -138,7 +139,7 @@ export default function AdminTimesheets() {
   }, [allTimesheets]);
 
   // Filter timesheets based on searchTerm and date range
-  const filteredTimesheets = allTimesheets.filter((ts) => {
+  let filteredTimesheets = allTimesheets.filter((ts) => {
     const id = ts.id || "";
     const firstName = ts?.User?.firstName || "";
     const lastName = ts?.User?.lastName || "";
@@ -162,6 +163,12 @@ export default function AdminTimesheets() {
         costCode.toLowerCase().includes(term))
     );
   });
+
+  if (showPendingOnly) {
+    filteredTimesheets = filteredTimesheets.filter(
+      (ts) => ts.status === "PENDING" && ts.endTime !== null
+    );
+  }
 
   // Use filteredTimesheets, sorted by date descending
   const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
@@ -317,7 +324,12 @@ export default function AdminTimesheets() {
               onCreated={refetchAll}
             />
           )}
-          <Button className="relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ">
+          <Button
+            onClick={() => setShowPendingOnly((prev) => !prev)}
+            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
+              showPendingOnly ? "ring-2 ring-red-400" : ""
+            }`}
+          >
             <div className="flex flex-row items-center">
               <img
                 src="/inbox-white.svg"
@@ -338,6 +350,7 @@ export default function AdminTimesheets() {
       </div>
       <div className="h-full w-full px-4 overflow-auto ">
         <TimesheetViewAll
+          showPendingOnly={showPendingOnly}
           timesheets={sortedTimesheets}
           loading={loading}
           page={page}

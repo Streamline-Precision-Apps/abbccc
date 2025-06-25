@@ -32,12 +32,11 @@ export function isTruckingLogComplete(log: TruckingLog): boolean {
 /** Checks if a Tasco log is complete. */
 export function isTascoLogComplete(log: TascoLog): boolean {
   return !!(
-    log.Equipment &&
     log.shiftType &&
     log.laborType &&
     log.materialType &&
     typeof log.LoadQuantity === "number" &&
-    log.LoadQuantity > 0
+    log.LoadQuantity >= 0
   );
 }
 

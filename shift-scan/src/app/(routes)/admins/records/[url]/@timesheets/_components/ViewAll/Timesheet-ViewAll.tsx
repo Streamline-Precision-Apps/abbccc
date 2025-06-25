@@ -25,7 +25,7 @@ export type Timesheet = {
   nu: string;
   Fp: string;
   startTime: Date | string;
-  endTime: Date | string;
+  endTime: Date | string | null;
   comment: string;
   status: TimeSheetStatus;
   workType: WorkType;
@@ -49,6 +49,7 @@ export default function ViewAllTimesheets({
   onEditClick,
   isDeleting,
   isEditing,
+  showPendingOnly,
 }: {
   timesheets: Timesheet[];
   loading: boolean;
@@ -65,6 +66,7 @@ export default function ViewAllTimesheets({
   onEditClick?: (id: string) => void;
   editingId?: string | null;
   isEditing?: boolean;
+  showPendingOnly: boolean;
 }) {
   const timesheetHeaders = [
     "ID",
@@ -122,6 +124,7 @@ export default function ViewAllTimesheets({
             deletingId={deletingId}
             onEditClick={onEditClick}
             editingId={editingId}
+            showPendingOnly={showPendingOnly}
           />
         </Table>
       </HorizontalScrollArea>
