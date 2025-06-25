@@ -160,7 +160,7 @@ export default function EditGeneralSection({
         </div>
       </div>
       <div className="flex flex-row items-end col-span-2">
-        <div className="w-1/4">
+        <div className="w-fit">
           <Combobox
             label="User"
             options={userOptions}
@@ -173,7 +173,7 @@ export default function EditGeneralSection({
         </div>
       </div>
       {/* Jobsite */}
-      <div>
+      <div className="w-1/2">
         <Combobox
           label="Project"
           options={jobsiteOptions}
@@ -191,7 +191,7 @@ export default function EditGeneralSection({
         />
       </div>
       {/* Costcode */}
-      <div>
+      <div className="w-1/2">
         <Combobox
           label="Cost Code"
           options={costCodeOptions}
@@ -248,7 +248,7 @@ export default function EditGeneralSection({
       </div>
 
       <div className="flex flex-row items-end">
-        <div className="flex-1">
+        <div className="w-1/2">
           <label className="block text-xs font-semibold mb-1">Work Type</label>
           <Select
             name="workType"
@@ -284,7 +284,7 @@ export default function EditGeneralSection({
           )}
         </div>
       </div>
-      <div className="col-span-1 max-w-[400px] flex flex-row flex-wrap items-end">
+      <div className="col-span-1 max-w-[350px] flex flex-row flex-wrap items-end">
         <p className="text-xs text-red-500 break-words">
           <span className="font-semibold">Warning: </span>
           Modifying the work type will erase all existing logs tied to the
