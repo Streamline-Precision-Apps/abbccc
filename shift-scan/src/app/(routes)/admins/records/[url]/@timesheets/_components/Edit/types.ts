@@ -1,3 +1,5 @@
+import { ApprovalStatus } from "@/lib/enums";
+
 export interface EditTimesheetModalProps {
   timesheetId: string;
   isOpen: boolean;
@@ -103,7 +105,7 @@ export interface TimesheetData {
   endTime: string;
   workType: string;
   comment: string;
-  status: string;
+  status: ApprovalStatus;
   createdAt: string;
   updatedAt: string;
   MaintenanceLogs: MaintenanceLog[];

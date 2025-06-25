@@ -60,18 +60,20 @@ export function TruckingSection({
       </div>
       {truckingLogs.map((log, idx) => (
         <div key={idx} className="flex flex-col gap-6 mb-4 border-b pb-4">
-          <div className="flex gap-4 items-end py-2">
-            <Combobox
-              options={equipmentOptions}
-              value={log.equipmentId}
-              onChange={(val, option) => {
-                const updated = [...truckingLogs];
-                updated[idx].equipmentId = val;
-                setTruckingLogs(updated);
-              }}
-              placeholder={`Select Vehicle*`}
-              filterKeys={["label", "value"]}
-            />
+          <div className="flex flex-col gap-4 py-2">
+            <div className="w-[350px]">
+              <Combobox
+                options={equipmentOptions}
+                value={log.equipmentId}
+                onChange={(val, option) => {
+                  const updated = [...truckingLogs];
+                  updated[idx].equipmentId = val;
+                  setTruckingLogs(updated);
+                }}
+                placeholder={`Select Vehicle*`}
+                filterKeys={["label", "value"]}
+              />
+            </div>
             <Input
               type="number"
               placeholder="Beginning Mileage*"
@@ -97,7 +99,7 @@ export function TruckingSection({
           </div>
           {/* Equipment Hauled */}
           <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-2">
+            <div className="flex flex-row justify-between items-center mb-4">
               <label className="block font-semibold text-md">
                 Equipment Hauled
               </label>
@@ -119,37 +121,45 @@ export function TruckingSection({
               </div>
             </div>
             {log.equipmentHauled.map((eq, eqIdx) => (
-              <div key={eqIdx} className="flex gap-4 mb-2">
-                <Combobox
-                  options={equipmentOptions}
-                  value={eq.equipment.id}
-                  onChange={(val, option) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled[eqIdx].equipment = option
-                      ? { id: option.value, name: option.label }
-                      : { id: "", name: "" };
-                    setTruckingLogs(updated);
-                  }}
-                  placeholder="Select equipment"
-                  filterKeys={["label", "value"]}
-                />
-                <Combobox
-                  options={jobsiteOptions}
-                  value={eq.jobsite.id}
-                  onChange={(val, option) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled[eqIdx].jobsite = option
-                      ? { id: option.value, name: option.label }
-                      : { id: "", name: "" };
-                    setTruckingLogs(updated);
-                  }}
-                  placeholder="Select jobsite"
-                  filterKeys={["label", "value"]}
-                />
+              <div
+                key={eqIdx}
+                className="flex flex-col gap-4 mb-2 rounded p-4 border relative"
+              >
+                <div className="w-[350px]">
+                  <Combobox
+                    options={equipmentOptions}
+                    value={eq.equipment.id}
+                    onChange={(val, option) => {
+                      const updated = [...truckingLogs];
+                      updated[idx].equipmentHauled[eqIdx].equipment = option
+                        ? { id: option.value, name: option.label }
+                        : { id: "", name: "" };
+                      setTruckingLogs(updated);
+                    }}
+                    placeholder="Select equipment"
+                    filterKeys={["label", "value"]}
+                  />
+                </div>
+                <div className="w-[350px]">
+                  <Combobox
+                    options={jobsiteOptions}
+                    value={eq.jobsite.id}
+                    onChange={(val, option) => {
+                      const updated = [...truckingLogs];
+                      updated[idx].equipmentHauled[eqIdx].jobsite = option
+                        ? { id: option.value, name: option.label }
+                        : { id: "", name: "" };
+                      setTruckingLogs(updated);
+                    }}
+                    placeholder="Select jobsite"
+                    filterKeys={["label", "value"]}
+                  />
+                </div>
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
+                  className="absolute top-2 right-2"
                   onClick={() => {
                     const updated = [...truckingLogs];
                     updated[idx].equipmentHauled = updated[
@@ -165,7 +175,7 @@ export function TruckingSection({
           </div>
           {/* Materials */}
           <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-2">
+            <div className="flex flex-row justify-between items-center mb-4">
               <label className="block font-semibold text-md ">Materials</label>
               <Button
                 size="icon"
@@ -187,8 +197,8 @@ export function TruckingSection({
               </Button>
             </div>
             {log.materials.map((mat, matIdx) => (
-              <div key={matIdx} className="mt-2 ">
-                <div className="flex flex-row gap-4 mb-2">
+              <div key={matIdx} className="mt-2 rounded p-4 border relative">
+                <div className="flex flex-col gap-4 mb-2">
                   <Input
                     type="text"
                     placeholder="Location"
@@ -198,7 +208,7 @@ export function TruckingSection({
                       updated[idx].materials[matIdx].location = e.target.value;
                       setTruckingLogs(updated);
                     }}
-                    className="w-[200px]"
+                    className="w-[350px]"
                   />
                   <Input
                     type="text"
@@ -209,7 +219,7 @@ export function TruckingSection({
                       updated[idx].materials[matIdx].name = e.target.value;
                       setTruckingLogs(updated);
                     }}
-                    className="w-[200px]"
+                    className="w-[350px]"
                   />
                   <Input
                     type="number"
@@ -221,10 +231,9 @@ export function TruckingSection({
                         e.target.value;
                       setTruckingLogs(updated);
                     }}
-                    className="w-[200px]"
+                    className="w-[350px]"
                   />
-                </div>
-                <div className="flex flex-row gap-4 mb-2">
+
                   <Input
                     type="number"
                     placeholder="Light Weight"
@@ -235,7 +244,7 @@ export function TruckingSection({
                         e.target.value;
                       setTruckingLogs(updated);
                     }}
-                    className="w-[200px]"
+                    className="w-[350px]"
                   />
                   <Input
                     type="number"
@@ -247,7 +256,7 @@ export function TruckingSection({
                         e.target.value;
                       setTruckingLogs(updated);
                     }}
-                    className="w-[200px]"
+                    className="w-[350px]"
                   />
                   <Select
                     value={mat.loadType}
@@ -259,7 +268,7 @@ export function TruckingSection({
                       setTruckingLogs(updated);
                     }}
                   >
-                    <SelectTrigger className="w-[200px]">
+                    <SelectTrigger className="w-[350px]">
                       <SelectValue placeholder="Load Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -267,29 +276,29 @@ export function TruckingSection({
                       <SelectItem value="unscreened">Unscreened</SelectItem>
                     </SelectContent>
                   </Select>
-                  <div className="flex justify-end ">
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="destructive"
-                      onClick={() => {
-                        const updated = [...truckingLogs];
-                        updated[idx].materials = updated[idx].materials.filter(
-                          (_, i) => i !== matIdx
-                        );
-                        setTruckingLogs(updated);
-                      }}
-                    >
-                      <img src="/trash.svg" alt="remove" className="w-4 h-4" />
-                    </Button>
-                  </div>
+
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      const updated = [...truckingLogs];
+                      updated[idx].materials = updated[idx].materials.filter(
+                        (_, i) => i !== matIdx
+                      );
+                      setTruckingLogs(updated);
+                    }}
+                  >
+                    <img src="/trash.svg" alt="remove" className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
           {/* Refuel Logs */}
           <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-2">
+            <div className="flex flex-row justify-between items-center mb-4">
               <label className="block font-semibold text-md">Refuel Logs</label>
               <Button
                 type="button"
@@ -307,7 +316,10 @@ export function TruckingSection({
               </Button>
             </div>
             {log.refuelLogs.map((ref, refIdx) => (
-              <div key={refIdx} className="flex gap-4 mb-2 items-end">
+              <div
+                key={refIdx}
+                className="flex flex-col gap-4 mb-2 border p-4 relative"
+              >
                 <Input
                   type="number"
                   placeholder="Total Gallons"
@@ -318,7 +330,7 @@ export function TruckingSection({
                       e.target.value;
                     setTruckingLogs(updated);
                   }}
-                  className="w-[200px]"
+                  className="w-[350px]"
                 />
                 <Input
                   type="number"
@@ -330,12 +342,13 @@ export function TruckingSection({
                       e.target.value;
                     setTruckingLogs(updated);
                   }}
-                  className="w-[200px]"
+                  className="w-[350px]"
                 />
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
+                  className="absolute top-2 right-2"
                   onClick={() => {
                     const updated = [...truckingLogs];
                     updated[idx].refuelLogs = updated[idx].refuelLogs.filter(
@@ -350,8 +363,8 @@ export function TruckingSection({
             ))}
           </div>
           {/* State Line Mileage */}
-          <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-2">
+          <div className="py-4  mb-2">
+            <div className="flex flex-row justify-between items-center mb-4">
               <label className="block font-semibold text-md">
                 State Line Mileage
               </label>
@@ -372,7 +385,10 @@ export function TruckingSection({
               </Button>
             </div>
             {log.stateMileages.map((sm, smIdx) => (
-              <div key={smIdx} className="flex gap-4 mb-2 items-end">
+              <div
+                key={smIdx}
+                className="flex flex-col gap-4 mb-2 relative border p-4 rounded"
+              >
                 <Select
                   value={sm.state}
                   onValueChange={(val) => {
@@ -381,7 +397,7 @@ export function TruckingSection({
                     setTruckingLogs(updated);
                   }}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-[350px]">
                     <SelectValue placeholder="State" />
                   </SelectTrigger>
                   <SelectContent>
@@ -402,7 +418,7 @@ export function TruckingSection({
                       e.target.value;
                     setTruckingLogs(updated);
                   }}
-                  className="w-[200px]"
+                  className="w-[350px]"
                 />
                 <Button
                   type="button"
@@ -415,7 +431,7 @@ export function TruckingSection({
                     ].stateMileages.filter((_, i) => i !== smIdx);
                     setTruckingLogs(updated);
                   }}
-                  className="ml-2"
+                  className="absolute top-2 right-2"
                 >
                   <img src="/trash.svg" alt="remove" className="w-4 h-4" />
                 </Button>

@@ -35,7 +35,7 @@ export function TascoSection({
   // ...existing code for rendering Tasco logs UI, using the props above...
   // Copy the JSX and logic for the Tasco section from the main modal, replacing state/handlers with props
   return (
-    <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
+    <div className="border-t-2 border-black pt-4 pb-2">
       <div className="mb-4">
         <h3 className="font-semibold text-xl mb-1">Additional Tasco Details</h3>
         <p className="text-sm text-gray-600">
@@ -45,7 +45,7 @@ export function TascoSection({
       </div>
       {tascoLogs.map((log, idx) => (
         <div key={idx} className="flex flex-col gap-6 mb-4  pb-4">
-          <div className="flex gap-4 items-end py-2">
+          <div className="flex flex-col gap-4 py-2 rounded relative border p-4">
             <Select
               value={log.shiftType}
               onValueChange={(val) => {
@@ -54,7 +54,7 @@ export function TascoSection({
                 setTascoLogs(updated);
               }}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[300px]">
                 <SelectValue placeholder="Shift Type*" />
               </SelectTrigger>
               <SelectContent>
@@ -71,7 +71,7 @@ export function TascoSection({
                 setTascoLogs(updated);
               }}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[300px]">
                 <SelectValue placeholder="Labor Type*" />
               </SelectTrigger>
               <SelectContent>
@@ -81,19 +81,21 @@ export function TascoSection({
                 <SelectItem value="Labor">Labor</SelectItem>
               </SelectContent>
             </Select>
-            <Combobox
-              options={materialTypes.map((m) => ({
-                value: m.name,
-                label: m.name,
-              }))}
-              value={log.materialType}
-              onChange={(val) => {
-                const updated = [...tascoLogs];
-                updated[idx].materialType = val;
-                setTascoLogs(updated);
-              }}
-              placeholder="Material Type*"
-            />
+            <div className="w-fit min-w-[300px]">
+              <Combobox
+                options={materialTypes.map((m) => ({
+                  value: m.name,
+                  label: m.name,
+                }))}
+                value={log.materialType}
+                onChange={(val) => {
+                  const updated = [...tascoLogs];
+                  updated[idx].materialType = val;
+                  setTascoLogs(updated);
+                }}
+                placeholder="Material Type*"
+              />
+            </div>
             <Input
               type="number"
               placeholder="Load Quantity*"
@@ -103,29 +105,17 @@ export function TascoSection({
                 updated[idx].loadQuantity = e.target.value;
                 setTascoLogs(updated);
               }}
-              className="w-[140px]"
+              className="w-[300px]"
             />
           </div>
           {/* Equipment selection */}
           <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-2">
-              <label className="block font-semibold text-md">Equipment</label>
-              <Button
-                type="button"
-                size="icon"
-                onClick={() => {
-                  const updated = [...tascoLogs];
-                  updated[idx].equipment.push({ id: "", name: "" });
-                  setTascoLogs(updated);
-                }}
-              >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex gap-2 flex-wrap mb-2">
+            <p className="text-sm">Select Equipment if Applicable</p>
+            <div className="flex flex-col gap-2 rounded border p-4">
               {log.equipment.map((eq, eqIdx) => (
                 <div key={eq.id || eqIdx} className="flex gap-1 items-center">
                   <Combobox
+                    label="Equipment"
                     options={equipmentOptions}
                     value={eq.id}
                     onChange={(val, option) => {
@@ -137,27 +127,13 @@ export function TascoSection({
                     }}
                     placeholder="Select equipment"
                   />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    onClick={() => {
-                      const updated = [...tascoLogs];
-                      updated[idx].equipment = updated[idx].equipment.filter(
-                        (_, i) => i !== eqIdx
-                      );
-                      setTascoLogs(updated);
-                    }}
-                  >
-                    <img src="/trash.svg" alt="remove" className="w-4 h-4" />
-                  </Button>
                 </div>
               ))}
             </div>
           </div>
           {/* Refuel Logs */}
-          <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-2">
+          <div className=" mb-2">
+            <div className="flex flex-row justify-between items-center mb-4">
               <label className="block font-semibold text-md">Refuel Logs</label>
               <Button
                 type="button"
@@ -174,7 +150,10 @@ export function TascoSection({
               </Button>
             </div>
             {log.refuelLogs.map((ref, refIdx) => (
-              <div key={refIdx} className="flex gap-4 mb-2 items-end">
+              <div
+                key={refIdx}
+                className="flex gap-4 relative rounded border p-4 "
+              >
                 <Input
                   type="number"
                   placeholder="Gallons Refueled"
@@ -185,13 +164,14 @@ export function TascoSection({
                       e.target.value;
                     setTascoLogs(updated);
                   }}
-                  className="w-[140px]"
+                  className="w-[350px]"
                 />
 
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
+                  className="absolute top-2 right-2"
                   onClick={() => {
                     const updated = [...tascoLogs];
                     updated[idx].refuelLogs = updated[idx].refuelLogs.filter(

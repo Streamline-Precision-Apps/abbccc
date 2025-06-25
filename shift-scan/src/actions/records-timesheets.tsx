@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { ApprovalStatus } from "@prisma/client";
 import type {
   TruckingLog,
   EquipmentHauled,
@@ -20,8 +21,8 @@ export type TimesheetSubmission = {
     user: { id: string; firstName: string; lastName: string };
     jobsite: { id: string; name: string };
     costcode: { id: string; name: string };
-    startTime: { date: string; time: string };
-    endTime: { date: string; time: string };
+    startTime: string | null;
+    endTime: string | null;
     workType: string;
   };
   maintenanceLogs: Array<{
@@ -76,34 +77,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
   await prisma.$transaction(async (tx) => {
     // Create the main timesheet
 
-    // Helper to convert MM/dd/yyyy to yyyy-MM-dd
-    function toISODateString(dateStr: string) {
-      if (!dateStr) return "";
-      // If already yyyy-MM-dd, return as is
-      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-      // If MM/dd/yyyy, convert
-      const parts = dateStr.split("/");
-      if (parts.length === 3) {
-        return `${parts[2]}-${parts[0].padStart(2, "0")}-${parts[1].padStart(
-          2,
-          "0"
-        )}`;
-      }
-      return dateStr;
-    }
-
-    const startDateString = toISODateString(data.form.startTime?.date);
-    const startTimeString = data.form.startTime?.time;
-    const endDateString = toISODateString(data.form.endTime?.date);
-    const endTimeString = data.form.endTime?.time;
-    const startDateTimeISO =
-      startDateString && startTimeString
-        ? new Date(`${startDateString}T${startTimeString}:00`)
-        : undefined;
-    const endDateTimeISO =
-      endDateString && endTimeString
-        ? new Date(`${endDateString}T${endTimeString}:00`)
-        : undefined;
+    // Use startTime and endTime as ISO strings (or null)
     const timesheetData: any = {
       date: data.form.date.toISOString(),
       userId: data.form.user.id,
@@ -111,10 +85,12 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       costcode: data.form.costcode.name, // costcode is referenced by name in schema
       workType: data.form.workType as WorkType,
       createdByAdmin: true,
+      status: "APPROVED" as ApprovalStatus, // Default status, can be updated later
       // Add other fields as needed
     };
-    if (startDateTimeISO) timesheetData.startTime = startDateTimeISO;
-    if (endDateTimeISO) timesheetData.endTime = endDateTimeISO;
+    if (data.form.startTime)
+      timesheetData.startTime = new Date(data.form.startTime);
+    if (data.form.endTime) timesheetData.endTime = new Date(data.form.endTime);
     const timesheet = await tx.timeSheet.create({
       data: timesheetData,
     });
@@ -122,27 +98,13 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Maintenance Logs
     for (const log of data.maintenanceLogs) {
       if (!log.maintenanceId) continue;
-      const logStartDate =
-        data.form.startTime?.date || data.form.date.toISOString().slice(0, 10);
-      const logEndDate =
-        data.form.endTime?.date || data.form.date.toISOString().slice(0, 10);
-      const logStartTime = log.startTime;
-      const logEndTime = log.endTime;
       const maintenanceLogData: any = {
         timeSheetId: timesheet.id,
         userId: data.form.user.id,
         maintenanceId: log.maintenanceId,
       };
-      const logStart =
-        logStartDate && logStartTime
-          ? new Date(`${logStartDate}T${logStartTime}:00`)
-          : undefined;
-      const logEnd =
-        logEndDate && logEndTime
-          ? new Date(`${logEndDate}T${logEndTime}:00`)
-          : undefined;
-      if (logStart) maintenanceLogData.startTime = logStart;
-      if (logEnd) maintenanceLogData.endTime = logEnd;
+      if (log.startTime) maintenanceLogData.startTime = new Date(log.startTime);
+      if (log.endTime) maintenanceLogData.endTime = new Date(log.endTime);
       await tx.maintenanceLog.create({
         data: maintenanceLogData,
       });
@@ -250,21 +212,11 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Labor Logs (EmployeeEquipmentLog)
     for (const log of data.laborLogs) {
       if (!log.equipment.id) continue;
-      const logStartDate =
-        data.form.startTime?.date || data.form.date.toISOString().slice(0, 10);
-      const logEndDate =
-        data.form.endTime?.date || data.form.date.toISOString().slice(0, 10);
       await tx.employeeEquipmentLog.create({
         data: {
           equipmentId: log.equipment.id,
-          startTime:
-            log.startTime && logStartDate
-              ? new Date(`${logStartDate}T${log.startTime}:00`)
-              : undefined,
-          endTime:
-            log.endTime && logEndDate
-              ? new Date(`${logEndDate}T${log.endTime}:00`)
-              : undefined,
+          startTime: log.startTime ? new Date(log.startTime) : undefined,
+          endTime: log.endTime ? new Date(log.endTime) : undefined,
           timeSheetId: timesheet.id,
         },
       });
