@@ -68,11 +68,12 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
       <h3 className="font-semibold text-sm mb-2">Trucking Logs</h3>
       {logs.map((log, idx) => (
         <div key={log.id} className="border rounded p-2 mb-6">
-          <div className="flex flex-row items-end  gap-3 mb-2">
+          <div className="flex flex-col gap-3 mb-2 border-b pb-3">
             <div className="flex flex-row items-end gap-x-2">
-              <div className="flex-1">
-                <label className="block text-xs mb-1">Equipment ID</label>
+              <div className="min-w-[350px]">
+                <label className="block text-xs">Equipment ID</label>
                 <Combobox
+                  font={"font-normal"}
                   options={equipmentOptions}
                   value={log.equipmentId}
                   onChange={(val) => onLogChange(idx, "equipmentId", val)}
@@ -88,91 +89,96 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     <Button
                       type="button"
                       size="default"
-                      className="w-fit"
+                      className="w-fit "
                       onClick={() => onUndoLogField(idx, "equipmentId")}
                     >
-                      Undo
+                      <p className="text-xs">Undo</p>
                     </Button>
                   </div>
                 )}
             </div>
-
             <div className="flex flex-row items-end gap-x-2">
-              <div className="flex-1">
-                <label className="block text-xs">Starting Mileage</label>
-                <Input
-                  type="number"
-                  value={log.startingMileage > 0 ? log.startingMileage : ""}
-                  onChange={(e) =>
-                    onLogChange(idx, "startingMileage", Number(e.target.value))
-                  }
-                  className="w-[200px]"
-                  onBlur={(e) => {
-                    let value = e.target.value;
-                    if (/^0+\d+/.test(value)) {
-                      value = String(Number(value));
-                      onLogChange(idx, "startingMileage", Number(value));
-                      e.target.value = value;
+              <div className="flex flex-row items-end gap-x-2 ">
+                <div className="flex-1">
+                  <label className="block text-xs">Starting Mileage</label>
+                  <Input
+                    type="number"
+                    value={log.startingMileage > 0 ? log.startingMileage : ""}
+                    onChange={(e) =>
+                      onLogChange(
+                        idx,
+                        "startingMileage",
+                        Number(e.target.value)
+                      )
                     }
-                  }}
-                />
+                    className="w-[160px] text-xs"
+                    onBlur={(e) => {
+                      let value = e.target.value;
+                      if (/^0+\d+/.test(value)) {
+                        value = String(Number(value));
+                        onLogChange(idx, "startingMileage", Number(value));
+                        e.target.value = value;
+                      }
+                    }}
+                  />
+                </div>
+                {originalLogs[idx] &&
+                  log.startingMileage !== originalLogs[idx].startingMileage &&
+                  onUndoLogField && (
+                    <div className="w-fit mr-4">
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="w-fit"
+                        onClick={() => onUndoLogField(idx, "startingMileage")}
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
+                    </div>
+                  )}
               </div>
-              {originalLogs[idx] &&
-                log.startingMileage !== originalLogs[idx].startingMileage &&
-                onUndoLogField && (
-                  <div className="w-fit mr-4">
-                    <Button
-                      type="button"
-                      size="sm"
-                      className="w-fit"
-                      onClick={() => onUndoLogField(idx, "startingMileage")}
-                    >
-                      Undo
-                    </Button>
-                  </div>
-                )}
-            </div>
 
-            <div className="flex flex-row items-end gap-x-2">
-              <div className="flex-1">
-                <label className="block text-xs">Ending Mileage</label>
-                <Input
-                  type="number"
-                  value={log.endingMileage > 0 ? log.endingMileage : ""}
-                  onChange={(e) =>
-                    onLogChange(idx, "endingMileage", Number(e.target.value))
-                  }
-                  className="w-[200px]"
-                  onBlur={(e) => {
-                    let value = e.target.value;
-                    if (/^0+\d+/.test(value)) {
-                      value = String(Number(value));
-                      onLogChange(idx, "endingMileage", Number(value));
-                      e.target.value = value;
+              <div className="flex flex-row items-end gap-x-2">
+                <div className="flex-1">
+                  <label className="block text-xs">Ending Mileage</label>
+                  <Input
+                    type="number"
+                    value={log.endingMileage > 0 ? log.endingMileage : ""}
+                    onChange={(e) =>
+                      onLogChange(idx, "endingMileage", Number(e.target.value))
                     }
-                    if (Number(value) < log.startingMileage) {
-                      e.target.setCustomValidity(
-                        "Ending mileage cannot be less than starting mileage"
-                      );
-                    } else {
-                      e.target.setCustomValidity("");
-                    }
-                  }}
-                />
+                    className="w-[160px]"
+                    onBlur={(e) => {
+                      let value = e.target.value;
+                      if (/^0+\d+/.test(value)) {
+                        value = String(Number(value));
+                        onLogChange(idx, "endingMileage", Number(value));
+                        e.target.value = value;
+                      }
+                      if (Number(value) < log.startingMileage) {
+                        e.target.setCustomValidity(
+                          "Ending mileage cannot be less than starting mileage"
+                        );
+                      } else {
+                        e.target.setCustomValidity("");
+                      }
+                    }}
+                  />
+                </div>
+                {originalLogs[idx] &&
+                  log.endingMileage !== originalLogs[idx].endingMileage &&
+                  onUndoLogField && (
+                    <div className="w-fit ">
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => onUndoLogField(idx, "endingMileage")}
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
+                    </div>
+                  )}
               </div>
-              {originalLogs[idx] &&
-                log.endingMileage !== originalLogs[idx].endingMileage &&
-                onUndoLogField && (
-                  <div className="w-fit ">
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => onUndoLogField(idx, "endingMileage")}
-                    >
-                      Undo
-                    </Button>
-                  </div>
-                )}
             </div>
           </div>
           {log.startingMileage > log.endingMileage && (
@@ -183,7 +189,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           {/* Equipment Hauled */}
           <div className="flex flex-row justify-between items-center my-2">
             <div className="flex-1">
-              <p className="block font-semibold text-sm">Equipment Hauled</p>
+              <p className="block font-semibold text-base">Equipment Hauled</p>
               <p className="text-xs text-gray-500 pt-1 ">
                 This section logs the equipment hauled and the destination it
                 was delivered to.
@@ -202,7 +208,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           <div className="border-b py-2">
             {log.EquipmentHauled.map((eq, eqIdx) => (
               <div key={eq.id || eqIdx} className="flex flex-row gap-4 mb-3">
-                <div className="flex items-end">
+                <div className="min-w-[200px] w-fit items-end">
                   <Combobox
                     font={"font-normal"}
                     label="Equipment ID"
@@ -221,7 +227,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     filterKeys={["label", "value"]}
                   />
                 </div>
-                <div className="flex items-end">
+                <div className="min-w-[200px] w-fit items-end">
                   <Combobox
                     font={"font-normal"}
                     label="Jobsite"
@@ -255,7 +261,6 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
 
           {/* Materials */}
-
           <div className="flex flex-row justify-between items-center my-2">
             <div className="flex-1">
               <p className="block font-semibold text-sm">Materials Hauled</p>
@@ -279,10 +284,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               <div key={mat.id || matIdx} className="mt-2 border p-2 rounded">
                 <div className="flex flex-row gap-4 mb-2">
                   <div>
-                    <label
-                      htmlFor="LocationOfMaterial"
-                      className="text-xs font-semibold"
-                    >
+                    <label htmlFor="LocationOfMaterial" className="text-xs ">
                       Location of Material
                     </label>
                     <Input
@@ -299,14 +301,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px]"
+                      className="w-[200px] text-xs"
                     />
                   </div>
                   <div>
-                    <label
-                      htmlFor="lightWeight"
-                      className="text-xs font-semibold"
-                    >
+                    <label htmlFor="lightWeight" className="text-xs ">
                       Material Name
                     </label>
                     <Input
@@ -322,14 +321,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px]"
+                      className="w-[200px] text-xs"
                     />
                   </div>
                   <div>
-                    <label
-                      htmlFor="materialWeight"
-                      className="text-xs font-semibold"
-                    >
+                    <label htmlFor="materialWeight" className="text-xs ">
                       Material Weight
                     </label>
                     <Input
@@ -346,7 +342,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px]"
+                      className="w-[200px] text-xs"
                     />
                   </div>
                   <div className="flex items-end ">
@@ -362,10 +358,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 </div>
                 <div className="flex flex-row gap-4 mb-2">
                   <div>
-                    <label
-                      htmlFor="lightWeight"
-                      className="text-xs font-semibold"
-                    >
+                    <label htmlFor="lightWeight" className="text-xs ">
                       Light Weight
                     </label>
                     <Input
@@ -382,14 +375,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px]"
+                      className="w-[200px] text-xs"
                     />
                   </div>
                   <div>
-                    <label
-                      htmlFor="grossWeight"
-                      className="text-xs font-semibold"
-                    >
+                    <label htmlFor="grossWeight" className="text-xs ">
                       Gross Weight
                     </label>
                     <Input
@@ -406,11 +396,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px]"
+                      className="w-[200px] text-xs"
                     />
                   </div>
                   <div>
-                    <label htmlFor="loadType" className="text-xs font-semibold">
+                    <label htmlFor="loadType" className="text-xs ">
                       Load Type
                     </label>
                     <Select
@@ -426,7 +416,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         )
                       }
                     >
-                      <SelectTrigger className="w-[200px]">
+                      <SelectTrigger className="w-[200px] text-xs">
                         <SelectValue placeholder="Load Type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -441,7 +431,6 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
 
           {/* Refuel Logs */}
-
           <div className="flex flex-row justify-between items-center my-2">
             <div className="flex-1">
               <p className="block font-semibold text-sm">Refuel Logs</p>
@@ -464,10 +453,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
             {log.RefuelLogs.map((ref, refIdx) => (
               <div key={ref.id || refIdx} className="flex gap-4 mb-2 items-end">
                 <div>
-                  <label
-                    htmlFor="gallonsRefueled"
-                    className="text-xs font-semibold"
-                  >
+                  <label htmlFor="gallonsRefueled" className="text-xs ">
                     Total Gallons Refueled
                   </label>
                   <Input
@@ -484,14 +470,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         e.target.value
                       )
                     }
-                    className="w-[200px]"
+                    className="w-[200px] text-xs"
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="milesAtFueling"
-                    className="text-xs font-semibold"
-                  >
+                  <label htmlFor="milesAtFueling" className="text-xs ">
                     Mileage at Refuel
                   </label>
                   <Input
@@ -507,7 +490,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         e.target.value
                       )
                     }
-                    className="w-[200px]"
+                    className="w-[200px] text-xs"
                   />
                 </div>
                 <Button
@@ -521,6 +504,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               </div>
             ))}
           </div>
+
           {/* State Line Mileage */}
           <div className="flex flex-row justify-between items-center my-2">
             <div className="flex-1">
@@ -544,10 +528,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
             {log.StateMileages.map((sm, smIdx) => (
               <div key={sm.id || smIdx} className="flex gap-4 mb-2 items-end">
                 <div>
-                  <label
-                    htmlFor="state"
-                    className="text-xs font-semibold w-[200px]"
-                  >
+                  <label htmlFor="state" className="text-xs  w-[200px]">
                     State
                   </label>
                   <Select
@@ -563,7 +544,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       )
                     }
                   >
-                    <SelectTrigger className="w-[200px]">
+                    <SelectTrigger className="w-[200px] text-xs">
                       <SelectValue placeholder="State" />
                     </SelectTrigger>
                     <SelectContent>
@@ -576,10 +557,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                   </Select>
                 </div>
                 <div>
-                  <label
-                    htmlFor="stateLineMileage"
-                    className="text-xs font-semibold"
-                  >
+                  <label htmlFor="stateLineMileage" className="text-xs ">
                     State Line Mileage
                   </label>
                   <Input
@@ -596,7 +574,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         e.target.value
                       )
                     }
-                    className="w-[200px]"
+                    className="w-[200px] text-xs"
                   />
                 </div>
                 <Button

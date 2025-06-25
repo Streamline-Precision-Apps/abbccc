@@ -739,18 +739,16 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[800px]  max-h-[70vh] overflow-y-auto no-scrollbar">
+      <div className="bg-white rounded-lg shadow-lg min-w-[700px]  max-h-[80vh] overflow-y-auto no-scrollbar">
         {error && (
-          <div className=" text-xs text-red-600 mb-2 bg-red-400 bg-opacity-20 px-6 py-4 rounded">
+          <div className=" text-xs text-red-600 mb-2 bg-red-400 bg-opacity-20 px-6 py-4 rounded max-w-[600px]">
             <span className="font-bold">Error:</span> {error}
           </div>
         )}
         <div className="p-6">
           <div className="mb-4">
             <h2 className="text-xl font-bold">Edit Timesheet</h2>
-            <p className="text-sm mb-1 text-gray-600">
-              Timesheet ID: {timesheetId}
-            </p>
+            <p className="text-xs text-gray-600">Timesheet ID: {timesheetId}</p>
           </div>
           {loading && <div className="text-gray-500">Loading...</div>}
           {form && (
