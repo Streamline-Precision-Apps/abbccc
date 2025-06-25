@@ -359,7 +359,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
-    // Validation: all maintenance logs must be complete if visible
+    // Validation: all logs must be complete if visible
     if (
       showMaintenance &&
       form.MaintenanceLogs.some((log) => !isMaintenanceLogComplete(log))
@@ -369,7 +369,50 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       );
       return;
     }
-    // You can add similar validation for other log types if needed
+    if (
+      showTrucking &&
+      (form.TruckingLogs.some((log) => !isTruckingLogComplete(log)) ||
+        form.TruckingLogs.some((log) =>
+          log.EquipmentHauled.some((eq: any) => !isEquipmentHauledComplete(eq))
+        ) ||
+        form.TruckingLogs.some((log) =>
+          log.Materials.some((mat: any) => !isMaterialComplete(mat))
+        ) ||
+        form.TruckingLogs.some((log) =>
+          log.RefuelLogs.some((ref: any) => !isRefuelLogComplete(ref))
+        ) ||
+        form.TruckingLogs.some((log) =>
+          log.StateMileages.some((sm: any) => !isStateMileageComplete(sm))
+        ))
+    ) {
+      setError(
+        "Invalid Trucking log submission. Please complete all fields in all nested logs before submitting again."
+      );
+      return;
+    }
+    if (
+      showTasco &&
+      (form.TascoLogs.some((log) => !isTascoLogComplete(log)) ||
+        form.TascoLogs.some((log) =>
+          log.RefuelLogs.some((ref: any) => !isTascoRefuelLogComplete(ref))
+        ))
+    ) {
+      setError(
+        "Invalid Tasco log submission. Please complete all fields in all nested logs before submitting again."
+      );
+      return;
+    }
+    if (
+      showEquipment &&
+      form.EmployeeEquipmentLogs.some(
+        (log) => !isEmployeeEquipmentLogComplete(log)
+      )
+    ) {
+      setError(
+        "Invalid Equipment log submission. Please complete all fields before submitting again."
+      );
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -773,6 +816,83 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     });
   };
 
+  // Helper functions to check completeness of each log type
+  function isMaintenanceLogComplete(log: MaintenanceLog): boolean {
+    return !!(log.maintenanceId && log.startTime && log.endTime);
+  }
+  function isTruckingLogComplete(log: TruckingLog): boolean {
+    return !!(
+      log.equipmentId &&
+      typeof log.startingMileage === "number" &&
+      typeof log.endingMileage === "number"
+    );
+  }
+  function isTascoLogComplete(log: TascoLog): boolean {
+    return !!(
+      log.Equipment &&
+      log.shiftType &&
+      log.laborType &&
+      log.materialType &&
+      typeof log.LoadQuantity === "number" &&
+      log.LoadQuantity > 0
+    );
+  }
+  function isEmployeeEquipmentLogComplete(log: EmployeeEquipmentLog): boolean {
+    return !!(log.equipmentId && log.startTime && log.endTime);
+  }
+
+  // Helper functions to check completeness of each nested Trucking log type
+  function isEquipmentHauledComplete(eq: any): boolean {
+    return !!(eq.equipmentId && eq.jobSiteId);
+  }
+  function isMaterialComplete(mat: any): boolean {
+    return !!(
+      mat.LocationOfMaterial &&
+      mat.name &&
+      mat.materialWeight &&
+      mat.lightWeight &&
+      mat.grossWeight &&
+      mat.loadType
+    );
+  }
+  function isRefuelLogComplete(ref: any): boolean {
+    return !!(ref.gallonsRefueled && ref.milesAtFueling);
+  }
+  function isStateMileageComplete(sm: any): boolean {
+    return !!(sm.state && sm.stateLineMileage);
+  }
+  function isTascoRefuelLogComplete(ref: any): boolean {
+    return !!(ref.gallonsRefueled && ref.gallonsRefueled > 0);
+  }
+
+  // Compute disableSubmit for the current work type
+  const disableSubmit =
+    (showMaintenance &&
+      form?.MaintenanceLogs.some((log) => !isMaintenanceLogComplete(log))) ||
+    (showTrucking &&
+      (form?.TruckingLogs.some((log) => !isTruckingLogComplete(log)) ||
+        form?.TruckingLogs.some((log) =>
+          log.EquipmentHauled.some((eq: any) => !isEquipmentHauledComplete(eq))
+        ) ||
+        form?.TruckingLogs.some((log) =>
+          log.Materials.some((mat: any) => !isMaterialComplete(mat))
+        ) ||
+        form?.TruckingLogs.some((log) =>
+          log.RefuelLogs.some((ref: any) => !isRefuelLogComplete(ref))
+        ) ||
+        form?.TruckingLogs.some((log) =>
+          log.StateMileages.some((sm: any) => !isStateMileageComplete(sm))
+        ))) ||
+    (showTasco &&
+      (form?.TascoLogs.some((log) => !isTascoLogComplete(log)) ||
+        form?.TascoLogs.some((log) =>
+          log.RefuelLogs.some((ref: any) => !isTascoRefuelLogComplete(ref))
+        ))) ||
+    (showEquipment &&
+      form?.EmployeeEquipmentLogs.some(
+        (log) => !isEmployeeEquipmentLogComplete(log)
+      ));
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -965,8 +1085,15 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
-                  disabled={loading}
+                  className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
+                    disableSubmit ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={disableSubmit}
+                  title={
+                    disableSubmit
+                      ? "Please complete all required fields in the logs before submitting."
+                      : ""
+                  }
                 >
                   {loading ? "Saving..." : "Save"}
                 </Button>
