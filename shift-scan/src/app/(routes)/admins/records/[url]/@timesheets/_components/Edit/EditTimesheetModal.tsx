@@ -778,7 +778,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg min-w-[700px]  max-h-[80vh] overflow-y-auto no-scrollbar">
         {error && (
-          <div className=" text-xs text-red-600 mb-2 bg-red-400 bg-opacity-20 px-6 py-4 rounded max-w-[600px]">
+          <div className=" text-xs text-red-600 mb-2 bg-red-400 bg-opacity-20 px-6 py-4 rounded max-w-[700px]">
             <span className="font-bold">Error:</span> {error}
           </div>
         )}

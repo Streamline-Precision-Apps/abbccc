@@ -75,9 +75,9 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
 }) => {
   return (
     <div className="col-span-2 mt-4">
-      <h3 className="font-semibold text-sm mb-2">Trucking Logs</h3>
+      <h3 className="font-semibold text-md mb-2">Trucking Logs</h3>
       {logs.map((log, idx) => (
-        <div key={log.id} className="border rounded p-2 mb-6">
+        <div key={log.id} className=" rounded p-2 mb-6 ">
           <div className="flex flex-col gap-3 mb-2 border-b pb-3">
             <div className="flex flex-row items-end gap-x-2">
               <div className="min-w-[350px]">
@@ -217,9 +217,12 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
           <div className="border-b py-2">
             {log.EquipmentHauled.map((eq, eqIdx) => (
-              <div key={eq.id || eqIdx} className="flex flex-row gap-4 mb-3">
+              <div
+                key={eq.id || eqIdx}
+                className="flex flex-col gap-4 mb-3 border p-2 rounded relative"
+              >
                 <div className="flex flex-row items-end gap-x-2">
-                  <div className="min-w-[200px] w-fit items-end">
+                  <div className="min-w-[350px] w-fit items-end">
                     <Combobox
                       font={"font-normal"}
                       label="Equipment ID"
@@ -264,7 +267,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     )}
                 </div>
                 <div className="flex flex-row items-end gap-x-2">
-                  <div className="min-w-[200px] w-fit items-end">
+                  <div className="min-w-[350px] w-fit items-end">
                     <Combobox
                       font={"font-normal"}
                       label="Jobsite"
@@ -308,7 +311,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       </div>
                     )}
                 </div>
-                <div className="flex items-end">
+                <div className="flex items-end absolute right-2 top-2">
                   <Button
                     type="button"
                     variant="destructive"
@@ -343,8 +346,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
           <div className="border-b py-2">
             {log.Materials.map((mat, matIdx) => (
-              <div key={mat.id || matIdx} className="mt-2 border p-2 rounded">
-                <div className="flex flex-row gap-4 mb-2">
+              <div
+                key={mat.id || matIdx}
+                className="mt-2 border p-2 rounded relative"
+              >
+                <div className="flex flex-col gap-4 mb-2">
                   <div className="flex flex-row gap-1 items-end">
                     <div>
                       <label htmlFor="LocationOfMaterial" className="text-xs ">
@@ -364,7 +370,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             e.target.value
                           )
                         }
-                        className="w-[160px] text-xs"
+                        className="w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -411,7 +417,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             e.target.value
                           )
                         }
-                        className="w-[120px] text-xs"
+                        className="w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -457,7 +463,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             e.target.value
                           )
                         }
-                        className="w-[120px] text-xs"
+                        className="w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -485,7 +491,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         </div>
                       )}
                   </div>
-                  <div className="flex items-end ">
+                  <div className="flex items-end right-2 top-2 absolute">
                     <Button
                       type="button"
                       size="icon"
@@ -496,7 +502,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     </Button>
                   </div>
                 </div>
-                <div className="flex flex-row gap-4 mb-2">
+                <div className="flex flex-col gap-4 mb-2">
                   <div className="flex flex-row gap-1 items-end">
                     <div>
                       <label htmlFor="lightWeight" className="text-xs ">
@@ -516,7 +522,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             e.target.value
                           )
                         }
-                        className="w-[120px] text-xs"
+                        className="w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -563,7 +569,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             e.target.value
                           )
                         }
-                        className="w-[120px] text-xs"
+                        className="w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -609,7 +615,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           )
                         }
                       >
-                        <SelectTrigger className="w-[120px] text-xs">
+                        <SelectTrigger className="w-[350px] text-xs">
                           <SelectValue placeholder="Load Type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -669,7 +675,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
           <div className="border-b py-2">
             {log.RefuelLogs.map((ref, refIdx) => (
-              <div key={ref.id || refIdx} className="flex gap-4 mb-2 items-end">
+              <div
+                key={ref.id || refIdx}
+                className="flex flex-col gap-4 mb-2  border p-2 rounded relative"
+              >
                 <div className="flex flex-row gap-1 items-end">
                   <div>
                     <label htmlFor="gallonsRefueled" className="text-xs ">
@@ -689,7 +698,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px] text-xs"
+                      className="w-[350px] text-xs"
                     />
                   </div>
                   {originalLogs[idx] &&
@@ -735,7 +744,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px] text-xs"
+                      className="w-[350px] text-xs"
                     />
                   </div>
                   {originalLogs[idx] &&
@@ -768,6 +777,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                   variant="destructive"
                   size="icon"
                   onClick={() => deleteRefuelLog(idx, refIdx)}
+                  className="absolute top-2 right-2"
                 >
                   <img src="/trash.svg" alt="remove" className="w-4 h-4" />
                 </Button>
@@ -796,10 +806,13 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           </div>
           <div className="pt-2">
             {log.StateMileages.map((sm, smIdx) => (
-              <div key={sm.id || smIdx} className="flex gap-4 mb-2 items-end">
+              <div
+                key={sm.id || smIdx}
+                className="flex flex-col gap-4 mb-2 border p-2 rounded relative"
+              >
                 <div className="flex flex-row gap-1 items-end">
                   <div>
-                    <label htmlFor="state" className="text-xs  w-[200px]">
+                    <label htmlFor="state" className="text-xs ">
                       State
                     </label>
                     <Select
@@ -815,7 +828,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         )
                       }
                     >
-                      <SelectTrigger className="w-[200px] text-xs">
+                      <SelectTrigger className="w-[350px] text-xs">
                         <SelectValue placeholder="State" />
                       </SelectTrigger>
                       <SelectContent>
@@ -870,7 +883,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           e.target.value
                         )
                       }
-                      className="w-[200px] text-xs"
+                      className="w-[350px] text-xs"
                     />
                   </div>
                   {originalLogs[idx] &&
@@ -903,7 +916,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                   variant="destructive"
                   size="icon"
                   onClick={() => deleteStateMileage(idx, smIdx)}
-                  className="ml-2"
+                  className="absolute top-2 right-2"
                 >
                   <img src="/trash.svg" alt="remove" className="w-4 h-4" />
                 </Button>
