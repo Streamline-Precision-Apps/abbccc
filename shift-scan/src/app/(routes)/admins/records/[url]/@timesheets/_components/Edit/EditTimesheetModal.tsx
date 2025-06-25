@@ -736,6 +736,43 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     );
   }
 
+  // Granular undo for nested TruckingLogs fields
+  const handleUndoTruckingNestedField = <
+    T extends TruckingNestedType,
+    K extends keyof TruckingNestedTypeMap[T]
+  >(
+    logIdx: number,
+    nestedType: T,
+    nestedIdx: number,
+    field: K
+  ) => {
+    if (!form || !originalForm) return;
+    setForm({
+      ...form,
+      TruckingLogs: form.TruckingLogs.map((log, i) => {
+        if (i !== logIdx) return log;
+        // Only operate if the nestedType is an array
+        const nestedArr = log[nestedType] as TruckingNestedTypeMap[T][];
+        const originalArr = originalForm.TruckingLogs[logIdx]?.[
+          nestedType
+        ] as TruckingNestedTypeMap[T][];
+        if (!Array.isArray(nestedArr) || !Array.isArray(originalArr))
+          return log;
+        return {
+          ...log,
+          [nestedType]: nestedArr.map((item, j) =>
+            j === nestedIdx
+              ? {
+                  ...item,
+                  [field]: originalArr[nestedIdx]?.[field],
+                }
+              : item
+          ),
+        };
+      }),
+    });
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -831,7 +868,6 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       value
                     )
                   }
-                  // Wrapper for EditTruckingLogs to match expected signature
                   handleNestedLogChange={handleTruckingNestedLogChange}
                   originalLogs={originalForm?.TruckingLogs || []}
                   onUndoLogField={(idx, field) => {
@@ -848,6 +884,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       ),
                     });
                   }}
+                  onUndoNestedLogField={handleUndoTruckingNestedField}
                 />
               )}
               {showTasco && (
