@@ -41,10 +41,10 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
     {logs.map((log, idx) => (
       <div
         key={log.id}
-        className="border rounded p-2 mb-2 flex flex-row flex-wrap gap-2 items-end"
+        className="border rounded p-4 mb-2 flex flex-col gap-2 relative "
       >
-        <div className="flex flex-row items-end">
-          <div className="w-[200px]">
+        <div className="flex items-end">
+          <div className="min-w-[200px]">
             <Combobox
               label="Maintenance ID"
               options={maintenanceOptions}
@@ -116,6 +116,7 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
           type="button"
           variant="destructive"
           onClick={() => onRemoveLog(idx)}
+          className="absolute top-2 right-2"
         >
           <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
         </Button>
