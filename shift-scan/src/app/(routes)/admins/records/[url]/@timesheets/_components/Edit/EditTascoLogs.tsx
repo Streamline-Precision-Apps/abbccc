@@ -5,6 +5,9 @@ import {
   TascoNestedType,
   TascoNestedTypeMap,
   RefuelLog,
+  TruckingNestedTypeMap,
+  TimesheetData,
+  TruckingNestedType,
 } from "./types";
 import {
   Select,
@@ -19,13 +22,12 @@ import { Input } from "@/components/ui/input";
 interface EditTascoLogsProps {
   logs: TascoLog[];
   onLogChange: (idx: number, field: keyof TascoLog, value: any) => void;
-  onAddLog: () => void;
-  onRemoveLog: (idx: number) => void;
-  handleNestedLogChange: <T extends TascoNestedType>(
+  handleNestedLogChange: <T extends TruckingNestedType>(
+    logType: keyof TimesheetData,
     logIndex: number,
     nestedType: T,
     nestedIndex: number,
-    field: keyof TascoNestedTypeMap[T],
+    field: keyof TruckingNestedTypeMap[T],
     value: any
   ) => void;
   originalLogs?: TascoLog[];
@@ -42,8 +44,6 @@ interface EditTascoLogsProps {
 export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   logs,
   onLogChange,
-  onAddLog,
-  onRemoveLog,
   originalLogs = [],
   onUndoLogField,
   materialTypes,
@@ -329,10 +329,11 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                           }
                           onChange={(e) =>
                             handleNestedLogChange(
-                              idx,
-                              "RefuelLogs",
-                              refIdx,
-                              "gallonsRefueled",
+                              "TascoLogs", // logType
+                              idx, // logIndex
+                              "RefuelLogs", // nestedType
+                              refIdx, // nestedIndex
+                              "gallonsRefueled", // field
                               Number(e.target.value)
                             )
                           }
