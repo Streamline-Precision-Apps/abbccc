@@ -65,7 +65,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[350px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg min-w-[400px] max-w-[90vw] max-h-[70vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <h2 className="text-xl font-bold mb-4">Export Timesheets</h2>
         <div className="flex flex-col gap-4 w-full items-center">
           <div className="w-full flex flex-col items-center mb-2">

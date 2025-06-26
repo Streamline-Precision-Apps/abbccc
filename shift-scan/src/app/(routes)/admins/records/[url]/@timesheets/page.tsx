@@ -22,12 +22,11 @@ import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 import { toast } from "sonner";
 
 import dynamic from "next/dynamic";
-const ExportModal = dynamic(() => import("./_components/Export/ExportModal"), {
-  ssr: false,
-});
+
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
+import ExportModal from "./_components/Export/ExportModal";
 
 /**
  * Timesheet domain entity.
