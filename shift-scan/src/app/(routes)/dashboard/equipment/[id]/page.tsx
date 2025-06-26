@@ -21,7 +21,6 @@ import UsageData from "./_components/UsageData";
 import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { EquipmentStatus, FormStatus } from "@/lib/types";
 
 import {
   UnifiedEquipmentState,
@@ -31,6 +30,7 @@ import {
   Refueled,
   EquipmentState,
 } from "./types";
+import { EquipmentStatus, FormStatus } from "@/lib/enums";
 
 // Helper function to transform API response to form state
 function transformApiToFormState(
@@ -39,7 +39,6 @@ function transformApiToFormState(
   return {
     id: apiData.id,
     equipmentId: apiData.equipmentId,
-    employeeId: apiData.employeeId,
     startTime: apiData.startTime || "",
     endTime: apiData.endTime || "",
     comment: apiData.comment || "",
@@ -75,7 +74,6 @@ function createInitialState(): UnifiedEquipmentState {
     formState: {
       id: "",
       equipmentId: "",
-      employeeId: "",
       startTime: "",
       endTime: "",
       comment: "",
