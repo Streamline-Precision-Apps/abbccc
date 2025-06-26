@@ -4,46 +4,76 @@ import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
-export async function GET() {
+/**
+ * GET /api/getAllForms
+ * Supports pagination via query params: ?page=1&pageSize=10
+ */
+export async function GET(req: Request) {
   try {
     const session = await auth();
-
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Parse pagination params
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    // Get total count for pagination
+    const total = await prisma.formTemplate.count();
+
     const forms = await prisma.formTemplate.findMany({
-      select: {
-        id: true,
-        name: true,
+      skip,
+      take,
+      include: {
+        _count: {
+          select: {
+            Submissions: true,
+          },
+        },
         FormGrouping: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            order: true,
             Fields: {
-              include: {
+              select: {
+                label: true,
+                name: true,
+                type: true,
+                required: true,
+                order: true,
+                defaultValue: true,
+                placeholder: true,
+                maxLength: true,
+                helperText: true,
                 Options: true,
-              },
-              orderBy: {
-                order: "asc",
               },
             },
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
-    if (!forms || forms.length === 0) {
-      return NextResponse.json({ message: "No forms found" }, { status: 404 });
-    }
-
-    return NextResponse.json(forms);
+    return NextResponse.json({
+      data: forms,
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+    });
   } catch (error) {
     console.error("Error fetching form templates:", error);
-
     let errorMessage = "Failed to fetch form templates";
     if (error instanceof Error) {
       errorMessage = error.message;
     }
-
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
