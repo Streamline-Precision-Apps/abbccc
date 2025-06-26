@@ -5,8 +5,6 @@ export interface EditTimesheetModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdated?: () => void; // Optional callback for parent to refetch
-  isEditing: boolean;
-  editingId: string | null;
 }
 
 // Types for nested logs
