@@ -18,7 +18,9 @@ const config: Config = {
   			wave: 'wave 1s linear',
   			slideLeft: 'slideLeft 0.3s ease-out forwards',
   			slideRight: 'slideRight 0.3s ease-out forwards',
-  			touchSlide: 'slide 5s linear infinite'
+  			touchSlide: 'slide 5s linear infinite',
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
   		keyframes: {
   			wave: {
@@ -72,6 +74,22 @@ const config: Config = {
   				},
   				'100%': {
   					transform: 'translateX(-100%)'
+  				}
+  			},
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
   				}
   			}
   		},

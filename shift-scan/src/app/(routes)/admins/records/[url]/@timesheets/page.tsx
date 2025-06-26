@@ -26,8 +26,7 @@ import dynamic from "next/dynamic";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
-import ExportModal from "./_components/Export/ExportModal";
-
+import { ExportModal } from "./_components/Export/ExportModal";
 /**
  * Timesheet domain entity.
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
