@@ -161,7 +161,7 @@ export default function Forms() {
           <SearchBar
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={"Search forms..."}
+            placeholder={"Search forms by name..."}
             textSize="xs"
             imageSize="6"
           />
