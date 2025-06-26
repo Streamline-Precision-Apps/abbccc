@@ -25,8 +25,7 @@ export async function GET() {
 
     const logs = await prisma.employeeEquipmentLog.findMany({
       where: {
-        employeeId: userId,
-        createdAt: { lte: currentDate, gte: past24Hours },
+        startTime: { gte: past24Hours, lte: currentDate },
         timeSheetId: timeSheetId?.id,
       },
       include: {

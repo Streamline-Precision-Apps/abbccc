@@ -1,7 +1,5 @@
 // Shared types for equipment page and its components
 
-import { FormStatus } from "@/lib/types";
-
 // Define simple types that match the JSON structure
 export type Priority = "PENDING" | "LOW" | "MEDIUM" | "HIGH" | "TODAY";
 
@@ -64,7 +62,7 @@ export type EmployeeEquipmentLogData = {
   createdAt: string;
   updatedAt: string;
   isFinished: boolean;
-  status: FormStatus;
+  status: string; // Replace FormStatus with string for status property, or define a local type if needed
   workType: string;
   relatedLogId: string | null;
   timeSheetId: string | null;
@@ -77,7 +75,6 @@ export type EmployeeEquipmentLogData = {
 export type EquipmentLog = {
   id: string;
   equipmentId: string;
-  employeeId: string;
   startTime: string;
   endTime: string;
   comment?: string;

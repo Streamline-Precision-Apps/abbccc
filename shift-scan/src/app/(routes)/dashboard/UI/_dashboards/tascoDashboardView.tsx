@@ -9,6 +9,7 @@ import { Dispatch, SetStateAction, use, useEffect } from "react";
 import TascoBtn from "../_buttons/TascoBtn";
 import { LogItem } from "@/lib/types";
 import { useModalState } from "@/hooks/(dashboard)/useModalState";
+import EquipmentBtn from "../_buttons/equipmentBtn";
 
 export default function TascoDashboardView({
   additionalButtonsType,
@@ -37,44 +38,43 @@ export default function TascoDashboardView({
   }, []);
   const modalState = useModalState();
 
-  if (laborType === "manualLabor") {
+  if (laborType === "tascoAbcdLabor") {
     return (
-      <>
-        <Contents width={"section"} className="py-5">
-          <Grids cols={"2"} rows={"3"} gap={"5"}>
-            <>
-              <TascoBtn
-                permission={permission}
-                view={"tasco"}
-                laborType={laborType}
-              />
-              <SwitchJobsBtn
-                {...modalState}
-                permission={permission}
-                logs={logs}
-                laborType={laborType}
-                view={"tasco"}
-              />
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
-
-              <ClockOutBtn
-                handleShowAdditionalButtons={verifyLogsCompletion}
-                permission={permission}
-                logs={logs}
-                mechanicProjectID={mechanicProjectID}
-                laborType={laborType}
-                View={"tasco"}
-              />
-            </>
-          </Grids>
-        </Contents>
-      </>
-    );
+        <>
+          <Contents width={"section"} className="py-5">
+            <Grids cols={"2"} rows={"3"} gap={"5"}>
+              <>
+                <EquipmentBtn permission={permission} />
+    
+                <SwitchJobsBtn
+                  {...modalState}
+                  permission={permission}
+                  logs={logs}
+                  laborType={"general"}
+                  view={"general"}
+                />
+    
+                {permission !== "USER" && !additionalButtonsType && (
+                  <GeneratorBtn />
+                )}
+    
+                {permission !== "USER" && !additionalButtonsType && (
+                  <MyTeamWidget />
+                )}
+    
+                <ClockOutBtn
+                  handleShowAdditionalButtons={verifyLogsCompletion}
+                  permission={permission}
+                  logs={logs}
+                  mechanicProjectID={mechanicProjectID}
+                  View={"general"}
+                  laborType="general"
+                />
+              </>
+            </Grids>
+          </Contents>
+        </>
+      );
   } else {
     return (
       <>
