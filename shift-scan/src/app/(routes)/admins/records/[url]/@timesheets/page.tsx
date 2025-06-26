@@ -21,8 +21,6 @@ import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 import { toast } from "sonner";
 
-import dynamic from "next/dynamic";
-
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
@@ -335,9 +333,20 @@ export default function AdminTimesheets() {
 
   return (
     <div className="h-full w-full flex flex-col gap-4">
-      <TimesheetDescription />
-      {/*Timesheet search, filter and navigation*/}
-      {/* ...existing code... */}
+      <TimesheetDescription
+        setShowCreateModal={setShowCreateModal}
+        setExportModal={setExportModal}
+        setShowPendingOnly={setShowPendingOnly}
+        showPendingOnly={showPendingOnly}
+        approvalInbox={approvalInbox}
+      />
+      {showCreateModal && (
+        <CreateTimesheetModal
+          onClose={() => setShowCreateModal(false)}
+          onCreated={refetchAll}
+        />
+      )}
+
       <div className="h-fit w-full flex flex-row px-4 gap-4">
         <div className="bg-white rounded-lg h-full w-full max-w-[450px] py-2">
           <SearchBar
@@ -412,71 +421,6 @@ export default function AdminTimesheets() {
               {pageSize} of {total} rows
             </>
           )}
-        </div>
-        <div className="w-full flex flex-row max-w-[160px] h-full">
-          <Texts
-            position={"left"}
-            size={"sm"}
-            text={"white"}
-            className="font-bold"
-          >
-            {/* {numOfTimesheets} of {numOfTimesheets} forms */}
-          </Texts>
-        </div>
-        <div className="w-full flex flex-row justify-end h-full">
-          <PageSelector />
-          <Button
-            onClick={() => setExportModal(true)}
-            size={"icon"}
-            className=" relative border-none hover:bg-gray-800 text-white mr-2"
-          >
-            <div className="flex w-fit h-fit flex-row items-center">
-              <img src="/export-white.svg" alt="Export" className="h-4 w-4 " />
-            </div>
-          </Button>
-          <Button
-            className="border-none w-fit h-fit px-4  hover:bg-gray-800 text-white mr-2"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <div className="items-center flex flex-row">
-              <img
-                src="/plus-white.svg"
-                alt="Create New Form"
-                className="h-4 w-4 mr-2"
-              />
-              <Texts size={"sm"} text={"white"} className="font-extrabold">
-                New Timesheet
-              </Texts>
-            </div>
-          </Button>
-          {showCreateModal && (
-            <CreateTimesheetModal
-              onClose={() => setShowCreateModal(false)}
-              onCreated={refetchAll}
-            />
-          )}
-          <Button
-            onClick={() => setShowPendingOnly((prev) => !prev)}
-            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
-              showPendingOnly ? "ring-2 ring-red-400" : ""
-            }`}
-          >
-            <div className="flex flex-row items-center">
-              <img
-                src="/inbox-white.svg"
-                alt="Approval"
-                className="h-4 w-4 mr-2"
-              />
-              <Texts size={"sm"} text={"white"} className="font-extrabold">
-                Approval
-              </Texts>
-              {approvalInbox && approvalInbox.length > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
-                  {approvalInbox.length}
-                </Badge>
-              )}
-            </div>
-          </Button>
         </div>
       </div>
       {/* ...existing code... */}

@@ -1,160 +1,380 @@
 "use client";
 
-import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import { Selects } from "@/components/(reusable)/selects";
-import { Buttons } from "@/components/(reusable)/buttons";
+//things to do:
+// views :
+// list view: display all forms and details in a table with pagination, search, and sorting
+// 1) build a api call to fetch all forms and their details
+// 2) create a table component to display forms with pagination
+// 3) add search functionality to filter forms by name or type
+// 4) add sorting functionality to sort forms by name, type, or date created
+// 5) in the table add actions to view, edit, or delete forms the edit will open the form in the builder view, the delete will delete the form, the view will open the form in the individual view
+
+// builder view : display form builder with options to create new forms
+// approval view : display forms awaiting approval
+// individual view : display individual form details and submissions
+
 import SearchBar from "../../../personnel/components/SearchBar";
 import PageSelector from "../_components/pageSelector";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 
-export default function AdminForms() {
+// ...existing code...
+import { Skeleton } from "@/components/ui/skeleton";
+
+export interface FormFieldOptions {
+  id: string;
+  fieldId: string;
+  value: string;
+}
+
+export interface FormField {
+  id: string;
+  label: string;
+  name: string;
+  type: string;
+  required: boolean;
+  order: number;
+  defaultValue?: string;
+  placeholder?: string;
+  maxLength?: number;
+  helperText?: string;
+  options?: FormFieldOptions[];
+}
+
+export interface FormGrouping {
+  id: string;
+  title: string;
+  order: number;
+  fields: FormField[];
+}
+
+export interface FormTemplate {
+  _count: {
+    Submissions: number;
+  };
+  id: string;
+  name: string;
+  formType?: string;
+  isActive?: boolean;
+  isSignatureRequired?: boolean;
+  groupings: FormGrouping[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export default function Forms() {
+  const [ViewMode, setViewMode] = useState<
+    "list" | "individual" | "builder" | "approval"
+  >("list");
+  const [forms, setForms] = useState<FormTemplate[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    async function fetchForms() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(
+          `/api/getAllForms?page=${page}&pageSize=${pageSize}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch forms");
+        const result = await res.json();
+        setForms(result.data as FormTemplate[]);
+        setTotalPages(result.totalPages || 1);
+        setTotal(result.total || 0);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "Failed to load forms");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchForms();
+  }, [page, pageSize]);
+
+  // Client-side search (optional: could be server-side for large data)
+  const filteredForms = searchTerm.trim()
+    ? forms.filter((form) =>
+        form.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+      )
+    : forms;
+
   return (
-    <Holds className="h-full w-full flex-col gap-4">
-      <Holds className="h-fit w-full gap-1 p-4">
-        <Texts size={"md"} text={"white"} className="text-left font-bold">
-          Forms Management
-        </Texts>
-        <Texts size={"sm"} text={"white"} className="text-left">
-          Create, manage, and track form templates and submissions
-        </Texts>
-      </Holds>
-      <Holds position={"row"} className="h-fit w-full px-4 gap-4">
-        <Holds
-          position={"left"}
-          background={"white"}
-          className="h-full w-full max-w-[250px] py-2"
-        >
+    <div className="h-screen w-full flex-col gap-4">
+      <div className="h-[10vh] w-full flex flex-row justify-between gap-1 p-4">
+        <div className="flex flex-col gap-1 mb-4">
+          <p className="text-left font-bold text-lg text-white">
+            Forms Management
+          </p>
+          <p className="text-left font-bold text-xs text-white">
+            Create, manage, and track form templates and submissions
+          </p>
+        </div>
+        <div>
+          <div className="flex flex-row ">
+            <PageSelector />
+            <div className="flex flex-row gap-2">
+              {ViewMode === "approval" && (
+                <Button size={"icon"}>
+                  <img
+                    src="/export-white.svg"
+                    alt="Create New Form"
+                    className="h-4 w-4"
+                  />
+                </Button>
+              )}
+              <Button>Form Builder</Button>
+              {ViewMode === "approval" && (
+                <>
+                  <Button>Create Submission</Button>
+                  <Button>Approval</Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="h-[4vh] flex flex-row w-full  gap-4 mb-2">
+        <div className="h-full w-full bg-white max-w-[450px] py-2 rounded-lg">
           <SearchBar
-            term={""}
-            handleSearchChange={(e) => console.log(e)}
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
             placeholder={"Search forms..."}
             textSize="xs"
             imageSize="6"
           />
-        </Holds>
-        <Holds
-          position={"left"}
-          background={"white"}
-          className="h-full w-full max-w-[250px]"
-        >
-          <Selects
-            defaultValue="all"
-            onChange={(e) => console.log(e)}
-            className="w-full h-full text-xs border-none outline-hidden px-2 "
-          >
-            <option value="all">All Forms</option>
-            <option value="incident">Incident Report</option>
-            <option value="equipment">Equipment Log</option>
-            <option value="maintenance">Maintenance Request</option>
-            <option value="safety">Safety Inspection</option>
-          </Selects>
-        </Holds>
-        <Holds position={"row"} className="w-full max-w-[160px] h-full">
-          <Texts
-            position={"left"}
-            size={"sm"}
-            text={"white"}
-            className="font-bold"
-          >
-            10 of 10 forms
-          </Texts>
-        </Holds>
-        <Holds position={"row"} className="w-full justify-end h-full">
-          <PageSelector />
-          <Buttons
-            position={"right"}
-            shadow={"none"}
-            background={"custom"}
-            className="border-none w-fit h-full px-4  bg-sky-500 hover:bg-sky-600 text-white"
-          >
-            <Holds position={"row"} className="items-center">
-              <img
-                src="/plus.svg"
-                alt="Create New Form"
-                className="h-4 w-4 mr-2"
-              />
-              <Texts size={"sm"} text={"black"}>
-                Create New Form
-              </Texts>
-            </Holds>
-          </Buttons>
-        </Holds>
-      </Holds>
-      <Holds className="h-full w-full px-4 ">
-        <Holds background={"white"} className="h-full w-full p-4 ">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="border-b">
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Category</th>
-                <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Submissions</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Created At</th>
-                <th className="px-4 py-2 text-left">Last modified</th>
-                <th className="px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b">
-                <td className="px-4 py-2 text-left">Incident Report</td>
-                <td className="px-4 py-2 text-left">Incident Report</td>
-                <td className="px-4 py-2 text-left">
-                  This form is used to report an incident
-                </td>
-                <td className="px-4 py-2 text-left">5</td>
-                <td className="px-4 py-2 text-left">Active</td>
-                <td className="px-4 py-2 text-left">2023-01-01</td>
-                <td className="px-4 py-2 text-left">2023-01-01</td>
-                <td className="px-4 py-2 text-left">
-                  <Buttons
-                    shadow={"none"}
-                    background={"custom"}
-                    className="border-none w-fit h-full justify-center items-center "
-                  >
-                    <img
-                      src="/eye.svg"
-                      alt="Edit Form"
-                      className="h-4 w-4 mr-4 "
-                    />
-                  </Buttons>
-                  <Buttons
-                    shadow={"none"}
-                    background={"custom"}
-                    className="border-none w-fit h-full  "
-                  >
-                    <img
-                      src="/formEdit.svg"
-                      alt="Edit Form"
-                      className="h-4 w-4 mr-4"
-                    />
-                  </Buttons>
-                  <Buttons
-                    shadow={"none"}
-                    background={"custom"}
-                    className="border-none w-fit h-full justify-center "
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 80 100"
-                      className="h-4 w-4 mr-4 fill-red-600"
-                    >
-                      <path
-                        d="M76.1035 24.0039C77.6888 24.0841 78.9492 25.3948 78.9492 27C78.9492 28.6052 77.6888 29.9159 76.1035 29.9961L75.9492 30H4.05078C2.39393 30 1.05078 28.6569 1.05078 27C1.05078 25.3431 2.39393 24 4.05078 24H75.9492L76.1035 24.0039Z"
-                        fill=""
+        </div>
+      </div>
+      <div className="bg-white bg-opacity-80 h-fit pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
+        {loading ? (
+          <Table className="w-full h-full bg-white rounded-lg">
+            <TableHeader className="bg-gray-100 rounded-lg ">
+              <TableRow className="h-24">
+                <TableHead className="rounded-tl-lg text-xs w-1/5">
+                  <Skeleton className="h-4 w-3/4" />
+                </TableHead>
+                <TableHead className="text-center text-xs w-1/6">
+                  <Skeleton className="h-4 w-2/3 mx-auto" />
+                </TableHead>
+                <TableHead className="text-center text-xs w-1/12">
+                  <Skeleton className="h-4 w-1/2 mx-auto" />
+                </TableHead>
+                <TableHead className="text-center text-xs w-1/12">
+                  <Skeleton className="h-4 w-2/3 mx-auto" />
+                </TableHead>
+                <TableHead className="text-center text-xs w-1/6">
+                  <Skeleton className="h-4 w-2/3 mx-auto" />
+                </TableHead>
+                <TableHead className="text-center text-xs w-1/6">
+                  <Skeleton className="h-4 w-2/3 mx-auto" />
+                </TableHead>
+                <TableHead className="w-[160px] text-right pr-6 rounded-tr-lg text-xs">
+                  <Skeleton className="h-4 w-1/2 ml-auto" />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="bg-white pt-2">
+              {[...Array(pageSize)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell className="text-xs">
+                    <Skeleton className="h-4 w-3/4 mb-1" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Skeleton className="h-4 w-2/3 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Skeleton className="h-4 w-1/2 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Skeleton className="h-4 w-2/3 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Skeleton className="h-4 w-2/3 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    <Skeleton className="h-4 w-2/3 mx-auto" />
+                  </TableCell>
+                  <TableCell className="w-[160px]">
+                    <div className="flex flex-row justify-center gap-4">
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Table className="w-full h-full bg-white rounded-lg">
+            <TableHeader className="bg-gray-100 rounded-lg">
+              <TableRow>
+                <TableHead className="rounded-tl-lg text-xs">
+                  Name & Description
+                </TableHead>
+                <TableHead className="text-center text-xs">Form Type</TableHead>
+                <TableHead className="text-center text-xs">
+                  Submissions
+                </TableHead>
+                <TableHead className="text-center text-xs">Status</TableHead>
+                <TableHead className="text-center text-xs">
+                  Date Created
+                </TableHead>
+                <TableHead className="text-center text-xs">
+                  Date Updated
+                </TableHead>
+                <TableHead className="w-[160px] text-right pr-6 rounded-tr-lg text-xs">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="bg-white pt-2">
+              {filteredForms.map((form) => (
+                <TableRow key={form.id}>
+                  <TableCell className="text-xs">{form.name}</TableCell>
+                  <TableCell className="text-center text-xs">
+                    <span className="bg-sky-200 px-3 py-1 rounded-xl">
+                      {form.formType}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center text-xs text-sky-900 underline hover:text-sky-600 cursor-pointer">
+                    {form._count.Submissions}
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    {form.isActive ? (
+                      <span className=" bg-green-300 px-3 py-1 rounded-xl ">
+                        Active
+                      </span>
+                    ) : (
+                      <span className=" bg-slate-100 px-3 py-1 rounded-xl">
+                        Inactive
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    {form.createdAt
+                      ? new Date(form.createdAt).toLocaleDateString()
+                      : "-"}
+                  </TableCell>
+                  <TableCell className="text-center text-xs">
+                    {form.updatedAt
+                      ? new Date(form.updatedAt).toLocaleDateString()
+                      : "-"}
+                  </TableCell>
+                  <TableCell className="w-[160px]">
+                    <div className="flex flex-row justify-center gap-4">
+                      <img
+                        src="/eye.svg"
+                        alt="View Form"
+                        className="h-4 w-4 cursor-pointer"
                       />
-                      <path
-                        d="M70.3613 24.0098C73.8523 24.2036 76.4709 27.3605 75.958 30.8682L66.5977 94.8682L66.5518 95.1426C66.0263 97.8592 63.7035 99.8663 60.9395 99.9932L60.6611 100H20.3516L20.0742 99.9932C17.3099 99.8666 14.9864 97.8594 14.4609 95.1426L14.415 94.8682L5.05566 30.8682C4.54271 27.3606 7.16047 24.2038 10.6514 24.0098L10.9922 24H70.0205L70.3613 24.0098ZM20.3516 94H60.6611L70.0205 30H10.9922L20.3516 94ZM40.5059 39C42.1627 39 43.5059 40.3431 43.5059 42V86C43.5059 87.6569 42.1627 89 40.5059 89C38.849 89 37.5059 87.6569 37.5059 86V42C37.5059 40.3431 38.849 39 40.5059 39ZM24.0391 39.0117C25.6388 38.88 27.0566 40.0281 27.2764 41.6006L27.2939 41.7539L31.1152 84.8848C31.2613 86.5351 30.0408 87.9831 28.3896 88.1191C26.7384 88.2551 25.281 87.0273 25.1348 85.377L21.3135 42.2461L21.3037 42.0918C21.244 40.5063 22.4394 39.1435 24.0391 39.0117ZM53.4893 41.7539C53.6355 40.1036 55.0929 38.8758 56.7441 39.0117C58.3953 39.1477 59.6158 40.5958 59.4697 42.2461L55.6484 85.377L55.6309 85.5303C55.4111 87.1028 53.9933 88.2509 52.3936 88.1191C50.7939 87.9874 49.5984 86.6245 49.6582 85.0391L49.668 84.8848L53.4893 41.7539ZM50.709 0C54.0227 0 56.709 2.68629 56.709 6V9L56.7168 9.30859C56.8774 12.4789 59.4988 15 62.709 15H75.9492L76.1035 15.0039C77.6888 15.0841 78.9492 16.3948 78.9492 18C78.9492 19.6052 77.6888 20.9159 76.1035 20.9961L75.9492 21H4.05078C2.39393 21 1.05078 19.6569 1.05078 18C1.05078 16.3431 2.39393 15 4.05078 15H17.291L17.5996 14.9922C20.6677 14.8367 23.1278 12.3767 23.2832 9.30859L23.291 9V6C23.291 2.68638 25.9774 0.000147198 29.291 0H50.709ZM29.291 9C29.291 11.1864 28.7033 13.2346 27.6816 15H52.3184C51.2967 13.2346 50.709 11.1864 50.709 9V6H29.291V9Z"
-                        fill=""
+                      <img
+                        src="/export.svg"
+                        alt="Export Form"
+                        className="h-4 w-4 cursor-pointer"
                       />
-                    </svg>
-                  </Buttons>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Holds>
-      </Holds>
-    </Holds>
+                      <img
+                        src="/formEdit.svg"
+                        alt="Edit Form"
+                        className="h-4 w-4 cursor-pointer"
+                      />
+                      <img
+                        src="/trash-red.svg"
+                        alt="Delete Form"
+                        className="h-4 w-4 cursor-pointer"
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+
+        {/* Pagination Controls */}
+        <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+          <div className="text-xs text-gray-600">
+            Showing page {page} of {totalPages} ({total} total)
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage((p) => Math.max(1, p - 1));
+                    }}
+                    aria-disabled={page === 1}
+                    tabIndex={page === 1 ? -1 : 0}
+                    style={{
+                      pointerEvents: page === 1 ? "none" : undefined,
+                      opacity: page === 1 ? 0.5 : 1,
+                    }}
+                  />
+                </PaginationItem>
+                <PaginationItem>
+                  <span className="text-xs border rounded py-1 px-2">
+                    {page}
+                  </span>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage((p) => Math.min(totalPages, p + 1));
+                    }}
+                    aria-disabled={page === totalPages}
+                    tabIndex={page === totalPages ? -1 : 0}
+                    style={{
+                      pointerEvents: page === totalPages ? "none" : undefined,
+                      opacity: page === totalPages ? 0.5 : 1,
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+            <select
+              className="ml-2 px-1 py-1 rounded text-xs border"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              {[5, 10, 20, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size} Rows
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
