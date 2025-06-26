@@ -1,7 +1,8 @@
 {
   "name": "shift-scan",
   "version": "0.1.0",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "sdev": "next dev --experimental-https",
     "build": "prisma generate && next build",
@@ -36,6 +37,7 @@
     "@radix-ui/react-scroll-area": "^1.2.9",
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
+    "@sentry/nextjs": "^9.32.0",
     "@types/react-pdf": "^5.0.7",
     "@vercel/speed-insights": "^1.1.0",
     "@vis.gl/react-google-maps": "^1.4.2",

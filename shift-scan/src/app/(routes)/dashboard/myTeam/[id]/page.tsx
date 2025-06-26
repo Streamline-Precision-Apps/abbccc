@@ -12,6 +12,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 
 // Zod schema for CrewMember type
 const CrewMemberSchema = z.object({
