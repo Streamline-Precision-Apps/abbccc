@@ -46,7 +46,7 @@ const List: React.FC<ListProps> = ({
   setViewMode,
 }) => {
   return (
-    <div className="bg-white bg-opacity-80 h-fit pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
+    <div className="bg-white bg-opacity-80 h-full pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
       {loading ? (
         <Table className="w-full h-full bg-white rounded-lg">
           <TableHeader className="bg-gray-100 rounded-lg ">

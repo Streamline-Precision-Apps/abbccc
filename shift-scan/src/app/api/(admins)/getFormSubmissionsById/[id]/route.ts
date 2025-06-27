@@ -6,12 +6,23 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const { searchParams } = new URL(request.url);
+  // Parse pagination params
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
 
   try {
-    // Query the database for the complete form template data with full relationships
+    // Get total count of submissions for this form
+    const total = await prisma.formSubmission.count({
+      where: { formTemplateId: String(id) },
+    });
+
+    // Query the database for the form template (without submissions)
     const formTemplate = await prisma.formTemplate.findUnique({
       where: {
-        id: String(id), // Ensure that the id is a string
+        id: String(id),
       },
       include: {
         FormGrouping: {
@@ -35,21 +46,34 @@ export async function GET(
             },
           },
         },
-        Submissions: {
-          include: {
-            User: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
+      },
+    });
+
+    // Fetch paginated submissions
+    const submissions = await prisma.formSubmission.findMany({
+      where: { formTemplateId: String(id) },
+      skip,
+      take,
+      orderBy: { submittedAt: "desc" },
+      include: {
+        User: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },
     });
 
-    return NextResponse.json(formTemplate);
+    return NextResponse.json({
+      ...formTemplate,
+      Submissions: submissions,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    });
   } catch (error) {
     // Log any database errors
     console.error("Error fetching form template:", error);

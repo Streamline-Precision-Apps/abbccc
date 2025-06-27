@@ -5,7 +5,7 @@ model FormTemplate {
   formType            String?
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
-  isActive            Boolean          @default(false)
+  isActive            Boolean          @default(false) // convert to enum {draft, active, archived}
   isSignatureRequired Boolean          @default(false)
   Submissions         FormSubmission[]
   Company             Company          @relation(fields: [companyId], references: [id])
