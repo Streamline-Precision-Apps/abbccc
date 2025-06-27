@@ -250,42 +250,6 @@ export default function Forms() {
     );
   }
 
-  function renderBuilderFilters() {
-    return (
-      <div className="h-full flex flex-row w-full gap-4 px-4 mb-4">
-        <Button
-          variant={"outline"}
-          size={"sm"}
-          className="bg-red-300 border-none"
-          onClick={() => setViewMode("list")}
-        >
-          <div className="flex flex-row items-center">
-            <img
-              src="/statusDenied.svg"
-              alt="Cancel Icon"
-              className="w-4 h-4 mr-2 px-2"
-            />
-            <p className="text-xs">Cancel</p>
-          </div>
-        </Button>
-        <Button
-          variant={"outline"}
-          size={"sm"}
-          className="bg-sky-400 border-none"
-        >
-          <div className="flex flex-row items-center">
-            <img
-              src="/formSave.svg"
-              alt="Save Icon"
-              className="w-4 h-4 mr-2 px-2"
-            />
-            <p className="text-xs"> Save</p>
-          </div>
-        </Button>
-      </div>
-    );
-  }
-
   // Main render
   return (
     <div className="h-full w-full grid grid-rows-[50px_35px_1fr] gap-4">
@@ -326,10 +290,7 @@ export default function Forms() {
         </>
       )}
       {ViewMode === "builder" && (
-        <>
-          {renderBuilderFilters()}
-          <FormBuilder />
-        </>
+        <FormBuilder onCancel={() => setViewMode("list")} />
       )}
     </div>
   );
