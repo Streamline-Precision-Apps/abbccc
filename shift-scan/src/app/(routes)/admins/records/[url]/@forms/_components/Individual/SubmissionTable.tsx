@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
   Table,
   TableHeader,
   TableBody,
@@ -7,7 +16,8 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { sub } from "date-fns";
+import { format } from "date-fns";
+import { Dispatch, SetStateAction } from "react";
 
 interface FieldOption {
   id: string;
@@ -56,6 +66,11 @@ interface Submission {
 interface SubmissionTableProps {
   groupings: Grouping[];
   submissions: Submission[];
+  totalPages: number;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  setPageSize: Dispatch<SetStateAction<number>>;
+  pageSize: number;
 }
 
 /**
@@ -64,6 +79,11 @@ interface SubmissionTableProps {
 const SubmissionTable: React.FC<SubmissionTableProps> = ({
   groupings,
   submissions,
+  totalPages,
+  page,
+  setPage,
+  setPageSize,
+  pageSize,
 }) => {
   // Flatten all fields from all groupings, ordered
   const fields = groupings
@@ -71,8 +91,8 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
     .sort((a, b) => a.order - b.order);
 
   return (
-    <div className="overflow-x-auto w-full">
-      <Table className="bg-white rounded-t-lg w-full h-full">
+    <ScrollArea className="bg-slate-50 w-full rounded-lg h-full relative">
+      <Table className="bg-slate-50 w-full h-full">
         <TableHeader className="rounded-t-md">
           <TableRow>
             <TableHead className="text-xs rounded-tl-md">
@@ -89,103 +109,150 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white h-full w-full">
-          {submissions && submissions.length > 0 ? (
-            submissions.map((submission) =>
-              submission == null ? null : (
-                <TableRow
-                  key={submission.id}
-                  className="bg-white hover:bg-gray-50"
-                >
-                  <TableCell className="text-xs">
-                    {submission.User.firstName} {submission.User.lastName}
-                  </TableCell>
-                  {fields.map((field) => (
-                    <TableCell key={field.name} className="text-xs">
-                      {submission.data[field.name] ?? ""}
+          {submissions && submissions.length > 0
+            ? submissions.map((submission) =>
+                submission == null ? null : (
+                  <TableRow
+                    key={submission.id}
+                    className="bg-white hover:bg-gray-50"
+                  >
+                    <TableCell className="text-xs">
+                      {submission.User.firstName} {submission.User.lastName}
                     </TableCell>
-                  ))}
-                  <TableCell className="text-xs">{submission.status}</TableCell>
-                  <TableCell className="text-xs">
-                    {new Date(submission.submittedAt).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="w-[160px]">
-                    <div className="flex flex-row justify-center">
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          // Handle view form action
-                          console.log("View Form:", submission.id);
-                        }}
-                      >
-                        <img
-                          src="/eye.svg"
-                          alt="View Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          // Handle export form action
-                          console.log("Export Form:", submission.id);
-                        }}
-                      >
-                        <img
-                          src="/export.svg"
-                          alt="Export Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          // Handle edit form action
-                          console.log("Edit Form:", submission.id);
-                        }}
-                      >
-                        <img
-                          src="/formEdit.svg"
-                          alt="Edit Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          // Handle delete form action
-                          console.log("Delete Form:", submission.id);
-                        }}
-                      >
-                        <img
-                          src="/trash-red.svg"
-                          alt="Delete Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                    {fields.map((field) => (
+                      <TableCell key={field.name} className="text-xs">
+                        {submission.data[field.name] ?? ""}
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-xs">
+                      {submission.status}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {format(new Date(submission.submittedAt), "PPp")}
+                    </TableCell>
+                    <TableCell className="w-[160px]">
+                      <div className="flex flex-row justify-center">
+                        <Button
+                          variant="ghost"
+                          size={"icon"}
+                          onClick={() => {
+                            // Handle export form action
+                            console.log("Export Form:", submission.id);
+                          }}
+                        >
+                          <img
+                            src="/export.svg"
+                            alt="Export Form"
+                            className="h-4 w-4 cursor-pointer"
+                          />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size={"icon"}
+                          onClick={() => {
+                            // Handle edit form action
+                            console.log("Edit Form:", submission.id);
+                          }}
+                        >
+                          <img
+                            src="/formEdit.svg"
+                            alt="Edit Form"
+                            className="h-4 w-4 cursor-pointer"
+                          />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size={"icon"}
+                          onClick={() => {
+                            // Handle delete form action
+                            console.log("Delete Form:", submission.id);
+                          }}
+                        >
+                          <img
+                            src="/trash-red.svg"
+                            alt="Delete Form"
+                            className="h-4 w-4 cursor-pointer"
+                          />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
               )
-            )
-          ) : (
-            <>
-              <TableRow className="bg-white h-full">
-                <TableCell
-                  colSpan={fields.length + 3 + 1}
-                  className="text-center text-gray-500"
-                >
-                  No submissions found.
-                </TableCell>
-              </TableRow>
-            </>
-          )}
+            : null}
         </TableBody>
       </Table>
-    </div>
+
+      {submissions && submissions.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="text-xs text-muted-foreground select-none">
+            No submissions found.
+          </p>
+        </div>
+      )}
+
+      {totalPages && (
+        <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+          <div className="text-xs text-gray-600">
+            Showing page {page} of {totalPages} ({submissions.length} total)
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    aria-disabled={page === 1}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < (totalPages || 1)) setPage(page + 1);
+                    }}
+                    aria-disabled={page === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+            <select
+              className="ml-2 px-1 py-1 rounded text-xs border"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              {[5, 10, 20, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size} Rows
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+    </ScrollArea>
   );
 };
 
