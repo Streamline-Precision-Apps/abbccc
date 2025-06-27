@@ -26,7 +26,65 @@ const fieldTypes = [
   { name: "Rating", description: "Star Rating", icon: "/rating.svg" },
 ];
 
+import { useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 export default function FormBuilder() {
+  const [fields, setFields] = useState<any[]>([]);
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    })
+  );
+
+  // Add a new field of the given type
+  const handleAddField = (fieldType: typeof fieldTypes[number]) => {
+    setFields((prev) => [
+      ...prev,
+      {
+        id: Date.now() + Math.random(),
+        type: fieldType.name,
+        label: fieldType.name + " Field",
+        name: fieldType.name.toLowerCase() + "_" + (prev.length + 1),
+        required: false,
+        order: prev.length,
+        defaultValue: "",
+        placeholder: "",
+        maxLength: undefined,
+        helperText: "",
+        options: [],
+      },
+    ]);
+  };
+
+  // DnD handlers
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      setFields((items) => {
+        const oldIndex = items.findIndex((f) => f.id === active.id);
+        const newIndex = items.findIndex((f) => f.id === over.id);
+        const newArr = arrayMove(items, oldIndex, newIndex).map((f, idx) => ({ ...f, order: idx }));
+        return newArr;
+      });
+    }
+  };
+
   return (
     <div className="w-full h-full grid grid-cols-[275px_1fr_250px]">
       <ScrollArea className="w-full h-full bg-white bg-opacity-40 rounded-tl-lg rounded-bl-lg  relative">
@@ -138,38 +196,100 @@ export default function FormBuilder() {
 
       <ScrollArea className="w-full h-full bg-white bg-opacity-10  p-4 relative">
         <div className="h-full flex flex-col items-center justify-center absolute inset-0">
-          <img
-            src="/formDuplicate.svg"
-            alt="Form Builder Placeholder"
-            className="w-12 h-12 mb-2"
-          />
-          <h2 className="text-lg font-semibold mb-2">
-            Start Building Your Form
-          </h2>
-          <p className="text-xs text-gray-500">
-            Add fields using the field type buttons on the right.
-          </p>
-          <Button variant={"outline"} className="mt-4">
-            <div className="flex flex-row items-center">
+          {fields.length === 0 ? (
+            <>
               <img
-                src="/plus.svg"
-                alt="Add Field Icon"
-                className="w-4 h-4 mr-2"
+                src="/formDuplicate.svg"
+                alt="Form Builder Placeholder"
+                className="w-12 h-12 mb-2"
               />
-              Add Field
-            </div>
-          </Button>
+              <h2 className="text-lg font-semibold mb-2">
+                Start Building Your Form
+              </h2>
+              <p className="text-xs text-gray-500">
+                Add fields using the field type buttons on the right.
+              </p>
+            </>
+          ) : (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+                <div className="w-full flex flex-col gap-4">
+                  {fields.map((field) => (
+                    <SortableField key={field.id} field={field} />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+
+
+
+// SortableField component for drag handle and drag styles
+function SortableField({ field }: { field: any }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: field.id });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: "grab",
+  };
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="w-full flex flex-row items-center gap-2 bg-white rounded-md p-3 shadow border border-dashed border-emerald-200"
+      {...attributes}
+      {...listeners}
+    >
+      <span className="material-symbols-outlined select-none mr-2 text-emerald-400">drag_indicator</span>
+      <span className="font-bold text-xs w-24">{field.label}</span>
+      {/* Render a preview of the field type */}
+      {field.type === "Text" && (
+        <Input disabled placeholder="Text input" className="w-40" />
+      )}
+      {field.type === "Number" && (
+        <Input disabled type="number" placeholder="Number input" className="w-40" />
+      )}
+      {field.type === "Date" && (
+        <Input disabled type="date" className="w-40" />
+      )}
+      {field.type === "Time" && (
+        <Input disabled type="time" className="w-40" />
+      )}
+      {field.type === "Checkbox" && (
+        <input type="checkbox" disabled className="w-4 h-4" />
+      )}
+      {field.type === "Dropdown" && (
+        <Select disabled>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Dropdown" />
+          </SelectTrigger>
+        </Select>
+      )}
+      {field.type === "Text Area" && (
+        <Textarea disabled placeholder="Text area" className="w-40" />
+      )}
+      {field.type === "Rating" && (
+        <div className="flex flex-row gap-1">
+          {[...Array(5)].map((_, i) => (
+            <span key={i} className="text-yellow-400">★</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+          )}
         </div>
       </ScrollArea>
       <div className="w-full h-full bg-white bg-opacity-40 rounded-tr-lg rounded-br-lg p-4">
         <div className="flex flex-row gap-4 h-10 w-full items-center  mb-4">
-          <Button
-            variant={"default"}
-            size={"icon"}
-            className="bg-emerald-300 hover:bg-emerald-200"
-          >
-            <img src="/plus.svg" alt="Add Field Icon" className="w-4 h-4" />
-          </Button>
           <div className="flex flex-col ">
             <p className="text-sm font-bold">Field types</p>
             <p className="text-xs">Click to add field</p>
@@ -177,20 +297,22 @@ export default function FormBuilder() {
         </div>
         <div className="flex flex-col gap-5">
           {fieldTypes.map((fieldType) => (
-            <div
+            <button
               key={fieldType.name}
-              className="flex flex-row items-center p-2 bg-white rounded-md shadow-sm"
+              type="button"
+              className="flex flex-row items-center p-2 bg-white rounded-md shadow-sm hover:bg-emerald-100 transition"
+              onClick={() => handleAddField(fieldType)}
             >
               <img
                 src={fieldType.icon}
                 alt={fieldType.name}
                 className="w-4 h-4 mr-2"
               />
-              <div className="flex flex-col">
+              <div className="flex flex-col text-left">
                 <p className="text-sm font-bold">{fieldType.name}</p>
                 <p className="text-xs text-gray-500">{fieldType.description}</p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>
