@@ -20,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 
 // Types for form building
 interface FormField {
@@ -289,9 +290,9 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col row-span-2">
+    <>
       {/* Action Buttons */}
-      <div className="h-12 flex flex-row items-center w-full gap-4 px-2 mb-4">
+      <div className="h-full flex flex-row items-center w-full gap-4 px-2 mb-4">
         <Button
           variant={"outline"}
           size={"sm"}
@@ -331,7 +332,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
       </div>
 
       {/* Form Builder Content */}
-      <div className="w-full flex-1 grid grid-cols-[275px_1fr_250px] px-2">
+      <div className="w-full h-full grid grid-cols-[275px_1fr_250px] px-2 overflow-y-auto">
         <ScrollArea className="w-full h-full bg-white bg-opacity-40 rounded-tl-lg rounded-bl-lg  relative">
           <Tabs defaultValue="settings" className="w-full h-full p-4 ">
             <TabsList className="w-full">
@@ -488,7 +489,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           </Tabs>
         </ScrollArea>
 
-        <ScrollArea className="w-full h-full bg-white bg-opacity-10 px-4 pt-2 relative">
+        <ScrollArea className="w-full h-full bg-white bg-opacity-10 relative ">
           {formFields.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center absolute inset-0">
               <img
@@ -519,7 +520,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
               </Button>
             </div>
           ) : (
-            <div className="w-full px-4">
+            <div className="w-full px-4 py-2">
               <div className="space-y-4">
                 {formFields.map((field, index) => (
                   <div
@@ -530,107 +531,126 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="w-full  flex flex-row items-center gap-x-4 ">
+                    {/* Top portion of field */}
+                    <div className="w-full  flex flex-row items-center gap-2 mb-1">
                       {/* Drag handle icon */}
-                      <div className="w-fit h-full bg-slate-50">
+                      <div className="w-fit h-full bg-transparent flex items-center justify-center">
                         <img
-                          src="/dragHandle.svg"
+                          src="/dragFormBuilder.svg"
                           alt="Drag Handle"
-                          className="w-4 h-4"
+                          className="w-6 h-6 object-contain cursor-move "
                         />
                       </div>
                       {/* Field type icon */}
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="default"
-                            className={`w-fit rounded-md ${
-                              field.type === "text"
-                                ? "bg-sky-400 hover:bg-sky-300"
-                                : field.type === "number"
-                                ? "bg-fuchsia-400 hover:bg-fuchsia-300"
-                                : field.type === "date"
-                                ? "bg-purple-400 hover:bg-purple-300"
-                                : field.type === "time"
-                                ? "bg-orange-300 hover:bg-orange-200"
-                                : field.type === "checkbox"
-                                ? "bg-amber-400 hover:bg-amber-300"
-                                : field.type === "dropdown"
-                                ? "bg-rose-400 hover:bg-rose-300"
-                                : field.type === "text_area"
-                                ? "bg-lime-400 hover:bg-lime-300"
-                                : "bg-gray-400 hover:bg-gray-300"
-                            } mb-1`}
+                      <div className="w-fit h-full">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="default"
+                              className={`w-fit h-full justify-center items-center rounded-md gap-0 ${
+                                field.type === "text"
+                                  ? "bg-sky-400 hover:bg-sky-300"
+                                  : field.type === "number"
+                                  ? "bg-fuchsia-400 hover:bg-fuchsia-300"
+                                  : field.type === "date"
+                                  ? "bg-purple-400 hover:bg-purple-300"
+                                  : field.type === "time"
+                                  ? "bg-orange-300 hover:bg-orange-200"
+                                  : field.type === "checkbox"
+                                  ? "bg-amber-400 hover:bg-amber-300"
+                                  : field.type === "dropdown"
+                                  ? "bg-rose-400 hover:bg-rose-300"
+                                  : field.type === "text_area"
+                                  ? "bg-lime-400 hover:bg-lime-300"
+                                  : "bg-gray-400 hover:bg-gray-300"
+                              } mb-1`}
+                            >
+                              <img
+                                src={
+                                  fieldTypes.find((t) => t.name === field.type)
+                                    ?.icon
+                                }
+                                alt={field.type}
+                                className="w-4 h-4 "
+                              />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            side="bottom"
+                            align="start"
+                            sideOffset={0}
+                            className="w-60"
                           >
-                            <img
-                              src={
-                                fieldTypes.find((t) => t.name === field.type)
-                                  ?.icon
-                              }
-                              alt={field.type}
-                              className="w-4 h-4 object-contain mx-auto "
-                            />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          side="right"
-                          align="center"
-                          sideOffset={0}
-                          className="w-80"
-                        >
-                          <Select
-                            value={field.type.replace("_", " ").toLowerCase()}
-                            onValueChange={(value) => {
-                              const fieldType =
-                                value.charAt(0).toUpperCase() + value.slice(1);
-                              const typeKey = fieldType
-                                .toLowerCase()
-                                .replace(/\s+/g, "_");
-                              updateField(field.id, {
-                                type: typeKey,
-                                // Reset type-specific properties when changing type
-                                options:
-                                  fieldType === "Dropdown"
-                                    ? field.options || ["Option 1"]
-                                    : undefined,
-                                maxLength:
-                                  fieldType === "Text"
-                                    ? field.maxLength || 100
-                                    : undefined,
-                              });
-                            }}
-                          >
-                            <SelectTrigger className="w-full bg-white rounded-lg text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {fieldTypes.map((fieldType) => (
-                                <SelectItem
-                                  key={fieldType.name}
-                                  value={fieldType.name.toLowerCase()}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <div
-                                      className={`w-4 h-4 rounded-sm ${fieldType.color}`}
-                                    ></div>
-                                    {fieldType.name}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </PopoverContent>
-                      </Popover>
+                            <Select
+                              value={field.type.replace("_", " ").toLowerCase()}
+                              onValueChange={(value) => {
+                                const fieldType =
+                                  value.charAt(0).toUpperCase() +
+                                  value.slice(1);
+                                const typeKey = fieldType
+                                  .toLowerCase()
+                                  .replace(/\s+/g, "_");
+                                updateField(field.id, {
+                                  type: typeKey,
+                                  // Reset type-specific properties when changing type
+                                  options:
+                                    fieldType === "Dropdown"
+                                      ? field.options || ["Option 1"]
+                                      : undefined,
+                                  maxLength:
+                                    fieldType === "Text"
+                                      ? field.maxLength || 100
+                                      : undefined,
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="w-full bg-white rounded-lg text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {fieldTypes.map((fieldType) => (
+                                  <SelectItem
+                                    key={fieldType.name}
+                                    value={fieldType.name.toLowerCase()}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <div
+                                        className={`w-4 h-4 rounded-sm ${fieldType.color}`}
+                                      ></div>
+                                      {fieldType.name}
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                       {/* Field label */}
-                      <Input
-                        value={field.label}
-                        onChange={(e) => {
-                          updateField(field.id, { label: e.target.value });
-                        }}
-                        className="bg-white rounded-lg text-xs border-none "
-                        placeholder="Enter field label here"
-                      />
+                      <div className="flex-1 h-full">
+                        <Input
+                          type="text"
+                          value={field.label}
+                          onChange={(e) => {
+                            updateField(field.id, { label: e.target.value });
+                          }}
+                          className="bg-white rounded-lg text-xs border-none "
+                          placeholder="Enter field label here"
+                        />
+                      </div>
+
+                      <Toggle
+                        className=""
+                        pressed={advancedOptionsOpen[field.id] || false}
+                        onPressedChange={() => toggleAdvancedOptions(field.id)}
+                      >
+                        <div className="text-black bg-gray-300 hover:bg-gray-200 rounded-lg py-2 px-3">
+                          <p className="text-xs">Advance Options</p>
+                        </div>
+                      </Toggle>
+
                       {/* Field Optional / Required */}
+
                       {field.required ? (
                         <Button
                           variant="default"
@@ -655,17 +675,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                         </Button>
                       )}
 
-                      <Toggle
-                        pressed={advancedOptionsOpen[field.id] || false}
-                        onPressedChange={() => toggleAdvancedOptions(field.id)}
-                      >
-                        <img
-                          src="/Settings.svg"
-                          alt="Toggle Icon"
-                          className="w-4 h-4 object-contain mx-auto"
-                        />
-                      </Toggle>
-
                       {/* Remove Field Icon */}
                       <Button
                         variant="ghost"
@@ -681,13 +690,38 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                       </Button>
                     </div>
 
+                    <div className="w-full  flex flex-row items-center gap-x-4 mb-3 ">
+                      {/* Field Placeholder and Field */}
+                      <div className="flex-1">
+                        <Input
+                          value={field.placeholder || ""}
+                          onChange={(e) =>
+                            updateField(field.id, {
+                              placeholder: e.target.value,
+                            })
+                          }
+                          className="mt-1 bg-white rounded-lg text-xs"
+                          placeholder="Enter placeholder text"
+                        />
+                      </div>
+                    </div>
+                    {advancedOptionsOpen[field.id] && (
+                      <>
+                        <Separator />
+                        <p className="text-sm font-semibold mt-2">
+                          Advanced Options
+                        </p>
+                      </>
+                    )}
                     {/* Advanced Options Section - Collapsible */}
                     {advancedOptionsOpen[field.id] && (
-                      <div className="mt-4 p-4 bg-gray-50 rounded-lg border-t">
-                        <div className="space-y-4">
+                      <div className="mt-1  p-3 bg-gray-50 rounded-lg border-t ">
+                        <div className="space-y-2">
                           {/* Helper Text */}
                           <div>
-                            <Label className="text-xs">Helper Text</Label>
+                            <Label className="text-xs">
+                              Helper Text (Below Input Field)
+                            </Label>
                             <Input
                               value={field.helperText || ""}
                               onChange={(e) =>
@@ -700,48 +734,61 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                             />
                           </div>
 
-                          {/* Field Name */}
-                          <div>
-                            <Label className="text-xs">
-                              Field Name (Internal)
-                            </Label>
-                            <Input
-                              value={field.name}
-                              onChange={(e) =>
-                                updateField(field.id, { name: e.target.value })
-                              }
-                              className="mt-1 bg-white rounded-lg text-xs"
-                              placeholder="Enter field name"
-                            />
-                          </div>
-
                           {/* Type-specific advanced options */}
                           {field.type === "text" && (
-                            <div>
-                              <Label className="text-xs">Max Length</Label>
-                              <Input
-                                type="number"
-                                value={field.maxLength || ""}
-                                onChange={(e) =>
-                                  updateField(field.id, {
-                                    maxLength:
-                                      parseInt(e.target.value) || undefined,
-                                  })
-                                }
-                                className="mt-1 bg-white rounded-lg text-xs w-32"
-                                placeholder="Enter max length"
-                              />
-                            </div>
+                            <>
+                              <div>
+                                <Label className="text-xs">Max Length</Label>
+                                <Input
+                                  type="number"
+                                  value={field.maxLength || ""}
+                                  onChange={(e) =>
+                                    updateField(field.id, {
+                                      maxLength:
+                                        parseInt(e.target.value) || undefined,
+                                    })
+                                  }
+                                  className="mt-1 bg-white rounded-lg text-xs w-32"
+                                  placeholder="Enter max length"
+                                />
+                              </div>
+                            </>
                           )}
 
                           {field.type === "dropdown" && (
-                            <div>
-                              <Label className="text-xs">
-                                Dropdown Options
-                              </Label>
-                              <div className="space-y-2 mt-1">
+                            <div className="pt-2">
+                              <div className="flex justify-between items-center">
+                                <Label className="text-xs">
+                                  Dropdown Options
+                                </Label>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    const newOptions = [
+                                      ...(field.options || []),
+                                      "",
+                                    ];
+                                    updateField(field.id, {
+                                      options: newOptions,
+                                    });
+                                  }}
+                                  className="w-fit bg-green-300"
+                                >
+                                  <img
+                                    src="/plus.svg"
+                                    alt="Add"
+                                    className="w-3 h-3 mr-2"
+                                  />
+                                  Add Option
+                                </Button>
+                              </div>
+                              <div className="space-y-2 mt-2">
                                 {field.options?.map((option, optionIndex) => (
                                   <div key={optionIndex} className="flex gap-2">
+                                    <div className="flex items-center">
+                                      <p>{optionIndex + 1}. </p>
+                                    </div>
                                     <Input
                                       value={option}
                                       onChange={(e) => {
@@ -772,58 +819,19 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
                                     >
                                       <img
-                                        src="/minus.svg"
+                                        src="/trash-red.svg"
                                         alt="Remove"
-                                        className="w-3 h-3"
+                                        className="w-4 h-4 object-contain mx-auto "
                                       />
                                     </Button>
                                   </div>
                                 ))}
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    const newOptions = [
-                                      ...(field.options || []),
-                                      `Option ${
-                                        (field.options?.length || 0) + 1
-                                      }`,
-                                    ];
-                                    updateField(field.id, {
-                                      options: newOptions,
-                                    });
-                                  }}
-                                  className="w-fit"
-                                >
-                                  <img
-                                    src="/plus.svg"
-                                    alt="Add"
-                                    className="w-3 h-3 mr-2"
-                                  />
-                                  Add Option
-                                </Button>
                               </div>
                             </div>
                           )}
                         </div>
                       </div>
                     )}
-
-                    <div className="w-full  flex flex-row items-center gap-x-4 ">
-                      {/* Field Placeholder and Field */}
-                      <div className="flex-1">
-                        <Input
-                          value={field.placeholder || ""}
-                          onChange={(e) =>
-                            updateField(field.id, {
-                              placeholder: e.target.value,
-                            })
-                          }
-                          className="mt-1 bg-white rounded-lg text-xs"
-                          placeholder="Enter placeholder text"
-                        />
-                      </div>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -883,6 +891,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
