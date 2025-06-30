@@ -34,6 +34,13 @@ interface FormField {
   options?: string[];
   maxLength?: number;
   order: number;
+  groupId?: string; // For associating with sections
+}
+
+interface FormSection {
+  id: string;
+  title: string;
+  order: number;
 }
 
 interface FormSettings {
@@ -93,6 +100,18 @@ const fieldTypes = [
     icon: "/rating.svg",
     color: "bg-yellow-200",
   },
+  {
+    name: "Radio",
+    description: "Single choice selection",
+    icon: "/radio.svg",
+    color: "bg-teal-400",
+  },
+  {
+    name: "Section",
+    description: "Divider for form sections",
+    icon: "/section.svg",
+    color: "bg-slate-500",
+  },
 ];
 
 export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
@@ -106,6 +125,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   });
 
   const [formFields, setFormFields] = useState<FormField[]>([]);
+  const [formSections, setFormSections] = useState<FormSection[]>([]);
   const [selectedField, setSelectedField] = useState<FormField | null>(null);
   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState<
@@ -114,21 +134,38 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
 
   // Add field to form
   const addField = (fieldType: string) => {
-    const newField: FormField = {
-      id: `field_${Date.now()}`,
-      name: `${fieldType.toLowerCase().replace(/\s+/g, "_")}_${
-        formFields.length + 1
-      }`,
-      label: `${fieldType} Field`,
-      type: fieldType.toLowerCase().replace(/\s+/g, "_"),
-      required: false,
-      placeholder: "",
-      helperText: "",
-      options: fieldType === "Dropdown" ? ["Option 1"] : undefined,
-      maxLength: fieldType === "Text" ? 100 : undefined,
-      order: formFields.length,
-    };
-    setFormFields([...formFields, newField]);
+    if (fieldType === "Section") {
+      // Create a new section
+      const newSection: FormSection = {
+        id: `section_${Date.now()}`,
+        title: "New Section",
+        order: formSections.length,
+      };
+      setFormSections([...formSections, newSection]);
+    } else {
+      // Create a regular field
+      const newField: FormField = {
+        id: `field_${Date.now()}`,
+        name: `${fieldType.toLowerCase().replace(/\s+/g, "_")}_${
+          formFields.length + 1
+        }`,
+        label: `${fieldType} Field`,
+        type: fieldType.toLowerCase().replace(/\s+/g, "_"),
+        required: false,
+        placeholder: "",
+        helperText: "",
+        options:
+          fieldType === "Dropdown"
+            ? ["Option 1"]
+            : fieldType === "Radio"
+            ? ["Option 1", "Option 2"]
+            : undefined,
+        maxLength: fieldType === "Text" ? 100 : undefined,
+        order: formFields.length,
+        groupId: undefined, // Can be assigned to a section later
+      };
+      setFormFields([...formFields, newField]);
+    }
   };
 
   // Remove field from form
@@ -144,6 +181,26 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
       delete newState[fieldId];
       return newState;
     });
+  };
+
+  // Remove section
+  const removeSection = (sectionId: string) => {
+    setFormSections(formSections.filter((section) => section.id !== sectionId));
+    // Remove groupId from fields that belonged to this section
+    setFormFields(
+      formFields.map((field) =>
+        field.groupId === sectionId ? { ...field, groupId: undefined } : field
+      )
+    );
+  };
+
+  // Update section
+  const updateSection = (sectionId: string, updates: Partial<FormSection>) => {
+    setFormSections(
+      formSections.map((section) =>
+        section.id === sectionId ? { ...section, ...updates } : section
+      )
+    );
   };
 
   // Toggle advanced options for a field
@@ -282,6 +339,32 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
             {[1, 2, 3, 4, 5].map((star) => (
               <img key={star} src="/star.svg" alt="star" className="w-4 h-4" />
             ))}
+          </div>
+        );
+      case "radio":
+        return (
+          <div className="flex flex-col space-y-2">
+            {(field.options || ["Option 1", "Option 2"]).map(
+              (option, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    disabled
+                    className="rounded-full"
+                    name={`radio-${field.id}`}
+                  />
+                  <span className="text-xs">{option}</span>
+                </div>
+              )
+            )}
+          </div>
+        );
+      case "section":
+        return (
+          <div className="w-full border-b-2 border-gray-300 pb-2">
+            <h3 className="text-sm font-semibold text-gray-700">
+              {field.label || "Section Title"}
+            </h3>
           </div>
         );
       default:
@@ -562,6 +645,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                   ? "bg-rose-400 hover:bg-rose-300"
                                   : field.type === "text_area"
                                   ? "bg-lime-400 hover:bg-lime-300"
+                                  : field.type === "radio"
+                                  ? "bg-teal-400 hover:bg-teal-300"
+                                  : field.type === "section"
+                                  ? "bg-slate-500 hover:bg-slate-400"
                                   : "bg-gray-400 hover:bg-gray-300"
                               } mb-1`}
                             >
@@ -596,6 +683,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                   options:
                                     fieldType === "Dropdown"
                                       ? field.options || ["Option 1"]
+                                      : fieldType === "Radio"
+                                      ? field.options || [
+                                          "Option 1",
+                                          "Option 2",
+                                        ]
                                       : undefined,
                                   maxLength:
                                     fieldType === "Text"
@@ -829,6 +921,81 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                               </div>
                             </div>
                           )}
+
+                          {field.type === "radio" && (
+                            <div className="pt-2">
+                              <div className="flex justify-between items-center">
+                                <Label className="text-xs">
+                                  Radio Button Options
+                                </Label>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    const newOptions = [
+                                      ...(field.options || []),
+                                      "",
+                                    ];
+                                    updateField(field.id, {
+                                      options: newOptions,
+                                    });
+                                  }}
+                                  className="w-fit bg-green-300"
+                                >
+                                  <img
+                                    src="/plus.svg"
+                                    alt="Add"
+                                    className="w-3 h-3 mr-2"
+                                  />
+                                  Add Option
+                                </Button>
+                              </div>
+                              <div className="space-y-2 mt-2">
+                                {field.options?.map((option, optionIndex) => (
+                                  <div key={optionIndex} className="flex gap-2">
+                                    <div className="flex items-center">
+                                      <p>{optionIndex + 1}. </p>
+                                    </div>
+                                    <Input
+                                      value={option}
+                                      onChange={(e) => {
+                                        const newOptions = [
+                                          ...(field.options || []),
+                                        ];
+                                        newOptions[optionIndex] =
+                                          e.target.value;
+                                        updateField(field.id, {
+                                          options: newOptions,
+                                        });
+                                      }}
+                                      className="bg-white rounded-lg text-xs"
+                                      placeholder={`Option ${optionIndex + 1}`}
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        const newOptions =
+                                          field.options?.filter(
+                                            (_, i) => i !== optionIndex
+                                          );
+                                        updateField(field.id, {
+                                          options: newOptions,
+                                        });
+                                      }}
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                    >
+                                      <img
+                                        src="/trash-red.svg"
+                                        alt="Remove"
+                                        className="w-4 h-4 object-contain mx-auto "
+                                      />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -849,7 +1016,8 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
             </div>
           )}
         </ScrollArea>
-        <div className="w-full h-full bg-white bg-opacity-40 rounded-tr-lg rounded-br-lg ">
+
+        <ScrollArea className="w-full h-full bg-white bg-opacity-40 rounded-tr-lg rounded-br-lg ">
           {/* Field Types */}
           <div className="flex flex-row gap-x-4 h-10 w-full items-center my-5 p-4">
             <Button
@@ -863,7 +1031,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
               <p className="text-sm font-bold">Field types</p>
               <p className="text-xs">Click to add field</p>
             </div>
-          </div>{" "}
+          </div>
           <div className="flex flex-col gap-3 p-4  bg-white">
             {fieldTypes.map((fieldType) => (
               <button
@@ -889,7 +1057,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
               </button>
             ))}
           </div>
-        </div>
+        </ScrollArea>
       </div>
     </>
   );

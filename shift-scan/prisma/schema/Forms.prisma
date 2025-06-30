@@ -33,9 +33,9 @@ model FormField {
   maxLength      Int?
   helperText     String?
   // For header fields - stores h1, h2, h3, h4, h5, h6
-  // headerSize     String?
+  headerSize     String?
   // For paragraph/header fields - stores the actual content to display
-  // content        String?
+  content        String?
   FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
   Options        FormFieldOption[]
 }
