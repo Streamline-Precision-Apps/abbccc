@@ -253,12 +253,12 @@ export default function Forms() {
   // Main render
   return (
     <div className="h-full w-full grid grid-rows-[50px_35px_1fr] gap-4">
-      <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
-        {renderHeader()}
-        <div>{renderTopBarActions()}</div>
-      </div>
       {ViewMode === "list" && (
         <>
+          <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
+            {renderHeader()}
+            <div>{renderTopBarActions()}</div>
+          </div>
           {renderListFilters()}
           <List
             forms={filteredForms}
@@ -276,6 +276,10 @@ export default function Forms() {
       )}
       {ViewMode === "individual" && (
         <>
+          <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
+            {renderHeader()}
+            <div>{renderTopBarActions()}</div>
+          </div>
           {renderIndividualFilters()}
           <IndividualFormView
             loading={individualFormLoading}
@@ -290,7 +294,13 @@ export default function Forms() {
         </>
       )}
       {ViewMode === "builder" && (
-        <FormBuilder onCancel={() => setViewMode("list")} />
+        <>
+          <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
+            {renderHeader()}
+            <div>{renderTopBarActions()}</div>
+          </div>
+          <FormBuilder onCancel={() => setViewMode("list")} />
+        </>
       )}
     </div>
   );
