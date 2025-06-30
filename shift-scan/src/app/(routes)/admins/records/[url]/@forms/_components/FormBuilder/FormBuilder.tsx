@@ -84,7 +84,7 @@ const fieldTypes = [
   },
   {
     name: "Dropdown",
-    description: "multiple options",
+    description: "Multiple options",
     icon: "/dropdown.svg",
     color: "bg-red-400",
   },
@@ -107,10 +107,28 @@ const fieldTypes = [
     color: "bg-teal-400",
   },
   {
-    name: "Section",
-    description: "Divider for form sections",
-    icon: "/section.svg",
-    color: "bg-slate-500",
+    name: "Header",
+    description: "Large text header",
+    icon: "/header.svg",
+    color: "bg-blue-500",
+  },
+  {
+    name: "Paragraph",
+    description: "Text block",
+    icon: "/paragraph.svg",
+    color: "bg-green-500",
+  },
+  {
+    name: "Multiselect",
+    description: "Select multiple options",
+    icon: "/multiselect.svg",
+    color: "bg-yellow-500",
+  },
+  {
+    name: "File",
+    description: "File upload",
+    icon: "/file.svg",
+    color: "bg-gray-500",
   },
 ];
 
@@ -365,6 +383,47 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
             <h3 className="text-sm font-semibold text-gray-700">
               {field.label || "Section Title"}
             </h3>
+          </div>
+        );
+      case "header":
+        return (
+          <h2 className="text-lg font-bold text-gray-800">
+            {field.label || "Header"}
+          </h2>
+        );
+      case "paragraph":
+        return (
+          <p className="text-sm text-gray-700">
+            {field.label || "Paragraph text"}
+          </p>
+        );
+      case "multiselect":
+        return (
+          <>
+            {field.options?.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="rounded"
+                  name={`checkbox-${field.id}`}
+                  value={option}
+                  checked={false}
+                  disabled
+                />
+                <span className="text-xs">{option}</span>
+              </div>
+            ))}
+          </>
+        );
+      case "file":
+        return (
+          <div className="flex items-center">
+            <input
+              type="file"
+              disabled
+              className="text-xs file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border file:border-gray-300 file:bg-gray-50"
+            />
+            <span className="text-xs">No file chosen</span>
           </div>
         );
       default:
@@ -649,6 +708,14 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                   ? "bg-teal-400 hover:bg-teal-300"
                                   : field.type === "section"
                                   ? "bg-slate-500 hover:bg-slate-400"
+                                  : field.type === "header"
+                                  ? "bg-blue-500 hover:bg-blue-400"
+                                  : field.type === "paragraph"
+                                  ? "bg-green-500 hover:bg-green-400"
+                                  : field.type === "multiselect"
+                                  ? "bg-yellow-500 hover:bg-yellow-400"
+                                  : field.type === "file"
+                                  ? "bg-gray-500 hover:bg-gray-400"
                                   : "bg-gray-400 hover:bg-gray-300"
                               } mb-1`}
                             >
@@ -845,6 +912,81 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                 />
                               </div>
                             </>
+                          )}
+
+                          {field.type === "multiselect" && (
+                            <div className="pt-2">
+                              <div className="flex justify-between items-center">
+                                <Label className="text-xs">
+                                  Multiselect Options
+                                </Label>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    const newOptions = [
+                                      ...(field.options || []),
+                                      "",
+                                    ];
+                                    updateField(field.id, {
+                                      options: newOptions,
+                                    });
+                                  }}
+                                  className="w-fit bg-green-300"
+                                >
+                                  <img
+                                    src="/plus.svg"
+                                    alt="Add"
+                                    className="w-3 h-3 mr-2"
+                                  />
+                                  Add Option
+                                </Button>
+                              </div>
+                              <div className="space-y-2 mt-2">
+                                {field.options?.map((option, optionIndex) => (
+                                  <div key={optionIndex} className="flex gap-2">
+                                    <div className="flex items-center">
+                                      <p>{optionIndex + 1}. </p>
+                                    </div>
+                                    <Input
+                                      value={option}
+                                      onChange={(e) => {
+                                        const newOptions = [
+                                          ...(field.options || []),
+                                        ];
+                                        newOptions[optionIndex] =
+                                          e.target.value;
+                                        updateField(field.id, {
+                                          options: newOptions,
+                                        });
+                                      }}
+                                      className="bg-white rounded-lg text-xs"
+                                      placeholder={`Option ${optionIndex + 1}`}
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        const newOptions =
+                                          field.options?.filter(
+                                            (_, i) => i !== optionIndex
+                                          );
+                                        updateField(field.id, {
+                                          options: newOptions,
+                                        });
+                                      }}
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                    >
+                                      <img
+                                        src="/trash-red.svg"
+                                        alt="Remove"
+                                        className="w-4 h-4 object-contain mx-auto "
+                                      />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
 
                           {field.type === "dropdown" && (
