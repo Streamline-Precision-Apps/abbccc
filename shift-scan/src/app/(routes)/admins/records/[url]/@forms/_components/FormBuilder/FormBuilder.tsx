@@ -27,6 +27,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { fi } from "date-fns/locale";
 
 // Types for form building
 interface FormField {
@@ -862,17 +863,19 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                           placeholder="Enter field label here"
                         />
                       </div>
-
-                      <Toggle
-                        className=""
-                        pressed={advancedOptionsOpen[field.id] || false}
-                        onPressedChange={() => toggleAdvancedOptions(field.id)}
-                      >
-                        <div className="text-black bg-gray-300 hover:bg-gray-200 rounded-lg py-2 px-3">
-                          <p className="text-xs">Advance Options</p>
-                        </div>
-                      </Toggle>
-
+                      {field.type !== "rating" && (
+                        <Toggle
+                          className=""
+                          pressed={advancedOptionsOpen[field.id] || false}
+                          onPressedChange={() =>
+                            toggleAdvancedOptions(field.id)
+                          }
+                        >
+                          <div className="text-black rounded-lg py-2 px-3">
+                            <p className="text-xs">Advance Options</p>
+                          </div>
+                        </Toggle>
+                      )}
                       {/* Field Optional / Required */}
 
                       {field.required ? (
@@ -922,7 +925,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                       field.type !== "checkbox" &&
                       field.type !== "multiselect" &&
                       field.type !== "dropdown" && (
-                        <div className="w-full  flex flex-row items-center gap-x-4 mb-3 ">
+                        <div className="w-full flex flex-row items-center gap-x-4 ">
                           {/* Field Placeholder and Field */}
                           <div className="flex-1">
                             <Input
@@ -940,33 +943,55 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                       )}
 
                     {advancedOptionsOpen[field.id] && (
-                      <>
-                        <Separator />
-                        <p className="text-sm font-semibold mt-2">
-                          Advanced Options
-                        </p>
-                      </>
+                      <div className="mt-3 mb-2 flex flex-col gap-2">
+                        <Separator className="bg-black" />
+                        {field.type === "multiselect" ? (
+                          <p className="text-sm font-semibold ">
+                            Multi-select Options
+                          </p>
+                        ) : field.type === "radio" ? (
+                          <p className="text-sm font-semibold ">
+                            Radio Options
+                          </p>
+                        ) : field.type === "dropdown" ? (
+                          <p className="text-sm font-semibold ">
+                            Dropdown Options
+                          </p>
+                        ) : (
+                          <p className="text-sm font-semibold ">
+                            Advanced Options
+                          </p>
+                        )}
+                      </div>
                     )}
                     {/* Advanced Options Section - Collapsible */}
                     {advancedOptionsOpen[field.id] && (
-                      <div className="mt-1  p-3 bg-gray-50 rounded-lg border-t ">
+                      <div className="px-2 pt-2 pb-4 bg-gray-50 rounded-lg border-t ">
                         <div className="space-y-2">
-                          {/* Helper Text */}
-                          <div>
-                            <Label className="text-xs">
-                              Helper Text (Below Input Field)
-                            </Label>
-                            <Input
-                              value={field.helperText || ""}
-                              onChange={(e) =>
-                                updateField(field.id, {
-                                  helperText: e.target.value,
-                                })
-                              }
-                              className="mt-1 bg-white rounded-lg text-xs"
-                              placeholder="Enter helper text"
-                            />
-                          </div>
+                          {/* Helper Text (Below Field) */}
+
+                          {field.type !== "date" &&
+                            field.type !== "time" &&
+                            field.type !== "rating" &&
+                            field.type !== "radio" &&
+                            field.type !== "multiselect" &&
+                            field.type !== "dropdown" && (
+                              <div>
+                                <Label className="text-xs">
+                                  Helper Text (Below Field)
+                                </Label>
+                                <Input
+                                  value={field.helperText || ""}
+                                  onChange={(e) =>
+                                    updateField(field.id, {
+                                      helperText: e.target.value,
+                                    })
+                                  }
+                                  className="mt-1 bg-white rounded-lg text-xs"
+                                  placeholder="Enter helper text"
+                                />
+                              </div>
+                            )}
 
                           {/* Type-specific advanced options */}
                           {field.type === "text" && (
@@ -988,13 +1013,29 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                               </div>
                             </>
                           )}
+                          {field.type === "textarea" && (
+                            <>
+                              <div>
+                                <Label className="text-xs">Max Length</Label>
+                                <Input
+                                  type="number"
+                                  value={field.maxLength || ""}
+                                  onChange={(e) =>
+                                    updateField(field.id, {
+                                      maxLength:
+                                        parseInt(e.target.value) || undefined,
+                                    })
+                                  }
+                                  className="mt-1 bg-white rounded-lg text-xs w-48"
+                                  placeholder="Enter max length"
+                                />
+                              </div>
+                            </>
+                          )}
 
                           {field.type === "multiselect" && (
-                            <div className="pt-2">
-                              <div className="flex justify-between items-center">
-                                <Label className="text-xs">
-                                  Multiselect Options
-                                </Label>
+                            <div>
+                              <div className="flex justify-end items-start">
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -1065,11 +1106,8 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                           )}
 
                           {field.type === "dropdown" && (
-                            <div className="pt-2">
-                              <div className="flex justify-between items-center">
-                                <Label className="text-xs">
-                                  Dropdown Options
-                                </Label>
+                            <div>
+                              <div className="flex justify-end items-center">
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -1140,11 +1178,9 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                           )}
 
                           {field.type === "radio" && (
-                            <div className="pt-2">
-                              <div className="flex justify-between items-center">
-                                <Label className="text-xs">
-                                  Radio Button Options
-                                </Label>
+                            <div className="">
+                              <div className="flex justify-between items-end">
+                                <p>Options</p>
                                 <Button
                                   size="sm"
                                   variant="outline"
