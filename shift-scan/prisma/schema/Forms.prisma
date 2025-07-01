@@ -21,23 +21,25 @@ model FormGrouping {
 }
 
 model FormField {
-  id             String            @id @default(uuid())
+  id             String    @id @default(uuid())
   formGroupingId String
-  label          String
-  name           String
+  label          String // question or field name
   type           FieldType
-  required       Boolean           @default(false)
+  required       Boolean   @default(false)
   order          Int
-  defaultValue   String?
+  // defaultValue   String? remove not necessary
   placeholder    String?
+  minLength      Int? // used for text fields to set minimum character length
   maxLength      Int?
-  helperText     String?
+  // helperText     String? remove not necessary
+
   // For header fields - stores h1, h2, h3, h4, h5, h6
-  headerSize     String?
+  headerSize   String?
   // For paragraph/header fields - stores the actual content to display
-  content        String?
-  FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
-  Options        FormFieldOption[]
+  content      String?
+  filter       String? // used for filtering options in select fields
+  FormGrouping FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
+  Options      FormFieldOption[]
 }
 
 model FormFieldOption {

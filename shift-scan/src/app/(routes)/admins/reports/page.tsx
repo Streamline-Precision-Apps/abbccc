@@ -4,8 +4,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
-import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../_components/pageSelector";
+import SearchBar from "../personnel/components/SearchBar";
 
 export default function AdminReports() {
   return (
@@ -60,7 +59,6 @@ export default function AdminReports() {
           </Texts>
         </Holds>
         <Holds position={"row"} className="w-full justify-end h-full">
-          <PageSelector />
           <Buttons
             position={"right"}
             shadow={"none"}

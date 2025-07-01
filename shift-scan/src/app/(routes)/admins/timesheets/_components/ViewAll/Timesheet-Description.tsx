@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import PageSelector from "../../../_components/pageSelector";
 import { Badge } from "@/components/ui/badge";
 
 type timesheetPending = {
@@ -30,7 +29,6 @@ export default function TimesheetDescription({
         </p>
       </div>
       <div className="w-full flex flex-row justify-end h-full">
-        <PageSelector />
         <Button
           onClick={() => setExportModal(true)}
           size={"icon"}
