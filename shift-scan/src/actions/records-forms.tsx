@@ -6,15 +6,14 @@ import { revalidatePath } from "next/cache";
 // Types for form builder
 export interface FormFieldData {
   id: string;
-  name: string;
   label: string;
   type: string;
   required: boolean;
-  placeholder?: string;
-  helperText?: string;
-  options?: string[];
-  maxLength?: number;
   order: number;
+  placeholder?: string;
+  maxLength?: number;
+  groupId?: string; // For associating with sections
+  options?: string[];
 }
 
 export interface FormSettingsData {
@@ -117,13 +116,11 @@ export async function saveFormTemplate(data: SaveFormData) {
           data: {
             formGroupingId: formGrouping.id,
             label: field.label,
-            name: field.name,
             type: mapFieldType(field.type),
             required: field.required,
             order: field.order,
             placeholder: field.placeholder,
             maxLength: field.maxLength,
-            helperText: field.helperText,
           },
         });
 
@@ -194,12 +191,10 @@ export async function getFormTemplateForEdit(formId: string) {
       grouping.Fields.forEach((field) => {
         fields.push({
           id: field.id,
-          name: field.name,
           label: field.label,
           type: field.type.toLowerCase(),
           required: field.required,
           placeholder: field.placeholder || "",
-          helperText: field.helperText || "",
           options: field.Options.map((opt) => opt.value),
           maxLength: field.maxLength || undefined,
           order: field.order,

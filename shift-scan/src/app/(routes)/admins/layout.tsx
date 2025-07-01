@@ -7,6 +7,7 @@ import TopTabBar from "./_pages/topTabBar";
 import { Contents } from "@/components/(reusable)/contents";
 import { UserEditProvider } from "@/app/context/(admin)/UserEditContext";
 import { CrewEditProvider } from "@/app/context/(admin)/CrewEditContext";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function RootLayout({
   children,
@@ -19,18 +20,16 @@ export default async function RootLayout({
   return (
     <Bases size={"screen"}>
       <NextIntlClientProvider messages={messages}>
+        <Toaster position="top-right" richColors closeButton duration={3000} />
         <UserEditProvider>
           <CrewEditProvider>
             <Contents width={"100"} className="">
               {/* Top bar */}
-              <Holds className="h-[60px]">
+              {/* <Holds className="h-[60px]">
                 <TopTabBar />
-              </Holds>
+              </Holds> */}
               {/* Main layout: sidebar + scrollable content */}
-              <Holds
-                position={"row"}
-                className="h-[calc(100dvh-60px)] min-h-0 w-full"
-              >
+              <Holds position={"row"} className="h-full w-full">
                 {/* Sidebar */}
                 <Holds position={"test"} className="h-full w-[60px] shrink-0">
                   <LeftSidebar />

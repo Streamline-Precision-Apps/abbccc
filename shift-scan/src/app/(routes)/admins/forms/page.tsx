@@ -13,8 +13,8 @@
 // approval view : display forms awaiting approval
 // individual view : display individual form details and submissions
 
-import SearchBar from "../../../personnel/components/SearchBar";
-import PageSelector from "../_components/pageSelector";
+import SearchBar from "../personnel/components/SearchBar";
+
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
@@ -172,14 +172,19 @@ export default function Forms() {
   function renderTopBarActions() {
     return (
       <div className="flex flex-row ">
-        <PageSelector />
         <div className="flex flex-row gap-2">
           {ViewMode === "list" && (
             <Button onClick={() => setViewMode("individual")}>
               View Submissions
             </Button>
           )}
-          <Button onClick={() => setViewMode("builder")}>Form Builder</Button>
+          {ViewMode === "list" && (
+            <>
+              <Button onClick={() => setViewMode("builder")}>
+                Form Builder
+              </Button>
+            </>
+          )}
           {ViewMode === "individual" && (
             <>
               <Button>Create Submission</Button>

@@ -42,14 +42,15 @@ export async function GET(req: Request) {
             Fields: {
               select: {
                 label: true,
-                name: true,
                 type: true,
                 required: true,
                 order: true,
-                defaultValue: true,
                 placeholder: true,
+                minLength: true,
                 maxLength: true,
-                helperText: true,
+                headerSize: true,
+                content: true,
+                filter: true,
                 Options: true,
               },
             },
