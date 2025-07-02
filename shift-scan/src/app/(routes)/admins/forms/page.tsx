@@ -114,21 +114,23 @@ export default function Forms() {
     if (ViewMode === "list") {
       return (
         <div className="flex flex-col gap-1 mb-4">
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <Button
               onClick={toggleSidebar}
               variant="default"
-              className="w-10 h-fit bg-transparent mr-6"
+              className="w-10 h-fit bg-transparent "
             >
               <PanelLeft />
             </Button>
-            <p className="text-left font-bold text-lg text-white">
-              Forms Management
-            </p>
+            <div>
+              <p className="text-left font-bold text-lg text-white">
+                Forms Management
+              </p>
+              <p className="text-left font-bold text-xs text-white">
+                Create, manage, and track form templates and submissions
+              </p>
+            </div>
           </div>
-          <p className="text-left font-bold text-xs text-white">
-            Create, manage, and track form templates and submissions
-          </p>
         </div>
       );
     }
@@ -141,7 +143,7 @@ export default function Forms() {
                 <Button
                   onClick={toggleSidebar}
                   variant="default"
-                  className="w-8 h-fit bg-transparent mr-2"
+                  className="w-8 h-fit bg-transparent"
                 >
                   <PanelLeft />
                 </Button>
@@ -167,29 +169,26 @@ export default function Forms() {
     }
     if (ViewMode === "individual") {
       return (
-        <div className="flex flex-row gap-4 justify-center items-start">
-          <Button
-            variant={"secondary"}
-            size={"icon"}
-            onClick={() => setViewMode("list")}
-          >
-            <img src="/arrowBack.svg" alt="Turn Back" className="w-4 h-4" />
-          </Button>
+        <div className="flex flex-col gap-4 justify-center items-start">
           {!individualFormLoading && formIndividualTemplate?.name ? (
             <div className="flex flex-col mb-4">
               <div className="flex flex-row items-center gap-1">
                 <Button
                   onClick={toggleSidebar}
                   variant="default"
-                  className="w-8 h-fit bg-transparent mr-2"
+                  className="w-8 h-fit bg-transparent mr-1"
                 >
                   <PanelLeft />
                 </Button>
-                <p className="text-left font-bold text-lg text-white">
-                  {formIndividualTemplate.name}
-                </p>
+                <div>
+                  <p className="text-left font-bold text-lg text-white">
+                    {formIndividualTemplate.name}
+                  </p>
+                  <p className="text-left text-xs text-white">
+                    Form Submissions
+                  </p>
+                </div>
               </div>
-              <p className="text-left text-xs text-white">Form Submissions</p>
             </div>
           ) : (
             <div className="flex flex-col gap-1">
@@ -206,7 +205,7 @@ export default function Forms() {
   // Top bar actions
   function renderTopBarActions() {
     return (
-      <div className="flex flex-row ">
+      <div className="h-full flex flex-row ">
         <div className="flex flex-row gap-2">
           {ViewMode === "list" && (
             <Button onClick={() => setViewMode("individual")}>
@@ -216,7 +215,12 @@ export default function Forms() {
           {ViewMode === "list" && (
             <>
               <Button onClick={() => setViewMode("builder")}>
-                Form Builder
+                <img
+                  src="/plus-white.svg"
+                  alt="Create New Form"
+                  className="h-4 w-4 mr-1"
+                />
+                <p>Form Template</p>
               </Button>
             </>
           )}
@@ -234,8 +238,8 @@ export default function Forms() {
   // List view filter/search bar
   function renderListFilters() {
     return (
-      <div className="h-[3vh] flex flex-row w-full gap-4 mb-4">
-        <div className="h-full w-full bg-white max-w-[450px] rounded ">
+      <div className="flex flex-row w-full gap-4 mb-2">
+        <div className="h-full w-full p-2 bg-white max-w-[450px] rounded-lg ">
           <SearchBar
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -245,7 +249,7 @@ export default function Forms() {
           />
         </div>
         <Select value={formType} onValueChange={setFormType}>
-          <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded">
+          <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded-lg">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -263,8 +267,17 @@ export default function Forms() {
 
   function renderIndividualFilters() {
     return (
-      <div className="h-full flex flex-row w-full gap-4 mb-4">
-        <div className="h-full w-full bg-white max-w-[450px] rounded ">
+      <div className="flex flex-row w-full gap-4 mb-2">
+        <Button
+          variant={"default"}
+          size={"sm"}
+          className=" bg-white h-full mr-1"
+          onClick={() => setViewMode("list")}
+        >
+          <img src="/arrowBack.svg" alt="Turn Back" className="w-4 h-auto " />
+          <p className="text-xs text-black ">Back</p>
+        </Button>
+        <div className="h-full w-full bg-white max-w-[450px] rounded-lg ">
           <SearchBar
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -274,7 +287,7 @@ export default function Forms() {
           />
         </div>
         <Select value={formType} onValueChange={setFormType}>
-          <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded">
+          <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded-lg">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -292,61 +305,66 @@ export default function Forms() {
 
   // Main render
   return (
-    <div className="h-screen w-screen flex flex-row">
+    <div className="h-full w-full flex flex-row">
       <LeftSidebar isOpen={isOpen} />
-      <ScrollArea className=" h-full w-full p-3  relative">
-        <div className="h-full w-full gap-4">
-          {ViewMode === "list" && (
-            <>
-              <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
-                {renderHeader()}
-                <div>{renderTopBarActions()}</div>
-              </div>
+      <div className="h-full w-full p-4  relative">
+        {ViewMode === "list" && (
+          <>
+            <div className="h-[5vh] w-full flex flex-row justify-between gap-1 ">
+              {renderHeader()}
+              <div>{renderTopBarActions()}</div>
+            </div>
+            <div className="h-[5vh] w-full flex flex-row justify-between gap-4 mb-4 ">
               {renderListFilters()}
-              <List
-                forms={filteredForms}
-                loading={loading}
-                page={page}
-                pageSize={pageSize}
-                totalPages={totalPages}
-                total={total}
-                setPage={setPage}
-                setPageSize={setPageSize}
-                setFormId={setFormId}
-                setViewMode={setViewMode}
-              />
-            </>
-          )}
-          {ViewMode === "individual" && (
-            <>
-              <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
-                {renderHeader()}
-                <div>{renderTopBarActions()}</div>
-              </div>
+            </div>
+
+            <List
+              forms={filteredForms}
+              loading={loading}
+              page={page}
+              pageSize={pageSize}
+              totalPages={totalPages}
+              total={total}
+              setPage={setPage}
+              setPageSize={setPageSize}
+              setFormId={setFormId}
+              setViewMode={setViewMode}
+            />
+          </>
+        )}
+        {ViewMode === "individual" && (
+          <>
+            <div className="h-[5vh] w-full flex flex-row justify-between gap-1 p-4">
+              {renderHeader()}
+              <div>{renderTopBarActions()}</div>
+            </div>
+            <div className="h-[5vh] w-full flex flex-row justify-between gap-4 mb-4">
               {renderIndividualFilters()}
-              <IndividualFormView
-                loading={individualFormLoading}
-                error={individualFormError}
-                formId={formId}
-                formTemplate={formIndividualTemplate}
-                page={individualFormPage}
-                setPage={setIndividualFormPage}
-                pageSize={individualFormPageSize}
-                setPageSize={setIndividualFormPageSize}
-              />
-            </>
-          )}
-          {ViewMode === "builder" && (
-            <>
-              <div className="h-full w-full flex flex-row justify-between gap-1 p-4">
-                {renderHeader()}
-                <div>{renderTopBarActions()}</div>
-              </div>
-              <FormBuilder onCancel={() => setViewMode("list")} />
-            </>
-          )}
-        </div>
-      </ScrollArea>
+            </div>
+
+            <IndividualFormView
+              loading={individualFormLoading}
+              error={individualFormError}
+              formId={formId}
+              formTemplate={formIndividualTemplate}
+              page={individualFormPage}
+              setPage={setIndividualFormPage}
+              pageSize={individualFormPageSize}
+              setPageSize={setIndividualFormPageSize}
+            />
+          </>
+        )}
+        {ViewMode === "builder" && (
+          <>
+            <div className="h-[10vh] w-full flex flex-row justify-between gap-1 p-4">
+              {renderHeader()}
+              <div>{renderTopBarActions()}</div>
+            </div>
+
+            <FormBuilder onCancel={() => setViewMode("list")} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
