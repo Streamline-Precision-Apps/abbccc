@@ -11,7 +11,7 @@ model TimeSheet {
   comment               String?
   statusComment         String?
   location              String? // not implemented yet
-  status                ApprovalStatus         @default(PENDING)
+  status                ApprovalStatus         @default(DRAFT)
   workType              WorkType
   editedByUserId        String? // not implemented yet
   newTimeSheetId        String? // not implemented yet
