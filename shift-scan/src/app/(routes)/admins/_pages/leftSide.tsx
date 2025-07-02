@@ -7,7 +7,7 @@ export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
   const pathname = usePathname();
 
   const Page = [
-    { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
+    // { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
     {
       id: 2,
       title: "Personnel",
