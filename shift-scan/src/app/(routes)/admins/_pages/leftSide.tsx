@@ -41,7 +41,7 @@ export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
 
   return (
     <div
-      className={`h-full w-[200px] p-3 bg-white bg-opacity-20 shrink-0 ${
+      className={`h-full w-[250px] p-3 bg-white bg-opacity-20 shrink-0 ${
         isOpen ? "block" : "hidden"
       }`}
     >
@@ -61,15 +61,13 @@ export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
             >
               <Link href={item.link} className="w-full">
                 <div
-                  className={`flex items-center gap-2 p-1 rounded-lg transition-colors `}
+                  className={`flex flex-row items-center gap-2 p-1 rounded-lg transition-colors `}
                 >
-                  <div className="bg-white  rounded-lg p-1">
-                    <img
-                      src={`/${item.img}.svg`}
-                      alt={item.title}
-                      className="w-4 h-4"
-                    />
-                  </div>
+                  <img
+                    src={`/${item.img}.svg`}
+                    alt={item.title}
+                    className="w-4 h-4"
+                  />
                   <p className="text-xs ">{item.title}</p>
                 </div>
               </Link>
