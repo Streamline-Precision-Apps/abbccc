@@ -48,13 +48,6 @@ enum LoadType {
   SCREENED
 }
 
-enum TimeSheetStatus {
-  DRAFT
-  PENDING
-  APPROVED
-  DENIED
-}
-
 enum EquipmentUsageType {
   TASCO
   TRUCKING
@@ -77,7 +70,7 @@ enum EquipmentState {
 //* APPROVED: The process has been approved.
 //* REJECTED: The process has been rejected or denied.
 enum ApprovalStatus {
-  IN_PROGRESS
+  DRAFT
   PENDING
   APPROVED
   REJECTED
