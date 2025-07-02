@@ -138,7 +138,6 @@ export async function CreateTimeSheet(formData: FormData) {
         CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType: workType,
-        status: "DRAFT",
       },
     });
 
@@ -297,7 +296,6 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
         CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType,
-        status: "DRAFT",
       },
     });
 
@@ -401,7 +399,6 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "LABOR",
-          status: "DRAFT",
         },
       });
 
@@ -478,7 +475,6 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "MECHANIC",
-          status: "DRAFT",
         },
       });
 
@@ -564,7 +560,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TASCO",
-          status: "DRAFT",
           TascoLogs: {
             create: {
               shiftType,
@@ -660,7 +655,6 @@ export async function handleTruckTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TRUCK_DRIVER",
-          status: "DRAFT",
           TruckingLogs: {
             create: {
               laborType,
