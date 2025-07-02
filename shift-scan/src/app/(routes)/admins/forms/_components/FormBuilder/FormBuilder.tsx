@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,34 +17,49 @@ import { Textarea } from "@/components/ui/textarea";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import FormBuilderPlaceholder from "./FormBuilderPlaceholder";
 
 // Types for form building
 export interface FormField {
   id: string;
+  formGroupingId: string;
   label: string;
   type: string;
   required: boolean;
   order: number;
+
   placeholder?: string;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
   multiple?: boolean;
-  minLength?: number; // Added for number fields
-  maxLength?: number;
-  content?: string;
-  groupId?: string; // For associating with sections
-  options?: string[];
+  content?: string | null;
+  filter?: string | null;
+  Options?: string[] | undefined;
 }
-export interface FormSection {
+
+export interface FormGrouping {
   id: string;
   title: string;
   order: number;
+  Fields: FormField[];
 }
+
 export interface FormSettings {
+  id: string;
+  companyId: string;
   name: string;
+  formType: string;
   description: string;
   category: string;
   status: string;
   requireSignature: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  isSignatureRequired: boolean;
+  FormGrouping: FormGrouping[];
 }
+
 export const fieldTypes = [
   {
     name: "text",
@@ -189,52 +204,141 @@ function SortableItem({
   );
 }
 
-export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
+export default function FormBuilder({
+  onCancel,
+  formId,
+}: {
+  onCancel?: () => void;
+  formId?: string | null;
+}) {
   // Form state
   const [formSettings, setFormSettings] = useState<FormSettings>({
+    id: "",
+    companyId: "",
     name: "",
+    formType: "",
     description: "",
     category: "",
-    status: "inactive",
+    status: "",
     requireSignature: false,
+    createdAt: "",
+    updatedAt: "",
+    isActive: false,
+    isSignatureRequired: false,
+    FormGrouping: [],
   });
 
   const [popoverOpenFieldId, setPopoverOpenFieldId] = useState<string | null>(
     null
   );
   const [formFields, setFormFields] = useState<FormField[]>([]);
-  const [formSections, setFormSections] = useState<FormSection[]>([]);
+  const [formSections, setFormSections] = useState<FormGrouping[]>([]);
   const [selectedField, setSelectedField] = useState<FormField | null>(null);
   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState<
     Record<string, boolean>
   >({});
 
+  // Fetch form data from API
+  useEffect(() => {
+    const fetchFormData = async () => {
+      if (!formId) return;
+
+      try {
+        const response = await fetch(`/api/getForms/${formId}`);
+        const { settings, fields, sections } = await response.json();
+
+        setFormSettings(settings);
+        setFormFields(fields);
+        setFormSections(sections);
+      } catch (error) {
+        console.error("Error fetching form data:", error);
+        alert("Failed to load form data.");
+      }
+    };
+
+    fetchFormData();
+  }, [formId]);
+
+  // Updated logic to handle the new `Options` property in the API response
+  const updateField = (
+    fieldId: string,
+    updatedProperties: Partial<FormField>
+  ) => {
+    setFormFields((prevFields) =>
+      prevFields.map((field) =>
+        field.id === fieldId ? { ...field, ...updatedProperties } : field
+      )
+    );
+  };
+
+  const handleApiResponse = (response: {
+    FormGrouping: FormGrouping[];
+    name: string;
+    isSignatureRequired: boolean;
+    isActive: boolean;
+  }) => {
+    const formGrouping = response.FormGrouping.map((group: FormGrouping) => ({
+      ...group,
+      Fields: group.Fields.map((field: FormField) => ({
+        ...field,
+        Options: field.Options || [],
+      })),
+    }));
+
+    setFormFields(formGrouping.flatMap((group) => group.Fields));
+    setFormSettings({
+      id: "", // Provide default values for missing properties
+      companyId: "",
+      name: response.name,
+      formType: "",
+      description: "",
+      category: "",
+      status: "",
+      requireSignature: response.isSignatureRequired,
+      createdAt: "",
+      updatedAt: "",
+      isActive: response.isActive,
+      isSignatureRequired: response.isSignatureRequired,
+      FormGrouping: [],
+    });
+  };
+
+  useEffect(() => {
+    if (formId) {
+      fetch(`/api/getForms/${formId}`)
+        .then((res) => res.json())
+        .then((data) => handleApiResponse(data))
+        .catch((error) => console.error("Error fetching form data:", error));
+    }
+  }, [formId]);
+
   // Add field to form
   const addField = (fieldType: string) => {
     if (fieldType === "section") {
       // Create a new section
-      const newSection: FormSection = {
+      const newSection: FormGrouping = {
         id: `section_${Date.now()}`,
         title: "New Section",
         order: formSections.length,
+        Fields: [],
       };
       setFormSections([...formSections, newSection]);
     } else {
       // Create a regular field
-      const typeKey = fieldType;
       const newField: FormField = {
         id: `field_${Date.now()}`,
+        formGroupingId: "",
         label: "",
-        type: typeKey,
+        type: fieldType,
         required: false,
+        order: formFields.length,
         placeholder: "",
-        options:
-          typeKey === "dropdown" ? [] : typeKey === "radio" ? [] : undefined,
         minLength: undefined,
         maxLength: undefined,
-        order: formFields.length,
-        groupId: undefined, // Can be assigned to a section later
+        multiple: false,
+        content: null,
+        filter: null,
       };
       setFormFields([...formFields, newField]);
     }
@@ -263,18 +367,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     }));
   };
 
-  // Update field
-  const updateField = (fieldId: string, updates: Partial<FormField>) => {
-    setFormFields(
-      formFields.map((field) =>
-        field.id === fieldId ? { ...field, ...updates } : field
-      )
-    );
-    if (selectedField?.id === fieldId) {
-      setSelectedField({ ...selectedField, ...updates });
-    }
-  };
-
   // Update form settings
   const updateFormSettings = (
     key: keyof FormSettings,
@@ -293,13 +385,23 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     try {
       const { saveFormTemplate } = await import("@/actions/records-forms");
 
-      // Get company ID from current session/user - in this system it's hardcoded as "1"
-      const companyId = "1"; // Based on the codebase pattern
-
       const payload = {
-        settings: formSettings,
+        settings: {
+          id: formSettings.id,
+          companyId: formSettings.companyId,
+          name: formSettings.name,
+          formType: formSettings.formType,
+          description: formSettings.description,
+          category: formSettings.category,
+          status: formSettings.status,
+          requireSignature: formSettings.requireSignature,
+          createdAt: formSettings.createdAt,
+          updatedAt: formSettings.updatedAt,
+          isActive: formSettings.isActive,
+          isSignatureRequired: formSettings.isSignatureRequired,
+        },
         fields: formFields,
-        companyId,
+        companyId: formSettings.companyId,
       };
 
       const result = await saveFormTemplate(payload);
@@ -307,13 +409,20 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
       if (result.success) {
         alert("Form saved successfully!");
         console.log("Saved form:", result);
-        // Reset form or redirect
         setFormSettings({
+          id: "",
+          companyId: "",
           name: "",
+          formType: "",
           description: "",
           category: "",
-          status: "inactive",
+          status: "",
           requireSignature: false,
+          createdAt: "",
+          updatedAt: "",
+          isActive: false,
+          isSignatureRequired: false,
+          FormGrouping: [],
         });
         setFormFields([]);
         setSelectedField(null);
@@ -388,46 +497,30 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           formSettings={formSettings}
           updateFormSettings={updateFormSettings}
         />
-        <ScrollArea className="w-full h-full bg-white bg-opacity-10 relative ">
-          {/* Form Builder Placeholder */}
-          {formFields.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center absolute inset-0">
-              <img
-                src="/formDuplicate.svg"
-                alt="Form Builder Placeholder"
-                className="w-12 h-12 mb-2 select-none"
-                draggable="false"
-              />
-              <h2 className="text-lg font-semibold mb-2 select-none">
-                Start Building Your Form
-              </h2>
-              <p className="text-xs text-gray-500 select-none">
-                Add fields using the field type buttons on the right, or click
-                below to add a text field.
-              </p>
-              <Button
-                variant={"outline"}
-                className="mt-4"
-                onClick={() => addField("text")}
-              >
-                <div className="flex flex-row items-center ">
-                  <img
-                    src="/plus.svg"
-                    alt="Add Field Icon"
-                    className="w-4 h-4 mr-2 select-none "
-                    draggable="false"
-                  />
-                  <p className="text-xs select-none">Add Text Field</p>
+        <ScrollArea className="w-full h-full bg-white bg-opacity-10 relative">
+          {formSettings && formSettings.name && (
+            <div className="w-full h-full flex flex-col px-4 my-2">
+              <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center px-4 py-2">
+                <div>
+                  <p className="text-xs text-gray-600">Form Name</p>
+                  <p className="text-lg font-semibold">{formSettings.name}</p>
+                  <p className="text-xs">{formSettings.description}</p>
                 </div>
-              </Button>
+              </div>
             </div>
+          )}
+          {/* Form Builder Placeholder */}
+          {formFields.length === 0 &&
+          !formSettings.requireSignature &&
+          !formSettings.name ? (
+            <FormBuilderPlaceholder addField={addField} />
           ) : (
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
               <SortableContext items={formFields.map((field) => field.id)}>
-                <div className="w-full px-4 py-2">
+                <div className="w-full px-4 py-1">
                   <div className="space-y-4">
                     {formFields.map((field, index) => (
                       <div
@@ -468,25 +561,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     setPopoverOpenFieldId(field.id)
                                   }
                                   variant="default"
-                                  className={`w-fit h-full justify-center items-center rounded-md gap-0 ${(() => {
-                                    const typeDef = fieldTypes.find(
-                                      (t) => t.name === field.type
-                                    );
-                                    return typeDef
-                                      ? `${typeDef.color} hover:${typeDef.color
-                                          .replace("bg-", "bg-")
-                                          .replace("400", "300")
-                                          .replace("500", "400")
-                                          .replace("200", "100")}`
-                                      : "bg-gray-400 hover:bg-gray-300";
-                                  })()} `}
+                                  className="w-fit h-full justify-center items-center rounded-md gap-0 bg-gray-400 hover:bg-gray-300"
                                 >
                                   <img
-                                    src={
-                                      fieldTypes.find(
-                                        (t) => t.name === field.type
-                                      )?.icon
-                                    }
+                                    src="/default-icon.svg"
                                     alt={field.type}
                                     className="w-4 h-4 "
                                   />
@@ -518,15 +596,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                         onClick={() => {
                                           updateField(field.id, {
                                             type: fieldType.name,
-                                            options:
-                                              fieldType.name === "dropdown"
-                                                ? field.options || ["Option 1"]
-                                                : fieldType.name === "radio"
-                                                ? field.options || [
-                                                    "Option 1",
-                                                    "Option 2",
-                                                  ]
-                                                : undefined,
                                             maxLength:
                                               fieldType.name === "text"
                                                 ? field.maxLength || 100
@@ -559,88 +628,19 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                             </Popover>
                           </div>
                           {/* Field label */}
-                          {field.type === "paragraph" ? (
-                            <div className="flex-1 h-full">
-                              <Textarea
-                                value={field.content || ""}
-                                onChange={(e) => {
-                                  updateField(field.id, {
-                                    content: e.target.value,
-                                  });
-                                }}
-                                className="bg-white rounded-lg text-xs border-none "
-                                placeholder={"Enter Paragraph"}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex-1 h-full">
-                              <Input
-                                type="text"
-                                value={field.label}
-                                onChange={(e) => {
-                                  updateField(field.id, {
-                                    label: e.target.value,
-                                  });
-                                }}
-                                className="bg-white rounded-lg text-xs border-none "
-                                placeholder={
-                                  field.type === "header"
-                                    ? "Enter Heading"
-                                    : "Enter Question Label here"
-                                }
-                              />
-                            </div>
-                          )}
-
-                          {field.type !== "rating" &&
-                            field.type !== "date" &&
-                            field.type !== "time" &&
-                            field.type !== "Worker" &&
-                            field.type !== "paragraph" &&
-                            field.type !== "header" && (
-                              <Toggle
-                                className="px-2 bg-gray-200 rounded-lg text-black hover:bg-gray-100"
-                                pressed={advancedOptionsOpen[field.id] || false}
-                                onPressedChange={() =>
-                                  toggleAdvancedOptions(field.id)
-                                }
-                              >
-                                <p className="text-xs ">Options</p>
-                              </Toggle>
-                            )}
-                          {/* Field Optional / Required */}
-                          {field.type !== "header" &&
-                            field.type !== "paragraph" && (
-                              <>
-                                {field.required ? (
-                                  <Button
-                                    variant="default"
-                                    size="sm"
-                                    className="text-black bg-red-300 hover:bg-red-200 rounded-lg"
-                                    onClick={() =>
-                                      updateField(field.id, {
-                                        required: false,
-                                      })
-                                    }
-                                  >
-                                    Required
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="default"
-                                    size="sm"
-                                    className="text-black bg-gray-300 hover:bg-gray-200 rounded-lg"
-                                    onClick={() =>
-                                      updateField(field.id, {
-                                        required: true,
-                                      })
-                                    }
-                                  >
-                                    Optional
-                                  </Button>
-                                )}
-                              </>
-                            )}
+                          <div className="flex-1 h-full">
+                            <Input
+                              type="text"
+                              value={field.label}
+                              onChange={(e) => {
+                                updateField(field.id, {
+                                  label: e.target.value,
+                                });
+                              }}
+                              className="bg-white rounded-lg text-xs border-none "
+                              placeholder="Enter Question Label here"
+                            />
+                          </div>
 
                           {/* Remove Field Icon */}
                           <Button
@@ -689,13 +689,12 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                               value={type}
                                               type="radio"
                                               className="w-fit"
-                                              checked={
-                                                field.options &&
-                                                field.options[0] === type
-                                              }
+                                              checked={field.filter?.includes(
+                                                type
+                                              )}
                                               onChange={() => {
                                                 updateField(field.id, {
-                                                  options: [type],
+                                                  filter: type,
                                                 });
                                               }}
                                             />
@@ -842,11 +841,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       variant="outline"
                                       onClick={() => {
                                         const newOptions = [
-                                          ...(field.options || []),
+                                          ...(field.Options || []),
                                           "",
                                         ];
                                         updateField(field.id, {
-                                          options: newOptions,
+                                          Options: newOptions,
                                         });
                                       }}
                                       className="w-fit bg-green-300"
@@ -859,10 +858,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       Add Option
                                     </Button>
                                   </div>
-                                  {field.options &&
-                                    field.options.length > 0 && (
+                                  {field.Options &&
+                                    field.Options.length > 0 && (
                                       <div className="flex flex-col gap-2 mt-2">
-                                        {field.options?.map(
+                                        {field.Options?.map(
                                           (option, optionIndex) => (
                                             <div
                                               key={optionIndex}
@@ -875,12 +874,12 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                                 value={option}
                                                 onChange={(e) => {
                                                   const newOptions = [
-                                                    ...(field.options || []),
+                                                    ...(field.Options || []),
                                                   ];
                                                   newOptions[optionIndex] =
                                                     e.target.value;
                                                   updateField(field.id, {
-                                                    options: newOptions,
+                                                    Options: newOptions,
                                                   });
                                                 }}
                                                 className="bg-white rounded-lg text-xs"
@@ -893,12 +892,12 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                                 variant="ghost"
                                                 onClick={() => {
                                                   const newOptions =
-                                                    field.options?.filter(
+                                                    field.Options?.filter(
                                                       (_, i) =>
                                                         i !== optionIndex
                                                     );
                                                   updateField(field.id, {
-                                                    options: newOptions,
+                                                    Options: newOptions,
                                                   });
                                                 }}
                                                 className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
@@ -962,7 +961,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                   </div>
                                 </div>
                               )}
-
                               {field.type === "radio" && (
                                 <div className="mt-2">
                                   <Separator className="my-2" />
@@ -975,11 +973,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       variant="outline"
                                       onClick={() => {
                                         const newOptions = [
-                                          ...(field.options || []),
+                                          ...(field.Options || []),
                                           "",
                                         ];
                                         updateField(field.id, {
-                                          options: newOptions,
+                                          Options: newOptions,
                                         });
                                       }}
                                       className="w-fit bg-green-300"
@@ -993,7 +991,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     </Button>
                                   </div>
                                   <div className="space-y-2 mt-2">
-                                    {field.options?.map(
+                                    {field.Options?.map(
                                       (option, optionIndex) => (
                                         <div
                                           key={optionIndex}
@@ -1006,12 +1004,12 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                             value={option}
                                             onChange={(e) => {
                                               const newOptions = [
-                                                ...(field.options || []),
+                                                ...(field.Options || []),
                                               ];
                                               newOptions[optionIndex] =
                                                 e.target.value;
                                               updateField(field.id, {
-                                                options: newOptions,
+                                                Options: newOptions,
                                               });
                                             }}
                                             className="bg-white rounded-lg text-xs"
@@ -1024,11 +1022,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                             variant="ghost"
                                             onClick={() => {
                                               const newOptions =
-                                                field.options?.filter(
+                                                field.Options?.filter(
                                                   (_, i) => i !== optionIndex
                                                 );
                                               updateField(field.id, {
-                                                options: newOptions,
+                                                Options: newOptions,
                                               });
                                             }}
                                             className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
@@ -1057,11 +1055,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       variant="outline"
                                       onClick={() => {
                                         const newOptions = [
-                                          ...(field.options || []),
+                                          ...(field.Options || []),
                                           "",
                                         ];
                                         updateField(field.id, {
-                                          options: newOptions,
+                                          Options: newOptions,
                                         });
                                       }}
                                       className="w-fit bg-green-300"
@@ -1075,7 +1073,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     </Button>
                                   </div>
                                   <div className="space-y-2 mt-2">
-                                    {field.options?.map(
+                                    {field.Options?.map(
                                       (option, optionIndex) => (
                                         <div
                                           key={optionIndex}
@@ -1088,12 +1086,12 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                             value={option}
                                             onChange={(e) => {
                                               const newOptions = [
-                                                ...(field.options || []),
+                                                ...(field.Options || []),
                                               ];
                                               newOptions[optionIndex] =
                                                 e.target.value;
                                               updateField(field.id, {
-                                                options: newOptions,
+                                                Options: newOptions,
                                               });
                                             }}
                                             className="bg-white rounded-lg text-xs"
@@ -1106,11 +1104,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                             variant="ghost"
                                             onClick={() => {
                                               const newOptions =
-                                                field.options?.filter(
+                                                field.Options?.filter(
                                                   (_, i) => i !== optionIndex
                                                 );
                                               updateField(field.id, {
-                                                options: newOptions,
+                                                Options: newOptions,
                                               });
                                             }}
                                             className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
@@ -1127,6 +1125,41 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                   </div>
                                 </div>
                               )}
+                              {field.type === "Worker" && (
+                                <>
+                                  <Separator className=" my-2" />
+                                  <p className="text-sm font-semibold">
+                                    Worker Options
+                                  </p>
+                                  <div className="bg-white px-4 py-2 rounded-md flex flex-col my-2">
+                                    <div>
+                                      <p className="text-xs font-semibold">
+                                        Multiple Selections
+                                      </p>
+                                      <div className="flex flex-row items-center gap-2 font-normal">
+                                        <Input
+                                          id={`multipleSelection_${field.id}`}
+                                          name={`multipleSelection_${field.id}`}
+                                          type="checkbox"
+                                          className="w-fit"
+                                          checked={field.multiple}
+                                          onChange={() =>
+                                            updateField(field.id, {
+                                              multiple: !field.multiple,
+                                            })
+                                          }
+                                        />
+                                        <label
+                                          htmlFor={`multipleSelection_${field.id}`}
+                                          className="text-xs font-normal"
+                                        >
+                                          Allow Multiple Selections
+                                        </label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                             </>
                           )}
                       </div>
@@ -1135,6 +1168,24 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                 </div>
               </SortableContext>
             </DndContext>
+          )}
+
+          {formSettings && formSettings.requireSignature && (
+            <div className="w-full flex flex-col  px-4 mt-2">
+              <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
+                <div className="flex items-center w-8 h-8 rounded-lg bg-lime-300 justify-center">
+                  <img
+                    src="/formEdit.svg"
+                    alt="Signature"
+                    className="w-4 h-4"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Digital Signature</p>
+                  <p className="text-xs">Automatically added at form end</p>
+                </div>
+              </div>
+            </div>
           )}
         </ScrollArea>
 
