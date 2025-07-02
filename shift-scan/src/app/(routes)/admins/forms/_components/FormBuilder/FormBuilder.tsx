@@ -204,13 +204,7 @@ function SortableItem({
   );
 }
 
-export default function FormBuilder({
-  onCancel,
-  formId,
-}: {
-  onCancel?: () => void;
-  formId?: string | null;
-}) {
+export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   // Form state
   const [formSettings, setFormSettings] = useState<FormSettings>({
     id: "",
@@ -238,27 +232,6 @@ export default function FormBuilder({
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState<
     Record<string, boolean>
   >({});
-
-  // Fetch form data from API
-  useEffect(() => {
-    const fetchFormData = async () => {
-      if (!formId) return;
-
-      try {
-        const response = await fetch(`/api/getForms/${formId}`);
-        const { settings, fields, sections } = await response.json();
-
-        setFormSettings(settings);
-        setFormFields(fields);
-        setFormSections(sections);
-      } catch (error) {
-        console.error("Error fetching form data:", error);
-        alert("Failed to load form data.");
-      }
-    };
-
-    fetchFormData();
-  }, [formId]);
 
   // Updated logic to handle the new `Options` property in the API response
   const updateField = (
@@ -303,15 +276,6 @@ export default function FormBuilder({
       FormGrouping: [],
     });
   };
-
-  useEffect(() => {
-    if (formId) {
-      fetch(`/api/getForms/${formId}`)
-        .then((res) => res.json())
-        .then((data) => handleApiResponse(data))
-        .catch((error) => console.error("Error fetching form data:", error));
-    }
-  }, [formId]);
 
   // Add field to form
   const addField = (fieldType: string) => {
