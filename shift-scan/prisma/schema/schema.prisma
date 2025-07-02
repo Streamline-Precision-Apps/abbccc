@@ -55,6 +55,7 @@ enum LoadType {
 }
 
 enum TimeSheetStatus {
+  DRAFT
   PENDING
   APPROVED
   DENIED
