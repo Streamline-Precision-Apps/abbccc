@@ -1,8 +1,6 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/holds";
-import { Contents } from "@/components/(reusable)/contents";
 import { UserEditProvider } from "@/app/context/(admin)/UserEditContext";
 import { CrewEditProvider } from "@/app/context/(admin)/CrewEditContext";
 import { Toaster } from "@/components/ui/sonner";
@@ -16,26 +14,13 @@ export default async function RootLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
   return (
-    <Bases size={"screen"}>
-      <NextIntlClientProvider messages={messages}>
-        <Toaster position="top-right" richColors closeButton duration={3000} />
-        <UserEditProvider>
-          <CrewEditProvider>
-            <Contents width={"100"} className="">
-              <Holds position={"row"} className="h-full w-full">
-                {/* Sidebar */}
-                {/* <Holds position={"test"} className="h-full w-[60px] shrink-0">
-                  <LeftSidebar />
-                </Holds> */}
-                {/* Scrollable content area */}
-                <Holds className="flex-1 min-h-0 h-full  overflow-y-auto no-scrollbar">
-                  {children}
-                </Holds>
-              </Holds>
-            </Contents>
-          </CrewEditProvider>
-        </UserEditProvider>
-      </NextIntlClientProvider>
-    </Bases>
+    <NextIntlClientProvider messages={messages}>
+      <Toaster position="top-right" richColors closeButton duration={3000} />
+      <UserEditProvider>
+        <CrewEditProvider>
+          <div className="h-screen">{children}</div>
+        </CrewEditProvider>
+      </UserEditProvider>
+    </NextIntlClientProvider>
   );
 }

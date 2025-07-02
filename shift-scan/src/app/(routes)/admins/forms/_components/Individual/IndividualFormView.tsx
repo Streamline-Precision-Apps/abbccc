@@ -11,6 +11,14 @@ import {
 import SubmissionTable from "./SubmissionTable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormIndividualTemplate } from "./hooks/types";
+import SearchBar from "../../../personnel/components/SearchBar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function IndividualFormView({
   formId,
@@ -103,16 +111,14 @@ export default function IndividualFormView({
     return <div className="text-xs text-gray-500">No data found.</div>;
 
   return (
-    <>
-      <SubmissionTable
-        groupings={formTemplate.FormGrouping}
-        submissions={formTemplate.Submissions}
-        totalPages={formTemplate.totalPages || 1}
-        page={page}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-      />
-    </>
+    <SubmissionTable
+      groupings={formTemplate.FormGrouping}
+      submissions={formTemplate.Submissions}
+      totalPages={formTemplate.totalPages || 1}
+      page={page}
+      setPage={setPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize}
+    />
   );
 }

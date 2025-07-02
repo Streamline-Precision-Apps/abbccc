@@ -33,14 +33,11 @@ export async function GET(
             Fields: {
               select: {
                 label: true,
-                name: true,
                 type: true,
                 required: true,
                 order: true,
-                defaultValue: true,
                 placeholder: true,
                 maxLength: true,
-                helperText: true,
                 Options: true,
               },
             },

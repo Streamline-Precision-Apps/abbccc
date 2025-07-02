@@ -91,7 +91,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
     .sort((a, b) => a.order - b.order);
 
   return (
-    <ScrollArea className="bg-slate-50 w-full rounded-lg h-full relative">
+    <ScrollArea className="bg-slate-50 w-full rounded-lg h-[85vh] relative">
       <Table className="bg-slate-50 w-full h-full">
         <TableHeader className="rounded-t-md">
           <TableRow>
