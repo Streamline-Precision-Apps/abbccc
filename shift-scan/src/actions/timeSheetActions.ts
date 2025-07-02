@@ -7,6 +7,7 @@ import {
   TimesheetHighlights,
   TimesheetUpdate,
   TruckingMileageUpdate,
+  TimeSheetStatus,
 } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
@@ -145,6 +146,7 @@ export async function CreateTimeSheet(formData: FormData) {
         CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType: workType,
+        status: "DRAFT",
       },
     });
 
@@ -189,6 +191,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
       data: {
         endTime: formatISO(formData.get("endTime") as string),
         comment: formData.get("timesheetComments") as string,
+        status: "PENDING",
       },
     });
     console.log("Timesheet updated successfully.");
@@ -221,6 +224,7 @@ export async function breakOutTimeSheet(formData: FormData) {
       data: {
         endTime,
         comment,
+        status: "PENDING",
       },
     });
     console.log("Timesheet updated successfully.");
@@ -301,6 +305,7 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
         CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType,
+        status: "DRAFT",
       },
     });
 
@@ -355,6 +360,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
       data: {
         endTime: formatISO(formData.get("endTime") as string),
         comment: formData.get("timeSheetComments") as string,
+        status: "PENDING",
       },
     });
 
@@ -403,6 +409,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "LABOR",
+          status: "DRAFT",
         },
       });
 
@@ -423,6 +430,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -478,6 +486,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "MECHANIC",
+          status: "DRAFT",
         },
       });
 
@@ -498,6 +507,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -562,6 +572,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TASCO",
+          status: "DRAFT",
           TascoLogs: {
             create: {
               shiftType,
@@ -594,6 +605,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previousTimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -656,6 +668,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TRUCK_DRIVER",
+          status: "DRAFT",
           TruckingLogs: {
             create: {
               laborType,
@@ -689,6 +702,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
