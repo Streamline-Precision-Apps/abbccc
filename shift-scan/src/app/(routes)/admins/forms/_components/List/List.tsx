@@ -27,7 +27,9 @@ export interface ListProps {
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
   setFormId: Dispatch<SetStateAction<string | null>>;
-  setViewMode: Dispatch<SetStateAction<"list" | "individual" | "builder">>;
+  setViewMode: Dispatch<
+    SetStateAction<"list" | "individual" | "builder" | "editTemplate">
+  >;
 }
 
 /**
@@ -192,7 +194,10 @@ const List: React.FC<ListProps> = ({
                     <Button
                       variant="ghost"
                       size={"icon"}
-                      onClick={() => setFormId(form.id)}
+                      onClick={() => {
+                        setFormId(form.id);
+                        setViewMode("editTemplate");
+                      }}
                     >
                       <img
                         src="/formEdit.svg"
