@@ -48,7 +48,7 @@ export async function GET(req: Request) {
                 placeholder: true,
                 minLength: true,
                 maxLength: true,
-                headerSize: true,
+                multiple: true,
                 content: true,
                 filter: true,
                 Options: true,
