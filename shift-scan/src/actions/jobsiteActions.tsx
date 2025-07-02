@@ -1,25 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-//-------- Not in use --------
-// Utility function to convert string to enum value
-// function toEnumValue<T extends Record<string, string>>(
-//   enumObject: T,
-//   value: string
-// ): T[keyof T] | null {
-//   return Object.values(enumObject).includes(value as T[keyof T])
-//     ? (value as T[keyof T])
-//     : null;
-// }
 
-// Enum for jobsite status
-// enum JobsiteStatus {
-//   ACTIVE = "ACTIVE",
-//   COMPLETE = "COMPLETE",
-// }
-// ----------------
-
-// Get all jobsite forms
 export async function getJobsiteForms() {
   try {
     const jobsiteForms = await prisma.jobsite.findMany();

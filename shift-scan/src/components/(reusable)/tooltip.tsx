@@ -30,7 +30,7 @@ export function Tooltips({
 }: TooltipsProps) {
   // Base styling for all tooltips
   const baseClasses =
-    "absolute bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap z-10 opacity-0 group-hover:opacity-100";
+    "absolute bg-gray-800 text-white text-xs rounded-sm py-1 px-2 pointer-events-none whitespace-nowrap z-10 opacity-0 group-hover:opacity-100";
 
   // Set transition based on delay
   const transitionClasses =

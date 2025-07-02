@@ -12,11 +12,11 @@ import {
   useDBCostcode,
   useDBEquipment,
 } from "@/app/context/dbCodeContext";
-import {
-  useRecentDBJobsite,
-  useRecentDBCostcode,
-  useRecentDBEquipment,
-} from "@/app/context/dbRecentCodesContext";
+// import {
+//   useRecentDBJobsite,
+//   useRecentDBCostcode,
+//   useRecentDBEquipment,
+// } from "@/app/context/dbRecentCodesContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useOperator } from "@/app/context/operatorContext";
@@ -61,13 +61,13 @@ export default function CodeFinder({
   const { setscanEQResult } = useEQScanData();
 
   const { jobsiteResults } = useDBJobsite();
-  const { addRecentlyUsedJobCode } = useRecentDBJobsite();
+  // const { addRecentlyUsedJobCode } = useRecentDBJobsite();
 
   const { costcodeResults } = useDBCostcode();
-  const { addRecentlyUsedCostCode } = useRecentDBCostcode();
+  // const { addRecentlyUsedCostCode } = useRecentDBCostcode();
 
   const { equipmentResults } = useDBEquipment();
-  const { addRecentlyUsedEquipment } = useRecentDBEquipment();
+  // const { addRecentlyUsedEquipment } = useRecentDBEquipment();
 
   const { setEquipmentId } = useOperator();
 
@@ -82,7 +82,7 @@ export default function CodeFinder({
     if (datatype === "costcode") {
       setCostCode(option.code);
       const selectedCode = costcodeResults.find((c) => c.name === option.code);
-      if (selectedCode) addRecentlyUsedCostCode(selectedCode);
+      // if (selectedCode) addRecentlyUsedCostCode(selectedCode);
     }
 
     if (datatype === "jobsite") {
@@ -93,7 +93,7 @@ export default function CodeFinder({
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
-      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+      // if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
 
     if (
@@ -108,7 +108,7 @@ export default function CodeFinder({
       const selectedJobCode = jobsiteResults.find(
         (j) => j.qrId === option.code
       );
-      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+      // if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
 
     if (datatype === "equipment-operator") {
@@ -125,7 +125,7 @@ export default function CodeFinder({
       const selectedEquipment = equipmentResults.find(
         (e) => e.qrId === option.code
       );
-      if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
+      // if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
 
     setSelectTerm(option.label);

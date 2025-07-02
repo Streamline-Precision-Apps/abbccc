@@ -2,16 +2,8 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import {
-  TimesheetUpdate,
-  TruckingEquipmentHaulUpdate,
-  TruckingMileageUpdate,
-} from "@/lib/types";
-import { WorkType } from "@prisma/client";
-import { error } from "console";
+import { TimesheetUpdate, TruckingEquipmentHaulUpdate } from "@/lib/types";
 import { revalidatePath } from "next/cache";
-import { formatInTimeZone } from "date-fns-tz";
-const { formatISO } = require("date-fns");
 
 export async function updateTimesheetHighlights(
   updatedTimesheets: TimesheetUpdate[]
@@ -51,24 +43,35 @@ export async function updateTimesheetHighlights(
 }
 
 export async function updateTruckingMileage(
-  data: FormData | Array<{ id: string; TruckingLogs: Array<{ startingMileage?: number; endingMileage?: number }> }>
+  data:
+    | FormData
+    | Array<{
+        id: string;
+        TruckingLogs: Array<{
+          startingMileage?: number;
+          endingMileage?: number;
+        }>;
+      }>
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log('[SERVER] Updating trucking mileage:', data);
+    console.log("[SERVER] Updating trucking mileage:", data);
     const session = await auth();
     if (!session) {
-      console.error('[SERVER] Unauthorized attempt to update mileage');
-      throw new Error('Unauthorized');
+      console.error("[SERVER] Unauthorized attempt to update mileage");
+      throw new Error("Unauthorized");
     }
 
     // Handle both FormData and direct array input
-    let mileageUpdates: Array<{ id: string; TruckingLogs: Array<{ startingMileage?: number; endingMileage?: number }> }>;
+    let mileageUpdates: Array<{
+      id: string;
+      TruckingLogs: Array<{ startingMileage?: number; endingMileage?: number }>;
+    }>;
     if (data instanceof FormData) {
       const changesEntries = Array.from(data.entries())
-        .filter(([key]) => key.startsWith('changes'))
+        .filter(([key]) => key.startsWith("changes"))
         .map(([, value]) => value as string);
       if (changesEntries.length === 0) {
-        throw new Error('No changes data found in FormData');
+        throw new Error("No changes data found in FormData");
       }
       mileageUpdates = changesEntries.flatMap((entry) => JSON.parse(entry));
     } else {
@@ -76,16 +79,21 @@ export async function updateTruckingMileage(
     }
 
     if (!Array.isArray(mileageUpdates)) {
-      throw new Error('Invalid mileage updates format');
+      throw new Error("Invalid mileage updates format");
     }
 
     const updatePromises = mileageUpdates.map((mileage) => {
       if (!mileage.id) {
-        console.error('[SERVER] Missing ID in mileage update:', mileage);
-        throw new Error(`Missing ID in mileage update: ${JSON.stringify(mileage)}`);
+        console.error("[SERVER] Missing ID in mileage update:", mileage);
+        throw new Error(
+          `Missing ID in mileage update: ${JSON.stringify(mileage)}`
+        );
       }
       // Extract startingMileage and endingMileage from the first TruckingLogs entry
-      const firstLog = Array.isArray(mileage.TruckingLogs) && mileage.TruckingLogs.length > 0 ? mileage.TruckingLogs[0] : undefined;
+      const firstLog =
+        Array.isArray(mileage.TruckingLogs) && mileage.TruckingLogs.length > 0
+          ? mileage.TruckingLogs[0]
+          : undefined;
       const startingMileage = firstLog?.startingMileage;
       const endingMileage = firstLog?.endingMileage;
       // Validate numbers
@@ -98,25 +106,27 @@ export async function updateTruckingMileage(
       return prisma.truckingLog.update({
         where: { id: mileage.id },
         data: {
-          startingMileage: startingMileage !== undefined ? Number(startingMileage) : undefined,
-          endingMileage: endingMileage !== undefined ? Number(endingMileage) : undefined,
+          startingMileage:
+            startingMileage !== undefined ? Number(startingMileage) : undefined,
+          endingMileage:
+            endingMileage !== undefined ? Number(endingMileage) : undefined,
         },
       });
     });
 
     const results = await Promise.all(updatePromises);
-    console.log('[SERVER] Successfully updated', results.length, 'records');
-    revalidatePath('/dashboard/myTeam');
-    revalidatePath('/dashboard/myTeam/[id]/employee/[employeeId]', 'page');
+    console.log("[SERVER] Successfully updated", results.length, "records");
+    revalidatePath("/dashboard/myTeam");
+    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
     return {
       success: true,
       updatedCount: results.length,
     };
   } catch (error) {
-    console.error('[SERVER] Error updating trucking mileage:', error);
+    console.error("[SERVER] Error updating trucking mileage:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -213,16 +223,16 @@ export async function updateTruckingMaterialLogs(
   }>
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log('[SERVER] Updating trucking material logs:', updates);
+    console.log("[SERVER] Updating trucking material logs:", updates);
     const session = await auth();
-    if (!session) throw new Error('Unauthorized');
+    if (!session) throw new Error("Unauthorized");
 
     // Validate updates
     const validUpdates = updates.filter(
-      (update) => !!update.id && typeof update.id === 'string'
+      (update) => !!update.id && typeof update.id === "string"
     );
     if (validUpdates.length === 0) {
-      return { success: false, error: 'No valid updates provided' };
+      return { success: false, error: "No valid updates provided" };
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -233,7 +243,9 @@ export async function updateTruckingMaterialLogs(
             name: update.name,
             LocationOfMaterial: update.LocationOfMaterial,
             materialWeight:
-              update.materialWeight !== undefined ? update.materialWeight : null,
+              update.materialWeight !== undefined
+                ? update.materialWeight
+                : null,
             lightWeight:
               update.lightWeight !== undefined ? update.lightWeight : null,
             grossWeight:
@@ -244,18 +256,22 @@ export async function updateTruckingMaterialLogs(
       return await Promise.all(updatePromises);
     });
 
-    console.log('[SERVER] Successfully updated', result.length, 'material logs');
-    revalidatePath('/dashboard/myTeam');
-    revalidatePath('/dashboard/myTeam/[id]/employee/[employeeId]', 'page');
+    console.log(
+      "[SERVER] Successfully updated",
+      result.length,
+      "material logs"
+    );
+    revalidatePath("/dashboard/myTeam");
+    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
     return {
       success: true,
       updatedCount: result.length,
     };
   } catch (error) {
-    console.error('[SERVER] Error updating trucking material logs:', error);
+    console.error("[SERVER] Error updating trucking material logs:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -460,17 +476,23 @@ export async function updateEquipmentLogs(
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating equipment logs:", updates);
-    
+
     // Validate input
-    if (!updates.every(update => 
-      update.startTime instanceof Date || update.startTime === undefined
-    )) {
+    if (
+      !updates.every(
+        (update) =>
+          update.startTime instanceof Date || update.startTime === undefined
+      )
+    ) {
       throw new Error("Invalid startTime format");
     }
-    
-    if (!updates.every(update => 
-      update.endTime instanceof Date || update.endTime === undefined
-    )) {
+
+    if (
+      !updates.every(
+        (update) =>
+          update.endTime instanceof Date || update.endTime === undefined
+      )
+    ) {
       throw new Error("Invalid endTime format");
     }
 

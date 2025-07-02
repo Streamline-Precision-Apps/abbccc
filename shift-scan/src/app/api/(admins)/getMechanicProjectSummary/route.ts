@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
+
+/**
+ * Get summary information of all jobsites (just id and name)
+ * Used for lightweight jobsite listing in admin assets page
+ */
+export async function GET() {
+  try {
+    // Authenticate the user
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Fetch only essential fields from maintenances
+    const maintenanceSummary = await prisma.maintenance.findMany({
+      select: {
+        id: true,
+      },
+    });
+
+    if (!maintenanceSummary || maintenanceSummary.length === 0) {
+      return NextResponse.json(
+        { message: "No maintenances found." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(maintenanceSummary);
+  } catch (error) {
+    console.error("Error fetching maintenance summary:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch maintenance summary";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}

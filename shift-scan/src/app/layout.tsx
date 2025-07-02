@@ -51,8 +51,8 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#57BDE9" />
       </head>
-      <body className="min-h-screen overflow-auto">
-        <main className="min-h-screen overflow-auto">
+      <body className="min-h-screen overflow-auto  bg-gradient-to-b from-app-dark-blue to-app-blue">
+        <main className="min-h-screen overflow-auto bg-gradient-to-b from-app-dark-blue to-app-blue">
           <NextIntlClientProvider messages={messages}>
             <Providers>
               {children}

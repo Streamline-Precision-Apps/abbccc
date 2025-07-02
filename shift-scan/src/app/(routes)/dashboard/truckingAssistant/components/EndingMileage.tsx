@@ -30,7 +30,7 @@ export const EndingMileage = ({
       placeholder={t("EnterEndingMileageHere")}
       className={`h-full w-full ${
         endMileage === null ? "placeholder:text-app-red" : ""
-      } border-black border-[3px] rounded-[10px] pl-3 text-base focus:outline-none focus:ring-transparent focus:border-current`}
+      } border-black border-[3px] rounded-[10px] pl-3 text-base focus:outline-hidden focus:ring-transparent focus:border-current`}
     />
   );
 };

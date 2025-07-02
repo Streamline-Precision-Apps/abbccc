@@ -49,7 +49,7 @@ const EquipmentRow: React.FC<EquipmentRowProps> = ({
           equipment.approvalStatus === "PENDING" ? "orange" : "lightGray"
         }
         className={`w-full justify-center h-[40px] flex hover:opacity-80 cursor-pointer relative ${
-          isSelected && "outline outline-[2px] outline-black"
+          isSelected && "outline-solid outline-2 outline-black"
         } rounded-[10px] mb-3 px-4`}
       >
         <Texts position="left" size="xs">

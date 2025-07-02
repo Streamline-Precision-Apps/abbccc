@@ -100,7 +100,7 @@ export default function LaborType({
                 <Holds className=" h-full w-1/3 justify-center items-center ">
                   <Selects
                     value={lt.type || ""}
-                    className={`border-none text-xs focus:outline-none ${
+                    className={`border-none text-xs focus:outline-hidden ${
                       lt.type === "" && "text-app-red"
                     } `}
                     onChange={(e) => {
@@ -126,7 +126,7 @@ export default function LaborType({
                       date.setMinutes(parseInt(change.split(":")[1]));
                       handleChange("startTime", lt.id, date.toISOString());
                     }}
-                    className={`py-2 border-none text-xs focus:outline-none ${
+                    className={`py-2 border-none text-xs focus:outline-hidden ${
                       lt.startTime === "" && "text-app-red"
                     }`}
                   />
@@ -145,7 +145,7 @@ export default function LaborType({
                       handleChange("endTime", lt.id, date.toISOString());
                     }}
                     placeholder="End Time"
-                    className={`text-xs focus:outline-none ${
+                    className={`text-xs focus:outline-hidden ${
                       !lt.endTime
                         ? "h-full border-app-red rounded-none rounded-tr-md rounded-br-md "
                         : "border-none"

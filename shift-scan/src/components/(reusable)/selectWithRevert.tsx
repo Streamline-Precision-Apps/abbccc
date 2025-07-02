@@ -24,7 +24,7 @@ const SelectWithRevert: React.FC<SelectWithRevertProps> = ({
 
   return (
     <select
-      className="w-full rounded-[10px] border-[3px] border-black focus:outline-none p-2"
+      className="w-full rounded-[10px] border-[3px] border-black focus:outline-hidden p-2"
       value={value}
       onChange={(e) => handleChange(e.target.value)}
     >

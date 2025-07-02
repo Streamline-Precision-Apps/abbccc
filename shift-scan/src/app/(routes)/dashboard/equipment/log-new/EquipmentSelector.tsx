@@ -1,13 +1,12 @@
+"use client";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
-import CodeStep from "@/components/(clock)/code-step";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import CodeFinder from "@/components/(search)/newCodeFinder";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -31,13 +30,18 @@ export default function EquipmentSelectorView({
   jobSite: Option;
 }) {
   const router = useRouter();
-  const id = useSession().data?.user.id;
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const { data: session } = useSession();
+  if (!session) {
+    router.push("/signin"); // Redirect to sign-in if not authenticated
+  }
+
+  const id = session?.user?.id || ""; // Get the user ID from the session
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const formData = new FormData();
-    formData.append("equipmentId", equipment?.code || "");
-    formData.append("jobsiteId", jobSite?.code || "");
-    formData.append("startTime", new Date().toString());
+    formData.append("equipmentId", equipment?.id || "");
+    formData.append("jobsiteId", jobSite?.id || "");
     formData.append("employeeId", id || "");
 
     const result = await CreateEmployeeEquipmentLog(formData);
@@ -56,9 +60,8 @@ export default function EquipmentSelectorView({
               setMethod("");
             }}
           >
-            {" "}
             <Holds className="flex items-center justify-end w-full h-full">
-              <Titles size={"h1"}>Select Equipment</Titles>
+              <Titles size={"h2"}>Select Equipment</Titles>
             </Holds>
           </TitleBoxes>
         </Holds>
@@ -66,7 +69,7 @@ export default function EquipmentSelectorView({
         <Holds className="h-full row-start-2 row-end-8">
           <Contents width={"section"} className="h-full">
             <Grids rows={"7"} gap={"5"}>
-              <Holds className="h-full w-full row-start-1 row-end-7 ">
+              <Holds className="h-full w-full row-start-1 row-end-7 pt-5 ">
                 <EquipmentSelector
                   onEquipmentSelect={(equipment) => {
                     if (equipment) {
@@ -78,16 +81,13 @@ export default function EquipmentSelectorView({
                   initialValue={equipment}
                 />
               </Holds>
-              <Holds className="h-full w-full row-start-7 row-end-8">
+              <Holds className="w-full row-start-7 row-end-8">
                 <Buttons
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onSubmit(e);
-                  }}
+                  onClick={(e) => onSubmit(e)}
                   background="orange"
-                  className="py-2"
+                  className="py-3"
                 >
-                  <Titles size={"h2"}>Submit Selection</Titles>
+                  <Titles size={"h4"}>Submit Selection</Titles>
                 </Buttons>
               </Holds>
             </Grids>

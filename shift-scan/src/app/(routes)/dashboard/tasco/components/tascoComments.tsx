@@ -26,7 +26,7 @@ export default function TascoComments({
         maxLength={40}
         value={comments}
         placeholder={t("CommentPlaceholder")}
-        className="h-full w-full text-base focus:outline-none focus:ring-transparent focus:border-current "
+        className="h-full w-full text-base focus:outline-hidden focus:ring-transparent focus:border-current "
         onChange={(e) => setComments(e.target.value)}
         onBlur={(e) => UpdateComments()}
       />

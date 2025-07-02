@@ -26,6 +26,7 @@ export async function GET() {
       select: {
         Jobsite: {
           select: {
+            id: true,
             name: true,
             qrId: true,
           },
