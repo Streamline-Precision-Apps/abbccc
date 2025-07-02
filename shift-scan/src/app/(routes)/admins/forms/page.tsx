@@ -37,9 +37,9 @@ import useLeftSideTrigger from "../_pages/useLeftSideTrigger";
 
 // Custom hook to manage all forms state and view mode
 function useFormsPageState() {
-  const [ViewMode, setViewMode] = useState<"list" | "individual" | "builder">(
-    "list"
-  );
+  const [ViewMode, setViewMode] = useState<
+    "list" | "individual" | "builder" | "editTemplate"
+  >("list");
 
   const [formId, setFormId] = useState<string | null>(null);
   const formsList = useFormsList();
@@ -362,6 +362,16 @@ export default function Forms() {
             </div>
 
             <FormBuilder onCancel={() => setViewMode("list")} />
+          </>
+        )}
+        {ViewMode === "editTemplate" && (
+          <>
+            <div className="h-[10vh] w-full flex flex-row justify-between gap-1 p-4">
+              {renderHeader()}
+              <div>{renderTopBarActions()}</div>
+            </div>
+
+            <FormBuilder formId={formId} onCancel={() => setViewMode("list")} />
           </>
         )}
       </div>
