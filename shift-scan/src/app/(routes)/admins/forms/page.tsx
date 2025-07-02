@@ -12,7 +12,7 @@
 // builder view : display form builder with options to create new forms
 // approval view : display forms awaiting approval
 // individual view : display individual form details and submissions
-
+import "@/app/globals.css";
 import SearchBar from "../personnel/components/SearchBar";
 
 import { Button } from "@/components/ui/button";
