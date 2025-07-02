@@ -1,16 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
-import {
-  FormStatus,
-  TimeOffRequestType,
-  Permission,
-  WorkType,
-} from "@/lib/types";
+import { Permission } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
-import {
-  CrewData,
-  CrewEditState,
-} from "@/app/(routes)/admins/personnel/components/types/personnel";
+import { CrewData } from "@/app/(routes)/admins/personnel/components/types/personnel";
 
 //------------------------------------------------------------------------------------------------------------------------
 // Personnel server actions

@@ -23,7 +23,7 @@ export default function PermissionsManager() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow">
+      <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm">
         <div>
           <h3 className="font-semibold">{t("Camera")}</h3>
           <p className="text-sm text-gray-500">
@@ -43,7 +43,7 @@ export default function PermissionsManager() {
         </button>
       </div>
 
-      <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow">
+      <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm">
         <div>
           <h3 className="font-semibold">{t("Location")}</h3>
           <p className="text-sm text-gray-500">

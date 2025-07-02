@@ -156,7 +156,7 @@ export default function AdminHours() {
               className={`h-full border-[3px] rounded-[10px] p-1 flex justify-end
               ${
                 data.date === new Date().toISOString().split("T")[0]
-                  ? "bg-app-dark-blue border-[4px] border-white"
+                  ? "bg-app-dark-blue border-4 border-white"
                   : "bg-app-gray border-black"
               }
                  ${

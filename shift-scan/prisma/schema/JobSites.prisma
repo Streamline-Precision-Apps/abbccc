@@ -1,31 +1,26 @@
 model Jobsite {
-  id                    String                 @id @default(uuid())
-  qrId                  String                 @unique @default(uuid())
-  name                  String
-  description           String
-  approvalStatus        ApprovalStatus         @default(APPROVED)
-  isActive              Boolean                @default(true)
-  address               String
-  city                  String
-  state                 String
-  zipCode               String
-  country               String                 @default("US")
-  comment               String?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  archiveDate           DateTime?
-  companyId             String?
-  clientId              String
-  AuditLogs             AuditLog[]
-  EmployeeEquipmentLogs EmployeeEquipmentLog[]
-  EquipmentHauled       EquipmentHauled[]
-  Client                Client                 @relation(fields: [clientId], references: [id])
-  Company               Company?               @relation(fields: [companyId], references: [id])
-  PendingApprovals      PendingApproval[]
-  TimeSheets            TimeSheet[]
-  CCTags                CCTag[]                @relation("CCTagToJobsite")
+  id              String            @id @default(uuid())
+  qrId            String            @unique @default(uuid())
+  name            String
+  description     String
+  creationReason  String? // Reason for creating the jobsite
+  approvalStatus  ApprovalStatus    @default(PENDING) // PENDING, APPROVED, REJECTED
+  isActive        Boolean           @default(true)
+  addressId       String?
+  Address         Address?          @relation(fields: [addressId], references: [id])
+  comment         String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  archiveDate     DateTime?
+  clientId        String // track jobs based on similar clients 
+  createdById     String?
+  createdBy       User?             @relation(fields: [createdById], references: [id])
+  createdVia      CreatedVia        @default(ADMIN)
+  EquipmentHauled EquipmentHauled[]
+  Client          Client            @relation(fields: [clientId], references: [id])
+  TimeSheets      TimeSheet[]
+  CCTags          CCTag[]           @relation("CCTagToJobsite")
 
-  @@unique([name, address, city, state])
   @@index([qrId])
-  @@index([clientId, companyId])
+  @@index([clientId])
 }

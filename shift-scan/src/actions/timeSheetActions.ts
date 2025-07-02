@@ -2,18 +2,10 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import {
-  TimeSheet,
-  TimesheetHighlights,
-  TimesheetUpdate,
-  TruckingMileageUpdate,
-  TimeSheetStatus,
-} from "@/lib/types";
-import { WorkType } from "@prisma/client";
-import { error } from "console";
+import { TimesheetHighlights, TimesheetUpdate } from "@/lib/types";
+import { WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
-import { form } from "@nextui-org/theme";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -347,7 +339,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
   try {
     const session = await auth();
     if (!session) {
-      throw error("Unauthorized user");
+      throw Error("Unauthorized user");
     }
     // verify data is passed through
     console.log("formData:", formData);
@@ -879,14 +871,6 @@ export async function returnToPrevWork(formData: FormData) {
     console.error("Error updating timesheet:", error);
   }
 }
-//---------
-//---------  Delete TimeSheet by id - will be used by Admin only
-//---------
-export async function deleteTimeSheet(id: string) {
-  await prisma.timeSheet.delete({
-    where: { id },
-  });
-}
 
 export async function updateTimesheetHighlights(
   updatedTimesheets: TimesheetUpdate[]
@@ -925,7 +909,10 @@ export async function updateTimesheetHighlights(
 }
 
 // Approve all pending timesheets for a user
-export async function approvePendingTimesheets(userId: string, managerName?: string) {
+export async function approvePendingTimesheets(
+  userId: string,
+  managerName?: string
+) {
   try {
     // Find all pending timesheets for the user
     const pendingTimesheets = await prisma.timeSheet.findMany({
@@ -946,7 +933,9 @@ export async function approvePendingTimesheets(userId: string, managerName?: str
       },
       data: {
         status: "APPROVED",
-        statusComment: managerName ? `Approved by ${managerName}` : "Approved by manager",
+        statusComment: managerName
+          ? `Approved by ${managerName}`
+          : "Approved by manager",
       },
     });
     revalidatePath("/dashboard/myTeam/timecards");

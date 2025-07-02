@@ -5,7 +5,7 @@ model FormTemplate {
   formType            String?
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
-  isActive            Boolean          @default(false)
+  isActive            Boolean          @default(false) // convert to enum {draft, active, archived}
   isSignatureRequired Boolean          @default(false)
   Submissions         FormSubmission[]
   Company             Company          @relation(fields: [companyId], references: [id])
@@ -21,19 +21,25 @@ model FormGrouping {
 }
 
 model FormField {
-  id             String            @id @default(uuid())
+  id             String    @id @default(uuid())
   formGroupingId String
-  label          String
-  name           String
+  label          String // question or field name
   type           FieldType
-  required       Boolean           @default(false)
+  required       Boolean   @default(false)
   order          Int
-  defaultValue   String?
+  // defaultValue   String? remove not necessary
   placeholder    String?
+  minLength      Int? // used for text fields to set minimum character length
   maxLength      Int?
-  helperText     String?
-  FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
-  Options        FormFieldOption[]
+  // helperText     String? remove not necessary
+
+  // For header fields - stores h1, h2, h3, h4, h5, h6
+  headerSize   String?
+  // For paragraph/header fields - stores the actual content to display
+  content      String?
+  filter       String? // used for filtering options in select fields
+  FormGrouping FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
+  Options      FormFieldOption[]
 }
 
 model FormFieldOption {
@@ -69,21 +75,4 @@ model FormApproval {
   comment          String?
   FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   Approver         User?          @relation(fields: [signedBy], references: [id])
-}
-
-enum FormStatus {
-  PENDING
-  APPROVED
-  DENIED
-  DRAFT
-}
-
-enum FieldType {
-  TEXT
-  TEXTAREA
-  NUMBER
-  DATE
-  FILE
-  DROPDOWN
-  CHECKBOX
 }

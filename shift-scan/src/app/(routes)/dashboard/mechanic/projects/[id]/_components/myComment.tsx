@@ -64,7 +64,7 @@ export default function CommentsTab({
             </Labels>
             <TextAreas
               name="MyComments"
-              className="h-full w-full resize-none focus:outline-none"
+              className="h-full w-full resize-none focus:outline-hidden"
               value={myComment}
               onChange={(e) => setMyComment(e.target.value)}
               onBlur={(e) => handleComment(e.target.value)}

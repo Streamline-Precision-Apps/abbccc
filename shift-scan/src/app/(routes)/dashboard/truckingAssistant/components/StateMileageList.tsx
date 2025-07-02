@@ -113,7 +113,7 @@ export default function StateMileageList({
                   value={sm.state || ""}
                   onChange={(e) => handleStateChange(index, e.target.value)}
                   className={`
-                      border-none h-full text-xs text-center  focus:outline-none ${
+                      border-none h-full text-xs text-center  focus:outline-hidden ${
                         sm.state ? "text-app-black" : "text-app-red"
                       }
                   `}
@@ -149,7 +149,7 @@ export default function StateMileageList({
                     updateStateMileage(formData);
                   }}
                   className={
-                    "h-full border-none text-xs text-center focus:outline-none focus:ring-0 empty: placeholder:text-app-red"
+                    "h-full border-none text-xs text-center focus:outline-hidden focus:ring-0 empty: placeholder:text-app-red"
                   }
                 />
               </Holds>

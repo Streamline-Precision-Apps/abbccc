@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { Priority } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { Priority } from "@/lib/types";
 
 // This Updates the selected staus of the project in the database
 export async function setProjectSelected(id: string, selected: boolean) {
@@ -30,25 +30,25 @@ export async function CreateMechanicProject(formData: FormData) {
     const equipmentIssue = formData.get("equipmentIssue") as string;
     const additionalInfo = formData.get("additionalInfo") as string;
     const location = formData.get("location") as string;
-    const stringPriority = formData.get("priority") as string;
+    const stringPriority = formData.get("priority") as Priority;
     const createdBy = formData.get("createdBy") as string;
 
-    let priority = Priority.PENDING;
+    let priority: Priority;
 
     switch (stringPriority) {
-      case "LOW":
+      case Priority.LOW:
         priority = Priority.LOW;
         break;
-      case "MEDIUM":
+      case Priority.MEDIUM:
         priority = Priority.MEDIUM;
         break;
-      case "HIGH":
+      case Priority.HIGH:
         priority = Priority.HIGH;
         break;
-      case "PENDING":
+      case Priority.PENDING:
         priority = Priority.PENDING;
         break;
-      case "TODAY":
+      case Priority.TODAY:
         priority = Priority.TODAY;
         break;
       default:
@@ -106,22 +106,22 @@ export async function setEditForProjectInfo(formData: FormData) {
     const equipmentIssue = formData.get("equipmentIssue") as string;
     const additionalInfo = formData.get("additionalInfo") as string;
 
-    let priority = Priority.PENDING;
+    let priority: Priority;
 
     switch (stringPriority) {
-      case "LOW":
+      case Priority.LOW:
         priority = Priority.LOW;
         break;
-      case "MEDIUM":
+      case Priority.MEDIUM:
         priority = Priority.MEDIUM;
         break;
-      case "HIGH":
+      case Priority.HIGH:
         priority = Priority.HIGH;
         break;
-      case "PENDING":
+      case Priority.PENDING:
         priority = Priority.PENDING;
         break;
-      case "TODAY":
+      case Priority.TODAY:
         priority = Priority.TODAY;
         break;
       default:

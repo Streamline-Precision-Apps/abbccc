@@ -21,6 +21,7 @@ const ButtonVariants = cva(
         lightGray: "bg-app-gray",
         darkGray: "bg-app-dark-gray",
         none: "bg-none border-0 shadow-none",
+        custom: "",
       },
       position: {
         //only position attributes
@@ -30,7 +31,7 @@ const ButtonVariants = cva(
       },
       size: {
         //only width and height
-        full: "w-[100%] h-[100%]",
+        full: "w-full h-full",
         "90": "w-[90%]",
         "80": "w-[80%]",
         "70": "w-[70%]",

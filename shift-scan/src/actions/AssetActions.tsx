@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { EquipmentTags, EquipmentStatus } from "@/lib/types";
+import { EquipmentTags, EquipmentStatus } from "@/lib/enums";
 
 type VehicleInfo = {
   make: string | null;
