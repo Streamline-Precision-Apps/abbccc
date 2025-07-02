@@ -48,6 +48,14 @@ enum LoadType {
   SCREENED
 }
 
+enum EquipmentUsageType {
+  TASCO
+  TRUCKING
+  MAINTENANCE
+  LABOR
+  GENERAL
+}
+
 enum EquipmentState {
   AVAILABLE
   IN_USE
@@ -62,7 +70,7 @@ enum EquipmentState {
 //* APPROVED: The process has been approved.
 //* REJECTED: The process has been rejected or denied.
 enum ApprovalStatus {
-  IN_PROGRESS
+  DRAFT
   PENDING
   APPROVED
   REJECTED
