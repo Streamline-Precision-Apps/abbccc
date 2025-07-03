@@ -34,6 +34,7 @@ import LeftSidebar from "../_pages/leftSide";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PanelLeft } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
+import FormEditor from "./_components/FormEdititor/FormEditor";
 
 // Custom hook to manage all forms state and view mode
 function useFormsPageState() {
@@ -398,7 +399,7 @@ export default function Forms() {
               <div>{renderTopBarActions()}</div>
             </div>
 
-            <FormBuilder onCancel={() => setViewMode("list")} />
+            <FormEditor formId={formId} onCancel={() => setViewMode("list")} />
           </>
         )}
       </div>
