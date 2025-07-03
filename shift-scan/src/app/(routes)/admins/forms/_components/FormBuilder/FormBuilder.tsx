@@ -62,28 +62,28 @@ export interface FormSettings {
 
 export const fieldTypes = [
   {
-    name: "text",
+    name: "TEXT",
     label: "Text",
     description: "Single line Input",
     icon: "/title.svg",
     color: "bg-sky-400",
   },
   {
-    name: "number",
+    name: "NUMBER",
     label: "Number",
     description: "Numeric Input",
     icon: "/number.svg",
     color: "bg-fuchsia-400",
   },
   {
-    name: "date",
+    name: "DATE",
     label: "Date",
     description: "Date picker",
     icon: "/calendar.svg",
     color: "bg-purple-400",
   },
   {
-    name: "time",
+    name: "TIME",
     label: "Time",
     description: "Time picker",
     icon: "/clock.svg",
@@ -91,35 +91,35 @@ export const fieldTypes = [
   },
 
   {
-    name: "dropdown",
+    name: "DROPDOWN",
     label: "Dropdown",
     description: "Multiple options",
     icon: "/layout.svg",
     color: "bg-red-400",
   },
   {
-    name: "textarea",
+    name: "TEXTAREA",
     label: "Text Area",
     description: "Multi-line Input",
     icon: "/formList.svg",
     color: "bg-indigo-400",
   },
   {
-    name: "rating",
-    label: "Rating",
-    description: "Star Rating",
-    icon: "/star.svg",
-    color: "bg-yellow-200",
+    name: "CHECKBOX",
+    label: "Checkbox",
+    description: "Checkbox",
+    icon: "/checkbox.svg",
+    color: "bg-green-400",
   },
   {
-    name: "radio",
+    name: "RADIO",
     label: "Radio",
     description: "Single choice selection",
     icon: "/radio.svg",
     color: "bg-teal-400",
   },
   {
-    name: "header",
+    name: "HEADER",
     label: "Header",
     description: "Large text header",
     icon: "/header.svg",
@@ -127,7 +127,7 @@ export const fieldTypes = [
     section: "Formatting",
   },
   {
-    name: "paragraph",
+    name: "PARAGRAPH",
     label: "Paragraph",
     description: "Text block",
     icon: "/drag.svg",
@@ -135,14 +135,14 @@ export const fieldTypes = [
     section: "Formatting",
   },
   {
-    name: "multiselect",
+    name: "MULTISELECT",
     label: "Multiselect",
     description: "Select multiple options",
     icon: "/moreOptionsCircle.svg",
     color: "bg-yellow-500",
   },
   {
-    name: "Worker",
+    name: "SEARCH_PERSON",
     label: "Worker",
     description: "Search and select a worker",
     icon: "/team.svg",
@@ -150,7 +150,7 @@ export const fieldTypes = [
   },
 
   {
-    name: "Asset",
+    name: "SEARCH_ASSET",
     label: "Asset",
     description: "Search and select an asset",
     icon: "/equipment.svg",
@@ -520,10 +520,20 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     setPopoverOpenFieldId(field.id)
                                   }
                                   variant="default"
-                                  className="w-fit h-full justify-center items-center rounded-md gap-0 bg-gray-400 hover:bg-gray-300"
+                                  className={`w-fit h-full justify-center items-center rounded-md gap-0 ${
+                                    fieldTypes.find(
+                                      (fieldType) =>
+                                        fieldType.name === field.type
+                                    )?.color || "bg-gray-400"
+                                  } hover:bg-opacity-80`}
                                 >
                                   <img
-                                    src="/default-icon.svg"
+                                    src={
+                                      fieldTypes.find(
+                                        (fieldType) =>
+                                          fieldType.name === field.type
+                                      )?.icon || "/default-icon.svg"
+                                    }
                                     alt={field.type}
                                     className="w-4 h-4 "
                                   />
