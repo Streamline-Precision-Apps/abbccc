@@ -415,11 +415,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     <>
       {/* Action Buttons */}
 
-      <div className="h-[3vh] flex flex-row items-center w-full gap-4 px-2 mb-4">
+      <div className="h-fit w-full flex flex-row  gap-4 mb-4">
         <Button
           variant={"outline"}
           size={"sm"}
-          className="bg-red-300 border-none"
+          className="bg-red-300 border-none rounded-lg"
           onClick={onCancel}
         >
           <div className="flex flex-row items-center">
@@ -434,9 +434,9 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
         <Button
           variant={"outline"}
           size={"sm"}
-          className="bg-sky-400 border-none"
+          className="bg-sky-400 border-none rounded-lg"
           onClick={saveForm}
-          disabled={!formSettings.name.trim()}
+          disabled={!formSettings.name}
         >
           <div className="flex flex-row items-center">
             <img
@@ -447,15 +447,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
             <p className="text-xs">Save</p>
           </div>
         </Button>
-        {!formSettings.name.trim() && (
-          <p className="text-xs text-red-500 flex items-start">
-            Please enter a form name to save
-          </p>
-        )}
       </div>
 
       {/* Form Builder Content */}
-      <div className="w-full h-[80vh] grid grid-cols-[275px_1fr_250px] px-2 overflow-y-auto">
+      <div className="w-full h-[85vh] grid grid-cols-[275px_1fr_250px] overflow-y-auto">
         <FormBuilderPanelLeft
           formFields={formFields}
           formSettings={formSettings}

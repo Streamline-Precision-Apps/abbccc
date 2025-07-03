@@ -11,14 +11,6 @@ import {
 import SubmissionTable from "./SubmissionTable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormIndividualTemplate } from "./hooks/types";
-import SearchBar from "../../../personnel/components/SearchBar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export default function IndividualFormView({
   formId,
