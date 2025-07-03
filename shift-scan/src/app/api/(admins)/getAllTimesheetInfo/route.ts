@@ -63,6 +63,8 @@ export async function GET(req: Request) {
             name: true,
           },
         },
+        nu: true,
+        Fp: true,
         startTime: true,
         endTime: true,
         comment: true,
@@ -70,6 +72,14 @@ export async function GET(req: Request) {
         createdAt: true,
         updatedAt: true,
         workType: true,
+        EmployeeEquipmentLogs: {
+          select: {
+            id: true,
+            equipmentId: true,
+            startTime: true,
+            endTime: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });

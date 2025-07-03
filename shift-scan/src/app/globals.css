@@ -9,6 +9,11 @@
   --color-custom-red: #fc3939;
   --color-custom-orange: #fc8f2b;
   --color-custom-yellow: #fce700;
+  --color-custom-gradient: linear-gradient(
+    to bottom right,
+    hsla(199, 77%, 63%, 0.6),
+    hsla(220, 47%, 26%, 0.6)
+  );
 }
 
 @layer utilities {
