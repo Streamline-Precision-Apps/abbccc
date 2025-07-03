@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
@@ -13,6 +14,7 @@ export async function equipmentTagExists(id: string) {
     });
     return equipment;
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error checking if equipment exists:", error);
     throw error;
   }

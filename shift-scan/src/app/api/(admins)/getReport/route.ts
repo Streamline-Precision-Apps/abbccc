@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
 
 export const dynamic = "force-dynamic"; // ✅ No "use server" needed in API routes
 
@@ -57,6 +58,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Invalid page parameter" }, { status: 400 });
   } catch (error) {
     console.error("Error fetching data:", error);
+
+    Sentry.captureException(error);
 
     let errorMessage = "Internal server error";
     if (error instanceof Error) {

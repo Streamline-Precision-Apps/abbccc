@@ -7,7 +7,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
-import { EquipmentStatus } from "@/lib/types";
+import { EquipmentState } from "@/lib/enums";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
@@ -17,7 +17,7 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { useNotification } from "@/app/context/NotificationContext";
 import { EquipmentLog, MaintenanceFormData, Priority } from "../types";
 import { Title } from "../../../mechanic/_components/Title";
-import { EquipmentState } from "@prisma/client";
+// Removed duplicate import of EquipmentState
 import { form } from "@nextui-org/theme";
 
 interface MaintenanceLogEquipmentProps {

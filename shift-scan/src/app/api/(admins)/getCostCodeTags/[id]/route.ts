@@ -1,6 +1,6 @@
-"use server";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
@@ -34,9 +34,10 @@ export async function GET(
 
     return NextResponse.json(tags.CCTags);
   } catch (error) {
-    console.error("Error fetching tags:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching tags:', error);
 
-    let errorMessage = "Failed to fetch tags";
+    let errorMessage = 'Failed to fetch tags';
     if (error instanceof Error) {
       errorMessage = error.message;
     }

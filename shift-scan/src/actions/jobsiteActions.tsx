@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 
 export async function getJobsiteForms() {
@@ -8,6 +9,7 @@ export async function getJobsiteForms() {
     console.log(jobsiteForms);
     return jobsiteForms;
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching jobsite forms:", error);
     throw error;
   }
@@ -32,10 +34,6 @@ export async function createJobsite(formData: FormData) {
   console.log(formData);
 
   const name = formData.get("temporaryJobsiteName") as string;
-  const address = formData.get("address") as string;
-  const city = formData.get("city") as string;
-  const state = formData.get("state") as string;
-  const zipCode = formData.get("zipCode") as string;
   const createdById = formData.get("createdById") as string;
   const qrId = formData.get("qrCode") as string;
 
@@ -47,10 +45,6 @@ export async function createJobsite(formData: FormData) {
       const existingJobsites = await prisma.jobsite.findMany({
         where: {
           name,
-          address,
-          city,
-          state,
-          zipCode,
         },
       });
 
@@ -64,10 +58,6 @@ export async function createJobsite(formData: FormData) {
         data: {
           name,
           qrId,
-          address,
-          city,
-          state,
-          zipCode,
           description: creationReasoning,
           comment: creationComment,
           isActive: true,
@@ -77,16 +67,6 @@ export async function createJobsite(formData: FormData) {
         },
       });
 
-      // Create PendingApproval for the new jobsite
-      await prisma.pendingApproval.create({
-        data: {
-          entityType: "JOBSITE",
-          jobsiteId: newJobsite.id,
-          createdById: createdById,
-          approvalStatus: "PENDING",
-          comment: creationComment,
-        },
-      });
       revalidatePath("/dashboard/qr-generator");
     });
     console.log("Jobsite created successfully.");

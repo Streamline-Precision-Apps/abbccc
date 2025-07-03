@@ -308,3 +308,8 @@ Remember that in production, all schema changes should go through proper testing
 
 # June 16 to June 20, 2025
 - I finished the clock out section. I fixed a bug in the tasco section as well. I restructured the clock out section to use the hook in the review section and fixed many types to work the way that it should I also fixed any types for the build.
+
+
+# July 1, 2025 - Tuesday
+- I fixed the filtering for the equipement logs.
+- I finished the update of the Sentry usage. I tested and fixed errors I ran into with the sentry changes.

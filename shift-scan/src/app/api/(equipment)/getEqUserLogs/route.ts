@@ -18,12 +18,13 @@ export async function GET() {
 
     const usersLogs = await prisma.employeeEquipmentLog.findMany({
       where: {
-        employeeId: userId,
-        createdAt: {
+        TimeSheet: {
+          userId: userId,
+        },
+        startTime: {
           lte: currentDate,
           gte: past24Hours,
         },
-        isFinished: false,
       },
       include: {
         Equipment: {
@@ -31,7 +32,7 @@ export async function GET() {
             name: true,
           },
         },
-        RefuelLogs: true,
+        RefuelLog: true,
       },
     });
 

@@ -1,20 +1,13 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-
-interface EmployeeEquipmentLog {
-  id: string;
-  equipmentId: string;
-  startTime: string;
-  endTime: string;
-  Equipment: { id: string; name: string } | null;
-}
+import type { EmployeeEquipmentLog } from "@/lib/types";
 
 interface EditEmployeeEquipmentLogsProps {
   logs: EmployeeEquipmentLog[];
   onLogChange: (
     idx: number,
     field: keyof EmployeeEquipmentLog,
-    value: any
+    value: EmployeeEquipmentLog[keyof EmployeeEquipmentLog]
   ) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;
@@ -69,7 +62,15 @@ export const EditEmployeeEquipmentLogs: React.FC<
             <label className="block text-xs">Start Time</label>
             <input
               type="time"
-              value={log.startTime ? log.startTime.slice(11, 16) : ""}
+              value={
+                log.startTime
+                  ? typeof log.startTime === "string"
+                    ? (log.startTime as string).slice(11, 16)
+                    : log.startTime instanceof Date
+                    ? log.startTime.toISOString().slice(11, 16)
+                    : ""
+                  : ""
+              }
               onChange={(e) => onLogChange(idx, "startTime", e.target.value)}
               className="border rounded px-2 py-1 w-full"
             />
@@ -94,7 +95,15 @@ export const EditEmployeeEquipmentLogs: React.FC<
             <label className="block text-xs">End Time</label>
             <input
               type="time"
-              value={log.endTime ? log.endTime.slice(11, 16) : ""}
+              value={
+                log.endTime
+                  ? typeof log.endTime === "string"
+                    ? (log.endTime as string).slice(11, 16)
+                    : log.endTime instanceof Date
+                    ? log.endTime.toISOString().slice(11, 16)
+                    : ""
+                  : ""
+              }
               onChange={(e) => onLogChange(idx, "endTime", e.target.value)}
               className="border rounded px-2 py-1 w-full"
             />

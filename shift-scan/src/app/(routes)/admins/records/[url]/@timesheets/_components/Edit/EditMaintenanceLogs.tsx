@@ -11,7 +11,11 @@ interface MaintenanceLog {
 
 interface EditMaintenanceLogsProps {
   logs: MaintenanceLog[];
-  onLogChange: (idx: number, field: keyof MaintenanceLog, value: any) => void;
+  onLogChange: (
+    idx: number,
+    field: keyof MaintenanceLog,
+    value: MaintenanceLog[keyof MaintenanceLog]
+  ) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;
   originalLogs?: MaintenanceLog[];

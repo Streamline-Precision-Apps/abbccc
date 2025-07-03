@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { ApprovalStatus } from "@/lib/enums";
 
 export async function GET(
   request: Request,
@@ -29,27 +30,21 @@ export async function GET(
   const filter = url.searchParams.get("filter");
 
   try {
-    enum EnumFormStatusFilter {
-      DENIED = "DENIED",
-      PENDING = "PENDING",
-      APPROVED = "APPROVED",
-    }
 
-    // Mapping filter statuses for better readability
-    const statusMap = {
-      DENIED: EnumFormStatusFilter.DENIED,
-      PENDING: EnumFormStatusFilter.PENDING,
-      APPROVED: EnumFormStatusFilter.APPROVED,
+    // Map filter to ApprovalStatus
+    const statusMap: Record<string, ApprovalStatus> = {
+      PENDING: ApprovalStatus.PENDING,
+      APPROVED: ApprovalStatus.APPROVED,
+      REJECTED: ApprovalStatus.REJECTED,
     };
 
-    // Get the status based on the filter or undefined if not provided
     const status = filter !== null ? statusMap[filter as keyof typeof statusMap] : undefined;
 
     // Query the database with the filter applied (if any)
     const timeSheet = await prisma.timeSheet.findMany({
       where: {
         userId: employee,
-        ...(status && { status }),  // Apply filter if defined
+        ...(status && { status }),
       },
       orderBy: { date: "desc" },
     });

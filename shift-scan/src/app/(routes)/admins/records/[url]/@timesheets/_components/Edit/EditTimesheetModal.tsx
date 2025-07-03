@@ -16,89 +16,40 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import type {
+  TruckingLog,
+  TascoLog,
+  EmployeeEquipmentLog,
+  MaintenanceLog,
+} from "@/lib/types";
+import type { TimesheetSubmission } from "@/actions/records-timesheets";
+
+// Define TimesheetData type for form state
+export type TimesheetData = {
+  date: Date | string;
+  User: { id: string; firstName: string; lastName: string };
+  Jobsite: { id: string; name: string };
+  CostCode: { id: string; name: string };
+  startTime: Date | null;
+  endTime: Date | null;
+  workType: string;
+  MaintenanceLogs: Array<{
+    id: string;
+    startTime: string;
+    endTime: string;
+    maintenanceId: string;
+  }>;
+  TruckingLogs: TruckingLog[];
+  TascoLogs: TascoLog[];
+  EmployeeEquipmentLogs: EmployeeEquipmentLog[];
+  [key: string]: unknown;
+};
 
 interface EditTimesheetModalProps {
   timesheetId: string;
   isOpen: boolean;
   onClose: () => void;
   onUpdated?: () => void; // Optional callback for parent to refetch
-}
-
-// Types for nested logs
-interface MaintenanceLog {
-  id: string;
-  startTime: string;
-  endTime: string;
-  maintenanceId: string;
-}
-interface EquipmentHauled {
-  id: string;
-  equipmentId: string;
-  jobSiteId: string;
-}
-interface Material {
-  id: string;
-  LocationOfMaterial: string;
-  name: string;
-  materialWeight: number;
-  lightWeight: number;
-  grossWeight: number;
-  loadType: string;
-}
-interface RefuelLog {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number;
-}
-interface StateMileage {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-}
-interface TruckingLog {
-  id: string;
-  equipmentId: string;
-  startingMileage: number;
-  endingMileage: number;
-  EquipmentHauled: EquipmentHauled[];
-  Materials: Material[];
-  RefuelLogs: RefuelLog[];
-  StateMileages: StateMileage[];
-}
-interface TascoLog {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string;
-  LoadQuantity: number;
-  RefuelLogs: RefuelLog[];
-  Equipment: { id: string; name: string } | null;
-}
-interface EmployeeEquipmentLog {
-  id: string;
-  equipmentId: string;
-  startTime: string;
-  endTime: string;
-  Equipment: { id: string; name: string } | null;
-}
-
-interface TimesheetData {
-  id: string;
-  date: Date | string;
-  User: { id: string; firstName: string; lastName: string };
-  Jobsite: { id: string; name: string };
-  CostCode: { id: string; name: string };
-  startTime: string;
-  endTime: string;
-  workType: string;
-  comment: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  MaintenanceLogs: MaintenanceLog[];
-  TruckingLogs: TruckingLog[];
-  TascoLogs: TascoLog[];
-  EmployeeEquipmentLogs: EmployeeEquipmentLog[];
 }
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
@@ -241,8 +192,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     logType: keyof TimesheetData,
     logIndex: number,
     field: keyof T,
-    value: any,
-    date?: string // pass the parent date if needed
+    value: T[keyof T],
+    date?: string
   ) => {
     if (!form) return;
     setForm({
@@ -257,25 +208,26 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       ),
     });
   };
-  // Nested array change handler (e.g., Materials in TruckingLogs)
   const handleNestedLogChange = <T extends object>(
     logType: keyof TimesheetData,
     logIndex: number,
-    nestedType: string,
+    nestedType: keyof T,
     nestedIndex: number,
     field: keyof T,
-    value: any
+    value: T[keyof T]
   ) => {
     if (!form) return;
     setForm({
       ...form,
-      [logType]: (form[logType] as any[]).map((log, idx) =>
+      [logType]: (form[logType] as T[]).map((log, idx) =>
         idx === logIndex
           ? {
               ...log,
-              [nestedType]: log[nestedType].map((item: T, nidx: number) =>
-                nidx === nestedIndex ? { ...item, [field]: value } : item
-              ),
+              [nestedType]: Array.isArray(log[nestedType])
+                ? (log[nestedType] as T[]).map((item, nidx) =>
+                    nidx === nestedIndex ? { ...item, [field]: value } : item
+                  )
+                : log[nestedType],
             }
           : log
       ),
@@ -301,10 +253,11 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     if (!form) return;
     setForm({
       ...form,
-      MaintenanceLogs: form.MaintenanceLogs.filter((_, i) => i !== idx),
+      MaintenanceLogs: form.MaintenanceLogs.filter((_, i: number) => i !== idx),
     });
   };
 
+  // Fix: Use correct property names and types for log creation and manipulation
   const addTruckingLog = () => {
     if (!form) return;
     setForm({
@@ -316,11 +269,18 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           equipmentId: "",
           startingMileage: 0,
           endingMileage: 0,
-          EquipmentHauled: [],
-          Materials: [],
-          RefuelLogs: [],
-          StateMileages: [],
-        },
+          equipmentHauled: [],
+          material: [],
+          refueled: [],
+          stateMileage: [],
+          comment: null,
+          netWeight: null,
+          taskName: null,
+          createdAt: new Date(),
+          timeSheetId: null,
+          equipment: null,
+          timeSheet: null,
+        } as TruckingLog,
       ],
     });
   };
@@ -328,7 +288,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     if (!form) return;
     setForm({
       ...form,
-      TruckingLogs: form.TruckingLogs.filter((_, i) => i !== idx),
+      TruckingLogs: form.TruckingLogs.filter((_, i: number) => i !== idx),
     });
   };
 
@@ -343,10 +303,12 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           shiftType: "",
           laborType: "",
           materialType: "",
-          LoadQuantity: 0,
-          RefuelLogs: [],
-          Equipment: null,
-        },
+          loadsHauled: 0,
+          loads: [],
+          refueled: [],
+          comment: "",
+          equipmentId: "",
+        } as TascoLog,
       ],
     });
   };
@@ -354,7 +316,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     if (!form) return;
     setForm({
       ...form,
-      TascoLogs: form.TascoLogs.filter((_, i) => i !== idx),
+      TascoLogs: form.TascoLogs.filter((_, i: number) => i !== idx),
     });
   };
 
@@ -367,10 +329,20 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         {
           id: Date.now().toString(),
           equipmentId: "",
-          startTime: "",
-          endTime: "",
-          Equipment: null,
-        },
+          jobsiteId: "",
+          employeeId: "",
+          startTime: null,
+          endTime: null,
+          comment: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isFinished: false,
+          status: "PENDING",
+          equipment: null,
+          jobsite: null,
+          employee: { id: "", firstName: "", lastName: "" },
+          timeSheet: null,
+        } as EmployeeEquipmentLog,
       ],
     });
   };
@@ -379,7 +351,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     setForm({
       ...form,
       EmployeeEquipmentLogs: form.EmployeeEquipmentLogs.filter(
-        (_, i) => i !== idx
+        (_, i: number) => i !== idx
       ),
     });
   };
@@ -403,66 +375,73 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   };
 
   // Transform TimesheetData to TimesheetSubmission
-  function toSubmission(form: TimesheetData): any {
+  // Fix: Convert Date | null to { date: string; time: string } for TimesheetSubmission
+  function toSubmission(form: TimesheetData): TimesheetSubmission {
+    const toDateTimeObj = (dt: Date | null): { date: string; time: string } => {
+      if (!dt) return { date: "", time: "" };
+      const iso = dt.toISOString();
+      return {
+        date: iso.slice(0, 10),
+        time: iso.slice(11, 16),
+      };
+    };
     return {
       form: {
-        date: form.date,
-        user: form.User, // ensure user is included
-        jobsite: form.Jobsite, // ensure jobsite is included
-        costcode: form.CostCode, // ensure costcode is included
-        startTime: form.startTime || "",
-        endTime: form.endTime || "",
+        date: form.date instanceof Date ? form.date : new Date(form.date),
+        user: form.User,
+        jobsite: form.Jobsite,
+        costcode: form.CostCode,
+        startTime: toDateTimeObj(form.startTime),
+        endTime: toDateTimeObj(form.endTime),
         workType: form.workType,
-        comment: form.comment,
+        // comment: form.comment, // Remove if not in TimesheetSubmission
       },
       maintenanceLogs: form.MaintenanceLogs.map((log) => ({
-        startTime: log.startTime || "",
-        endTime: log.endTime || "",
+        startTime: log.startTime,
+        endTime: log.endTime,
         maintenanceId: log.maintenanceId,
       })),
       truckingLogs: form.TruckingLogs.map((log) => ({
-        equipmentId: log.equipmentId,
-        startingMileage: log.startingMileage?.toString() || "",
-        endingMileage: log.endingMileage?.toString() || "",
-        equipmentHauled: log.EquipmentHauled.map((eq) => ({
+        equipmentId: log.equipmentId ?? "",
+        startingMileage: String(log.startingMileage ?? ""),
+        endingMileage: String(log.endingMileage ?? ""),
+        equipmentHauled: (log.equipmentHauled || []).map((eq) => ({
           equipment: { id: eq.equipmentId, name: "" },
-          jobsite: { id: eq.jobSiteId, name: "" },
+          jobsite: { id: "", name: "" }, // Provide empty jobsite to match expected type
         })),
-        materials: log.Materials.map((mat) => ({
-          location: mat.LocationOfMaterial,
+        materials: (log.material || []).map((mat) => ({
           name: mat.name,
-          materialWeight: mat.materialWeight?.toString() || "",
-          lightWeight: mat.lightWeight?.toString() || "",
-          grossWeight: mat.grossWeight?.toString() || "",
-          loadType: mat.loadType || "",
+          location: "",
+          materialWeight: "",
+          lightWeight: "",
+          grossWeight: "",
+          loadType: "",
         })),
-        refuelLogs: log.RefuelLogs.map((ref) => ({
-          gallonsRefueled: ref.gallonsRefueled?.toString() || "",
-          milesAtFueling: ref.milesAtFueling?.toString() || "",
+        refuelLogs: (log.refueled || []).map((ref) => ({
+          gallonsRefueled: String(ref.gallonsRefueled ?? ""),
+          milesAtFueling: "", // Provide empty string to match expected type
         })),
-        stateMileages: log.StateMileages.map((sm) => ({
+        stateMileages: (log.stateMileage || []).map((sm) => ({
           state: sm.state,
-          stateLineMileage: sm.stateLineMileage?.toString() || "",
+          stateLineMileage: String(sm.stateLineMileage ?? ""),
         })),
       })),
       tascoLogs: form.TascoLogs.map((log) => ({
-        shiftType: log.shiftType,
-        laborType: log.laborType,
+        shiftType: log.shiftType as "" | "ABCD Shift" | "E Shift" | "F Shift",
+        laborType: log.laborType as "" | "Equipment Operator" | "Labor",
         materialType: log.materialType,
-        loadQuantity: log.LoadQuantity?.toString() || "",
-        refuelLogs: log.RefuelLogs.map((ref) => ({
-          gallonsRefueled: ref.gallonsRefueled?.toString() || "",
+        loadQuantity: String(log.loadsHauled ?? ""),
+        refuelLogs: (log.refueled || []).map((ref) => ({
+          gallonsRefueled: String(ref.gallonsRefueled ?? ""),
         })),
-        equipment: log.Equipment
-          ? [{ id: log.Equipment.id, name: log.Equipment.name }]
-          : [],
+        equipment: log.equipmentId ? [{ id: log.equipmentId, name: "" }] : [],
       })),
       laborLogs: form.EmployeeEquipmentLogs.map((log) => ({
-        equipment: log.Equipment
-          ? { id: log.Equipment.id, name: log.Equipment.name }
+        equipment: log.equipment
+          ? { id: log.equipment.id, name: log.equipment.name }
           : { id: log.equipmentId, name: "" },
-        startTime: log.startTime || "",
-        endTime: log.endTime || "",
+        startTime: String(log.startTime ?? ""),
+        endTime: String(log.endTime ?? ""),
       })),
     };
   }
@@ -477,8 +456,12 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       await adminUpdateTimesheet(timesheetId, toSubmission(form));
       if (onUpdated) onUpdated();
       onClose();
-    } catch (err: any) {
-      setError(err.message || "Failed to update timesheet");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to update timesheet");
+      } else {
+        setError("Failed to update timesheet");
+      }
     } finally {
       setLoading(false);
     }
@@ -490,20 +473,17 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     onChange,
     label,
   }: {
-    value?: string;
-    onChange: (val: string) => void;
+    value?: Date | null;
+    onChange: (val: Date | null) => void;
     label: string;
   }) {
-    // Always derive date and time from value prop
-    const dateValue = value ? new Date(value) : undefined;
-    const timeValue = value ? format(new Date(value), "HH:mm") : "";
-
-    // Handlers update only the changed part and call onChange
+    const dateValue = value ?? undefined;
+    const timeValue = value ? format(value, "HH:mm") : "";
     const handleDateChange = (date: Date | undefined) => {
       if (!date) return;
       const [hours, minutes] = timeValue ? timeValue.split(":") : ["00", "00"];
       date.setHours(Number(hours), Number(minutes), 0, 0);
-      onChange(date.toISOString());
+      onChange(date);
     };
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const time = e.target.value;
@@ -511,9 +491,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       const [hours, minutes] = time.split(":");
       const newDate = new Date(dateValue);
       newDate.setHours(Number(hours), Number(minutes), 0, 0);
-      onChange(newDate.toISOString());
+      onChange(newDate);
     };
-
     return (
       <div>
         <label className="block text-xs font-semibold mb-1">{label}</label>
@@ -583,7 +562,9 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             </div>
             <EditGeneralSection
               form={form}
-              setForm={setForm}
+              setForm={(f) =>
+                setForm((prev) => ({ ...prev, ...f } as TimesheetData))
+              }
               userOptions={userOptions}
               jobsiteOptions={jobsiteOptions}
               costCodeOptions={costCodeOptions}
@@ -610,7 +591,9 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 <select
                   name="workType"
                   value={form.workType || ""}
-                  onChange={(e) => handleChange(e as any)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    handleChange(e)
+                  }
                   className="border rounded px-2 py-1 w-full"
                 >
                   <option value="">Select work type</option>
@@ -641,7 +624,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 </label>
                 <textarea
                   name="comment"
-                  value={form.comment || ""}
+                  value={typeof form.comment === "string" ? form.comment : ""}
                   onChange={handleChange}
                   className="border rounded px-2 py-1 w-full"
                 />
@@ -700,8 +683,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   handleLogChange<TruckingLog>(
                     "TruckingLogs",
                     idx,
-                    field,
-                    value
+                    field as keyof TruckingLog,
+                    value as TruckingLog[keyof TruckingLog]
                   )
                 }
                 onAddLog={addTruckingLog}
@@ -713,16 +696,24 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   field,
                   value
                 ) =>
-                  handleNestedLogChange<any>(
+                  handleNestedLogChange<TruckingLog>(
                     "TruckingLogs",
                     logIndex,
                     nestedType,
                     nestedIndex,
-                    field,
-                    value
+                    field as keyof TruckingLog,
+                    value as TruckingLog[keyof TruckingLog]
                   )
                 }
-                originalLogs={originalForm?.TruckingLogs || []}
+                originalLogs={
+                  originalForm?.TruckingLogs?.map((log) => ({
+                    ...log,
+                    equipmentHauled: log.equipmentHauled || [],
+                    material: log.material || [],
+                    refueled: log.refueled || [],
+                    stateMileage: log.stateMileage || [],
+                  })) || []
+                }
                 onUndoLogField={(idx, field) => {
                   if (!form || !originalForm) return;
                   setForm({
@@ -743,7 +734,12 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               <EditTascoLogs
                 logs={form.TascoLogs}
                 onLogChange={(idx, field, value) =>
-                  handleLogChange<TascoLog>("TascoLogs", idx, field, value)
+                  handleLogChange<TascoLog>(
+                    "TascoLogs",
+                    idx,
+                    field as keyof TascoLog,
+                    value as TascoLog[keyof TascoLog]
+                  )
                 }
                 onAddLog={addTascoLog}
                 onRemoveLog={removeTascoLog}
@@ -754,16 +750,25 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   field,
                   value
                 ) =>
-                  handleNestedLogChange<any>(
+                  handleNestedLogChange<TascoLog>(
                     "TascoLogs",
                     logIndex,
                     nestedType,
                     nestedIndex,
-                    field,
-                    value
+                    field as keyof TascoLog,
+                    value as TascoLog[keyof TascoLog]
                   )
                 }
-                originalLogs={originalForm?.TascoLogs || []}
+                originalLogs={
+                  originalForm?.TascoLogs?.map((log) => ({
+                    ...log,
+                    loadsHauled: log.loadsHauled || 0,
+                    loads: log.loads || [],
+                    refueled: log.refueled || [],
+                    equipmentId: log.equipmentId || "",
+                    comment: log.comment || "",
+                  })) || []
+                }
                 onUndoLogField={(idx, field) => {
                   if (!form || !originalForm) return;
                   setForm({

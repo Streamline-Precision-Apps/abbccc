@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { FormStatus, Permission, WorkType } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 
 interface NewEmployeeFormData {
   username: string;
@@ -176,6 +177,7 @@ export async function updateEmployeeAndContact(formData: FormData) {
     revalidatePath(`/admins/personnel/${id}`);
     return { success: true };
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error updating employee and contact info:", error);
     return {
       success: false,
@@ -289,13 +291,10 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
     const equipmentLog = await prisma.employeeEquipmentLog.create({
       data: {
         equipmentId: "new", // this is a placeholder equipment
-        jobsiteId: "new", // this is a placeholder jobsite
-        employeeId: userId,
+        timeSheetId: "new", // this is a placeholder timesheet
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
         comment: null,
-        isFinished: true,
-        status: FormStatus.APPROVED,
       },
     });
 
@@ -324,13 +323,9 @@ export async function saveEquipmentLogs(formData: FormData) {
         endTime: formData.get("endTime") as string,
         equipmentId: formData.get("equipmentId") as string,
         comment: formData.get("comment") as string,
-        timeSheetId: (formData.get("timeSheetId") as string) || null,
+        timeSheetId: (formData.get("timeSheetId") as string) || undefined,
 
-        MaintenanceId: {
-          connect: {
-            id: formData.get("maintenanceId") as string,
-          },
-        },
+        maintenanceId: (formData.get("maintenanceId") as string) || undefined,
       },
     });
 
@@ -416,10 +411,6 @@ export async function updateJobsite(formData: FormData) {
     console.log(formData);
     const name = formData.get("name") as string;
     const address = formData.get("address") as string;
-    const zipCode = formData.get("zipCode") as string;
-    const city = formData.get("city") as string;
-    const state = formData.get("state") as string;
-    const country = formData.get("country") as string;
     const description = formData.get("description") as string;
     const comment = formData.get("jobsite_comment") as string;
     const isActive = Boolean(formData.get("isActive") as string);
@@ -431,11 +422,7 @@ export async function updateJobsite(formData: FormData) {
       },
       data: {
         name: name,
-        address: address,
-        city: city,
-        state: state,
-        country: country,
-        zipCode: zipCode,
+        Address: { connect: { id: address } },
         description: description,
         comment: comment,
         isActive: isActive,

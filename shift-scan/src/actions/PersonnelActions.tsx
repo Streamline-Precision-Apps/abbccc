@@ -160,11 +160,6 @@ export async function createJobsite(formData: FormData) {
     const newJobsite = await prisma.jobsite.create({
       data: {
         name: formData.get("name") as string,
-        address: formData.get("address") as string,
-        city: formData.get("city") as string,
-        state: formData.get("state") as string,
-        zipCode: formData.get("zip") as string,
-        country: formData.get("country") as string,
         description: formData.get("description") as string,
         comment: (formData.get("jobsite_comment") as string) || null,
         isActive: true,
@@ -173,16 +168,7 @@ export async function createJobsite(formData: FormData) {
         Client: { connect: { id: formData.get("clientId") as string } },
       },
     });
-    // Create PendingApproval for the new jobsite
-    await prisma.pendingApproval.create({
-      data: {
-        entityType: "JOBSITE",
-        jobsiteId: newJobsite.id,
-        createdById: formData.get("createdById") as string,
-        approvalStatus: "PENDING",
-        comment: (formData.get("jobsite_comment") as string) || null,
-      },
-    });
+    // Removed creation of PendingApproval as the model does not exist in Prisma schema
     console.log("Jobsite created successfully.");
 
     // Revalidate the path

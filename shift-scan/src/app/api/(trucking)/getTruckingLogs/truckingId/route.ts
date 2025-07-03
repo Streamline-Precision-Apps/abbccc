@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
+
 export async function GET(request: Request) {
   let session;
 
@@ -9,6 +12,7 @@ export async function GET(request: Request) {
   try {
     session = await auth();
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Authentication failed:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
@@ -51,10 +55,10 @@ export async function GET(request: Request) {
     }
 
     const truckingLogs = truckingId.TruckingLogs[0].id;
-
     // Return the trucking log ID
     return NextResponse.json(truckingLogs);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching trucking log:", error);
     return NextResponse.json(
       { error: "Failed to fetch trucking log" },
@@ -62,3 +66,4 @@ export async function GET(request: Request) {
     );
   }
 }
+

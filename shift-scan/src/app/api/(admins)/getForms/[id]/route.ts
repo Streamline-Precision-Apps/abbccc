@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -33,9 +35,10 @@ export async function GET(
 
     return NextResponse.json(formTemplate);
   } catch (error) {
-    console.error("Error fetching form:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching form:', error);
 
-    let errorMessage = "Failed to fetch form data";
+    let errorMessage = 'Failed to fetch form data';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
