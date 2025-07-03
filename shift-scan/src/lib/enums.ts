@@ -12,6 +12,8 @@ import {
   EquipmentUsageType,
   EquipmentState,
   ApprovalStatus,
+  FormTemplateCategory,
+  FormTemplateStatus,
 } from "@prisma/client";
 
 export {
@@ -28,4 +30,6 @@ export {
   EquipmentUsageType,
   EquipmentState,
   ApprovalStatus,
+  FormTemplateCategory,
+  FormTemplateStatus,
 };

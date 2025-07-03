@@ -13,10 +13,13 @@ import { Separator } from "@/components/ui/separator";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { FormBuilderPanelLeft } from "../FormBuilder/FormBuilderPanelLeft";
-import FormBuilderPlaceholder from "../FormBuilder/FormBuilderPlaceholder";
-import { FormBuilderPanelRight } from "../FormBuilder/FormBuilderPanelRight";
 import { Toggle } from "@/components/ui/toggle";
+import FormBuilderPlaceholder from "../../../create/_component/FormBuilder/FormBuilderPlaceholder";
+import { FormBuilderPanelRight } from "../../../create/_component/FormBuilder/FormBuilderPanelRight";
+import { toast } from "sonner";
+import { updateFormTemplate } from "@/actions/records-forms";
+import { FormEditorPanelLeft } from "./FormEditorPanelLeft";
+import Spinner from "@/components/(animations)/spinner";
 
 // Types for form building
 export interface FormField {
@@ -32,7 +35,7 @@ export interface FormField {
   multiple?: boolean;
   content?: string | null;
   filter?: string | null;
-  Options?: string[] | undefined;
+  Options?: { id: string; value: string }[];
 }
 
 export interface FormGrouping {
@@ -48,12 +51,10 @@ export interface FormSettings {
   name: string;
   formType: string;
   description: string;
-  category: string;
-  status: string;
   requireSignature: boolean;
   createdAt: string;
   updatedAt: string;
-  isActive: boolean;
+  isActive: string;
   isSignatureRequired: boolean;
   FormGrouping: FormGrouping[];
 }
@@ -216,12 +217,10 @@ export default function FormEditor({
     name: "",
     formType: "",
     description: "",
-    category: "",
-    status: "",
     requireSignature: false,
     createdAt: "",
     updatedAt: "",
-    isActive: false,
+    isActive: "",
     isSignatureRequired: false,
     FormGrouping: [],
   });
@@ -265,8 +264,6 @@ export default function FormEditor({
           name: data.name,
           formType: data.formType,
           description: data.description || "",
-          category: data.category || "",
-          status: data.status || "",
           requireSignature: data.isSignatureRequired,
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
@@ -276,7 +273,7 @@ export default function FormEditor({
         });
       } catch (error) {
         console.error("Error fetching form:", error);
-        alert("Failed to fetch form data");
+        toast.error("Failed to fetch form data");
       } finally {
         setLoading(false);
       }
@@ -354,62 +351,52 @@ export default function FormEditor({
   };
 
   // Save form to database
-  const saveForm = async () => {
+  /**
+   * Save or update the form template using the server action.
+   * Submits all current form field and settings data to the server.
+   */
+  const editForm = async () => {
     if (!formSettings.name.trim()) {
-      alert("Please enter a form name");
+      toast.error("Please enter a form name");
       return;
     }
-
+    setLoading(true);
     try {
-      const { saveFormTemplate } = await import("@/actions/records-forms");
-
+      // Prepare the payload for the updateFormTemplate server action
       const payload = {
         settings: {
-          id: formSettings.id,
-          companyId: formSettings.companyId,
           name: formSettings.name,
-          formType: formSettings.formType,
           description: formSettings.description,
-          category: formSettings.category,
-          status: formSettings.status,
+          formType: formSettings.formType,
+          status: formSettings.isActive, // status isActive is used for status
           requireSignature: formSettings.requireSignature,
-          createdAt: formSettings.createdAt,
-          updatedAt: formSettings.updatedAt,
-          isActive: formSettings.isActive,
-          isSignatureRequired: formSettings.isSignatureRequired,
         },
-        fields: formFields,
+        fields: formFields.map((field) => ({
+          id: field.id,
+          label: field.label,
+          type: field.type,
+          required: field.required,
+          order: field.order,
+          placeholder: field.placeholder ?? undefined,
+          maxLength: field.maxLength ?? undefined,
+          Options: field.Options ?? [],
+        })),
         companyId: formSettings.companyId,
+        formId: formSettings.id,
       };
 
-      const result = await saveFormTemplate(payload);
+      const result = await updateFormTemplate(payload);
 
       if (result.success) {
-        alert("Form saved successfully!");
-        console.log("Saved form:", result);
-        setFormSettings({
-          id: "",
-          companyId: "",
-          name: "",
-          formType: "",
-          description: "",
-          category: "",
-          status: "",
-          requireSignature: false,
-          createdAt: "",
-          updatedAt: "",
-          isActive: false,
-          isSignatureRequired: false,
-          FormGrouping: [],
-        });
-        setFormFields([]);
-        setSelectedField(null);
+        toast.success("Form saved successfully!");
       } else {
-        alert(`Failed to save form: ${result.error}`);
+        toast.error(`Failed to save form: ${result.error}`);
       }
     } catch (error) {
       console.error("Save error:", error);
-      alert("Error saving form");
+      toast.error("Error saving form");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -434,6 +421,7 @@ export default function FormEditor({
           variant={"outline"}
           size={"sm"}
           className="bg-red-300 border-none rounded-lg"
+          disabled={loading}
           onClick={onCancel}
         >
           <div className="flex flex-row items-center">
@@ -442,15 +430,15 @@ export default function FormEditor({
               alt="Cancel Icon"
               className="w-3 h-3 mr-2"
             />
-            <p className="text-xs">Cancel</p>
+            <p className="text-xs">Close</p>
           </div>
         </Button>
         <Button
           variant={"outline"}
           size={"sm"}
           className="bg-sky-400 border-none rounded-lg"
-          onClick={saveForm}
-          disabled={!formSettings.name}
+          onClick={editForm}
+          disabled={loading}
         >
           <div className="flex flex-row items-center">
             <img
@@ -464,8 +452,9 @@ export default function FormEditor({
       </div>
 
       {/* Form Builder Content */}
-      <div className="w-full h-[85vh] grid grid-cols-[275px_1fr_250px] overflow-y-auto">
-        <FormBuilderPanelLeft
+
+      <div className="w-full h-[85vh] grid grid-cols-[275px_1fr_250px] overflow-y-auto relative">
+        <FormEditorPanelLeft
           formFields={formFields}
           formSettings={formSettings}
           updateFormSettings={updateFormSettings}
@@ -874,8 +863,18 @@ export default function FormEditor({
                                       variant="outline"
                                       onClick={() => {
                                         const newOptions = [
-                                          ...(field.Options || []),
-                                          "",
+                                          ...(field.Options || []).filter(
+                                            (
+                                              opt
+                                            ): opt is {
+                                              id: string;
+                                              value: string;
+                                            } => typeof opt !== "string"
+                                          ),
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -894,23 +893,47 @@ export default function FormEditor({
                                   {field.Options &&
                                     field.Options.length > 0 && (
                                       <div className="flex flex-col gap-2 mt-2">
-                                        {field.Options?.map(
-                                          (option, optionIndex) => (
+                                        {(field.Options || [])
+                                          .filter(
+                                            (
+                                              opt
+                                            ): opt is {
+                                              id: string;
+                                              value: string;
+                                            } => typeof opt !== "string"
+                                          )
+                                          .map((option, optionIndex) => (
                                             <div
-                                              key={optionIndex}
+                                              key={option.id || optionIndex}
                                               className="flex gap-2"
                                             >
                                               <div className="flex items-center">
                                                 <p>{optionIndex + 1}. </p>
                                               </div>
                                               <Input
-                                                value={option}
+                                                value={option.value || ""}
                                                 onChange={(e) => {
-                                                  const newOptions = [
-                                                    ...(field.Options || []),
-                                                  ];
-                                                  newOptions[optionIndex] =
-                                                    e.target.value;
+                                                  const newOptions = (
+                                                    field.Options || []
+                                                  )
+                                                    .filter(
+                                                      (
+                                                        opt
+                                                      ): opt is {
+                                                        id: string;
+                                                        value: string;
+                                                      } =>
+                                                        typeof opt !== "string"
+                                                    )
+                                                    .map((opt, idx) =>
+                                                      idx === optionIndex
+                                                        ? {
+                                                            ...opt,
+                                                            value:
+                                                              e.target.value,
+                                                          }
+                                                        : opt
+                                                    );
                                                   updateField(field.id, {
                                                     Options: newOptions,
                                                   });
@@ -924,8 +947,19 @@ export default function FormEditor({
                                                 size="sm"
                                                 variant="ghost"
                                                 onClick={() => {
-                                                  const newOptions =
-                                                    field.Options?.filter(
+                                                  const newOptions = (
+                                                    field.Options || []
+                                                  )
+                                                    .filter(
+                                                      (
+                                                        opt
+                                                      ): opt is {
+                                                        id: string;
+                                                        value: string;
+                                                      } =>
+                                                        typeof opt !== "string"
+                                                    )
+                                                    .filter(
                                                       (_, i) =>
                                                         i !== optionIndex
                                                     );
@@ -942,8 +976,7 @@ export default function FormEditor({
                                                 />
                                               </Button>
                                             </div>
-                                          )
-                                        )}
+                                          ))}
                                       </div>
                                     )}
                                 </div>
@@ -1006,8 +1039,18 @@ export default function FormEditor({
                                       variant="outline"
                                       onClick={() => {
                                         const newOptions = [
-                                          ...(field.Options || []),
-                                          "",
+                                          ...(field.Options || []).filter(
+                                            (
+                                              opt
+                                            ): opt is {
+                                              id: string;
+                                              value: string;
+                                            } => typeof opt !== "string"
+                                          ),
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -1024,23 +1067,45 @@ export default function FormEditor({
                                     </Button>
                                   </div>
                                   <div className="space-y-2 mt-2">
-                                    {field.Options?.map(
-                                      (option, optionIndex) => (
+                                    {(field.Options || [])
+                                      .filter(
+                                        (
+                                          opt
+                                        ): opt is {
+                                          id: string;
+                                          value: string;
+                                        } => typeof opt !== "string"
+                                      )
+                                      .map((option, optionIndex) => (
                                         <div
-                                          key={optionIndex}
+                                          key={option.id || optionIndex}
                                           className="flex gap-2"
                                         >
                                           <div className="flex items-center">
                                             <p>{optionIndex + 1}. </p>
                                           </div>
                                           <Input
-                                            value={option}
+                                            value={option.value}
                                             onChange={(e) => {
-                                              const newOptions = [
-                                                ...(field.Options || []),
-                                              ];
-                                              newOptions[optionIndex] =
-                                                e.target.value;
+                                              const newOptions = (
+                                                field.Options || []
+                                              )
+                                                .filter(
+                                                  (
+                                                    opt
+                                                  ): opt is {
+                                                    id: string;
+                                                    value: string;
+                                                  } => typeof opt !== "string"
+                                                )
+                                                .map((opt, idx) =>
+                                                  idx === optionIndex
+                                                    ? {
+                                                        ...opt,
+                                                        value: e.target.value,
+                                                      }
+                                                    : opt
+                                                );
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1054,8 +1119,18 @@ export default function FormEditor({
                                             size="sm"
                                             variant="ghost"
                                             onClick={() => {
-                                              const newOptions =
-                                                field.Options?.filter(
+                                              const newOptions = (
+                                                field.Options || []
+                                              )
+                                                .filter(
+                                                  (
+                                                    opt
+                                                  ): opt is {
+                                                    id: string;
+                                                    value: string;
+                                                  } => typeof opt !== "string"
+                                                )
+                                                .filter(
                                                   (_, i) => i !== optionIndex
                                                 );
                                               updateField(field.id, {
@@ -1071,8 +1146,7 @@ export default function FormEditor({
                                             />
                                           </Button>
                                         </div>
-                                      )
-                                    )}
+                                      ))}
                                   </div>
                                 </div>
                               )}
@@ -1088,8 +1162,18 @@ export default function FormEditor({
                                       variant="outline"
                                       onClick={() => {
                                         const newOptions = [
-                                          ...(field.Options || []),
-                                          "",
+                                          ...(field.Options || []).filter(
+                                            (
+                                              opt
+                                            ): opt is {
+                                              id: string;
+                                              value: string;
+                                            } => typeof opt !== "string"
+                                          ),
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -1106,23 +1190,45 @@ export default function FormEditor({
                                     </Button>
                                   </div>
                                   <div className="space-y-2 mt-2">
-                                    {field.Options?.map(
-                                      (option, optionIndex) => (
+                                    {(field.Options || [])
+                                      .filter(
+                                        (
+                                          opt
+                                        ): opt is {
+                                          id: string;
+                                          value: string;
+                                        } => typeof opt !== "string"
+                                      )
+                                      .map((option, optionIndex) => (
                                         <div
-                                          key={optionIndex}
+                                          key={option.id || optionIndex}
                                           className="flex gap-2"
                                         >
                                           <div className="flex items-center">
                                             <p>{optionIndex + 1}. </p>
                                           </div>
                                           <Input
-                                            value={option}
+                                            value={option.value}
                                             onChange={(e) => {
-                                              const newOptions = [
-                                                ...(field.Options || []),
-                                              ];
-                                              newOptions[optionIndex] =
-                                                e.target.value;
+                                              const newOptions = (
+                                                field.Options || []
+                                              )
+                                                .filter(
+                                                  (
+                                                    opt
+                                                  ): opt is {
+                                                    id: string;
+                                                    value: string;
+                                                  } => typeof opt !== "string"
+                                                )
+                                                .map((opt, idx) =>
+                                                  idx === optionIndex
+                                                    ? {
+                                                        ...opt,
+                                                        value: e.target.value,
+                                                      }
+                                                    : opt
+                                                );
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1136,8 +1242,18 @@ export default function FormEditor({
                                             size="sm"
                                             variant="ghost"
                                             onClick={() => {
-                                              const newOptions =
-                                                field.Options?.filter(
+                                              const newOptions = (
+                                                field.Options || []
+                                              )
+                                                .filter(
+                                                  (
+                                                    opt
+                                                  ): opt is {
+                                                    id: string;
+                                                    value: string;
+                                                  } => typeof opt !== "string"
+                                                )
+                                                .filter(
                                                   (_, i) => i !== optionIndex
                                                 );
                                               updateField(field.id, {
@@ -1153,8 +1269,7 @@ export default function FormEditor({
                                             />
                                           </Button>
                                         </div>
-                                      )
-                                    )}
+                                      ))}
                                   </div>
                                 </div>
                               )}
@@ -1225,6 +1340,11 @@ export default function FormEditor({
         </ScrollArea>
 
         <FormBuilderPanelRight addField={addField} />
+        {loading && (
+          <div className="absolute inset-0 z-40 w-full h-full bg-white bg-opacity-20 flex items-center justify-center">
+            <Spinner size={40} />
+          </div>
+        )}
       </div>
     </>
   );
