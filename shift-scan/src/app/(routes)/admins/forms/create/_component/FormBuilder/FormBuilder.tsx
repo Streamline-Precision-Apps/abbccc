@@ -27,14 +27,13 @@ export interface FormField {
   type: string;
   required: boolean;
   order: number;
-
   placeholder?: string;
   minLength?: number | undefined;
   maxLength?: number | undefined;
   multiple?: boolean;
   content?: string | null;
   filter?: string | null;
-  Options?: string[] | undefined;
+  Options?: { id: string; value: string }[];
 }
 
 export interface FormGrouping {
@@ -50,12 +49,11 @@ export interface FormSettings {
   name: string;
   formType: string;
   description: string;
-  category: string;
   status: string;
   requireSignature: boolean;
   createdAt: string;
   updatedAt: string;
-  isActive: boolean;
+  isActive: string;
   isSignatureRequired: boolean;
   FormGrouping: FormGrouping[];
 }
@@ -212,12 +210,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     name: "",
     formType: "",
     description: "",
-    category: "",
     status: "",
     requireSignature: false,
     createdAt: "",
     updatedAt: "",
-    isActive: false,
+    isActive: "",
     isSignatureRequired: false,
     FormGrouping: [],
   });
@@ -243,38 +240,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
         field.id === fieldId ? { ...field, ...updatedProperties } : field
       )
     );
-  };
-
-  const handleApiResponse = (response: {
-    FormGrouping: FormGrouping[];
-    name: string;
-    isSignatureRequired: boolean;
-    isActive: boolean;
-  }) => {
-    const formGrouping = response.FormGrouping.map((group: FormGrouping) => ({
-      ...group,
-      Fields: group.Fields.map((field: FormField) => ({
-        ...field,
-        Options: field.Options || [],
-      })),
-    }));
-
-    setFormFields(formGrouping.flatMap((group) => group.Fields));
-    setFormSettings({
-      id: "", // Provide default values for missing properties
-      companyId: "",
-      name: response.name,
-      formType: "",
-      description: "",
-      category: "",
-      status: "",
-      requireSignature: response.isSignatureRequired,
-      createdAt: "",
-      updatedAt: "",
-      isActive: response.isActive,
-      isSignatureRequired: response.isSignatureRequired,
-      FormGrouping: [],
-    });
   };
 
   // Add field to form
@@ -356,7 +321,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           name: formSettings.name,
           formType: formSettings.formType,
           description: formSettings.description,
-          category: formSettings.category,
           status: formSettings.status,
           requireSignature: formSettings.requireSignature,
           createdAt: formSettings.createdAt,
@@ -379,12 +343,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           name: "",
           formType: "",
           description: "",
-          category: "",
           status: "",
           requireSignature: false,
           createdAt: "",
           updatedAt: "",
-          isActive: false,
+          isActive: "",
           isSignatureRequired: false,
           FormGrouping: [],
         });
@@ -811,7 +774,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       onClick={() => {
                                         const newOptions = [
                                           ...(field.Options || []),
-                                          "",
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -830,23 +796,27 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                   {field.Options &&
                                     field.Options.length > 0 && (
                                       <div className="flex flex-col gap-2 mt-2">
-                                        {field.Options?.map(
+                                        {field.Options.map(
                                           (option, optionIndex) => (
                                             <div
-                                              key={optionIndex}
+                                              key={option.id || optionIndex}
                                               className="flex gap-2"
                                             >
                                               <div className="flex items-center">
                                                 <p>{optionIndex + 1}. </p>
                                               </div>
                                               <Input
-                                                value={option}
+                                                value={option.value || ""} // Ensure value is a string
                                                 onChange={(e) => {
                                                   const newOptions = [
                                                     ...(field.Options || []),
                                                   ];
-                                                  newOptions[optionIndex] =
-                                                    e.target.value;
+                                                  newOptions[optionIndex] = {
+                                                    id:
+                                                      option.id ||
+                                                      Date.now().toString(),
+                                                    value: e.target.value,
+                                                  };
                                                   updateField(field.id, {
                                                     Options: newOptions,
                                                   });
@@ -864,7 +834,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                                     field.Options?.filter(
                                                       (_, i) =>
                                                         i !== optionIndex
-                                                    );
+                                                    ) || [];
                                                   updateField(field.id, {
                                                     Options: newOptions,
                                                   });
@@ -884,52 +854,6 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     )}
                                 </div>
                               )}
-                              {field.type === "textarea" && (
-                                <div>
-                                  <Separator className="my-2" />
-                                  <p className="text-sm font-semibold">
-                                    Character Limits (Optional)
-                                  </p>
-                                  <div className="flex flex-row mt-2 gap-2">
-                                    <div className="flex flex-col">
-                                      <Label className="text-xs font-normal">
-                                        Min Length
-                                      </Label>
-                                      <Input
-                                        type="number"
-                                        value={field.minLength || ""}
-                                        onChange={(e) =>
-                                          updateField(field.id, {
-                                            minLength:
-                                              parseInt(e.target.value) ||
-                                              undefined,
-                                          })
-                                        }
-                                        className="bg-white rounded-lg text-xs w-48"
-                                        placeholder="Enter min length"
-                                      />
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <Label className="text-xs font-normal">
-                                        Max Length
-                                      </Label>
-                                      <Input
-                                        type="number"
-                                        value={field.maxLength || ""}
-                                        onChange={(e) =>
-                                          updateField(field.id, {
-                                            maxLength:
-                                              parseInt(e.target.value) ||
-                                              undefined,
-                                          })
-                                        }
-                                        className="bg-white rounded-lg text-xs w-48"
-                                        placeholder="Enter max length"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
                               {field.type === "radio" && (
                                 <div className="mt-2">
                                   <Separator className="my-2" />
@@ -943,7 +867,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       onClick={() => {
                                         const newOptions = [
                                           ...(field.Options || []),
-                                          "",
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -963,20 +890,24 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     {field.Options?.map(
                                       (option, optionIndex) => (
                                         <div
-                                          key={optionIndex}
+                                          key={option.id || optionIndex}
                                           className="flex gap-2"
                                         >
                                           <div className="flex items-center">
                                             <p>{optionIndex + 1}. </p>
                                           </div>
                                           <Input
-                                            value={option}
+                                            value={option.value || ""}
                                             onChange={(e) => {
                                               const newOptions = [
                                                 ...(field.Options || []),
                                               ];
-                                              newOptions[optionIndex] =
-                                                e.target.value;
+                                              newOptions[optionIndex] = {
+                                                id:
+                                                  option.id ||
+                                                  Date.now().toString(),
+                                                value: e.target.value,
+                                              };
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -993,7 +924,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                               const newOptions =
                                                 field.Options?.filter(
                                                   (_, i) => i !== optionIndex
-                                                );
+                                                ) || [];
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1025,7 +956,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                       onClick={() => {
                                         const newOptions = [
                                           ...(field.Options || []),
-                                          "",
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -1045,20 +979,24 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                     {field.Options?.map(
                                       (option, optionIndex) => (
                                         <div
-                                          key={optionIndex}
+                                          key={option.id || optionIndex}
                                           className="flex gap-2"
                                         >
                                           <div className="flex items-center">
                                             <p>{optionIndex + 1}. </p>
                                           </div>
                                           <Input
-                                            value={option}
+                                            value={option.value || ""}
                                             onChange={(e) => {
                                               const newOptions = [
                                                 ...(field.Options || []),
                                               ];
-                                              newOptions[optionIndex] =
-                                                e.target.value;
+                                              newOptions[optionIndex] = {
+                                                id:
+                                                  option.id ||
+                                                  Date.now().toString(),
+                                                value: e.target.value,
+                                              };
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1075,7 +1013,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                                               const newOptions =
                                                 field.Options?.filter(
                                                   (_, i) => i !== optionIndex
-                                                );
+                                                ) || [];
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });

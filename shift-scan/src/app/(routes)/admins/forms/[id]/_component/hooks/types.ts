@@ -28,7 +28,7 @@ export interface FormIndividualTemplate {
   formType: string;
   createdAt: string;
   updatedAt: string;
-  isActive: boolean;
+  isActive: string;
   isSignatureRequired: boolean;
   FormGrouping: Grouping[];
   Submissions: Submission[];

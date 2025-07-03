@@ -1,16 +1,16 @@
 model FormTemplate {
-  id                  String             @id @default(uuid())
+  id                  String               @id @default(uuid())
   companyId           String
   name                String
   description         String? // description of the form
-  formType            String?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  isActive            FormTemplateStatus @default(DRAFT)
-  isSignatureRequired Boolean            @default(false)
+  formType            FormTemplateCategory @default(GENERAL)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  isActive            FormTemplateStatus   @default(DRAFT)
+  isSignatureRequired Boolean              @default(false)
   Submissions         FormSubmission[]
-  Company             Company            @relation(fields: [companyId], references: [id])
-  FormGrouping        FormGrouping[]     @relation("FormGroupingToFormTemplate")
+  Company             Company              @relation(fields: [companyId], references: [id])
+  FormGrouping        FormGrouping[]       @relation("FormGroupingToFormTemplate")
 }
 
 model FormGrouping {

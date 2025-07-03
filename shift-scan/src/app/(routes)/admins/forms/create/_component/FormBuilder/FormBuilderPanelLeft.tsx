@@ -80,18 +80,20 @@ export function FormBuilderPanelLeft({
             </Label>
             <Select
               name="category"
-              value={formSettings.category}
-              onValueChange={(value) => updateFormSettings("category", value)}
+              value={formSettings.formType}
+              onValueChange={(value) => updateFormSettings("formType", value)}
             >
               <SelectTrigger className="w-full bg-white rounded-lg text-xs">
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="safety">Safety</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-                <SelectItem value="inspection">Inspection</SelectItem>
-                <SelectItem value="incident">Incident Report</SelectItem>
-                <SelectItem value="general">General</SelectItem>
+                <SelectItem value="SAFETY">Safety</SelectItem>
+                <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                <SelectItem value="INSPECTION">Inspection</SelectItem>
+                <SelectItem value="INCIDENT">Incident Report</SelectItem>
+                <SelectItem value="GENERAL">General</SelectItem>
+                <SelectItem value="FINANCE">Finance</SelectItem>
+                <SelectItem value="OTHER">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -101,16 +103,16 @@ export function FormBuilderPanelLeft({
             </Label>
             <Select
               name="status"
-              value={formSettings.status}
-              onValueChange={(value) => updateFormSettings("status", value)}
+              value={formSettings.isActive}
+              onValueChange={(value) => updateFormSettings("isActive", value)}
             >
               <SelectTrigger className="w-full bg-white rounded-lg text-xs">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="ARCHIVED">Archived</SelectItem>
+                <SelectItem value="DRAFT">Draft</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -195,7 +197,7 @@ export function FormBuilderPanelLeft({
                   {field.type === "dropdown" ||
                     (field.type === "multiselect" && (
                       <p className="w-fit text-xs text-gray-500">
-                        {`${field.options?.length || 0}`}
+                        {`${field.Options?.length || 0}`}
                       </p>
                     ))}
                   {field.required && (

@@ -124,3 +124,13 @@ enum FieldType {
   SEARCH_PERSON
   SEARCH_ASSET
 }
+
+enum FormTemplateCategory {
+  GENERAL
+  MAINTENANCE
+  SAFETY
+  INSPECTION
+  INCIDENT
+  FINANCE
+  OTHER
+}
