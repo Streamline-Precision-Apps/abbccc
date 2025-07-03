@@ -1,32 +1,22 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-
-interface RefuelLog {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number;
-}
-interface TascoLog {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string;
-  LoadQuantity: number;
-  RefuelLogs: RefuelLog[];
-  Equipment: { id: string; name: string } | null;
-}
+import type { TascoLog } from "@/lib/types";
 
 interface EditTascoLogsProps {
   logs: TascoLog[];
-  onLogChange: (idx: number, field: keyof TascoLog, value: any) => void;
+  onLogChange: (
+    idx: number,
+    field: keyof TascoLog,
+    value: TascoLog[keyof TascoLog]
+  ) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;
   handleNestedLogChange: (
     logIndex: number,
-    nestedType: string,
+    nestedType: keyof TascoLog,
     nestedIndex: number,
     field: string,
-    value: any
+    value: unknown
   ) => void;
   originalLogs?: TascoLog[];
   onUndoLogField?: (idx: number, field: keyof TascoLog) => void;
@@ -128,35 +118,37 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
             <label className="block text-xs">Load Quantity</label>
             <input
               type="number"
-              value={log.LoadQuantity}
+              value={log.loadsHauled}
               onChange={(e) =>
-                onLogChange(idx, "LoadQuantity", Number(e.target.value))
+                onLogChange(idx, "loadsHauled", Number(e.target.value))
               }
               className="border rounded px-2 py-1 w-full"
             />
           </div>
           <div>
             {originalLogs[idx] &&
-              log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
+              log.loadsHauled !== originalLogs[idx].loadsHauled &&
               onUndoLogField && (
                 <Button
                   type="button"
                   size="sm"
                   className="ml-2"
-                  onClick={() => onUndoLogField(idx, "LoadQuantity")}
+                  onClick={() => onUndoLogField(idx, "loadsHauled")}
                 >
                   Undo
                 </Button>
               )}
           </div>
         </div>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={() => onRemoveLog(idx)}
-        >
-          Remove
-        </Button>
+        <div>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => onRemoveLog(idx)}
+          >
+            Remove
+          </Button>
+        </div>
       </div>
     ))}
     <Button type="button" className="mt-2" onClick={onAddLog}>

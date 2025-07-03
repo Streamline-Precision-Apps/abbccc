@@ -10,7 +10,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useMemo, useState } from "react";
-import { Priority } from "@/lib/types";
+import { Priority } from "@/lib/enums";
 import {
   deleteMaintenanceProject,
   RemoveDelayRepair,

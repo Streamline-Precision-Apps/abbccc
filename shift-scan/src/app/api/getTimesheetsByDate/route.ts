@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import * as Sentry from '@sentry/nextjs';
 import { TimesheetFilter } from '@/lib/types';
 import { NextRequest } from 'next/server';
 
@@ -199,8 +200,7 @@ export async function GET(req: NextRequest) {
               },
               include: {
                 Equipment: true,
-                Jobsite: true,
-                RefuelLogs: true,
+                RefuelLog: true,
               },
             }),
           },
@@ -221,9 +221,9 @@ export async function GET(req: NextRequest) {
                 },
               },
               include: {
-                RefuelLogs: true,
+                RefuelLog: true,
                 Equipment: true,
-                Jobsite: true,
+                // Jobsite: true, // Not a valid relation on EmployeeEquipmentLog
               },
             }),
           },
@@ -261,6 +261,7 @@ export async function GET(req: NextRequest) {
 
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (error) {
+    Sentry.captureException(error);
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: String(error) }),
       { status: 500 }

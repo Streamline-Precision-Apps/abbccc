@@ -1,3 +1,5 @@
+// Canonical union for timesheet status (not a Prisma enum)
+export type TimeSheetStatus = 'PENDING' | 'APPROVED' | 'DENIED';
 import {
   FormStatus,
   FieldType,
@@ -7,14 +9,9 @@ import {
   Permission,
   WorkType,
   EquipmentTags,
-  EquipmentStatus,
+  EquipmentState,
   IsActive,
   LoadType,
-  TimeSheetStatus,
-  EquipmentUsageType,
-  EquipmentState,
-  AuditAction,
-  EntityType,
   ApprovalStatus,
 } from "@prisma/client";
 
@@ -27,14 +24,9 @@ export {
   Permission,
   WorkType,
   EquipmentTags,
-  EquipmentStatus,
+  EquipmentState,
   IsActive,
   LoadType,
-  TimeSheetStatus,
-  EquipmentUsageType,
-  EquipmentState,
-  AuditAction,
-  EntityType,
   ApprovalStatus,
 };
 

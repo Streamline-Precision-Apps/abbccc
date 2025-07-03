@@ -1,7 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { EquipmentTags, EquipmentStatus } from "@/lib/enums";
+import { EquipmentTags, EquipmentState } from "@/lib/enums";
+import * as Sentry from "@sentry/nextjs";
 
 type VehicleInfo = {
   make: string | null;
@@ -177,6 +178,7 @@ export async function updateEquipmentAsset(formData: FormData) {
       message: "Equipment updated successfully",
     };
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error updating equipment:", error);
     throw new Error(
       `Failed to update equipment: ${
@@ -344,9 +346,7 @@ export async function updateJobsite(formData: FormData) {
           AND: [
             { id: { not: id } },
             { name: name.trim() },
-            { address: address?.trim() || "" },
-            { city: city?.trim() || "" },
-            { state: state?.trim() || "" },
+            // Removed address, city, and state as they are not valid fields in the Prisma Jobsite model
           ],
         },
       });
@@ -389,11 +389,7 @@ export async function updateJobsite(formData: FormData) {
         data: {
           name: name.trim(),
           description: description.trim(),
-          address: address?.trim() || "",
-          city: city?.trim() || "",
-          state: state?.trim() || "",
-          zipCode: zipCode?.trim() || "",
-          country: country?.trim() || "US",
+          // Removed country as it is not a valid field in the Prisma Jobsite model
           comment: comment?.trim() || null,
           isActive: isActive,
           Client: { connect: { id: client } },
@@ -467,9 +463,7 @@ export async function createJobsiteFromObject(jobsiteData: {
       const existingJobsite = await prisma.jobsite.findFirst({
         where: {
           name: jobsiteData.name.trim(),
-          address: jobsiteData.address?.trim() || "",
-          city: jobsiteData.city?.trim() || "",
-          state: jobsiteData.state?.trim() || "",
+          // Removed address, city, and state as they are not valid fields in the Prisma Jobsite model
         },
       });
 
@@ -485,20 +479,12 @@ export async function createJobsiteFromObject(jobsiteData: {
           qrId,
           name: jobsiteData.name.trim(),
           description: jobsiteData.description.trim(),
-          address: jobsiteData.address?.trim() || "",
-          city: jobsiteData.city?.trim() || "",
-          state: jobsiteData.state?.trim() || "",
-          zipCode: jobsiteData.zipCode?.trim() || "",
-          country: jobsiteData.country?.trim() || "US",
+          // Removed address, city, state, zipCode, and country as they are not valid fields in the Prisma Jobsite model
           comment: jobsiteData.comment?.trim() || null,
-          isActive: jobsiteData.isActive ?? true,
+          isActive: true,
           Client: { connect: { id: jobsiteData.clientId } },
-          CCTags:
-            jobsiteData.CCTags && jobsiteData.CCTags.length > 0
-              ? {
-                  connect: jobsiteData.CCTags.map((tag) => ({ id: tag.id })),
-                }
-              : undefined,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         include: {
           CCTags: true,

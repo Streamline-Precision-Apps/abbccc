@@ -12,10 +12,8 @@ import TimeCardTascoHaulLogs from "./TimeCardTascoHaulLogs";
 import TimeCardTascoRefuelLogs from "./TimeCardTascoRefuelLogs";
 import TimeCardTruckingHaulLogs from "./TimeCardTruckingHaulLogs";
 import TimeCardTruckingMaterialLogs from "./TimeCardTruckingMaterialLogs";
-import TimeCardTruckingMileage from "./TimeCardTruckingMileage";
 import TimeCardTruckingRefuelLogs from "./TimeCardTruckingRefuelLogs";
 import TimeCardTruckingStateMileageLogs from "./TimeCardTruckingStateMileage";
-import { useEffect } from "react";
 import {
   TimesheetHighlights,
   TruckingMileageData,
@@ -205,119 +203,6 @@ export default function TimeSheetRenderer({
       );
     }
     switch (filter) {
-      case "truckingMileage": {
-        // Debug data in truckingMileage case
-        console.log("truckingMileage case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-          data,
-        });
-
-        // Handle review mode data conversion
-        if (isReviewYourTeam && Array.isArray(data)) {
-          // Type guard for direct API format with TruckingLogs
-          const hasDirectTruckingLogs = (
-            item: unknown
-          ): item is { TruckingLogs: unknown[] } => {
-            return (
-              !!item &&
-              typeof item === "object" &&
-              "TruckingLogs" in item &&
-              Array.isArray((item as { TruckingLogs: unknown[] }).TruckingLogs)
-            );
-          };
-
-          let formattedData: TruckingMileageData;
-
-          // Check if data is already in [{TruckingLogs:[...]}] format from API
-          if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
-            console.log("Found direct TruckingLogs format - using as-is");
-            // TruckingLogs contains all the mileage info directly
-            formattedData = data as TruckingMileageData;
-          } else {
-            // Original logic for EditTeamTimeSheet format
-            interface ReviewTruckingLog {
-              id: string;
-              timeSheetId: string | null;
-              equipmentId: string | null;
-              startingMileage: number;
-              endingMileage: number | null;
-              Equipment: {
-                id: string;
-                name: string;
-              };
-            }
-
-            interface ReviewTimesheet {
-              id: string;
-              TruckingLogs?: ReviewTruckingLog[];
-            }
-
-            // Type guard to check if object has TruckingLogs
-            const hasTruckingLogs = (
-              item: unknown
-            ): item is ReviewTimesheet & {
-              TruckingLogs: ReviewTruckingLog[];
-            } => {
-              return (
-                !!item &&
-                typeof item === "object" &&
-                "id" in item &&
-                "TruckingLogs" in item &&
-                Array.isArray((item as ReviewTimesheet).TruckingLogs) &&
-                (item as ReviewTimesheet).TruckingLogs!.length > 0
-              );
-            };
-
-            // Convert data with proper type checking
-            const validTimesheets = (data as unknown[]).filter(hasTruckingLogs);
-            console.log("Valid timesheets after filter:", validTimesheets);
-
-            formattedData = validTimesheets.map((ts) => ({
-              TruckingLogs: ts.TruckingLogs.map((tl) => ({
-                id: tl.id,
-                timeSheetId: tl.timeSheetId || ts.id, // Use timesheet id if log id is not available
-                equipmentId: tl.equipmentId || tl.Equipment?.id || null,
-                startingMileage: tl.startingMileage,
-                endingMileage: tl.endingMileage,
-                Equipment: tl.Equipment,
-              })),
-            }));
-          }
-
-          console.log("Converted trucking mileage data:", formattedData);
-
-          return (
-            <TimeCardTruckingMileage
-              truckingMileage={formattedData}
-              edit={edit}
-              manager={manager}
-              onDataChange={
-                getTypedOnDataChange<TruckingMileageData>(onDataChange)!
-              }
-              focusIds={focusIds}
-              setFocusIds={setFocusIds}
-              isReviewYourTeam={isReviewYourTeam}
-            />
-          );
-        }
-
-        // Regular format from EditTeamTimeSheet
-        return (
-          <TimeCardTruckingMileage
-            truckingMileage={data as TruckingMileageData}
-            edit={edit}
-            manager={manager}
-            onDataChange={
-              getTypedOnDataChange<TruckingMileageData>(onDataChange)!
-            }
-            focusIds={focusIds}
-            setFocusIds={setFocusIds}
-            isReviewYourTeam={isReviewYourTeam}
-          />
-        );
-      }
       case "truckingEquipmentHaulLogs": {
         // Debug data
         console.log("truckingEquipmentHaulLogs case debug:", {

@@ -22,7 +22,7 @@ import { useState } from "react";
 export interface ComboboxOption {
   value: string;
   label: string;
-  [key: string]: any; // Allow extra fields for advanced filtering
+  [key: string]: string | number | boolean | undefined; // Allow extra fields for advanced filtering, but no any
 }
 
 interface ComboboxProps {
@@ -57,8 +57,14 @@ export function Combobox({
       // Support nested keys like 'user.firstName'
       const value = key
         .split(".")
-        .reduce((obj, k) => (obj ? obj[k] : ""), option);
-      return (value || "")
+        .reduce<unknown>(
+          (obj, k) =>
+            obj && typeof obj === "object"
+              ? (obj as Record<string, unknown>)[k]
+              : undefined,
+          option
+        );
+      return (value ?? "")
         .toString()
         .toLowerCase()
         .includes(search.toLowerCase());

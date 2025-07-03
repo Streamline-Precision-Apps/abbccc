@@ -30,7 +30,7 @@ import {
   Refueled,
   EquipmentState,
 } from "./types";
-import { EquipmentStatus, FormStatus } from "@/lib/enums";
+import { FormStatus } from "@/lib/enums";
 
 // Helper function to transform API response to form state
 function transformApiToFormState(
@@ -80,7 +80,7 @@ function createInitialState(): UnifiedEquipmentState {
       isFinished: false,
       equipment: {
         name: "",
-        status: "OPERATIONAL" as EquipmentStatus, // Default to OPERATIONAL
+        status: "OPERATIONAL" as EquipmentState, // Default to OPERATIONAL
       },
       maintenanceId: null,
       refuelLogs: null,

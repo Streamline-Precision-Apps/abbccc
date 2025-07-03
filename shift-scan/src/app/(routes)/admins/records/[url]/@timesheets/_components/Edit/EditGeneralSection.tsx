@@ -1,14 +1,16 @@
 import { Combobox } from "@/components/ui/combobox";
 import React from "react";
 
+export type GeneralSectionForm = {
+  User: { id: string; firstName: string; lastName: string };
+  Jobsite: { id: string; name: string };
+  CostCode: { id: string; name: string };
+  // Add other fields as needed, or use Partial<Record<string, unknown>> if truly dynamic
+};
+
 export interface EditGeneralSectionProps {
-  form: {
-    User: { id: string; firstName: string; lastName: string };
-    Jobsite: { id: string; name: string };
-    CostCode: { id: string; name: string };
-    [key: string]: any;
-  };
-  setForm: (f: any) => void;
+  form: GeneralSectionForm;
+  setForm: (f: GeneralSectionForm) => void;
   userOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];

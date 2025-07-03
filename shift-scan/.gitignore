@@ -43,3 +43,5 @@ dev.db
 .github/instructions/Sean.instructions.md
 
 certificates
+# Sentry Config File
+.env.sentry-build-plugin

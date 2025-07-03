@@ -2,6 +2,7 @@
 import { LoadType, WorkType } from "@/lib/enums";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
+import type { Prisma } from "@prisma/client";
 
 export type TimesheetSubmission = {
   form: {
@@ -92,17 +93,17 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       endDateString && endTimeString
         ? new Date(`${endDateString}T${endTimeString}:00`)
         : undefined;
-    const timesheetData: any = {
+    const timesheetData: Prisma.TimeSheetCreateInput = {
       date: data.form.date.toISOString(),
-      userId: data.form.user.id,
-      jobsiteId: data.form.jobsite.id,
-      costcode: data.form.costcode.name, // costcode is referenced by name in schema
+      User: { connect: { id: data.form.user.id } },
+      Jobsite: { connect: { id: data.form.jobsite.id } },
+      CostCode: { connect: { name: data.form.costcode.name } },
       workType: data.form.workType as WorkType,
       createdByAdmin: true,
+      startTime: startDateTimeISO ?? new Date(),
+      endTime: endDateTimeISO,
       // Add other fields as needed
     };
-    if (startDateTimeISO) timesheetData.startTime = startDateTimeISO;
-    if (endDateTimeISO) timesheetData.endTime = endDateTimeISO;
     const timesheet = await tx.timeSheet.create({
       data: timesheetData,
     });
@@ -116,21 +117,21 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
         data.form.endTime?.date || data.form.date.toISOString().slice(0, 10);
       const logStartTime = log.startTime;
       const logEndTime = log.endTime;
-      const maintenanceLogData: any = {
-        timeSheetId: timesheet.id,
-        userId: data.form.user.id,
-        maintenanceId: log.maintenanceId,
-      };
       const logStart =
         logStartDate && logStartTime
           ? new Date(`${logStartDate}T${logStartTime}:00`)
-          : undefined;
+          : new Date();
       const logEnd =
         logEndDate && logEndTime
           ? new Date(`${logEndDate}T${logEndTime}:00`)
           : undefined;
-      if (logStart) maintenanceLogData.startTime = logStart;
-      if (logEnd) maintenanceLogData.endTime = logEnd;
+      const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
+        TimeSheet: { connect: { id: timesheet.id } },
+        User: { connect: { id: data.form.user.id } },
+        Maintenance: { connect: { id: log.maintenanceId } },
+        startTime: logStart,
+        endTime: logEnd,
+      };
       await tx.maintenanceLog.create({
         data: maintenanceLogData,
       });
@@ -275,7 +276,10 @@ export async function adminDeleteTimesheet(id: string) {
   }
 }
 
-export async function adminUpdateTimesheet(id: string, data: any) {
+export async function adminUpdateTimesheet(
+  id: string,
+  data: TimesheetSubmission
+) {
   // Implementation for updating a timesheet
   console.log("Updating timesheet with ID:", id, "and data:", data);
 }

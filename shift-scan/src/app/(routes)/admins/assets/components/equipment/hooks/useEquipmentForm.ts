@@ -217,7 +217,12 @@ export const useEquipmentForm = ({
           name: result.data.name,
           description: result.data.description || "",
           equipmentTag: result.data.equipmentTag,
-          approvalStatus: result.data.approvalStatus,
+          approvalStatus:
+            result.data.approvalStatus === 'IN_PROGRESS'
+              ? 'PENDING'
+              : (['PENDING', 'APPROVED', 'REJECTED', 'CHANGES_REQUESTED'].includes(result.data.approvalStatus)
+                  ? result.data.approvalStatus
+                  : 'PENDING'),
           state: result.data.state,
           isDisabledByAdmin: result.data.isDisabledByAdmin,
           overWeight: result.data.overWeight ?? false,
