@@ -1,15 +1,12 @@
 "use client";
-import "@/app/globals.css";
-import { Holds } from "@/components/(reusable)/holds";
-import AdminHome from "./_pages/admin-home";
-import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 
 // change back to async later
 export default function Admins() {
   return (
-    <Holds className="h-full w-full">
-      <NotificationComponent />
-      <AdminHome />
-    </Holds>
+    <div className="h-full w-full flex flex-row">
+      {/* Main content goes here */}
+      <p className="text-white">Welcome to the Admin Dashboard</p>
+      {/* Add more components or content as needed */}
+    </div>
   );
 }

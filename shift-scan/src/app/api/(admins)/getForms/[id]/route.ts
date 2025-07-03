@@ -13,7 +13,10 @@ export async function GET(
     // Validate form ID
     const formId = params.id;
     if (!formId) {
-      return NextResponse.json({ error: "Invalid or missing form ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or missing form ID" },
+        { status: 400 }
+      );
     }
 
     // Fetch the form template with related groupings and fields
@@ -22,8 +25,14 @@ export async function GET(
       include: {
         FormGrouping: {
           include: {
-            Fields: { orderBy: { order: "asc" } }, // Load fields sorted by `order`
+            Fields: {
+              orderBy: { order: "asc" },
+              include: {
+                Options: true, // Include FormFieldOption[]
+              },
+            },
           },
+          orderBy: { order: "asc" }, // optional: keep groupings ordered
         },
       },
     });
@@ -43,9 +52,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

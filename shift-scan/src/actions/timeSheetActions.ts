@@ -182,6 +182,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
       data: {
         endTime: formatISO(formData.get("endTime") as string),
         comment: formData.get("timesheetComments") as string,
+        status: "PENDING",
       },
     });
     console.log("Timesheet updated successfully.");
@@ -214,6 +215,7 @@ export async function breakOutTimeSheet(formData: FormData) {
       data: {
         endTime,
         comment,
+        status: "PENDING",
       },
     });
     console.log("Timesheet updated successfully.");
@@ -348,6 +350,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
       data: {
         endTime: formatISO(formData.get("endTime") as string),
         comment: formData.get("timeSheetComments") as string,
+        status: "PENDING",
       },
     });
 
@@ -416,6 +419,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -491,6 +495,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -608,6 +613,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previousTimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -703,6 +709,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
