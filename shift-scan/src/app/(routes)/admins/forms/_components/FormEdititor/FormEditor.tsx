@@ -16,6 +16,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FormBuilderPanelLeft } from "../FormBuilder/FormBuilderPanelLeft";
 import FormBuilderPlaceholder from "../FormBuilder/FormBuilderPlaceholder";
 import { FormBuilderPanelRight } from "../FormBuilder/FormBuilderPanelRight";
+import { Toggle } from "@/components/ui/toggle";
 
 // Types for form building
 export interface FormField {
@@ -25,7 +26,6 @@ export interface FormField {
   type: string;
   required: boolean;
   order: number;
-
   placeholder?: string;
   minLength?: number | undefined;
   maxLength?: number | undefined;
@@ -60,28 +60,28 @@ export interface FormSettings {
 
 export const fieldTypes = [
   {
-    name: "text",
+    name: "TEXT",
     label: "Text",
     description: "Single line Input",
     icon: "/title.svg",
     color: "bg-sky-400",
   },
   {
-    name: "number",
+    name: "NUMBER",
     label: "Number",
     description: "Numeric Input",
     icon: "/number.svg",
     color: "bg-fuchsia-400",
   },
   {
-    name: "date",
+    name: "DATE",
     label: "Date",
     description: "Date picker",
     icon: "/calendar.svg",
     color: "bg-purple-400",
   },
   {
-    name: "time",
+    name: "TIME",
     label: "Time",
     description: "Time picker",
     icon: "/clock.svg",
@@ -89,35 +89,35 @@ export const fieldTypes = [
   },
 
   {
-    name: "dropdown",
+    name: "DROPDOWN",
     label: "Dropdown",
     description: "Multiple options",
     icon: "/layout.svg",
     color: "bg-red-400",
   },
   {
-    name: "textarea",
+    name: "TEXTAREA",
     label: "Text Area",
     description: "Multi-line Input",
     icon: "/formList.svg",
     color: "bg-indigo-400",
   },
   {
-    name: "rating",
-    label: "Rating",
-    description: "Star Rating",
-    icon: "/star.svg",
-    color: "bg-yellow-200",
+    name: "CHECKBOX",
+    label: "Checkbox",
+    description: "Checkbox",
+    icon: "/checkbox.svg",
+    color: "bg-green-400",
   },
   {
-    name: "radio",
+    name: "RADIO",
     label: "Radio",
     description: "Single choice selection",
     icon: "/radio.svg",
     color: "bg-teal-400",
   },
   {
-    name: "header",
+    name: "HEADER",
     label: "Header",
     description: "Large text header",
     icon: "/header.svg",
@@ -125,7 +125,7 @@ export const fieldTypes = [
     section: "Formatting",
   },
   {
-    name: "paragraph",
+    name: "PARAGRAPH",
     label: "Paragraph",
     description: "Text block",
     icon: "/drag.svg",
@@ -133,14 +133,14 @@ export const fieldTypes = [
     section: "Formatting",
   },
   {
-    name: "multiselect",
+    name: "MULTISELECT",
     label: "Multiselect",
     description: "Select multiple options",
     icon: "/moreOptionsCircle.svg",
     color: "bg-yellow-500",
   },
   {
-    name: "Worker",
+    name: "SEARCH_PERSON",
     label: "Worker",
     description: "Search and select a worker",
     icon: "/team.svg",
@@ -148,7 +148,7 @@ export const fieldTypes = [
   },
 
   {
-    name: "Asset",
+    name: "SEARCH_ASSET",
     label: "Asset",
     description: "Search and select an asset",
     icon: "/equipment.svg",
@@ -255,7 +255,9 @@ export default function FormEditor({
           })),
         }));
 
-        setFormFields(formGrouping.flatMap((group: FormGrouping) => group.Fields));
+        setFormFields(
+          formGrouping.flatMap((group: FormGrouping) => group.Fields)
+        );
         setFormSections(formGrouping);
         setFormSettings({
           id: data.id,
@@ -295,38 +297,6 @@ export default function FormEditor({
         field.id === fieldId ? { ...field, ...updatedProperties } : field
       )
     );
-  };
-
-  const handleApiResponse = (response: {
-    FormGrouping: FormGrouping[];
-    name: string;
-    isSignatureRequired: boolean;
-    isActive: boolean;
-  }) => {
-    const formGrouping = response.FormGrouping.map((group: FormGrouping) => ({
-      ...group,
-      Fields: group.Fields.map((field: FormField) => ({
-        ...field,
-        Options: field.Options || [],
-      })),
-    }));
-
-    setFormFields(formGrouping.flatMap((group) => group.Fields));
-    setFormSettings({
-      id: "", // Provide default values for missing properties
-      companyId: "",
-      name: response.name,
-      formType: "",
-      description: "",
-      category: "",
-      status: "",
-      requireSignature: response.isSignatureRequired,
-      createdAt: "",
-      updatedAt: "",
-      isActive: response.isActive,
-      isSignatureRequired: response.isSignatureRequired,
-      FormGrouping: [],
-    });
   };
 
   // Add field to form
@@ -373,14 +343,6 @@ export default function FormEditor({
       delete newState[fieldId];
       return newState;
     });
-  };
-
-  // Toggle advanced options for a field
-  const toggleAdvancedOptions = (fieldId: string) => {
-    setAdvancedOptionsOpen((prev) => ({
-      ...prev,
-      [fieldId]: !prev[fieldId],
-    }));
   };
 
   // Update form settings
@@ -520,11 +482,12 @@ export default function FormEditor({
               </div>
             </div>
           )}
+
           {/* Form Builder Placeholder */}
           {formFields.length === 0 &&
           !formSettings.requireSignature &&
           !formSettings.name ? (
-            <FormBuilderPlaceholder addField={addField} />
+            <FormBuilderPlaceholder loading={loading} addField={addField} />
           ) : (
             <DndContext
               collisionDetection={closestCenter}
@@ -571,11 +534,21 @@ export default function FormEditor({
                                   onClick={() =>
                                     setPopoverOpenFieldId(field.id)
                                   }
-                                  variant="default"
-                                  className="w-fit h-full justify-center items-center rounded-md gap-0 bg-gray-400 hover:bg-gray-300"
+                                  variant="ghost"
+                                  className={`w-fit h-full justify-center items-center rounded-md gap-0  ${
+                                    fieldTypes.find(
+                                      (fieldType) =>
+                                        fieldType.name === field.type
+                                    )?.color || "bg-white"
+                                  } `}
                                 >
                                   <img
-                                    src="/default-icon.svg"
+                                    src={
+                                      fieldTypes.find(
+                                        (fieldType) =>
+                                          fieldType.name === field.type
+                                      )?.icon || "/default-icon.svg"
+                                    }
                                     alt={field.type}
                                     className="w-4 h-4 "
                                   />
@@ -653,6 +626,55 @@ export default function FormEditor({
                             />
                           </div>
 
+                          {/* Field options */}
+                          {field.type !== "DATE" && (
+                            <Toggle
+                              className="bg-white rounded-lg text-xs"
+                              pressed={advancedOptionsOpen[field.id] || false}
+                              onPressedChange={(value: boolean) => {
+                                setAdvancedOptionsOpen({
+                                  ...advancedOptionsOpen,
+                                  [field.id]: value,
+                                });
+                              }}
+                            >
+                              <img
+                                src="/arrowRightSymbol.svg"
+                                alt="Options Icon"
+                                className="w-2 h-2 "
+                              />
+                              <p className="text-xs ">Options</p>
+                            </Toggle>
+                          )}
+
+                          {/* Field Required */}
+
+                          {field.required === true ? (
+                            <Button
+                              variant={"ghost"}
+                              onClick={() => {
+                                updateField(field.id, {
+                                  required: false,
+                                });
+                              }}
+                              className="bg-red-400 rounded-lg"
+                            >
+                              <p className="text-xs">required</p>
+                            </Button>
+                          ) : (
+                            <Button
+                              variant={"ghost"}
+                              onClick={() => {
+                                updateField(field.id, {
+                                  required: true,
+                                });
+                              }}
+                              className="bg-neutral-200 rounded-lg px-2 "
+                            >
+                              <p className="text-xs text-black">optional</p>
+                            </Button>
+                          )}
+
                           {/* Remove Field Icon */}
                           <Button
                             variant="ghost"
@@ -670,7 +692,7 @@ export default function FormEditor({
 
                         {/* Advanced Options Section - Collapsible */}
                         {advancedOptionsOpen[field.id] &&
-                          !["date", "time"].includes(field.type) && (
+                          !["DATE", "TIME"].includes(field.type) && (
                             <>
                               {field.type === "Asset" && (
                                 <>
@@ -748,7 +770,7 @@ export default function FormEditor({
                                   </div>
                                 </>
                               )}
-                              {field.type === "text" && (
+                              {field.type === "TEXT" && (
                                 <>
                                   <Separator className="my-2" />
                                   <p className="text-sm font-semibold">
@@ -794,7 +816,7 @@ export default function FormEditor({
                                   </div>
                                 </>
                               )}
-                              {field.type === "number" && (
+                              {field.type === "NUMBER" && (
                                 <div>
                                   <Separator className="my-2" />
                                   <p className="text-sm font-semibold mb-2">
@@ -840,7 +862,7 @@ export default function FormEditor({
                                   </div>
                                 </div>
                               )}
-                              {field.type === "dropdown" && (
+                              {field.type === "DROPDOWN" && (
                                 <div className="mb-2 flex flex-col gap-2">
                                   <Separator className="my-2" />
                                   <div className="flex justify-between items-center">
@@ -926,7 +948,7 @@ export default function FormEditor({
                                     )}
                                 </div>
                               )}
-                              {field.type === "textarea" && (
+                              {field.type === "TEXTAREA" && (
                                 <div>
                                   <Separator className="my-2" />
                                   <p className="text-sm font-semibold">
@@ -972,7 +994,7 @@ export default function FormEditor({
                                   </div>
                                 </div>
                               )}
-                              {field.type === "radio" && (
+                              {field.type === "RADIO" && (
                                 <div className="mt-2">
                                   <Separator className="my-2" />
                                   <div className="flex justify-between items-center">
@@ -1054,7 +1076,7 @@ export default function FormEditor({
                                   </div>
                                 </div>
                               )}
-                              {field.type === "multiselect" && (
+                              {field.type === "MULTISELECT" && (
                                 <div>
                                   <Separator className="my-2" />
                                   <div className="flex justify-between items-start">
@@ -1136,7 +1158,7 @@ export default function FormEditor({
                                   </div>
                                 </div>
                               )}
-                              {field.type === "Worker" && (
+                              {field.type === "WORKER" && (
                                 <>
                                   <Separator className=" my-2" />
                                   <p className="text-sm font-semibold">
@@ -1193,7 +1215,9 @@ export default function FormEditor({
                 </div>
                 <div>
                   <p className="text-sm font-semibold">Digital Signature</p>
-                  <p className="text-xs">Automatically added at form end</p>
+                  <p className="text-xs">
+                    Automatically added at the end of the form
+                  </p>
                 </div>
               </div>
             </div>

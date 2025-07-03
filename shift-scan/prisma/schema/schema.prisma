@@ -103,6 +103,12 @@ enum FormStatus {
   DENIED
 }
 
+enum FormTemplateStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
 enum FieldType {
   HEADER
   PARAGRAPH
