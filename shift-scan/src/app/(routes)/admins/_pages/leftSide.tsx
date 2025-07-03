@@ -1,10 +1,12 @@
 "use client";
-
+import "@/app/globals.css";
+import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
+export default function LeftSidebar() {
   const pathname = usePathname();
+  const { open: isOpen } = useSidebar();
 
   const Page = [
     // { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
@@ -41,11 +43,11 @@ export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
 
   return (
     <div
-      className={`h-full w-[250px] p-3 bg-white bg-opacity-20 shrink-0 ${
+      className={`h-full w-[250px] bg-opacity-40  p-3  shrink-0 ${
         isOpen ? "block" : "hidden"
       }`}
     >
-      <div className="flex items-center justify-center bg-white rounded-lg p-1">
+      <div className="flex items-center justify-center bg-white  rounded-lg p-1">
         <img src="/logo.svg" alt="logo" className="w-24 h-auto" />
       </div>
       <div className="mt-4">

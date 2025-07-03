@@ -33,7 +33,7 @@ import FormBuilder from "./_components/FormBuilder/FormBuilder";
 import LeftSidebar from "../_pages/leftSide";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PanelLeft } from "lucide-react";
-import useLeftSideTrigger from "../_pages/useLeftSideTrigger";
+import { useSidebar } from "@/components/ui/sidebar";
 
 // Custom hook to manage all forms state and view mode
 function useFormsPageState() {
@@ -85,7 +85,7 @@ export default function Forms() {
   );
   const [individualFormPage, setIndividualFormPage] = useState(1);
   const [individualFormPageSize, setIndividualFormPageSize] = useState(10);
-  const { isOpen, toggleSidebar } = useLeftSideTrigger();
+  const { setOpen, open } = useSidebar();
 
   useEffect(() => {
     if (!formId) return;
@@ -107,93 +107,121 @@ export default function Forms() {
       .finally(() => setIndividualFormLoading(false));
   }, [formId, individualFormPage, individualFormPageSize]);
 
-  const [builderLoading, setBuilderLoading] = useState(false);
-
   // Header section
   function renderHeader() {
     if (ViewMode === "list") {
       return (
-        <div className="flex flex-col gap-1 mb-4">
-          <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row gap-5 ">
+          <div className="flex items-center justify-center">
             <Button
-              onClick={toggleSidebar}
-              variant="default"
-              className="w-10 h-fit bg-transparent "
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+              }`}
+              onClick={() => {
+                setOpen(!open);
+              }}
             >
-              <PanelLeft />
+              <img
+                src={open ? "/condense-white.svg" : "/condense.svg"}
+                alt="logo"
+                className="w-4 h-auto object-contain "
+              />
             </Button>
-            <div>
-              <p className="text-left font-bold text-lg text-white">
-                Forms Management
-              </p>
-              <p className="text-left font-bold text-xs text-white">
-                Create, manage, and track form templates and submissions
-              </p>
-            </div>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-left font-bold text-base text-white">
+              Forms Management
+            </p>
+            <p className="text-left font-normal text-xs text-white">
+              Create, manage, and track form templates and submissions
+            </p>
           </div>
         </div>
       );
     }
     if (ViewMode === "builder") {
       return (
-        <div className="flex flex-row gap-4 justify-center items-start">
-          {!builderLoading ? (
-            <div className="flex flex-col mb-4">
-              <div className="flex flex-row items-center gap-1">
-                <Button
-                  onClick={toggleSidebar}
-                  variant="default"
-                  className="w-8 h-fit bg-transparent"
-                >
-                  <PanelLeft />
-                </Button>
-                <p className="text-left font-bold text-lg text-white">
-                  Form Builder
-                </p>
-              </div>
-
-              <p className="text-left text-xs text-white">
-                {" "}
-                Design your custom form by adding fields, configuring
-                validation, and setting up workflows.
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-5 w-24 pl-1" />
-              <Skeleton className="h-5 w-48 pl-1" />
-            </div>
-          )}
+        <div className="flex flex-row gap-5 ">
+          <div className="flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+              }`}
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
+              <img
+                src={open ? "/condense-white.svg" : "/condense.svg"}
+                alt="logo"
+                className="w-4 h-auto object-contain "
+              />
+            </Button>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-left font-bold text-base text-white">
+              Form Builder
+            </p>
+            <p className="text-left font-normal text-xs text-white">
+              Design your custom form by adding fields, configuring validation,
+              and setting up workflows.
+            </p>
+          </div>
         </div>
       );
     }
     if (ViewMode === "individual") {
       return (
-        <div className="flex flex-col gap-4 justify-center items-start">
+        <div className="flex flex-row gap-1 ">
           {!individualFormLoading && formIndividualTemplate?.name ? (
-            <div className="flex flex-col mb-4">
-              <div className="flex flex-row items-center gap-1">
+            <div className="flex flex-row gap-5">
+              <div className="flex items-center justify-center">
                 <Button
-                  onClick={toggleSidebar}
-                  variant="default"
-                  className="w-8 h-fit bg-transparent mr-1"
+                  variant="ghost"
+                  size="icon"
+                  className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+                    open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+                  }`}
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
                 >
-                  <PanelLeft />
+                  <img
+                    src={open ? "/condense-white.svg" : "/condense.svg"}
+                    alt="logo"
+                    className="w-4 h-auto object-contain "
+                  />
                 </Button>
-                <div>
-                  <p className="text-left font-bold text-lg text-white">
-                    {formIndividualTemplate.name}
-                  </p>
-                  <p className="text-left text-xs text-white">
-                    Form Submissions
-                  </p>
-                </div>
+              </div>
+              <div className="flex flex-col">
+                <p className="text-left font-bold text-base text-white">
+                  {formIndividualTemplate.name}
+                </p>
+                <p className="text-left text-xs text-white">Form Submissions</p>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-5 w-48 pl-1" />
-              <p className="text-left text-xs text-white">Form Submissions</p>
+            <div className="flex flex-row gap-1 ">
+              <div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20"
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
+                >
+                  <PanelLeft className="h-4 w-4 text-white" />
+                </Button>
+              </div>
+              <div className="flex flex-col  gap-1">
+                <Skeleton className="h-5 w-48 pl-1" />
+                <p className="text-left text-xs text-white">Form Submissions</p>
+              </div>
             </div>
           )}
         </div>
@@ -205,7 +233,7 @@ export default function Forms() {
   // Top bar actions
   function renderTopBarActions() {
     return (
-      <div className="h-full flex flex-row ">
+      <div className="h-fit flex flex-row ">
         <div className="flex flex-row gap-2">
           {ViewMode === "list" && (
             <Button onClick={() => setViewMode("individual")}>
@@ -239,7 +267,7 @@ export default function Forms() {
   function renderListFilters() {
     return (
       <div className="flex flex-row w-full gap-4 mb-2">
-        <div className="h-full w-full p-2 bg-white max-w-[450px] rounded-lg ">
+        <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
           <SearchBar
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -306,15 +334,14 @@ export default function Forms() {
   // Main render
   return (
     <div className="h-full w-full flex flex-row">
-      <LeftSidebar isOpen={isOpen} />
-      <div className="h-full w-full p-4  relative">
+      <div className="h-full w-full relative">
         {ViewMode === "list" && (
           <>
-            <div className="h-[5vh] w-full flex flex-row justify-between gap-1 ">
+            <div className="h-fit w-full flex flex-row justify-between mb-4">
               {renderHeader()}
               <div>{renderTopBarActions()}</div>
             </div>
-            <div className="h-[5vh] w-full flex flex-row justify-between gap-4 mb-4 ">
+            <div className="h-fit w-full flex flex-row justify-between gap-4 mb-2 ">
               {renderListFilters()}
             </div>
 
@@ -334,11 +361,11 @@ export default function Forms() {
         )}
         {ViewMode === "individual" && (
           <>
-            <div className="h-[5vh] w-full flex flex-row justify-between gap-1 p-4">
+            <div className="h-fit w-full flex flex-row justify-between mb-4">
               {renderHeader()}
               <div>{renderTopBarActions()}</div>
             </div>
-            <div className="h-[5vh] w-full flex flex-row justify-between gap-4 mb-4">
+            <div className="h-fit w-full flex flex-row justify-between gap-4 mb-2">
               {renderIndividualFilters()}
             </div>
 
@@ -356,7 +383,7 @@ export default function Forms() {
         )}
         {ViewMode === "builder" && (
           <>
-            <div className="h-[10vh] w-full flex flex-row justify-between gap-1 p-4">
+            <div className="h-fit w-full flex flex-row justify-between gap-1 mb-4">
               {renderHeader()}
               <div>{renderTopBarActions()}</div>
             </div>
@@ -366,12 +393,12 @@ export default function Forms() {
         )}
         {ViewMode === "editTemplate" && (
           <>
-            <div className="h-[10vh] w-full flex flex-row justify-between gap-1 p-4">
+            <div className="h-fit w-full flex flex-row justify-between gap-1 mb-4">
               {renderHeader()}
               <div>{renderTopBarActions()}</div>
             </div>
 
-            <FormBuilder formId={formId} onCancel={() => setViewMode("list")} />
+            <FormBuilder onCancel={() => setViewMode("list")} />
           </>
         )}
       </div>
