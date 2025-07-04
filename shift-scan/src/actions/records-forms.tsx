@@ -320,7 +320,9 @@ export async function deleteFormTemplate(formId: string) {
       where: { id: formId },
     });
 
-    revalidatePath("/admins/records/forms");
+    revalidatePath("/admins/forms");
+    revalidatePath(`/admins/forms/${formId}`);
+
     return { success: true, message: "Form deleted successfully" };
   } catch (error) {
     console.error("Error deleting form template:", error);

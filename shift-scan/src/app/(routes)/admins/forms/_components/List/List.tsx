@@ -27,7 +27,8 @@ export interface ListProps {
   total: number;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
-  setFormId: Dispatch<SetStateAction<string | null>>;
+  openHandleDelete: (id: string) => void;
+  setPendingExportId: Dispatch<SetStateAction<string | null>>;
 }
 
 /**
@@ -42,7 +43,8 @@ const List: React.FC<ListProps> = ({
   total,
   setPage,
   setPageSize,
-  setFormId,
+  setPendingExportId,
+  openHandleDelete,
 }) => {
   return (
     <div className="bg-white bg-opacity-80 h-[85vh] pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
@@ -193,7 +195,7 @@ const List: React.FC<ListProps> = ({
                     <Button
                       variant="ghost"
                       size={"icon"}
-                      onClick={() => setFormId(form.id)}
+                      onClick={() => setPendingExportId(form.id)}
                     >
                       <img
                         src="/export.svg"
@@ -212,7 +214,13 @@ const List: React.FC<ListProps> = ({
                       </Button>
                     </Link>
 
-                    <Button variant="ghost" size={"icon"} onClick={() => {}}>
+                    <Button
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => {
+                        openHandleDelete(form.id);
+                      }}
+                    >
                       <img
                         src="/trash-red.svg"
                         alt="Delete Form"
