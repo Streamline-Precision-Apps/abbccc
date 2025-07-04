@@ -22,11 +22,24 @@ import {
 } from "@/components/ui/select";
 import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { deleteFormTemplate } from "@/actions/records-forms";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Forms() {
   const { setOpen, open } = useSidebar();
-  const [formId, setFormId] = useState<string | null>(null); // use export here
-
+  const router = useRouter();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [pendingExportId, setPendingExportId] = useState<string | null>(null);
   const {
     searchTerm,
     setSearchTerm,
@@ -40,14 +53,65 @@ export default function Forms() {
     setPage,
     setPageSize,
     filteredForms,
+    refetch,
   } = useFormsList();
 
   // Helper to get enum values as array
   const formTemplateCategoryValues = Object.values(FormTemplateCategory);
+  const handleDelete = async (submissionId: string) => {
+    try {
+      const isDeleted = await deleteFormTemplate(submissionId);
+      if (isDeleted) {
+        // Optionally, you can show a success message or update the UI
+        toast.success("Form template deleted successfully");
+        router.push("/admins/forms");
+      }
+    } catch (error) {
+      console.error("Error deleting form template:", error);
+      toast.error("Failed to delete form template");
+    }
+  };
 
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (pendingDeleteId) {
+      await handleDelete(pendingDeleteId);
+      setShowDeleteDialog(false);
+      setPendingDeleteId(null);
+      refetch();
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setPendingDeleteId(null);
+  };
   // Main render
   return (
     <div className="h-full w-full flex flex-row">
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Form Template?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this form template? All form data
+              will be permanently deleted. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="h-full w-full relative">
         <div className="h-fit w-full flex flex-row justify-between mb-4">
           <div className="flex flex-row gap-5 ">
@@ -135,7 +199,8 @@ export default function Forms() {
           total={total}
           setPage={setPage}
           setPageSize={setPageSize}
-          setFormId={setFormId}
+          openHandleDelete={openHandleDelete}
+          setPendingExportId={setPendingExportId}
         />
       </div>
     </div>
