@@ -30,7 +30,6 @@ export async function GET(
     const jobsiteData = await prisma.jobsite.findUnique({
       where: { id: jobsiteId },
       include: {
-        PendingApprovals: true,
         Client: {
           select: {
             id: true,

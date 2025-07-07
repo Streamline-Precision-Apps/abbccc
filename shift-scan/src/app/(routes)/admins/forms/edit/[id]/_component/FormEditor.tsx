@@ -147,7 +147,6 @@ export const fieldTypes = [
     icon: "/team.svg",
     color: "bg-pink-400",
   },
-
   {
     name: "SEARCH_ASSET",
     label: "Asset",
@@ -224,7 +223,7 @@ export default function FormEditor({
     isSignatureRequired: false,
     FormGrouping: [],
   });
-
+  const [loadingSave, setLoadingSave] = useState(false);
   const [loading, setLoading] = useState(false);
   const [popoverOpenFieldId, setPopoverOpenFieldId] = useState<string | null>(
     null
@@ -360,7 +359,7 @@ export default function FormEditor({
       toast.error("Please enter a form name");
       return;
     }
-    setLoading(true);
+    setLoadingSave(true);
     try {
       // Prepare the payload for the updateFormTemplate server action
       const payload = {
@@ -396,7 +395,7 @@ export default function FormEditor({
       console.error("Save error:", error);
       toast.error("Error saving form");
     } finally {
-      setLoading(false);
+      setLoadingSave(false);
     }
   };
 
@@ -411,6 +410,8 @@ export default function FormEditor({
       });
     }
   };
+
+  const loadingFormBuilder = formFields.length === 0 && !formSettings.name;
 
   return (
     <>
@@ -471,11 +472,8 @@ export default function FormEditor({
               </div>
             </div>
           )}
-
           {/* Form Builder Placeholder */}
-          {formFields.length === 0 &&
-          !formSettings.requireSignature &&
-          !formSettings.name ? (
+          {loadingFormBuilder ? (
             <FormBuilderPlaceholder loading={loading} addField={addField} />
           ) : (
             <DndContext
@@ -616,25 +614,29 @@ export default function FormEditor({
                           </div>
 
                           {/* Field options */}
-                          {field.type !== "DATE" && (
-                            <Toggle
-                              className="bg-white rounded-lg text-xs"
-                              pressed={advancedOptionsOpen[field.id] || false}
-                              onPressedChange={(value: boolean) => {
-                                setAdvancedOptionsOpen({
-                                  ...advancedOptionsOpen,
-                                  [field.id]: value,
-                                });
-                              }}
-                            >
-                              <img
-                                src="/arrowRightSymbol.svg"
-                                alt="Options Icon"
-                                className="w-2 h-2 "
-                              />
-                              <p className="text-xs ">Options</p>
-                            </Toggle>
-                          )}
+                          {field.type !== "DATE" &&
+                            field.type !== "TIME" &&
+                            field.type !== "CHECKBOX" &&
+                            field.type !== "PARAGRAPH" &&
+                            field.type !== "HEADER" && (
+                              <Toggle
+                                className="bg-white rounded-lg text-xs"
+                                pressed={advancedOptionsOpen[field.id] || false}
+                                onPressedChange={(value: boolean) => {
+                                  setAdvancedOptionsOpen({
+                                    ...advancedOptionsOpen,
+                                    [field.id]: value,
+                                  });
+                                }}
+                              >
+                                <img
+                                  src="/arrowRightSymbol.svg"
+                                  alt="Options Icon"
+                                  className="w-2 h-2 "
+                                />
+                                <p className="text-xs ">Options</p>
+                              </Toggle>
+                            )}
 
                           {/* Field Required */}
 
@@ -683,7 +685,7 @@ export default function FormEditor({
                         {advancedOptionsOpen[field.id] &&
                           !["DATE", "TIME"].includes(field.type) && (
                             <>
-                              {field.type === "Asset" && (
+                              {field.type === "SEARCH_ASSET" && (
                                 <>
                                   <Separator className=" my-2" />
                                   <p className="text-sm font-semibold">
@@ -1273,7 +1275,7 @@ export default function FormEditor({
                                   </div>
                                 </div>
                               )}
-                              {field.type === "WORKER" && (
+                              {field.type === "SEARCH_PERSON" && (
                                 <>
                                   <Separator className=" my-2" />
                                   <p className="text-sm font-semibold">
@@ -1340,7 +1342,7 @@ export default function FormEditor({
         </ScrollArea>
 
         <FormBuilderPanelRight addField={addField} />
-        {loading && (
+        {loadingSave && (
           <div className="absolute inset-0 z-40 w-full h-full bg-white bg-opacity-20 flex items-center justify-center">
             <Spinner size={40} />
           </div>

@@ -37,7 +37,6 @@ export async function GET(
         equipmentVehicleInfo: true,
         TruckingLogs: true,
         DocumentTags: true,
-        PendingApprovals: true,
       },
     });
 
