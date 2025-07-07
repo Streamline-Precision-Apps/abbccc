@@ -39,6 +39,8 @@ import {
   archiveFormTemplate,
   deleteFormTemplate,
   draftFormTemplate,
+  getFormSubmissions,
+  getFormTemplate,
   publishFormTemplate,
 } from "@/actions/records-forms";
 import {
@@ -49,8 +51,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 import { FormStatus } from "@/lib/enums";
+import { ExportModal } from "../_components/List/exportModal";
+import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -69,6 +74,15 @@ export default function FormPage({ params }: { params: { id: string } }) {
     end: Date | undefined;
   }>({ start: undefined, end: undefined });
 
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportDateRange, setExportDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
+
   const [formTemplate, setFormTemplate] =
     useState<FormIndividualTemplate | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +92,10 @@ export default function FormPage({ params }: { params: { id: string } }) {
     "archive" | "publish" | "draft" | null
   >(null);
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
-
+  const [showFormSubmission, setShowFormSubmission] = useState(false);
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<
+    string | null
+  >(null);
   // Fetch form template data when component mounts or when formId, page, pageSize, or statusFilter changes
   useEffect(() => {
     const fetchFormTemplate = async () => {
@@ -315,14 +332,15 @@ export default function FormPage({ params }: { params: { id: string } }) {
         <Button
           variant={"destructive"}
           size={"sm"}
-          className="hover:bg-slate-500 hover:bg-opacity-20"
+          className="min-w-[120px] hover:bg-slate-500 hover:bg-opacity-20"
           onClick={() => {
             if (formTemplate) {
               openHandleDelete(formTemplate.id);
             }
           }}
         >
-          <p className="text-sm font-semibold">Delete</p>
+          <p className="text-xs font-semibold">Delete</p>
+          <img src="/trash.svg" alt="Delete Form" className="h-4 w-4" />
         </Button>
       </div>
     );
@@ -333,6 +351,91 @@ export default function FormPage({ params }: { params: { id: string } }) {
     currentStatus,
     STATUS_OPTIONS,
   ]);
+
+  const handleExport = async (exportFormat = "xlsx") => {
+    if (id) {
+      try {
+        const template = await getFormTemplate(id);
+        const submissions = await getFormSubmissions(id, {
+          from: exportDateRange.from,
+          to: exportDateRange.to,
+        });
+
+        if (!template || !template.FormGrouping) {
+          toast.error("Form template or groupings not found");
+          return;
+        }
+        const groupings = template.FormGrouping;
+        const fields = groupings
+          .flatMap((group) => (Array.isArray(group.Fields) ? group.Fields : []))
+          .filter((field) => field && field.id && field.label);
+
+        // Build headers: field labels, plus some submission metadata
+        const headers = [
+          "Submission ID",
+          "Submitted By",
+          "Submitted At",
+          ...fields.map((field: any) => field.label),
+        ];
+
+        // Build rows from submissions
+        const rows = (submissions || []).map((submission: any) => {
+          const user = submission.User
+            ? `${submission.User.firstName} ${submission.User.lastName}`
+            : "";
+          const submittedAt =
+            submission.submittedAt || submission.createdAt || "";
+          return [
+            submission.id,
+            user,
+            submittedAt,
+            ...fields.map((field: any) => {
+              // Prefer field.id as key, fallback to label
+              return (
+                submission.data?.[field.id] ??
+                submission.data?.[field.label] ??
+                ""
+              );
+            }),
+          ];
+        });
+
+        const exportData = [headers, ...rows];
+
+        if (exportFormat === "csv") {
+          const csv = exportData
+            .map((row) =>
+              row
+                .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
+                .join(",")
+            )
+            .join("\n");
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          saveAs(
+            blob,
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+        } else {
+          const ws = XLSX.utils.aoa_to_sheet(exportData);
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "Form Submissions");
+          const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+          const blob = new Blob([wbout], { type: "application/octet-stream" });
+          saveAs(
+            blob,
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        }
+
+        toast.success("Export completed successfully");
+      } catch (error) {
+        console.error("Error exporting form template:", error);
+        toast.error("Failed to export form template");
+      } finally {
+        setShowExportModal(false);
+      }
+    }
+  };
 
   return (
     <div>
@@ -355,6 +458,17 @@ export default function FormPage({ params }: { params: { id: string } }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Export Modal */}
+      {showExportModal && (
+        <ExportModal
+          setDateRange={setExportDateRange}
+          dateRange={exportDateRange}
+          onClose={() => {
+            setShowExportModal(false);
+          }}
+          onExport={handleExport}
+        />
+      )}
       <div className="flex flex-row gap-1 mb-4 ">
         <div className="w-full flex flex-row gap-5">
           <div className="flex items-center justify-center">
@@ -514,6 +628,9 @@ export default function FormPage({ params }: { params: { id: string } }) {
         </div>
         <div className="flex justify-center items-center">
           <Button
+            onClick={() => {
+              setShowExportModal(true);
+            }}
             variant={"ghost"}
             size={"default"}
             className="px-6 py-1 rounded-lg bg-white hover:bg-slate-500 hover:bg-opacity-20"
@@ -597,6 +714,8 @@ export default function FormPage({ params }: { params: { id: string } }) {
                 setPage={setPage}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
+                setShowFormSubmission={setShowFormSubmission}
+                setSelectedSubmissionId={setSelectedSubmissionId}
               />
             ) : (
               <div className="bg-white bg-opacity-80 h-[85vh] pb-[1.5em] w-full flex items-center justify-center rounded-lg">
@@ -606,6 +725,12 @@ export default function FormPage({ params }: { params: { id: string } }) {
               </div>
             )}
           </>
+        )}
+        {showFormSubmission && selectedSubmissionId && (
+          <EditFormSubmissionModal
+            id={selectedSubmissionId}
+            closeModal={() => setShowFormSubmission(false)}
+          />
         )}
       </div>
     </div>
