@@ -44,7 +44,6 @@ export default function EquipmentScanner({
       formData.append("equipmentId", scannedId);
       formData.append("jobsiteId", jobSite?.code || "");
       formData.append("startTime", new Date().toString());
-      formData.append("employeeId", id || "");
 
       const result = await CreateEmployeeEquipmentLog(formData);
       if (result) {

@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { ApprovalStatus } from "@/lib/enums";
 
 export async function GET(
   request: Request,
@@ -23,7 +24,7 @@ export async function GET(
       timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
-          status: "DENIED",
+          status: ApprovalStatus.REJECTED,
         },
         orderBy: { date: "desc" },
       });
@@ -31,7 +32,7 @@ export async function GET(
       timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
-          status: "PENDING",
+          status: ApprovalStatus.PENDING,
         },
         orderBy: { date: "desc" },
       });
@@ -39,7 +40,7 @@ export async function GET(
       timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
-          status: "APPROVED",
+          status: ApprovalStatus.APPROVED,
         },
         orderBy: { date: "desc" },
       });

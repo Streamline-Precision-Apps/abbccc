@@ -9,6 +9,9 @@ import GeneralSection from "./GeneralSection";
 import { adminCreateTimesheet } from "@/actions/records-timesheets";
 import { toast } from "sonner";
 
+// Type for mechanic project summary (expand as needed)
+type MechanicProjectSummary = { id: string };
+
 export function CreateTimesheetModal({
   onClose,
   onCreated,
@@ -125,7 +128,7 @@ export function CreateTimesheetModal({
         if (!res.ok) return setMaintenanceEquipmentOptions([]);
         const data = await res.json();
         // Flatten to [{ value: id, label: Equipment.name }]
-        const options = data.map((m: any) => ({
+        const options = (data as MechanicProjectSummary[]).map((m) => ({
           value: m.id,
           label: `#${m.id}`,
         }));

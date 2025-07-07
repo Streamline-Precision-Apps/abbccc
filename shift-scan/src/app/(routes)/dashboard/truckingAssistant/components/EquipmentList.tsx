@@ -80,7 +80,7 @@ export default function EquipmentList({
       const formData = new FormData();
       formData.append("id", selectedIndex);
       formData.append("truckingLogId", truckingLog);
-      formData.append("equipmentId", equipment.code); // equipment Id
+      formData.append("equipmentId", equipment.code); // This is actually the equipment QR ID, not the internal ID
       formData.append("equipmentName", equipment.label); // equipment Name
 
       await updateEquipmentLogsEquipment(formData);

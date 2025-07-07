@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from '@sentry/nextjs';
 import prisma from "@/lib/prisma";
 
 export async function GET(
@@ -45,6 +46,7 @@ export async function GET(
 
     return NextResponse.json(tags);
   } catch (error) {
+    Sentry.captureException(error);
     // Log any database errors
     console.error("Error fetching tags:", error);
     return NextResponse.json(

@@ -11,7 +11,7 @@ import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
 import ReviewYourTeam from "./(components)/reviewYourTeam";
 import EditTeamTimeSheet from "./(components)/editTeamTimeSheet";
-import { TimesheetFilter } from "@/lib/types";
+import { TimesheetFilter, crewUsers } from "@/lib/types";
 
 export type TimeSheet = {
   submitDate: string;
@@ -47,7 +47,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
   const [editDate, setEditDate] = useState<string>("");
   const [focusIds, setFocusIds] = useState<string[]>([]);
   const [employeeId, setEmployeeId] = useState<string>("");
-  const [teamUsers, setTeamUsers] = useState<any[]>([]);
+  const [teamUsers, setTeamUsers] = useState<crewUsers[]>([]);
 
   useEffect(() => {
     console.log("currentStep: ", step);
