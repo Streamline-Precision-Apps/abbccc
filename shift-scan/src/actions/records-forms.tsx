@@ -352,6 +352,8 @@ export async function deleteFormTemplate(formId: string) {
   }
 }
 // ===========================================================================
+
+// ===========================================================================
 // */admins/form/[id]/page.tsx*
 export async function archiveFormTemplate(formId: string) {
   try {
@@ -396,3 +398,50 @@ export async function draftFormTemplate(formId: string) {
   }
 }
 // ===========================================================================
+export async function getFormTemplate(formId: string) {
+  try {
+    const formTemplate = await prisma.formTemplate.findUnique({
+      where: { id: formId },
+      include: {
+        FormGrouping: {
+          include: {
+            Fields: true,
+          },
+        },
+      },
+    });
+    return formTemplate;
+  } catch (error) {
+    console.error("Error fetching form template:", error);
+    return null;
+  }
+}
+
+export async function getFormSubmissions(
+  formId: string,
+  dateRange?: {
+    from?: Date;
+    to?: Date;
+  }
+) {
+  try {
+    const formSubmissions = await prisma.formSubmission.findMany({
+      where: {
+        formTemplateId: formId,
+        submittedAt: { gte: dateRange?.from, lte: dateRange?.to },
+      },
+      include: {
+        User: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+    return formSubmissions;
+  } catch (error) {
+    console.error("Error fetching form submissions:", error);
+    return null;
+  }
+}
