@@ -104,9 +104,11 @@ export async function saveFormTemplate(data: SaveFormData) {
           },
         });
 
-        // Handle field options for dropdowns
+        // Handle field options for dropdowns, radios, multiselects
         if (
-          field.type === "DROPDOWN" &&
+          ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
+            field.type?.toUpperCase?.()
+          ) &&
           field.Options &&
           field.Options.length > 0
         ) {
@@ -168,10 +170,11 @@ export async function saveFormTemplate(data: SaveFormData) {
 
 export async function updateFormTemplate(data: SaveFormData) {
   try {
-    const { settings, fields, companyId, formId } = data;
+    const { settings, fields, formId } = data;
     if (!formId) {
       return { success: false, error: "No formId provided for update" };
     }
+    console.log("Updating form template with data:", data);
 
     // Update the form template main settings
     const updatedForm = await prisma.formTemplate.update({
@@ -207,6 +210,7 @@ export async function updateFormTemplate(data: SaveFormData) {
       where: { formGroupingId },
       include: { Options: true },
     });
+    console.log("Existing fields:", existingFields);
 
     // Build a map for quick lookup
     const existingFieldMap = new Map(existingFields.map((f) => [f.id, f]));
