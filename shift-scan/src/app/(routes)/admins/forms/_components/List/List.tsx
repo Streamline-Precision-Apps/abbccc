@@ -16,6 +16,7 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export interface ListProps {
   forms: any[];
@@ -26,10 +27,8 @@ export interface ListProps {
   total: number;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
-  setFormId: Dispatch<SetStateAction<string | null>>;
-  setViewMode: Dispatch<
-    SetStateAction<"list" | "individual" | "builder" | "editTemplate">
-  >;
+  openHandleDelete: (id: string) => void;
+  setPendingExportId: Dispatch<SetStateAction<string | null>>;
 }
 
 /**
@@ -44,8 +43,8 @@ const List: React.FC<ListProps> = ({
   total,
   setPage,
   setPageSize,
-  setFormId,
-  setViewMode,
+  setPendingExportId,
+  openHandleDelete,
 }) => {
   return (
     <div className="bg-white bg-opacity-80 h-[85vh] pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
@@ -134,7 +133,14 @@ const List: React.FC<ListProps> = ({
           <TableBody className="bg-white pt-2">
             {forms.map((form) => (
               <TableRow key={form.id}>
-                <TableCell className="text-xs">{form.name}</TableCell>
+                <TableCell className="text-xs">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-semibold">{form.name}</span>
+                    <span className="text-xs text-gray-500">
+                      {form.description || "No description"}
+                    </span>
+                  </div>
+                </TableCell>
                 <TableCell className="text-center text-xs">
                   <span className="bg-sky-200 px-3 py-1 rounded-xl">
                     {form.formType}
@@ -144,9 +150,13 @@ const List: React.FC<ListProps> = ({
                   {form._count.Submissions}
                 </TableCell>
                 <TableCell className="text-center text-xs">
-                  {form.isActive ? (
+                  {form.isActive === "ACTIVE" ? (
                     <span className=" bg-green-300 px-3 py-1 rounded-xl ">
                       Active
+                    </span>
+                  ) : form.isActive === "DRAFT" ? (
+                    <span className=" bg-yellow-200 px-3 py-1 rounded-xl ">
+                      Draft
                     </span>
                   ) : (
                     <span className=" bg-slate-100 px-3 py-1 rounded-xl">
@@ -166,24 +176,26 @@ const List: React.FC<ListProps> = ({
                 </TableCell>
                 <TableCell className="w-[160px]">
                   <div className="flex flex-row justify-center">
+                    <Link href={`/admins/forms/${form.id}`}>
+                      <Button
+                        variant="ghost"
+                        size={"icon"}
+                        onClick={() => {
+                          form.id;
+                        }}
+                      >
+                        <img
+                          src="/eye.svg"
+                          alt="View Form"
+                          className="h-4 w-4 cursor-pointer"
+                        />
+                      </Button>
+                    </Link>
+
                     <Button
                       variant="ghost"
                       size={"icon"}
-                      onClick={() => {
-                        setFormId(form.id);
-                        setViewMode("individual");
-                      }}
-                    >
-                      <img
-                        src="/eye.svg"
-                        alt="View Form"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size={"icon"}
-                      onClick={() => setFormId(form.id)}
+                      onClick={() => setPendingExportId(form.id)}
                     >
                       <img
                         src="/export.svg"
@@ -191,24 +203,23 @@ const List: React.FC<ListProps> = ({
                         className="h-4 w-4 cursor-pointer"
                       />
                     </Button>
+
+                    <Link href={`/admins/forms/edit/${form.id}`}>
+                      <Button variant="ghost" size={"icon"}>
+                        <img
+                          src="/formEdit.svg"
+                          alt="Edit Form"
+                          className="h-4 w-4 cursor-pointer"
+                        />
+                      </Button>
+                    </Link>
+
                     <Button
                       variant="ghost"
                       size={"icon"}
                       onClick={() => {
-                        setFormId(form.id);
-                        setViewMode("editTemplate");
+                        openHandleDelete(form.id);
                       }}
-                    >
-                      <img
-                        src="/formEdit.svg"
-                        alt="Edit Form"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size={"icon"}
-                      onClick={() => setFormId(form.id)}
                     >
                       <img
                         src="/trash-red.svg"

@@ -1,6 +1,10 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { FieldType } from "@prisma/client";
+import {
+  FieldType,
+  FormTemplateCategory,
+  FormTemplateStatus,
+} from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 
 // Types for form builder
@@ -13,13 +17,13 @@ export interface FormFieldData {
   placeholder?: string;
   maxLength?: number;
   groupId?: string; // For associating with sections
-  options?: string[];
+  Options?: { id: string; value: string }[];
 }
 
 export interface FormSettingsData {
   name: string;
   description: string;
-  category: string;
+  formType: string;
   status: string;
   requireSignature: boolean;
 }
@@ -52,45 +56,21 @@ function mapFieldType(type: string): FieldType {
 // Create or update a form template
 export async function saveFormTemplate(data: SaveFormData) {
   try {
-    const { settings, fields, companyId, formId } = data;
+    const { settings, fields, companyId } = data;
+    console.log("Saving form template with data:", data);
 
     // Start a transaction
     const result = await prisma.$transaction(async (tx) => {
-      let formTemplate;
-
-      if (formId) {
-        // Update existing form
-        formTemplate = await tx.formTemplate.update({
-          where: { id: formId },
-          data: {
-            name: settings.name,
-            formType: settings.category,
-            isActive: settings.status === "active",
-            isSignatureRequired: settings.requireSignature,
-            updatedAt: new Date(),
-          },
-        });
-
-        // Delete existing form groupings and fields
-        await tx.formGrouping.deleteMany({
-          where: {
-            FormTemplate: {
-              some: { id: formId },
-            },
-          },
-        });
-      } else {
-        // Create new form
-        formTemplate = await tx.formTemplate.create({
-          data: {
-            companyId,
-            name: settings.name,
-            formType: settings.category,
-            isActive: settings.status === "active",
-            isSignatureRequired: settings.requireSignature,
-          },
-        });
-      }
+      // Create new form
+      const formTemplate = await tx.formTemplate.create({
+        data: {
+          companyId,
+          name: settings.name,
+          formType: settings.formType as FormTemplateCategory, // Ensure formType is cast to enum
+          isActive: (settings.status as FormTemplateStatus) || "DRAFT",
+          isSignatureRequired: settings.requireSignature,
+        },
+      });
 
       // Create form grouping (one grouping per form for simplicity)
       const formGrouping = await tx.formGrouping.create({
@@ -124,16 +104,52 @@ export async function saveFormTemplate(data: SaveFormData) {
           },
         });
 
-        // Create field options if it's a dropdown
-        if (field.options && field.options.length > 0) {
-          for (const option of field.options) {
+        // Handle field options for dropdowns, radios, multiselects
+        if (
+          ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
+            field.type?.toUpperCase?.()
+          ) &&
+          field.Options &&
+          field.Options.length > 0
+        ) {
+          for (const option of field.Options) {
+            const optionData =
+              typeof option === "string" ? { value: option } : option;
             await tx.formFieldOption.create({
               data: {
                 fieldId: formField.id,
-                value: option,
+                value: optionData.value,
               },
             });
           }
+        }
+
+        // Handle additional types
+        if (field.type === "TEXTAREA" || field.type === "TEXT") {
+          await tx.formField.update({
+            where: { id: formField.id },
+            data: {
+              maxLength: field.maxLength,
+            },
+          });
+        }
+
+        if (field.type === "NUMBER") {
+          await tx.formField.update({
+            where: { id: formField.id },
+            data: {
+              maxLength: field.maxLength,
+            },
+          });
+        }
+
+        if (field.type === "DATE" || field.type === "TIME") {
+          await tx.formField.update({
+            where: { id: formField.id },
+            data: {
+              placeholder: field.placeholder,
+            },
+          });
         }
       }
 
@@ -152,73 +168,155 @@ export async function saveFormTemplate(data: SaveFormData) {
   }
 }
 
-// Get form template with fields for editing
-export async function getFormTemplateForEdit(formId: string) {
+export async function updateFormTemplate(data: SaveFormData) {
   try {
-    const formTemplate = await prisma.formTemplate.findUnique({
+    const { settings, fields, formId } = data;
+    if (!formId) {
+      return { success: false, error: "No formId provided for update" };
+    }
+    console.log("Updating form template with data:", data);
+
+    // Update the form template main settings
+    const updatedForm = await prisma.formTemplate.update({
       where: { id: formId },
-      include: {
-        FormGrouping: {
-          include: {
-            Fields: {
-              include: {
-                Options: true,
-              },
-              orderBy: { order: "asc" },
-            },
-          },
-        },
+      data: {
+        name: settings.name,
+        formType: settings.formType as FormTemplateCategory,
+        isActive: (settings.status as FormTemplateStatus) || "DRAFT",
+        isSignatureRequired: settings.requireSignature,
+        description: settings.description,
       },
     });
 
-    if (!formTemplate) {
-      return { success: false, error: "Form template not found" };
+    // Get the grouping(s) for this form
+    const groupings = await prisma.formGrouping.findMany({
+      where: { FormTemplate: { some: { id: formId } } },
+    });
+    let formGroupingId = groupings[0]?.id;
+    // If no grouping exists, create one
+    if (!formGroupingId) {
+      const newGrouping = await prisma.formGrouping.create({
+        data: { title: settings.name, order: 0 },
+      });
+      await prisma.formTemplate.update({
+        where: { id: formId },
+        data: { FormGrouping: { connect: { id: newGrouping.id } } },
+      });
+      formGroupingId = newGrouping.id;
     }
 
-    // Transform the data to match our FormBuilder interface
-    const settings: FormSettingsData = {
-      name: formTemplate.name,
-      description: formTemplate.formType || "",
-      category: formTemplate.formType || "",
-      status: formTemplate.isActive ? "active" : "inactive",
-      requireSignature: formTemplate.isSignatureRequired,
-    };
-
-    const fields: FormFieldData[] = [];
-
-    // Flatten fields from all groupings
-    formTemplate.FormGrouping.forEach((grouping) => {
-      grouping.Fields.forEach((field) => {
-        fields.push({
-          id: field.id,
-          label: field.label,
-          type: field.type.toLowerCase(),
-          required: field.required,
-          placeholder: field.placeholder || "",
-          options: field.Options.map((opt) => opt.value),
-          maxLength: field.maxLength || undefined,
-          order: field.order,
-        });
-      });
+    // Fetch all existing fields for this grouping
+    const existingFields = await prisma.formField.findMany({
+      where: { formGroupingId },
+      include: { Options: true },
     });
+    console.log("Existing fields:", existingFields);
 
-    // Sort fields by order
-    fields.sort((a, b) => a.order - b.order);
+    // Build a map for quick lookup
+    const existingFieldMap = new Map(existingFields.map((f) => [f.id, f]));
+    const submittedFieldIds = new Set(fields.map((f) => f.id));
 
-    return {
-      success: true,
-      data: {
-        settings,
-        fields,
-        formId: formTemplate.id,
-      },
-    };
+    // Delete fields that are not in the submitted fields
+    for (const oldField of existingFields) {
+      if (!submittedFieldIds.has(oldField.id)) {
+        await prisma.formFieldOption.deleteMany({
+          where: { fieldId: oldField.id },
+        });
+        await prisma.formField.delete({ where: { id: oldField.id } });
+      }
+    }
+
+    // Upsert submitted fields
+    for (const field of fields) {
+      let formFieldId = field.id;
+      const isExisting = existingFieldMap.has(field.id);
+      if (isExisting) {
+        // Update the field
+        await prisma.formField.update({
+          where: { id: field.id },
+          data: {
+            label: field.label,
+            type: mapFieldType(field.type),
+            required: field.required,
+            order: field.order,
+            placeholder: field.placeholder,
+            maxLength: field.maxLength,
+            formGroupingId,
+          },
+        });
+        // Remove all options for this field (will re-add below)
+        await prisma.formFieldOption.deleteMany({
+          where: { fieldId: field.id },
+        });
+      } else {
+        // Create the field
+        const created = await prisma.formField.create({
+          data: {
+            id: field.id,
+            formGroupingId,
+            label: field.label,
+            type: mapFieldType(field.type),
+            required: field.required,
+            order: field.order,
+            placeholder: field.placeholder,
+            maxLength: field.maxLength,
+          },
+        });
+        formFieldId = created.id;
+      }
+
+      // Handle field options for dropdowns, radios, multiselects
+      if (
+        ["DROPDOWN", "RADIO", "MULTISELECT"].includes(field.type) &&
+        field.Options &&
+        field.Options.length > 0
+      ) {
+        for (const option of field.Options) {
+          await prisma.formFieldOption.create({
+            data: {
+              fieldId: formFieldId,
+              value: option.value,
+            },
+          });
+        }
+      }
+
+      // Handle additional types
+      if (field.type === "TEXTAREA" || field.type === "TEXT") {
+        await prisma.formField.update({
+          where: { id: formFieldId },
+          data: {
+            maxLength: field.maxLength,
+          },
+        });
+      }
+
+      if (field.type === "NUMBER") {
+        await prisma.formField.update({
+          where: { id: formFieldId },
+          data: {
+            maxLength: field.maxLength,
+          },
+        });
+      }
+
+      if (field.type === "DATE" || field.type === "TIME") {
+        await prisma.formField.update({
+          where: { id: formFieldId },
+          data: {
+            placeholder: field.placeholder,
+          },
+        });
+      }
+    }
+
+    revalidatePath("/admins/forms");
+    return { success: true, formId, message: "Form updated successfully" };
   } catch (error) {
-    console.error("Error fetching form template:", error);
-    return { success: false, error: "Failed to fetch form template" };
+    console.error("Error updating form template:", error);
+    return { success: false, error: "Failed to update form template" };
   }
 }
-
 // Delete form template
 export async function deleteFormTemplate(formId: string) {
   try {
@@ -226,99 +324,55 @@ export async function deleteFormTemplate(formId: string) {
       where: { id: formId },
     });
 
-    revalidatePath("/admins/records/forms");
+    revalidatePath("/admins/forms");
+    revalidatePath(`/admins/forms/${formId}`);
+
     return { success: true, message: "Form deleted successfully" };
   } catch (error) {
     console.error("Error deleting form template:", error);
     return { success: false, error: "Failed to delete form template" };
   }
 }
-
-// Get all form templates for a company
-export async function getFormTemplates(
-  companyId: string,
-  page = 1,
-  pageSize = 10,
-  searchTerm = "",
-  formType = ""
-) {
+// used in the form/id page.tsx
+export async function archiveFormTemplate(formId: string) {
   try {
-    const skip = (page - 1) * pageSize;
-
-    const where = {
-      companyId,
-      ...(searchTerm && {
-        OR: [
-          { name: { contains: searchTerm, mode: "insensitive" as const } },
-          { formType: { contains: searchTerm, mode: "insensitive" as const } },
-        ],
-      }),
-      ...(formType && { formType }),
-    };
-
-    const [formTemplates, total] = await Promise.all([
-      prisma.formTemplate.findMany({
-        where,
-        include: {
-          _count: {
-            select: { Submissions: true },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: pageSize,
-      }),
-      prisma.formTemplate.count({ where }),
-    ]);
-
-    return {
-      success: true,
-      data: {
-        forms: formTemplates,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-        currentPage: page,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching form templates:", error);
-    return { success: false, error: "Failed to fetch form templates" };
-  }
-}
-
-// Duplicate form template
-export async function duplicateFormTemplate(formId: string, companyId: string) {
-  try {
-    const originalForm = await getFormTemplateForEdit(formId);
-
-    if (!originalForm.success || !originalForm.data) {
-      return { success: false, error: "Failed to fetch original form" };
-    }
-
-    const { settings, fields } = originalForm.data;
-
-    // Modify settings for the duplicate
-    const duplicateSettings = {
-      ...settings,
-      name: `${settings.name} (Copy)`,
-      status: "inactive", // Always create duplicates as inactive
-    };
-
-    // Generate new IDs for fields
-    const duplicateFields = fields.map((field) => ({
-      ...field,
-      id: `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    }));
-
-    const result = await saveFormTemplate({
-      settings: duplicateSettings,
-      fields: duplicateFields,
-      companyId,
+    await prisma.formTemplate.update({
+      where: { id: formId },
+      data: { isActive: "ARCHIVED" },
     });
 
-    return result;
+    revalidatePath("/admins/records/forms");
+    return { success: true, message: "Form archived successfully" };
   } catch (error) {
-    console.error("Error duplicating form template:", error);
-    return { success: false, error: "Failed to duplicate form template" };
+    console.error("Error archiving form template:", error);
+    return { success: false, error: "Failed to archive form template" };
+  }
+}
+export async function publishFormTemplate(formId: string) {
+  try {
+    await prisma.formTemplate.update({
+      where: { id: formId },
+      data: { isActive: "ACTIVE" },
+    });
+
+    revalidatePath("/admins/records/forms");
+    return { success: true, message: "Form published successfully" };
+  } catch (error) {
+    console.error("Error publishing form template:", error);
+    return { success: false, error: "Failed to publish form template" };
+  }
+}
+export async function draftFormTemplate(formId: string) {
+  try {
+    await prisma.formTemplate.update({
+      where: { id: formId },
+      data: { isActive: "DRAFT" },
+    });
+
+    revalidatePath("/admins/records/forms");
+    return { success: true, message: "Form drafted successfully" };
+  } catch (error) {
+    console.error("Error drafting form template:", error);
+    return { success: false, error: "Failed to draft form template" };
   }
 }

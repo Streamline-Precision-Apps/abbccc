@@ -103,6 +103,12 @@ enum FormStatus {
   DENIED
 }
 
+enum FormTemplateStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
 enum FieldType {
   HEADER
   PARAGRAPH
@@ -117,4 +123,14 @@ enum FieldType {
   RADIO
   SEARCH_PERSON
   SEARCH_ASSET
+}
+
+enum FormTemplateCategory {
+  GENERAL
+  MAINTENANCE
+  SAFETY
+  INSPECTION
+  INCIDENT
+  FINANCE
+  OTHER
 }
