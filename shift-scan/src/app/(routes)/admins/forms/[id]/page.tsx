@@ -729,6 +729,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
         {showFormSubmission && selectedSubmissionId && (
           <EditFormSubmissionModal
             id={selectedSubmissionId}
+            formTemplate={formTemplate}
             closeModal={() => setShowFormSubmission(false)}
           />
         )}

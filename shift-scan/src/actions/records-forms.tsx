@@ -417,20 +417,85 @@ export async function getFormTemplate(formId: string) {
   }
 }
 
-export async function getFormSubmissionById(formId: string) {
+/**
+ * Represents a single form submission with all related data for editing.
+ */
+export interface FormSubmissionWithTemplate {
+  id: string;
+  title: string | null;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string | null;
+  status: string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  FormTemplate: {
+    id: string;
+    name: string;
+    description: string | null;
+    formType: string;
+    createdAt: string;
+    updatedAt: string;
+    isActive: string;
+    isSignatureRequired: boolean;
+    FormGrouping: Array<{
+      id: string;
+      title: string | null;
+      order: number;
+      Fields: Array<{
+        id: string;
+        formGroupingId: string;
+        label: string;
+        type: string;
+        required: boolean;
+        order: number;
+        placeholder?: string | null;
+        minLength?: number | null;
+        maxLength?: number | null;
+        multiple?: boolean | null;
+        content?: string | null;
+        filter?: string | null;
+        Options?: Array<{
+          id: string;
+          fieldId: string;
+          value: string;
+        }>;
+      }>;
+    }>;
+  };
+}
+
+export async function getFormSubmissionById(submissionId: string) {
   try {
-    const formSubmission = await prisma.formSubmission.findUnique({
-      where: { id: formId },
+    const submission = await prisma.formSubmission.findUnique({
+      where: { id: submissionId },
       include: {
         User: {
-          select: {
-            firstName: true,
-            lastName: true,
+          select: { id: true, firstName: true, lastName: true },
+        },
+        FormTemplate: {
+          include: {
+            FormGrouping: {
+              include: {
+                Fields: {
+                  include: {
+                    Options: true, // if you need select/radio options
+                  },
+                },
+              },
+            },
           },
         },
       },
     });
-    return formSubmission;
+    return submission;
   } catch (error) {
     console.error("Error fetching form submission:", error);
     return null;
@@ -463,5 +528,33 @@ export async function getFormSubmissions(
   } catch (error) {
     console.error("Error fetching form submissions:", error);
     return null;
+  }
+}
+
+// Update a form submission's data (for editing submissions)
+export interface UpdateFormSubmissionInput {
+  submissionId: string;
+  data: Record<string, any>;
+}
+
+/**
+ * Updates a form submission's data and updatedAt timestamp.
+ * @param input - The submission id and new data object
+ */
+export async function updateFormSubmission(input: UpdateFormSubmissionInput) {
+  try {
+    const { submissionId, data } = input;
+    const updated = await prisma.formSubmission.update({
+      where: { id: submissionId },
+      data: {
+        data,
+        updatedAt: new Date(),
+      },
+    });
+    revalidatePath(`/admins/forms/${updated.formTemplateId}`);
+    return { success: true, submission: updated };
+  } catch (error) {
+    console.error("Error updating form submission:", error);
+    return { success: false, error: "Failed to update form submission" };
   }
 }

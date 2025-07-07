@@ -45,6 +45,7 @@ export async function GET(
             order: true,
             Fields: {
               select: {
+                id: true,
                 label: true,
                 type: true,
                 required: true,

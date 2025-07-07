@@ -26,6 +26,7 @@ interface FieldOption {
 }
 
 interface Field {
+  id: string;
   label: string;
   name: string;
   type: string;
@@ -123,11 +124,30 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     <TableCell className="text-xs">
                       {submission.User.firstName} {submission.User.lastName}
                     </TableCell>
-                    {fields.map((field) => (
-                      <TableCell key={field.name} className="text-xs">
-                        {submission.data[field.name] ?? ""}
-                      </TableCell>
-                    ))}
+                    {fields.map((field) => {
+                      const val = submission.data[field.id];
+                      let display = val;
+                      // If the field is a date or time, format it
+                      if (
+                        val &&
+                        (field.type === "DATE" || field.type === "TIME")
+                      ) {
+                        try {
+                          display = format(new Date(val), "P");
+                        } catch {
+                          display = val;
+                        }
+                      }
+                      // If the value is an array (e.g., MULTISELECT), join with commas
+                      if (Array.isArray(val)) {
+                        display = val.join(", ");
+                      }
+                      return (
+                        <TableCell key={field.id} className="text-xs">
+                          {display ?? ""}
+                        </TableCell>
+                      );
+                    })}
                     <TableCell className="text-xs">
                       {submission.status}
                     </TableCell>
