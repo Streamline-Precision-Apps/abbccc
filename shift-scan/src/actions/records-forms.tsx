@@ -537,6 +537,47 @@ export interface UpdateFormSubmissionInput {
   data: Record<string, any>;
 }
 
+// Create a new form submission
+import { FormStatus } from "@prisma/client";
+
+export interface CreateFormSubmissionInput {
+  formTemplateId: string;
+  data: Record<string, any>;
+  submittedBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+/**
+ * Creates a new form submission record.
+ * @param input - The form template id, data, and optional userId/status
+ */
+export async function createFormSubmission(input: CreateFormSubmissionInput) {
+  try {
+    const { formTemplateId, data, submittedBy } = input;
+    if (!submittedBy.id) {
+      throw new Error("Submitted By is required");
+    }
+
+    const created = await prisma.formSubmission.create({
+      data: {
+        formTemplateId,
+        userId: submittedBy.id,
+        data,
+        status: FormStatus.APPROVED,
+        submittedAt: new Date(),
+      },
+    });
+    revalidatePath(`/admins/forms/${formTemplateId}`);
+    return { success: true, submission: created };
+  } catch (error) {
+    console.error("Error creating form submission:", error);
+    return { success: false, error: "Failed to create form submission" };
+  }
+}
+
 /**
  * Updates a form submission's data and updatedAt timestamp.
  * @param input - The submission id and new data object
@@ -556,5 +597,18 @@ export async function updateFormSubmission(input: UpdateFormSubmissionInput) {
   } catch (error) {
     console.error("Error updating form submission:", error);
     return { success: false, error: "Failed to update form submission" };
+  }
+}
+
+export async function deleteFormSubmission(submissionId: string) {
+  try {
+    const submission = await prisma.formSubmission.delete({
+      where: { id: submissionId },
+    });
+    revalidatePath(`/admins/forms/${submission.formTemplateId}`);
+    return { success: true, message: "Form submission deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting form submission:", error);
+    return { success: false, error: "Failed to delete form submission" };
   }
 }

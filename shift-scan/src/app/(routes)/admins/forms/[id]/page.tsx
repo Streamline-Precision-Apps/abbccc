@@ -1,12 +1,12 @@
 "use client";
 {
   /* things to do:
-  - Implement form submission filtering by who submitted the form and form Id
-  - Implement form submission dropdown to select form status
-  - Implement form submissionAt range filtering
-  - Implement Editing form submission
-  - Implement form submission deletion
-  - Implement form submission export to csv and xlsx
+  - Implement form submission filtering by who submitted the form and form Id - done
+  - Implement form submission dropdown to select form status -done
+  - Implement form submissionAt range filtering -done
+  - Implement Editing form submission - done
+  - Implement form submission deletion - done
+  - Implement form submission export to csv and xlsx - done
   - Implement form Approval for form submission
   */
 }
@@ -37,6 +37,7 @@ import SubmissionTable from "./_component/SubmissionTable";
 import { toast } from "sonner";
 import {
   archiveFormTemplate,
+  deleteFormSubmission,
   deleteFormTemplate,
   draftFormTemplate,
   getFormSubmissions,
@@ -56,6 +57,7 @@ import * as XLSX from "xlsx";
 import { FormStatus } from "@/lib/enums";
 import { ExportModal } from "../_components/List/exportModal";
 import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
+import CreateFormSubmissionModal from "./_component/CreateFormSubmissionModal";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,7 +84,9 @@ export default function FormPage({ params }: { params: { id: string } }) {
     from: undefined,
     to: undefined,
   });
-
+  const [showDeleteSubmissionDialog, setShowDeleteSubmissionDialog] =
+    useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [formTemplate, setFormTemplate] =
     useState<FormIndividualTemplate | null>(null);
   const [loading, setLoading] = useState(true);
@@ -96,6 +100,10 @@ export default function FormPage({ params }: { params: { id: string } }) {
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<
     string | null
   >(null);
+  const [pendingSubmissionDeleteId, setPendingSubmissionDeleteId] = useState<
+    string | null
+  >(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   // Fetch form template data when component mounts or when formId, page, pageSize, or statusFilter changes
   useEffect(() => {
     const fetchFormTemplate = async () => {
@@ -127,7 +135,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
       }
     };
     fetchFormTemplate();
-  }, [id, page, pageSize, statusFilter, dateRange]);
+  }, [id, page, pageSize, statusFilter, dateRange, refreshKey]);
 
   const returnToList = () => {
     router.push("/admins/forms");
@@ -163,6 +171,31 @@ export default function FormPage({ params }: { params: { id: string } }) {
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
+  };
+  //================================================
+  // modal helper function for submission deletion
+  const openHandleDeleteSubmission = (id: string) => {
+    setPendingSubmissionDeleteId(id);
+    setShowDeleteSubmissionDialog(true);
+  };
+
+  const confirmSubmissionDelete = async () => {
+    if (pendingSubmissionDeleteId) {
+      const isDeleted = await deleteFormSubmission(pendingSubmissionDeleteId);
+      if (isDeleted) {
+        toast.success("Form submission deleted successfully");
+        setShowDeleteSubmissionDialog(false);
+        setPendingSubmissionDeleteId(null);
+        setRefreshKey((prev) => prev + 1);
+      } else {
+        toast.error("Failed to delete form submission");
+      }
+    }
+  };
+
+  const cancelSubmissionDelete = () => {
+    setShowDeleteSubmissionDialog(false);
+    setPendingSubmissionDeleteId(null);
   };
 
   /**
@@ -437,6 +470,8 @@ export default function FormPage({ params }: { params: { id: string } }) {
     }
   };
 
+  const triggerRerender = () => setRefreshKey((k) => k + 1);
+
   return (
     <div>
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -453,6 +488,29 @@ export default function FormPage({ params }: { params: { id: string } }) {
               Cancel
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={showDeleteSubmissionDialog}
+        onOpenChange={setShowDeleteSubmissionDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Form Submission?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this form submission? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelSubmissionDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmSubmissionDelete}>
               Delete
             </Button>
           </DialogFooter>
@@ -511,7 +569,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-      <div className="h-fit w-full flex flex-row justify-between gap-4 mb-4 ">
+      <div className="h-fit w-full flex flex-row justify-between gap-2 mb-4 ">
         <div className="w-full flex flex-row gap-4 ">
           <Button
             variant="outline"
@@ -631,12 +689,29 @@ export default function FormPage({ params }: { params: { id: string } }) {
             onClick={() => {
               setShowExportModal(true);
             }}
-            variant={"ghost"}
+            variant={"default"}
             size={"default"}
-            className="px-6 py-1 rounded-lg bg-white hover:bg-slate-500 hover:bg-opacity-20"
+            className="px-6 py-1 rounded-lg hover:bg-slate-800 "
           >
-            <img src="/export.svg" alt="Export Form" className="h-3 w-3 mr-1" />
-            <p className="text-xs ">Export</p>
+            <img
+              src="/export-white.svg"
+              alt="Export Form"
+              className="h-3 w-3 mr-1"
+            />
+            <p className="text-xs">Export</p>
+          </Button>
+        </div>
+        <div className="flex justify-center items-center">
+          <Button
+            onClick={() => {
+              setShowCreateModal(true);
+            }}
+            variant={"default"}
+            size={"default"}
+            className="px-6 py-1 rounded-lg  hover:bg-slate-800"
+          >
+            <img src="/plus-white.svg" alt="Export Form" className="h-4 w-4" />
+            <p className="text-xs ">Create</p>
           </Button>
         </div>
       </div>
@@ -716,6 +791,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
                 setPageSize={setPageSize}
                 setShowFormSubmission={setShowFormSubmission}
                 setSelectedSubmissionId={setSelectedSubmissionId}
+                onDeleteSubmission={openHandleDeleteSubmission}
               />
             ) : (
               <div className="bg-white bg-opacity-80 h-[85vh] pb-[1.5em] w-full flex items-center justify-center rounded-lg">
@@ -725,6 +801,16 @@ export default function FormPage({ params }: { params: { id: string } }) {
               </div>
             )}
           </>
+        )}
+        {showCreateModal && formTemplate && (
+          <CreateFormSubmissionModal
+            formTemplate={formTemplate}
+            closeModal={() => setShowCreateModal(false)}
+            onSuccess={() => {
+              setShowCreateModal(false);
+              triggerRerender();
+            }}
+          />
         )}
         {showFormSubmission && selectedSubmissionId && (
           <EditFormSubmissionModal

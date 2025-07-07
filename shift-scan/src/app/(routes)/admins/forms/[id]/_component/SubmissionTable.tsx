@@ -74,6 +74,7 @@ interface SubmissionTableProps {
   pageSize: number;
   setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
   setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
+  onDeleteSubmission: (id: string) => void;
 }
 
 /**
@@ -89,6 +90,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
   pageSize,
   setShowFormSubmission,
   setSelectedSubmissionId,
+  onDeleteSubmission,
 }) => {
   // Flatten all fields from all groupings, ordered
   const fields = groupings
@@ -174,8 +176,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                           variant="ghost"
                           size={"icon"}
                           onClick={() => {
-                            // Handle delete form action
-                            console.log("Delete Form:", submission.id);
+                            onDeleteSubmission(submission.id);
                           }}
                         >
                           <img
