@@ -14,8 +14,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
-import { useMemo } from "react";
-
 export function FormBuilderPanelLeft({
   formFields,
   formSettings,
@@ -171,14 +169,14 @@ export function FormBuilderPanelLeft({
               {formFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="flex flex-row  items-center gap-2 rounded-lg"
+                  className="flex flex-row items-center gap-2 rounded-lg"
                 >
                   <p className="text-xs font-semibold">{index + 1}.</p>
 
                   <Button
                     size={"icon"}
                     variant="default"
-                    className={`w-8 h-6 ${(() => {
+                    className={`w-8 h-auto p-1 justify-start ${(() => {
                       const typeDef = fieldTypes.find(
                         (t) => t.name === field.type
                       );

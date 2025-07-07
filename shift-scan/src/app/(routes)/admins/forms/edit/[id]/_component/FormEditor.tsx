@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { updateFormTemplate } from "@/actions/records-forms";
 import { FormEditorPanelLeft } from "./FormEditorPanelLeft";
 import Spinner from "@/components/(animations)/spinner";
+import { is } from "date-fns/locale";
 
 // Types for form building
 export interface FormField {
@@ -366,18 +367,23 @@ export default function FormEditor({
         settings: {
           name: formSettings.name,
           description: formSettings.description,
-          formType: formSettings.formType,
-          status: formSettings.isActive, // status isActive is used for status
+          formType: formSettings.formType, // status isActive is used for status
+          isActive: formSettings.isActive,
           requireSignature: formSettings.requireSignature,
         },
         fields: formFields.map((field) => ({
           id: field.id,
+          formGroupingId: field.formGroupingId, // Ensure this property is included
           label: field.label,
           type: field.type,
           required: field.required,
           order: field.order,
           placeholder: field.placeholder ?? undefined,
           maxLength: field.maxLength ?? undefined,
+          minLength: field.minLength ?? undefined,
+          multiple: field.multiple ?? undefined,
+          content: field.content ?? undefined,
+          filter: field.filter ?? undefined,
           Options: field.Options ?? [],
         })),
         companyId: formSettings.companyId,

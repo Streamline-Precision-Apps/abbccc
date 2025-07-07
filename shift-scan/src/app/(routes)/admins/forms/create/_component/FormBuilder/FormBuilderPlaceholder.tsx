@@ -31,7 +31,7 @@ export default function FormBuilderPlaceholder({
           <Button
             variant={"outline"}
             className="mt-4"
-            onClick={() => addField("text")}
+            onClick={() => addField("TEXT")}
           >
             <div className="flex flex-row items-center ">
               <img
