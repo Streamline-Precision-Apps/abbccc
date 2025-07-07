@@ -12,12 +12,12 @@ model Jobsite {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   archiveDate     DateTime?
-  clientId        String // track jobs based on similar clients 
+  clientId        String? // track jobs based on similar clients 
   createdById     String?
   createdBy       User?             @relation(fields: [createdById], references: [id])
   createdVia      CreatedVia        @default(ADMIN)
   EquipmentHauled EquipmentHauled[]
-  Client          Client            @relation(fields: [clientId], references: [id])
+  Client          Client?            @relation(fields: [clientId], references: [id])
   TimeSheets      TimeSheet[]
   CCTags          CCTag[]           @relation("CCTagToJobsite")
 
