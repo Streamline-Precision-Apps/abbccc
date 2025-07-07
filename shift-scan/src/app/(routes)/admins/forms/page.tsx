@@ -10,6 +10,7 @@
 import SearchBar from "../personnel/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+
 import { useFormsList } from "./_components/List/hooks/useFormsList";
 import List from "./_components/List/List";
 import { FormTemplateCategory } from "@/lib/enums";
@@ -22,7 +23,11 @@ import {
 } from "@/components/ui/select";
 import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { deleteFormTemplate } from "@/actions/records-forms";
+import {
+  deleteFormTemplate,
+  getFormSubmissions,
+  getFormTemplate,
+} from "@/actions/records-forms";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -33,13 +38,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ExportModal } from "./_components/List/exportModal";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
+import type { FormIndividualTemplate } from "./[id]/_component/hooks/types";
+
+type DateRange = { from: Date | undefined; to: Date | undefined };
 
 export default function Forms() {
   const { setOpen, open } = useSidebar();
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [pendingExportId, setPendingExportId] = useState<string | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportingFormId, setExportingFormId] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: undefined,
+    to: undefined,
+  });
   const {
     searchTerm,
     setSearchTerm,
@@ -90,6 +106,93 @@ export default function Forms() {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
   };
+
+  const handleExport = async (exportFormat = "xlsx") => {
+    if (exportingFormId) {
+      try {
+        const template = await getFormTemplate(exportingFormId);
+        const submissions = await getFormSubmissions(exportingFormId, {
+          from: dateRange.from,
+          to: dateRange.to,
+        });
+
+        if (!template || !template.FormGrouping) {
+          toast.error("Form template or groupings not found");
+          return;
+        }
+        const groupings = template.FormGrouping;
+        const fields = groupings
+          .flatMap((group) => (Array.isArray(group.Fields) ? group.Fields : []))
+          .filter((field) => field && field.id && field.label);
+
+        // Build headers: field labels, plus some submission metadata
+        const headers = [
+          "Submission ID",
+          "Submitted By",
+          "Submitted At",
+          ...fields.map((field: any) => field.label),
+        ];
+
+        // Build rows from submissions
+        const rows = (submissions || []).map((submission: any) => {
+          const user = submission.User
+            ? `${submission.User.firstName} ${submission.User.lastName}`
+            : "";
+          const submittedAt =
+            submission.submittedAt || submission.createdAt || "";
+          return [
+            submission.id,
+            user,
+            submittedAt,
+            ...fields.map((field: any) => {
+              // Prefer field.id as key, fallback to label
+              return (
+                submission.data?.[field.id] ??
+                submission.data?.[field.label] ??
+                ""
+              );
+            }),
+          ];
+        });
+
+        const exportData = [headers, ...rows];
+
+        if (exportFormat === "csv") {
+          const csv = exportData
+            .map((row) =>
+              row
+                .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
+                .join(",")
+            )
+            .join("\n");
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          saveAs(
+            blob,
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+        } else {
+          const ws = XLSX.utils.aoa_to_sheet(exportData);
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "Form Submissions");
+          const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+          const blob = new Blob([wbout], { type: "application/octet-stream" });
+          saveAs(
+            blob,
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        }
+
+        toast.success("Export completed successfully");
+      } catch (error) {
+        console.error("Error exporting form template:", error);
+        toast.error("Failed to export form template");
+      } finally {
+        setShowExportModal(false);
+        setExportingFormId(null);
+      }
+    }
+  };
+
   // Main render
   return (
     <div className="h-full w-full flex flex-row">
@@ -112,6 +215,19 @@ export default function Forms() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Export Modal */}
+      {showExportModal && (
+        <ExportModal
+          setDateRange={setDateRange}
+          dateRange={dateRange}
+          onClose={() => {
+            setShowExportModal(false);
+            setExportingFormId(null);
+          }}
+          onExport={handleExport}
+        />
+      )}
       <div className="h-full w-full relative">
         <div className="h-fit w-full flex flex-row justify-between mb-4">
           <div className="flex flex-row gap-5 ">
@@ -200,7 +316,10 @@ export default function Forms() {
           setPage={setPage}
           setPageSize={setPageSize}
           openHandleDelete={openHandleDelete}
-          setPendingExportId={setPendingExportId}
+          setPendingExportId={(id) => {
+            setExportingFormId(id);
+            setShowExportModal(true);
+          }}
         />
       </div>
     </div>
