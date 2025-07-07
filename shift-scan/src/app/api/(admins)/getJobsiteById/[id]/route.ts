@@ -31,7 +31,6 @@ export async function GET(
     const jobsiteData = await prisma.jobsite.findUnique({
       where: { id: jobsiteId },
       include: {
-        // PendingApprovals: true, // Removed: not a valid relation
         Client: {
           select: {
             id: true,

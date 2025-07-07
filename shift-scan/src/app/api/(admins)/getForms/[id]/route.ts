@@ -28,7 +28,12 @@ export async function GET(
             Fields: {
               orderBy: { order: "asc" },
               include: {
-                Options: true, // Include FormFieldOption[]
+                Options: {
+                  select: {
+                    id: true,
+                    value: true,
+                  },
+                }, // Include FormFieldOption[]
               },
             },
           },

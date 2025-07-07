@@ -4,18 +4,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { FormBuilderPanelLeft } from "./FormBuilderPanelLeft";
+import { FormBuilderPanelRight } from "./FormBuilderPanelRight";
+import { Textarea } from "@/components/ui/textarea";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { FormBuilderPanelLeft } from "../FormBuilder/FormBuilderPanelLeft";
-import FormBuilderPlaceholder from "../FormBuilder/FormBuilderPlaceholder";
-import { FormBuilderPanelRight } from "../FormBuilder/FormBuilderPanelRight";
+import FormBuilderPlaceholder from "./FormBuilderPlaceholder";
 
 // Types for form building
 export interface FormField {
@@ -25,14 +27,13 @@ export interface FormField {
   type: string;
   required: boolean;
   order: number;
-
   placeholder?: string;
   minLength?: number | undefined;
   maxLength?: number | undefined;
   multiple?: boolean;
   content?: string | null;
   filter?: string | null;
-  Options?: string[] | undefined;
+  Options?: { id: string; value: string }[];
 }
 
 export interface FormGrouping {
@@ -48,40 +49,39 @@ export interface FormSettings {
   name: string;
   formType: string;
   description: string;
-  category: string;
   status: string;
   requireSignature: boolean;
   createdAt: string;
   updatedAt: string;
-  isActive: boolean;
+  isActive: string;
   isSignatureRequired: boolean;
   FormGrouping: FormGrouping[];
 }
 
 export const fieldTypes = [
   {
-    name: "text",
+    name: "TEXT",
     label: "Text",
     description: "Single line Input",
     icon: "/title.svg",
     color: "bg-sky-400",
   },
   {
-    name: "number",
+    name: "NUMBER",
     label: "Number",
     description: "Numeric Input",
     icon: "/number.svg",
     color: "bg-fuchsia-400",
   },
   {
-    name: "date",
+    name: "DATE",
     label: "Date",
     description: "Date picker",
     icon: "/calendar.svg",
     color: "bg-purple-400",
   },
   {
-    name: "time",
+    name: "TIME",
     label: "Time",
     description: "Time picker",
     icon: "/clock.svg",
@@ -89,35 +89,35 @@ export const fieldTypes = [
   },
 
   {
-    name: "dropdown",
+    name: "DROPDOWN",
     label: "Dropdown",
     description: "Multiple options",
     icon: "/layout.svg",
     color: "bg-red-400",
   },
   {
-    name: "textarea",
+    name: "TEXTAREA",
     label: "Text Area",
     description: "Multi-line Input",
     icon: "/formList.svg",
     color: "bg-indigo-400",
   },
   {
-    name: "rating",
-    label: "Rating",
-    description: "Star Rating",
-    icon: "/star.svg",
-    color: "bg-yellow-200",
+    name: "CHECKBOX",
+    label: "Checkbox",
+    description: "Checkbox",
+    icon: "/checkbox.svg",
+    color: "bg-green-400",
   },
   {
-    name: "radio",
+    name: "RADIO",
     label: "Radio",
     description: "Single choice selection",
     icon: "/radio.svg",
     color: "bg-teal-400",
   },
   {
-    name: "header",
+    name: "HEADER",
     label: "Header",
     description: "Large text header",
     icon: "/header.svg",
@@ -125,7 +125,7 @@ export const fieldTypes = [
     section: "Formatting",
   },
   {
-    name: "paragraph",
+    name: "PARAGRAPH",
     label: "Paragraph",
     description: "Text block",
     icon: "/drag.svg",
@@ -133,14 +133,14 @@ export const fieldTypes = [
     section: "Formatting",
   },
   {
-    name: "multiselect",
+    name: "MULTISELECT",
     label: "Multiselect",
     description: "Select multiple options",
     icon: "/moreOptionsCircle.svg",
     color: "bg-yellow-500",
   },
   {
-    name: "Worker",
+    name: "SEARCH_PERSON",
     label: "Worker",
     description: "Search and select a worker",
     icon: "/team.svg",
@@ -148,7 +148,7 @@ export const fieldTypes = [
   },
 
   {
-    name: "Asset",
+    name: "SEARCH_ASSET",
     label: "Asset",
     description: "Search and select an asset",
     icon: "/equipment.svg",
@@ -202,13 +202,7 @@ function SortableItem({
   );
 }
 
-export default function FormEditor({
-  onCancel,
-  formId,
-}: {
-  onCancel?: () => void;
-  formId: string | null;
-}) {
+export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   // Form state
   const [formSettings, setFormSettings] = useState<FormSettings>({
     id: "",
@@ -216,17 +210,15 @@ export default function FormEditor({
     name: "",
     formType: "",
     description: "",
-    category: "",
     status: "",
     requireSignature: false,
     createdAt: "",
     updatedAt: "",
-    isActive: false,
+    isActive: "",
     isSignatureRequired: false,
     FormGrouping: [],
   });
 
-  const [loading, setLoading] = useState(false);
   const [popoverOpenFieldId, setPopoverOpenFieldId] = useState<string | null>(
     null
   );
@@ -238,53 +230,6 @@ export default function FormEditor({
     Record<string, boolean>
   >({});
 
-  useEffect(() => {
-    const fetchForm = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/getForms/${formId}`);
-        if (!response.ok) throw new Error("Failed to fetch form");
-        const data = await response.json();
-
-        // Map the response data to the form state
-        const formGrouping = data.FormGrouping.map((group: FormGrouping) => ({
-          ...group,
-          Fields: group.Fields.map((field: FormField) => ({
-            ...field,
-            Options: field.Options || [],
-          })),
-        }));
-
-        setFormFields(formGrouping.flatMap((group: FormGrouping) => group.Fields));
-        setFormSections(formGrouping);
-        setFormSettings({
-          id: data.id,
-          companyId: data.companyId,
-          name: data.name,
-          formType: data.formType,
-          description: data.description || "",
-          category: data.category || "",
-          status: data.status || "",
-          requireSignature: data.isSignatureRequired,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-          isActive: data.isActive,
-          isSignatureRequired: data.isSignatureRequired,
-          FormGrouping: formGrouping,
-        });
-      } catch (error) {
-        console.error("Error fetching form:", error);
-        alert("Failed to fetch form data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (formId) {
-      fetchForm();
-    }
-  }, [formId]);
-
   // Updated logic to handle the new `Options` property in the API response
   const updateField = (
     fieldId: string,
@@ -295,38 +240,6 @@ export default function FormEditor({
         field.id === fieldId ? { ...field, ...updatedProperties } : field
       )
     );
-  };
-
-  const handleApiResponse = (response: {
-    FormGrouping: FormGrouping[];
-    name: string;
-    isSignatureRequired: boolean;
-    isActive: boolean;
-  }) => {
-    const formGrouping = response.FormGrouping.map((group: FormGrouping) => ({
-      ...group,
-      Fields: group.Fields.map((field: FormField) => ({
-        ...field,
-        Options: field.Options || [],
-      })),
-    }));
-
-    setFormFields(formGrouping.flatMap((group) => group.Fields));
-    setFormSettings({
-      id: "", // Provide default values for missing properties
-      companyId: "",
-      name: response.name,
-      formType: "",
-      description: "",
-      category: "",
-      status: "",
-      requireSignature: response.isSignatureRequired,
-      createdAt: "",
-      updatedAt: "",
-      isActive: response.isActive,
-      isSignatureRequired: response.isSignatureRequired,
-      FormGrouping: [],
-    });
   };
 
   // Add field to form
@@ -408,7 +321,6 @@ export default function FormEditor({
           name: formSettings.name,
           formType: formSettings.formType,
           description: formSettings.description,
-          category: formSettings.category,
           status: formSettings.status,
           requireSignature: formSettings.requireSignature,
           createdAt: formSettings.createdAt,
@@ -431,12 +343,11 @@ export default function FormEditor({
           name: "",
           formType: "",
           description: "",
-          category: "",
           status: "",
           requireSignature: false,
           createdAt: "",
           updatedAt: "",
-          isActive: false,
+          isActive: "",
           isSignatureRequired: false,
           FormGrouping: [],
         });
@@ -572,10 +483,20 @@ export default function FormEditor({
                                     setPopoverOpenFieldId(field.id)
                                   }
                                   variant="default"
-                                  className="w-fit h-full justify-center items-center rounded-md gap-0 bg-gray-400 hover:bg-gray-300"
+                                  className={`w-fit h-full justify-center items-center rounded-md gap-0 ${
+                                    fieldTypes.find(
+                                      (fieldType) =>
+                                        fieldType.name === field.type
+                                    )?.color || "bg-gray-400"
+                                  } hover:bg-opacity-80`}
                                 >
                                   <img
-                                    src="/default-icon.svg"
+                                    src={
+                                      fieldTypes.find(
+                                        (fieldType) =>
+                                          fieldType.name === field.type
+                                      )?.icon || "/default-icon.svg"
+                                    }
                                     alt={field.type}
                                     className="w-4 h-4 "
                                   />
@@ -853,7 +774,10 @@ export default function FormEditor({
                                       onClick={() => {
                                         const newOptions = [
                                           ...(field.Options || []),
-                                          "",
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -872,23 +796,27 @@ export default function FormEditor({
                                   {field.Options &&
                                     field.Options.length > 0 && (
                                       <div className="flex flex-col gap-2 mt-2">
-                                        {field.Options?.map(
+                                        {field.Options.map(
                                           (option, optionIndex) => (
                                             <div
-                                              key={optionIndex}
+                                              key={option.id || optionIndex}
                                               className="flex gap-2"
                                             >
                                               <div className="flex items-center">
                                                 <p>{optionIndex + 1}. </p>
                                               </div>
                                               <Input
-                                                value={option}
+                                                value={option.value || ""} // Ensure value is a string
                                                 onChange={(e) => {
                                                   const newOptions = [
                                                     ...(field.Options || []),
                                                   ];
-                                                  newOptions[optionIndex] =
-                                                    e.target.value;
+                                                  newOptions[optionIndex] = {
+                                                    id:
+                                                      option.id ||
+                                                      Date.now().toString(),
+                                                    value: e.target.value,
+                                                  };
                                                   updateField(field.id, {
                                                     Options: newOptions,
                                                   });
@@ -906,7 +834,7 @@ export default function FormEditor({
                                                     field.Options?.filter(
                                                       (_, i) =>
                                                         i !== optionIndex
-                                                    );
+                                                    ) || [];
                                                   updateField(field.id, {
                                                     Options: newOptions,
                                                   });
@@ -926,52 +854,6 @@ export default function FormEditor({
                                     )}
                                 </div>
                               )}
-                              {field.type === "textarea" && (
-                                <div>
-                                  <Separator className="my-2" />
-                                  <p className="text-sm font-semibold">
-                                    Character Limits (Optional)
-                                  </p>
-                                  <div className="flex flex-row mt-2 gap-2">
-                                    <div className="flex flex-col">
-                                      <Label className="text-xs font-normal">
-                                        Min Length
-                                      </Label>
-                                      <Input
-                                        type="number"
-                                        value={field.minLength || ""}
-                                        onChange={(e) =>
-                                          updateField(field.id, {
-                                            minLength:
-                                              parseInt(e.target.value) ||
-                                              undefined,
-                                          })
-                                        }
-                                        className="bg-white rounded-lg text-xs w-48"
-                                        placeholder="Enter min length"
-                                      />
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <Label className="text-xs font-normal">
-                                        Max Length
-                                      </Label>
-                                      <Input
-                                        type="number"
-                                        value={field.maxLength || ""}
-                                        onChange={(e) =>
-                                          updateField(field.id, {
-                                            maxLength:
-                                              parseInt(e.target.value) ||
-                                              undefined,
-                                          })
-                                        }
-                                        className="bg-white rounded-lg text-xs w-48"
-                                        placeholder="Enter max length"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
                               {field.type === "radio" && (
                                 <div className="mt-2">
                                   <Separator className="my-2" />
@@ -985,7 +867,10 @@ export default function FormEditor({
                                       onClick={() => {
                                         const newOptions = [
                                           ...(field.Options || []),
-                                          "",
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -1005,20 +890,24 @@ export default function FormEditor({
                                     {field.Options?.map(
                                       (option, optionIndex) => (
                                         <div
-                                          key={optionIndex}
+                                          key={option.id || optionIndex}
                                           className="flex gap-2"
                                         >
                                           <div className="flex items-center">
                                             <p>{optionIndex + 1}. </p>
                                           </div>
                                           <Input
-                                            value={option}
+                                            value={option.value || ""}
                                             onChange={(e) => {
                                               const newOptions = [
                                                 ...(field.Options || []),
                                               ];
-                                              newOptions[optionIndex] =
-                                                e.target.value;
+                                              newOptions[optionIndex] = {
+                                                id:
+                                                  option.id ||
+                                                  Date.now().toString(),
+                                                value: e.target.value,
+                                              };
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1035,7 +924,7 @@ export default function FormEditor({
                                               const newOptions =
                                                 field.Options?.filter(
                                                   (_, i) => i !== optionIndex
-                                                );
+                                                ) || [];
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1067,7 +956,10 @@ export default function FormEditor({
                                       onClick={() => {
                                         const newOptions = [
                                           ...(field.Options || []),
-                                          "",
+                                          {
+                                            id: Date.now().toString(),
+                                            value: "",
+                                          },
                                         ];
                                         updateField(field.id, {
                                           Options: newOptions,
@@ -1087,20 +979,24 @@ export default function FormEditor({
                                     {field.Options?.map(
                                       (option, optionIndex) => (
                                         <div
-                                          key={optionIndex}
+                                          key={option.id || optionIndex}
                                           className="flex gap-2"
                                         >
                                           <div className="flex items-center">
                                             <p>{optionIndex + 1}. </p>
                                           </div>
                                           <Input
-                                            value={option}
+                                            value={option.value || ""}
                                             onChange={(e) => {
                                               const newOptions = [
                                                 ...(field.Options || []),
                                               ];
-                                              newOptions[optionIndex] =
-                                                e.target.value;
+                                              newOptions[optionIndex] = {
+                                                id:
+                                                  option.id ||
+                                                  Date.now().toString(),
+                                                value: e.target.value,
+                                              };
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
@@ -1117,7 +1013,7 @@ export default function FormEditor({
                                               const newOptions =
                                                 field.Options?.filter(
                                                   (_, i) => i !== optionIndex
-                                                );
+                                                ) || [];
                                               updateField(field.id, {
                                                 Options: newOptions,
                                               });
