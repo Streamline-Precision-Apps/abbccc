@@ -1,6 +1,5 @@
 model CostCode {
   id         String      @id @default(uuid())
-  // code       String      @unique bring back code for creation ease
   name       String      @unique
   isActive   Boolean     @default(true)
   createdAt  DateTime    @default(now())
