@@ -125,6 +125,13 @@ enum FieldType {
   SEARCH_ASSET
 }
 
+enum AssetType {
+  EQUIPMENT
+  JOBSITES
+  COST_CODES
+  CLIENTS
+}
+
 enum FormTemplateCategory {
   GENERAL
   MAINTENANCE

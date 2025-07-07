@@ -18,51 +18,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
-
-interface FieldOption {
-  id: string;
-  fieldId: string;
-  value: string;
-}
-
-interface Field {
-  id: string;
-  label: string;
-  name: string;
-  type: string;
-  required: boolean;
-  order: number;
-  defaultValue?: string | null;
-  placeholder?: string | null;
-  maxLength?: number | null;
-  helperText?: string | null;
-  Options?: FieldOption[];
-}
-
-interface Grouping {
-  id: string;
-  title: string;
-  order: number;
-  Fields: Field[];
-}
-
-interface Submission {
-  id: string;
-  title: string;
-  formTemplateId: string;
-  userId: string;
-  formType: string;
-  data: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
-  submittedAt: string;
-  status: string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-}
+import { Grouping, Submission } from "./hooks/types";
 
 interface SubmissionTableProps {
   groupings: Grouping[];
@@ -106,7 +62,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
               Submitted By
             </TableHead>
             {fields.map((field) => (
-              <TableHead key={field.name} className="text-xs">
+              <TableHead key={field.label} className="text-xs">
                 {field.label}
               </TableHead>
             ))}

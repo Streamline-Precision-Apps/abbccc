@@ -6,7 +6,10 @@ import {
 } from "@/actions/records-forms";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { FormIndividualTemplate } from "./hooks/types";
+import {
+  FormIndividualTemplate,
+  FormSubmissionWithTemplate,
+} from "./hooks/types";
 import Spinner from "@/components/(animations)/spinner";
 import React from "react";
 import { Label } from "@/components/ui/label";
@@ -29,58 +32,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-
-export interface FormSubmissionWithTemplate {
-  id: string;
-  title: string | null;
-  formTemplateId: string;
-  userId: string;
-  formType: string | null;
-  data: Record<string, any>;
-  createdAt: Date;
-  updatedAt: Date;
-  submittedAt: Date | null;
-  status: string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-  FormTemplate: {
-    id: string;
-    name: string;
-    description: string | null;
-    formType: string;
-    createdAt: Date;
-    updatedAt: Date;
-    isActive: string;
-    isSignatureRequired: boolean;
-    FormGrouping: Array<{
-      id: string;
-      title: string | null;
-      order: number;
-      Fields: Array<{
-        id: string;
-        formGroupingId: string;
-        label: string;
-        type: string;
-        required: boolean;
-        order: number;
-        placeholder?: string | null;
-        minLength?: number | null;
-        maxLength?: number | null;
-        multiple?: boolean | null;
-        content?: string | null;
-        filter?: string | null;
-        Options?: Array<{
-          id: string;
-          fieldId: string;
-          value: string;
-        }>;
-      }>;
-    }>;
-  };
-}
 
 export default function EditFormSubmissionModal({
   id,

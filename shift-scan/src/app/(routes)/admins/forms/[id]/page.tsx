@@ -471,62 +471,64 @@ export default function FormPage({ params }: { params: { id: string } }) {
   };
 
   const triggerRerender = () => setRefreshKey((k) => k + 1);
-
   return (
     <div>
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Form Template?</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this form template? All form data
-              will be permanently deleted. This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelDelete}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Create Section Modal */}
+      <div>
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Form Template?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this form template? All form
+                data will be permanently deleted. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={cancelDelete}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      <Dialog
-        open={showDeleteSubmissionDialog}
-        onOpenChange={setShowDeleteSubmissionDialog}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Form Submission?</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this form submission? This action
-              cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelSubmissionDelete}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmSubmissionDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      {/* Export Modal */}
-      {showExportModal && (
-        <ExportModal
-          setDateRange={setExportDateRange}
-          dateRange={exportDateRange}
-          onClose={() => {
-            setShowExportModal(false);
-          }}
-          onExport={handleExport}
-        />
-      )}
+        <Dialog
+          open={showDeleteSubmissionDialog}
+          onOpenChange={setShowDeleteSubmissionDialog}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Form Submission?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this form submission? This
+                action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={cancelSubmissionDelete}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmSubmissionDelete}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {showExportModal && (
+          <ExportModal
+            setDateRange={setExportDateRange}
+            dateRange={exportDateRange}
+            onClose={() => {
+              setShowExportModal(false);
+            }}
+            onExport={handleExport}
+          />
+        )}
+      </div>
       <div className="flex flex-row gap-1 mb-4 ">
         <div className="w-full flex flex-row gap-5">
           <div className="flex items-center justify-center">
