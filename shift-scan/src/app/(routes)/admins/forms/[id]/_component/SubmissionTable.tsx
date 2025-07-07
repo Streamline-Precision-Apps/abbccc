@@ -71,6 +71,8 @@ interface SubmissionTableProps {
   setPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
   pageSize: number;
+  setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
+  setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
 }
 
 /**
@@ -84,6 +86,8 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
   setPage,
   setPageSize,
   pageSize,
+  setShowFormSubmission,
+  setSelectedSubmissionId,
 }) => {
   // Flatten all fields from all groupings, ordered
   const fields = groupings
@@ -136,22 +140,8 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                           variant="ghost"
                           size={"icon"}
                           onClick={() => {
-                            // Handle export form action
-                            console.log("Export Form:", submission.id);
-                          }}
-                        >
-                          <img
-                            src="/export.svg"
-                            alt="Export Form"
-                            className="h-4 w-4 cursor-pointer"
-                          />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size={"icon"}
-                          onClick={() => {
-                            // Handle edit form action
-                            console.log("Edit Form:", submission.id);
+                            setShowFormSubmission(true);
+                            setSelectedSubmissionId(submission.id);
                           }}
                         >
                           <img

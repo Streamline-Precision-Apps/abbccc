@@ -417,6 +417,26 @@ export async function getFormTemplate(formId: string) {
   }
 }
 
+export async function getFormSubmissionById(formId: string) {
+  try {
+    const formSubmission = await prisma.formSubmission.findUnique({
+      where: { id: formId },
+      include: {
+        User: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+    return formSubmission;
+  } catch (error) {
+    console.error("Error fetching form submission:", error);
+    return null;
+  }
+}
+
 export async function getFormSubmissions(
   formId: string,
   dateRange?: {

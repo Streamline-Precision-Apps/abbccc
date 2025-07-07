@@ -3,14 +3,13 @@
 //things to do:
 // views :
 // list view: display all forms and details in a table with pagination, search, and sorting
-// 1) build export module to export forms as CSV or xlsx
+// 1) build export module to export forms as CSV or xlsx - done
 // 2) create a table component to display forms with pagination - done
 // 3) add search functionality to filter forms by name - done
 
 import SearchBar from "../personnel/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
 import { useFormsList } from "./_components/List/hooks/useFormsList";
 import List from "./_components/List/List";
 import { FormTemplateCategory } from "@/lib/enums";
@@ -41,7 +40,6 @@ import {
 import { ExportModal } from "./_components/List/exportModal";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
-import type { FormIndividualTemplate } from "./[id]/_component/hooks/types";
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 

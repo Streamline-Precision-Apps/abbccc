@@ -147,7 +147,9 @@ const List: React.FC<ListProps> = ({
                   </span>
                 </TableCell>
                 <TableCell className="text-center text-xs text-sky-900 underline hover:text-sky-600 cursor-pointer">
-                  {form._count.Submissions}
+                  <Link href={`/admins/forms/${form.id}`}>
+                    {form._count.Submissions}
+                  </Link>
                 </TableCell>
                 <TableCell className="text-center text-xs">
                   {form.isActive === "ACTIVE" ? (
