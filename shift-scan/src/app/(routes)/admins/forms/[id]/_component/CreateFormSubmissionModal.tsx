@@ -46,6 +46,13 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     lastName: string;
   } | null>(null);
   const [submittedByTouched, setSubmittedByTouched] = useState(false);
+  const [assets, setAssets] = useState<
+    { id: string; name: string; type: string }[]
+  >([]);
+  const [workers, setWorkers] = useState<
+    { id: string; firstName: string; lastName: string }[]
+  >([]);
+
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);
@@ -53,6 +60,10 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   const userOptions = users.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
+  }));
+  const clientOptions = assets.map((c) => ({
+    value: c.id,
+    label: `${c.name}`,
   }));
 
   useEffect(() => {
