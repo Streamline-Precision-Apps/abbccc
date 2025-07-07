@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
+import { useMemo } from "react";
+
 export function FormBuilderPanelLeft({
   formFields,
   formSettings,
@@ -45,8 +47,8 @@ export function FormBuilderPanelLeft({
         </TabsList>
         <TabsContent value="settings">
           <div className="flex flex-col mt-4">
-            <Label htmlFor="name" className="text-xs ">
-              Form Name
+            <Label htmlFor="name" className="text-xs">
+              Form Name <span className="text-red-500">*</span>
             </Label>
             <Input
               type="text"
@@ -55,10 +57,13 @@ export function FormBuilderPanelLeft({
               value={formSettings.name}
               onChange={(e) => updateFormSettings("name", e.target.value)}
               placeholder="Enter Form Name"
-              className="mb-4 bg-white rounded-lg text-xs"
+              className="bg-white rounded-lg text-xs"
             />
+            {!formSettings.name.trim() && (
+              <span className="mt-1 text-xs text-red-500">Required</span>
+            )}
           </div>
-          <div className=" w-full mb-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="description" className="text-xs">
               Description
             </Label>
@@ -74,9 +79,9 @@ export function FormBuilderPanelLeft({
               className="bg-white rounded-lg text-xs "
             />
           </div>
-          <div className=" w-full mb-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="category" className="text-xs">
-              Category
+              Category <span className="text-red-500">*</span>
             </Label>
             <Select
               name="category"
@@ -96,10 +101,13 @@ export function FormBuilderPanelLeft({
                 <SelectItem value="OTHER">Other</SelectItem>
               </SelectContent>
             </Select>
+            {!formSettings.formType && (
+              <span className="mt-1 text-xs text-red-500">Required</span>
+            )}
           </div>
-          <div className=" w-full mb-6">
+          <div className=" w-full mt-4">
             <Label htmlFor="status" className="text-xs">
-              Status
+              Status <span className="text-red-500">*</span>
             </Label>
             <Select
               name="status"
@@ -115,8 +123,11 @@ export function FormBuilderPanelLeft({
                 <SelectItem value="DRAFT">Draft</SelectItem>
               </SelectContent>
             </Select>
+            {!formSettings.isActive && (
+              <span className="mt-1 text-xs text-red-500">Required</span>
+            )}
           </div>
-          <div className="w-full flex flex-row justify-between items-center ">
+          <div className="mt-4 w-full flex flex-row justify-between items-center ">
             <Label htmlFor="airplane-mode" className="text-xs">
               Require Signature
             </Label>

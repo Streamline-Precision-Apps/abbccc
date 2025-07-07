@@ -64,8 +64,9 @@ export async function saveFormTemplate(data: SaveFormData) {
       // Create new form
       const formTemplate = await tx.formTemplate.create({
         data: {
-          companyId,
+          companyId: "1", // Use a fixed companyId for now, replace with dynamic later
           name: settings.name,
+          description: settings.description || null,
           formType: settings.formType as FormTemplateCategory, // Ensure formType is cast to enum
           isActive: (settings.status as FormTemplateStatus) || "DRAFT",
           isSignatureRequired: settings.requireSignature,
@@ -73,83 +74,85 @@ export async function saveFormTemplate(data: SaveFormData) {
       });
 
       // Create form grouping (one grouping per form for simplicity)
-      const formGrouping = await tx.formGrouping.create({
-        data: {
-          title: settings.name,
-          order: 0,
-        },
-      });
-
-      // Connect form template to grouping
-      await tx.formTemplate.update({
-        where: { id: formTemplate.id },
-        data: {
-          FormGrouping: {
-            connect: { id: formGrouping.id },
-          },
-        },
-      });
-
-      // Create form fields
-      for (const field of fields) {
-        const formField = await tx.formField.create({
+      if (fields.length === 0) {
+        const formGrouping = await tx.formGrouping.create({
           data: {
-            formGroupingId: formGrouping.id,
-            label: field.label,
-            type: mapFieldType(field.type),
-            required: field.required,
-            order: field.order,
-            placeholder: field.placeholder,
-            maxLength: field.maxLength,
+            title: settings.name,
+            order: 0,
           },
         });
 
-        // Handle field options for dropdowns, radios, multiselects
-        if (
-          ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
-            field.type?.toUpperCase?.()
-          ) &&
-          field.Options &&
-          field.Options.length > 0
-        ) {
-          for (const option of field.Options) {
-            const optionData =
-              typeof option === "string" ? { value: option } : option;
-            await tx.formFieldOption.create({
+        // Connect form template to grouping
+        await tx.formTemplate.update({
+          where: { id: formTemplate.id },
+          data: {
+            FormGrouping: {
+              connect: { id: formGrouping.id },
+            },
+          },
+        });
+
+        // Create form fields
+        for (const field of fields) {
+          const formField = await tx.formField.create({
+            data: {
+              formGroupingId: formGrouping.id,
+              label: field.label,
+              type: mapFieldType(field.type),
+              required: field.required,
+              order: field.order,
+              placeholder: field.placeholder,
+              maxLength: field.maxLength,
+            },
+          });
+
+          // Handle field options for dropdowns, radios, multiselects
+          if (
+            ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
+              field.type?.toUpperCase?.()
+            ) &&
+            field.Options &&
+            field.Options.length > 0
+          ) {
+            for (const option of field.Options) {
+              const optionData =
+                typeof option === "string" ? { value: option } : option;
+              await tx.formFieldOption.create({
+                data: {
+                  fieldId: formField.id,
+                  value: optionData.value,
+                },
+              });
+            }
+          }
+
+          // Handle additional types
+          if (field.type === "TEXTAREA" || field.type === "TEXT") {
+            await tx.formField.update({
+              where: { id: formField.id },
               data: {
-                fieldId: formField.id,
-                value: optionData.value,
+                maxLength: field.maxLength,
               },
             });
           }
-        }
 
-        // Handle additional types
-        if (field.type === "TEXTAREA" || field.type === "TEXT") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              maxLength: field.maxLength,
-            },
-          });
-        }
+          if (field.type === "NUMBER") {
+            await tx.formField.update({
+              where: { id: formField.id },
+              data: {
+                maxLength: field.maxLength,
+              },
+            });
+          }
 
-        if (field.type === "NUMBER") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              maxLength: field.maxLength,
-            },
-          });
-        }
-
-        if (field.type === "DATE" || field.type === "TIME") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              placeholder: field.placeholder,
-            },
-          });
+          if (field.type === "DATE" || field.type === "TIME") {
+            await tx.formField.update({
+              where: { id: formField.id },
+              data: {
+                placeholder: field.placeholder,
+              },
+            });
+          }
         }
       }
 
@@ -159,7 +162,6 @@ export async function saveFormTemplate(data: SaveFormData) {
     revalidatePath("/admins/records/forms");
     return {
       success: true,
-      formId: result.id,
       message: "Form saved successfully",
     };
   } catch (error) {
