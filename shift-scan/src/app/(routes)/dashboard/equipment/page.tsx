@@ -59,8 +59,8 @@ export default function EquipmentLogContent() {
 
   const filteredLogs =
     active === 1
-      ? logs.filter((log) => !log.isFinished)
-      : logs.filter((log) => log.isFinished);
+      ? logs.filter((log) => !log.endTime)
+      : logs.filter((log) => !!log.endTime);
 
   const handleDelete = async (id: string) => {
     try {

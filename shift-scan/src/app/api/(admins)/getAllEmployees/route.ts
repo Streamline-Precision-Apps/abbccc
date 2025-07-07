@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from '@sentry/nextjs';
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -40,6 +41,7 @@ export async function GET() {
 
     return NextResponse.json(employees);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching employees:", error);
 
     const errorMessage =

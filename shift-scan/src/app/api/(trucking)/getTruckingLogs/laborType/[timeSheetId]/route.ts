@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { formatInTimeZone } from "date-fns-tz";
 import { it } from "node:test";
@@ -48,6 +49,7 @@ export async function GET(
     // Return the ending mileage
     return NextResponse.json(newValues);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching trucking log:", error);
     return NextResponse.json(
       { error: "Failed to fetch trucking log" },

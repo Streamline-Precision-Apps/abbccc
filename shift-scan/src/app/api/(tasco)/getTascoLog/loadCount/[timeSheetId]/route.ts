@@ -1,7 +1,8 @@
 "use server";
 
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
@@ -26,10 +27,10 @@ export async function GET(
 
     return NextResponse.json(count);
   } catch (error) {
-    // Log the error for debugging purposes
-    console.error("Error fetching tascoLog:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching tascoLog:', error);
     return NextResponse.json(
-      { error: "Failed to fetch logs" },
+      { error: 'Failed to fetch logs' },
       { status: 500 }
     );
   }

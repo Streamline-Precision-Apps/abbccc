@@ -7,7 +7,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { format, parseISO } from "date-fns";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { useNotification } from "@/app/context/NotificationContext";
-import { EquipmentStatus } from "@/lib/types";
+import { EquipmentState } from "@/lib/enums";
 import { Dispatch, SetStateAction, useState } from "react";
 import { EquipmentLog, RefuelLogData } from "../types";
 import { Images } from "@/components/(reusable)/images";
@@ -16,7 +16,7 @@ interface UsageDataProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentStatus | RefuelLogData | null
+    value: string | number | boolean | EquipmentState | RefuelLogData | null
   ) => void;
   formattedTime: string;
   handleChangeRefueled: () => void;

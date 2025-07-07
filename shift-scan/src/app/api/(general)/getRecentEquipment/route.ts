@@ -17,37 +17,34 @@ export async function GET() {
     // Fetch the 5 most recent unique equipment used by the authenticated user
     const recentEquipment = await prisma.employeeEquipmentLog.findMany({
       where: {
-        employeeId: userId,
-      },
-      select: {
-        Equipment: {
-          select: {
-            id: true,
-            qrId: true,
-            name: true,
-          },
+        TimeSheet: {
+          userId: userId,
         },
       },
-      orderBy: {
-        createdAt: "desc",
+      include: {
+        Equipment: true,
       },
-      take: 5,
     });
 
-    // Extract unique equipment items (filter out duplicates)
-    const uniqueEquipment = new Map();
-    recentEquipment.forEach((log) => {
-      if (log.Equipment) {
-        uniqueEquipment.set(log.Equipment.id, log.Equipment);
-      }
-    });
+    // Extract unique equipment items, sorted by most recent log (using startTime)
+    const uniqueEquipment = new Map<string, { id: string; qrId: string; name: string }>();
+    recentEquipment
+      .sort((a, b) => (b.startTime?.getTime?.() ?? 0) - (a.startTime?.getTime?.() ?? 0))
+      .forEach((log) => {
+        if (log.Equipment) {
+          uniqueEquipment.set(log.Equipment.id, {
+            id: log.Equipment.id,
+            qrId: log.Equipment.qrId,
+            name: log.Equipment.name,
+          });
+        }
+      });
 
-    const equipmentList = Array.from(uniqueEquipment.values());
+    const equipmentList = Array.from(uniqueEquipment.values()).slice(0, 5);
 
     if (equipmentList.length === 0) {
-      // return NextResponse.json([], { status: 404 }); // Return an empty array with 200 status
       return NextResponse.json(
-        { message: "No matching cost codes found in database." },
+        { message: "No matching equipment found in database." },
         { status: 404 }
       );
     }

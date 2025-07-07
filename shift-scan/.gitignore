@@ -39,4 +39,9 @@ next-env.d.ts
 # prisma
 dev.db
 
+# github agent instructions
+.github/instructions/Sean.instructions.md
+
 certificates
+# Sentry Config File
+.env.sentry-build-plugin

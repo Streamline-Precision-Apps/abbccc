@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from '@sentry/nextjs';
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -51,6 +52,7 @@ export async function GET(
 
     return NextResponse.json(jobsiteData);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching jobsite data:", error);
 
     let errorMessage = "Failed to fetch jobsite data";

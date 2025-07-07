@@ -549,6 +549,28 @@ export async function handleTascoTimeSheet(formData: FormData) {
         materialType = formData.get("materialType") as string;
       } else {
         materialType = undefined;
+      }      // Log the equipment ID for debugging
+      console.log("Equipment ID for connection:", equipmentId);
+
+      // First, check if equipment exists before trying to connect
+      let equipmentExists = false;
+      let equipmentData = null;
+      if (equipmentId) {
+        equipmentData = await prisma.equipment.findFirst({
+          where: { 
+            OR: [
+              { qrId: equipmentId },
+              { id: equipmentId }
+            ]
+          },
+        });
+        
+        if (equipmentData) {
+          equipmentExists = true;
+          console.log("Found equipment:", equipmentData);
+        } else {
+          console.error("No equipment found with ID or qrId:", equipmentId);
+        }
       }
 
       // Create a new TimeSheet
@@ -559,13 +581,12 @@ export async function handleTascoTimeSheet(formData: FormData) {
           User: { connect: { id: userId } },
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
-          workType: "TASCO",
-          TascoLogs: {
+          workType: "TASCO",          TascoLogs: {
             create: {
               shiftType,
               laborType: laborType,
-              ...(equipmentId && {
-                Equipment: { connect: { qrId: equipmentId } },
+              ...(equipmentExists && equipmentData && {
+                Equipment: { connect: { id: equipmentData.id } },
               }),
               ...(materialType && {
                 TascoMaterialTypes: { connect: { name: materialType } },

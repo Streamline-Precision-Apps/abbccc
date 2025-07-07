@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
@@ -38,9 +39,13 @@ export async function GET() {
 
     return NextResponse.json(clientSummary);
   } catch (error) {
-    console.error("Error fetching client summary:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching client summary:', error);
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to fetch client summary";
+      error instanceof Error ? error.message : 'Failed to fetch client summary';
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
+
+
+

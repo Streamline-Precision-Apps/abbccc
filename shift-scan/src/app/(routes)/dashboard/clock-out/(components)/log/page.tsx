@@ -28,16 +28,22 @@ export default function Log() {
 
       const logs = await prisma.employeeEquipmentLog.findMany({
         where: {
-          employeeId: userId,
-          createdAt: { lte: currentDate, gte: past24Hours },
-          isFinished: false,
+          // No valid filters available in Prisma schema, fetch all logs
         },
         include: {
           Equipment: true,
+          TimeSheet: true,
         },
       });
 
-      setHasEquipmentCheckedOut(logs.length > 0);
+      // After fetching, filter logs by userId and startTime in JS
+      const filteredLogs = logs.filter(
+        (log) =>
+          log.TimeSheet?.userId === userId &&
+          log.startTime <= currentDate &&
+          log.startTime >= past24Hours
+      );
+      setHasEquipmentCheckedOut(filteredLogs.length > 0);
     };
 
     fetchLogs();
