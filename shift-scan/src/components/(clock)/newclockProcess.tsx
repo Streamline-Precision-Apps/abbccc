@@ -124,13 +124,13 @@ export default function NewClockProcess({
     if (laborView) availableRoles.push("general");
     if (truckView) availableRoles.push("truck");
     if (tascoView) availableRoles.push("tasco");
-    console.log("Available roles:", availableRoles);
+    // console.log("Available roles:", availableRoles); // Debugging line to check available roles
     setNumberOfRoles(availableRoles.length);
 
     // Auto-select if exactly one role is available.
     if (availableRoles.length === 1) {
       const selectedRole = availableRoles[0];
-      console.log("Auto-selecting role:", selectedRole);
+      // console.log("Auto-selecting role:", selectedRole); // Debugging line to check selected role
       const autoSelectRole = async () => {
         setClockInRole(selectedRole);
         await setWorkRole(selectedRole); // Ensure setWorkRole returns a promise

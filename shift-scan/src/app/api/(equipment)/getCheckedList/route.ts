@@ -13,21 +13,26 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const currentDate = new Date();
-    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-
-    const timeSheetId = await prisma.timeSheet.findFirst({
+    // Find the current open timesheet for this user
+    const currentTimeSheet = await prisma.timeSheet.findFirst({
       where: {
         userId: userId,
         endTime: null,
       },
     });
 
+    if (!currentTimeSheet) {
+      return NextResponse.json(
+        { message: "No open timesheet found for this user." },
+        { status: 404 }
+      );
+    }
+
+    // Find all equipment logs for the current timesheet that are not finished (endTime is null)
     const logs = await prisma.employeeEquipmentLog.findMany({
       where: {
-        employeeId: userId,
-        createdAt: { lte: currentDate, gte: past24Hours },
-        timeSheetId: timeSheetId?.id,
+        timeSheetId: currentTimeSheet.id,
+        endTime: null,
       },
       include: {
         Equipment: true,
@@ -36,7 +41,7 @@ export async function GET() {
 
     if (!logs || logs.length === 0) {
       return NextResponse.json(
-        { message: "No logs found for the past 24 hours." },
+        { message: "No unfinished equipment logs for the current timesheet." },
         { status: 404 }
       );
     }
