@@ -124,7 +124,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
         if (!response.ok) {
           throw new Error("Failed to fetch form template");
         }
-        const data: FormIndividualTemplate = await response.json();
+        const data = await response.json();
         setFormTemplate(data);
         return data;
       } catch (error) {
@@ -683,7 +683,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
             </Popover>
           </div>
           <div className="flex items-center ">
-            <p className="font-light text-xs text-white">{`${formTemplate?.Submissions.length} of ${formTemplate?.total} submissions`}</p>
+            <p className="font-light text-xs text-white">{`${formTemplate?.Submissions?.length} of ${formTemplate?.total} submissions`}</p>
           </div>
         </div>
         <div className="flex justify-center items-center">

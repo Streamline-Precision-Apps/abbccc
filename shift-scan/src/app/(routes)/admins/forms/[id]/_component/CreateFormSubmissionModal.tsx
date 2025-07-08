@@ -25,7 +25,70 @@ import Spinner from "@/components/(animations)/spinner";
 import { createFormSubmission } from "@/actions/records-forms";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
-import { Fields, FormIndividualTemplate } from "./hooks/types";
+
+export interface Submission {
+  id: string;
+  title: string;
+  formTemplateId: string;
+  userId: string;
+  formType: string;
+  data: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string;
+  status: string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface FormIndividualTemplate {
+  id: string;
+  name: string;
+  formType: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: string;
+  description: string | null;
+  isSignatureRequired: boolean;
+  FormGrouping: Grouping[];
+  Submissions: Submission[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  totalPages?: number;
+}
+
+export interface Grouping {
+  id: string;
+  title: string;
+  order: number;
+  Fields: Fields[];
+}
+
+export interface Fields {
+  id: string;
+  formGroupingId: string;
+  label: string;
+  type: string;
+  required: boolean;
+  order: number;
+  placeholder?: string | null;
+  minLength?: number | null;
+  maxLength?: number | null;
+  multiple: boolean | null;
+  content?: string | null;
+  filter?: string | null;
+  Options?: FieldOption[];
+}
+
+interface FieldOption {
+  id: string;
+  fieldId: string;
+  value: string;
+}
 
 interface CreateFormSubmissionModalProps {
   formTemplate: FormIndividualTemplate;
@@ -38,6 +101,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   closeModal,
   onSuccess,
 }) => {
+  console.log("Form Template:", formTemplate);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [submittedBy, setSubmittedBy] = useState<{
@@ -224,12 +288,8 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               {group.Fields.map((field: Fields) => {
                 const value = formData[field.id] ?? "";
-                type OptionType = {
-                  id: string;
-                  value: string;
-                  fieldId?: string;
-                };
-                const options: OptionType[] = field.Options || [];
+                const options = field.Options || [];
+
                 switch (field.type) {
                   case "TEXTAREA":
                     return (
@@ -364,7 +424,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                             <SelectValue placeholder="Select..." />
                           </SelectTrigger>
                           <SelectContent>
-                            {options.map((opt: OptionType) => (
+                            {options.map((opt) => (
                               <SelectItem key={opt.id} value={opt.value}>
                                 {opt.value}
                               </SelectItem>
@@ -386,7 +446,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                           }
                           className="flex flex-row gap-2"
                         >
-                          {options.map((opt: OptionType) => (
+                          {options.map((opt) => (
                             <Label
                               key={opt.id}
                               className="flex items-center gap-1 cursor-pointer select-none"
@@ -443,30 +503,27 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                           {field.label}
                         </Label>
                         <div className="flex flex-col gap-1 border rounded px-2 py-2 bg-white">
-                          {options.map((opt: OptionType) => (
+                          {options.map((opt) => (
                             <label
                               key={opt.id}
                               className="flex items-center gap-2 cursor-pointer select-none"
                             >
                               <Checkbox
                                 checked={
-                                  Array.isArray(value)
-                                    ? value.includes(opt.value)
-                                    : false
+                                  Array.isArray(value) &&
+                                  value.includes(opt.value)
                                 }
                                 onCheckedChange={(checked) => {
-                                  let newValue = Array.isArray(value)
-                                    ? [...value]
-                                    : [];
-                                  if (checked) {
-                                    if (!newValue.includes(opt.value))
-                                      newValue.push(opt.value);
-                                  } else {
-                                    newValue = newValue.filter(
-                                      (v) => v !== opt.value
-                                    );
-                                  }
-                                  handleFieldChange(field.id, newValue);
+                                  const updatedValue = checked
+                                    ? [
+                                        ...(Array.isArray(value) ? value : []),
+                                        opt.value,
+                                      ]
+                                    : (Array.isArray(value)
+                                        ? value
+                                        : []
+                                      ).filter((v) => v !== opt.value);
+                                  handleFieldChange(field.id, updatedValue);
                                 }}
                                 id={`${field.id}-${opt.id}`}
                               />
@@ -477,26 +534,106 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                       </div>
                     );
                   case "SEARCH_PERSON":
-                    return (
-                      <div key={field.id} className="flex flex-col">
-                        <Combobox
-                          label={field.label}
-                          options={userOptions}
-                          value={submittedBy?.id || ""}
-                          onChange={(val, option) => {
-                            if (option) {
-                              setSubmittedBy({
-                                id: option.value,
-                                firstName: option.label.split(" ")[0],
-                                lastName: option.label.split(" ")[1],
-                              });
-                            } else {
-                              setSubmittedBy(null);
-                            }
-                          }}
-                        />
-                      </div>
-                    );
+                    if (field.multiple) {
+                      // For multiple selection of people
+                      const selectedPeople = Array.isArray(formData[field.id])
+                        ? formData[field.id]
+                        : formData[field.id]
+                        ? [formData[field.id]]
+                        : [];
+
+                      return (
+                        <div key={field.id} className="flex flex-col">
+                          <Label className="text-sm font-medium mb-1">
+                            {field.label}
+                          </Label>
+
+                          {/* Combobox for selecting people */}
+                          <Combobox
+                            options={userOptions}
+                            value=""
+                            onChange={(val, option) => {
+                              if (option) {
+                                // Check if person is already selected
+                                const isSelected = selectedPeople.some(
+                                  (p: any) => p.id === option.value
+                                );
+
+                                if (!isSelected) {
+                                  const newPerson = {
+                                    id: option.value,
+                                    name: option.label,
+                                  };
+
+                                  const updatedPeople = [
+                                    ...selectedPeople,
+                                    newPerson,
+                                  ];
+                                  handleFieldChange(field.id, updatedPeople);
+                                }
+                              }
+                            }}
+                            placeholder="Select people..."
+                            filterKeys={["value", "label"]}
+                          />
+                          {/* Display selected people as tags */}
+                          {selectedPeople.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2 mb-1">
+                              {selectedPeople.map(
+                                (person: any, idx: number) => (
+                                  <div
+                                    key={idx}
+                                    className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                                  >
+                                    <span>{person.name}</span>
+                                    <button
+                                      type="button"
+                                      className="text-blue-800 hover:text-blue-900"
+                                      onClick={() => {
+                                        const updatedPeople =
+                                          selectedPeople.filter(
+                                            (_: any, i: number) => i !== idx
+                                          );
+                                        handleFieldChange(
+                                          field.id,
+                                          updatedPeople.length
+                                            ? updatedPeople
+                                            : null
+                                        );
+                                      }}
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    } else {
+                      // For single person selection (existing behavior)
+                      return (
+                        <div key={field.id} className="flex flex-col">
+                          <Combobox
+                            label={field.label}
+                            options={userOptions}
+                            value={formData[field.id]?.id || ""}
+                            onChange={(val, option) => {
+                              if (option) {
+                                // Store the selected value in formData instead of a separate asset state
+                                handleFieldChange(field.id, {
+                                  id: option.value,
+                                  name: option.label,
+                                });
+                              } else {
+                                handleFieldChange(field.id, null);
+                              }
+                            }}
+                          />
+                        </div>
+                      );
+                    }
                   case "SEARCH_ASSET":
                     // Determine which options to use based on the field filter
                     let assetOptions = clientOptions;
@@ -505,45 +642,129 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                     if (field.filter) {
                       switch (field.filter.toUpperCase()) {
                         case "Equipment":
+                        case "EQUIPMENT":
                           assetOptions = equipmentOptions;
                           assetType = "equipment";
                           break;
                         case "Jobsites":
+                        case "JOBSITES":
                           assetOptions = jobsiteOptions;
                           assetType = "jobsite";
                           break;
                         case "Cost Codes":
+                        case "COST_CODES":
                           assetOptions = costCodeOptions;
                           assetType = "costCode";
                           break;
                         case "Clients":
+                        case "CLIENTS":
                           assetOptions = clientOptions;
                           assetType = "client";
                           break;
                       }
                     }
 
-                    return (
-                      <div key={field.id} className="flex flex-col">
-                        <Combobox
-                          label={field.label}
-                          options={assetOptions}
-                          value={formData[field.id].id || ""}
-                          onChange={(val, option) => {
-                            if (option) {
-                              // Store the selected value in formData instead of a separate asset state
-                              handleFieldChange(field.id, {
-                                id: option.value,
-                                name: option.label,
-                                type: assetType,
-                              });
-                            } else {
-                              handleFieldChange(field.id, null);
-                            }
-                          }}
-                        />
-                      </div>
-                    );
+                    if (field.multiple) {
+                      // For multiple selection of assets
+                      const selectedAssets = Array.isArray(formData[field.id])
+                        ? formData[field.id]
+                        : formData[field.id]
+                        ? [formData[field.id]]
+                        : [];
+
+                      return (
+                        <div key={field.id} className="flex flex-col">
+                          <Label className="text-sm font-medium mb-1">
+                            {field.label}
+                          </Label>
+
+                          {/* Combobox for selecting assets */}
+                          <Combobox
+                            options={assetOptions}
+                            value=""
+                            onChange={(val, option) => {
+                              if (option) {
+                                // Check if asset is already selected
+                                const isSelected = selectedAssets.some(
+                                  (a: any) => a.id === option.value
+                                );
+
+                                if (!isSelected) {
+                                  const newAsset = {
+                                    id: option.value,
+                                    name: option.label,
+                                    type: assetType,
+                                  };
+
+                                  const updatedAssets = [
+                                    ...selectedAssets,
+                                    newAsset,
+                                  ];
+                                  handleFieldChange(field.id, updatedAssets);
+                                }
+                              }
+                            }}
+                            placeholder={`Select ${assetType}...`}
+                            filterKeys={["value", "label"]}
+                          />
+                          {/* Display selected assets as tags */}
+                          {selectedAssets.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2 mb-1">
+                              {selectedAssets.map((asset: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                                >
+                                  <span>{asset.name}</span>
+                                  <button
+                                    type="button"
+                                    className="text-green-800 hover:text-green-900"
+                                    onClick={() => {
+                                      const updatedAssets =
+                                        selectedAssets.filter(
+                                          (_: any, i: number) => i !== idx
+                                        );
+                                      handleFieldChange(
+                                        field.id,
+                                        updatedAssets.length
+                                          ? updatedAssets
+                                          : null
+                                      );
+                                    }}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    } else {
+                      // For single asset selection (existing behavior)
+                      return (
+                        <div key={field.id} className="flex flex-col">
+                          <Combobox
+                            label={field.label}
+                            options={assetOptions}
+                            value={formData[field.id]?.id || ""}
+                            onChange={(val, option) => {
+                              if (option) {
+                                // Store the selected value in formData instead of a separate asset state
+                                handleFieldChange(field.id, {
+                                  id: option.value,
+                                  name: option.label,
+                                  type: assetType,
+                                });
+                              } else {
+                                handleFieldChange(field.id, null);
+                              }
+                            }}
+                          />
+                        </div>
+                      );
+                    }
+
                   default:
                     return (
                       <div key={field.id} className="flex flex-col">
