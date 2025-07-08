@@ -285,7 +285,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
         </div>
         {formTemplate.FormGrouping.map((group) => (
           <div key={group.id} className="mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <div className="flex flex-col gap-5">
               {group.Fields.map((field: Fields) => {
                 const value = formData[field.id] ?? "";
                 const options = field.Options || [];

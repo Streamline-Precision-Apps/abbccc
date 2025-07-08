@@ -68,7 +68,7 @@ export async function saveFormTemplate(data: SaveFormData) {
     console.log("Saving form template with data:", data);
 
     // Start a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // Create new form
       const formTemplate = await tx.formTemplate.create({
         data: {
@@ -80,6 +80,7 @@ export async function saveFormTemplate(data: SaveFormData) {
           isSignatureRequired: settings.requireSignature,
         },
       });
+      console.log("Created form template");
 
       // Always create a grouping for this form
       const formGrouping = await tx.formGrouping.create({
@@ -88,7 +89,7 @@ export async function saveFormTemplate(data: SaveFormData) {
           order: 0,
         },
       });
-
+      console.log("Created form grouping:");
       // Connect form template to grouping
       await tx.formTemplate.update({
         where: { id: formTemplate.id },
@@ -101,6 +102,13 @@ export async function saveFormTemplate(data: SaveFormData) {
 
       // Create all form fields
       for (const field of fields) {
+        if (
+          ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
+            field.type?.toUpperCase?.()
+          ) &&
+          !field.Options
+        ) {
+        }
         const formField = await tx.formField.create({
           data: {
             formGroupingId: formGrouping.id,
@@ -136,37 +144,8 @@ export async function saveFormTemplate(data: SaveFormData) {
             });
           }
         }
-
-        // Handle additional types
-        if (field.type === "TEXTAREA" || field.type === "TEXT") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              maxLength: field.maxLength,
-            },
-          });
-        }
-
-        if (field.type === "NUMBER") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              maxLength: field.maxLength,
-            },
-          });
-        }
-
-        if (field.type === "DATE" || field.type === "TIME") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              placeholder: field.placeholder,
-            },
-          });
-        }
       }
-
-      return formTemplate;
+      return;
     });
 
     revalidatePath("/admins/records/forms");
@@ -520,7 +499,7 @@ export async function getFormTemplateById(templateId: string) {
     });
     return template;
   } catch (error) {
-    console.error("Error fetching form template:", error);
+    console.error("Error fetching form submission:", error);
     return null;
   }
 }
