@@ -12,6 +12,9 @@ export async function GET() {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    
+    const currentDate = new Date();
+    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
     // Find all logs for the user via TimeSheet relation
     const usersLogs = await prisma.employeeEquipmentLog.findMany({
@@ -19,7 +22,10 @@ export async function GET() {
         TimeSheet: {
           userId: userId,
         },
-        // Add any other filters you need here
+        startTime: {
+          lte: currentDate,
+          gte: past24Hours,
+        },
       },
       include: {
         Equipment: {

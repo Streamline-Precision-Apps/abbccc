@@ -1,7 +1,8 @@
-"use server";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 // TypeScript Types for Safety and Consistency
 type EquipmentLog = {
@@ -242,9 +243,10 @@ export async function GET() {
 
     return NextResponse.json(combinedLogs);
   } catch (error) {
-    console.error("Error fetching logs:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching logs:', error);
     return NextResponse.json(
-      { error: "Failed to fetch logs" },
+      { error: 'Failed to fetch logs' },
       { status: 500 }
     );
   }

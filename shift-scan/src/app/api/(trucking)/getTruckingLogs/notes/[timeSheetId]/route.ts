@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
@@ -41,6 +42,7 @@ export async function GET(
     // Return the fetched notes (comment)
     return NextResponse.json(comment);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching trucking log:", error);
     return NextResponse.json(
       { error: "Failed to fetch trucking log" },
@@ -48,3 +50,4 @@ export async function GET(
     );
   }
 }
+

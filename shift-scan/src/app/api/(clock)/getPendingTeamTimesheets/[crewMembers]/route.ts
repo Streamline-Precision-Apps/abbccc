@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { TimeSheetStatus } from '@/lib/types';
+import { TimeSheetStatus } from '@/lib/enums';
 
 /**
  * API endpoint to fetch all PENDING timesheets for a list of user IDs.
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: { in: userIds },
-        status: TimeSheetStatus.PENDING,
+        status: 'PENDING',
         endTime: { not: null }, // Filter out timesheets without an endTime
       },
       include: {

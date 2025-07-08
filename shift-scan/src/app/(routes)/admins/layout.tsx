@@ -1,41 +1,33 @@
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/holds";
-import { Contents } from "@/components/(reusable)/contents";
+"use client";
+import "@/app/globals.css";
 import { UserEditProvider } from "@/app/context/(admin)/UserEditContext";
 import { CrewEditProvider } from "@/app/context/(admin)/CrewEditContext";
 import { Toaster } from "@/components/ui/sonner";
+import LeftSidebar from "./_pages/leftSide";
+import { PanelLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Bases } from "@/components/(reusable)/bases";
 
-export default async function RootLayout({
+import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Providing all messages to the client
-  // side is the easiest way to get started
-  const messages = await getMessages();
   return (
-    <Bases size={"screen"}>
-      <NextIntlClientProvider messages={messages}>
-        <Toaster position="top-right" richColors closeButton duration={3000} />
-        <UserEditProvider>
-          <CrewEditProvider>
-            <Contents width={"100"} className="">
-              <Holds position={"row"} className="h-full w-full">
-                {/* Sidebar */}
-                {/* <Holds position={"test"} className="h-full w-[60px] shrink-0">
-                  <LeftSidebar />
-                </Holds> */}
-                {/* Scrollable content area */}
-                <Holds className="flex-1 min-h-0 h-full  overflow-y-auto no-scrollbar">
-                  {children}
-                </Holds>
-              </Holds>
-            </Contents>
-          </CrewEditProvider>
-        </UserEditProvider>
-      </NextIntlClientProvider>
+    <Bases size={"screen"} className="w-full">
+      <Toaster position="top-right" richColors closeButton duration={3000} />
+      <UserEditProvider>
+        <CrewEditProvider>
+          <SidebarProvider>
+            <Sidebar className="h-full w-[250px] bg-white bg-opacity-25 border-r border-slate-800">
+              <LeftSidebar />
+            </Sidebar>
+            <div className="h-full w-full p-4">{children}</div>
+          </SidebarProvider>
+        </CrewEditProvider>
+      </UserEditProvider>
     </Bases>
   );
 }

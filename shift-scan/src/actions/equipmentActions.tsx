@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
@@ -13,12 +14,13 @@ export async function equipmentTagExists(id: string) {
     });
     return equipment;
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error checking if equipment exists:", error);
     throw error;
   }
 }
 
-export async function fetchEq(employeeId: string, date: string) {
+export async function fetchEq(date: string) {
   const startOfDay = new Date(date);
   startOfDay.setUTCHours(0, 0, 0, 0);
 
@@ -42,7 +44,6 @@ export async function fetchEq(employeeId: string, date: string) {
 
   const eqlogs = await prisma.employeeEquipmentLog.findMany({
     where: {
-      timeSheetId: timeSheet.id,
       startTime: {
         gte: startOfDay.toISOString(),
         lte: endOfDay.toISOString(),
@@ -58,7 +59,8 @@ export async function fetchEq(employeeId: string, date: string) {
     (log) => log.Equipment !== undefined && log.Equipment !== null
   );
 
-  revalidatePath("/dashboard/myTeam/" + employeeId);
+  console.log("\n\n\nEquipment Logs:", filteredEqLogs);
+  revalidatePath("/dashboard/myTeam/");
   return filteredEqLogs;
 }
 
@@ -135,7 +137,7 @@ export async function createEquipment(formData: FormData) {
     );
     const mileage = Number(formData.get("mileage") as string);
     const name = formData.get("temporaryEquipmentName") as string;
-    const comment = formData.get("creationReasoning") as string;
+    const creationReason = formData.get("creationReasoning") as string;
     const jobsiteId = formData.get("jobsiteLocation") as string;
     const qrId = formData.get("eqCode") as string;
     const createdById = formData.get("createdById") as string;
@@ -154,6 +156,7 @@ export async function createEquipment(formData: FormData) {
             qrId,
             name,
             description,
+            creationReason,
             equipmentTag,
           },
         });
@@ -168,6 +171,7 @@ export async function createEquipment(formData: FormData) {
             qrId,
             name,
             description,
+            creationReason,
             equipmentVehicleInfo: {
               create: {
                 make,
@@ -182,18 +186,6 @@ export async function createEquipment(formData: FormData) {
           },
         });
       }
-
-      // Create PendingApproval for the new equipment
-      // await prisma.pendingApproval.create({
-      //   data: {
-      //     entityType: "EQUIPMENT",
-      //     equipmentId: newEquipment.id,
-      //     createdById: createdById,
-      //     approvalStatus: "PENDING",
-      //     comment: comment,
-      //     jobsiteId: jobsiteId || undefined,
-      //   },
-      // });
 
       return newEquipment;
     });
@@ -238,17 +230,22 @@ export async function deleteEquipmentbyId(formData: FormData) {
 
 export async function CreateEmployeeEquipmentLog(formData: FormData) {
   try {
-    const employeeId = formData.get("employeeId") as string;
+    console.log("Creating EmployeeEquipmentLog...");
+    console.log(formData);
+
     const equipmentId = formData.get("equipmentId") as string;
-
-    // Execute all operations in a transaction
+    const jobsiteId = formData.get("jobsiteId") as string; // Execute all operations in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // 1. CHECK TO SEE IF A QR WAS SCANNED
-
-      //2. find timesheet info
+      const userId = formData.get("userId") as string | null;
+      if (userId === null) {
+        throw new Error("userId is required");
+      }
 
       const timeSheet = await tx.timeSheet.findFirst({
-        where: { userId: employeeId, endTime: null },
+        where: {
+          userId: userId,
+          endTime: null,
+        },
         select: { id: true, workType: true },
       });
 
@@ -270,30 +267,25 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       const newLog = await tx.employeeEquipmentLog.create({
         data: {
           equipmentId,
-          timeSheetId: timeSheet.id, // always a string
+          timeSheetId: timeSheet?.id ?? "", // fallback to empty string if undefined
           startTime: new Date().toISOString(),
           endTime: formData.get("endTime")
             ? new Date(formData.get("endTime") as string)
-            : undefined,
+            : null,
           comment: formData.get("comment") as string,
         },
       });
 
       return newLog;
     });
-
-    // Revalidate the path to update any dependent front-end views
-    revalidatePath("/");
-
     return result;
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error creating employee equipment log:", error);
       throw new Error(
         `Failed to create employee equipment log: ${error.message}`
       );
     } else {
-      console.error("An unknown error occurred:", error);
       throw error;
     }
   }
@@ -370,7 +362,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       // Maintenance fields
       const equipmentIssue = formData.get("equipmentIssue") as string;
       const additionalInfo = formData.get("additionalInfo") as string;
-      const maintenanceId = formData.get("maintenanceId") as string | null;
+      let maintenanceId = formData.get("maintenanceId") as string | null;
 
       // Refuel log fields - handle null values with special "__NULL__" marker
       const disconnectRefuelLog =
@@ -413,32 +405,13 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       }
       // If no refuel log data provided, don't include any RefuelLog updates
 
-      // Update the employee equipment log
-      const log = await prisma.employeeEquipmentLog.update({
-        where: { id },
-        data: {
-          startTime,
-          endTime: endTime ? endTime : new Date().toISOString(),
-          comment,
-          ...(Object.keys(refuelLogUpdate).length > 0
-            ? { RefuelLog: refuelLogUpdate }
-            : {}),
-        },
-      });
-
-      // Update equipment status
-      if (status) {
-        await prisma.equipment.update({
-          where: { id: equipmentId },
-          data: {
-            state: status,
-          },
-        });
-      }
-
-      // Handle maintenance - create, update, or leave as is
+      // --- MAINTENANCE LOGIC ---
+      let createdMaintenanceId: string | null = null;
       if (status === "NEEDS_REPAIR" || status === "MAINTENANCE") {
-        if (equipmentIssue || additionalInfo) {
+        if (
+          (equipmentIssue && equipmentIssue.length > 0) ||
+          (additionalInfo && additionalInfo.length > 0)
+        ) {
           const maintenanceData = {
             equipmentIssue: equipmentIssue || null,
             additionalInfo: additionalInfo || null,
@@ -453,8 +426,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
               data: maintenanceData,
             });
           } else {
-            // Create a new maintenance request
-            await prisma.maintenance.create({
+            // Create a new maintenance request and capture its ID
+            const newMaintenance = await prisma.maintenance.create({
               data: {
                 ...maintenanceData,
                 equipmentId,
@@ -463,8 +436,44 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
                   "Unknown",
               },
             });
+            createdMaintenanceId = newMaintenance.id;
+            maintenanceId = newMaintenance.id;
           }
         }
+      }
+
+      // --- UPDATE EMPLOYEE EQUIPMENT LOG (including maintenanceId if present) ---
+      const log = await prisma.employeeEquipmentLog.update({
+        where: { id },
+        data: {
+          startTime,
+          endTime: endTime ? endTime : new Date().toISOString(),
+          comment,
+          ...(Object.keys(refuelLogsUpdate).length > 0
+            ? { RefuelLog: refuelLogsUpdate }
+            : {}),
+          ...(maintenanceId ? { maintenanceId } : {}),
+        },
+      });
+
+      // Update equipment status
+      if (status) {
+        await prisma.equipment.update({
+          where: { id: equipmentId },
+          data: {
+            state: status,
+          },
+        });
+      }
+
+      // Ensure bidirectional link: update Maintenance with employeeEquipmentLogId (if new maintenance was created)
+      if (createdMaintenanceId) {
+        await prisma.maintenance.update({
+          where: { id: createdMaintenanceId },
+          data: {
+            employeeEquipmentLogId: id,
+          },
+        });
       }
 
       revalidatePath(`/dashboard/equipment/${id}`);
@@ -576,12 +585,9 @@ export async function UpdateSubmit(formData: FormData) {
     if (openTimeSheetIds.length === 0) return;
 
     const logs = await prisma.employeeEquipmentLog.updateMany({
-      where: {
-        timeSheetId: { in: openTimeSheetIds },
-        endTime: null, // Only unfinished logs
-      },
+      // Removed isFinished from where and data as it does not exist in schema
       data: {
-        endTime: new Date().toISOString(), // Mark as finished by setting endTime
+        // No isFinished field
       },
     });
 

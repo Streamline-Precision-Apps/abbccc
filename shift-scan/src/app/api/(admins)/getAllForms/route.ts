@@ -1,6 +1,9 @@
+
 import { NextResponse } from "next/server";
+// Sentry import already present if needed
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import * as Sentry from '@sentry/nextjs';
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -48,7 +51,7 @@ export async function GET(req: Request) {
                 placeholder: true,
                 minLength: true,
                 maxLength: true,
-                headerSize: true,
+                multiple: true,
                 content: true,
                 filter: true,
                 Options: true,
@@ -70,6 +73,7 @@ export async function GET(req: Request) {
       totalPages: Math.ceil(total / pageSize),
     });
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching form templates:", error);
     let errorMessage = "Failed to fetch form templates";
     if (error instanceof Error) {

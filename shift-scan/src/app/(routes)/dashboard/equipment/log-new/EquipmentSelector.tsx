@@ -42,7 +42,7 @@ export default function EquipmentSelectorView({
     const formData = new FormData();
     formData.append("equipmentId", equipment?.id || "");
     formData.append("jobsiteId", jobSite?.id || "");
-    formData.append("employeeId", id || "");
+    formData.append("userId", id);
 
     const result = await CreateEmployeeEquipmentLog(formData);
     if (result) {

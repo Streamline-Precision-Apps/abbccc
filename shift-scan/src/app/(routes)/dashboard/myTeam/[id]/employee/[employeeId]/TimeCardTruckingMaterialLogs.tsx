@@ -9,12 +9,14 @@ import {
   MaterialType,
   TruckingMaterialHaulLog,
   TruckingMaterialHaulLogData,
+  TruckingMaterialHaulLogItem,
+  TruckingMaterial,
 } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 // Define the type for processed material data
-type ProcessedMaterialLog = {
+export type ProcessedMaterialLog = {
   id: string;
   name: string;
   LocationOfMaterial: string;
@@ -97,7 +99,7 @@ export default function TimeCardTruckingMaterialLogs({
     logId: string,
     materialId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, materialId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -108,7 +110,7 @@ export default function TimeCardTruckingMaterialLogs({
     logId: string,
     materialId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -142,7 +144,7 @@ export default function TimeCardTruckingMaterialLogs({
     truckingLogId: string,
     materialId: string,
     field: keyof ProcessedMaterialLog,
-    value: any
+    value: string | number | null
   ) => {
     const updated = truckingMaterialHaulLogs.map((item, idx) => {
       if (idx === truckingLogItemIndex) {
@@ -176,8 +178,7 @@ export default function TimeCardTruckingMaterialLogs({
       <Grids rows={"7"}>
         <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full">
           {!isEmptyData ? (
-            <>
-              <Grids cols={"2"} className="w-full h-fit">
+            <>              <Grids cols={"2"} className="w-full h-fit">
                 <Holds className="col-start-1 col-end-2 w-full h-full pr-1">
                   <Titles position={"left"} size={"h6"}>
                     {t("MaterialLocation")}
@@ -188,23 +189,34 @@ export default function TimeCardTruckingMaterialLogs({
                     {t("Weight")}
                   </Titles>
                 </Holds>
-              </Grids>
-
-              {truckingMaterialHaulLogs.map((item, itemIdx) =>
-                (item.TruckingLogs ?? []).map((log, logIdx) => {
+              </Grids>              {truckingMaterialHaulLogs.map((item: TruckingMaterialHaulLogItem, itemIdx: number) =>
+                (item.TruckingLogs ?? []).map((log: TruckingMaterialHaulLog | null, logIdx: number) => {
                   if (!log) return null;
-                  return (log.Materials ?? []).map((material, matIdx) => {
+                  return (log.Materials ?? []).map((material: TruckingMaterial | null, matIdx: number) => {
                     if (!material) return null;
-                    return (
-                      <Holds
-                        key={`${log.id}-${material.id}`}
-                        background={
-                          focusIds.includes(material.id) ? "orange" : "white"
-                        }
-                        className={`border-black border-[3px] rounded-lg mb-2 ${
-                          isReviewYourTeam ? "cursor-pointer" : ""
-                        }`}
+                    const isFocused = focusIds.includes(material.id);
+                    const handleToggleFocus = () => {
+                      if (isFocused) {
+                        setFocusIds(focusIds.filter((id: string) => id !== material.id));
+                      } else {
+                        setFocusIds([...focusIds, material.id]);
+                      }
+                    };
+                    return (                      <Holds
+                        key={material.id}
+                        background={isFocused ? 'orange' : 'white'}
+                        className={`relative border-black border-[3px] rounded-lg mb-2 ${isReviewYourTeam ? 'cursor-pointer' : ''}`}
+                        onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                       >
+                        {isReviewYourTeam && (                          <div
+                            className="absolute top-0 left-0 w-full h-full z-0 cursor-pointer"
+                            onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleToggleFocus();
+                            }}
+                          />
+                        )}
                         <Buttons
                           shadow={"none"}
                           background={"none"}
@@ -226,7 +238,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "name",
                                         material.name
-                                      )}
+                                      ) ?? ''}
                                       background={
                                         focusIds.includes(material.id)
                                           ? "orange"
@@ -283,7 +295,7 @@ export default function TimeCardTruckingMaterialLogs({
                                       material.id,
                                       "LocationOfMaterial",
                                       material.LocationOfMaterial
-                                    )}
+                                    ) ?? ''}
                                     onChange={(e) =>
                                       handleLocalChange(
                                         log.id,
@@ -316,9 +328,9 @@ export default function TimeCardTruckingMaterialLogs({
                               <Grids rows={"3"} className="w-full h-full">
                                 <Holds
                                   position={"row"}
-                                  className={`row-start-1 row-end-2 h-full rounded-none rounded-tr-md border-b-2 border-black ${
-                                    edit ? "bg-white" : "bg-app-gray"
-                                  }`}
+                                  className={`row-start-1 row-end-2 h-full rounded-none rounded-tr-md border-b-[2px] border-black ${focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"}`}
                                 >
                                   <Titles
                                     position={"left"}
@@ -334,7 +346,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "materialWeight",
                                         material.materialWeight
-                                      ) || ""
+                                      )?.toString() ?? ''
                                     }
                                     onChange={(e) =>
                                       handleLocalChange(
@@ -366,9 +378,9 @@ export default function TimeCardTruckingMaterialLogs({
                                 </Holds>
                                 <Holds
                                   position={"row"}
-                                  className={`row-start-2 row-end-3 h-full rounded-none border-b-2 border-black ${
-                                    edit ? "bg-white" : "bg-app-gray"
-                                  }`}
+                                  className={`row-start-2 row-end-3 h-full rounded-none border-b-[2px] border-black ${focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"}`}
                                 >
                                   <Titles
                                     position={"left"}
@@ -384,7 +396,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "lightWeight",
                                         material.lightWeight
-                                      ) || ""
+                                      )?.toString() ?? ''
                                     }
                                     onChange={(e) =>
                                       handleLocalChange(
@@ -416,9 +428,9 @@ export default function TimeCardTruckingMaterialLogs({
                                 </Holds>
                                 <Holds
                                   position={"row"}
-                                  className={`row-start-3 row-end-4 h-full w-full rounded-br-md ${
-                                    edit ? "bg-white" : "bg-app-gray"
-                                  }`}
+                                  className={`row-start-3 row-end-4 h-full w-full rounded-br-md  ${focusIds.includes(material.id)
+                                        ? "orange"
+                                        : "white"}`}
                                 >
                                   <Titles
                                     position={"left"}
@@ -434,7 +446,7 @@ export default function TimeCardTruckingMaterialLogs({
                                         material.id,
                                         "grossWeight",
                                         material.grossWeight
-                                      ) || ""
+                                      )?.toString() ?? ''
                                     }
                                     onChange={(e) =>
                                       handleLocalChange(

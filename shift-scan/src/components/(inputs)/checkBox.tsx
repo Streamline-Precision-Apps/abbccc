@@ -34,7 +34,7 @@ export const CheckBox = ({
   };
 
   return (
-    <div className="w-full flex">
+    <div className="w-full flex items-center">
       <input
         className={`
         peer relative appearance-none shrink-0 border-[3px] border-black  
@@ -68,7 +68,11 @@ export const CheckBox = ({
       >
         <polyline points="26 10 13 23 6 16"></polyline>
       </svg>
-      {label && <label htmlFor={id}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className="ml-4 text-m flex items-center h-full">
+          {label}
+        </label>
+      )}
     </div>
   );
 };

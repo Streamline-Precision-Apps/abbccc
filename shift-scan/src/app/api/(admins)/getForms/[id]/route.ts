@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +13,10 @@ export async function GET(
     // Validate form ID
     const formId = params.id;
     if (!formId) {
-      return NextResponse.json({ error: "Invalid or missing form ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or missing form ID" },
+        { status: 400 }
+      );
     }
 
     // Fetch the form template with related groupings and fields
@@ -20,8 +25,19 @@ export async function GET(
       include: {
         FormGrouping: {
           include: {
-            Fields: { orderBy: { order: "asc" } }, // Load fields sorted by `order`
+            Fields: {
+              orderBy: { order: "asc" },
+              include: {
+                Options: {
+                  select: {
+                    id: true,
+                    value: true,
+                  },
+                }, // Include FormFieldOption[]
+              },
+            },
           },
+          orderBy: { order: "asc" }, // optional: keep groupings ordered
         },
       },
     });
@@ -33,16 +49,14 @@ export async function GET(
 
     return NextResponse.json(formTemplate);
   } catch (error) {
-    console.error("Error fetching form:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching form:', error);
 
-    let errorMessage = "Failed to fetch form data";
+    let errorMessage = 'Failed to fetch form data';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

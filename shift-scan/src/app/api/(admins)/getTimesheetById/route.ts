@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from '@sentry/nextjs';
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -161,6 +162,7 @@ export async function GET(req: Request) {
     }
     return NextResponse.json(timesheet);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching timesheet by id:", error);
     return NextResponse.json(
       { error: "Failed to fetch timesheet" },

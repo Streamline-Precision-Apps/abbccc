@@ -47,7 +47,7 @@ function testDateConversion() {
 }
 
 // Safe conversion function
-function safeToISOString(dateValue: any): string | undefined {
+function safeToISOString(dateValue: Date | string | number | null | undefined): string | undefined {
   if (!dateValue) return undefined;
   
   try {

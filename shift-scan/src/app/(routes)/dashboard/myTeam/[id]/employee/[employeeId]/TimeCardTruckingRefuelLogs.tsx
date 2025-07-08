@@ -55,7 +55,7 @@ export default function TimeCardTruckingRefuelLogs({
     logId: string,
     refuelId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(logId, refuelId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -66,7 +66,7 @@ export default function TimeCardTruckingRefuelLogs({
     logId: string,
     refuelId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -121,7 +121,7 @@ export default function TimeCardTruckingRefuelLogs({
     truckingLogId: string,
     refuelId: string,
     field: string,
-    value: any
+    value: number | string | null | undefined
   ) => {
     // Update the flat UI state
     setEditedRefuelLogs((prev) =>
@@ -182,14 +182,15 @@ export default function TimeCardTruckingRefuelLogs({
 
                 return (
                   <Holds
-                    key={`${rl.truckingLogId}-${rl.id}`}                    background={isFocused ? "orange" : "white"}
+                    key={`${rl.truckingLogId}-${rl.id}`}
+                    background={isFocused ? "orange" : "white"}
                     className={`relative border-black border-[3px] rounded-lg mb-2
                     ${isReviewYourTeam ? "cursor-pointer" : ""}`}
                     onClick={isReviewYourTeam ? handleToggleFocus : undefined}
                   >
                     {isReviewYourTeam && (
                       <div
-                        className="absolute top-0 left-0 w-full h-full z-10 cursor-pointer"
+                        className="absolute top-0 left-0 w-full h-full z-0 cursor-pointer"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -203,7 +204,9 @@ export default function TimeCardTruckingRefuelLogs({
                       className="w-full h-full text-left"
                     >
                       <Grids cols={"4"} className="w-full h-full">
-                        <Holds className="w-full h-full col-start-1 col-end-3 border-r-[3px] border-black">                          <Inputs
+                        <Holds className="w-full h-full col-start-1 col-end-3 border-r-[3px] border-black">
+                          {" "}
+                          <Inputs
                             value={rl.truckName}
                             disabled={true}
                             placeholder="Truck ID"
@@ -213,7 +216,9 @@ export default function TimeCardTruckingRefuelLogs({
                           />
                         </Holds>
 
-                        <Holds className="w-full h-full col-start-3 col-end-4 border-black">                          <Inputs
+                        <Holds className="w-full h-full col-start-3 col-end-4 border-black">
+                          {" "}
+                          <Inputs
                             type="number"
                             value={
                               getDisplayValue(
@@ -243,7 +248,9 @@ export default function TimeCardTruckingRefuelLogs({
                             className="py-2 w-full h-full text-xs border-none rounded-none text-center"
                           />
                         </Holds>
-                        <Holds className="w-full h-full col-start-4 col-end-5 border-l-[3px] border-black">                          <Inputs
+                        <Holds className="w-full h-full col-start-4 col-end-5 border-l-[3px] border-black">
+                          {" "}
+                          <Inputs
                             type="number"
                             value={
                               getDisplayValue(

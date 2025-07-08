@@ -161,6 +161,16 @@ export async function updateTruckingHaulLogs(
       return { success: false, error: "No valid updates provided" };
     }
 
+    const jobsite = await prisma.jobsite.findFirst({
+      where: {
+        qrId: validUpdates[0].jobSiteId || undefined,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+
     console.log("[SERVER] Processing updates for:", validUpdates);
 
     // Start a transaction
@@ -172,7 +182,7 @@ export async function updateTruckingHaulLogs(
               where: { id: update.id },
               data: {
                 equipmentId: update.equipmentId || null,
-                jobSiteId: update.jobSiteId || null,
+                jobSiteId: jobsite?.id || null,
               },
             });
           } catch (error) {
