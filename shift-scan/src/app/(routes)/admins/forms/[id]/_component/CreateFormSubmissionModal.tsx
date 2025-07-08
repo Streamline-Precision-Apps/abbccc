@@ -46,22 +46,21 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     lastName: string;
   } | null>(null);
   const [submittedByTouched, setSubmittedByTouched] = useState(false);
-  const [assets, setAssets] = useState<
-    { id: string; name: string; type: string }[]
-  >([]);
-  const [workers, setWorkers] = useState<
-    { id: string; firstName: string; lastName: string }[]
-  >([]);
+  const [assets, setAssets] = useState<{ id: string; name: string } | null>(
+    null
+  );
 
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);
-
   const userOptions = users.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
   }));
-  const clientOptions = assets.map((c) => ({
+
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
+
+  const clientOptions = clients.map((c) => ({
     value: c.id,
     label: `${c.name}`,
   }));
@@ -74,6 +73,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     };
     fetchEmployees();
   }, []);
+
   const handleFieldChange = (fieldId: string, value: any) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
   };
@@ -118,7 +118,6 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
             Submitted By <span className="text-red-500">*</span>
           </Label>
           <Combobox
-            label="User"
             options={userOptions}
             value={submittedBy?.id || ""}
             onChange={(val, option) => {
@@ -143,9 +142,6 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
         </div>
         {formTemplate.FormGrouping.map((group) => (
           <div key={group.id} className="mb-4">
-            {group.title && (
-              <p className="font-semibold text-base mb-2">{group.title}</p>
-            )}
             <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               {group.Fields.map((field: any) => {
                 const value = formData[field.id] ?? "";
@@ -404,51 +400,42 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                   case "SEARCH_PERSON":
                     return (
                       <div key={field.id} className="flex flex-col">
-                        <Label className="text-sm font-medium mb-1">
-                          {field.label}
-                        </Label>
-                        <Select
-                          value={value}
-                          onValueChange={(val) =>
-                            handleFieldChange(field.id, val)
-                          }
-                        >
-                          <SelectTrigger className="border rounded px-2 py-1 bg-white">
-                            <SelectValue placeholder="Search for a worker..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {options.map((opt: OptionType) => (
-                              <SelectItem key={opt.id} value={opt.value}>
-                                {opt.value}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Combobox
+                          label={field.label}
+                          options={userOptions}
+                          value={submittedBy?.id || ""}
+                          onChange={(val, option) => {
+                            if (option) {
+                              setSubmittedBy({
+                                id: option.value,
+                                firstName: option.label.split(" ")[0],
+                                lastName: option.label.split(" ")[1],
+                              });
+                            } else {
+                              setSubmittedBy(null);
+                            }
+                          }}
+                        />
                       </div>
                     );
                   case "SEARCH_ASSET":
                     return (
                       <div key={field.id} className="flex flex-col">
-                        <Label className="text-sm font-medium mb-1">
-                          {field.label}
-                        </Label>
-                        <Select
-                          value={value}
-                          onValueChange={(val) =>
-                            handleFieldChange(field.id, val)
-                          }
-                        >
-                          <SelectTrigger className="border rounded px-2 py-1 bg-white">
-                            <SelectValue placeholder="Search for an asset..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {options.map((opt: OptionType) => (
-                              <SelectItem key={opt.id} value={opt.value}>
-                                {opt.value}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Combobox
+                          label={field.label}
+                          options={clientOptions}
+                          value={assets?.id || ""}
+                          onChange={(val, option) => {
+                            if (option) {
+                              setAssets({
+                                id: option.value,
+                                name: option.label,
+                              });
+                            } else {
+                              setAssets(null);
+                            }
+                          }}
+                        />
                       </div>
                     );
                   default:
@@ -480,10 +467,16 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col gap-4 w-full items-center">
-          <div className="w-full flex flex-row justify-between">
-            <div className="flex flex-col">
-              <p className="text-lg text-black font-semibold">
-                {formTemplate?.name || "N/A"}
+          <div className="w-full flex flex-col justify-center mb-2 ">
+            <div>
+              <p className="text-lg text-black font-semibold ">
+                Submit A New {formTemplate?.name || "N/A"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">
+                Please complete the form below to initiate a new{" "}
+                {formTemplate?.name} submission.
               </p>
             </div>
           </div>
