@@ -8,4 +8,6 @@ model Address {
     Client  Client[]
     Company Company[]
     Jobsite Jobsite[]
+
+    @@unique([street, city, state, zipCode], name: "street_city_state_zipCode")
 }
