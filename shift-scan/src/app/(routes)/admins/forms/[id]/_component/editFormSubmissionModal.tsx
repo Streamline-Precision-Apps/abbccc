@@ -1,5 +1,4 @@
 "use client";
-
 import {
   getFormSubmissionById,
   updateFormSubmission,
@@ -32,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Combobox } from "@/components/ui/combobox";
 
 export default function EditFormSubmissionModal({
   id,
@@ -47,15 +47,56 @@ export default function EditFormSubmissionModal({
     useState<FormSubmissionWithTemplate | null>(null);
   const [editData, setEditData] = useState<Record<string, any>>({});
 
+  // State for different asset types
+  const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
+  const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
+    []
+  );
+
+  const [users, setUsers] = useState<
+    { id: string; firstName: string; lastName: string }[]
+  >([]);
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
+
+  const userOptions = users.map((u) => ({
+    value: u.id,
+    label: `${u.firstName} ${u.lastName}`,
+  }));
+
+  const clientOptions = clients.map((c) => ({
+    value: c.id,
+    label: `${c.name}`,
+  }));
+
+  const equipmentOptions = equipment.map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+
+  const jobsiteOptions = jobsites.map((j) => ({
+    value: j.id,
+    label: j.name,
+  }));
+
+  const costCodeOptions = costCodes.map((c) => ({
+    value: c.id,
+    label: c.name,
+  }));
+
+  // Fetch form submission data by ID
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const submission = await getFormSubmissionById(id);
+      console.log("Fetched submission:", submission);
       if (!submission) {
         console.error("Submission not found for ID:", id);
         return;
       }
-      setFormSubmission(submission as FormSubmissionWithTemplate);
+      setFormSubmission(submission as unknown as FormSubmissionWithTemplate);
       setEditData(
         submission &&
           typeof submission.data === "object" &&
@@ -67,6 +108,68 @@ export default function EditFormSubmissionModal({
     };
     fetchData();
   }, [id]);
+  // Fetch users data
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await fetch("/api/getAllActiveEmployeeName");
+      const users = await res.json();
+      setUsers(users);
+    };
+    fetchUsers();
+  }, []);
+  // Fetch clients data
+  useEffect(() => {
+    const fetchClients = async () => {
+      const res = await fetch("/api/getClientsSummary");
+      const clients = await res.json();
+      setClients(clients);
+    };
+    fetchClients();
+  }, []);
+  // Fetch equipment data
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      try {
+        const res = await fetch("/api/getEquipmentSummary");
+        if (!res.ok) throw new Error("Failed to fetch equipment");
+        const data = await res.json();
+        setEquipment(data);
+      } catch (error) {
+        console.error("Error fetching equipment:", error);
+      }
+    };
+    fetchEquipment();
+  }, []);
+
+  // Fetch jobsites data
+  useEffect(() => {
+    const fetchJobsites = async () => {
+      try {
+        const res = await fetch("/api/getJobsiteSummary");
+        if (!res.ok) throw new Error("Failed to fetch jobsites");
+        const data = await res.json();
+
+        setJobsites(data);
+      } catch (error) {
+        console.error("Error fetching jobsites:", error);
+      }
+    };
+    fetchJobsites();
+  }, []);
+  // Fetch cost codes data
+  useEffect(() => {
+    const fetchCostCodes = async () => {
+      try {
+        const res = await fetch("/api/getCostCodeSummary");
+        if (!res.ok) throw new Error("Failed to fetch cost codes");
+        const data = await res.json();
+        setCostCodes(data);
+      } catch (error) {
+        console.error("Error fetching cost codes:", error);
+      }
+    };
+    fetchCostCodes();
+  }, []);
 
   const handleFieldChange = (fieldId: string, value: any) => {
     setEditData((prev) => ({ ...prev, [fieldId]: value }));
@@ -374,53 +477,229 @@ export default function EditFormSubmissionModal({
                   </div>
                 );
               case "SEARCH_PERSON":
-                return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Select
-                      value={value}
-                      onValueChange={(val) => handleFieldChange(field.id, val)}
-                    >
-                      <SelectTrigger className="border rounded px-2 py-1 bg-white">
-                        <SelectValue placeholder="Search for a worker..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {/* TODO: Replace with dynamic person options and search logic */}
-                        {field.Options?.map((opt) => (
-                          <SelectItem key={opt.id} value={opt.value}>
-                            {opt.value}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                );
+                if (field.multiple) {
+                  // For multiple selection of people
+                  const selectedPeople = Array.isArray(editData[field.id])
+                    ? editData[field.id]
+                    : editData[field.id]
+                    ? [editData[field.id]]
+                    : [];
+
+                  return (
+                    <div key={field.id} className="flex flex-col">
+                      <Label className="text-sm font-medium mb-1">
+                        {field.label}
+                      </Label>
+
+                      {/* Combobox for selecting people */}
+                      <Combobox
+                        options={userOptions}
+                        value={editData[field.id]?.id || ""}
+                        onChange={(val, option) => {
+                          if (option) {
+                            // Check if person is already selected
+                            const isSelected = selectedPeople.some(
+                              (p: any) => p.id === option.value
+                            );
+
+                            if (!isSelected) {
+                              const newPerson = {
+                                id: option.value,
+                                name: option.label,
+                              };
+
+                              const updatedPeople = [
+                                ...selectedPeople,
+                                newPerson,
+                              ];
+                              handleFieldChange(field.id, updatedPeople);
+                            }
+                          }
+                        }}
+                        placeholder="Click To Add More"
+                        filterKeys={["value", "label"]}
+                      />
+
+                      {/* Display selected people as tags */}
+                      {selectedPeople.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2 mb-1">
+                          {selectedPeople.map((person: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                            >
+                              <span>{person.name}</span>
+                              <button
+                                type="button"
+                                className="text-blue-800 hover:text-blue-900"
+                                onClick={() => {
+                                  const updatedPeople = selectedPeople.filter(
+                                    (_: any, i: number) => i !== idx
+                                  );
+                                  handleFieldChange(
+                                    field.id,
+                                    updatedPeople.length ? updatedPeople : null
+                                  );
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else {
+                  // For single person selection (existing behavior)
+                  return (
+                    <div key={field.id} className="flex flex-col">
+                      <Combobox
+                        label={field.label}
+                        options={userOptions}
+                        value={editData[field.id]?.id || ""}
+                        onChange={(val, option) => {
+                          if (option) {
+                            // Store the selected value in formData instead of a separate asset state
+                            handleFieldChange(field.id, {
+                              id: option.value,
+                              name: option.label,
+                            });
+                          } else {
+                            handleFieldChange(field.id, null);
+                          }
+                        }}
+                      />
+                    </div>
+                  );
+                }
               case "SEARCH_ASSET":
-                return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Select
-                      value={value}
-                      onValueChange={(val) => handleFieldChange(field.id, val)}
-                    >
-                      <SelectTrigger className="border rounded px-2 py-1 bg-white">
-                        <SelectValue placeholder="Search for an asset..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {/* TODO: Replace with dynamic asset options and search logic */}
-                        {field.Options?.map((opt) => (
-                          <SelectItem key={opt.id} value={opt.value}>
-                            {opt.value}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                );
+                // Determine which options to use based on the field filter
+                let assetOptions = clientOptions;
+                let assetType = "client";
+
+                if (field.filter) {
+                  switch (field.filter.toUpperCase()) {
+                    case "Equipment":
+                    case "EQUIPMENT":
+                      assetOptions = equipmentOptions;
+                      assetType = "equipment";
+                      break;
+                    case "Jobsites":
+                    case "JOBSITES":
+                      assetOptions = jobsiteOptions;
+                      assetType = "jobsite";
+                      break;
+                    case "Cost Codes":
+                    case "COST_CODES":
+                      assetOptions = costCodeOptions;
+                      assetType = "costCode";
+                      break;
+                    case "Clients":
+                    case "CLIENTS":
+                      assetOptions = clientOptions;
+                      assetType = "client";
+                      break;
+                  }
+                }
+
+                if (field.multiple) {
+                  // For multiple selection of assets
+                  const selectedAssets = Array.isArray(editData[field.id])
+                    ? editData[field.id]
+                    : editData[field.id]
+                    ? [editData[field.id]]
+                    : [];
+
+                  return (
+                    <div key={field.id} className="flex flex-col">
+                      <Label className="text-sm font-medium mb-1">
+                        {field.label}
+                      </Label>
+
+                      {/* Combobox for selecting assets */}
+                      <Combobox
+                        options={assetOptions}
+                        value=""
+                        onChange={(val, option) => {
+                          if (option) {
+                            // Check if asset is already selected
+                            const isSelected = selectedAssets.some(
+                              (a: any) => a.id === option.value
+                            );
+
+                            if (!isSelected) {
+                              const newAsset = {
+                                id: option.value,
+                                name: option.label,
+                                type: assetType,
+                              };
+
+                              const updatedAssets = [
+                                ...selectedAssets,
+                                newAsset,
+                              ];
+                              handleFieldChange(field.id, updatedAssets);
+                            }
+                          }
+                        }}
+                        placeholder={`Select ${assetType}`}
+                        filterKeys={["value", "label"]}
+                      />
+                      {/* Display selected assets as tags */}
+                      {selectedAssets.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2 mb-1">
+                          {selectedAssets.map((asset: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                            >
+                              <span>{asset.name}</span>
+                              <button
+                                type="button"
+                                className="text-green-800 hover:text-green-900"
+                                onClick={() => {
+                                  const updatedAssets = selectedAssets.filter(
+                                    (_: any, i: number) => i !== idx
+                                  );
+                                  handleFieldChange(
+                                    field.id,
+                                    updatedAssets.length ? updatedAssets : null
+                                  );
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else {
+                  // For single asset selection (existing behavior)
+                  return (
+                    <div key={field.id} className="flex flex-col">
+                      <Combobox
+                        label={field.label}
+                        options={assetOptions}
+                        value={formSubmission.data[field.id]?.id || ""}
+                        onChange={(val, option) => {
+                          if (option) {
+                            // Store the selected value in formData instead of a separate asset state
+                            handleFieldChange(field.id, {
+                              id: option.value,
+                              name: option.label,
+                              type: assetType,
+                            });
+                          } else {
+                            handleFieldChange(field.id, null);
+                          }
+                        }}
+                      />
+                    </div>
+                  );
+                }
               default:
                 return (
                   <div key={field.id} className="flex flex-col">

@@ -97,9 +97,29 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                         }
                       }
                       // If the value is an array (e.g., MULTISELECT), join with commas
+                      // If the value is an array (e.g., MULTISELECT or multiple selection), process it
                       if (Array.isArray(val)) {
-                        display = val.join(", ");
+                        // Check if it's an array of objects (like from SEARCH_ASSET or SEARCH_PERSON with multiple=true)
+                        if (
+                          val.length > 0 &&
+                          typeof val[0] === "object" &&
+                          val[0] !== null
+                        ) {
+                          // Extract the name property from each object in the array
+                          display = val
+                            .map((item: any) => item?.name || "")
+                            .filter(Boolean)
+                            .join(", ");
+                        } else {
+                          display = val.join(", ");
+                        }
                       }
+                      // If the value is an object (like from SEARCH_ASSET or SEARCH_PERSON)
+                      else if (val && typeof val === "object" && val !== null) {
+                        // Display the name property of the object
+                        display = val.name || "";
+                      }
+
                       return (
                         <TableCell key={field.id} className="text-xs">
                           {display ?? ""}

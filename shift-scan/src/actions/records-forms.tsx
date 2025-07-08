@@ -502,6 +502,29 @@ export async function getFormSubmissionById(submissionId: string) {
   }
 }
 
+export async function getFormTemplateById(templateId: string) {
+  try {
+    const template = await prisma.formTemplate.findUnique({
+      where: { id: templateId },
+      include: {
+        FormGrouping: {
+          include: {
+            Fields: {
+              include: {
+                Options: true, // if you need select/radio options
+              },
+            },
+          },
+        },
+      },
+    });
+    return template;
+  } catch (error) {
+    console.error("Error fetching form template:", error);
+    return null;
+  }
+}
+
 export async function getFormSubmissions(
   formId: string,
   dateRange?: {

@@ -50,7 +50,7 @@ export interface Fields {
   placeholder?: string | null;
   minLength?: number | null;
   maxLength?: number | null;
-  multiple?: boolean | null;
+  multiple: boolean | null;
   content?: string | null;
   filter?: string | null;
   Options?: FieldOption[];
