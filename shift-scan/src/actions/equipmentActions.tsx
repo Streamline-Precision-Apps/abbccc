@@ -228,12 +228,16 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
     const equipmentId = formData.get("equipmentId") as string;
     const jobsiteId = formData.get("jobsiteId") as string; // Execute all operations in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // 1. CHECK TO SEE IF A QR WAS SCANNED
-
-      //2. find timesheet info
+      const userId = formData.get("userId") as string | null;
+      if (userId === null) {
+        throw new Error("userId is required");
+      }
 
       const timeSheet = await tx.timeSheet.findFirst({
-        where: { endTime: null },
+        where: {
+          userId: userId,
+          endTime: null,
+        },
         select: { id: true, workType: true },
       });
 
@@ -349,7 +353,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       // Maintenance fields
       const equipmentIssue = formData.get("equipmentIssue") as string;
       const additionalInfo = formData.get("additionalInfo") as string;
-      const maintenanceId = formData.get("maintenanceId") as string | null;
+      let maintenanceId = formData.get("maintenanceId") as string | null;
 
       // Refuel log fields - handle null values with special "__NULL__" marker
       const disconnectRefuelLog =
@@ -392,32 +396,13 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       }
       // If no refuel log data provided, don't include any RefuelLogs updates
 
-      // Update the employee equipment log
-      const log = await prisma.employeeEquipmentLog.update({
-        where: { id },
-        data: {
-          startTime,
-          endTime: endTime ? endTime : new Date().toISOString(),
-          comment,
-          ...(Object.keys(refuelLogsUpdate).length > 0
-            ? { RefuelLog: refuelLogsUpdate } // Changed from RefuelLogs to RefuelLog
-            : {}),
-        },
-      });
-
-      // Update equipment status
-      if (status) {
-        await prisma.equipment.update({
-          where: { id: equipmentId },
-          data: {
-            state: status,
-          },
-        });
-      }
-
-      // Handle maintenance - create, update, or leave as is
+      // --- MAINTENANCE LOGIC ---
+      let createdMaintenanceId: string | null = null;
       if (status === "NEEDS_REPAIR" || status === "MAINTENANCE") {
-        if (equipmentIssue || additionalInfo) {
+        if (
+          (equipmentIssue && equipmentIssue.length > 0) ||
+          (additionalInfo && additionalInfo.length > 0)
+        ) {
           const maintenanceData = {
             equipmentIssue: equipmentIssue || null,
             additionalInfo: additionalInfo || null,
@@ -432,8 +417,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
               data: maintenanceData,
             });
           } else {
-            // Create a new maintenance request
-            await prisma.maintenance.create({
+            // Create a new maintenance request and capture its ID
+            const newMaintenance = await prisma.maintenance.create({
               data: {
                 ...maintenanceData,
                 equipmentId,
@@ -442,8 +427,44 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
                   "Unknown",
               },
             });
+            createdMaintenanceId = newMaintenance.id;
+            maintenanceId = newMaintenance.id;
           }
         }
+      }
+
+      // --- UPDATE EMPLOYEE EQUIPMENT LOG (including maintenanceId if present) ---
+      const log = await prisma.employeeEquipmentLog.update({
+        where: { id },
+        data: {
+          startTime,
+          endTime: endTime ? endTime : new Date().toISOString(),
+          comment,
+          ...(Object.keys(refuelLogsUpdate).length > 0
+            ? { RefuelLog: refuelLogsUpdate }
+            : {}),
+          ...(maintenanceId ? { maintenanceId } : {}),
+        },
+      });
+
+      // Update equipment status
+      if (status) {
+        await prisma.equipment.update({
+          where: { id: equipmentId },
+          data: {
+            state: status,
+          },
+        });
+      }
+
+      // Ensure bidirectional link: update Maintenance with employeeEquipmentLogId (if new maintenance was created)
+      if (createdMaintenanceId) {
+        await prisma.maintenance.update({
+          where: { id: createdMaintenanceId },
+          data: {
+            employeeEquipmentLogId: id,
+          },
+        });
       }
 
       revalidatePath(`/dashboard/equipment/${id}`);
