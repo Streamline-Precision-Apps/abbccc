@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -23,9 +23,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import Spinner from "@/components/(animations)/spinner";
 import { createFormSubmission } from "@/actions/records-forms";
-import { FormIndividualTemplate } from "./hooks/types";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
+import { Fields, FormIndividualTemplate } from "./hooks/types";
 
 interface CreateFormSubmissionModalProps {
   formTemplate: FormIndividualTemplate;
@@ -46,23 +46,44 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     lastName: string;
   } | null>(null);
   const [submittedByTouched, setSubmittedByTouched] = useState(false);
-  const [assets, setAssets] = useState<{ id: string; name: string } | null>(
-    null
+
+  // State for different asset types
+  const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
+  const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
+    []
   );
 
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
+
   const userOptions = users.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
   }));
 
-  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
-
   const clientOptions = clients.map((c) => ({
     value: c.id,
     label: `${c.name}`,
+  }));
+
+  const equipmentOptions = equipment.map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+
+  const jobsiteOptions = jobsites.map((j) => ({
+    value: j.id,
+    label: j.name,
+  }));
+
+  const costCodeOptions = costCodes.map((c) => ({
+    value: c.id,
+    label: c.name,
   }));
 
   useEffect(() => {
@@ -72,6 +93,61 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
       setUsers(employees);
     };
     fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      const res = await fetch("/api/getClientsSummary");
+      const clients = await res.json();
+      setClients(clients);
+    };
+    fetchClients();
+  }, []);
+
+  // Fetch equipment data
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      try {
+        const res = await fetch("/api/getEquipmentSummary");
+        if (!res.ok) throw new Error("Failed to fetch equipment");
+        const data = await res.json();
+        setEquipment(data);
+      } catch (error) {
+        console.error("Error fetching equipment:", error);
+      }
+    };
+    fetchEquipment();
+  }, []);
+
+  // Fetch jobsites data
+  useEffect(() => {
+    const fetchJobsites = async () => {
+      try {
+        const res = await fetch("/api/getJobsiteSummary");
+        if (!res.ok) throw new Error("Failed to fetch jobsites");
+        const data = await res.json();
+
+        setJobsites(data);
+      } catch (error) {
+        console.error("Error fetching jobsites:", error);
+      }
+    };
+    fetchJobsites();
+  }, []);
+
+  // Fetch cost codes data
+  useEffect(() => {
+    const fetchCostCodes = async () => {
+      try {
+        const res = await fetch("/api/getCostCodeSummary");
+        if (!res.ok) throw new Error("Failed to fetch cost codes");
+        const data = await res.json();
+        setCostCodes(data);
+      } catch (error) {
+        console.error("Error fetching cost codes:", error);
+      }
+    };
+    fetchCostCodes();
   }, []);
 
   const handleFieldChange = (fieldId: string, value: any) => {
@@ -86,9 +162,12 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     }
     setLoading(true);
     try {
+      // Process formData to ensure asset data is properly formatted
+      const processedFormData = { ...formData };
+
       const res = await createFormSubmission({
         formTemplateId: formTemplate.id,
-        data: { ...formData },
+        data: processedFormData,
         submittedBy: {
           id: submittedBy.id,
           firstName: submittedBy.firstName,
@@ -143,7 +222,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
         {formTemplate.FormGrouping.map((group) => (
           <div key={group.id} className="mb-4">
             <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-              {group.Fields.map((field: any) => {
+              {group.Fields.map((field: Fields) => {
                 const value = formData[field.id] ?? "";
                 type OptionType = {
                   id: string;
@@ -419,20 +498,47 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                       </div>
                     );
                   case "SEARCH_ASSET":
+                    // Determine which options to use based on the field filter
+                    let assetOptions = clientOptions;
+                    let assetType = "client";
+
+                    if (field.filter) {
+                      switch (field.filter.toUpperCase()) {
+                        case "Equipment":
+                          assetOptions = equipmentOptions;
+                          assetType = "equipment";
+                          break;
+                        case "Jobsites":
+                          assetOptions = jobsiteOptions;
+                          assetType = "jobsite";
+                          break;
+                        case "Cost Codes":
+                          assetOptions = costCodeOptions;
+                          assetType = "costCode";
+                          break;
+                        case "Clients":
+                          assetOptions = clientOptions;
+                          assetType = "client";
+                          break;
+                      }
+                    }
+
                     return (
                       <div key={field.id} className="flex flex-col">
                         <Combobox
                           label={field.label}
-                          options={clientOptions}
-                          value={assets?.id || ""}
+                          options={assetOptions}
+                          value={formData[field.id].id || ""}
                           onChange={(val, option) => {
                             if (option) {
-                              setAssets({
+                              // Store the selected value in formData instead of a separate asset state
+                              handleFieldChange(field.id, {
                                 id: option.value,
                                 name: option.label,
+                                type: assetType,
                               });
                             } else {
-                              setAssets(null);
+                              handleFieldChange(field.id, null);
                             }
                           }}
                         />

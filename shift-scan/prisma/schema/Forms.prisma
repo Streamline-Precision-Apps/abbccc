@@ -26,7 +26,6 @@ model FormField {
   formGroupingId String
   label          String // question or field name
   type           FieldType
-  assetType      AssetType? // used for search asset field type
   required       Boolean           @default(false)
   order          Int
   placeholder    String?
