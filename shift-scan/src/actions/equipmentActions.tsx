@@ -20,7 +20,7 @@ export async function equipmentTagExists(id: string) {
   }
 }
 
-export async function fetchEq(date: string) {
+export async function fetchEq(date: string, employeeId: string) {
   const startOfDay = new Date(date);
   startOfDay.setUTCHours(0, 0, 0, 0);
 
@@ -449,8 +449,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
           startTime,
           endTime: endTime ? endTime : new Date().toISOString(),
           comment,
-          ...(Object.keys(refuelLogsUpdate).length > 0
-            ? { RefuelLog: refuelLogsUpdate }
+          ...(Object.keys(refuelLogUpdate).length > 0
+            ? { RefuelLog: refuelLogUpdate }
             : {}),
           ...(maintenanceId ? { maintenanceId } : {}),
         },
