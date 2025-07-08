@@ -33,12 +33,6 @@ export async function GET() {
       },
     });
 
-    if (!logs || logs.length === 0) {
-      return NextResponse.json(
-        { message: "No logs found for the past 24 hours." },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json(logs);
   } catch (error) {

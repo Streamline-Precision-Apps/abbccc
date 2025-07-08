@@ -36,12 +36,6 @@ export async function GET() {
       },
     });
 
-    if (!equipment || equipment.length === 0) {
-      return NextResponse.json(
-        { message: "No available equipment found." },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json(equipment);
   } catch (error) {

@@ -24,37 +24,55 @@ export async function GET(req: Request) {
       id: true,
       qrId: true,
       isActive: true,
-      status: true,
+      approvalStatus: true,
       name: true,
-      address: true,
-      city: true,
-      state: true,
-      zipCode: true,
-      country: true,
+      Address: true, // This will return the related Address object if you want address info
       description: true,
       comment: true,
+      creationReason: true,
+      createdAt: true,
+      updatedAt: true,
+      archiveDate: true,
+      clientId: true,
+      createdById: true,
+      createdVia: true,
     };
 
-    if (filter === "Temporary") {
-      jobsiteData = await prisma.jobsite.findMany({
-        // TODO: Uncomment this once the database schema includes a "TEMPORARY" status.
-        // where: { status: "TEMPORARY" },
-        select: selectFields,
-      });
-    } else if (filter === "Active") {
-      jobsiteData = await prisma.jobsite.findMany({
-        where: { isActive: true },
-        select: selectFields,
-      });
-    } else if (filter === "Inactive") {
-      jobsiteData = await prisma.jobsite.findMany({
-        where: { isActive: false },
-        select: selectFields,
-      });
-    } else {
-      jobsiteData = await prisma.jobsite.findMany({
-        select: selectFields,
-      });
+    // Defensive: Remove select fields that are not in the model
+    // (Prisma will throw if you select a field that doesn't exist)
+    // You can comment out or remove fields above if not in your schema
+
+    try {
+      if (filter === "Temporary") {
+        jobsiteData = await prisma.jobsite.findMany({
+          where: { approvalStatus: "PENDING" },
+          select: selectFields,
+        });
+      } else if (filter === "Active") {
+        jobsiteData = await prisma.jobsite.findMany({
+          where: { isActive: true },
+          select: selectFields,
+        });
+      } else if (filter === "Inactive") {
+        jobsiteData = await prisma.jobsite.findMany({
+          where: { isActive: false },
+          select: selectFields,
+        });
+      } else {
+        jobsiteData = await prisma.jobsite.findMany({
+          select: selectFields,
+        });
+      }
+    } catch (err) {
+      // If Prisma throws due to a bad select field, log and return a clear error
+      console.error("Prisma error in getAllJobsites:", err);
+      return NextResponse.json(
+        {
+          error:
+            "Invalid select fields in getAllJobsites. Check your Jobsite model and selectFields.",
+        },
+        { status: 500 }
+      );
     }
 
     if (!jobsiteData || jobsiteData.length === 0) {
