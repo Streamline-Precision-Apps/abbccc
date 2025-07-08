@@ -636,8 +636,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
             create: {
               shiftType,
               laborType: laborType,
-              ...(equipmentExists && equipmentData && {
-                Equipment: { connect: { id: equipmentData.id } },
+              ...(equipmentId && {
+                Equipment: { connect: { id: equipmentId } },
               }),
               ...(materialType && {
                 TascoMaterialTypes: { connect: { name: materialType } },
