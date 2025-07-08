@@ -1,13 +1,15 @@
 "use client";
-
+import "@/app/globals.css";
+import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
+export default function LeftSidebar() {
   const pathname = usePathname();
+  const { open: isOpen } = useSidebar();
 
   const Page = [
-    { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
+    // { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
     {
       id: 2,
       title: "Personnel",
@@ -41,11 +43,11 @@ export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
 
   return (
     <div
-      className={`h-full w-[200px] p-3 bg-white bg-opacity-20 shrink-0 ${
+      className={`h-full w-[250px] bg-opacity-40  p-3  shrink-0 ${
         isOpen ? "block" : "hidden"
       }`}
     >
-      <div className="flex items-center justify-center bg-white rounded-lg p-1">
+      <div className="flex items-center justify-center bg-white  rounded-lg p-1">
         <img src="/logo.svg" alt="logo" className="w-24 h-auto" />
       </div>
       <div className="mt-4">
@@ -61,15 +63,13 @@ export default function LeftSidebar({ isOpen }: { isOpen: boolean }) {
             >
               <Link href={item.link} className="w-full">
                 <div
-                  className={`flex items-center gap-2 p-1 rounded-lg transition-colors `}
+                  className={`flex flex-row items-center gap-2 p-1 rounded-lg transition-colors `}
                 >
-                  <div className="bg-white  rounded-lg p-1">
-                    <img
-                      src={`/${item.img}.svg`}
-                      alt={item.title}
-                      className="w-4 h-4"
-                    />
-                  </div>
+                  <img
+                    src={`/${item.img}.svg`}
+                    alt={item.title}
+                    className="w-4 h-4"
+                  />
                   <p className="text-xs ">{item.title}</p>
                 </div>
               </Link>

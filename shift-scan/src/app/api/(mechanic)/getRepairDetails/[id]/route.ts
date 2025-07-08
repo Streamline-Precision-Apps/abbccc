@@ -1,7 +1,7 @@
-"use server";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export async function GET(
   req: Request,
@@ -48,9 +48,10 @@ export async function GET(
 
     return NextResponse.json(projects);
   } catch (error) {
-    console.error("Error fetching maintenance project details:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching maintenance project details:', error);
 
-    let errorMessage = "Failed to fetch maintenance project details";
+    let errorMessage = 'Failed to fetch maintenance project details';
     if (error instanceof Error) {
       errorMessage = error.message;
     }

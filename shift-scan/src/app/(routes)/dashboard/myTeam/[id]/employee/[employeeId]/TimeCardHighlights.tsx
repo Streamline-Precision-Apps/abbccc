@@ -54,14 +54,18 @@ export default function TimeCardHighlights({
   const getDisplayValue = (
     id: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(id, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
   };
 
   // Update local state without triggering parent update (and thus avoiding re-render)
-  const handleLocalChange = (id: string, fieldName: string, value: any) => {
+  const handleLocalChange = (
+    id: string,
+    fieldName: string,
+    value: string | number | null
+  ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(id, fieldName)]: value,
@@ -156,19 +160,30 @@ export default function TimeCardHighlights({
     },
     [date, onDataChange, highlightTimesheet]
   );
-
   const handleJobsiteChange = useCallback(
     (id: string, jobsiteId: string, jobsiteName?: string) => {
+      // Use the provided jobsiteId directly - it comes from the selector
+      // and should be the database ID (primary key), not the qrId
       const updatedData = highlightTimesheet.map((item) => {
         if (item.id === id) {
           return {
             ...item,
-            jobsiteId,
+            jobsiteId, // Use the database ID
             Jobsite: { ...(item.Jobsite || {}), name: jobsiteName || "" },
           };
         }
         return item;
       });
+
+      // Comprehensive logging for debugging
+      console.log(
+        `Updating timesheet ${id} with jobsiteId: ${jobsiteId}, name: ${jobsiteName}`
+      );
+      console.log(
+        "Updated data sample:",
+        updatedData.find((item) => item.id === id)
+      );
+
       onDataChange(updatedData);
     },
     [highlightTimesheet, onDataChange]
@@ -193,6 +208,9 @@ export default function TimeCardHighlights({
     (date: Date | string | null | undefined): string => {
       if (!date) return "";
 
+      // Handle special string cases that aren't dates
+      if (date === "N/A") return "";
+
       try {
         // Safely handle the date value
         let dateObj: Date;
@@ -200,6 +218,10 @@ export default function TimeCardHighlights({
         if (date instanceof Date) {
           dateObj = date;
         } else if (typeof date === "string") {
+          // Skip processing if the string is not a valid date format
+          if (/^[a-zA-Z\/]+$/.test(date)) {
+            return "";
+          }
           dateObj = new Date(date);
         } else {
           return "";
@@ -207,7 +229,10 @@ export default function TimeCardHighlights({
 
         // Validate the date is valid before attempting to format
         if (isNaN(dateObj.getTime())) {
-          console.warn("Invalid date value:", date);
+          // Only log warnings for values that should be dates but aren't
+          if (date !== "N/A" && date !== "") {
+            console.warn("Invalid date value:", date);
+          }
           return "";
         }
 
@@ -223,11 +248,14 @@ export default function TimeCardHighlights({
       }
     },
     []
-  );
-  // Helper to format time for display in local timezone (HH:mm)
+  ); // Helper to format time for display in local timezone (HH:mm)
   const formatTimeLocal = useCallback(
     (date: Date | string | null | undefined): string => {
       if (!date) return "";
+
+      // Handle special string cases that aren't dates
+      if (date === "N/A") return "";
+
       try {
         // Safely handle the date value
         let dateObj: Date;
@@ -235,6 +263,10 @@ export default function TimeCardHighlights({
         if (date instanceof Date) {
           dateObj = date;
         } else if (typeof date === "string") {
+          // Skip processing if the string is not a valid date format
+          if (/^[a-zA-Z\/]+$/.test(date)) {
+            return "";
+          }
           dateObj = new Date(date);
         } else {
           return "";
@@ -242,7 +274,10 @@ export default function TimeCardHighlights({
 
         // Check if date is valid before formatting
         if (isNaN(dateObj.getTime())) {
-          console.warn("Invalid date value for local formatting:", date);
+          // Only log warnings for values that should be dates but aren't
+          if (date !== "N/A" && date !== "") {
+            console.warn("Invalid date value for local formatting:", date);
+          }
           return "";
         }
 
@@ -269,70 +304,64 @@ export default function TimeCardHighlights({
     setCurrentEditingId(id);
     setCostCodeModalOpen(true);
   };
-
   const handleJobsiteSelect = (
-    jobsite: { code: string; label: string } | null
+    jobsite: { id: string; code: string; label: string } | null
   ) => {
     if (currentEditingId && jobsite) {
-      handleJobsiteChange(currentEditingId, jobsite.code, jobsite.label);
+      // Use the actual id (database primary key) instead of code (qrId)
+      console.log(
+        `JobsiteSelector returned id: ${jobsite.id}, code (qrId): ${jobsite.code}, label: ${jobsite.label}`
+      );
+
+      // Pass the database ID instead of the qrId (code)
+      handleJobsiteChange(currentEditingId, jobsite.id, jobsite.label);
     }
     setJobsiteModalOpen(false);
   };
-
   const handleCostCodeSelect = (
-    costcode: { code: string; label: string } | null
+    costcode: { id: string; code: string; label: string } | null
   ) => {
     if (currentEditingId && costcode) {
+      // For cost codes, continue using the code property as before
       handleCostCodeChange(currentEditingId, costcode.code);
     }
     setCostCodeModalOpen(false);
   };
-
   // Add debugging function to log date values
-  const debugLogDate = useCallback((context: string, dateValue: any) => {
-    if (!dateValue) {
-      console.log(`${context}: undefined or null`);
-      return;
-    }
-
-    try {
-      if (dateValue instanceof Date) {
-        console.log(
-          `${context}: Date object - ${dateValue.toISOString()} - Valid: ${!isNaN(
-            dateValue.getTime()
-          )}`
-        );
-      } else if (typeof dateValue === "string") {
-        const parsed = new Date(dateValue);
-        console.log(
-          `${context}: String - ${dateValue} - Parsed to: ${parsed.toISOString()} - Valid: ${!isNaN(
-            parsed.getTime()
-          )}`
-        );
-      } else {
-        console.log(
-          `${context}: Unknown type - ${typeof dateValue} - ${String(
-            dateValue
-          )}`
-        );
+  const debugLogDate = useCallback(
+    (context: string, dateValue: Date | string | number | null | undefined) => {
+      if (!dateValue) {
+        console.log(`${context}: undefined or null`);
+        return;
       }
-    } catch (error) {
-      console.error(`${context}: Error logging date:`, error);
-    }
-  }, []);
 
-  // Debug log when component renders with new timesheet data
-  useEffect(() => {
-    console.log(
-      `TimeCardHighlights rendered with ${highlightTimesheet.length} items`
-    );
-
-    if (highlightTimesheet.length > 0) {
-      const sample = highlightTimesheet[0];
-      debugLogDate("First timesheet startTime", sample.startTime);
-      debugLogDate("First timesheet endTime", sample.endTime);
-    }
-  }, [highlightTimesheet, debugLogDate]);
+      try {
+        if (dateValue instanceof Date) {
+          console.log(
+            `${context}: Date object - ${dateValue.toISOString()} - Valid: ${!isNaN(
+              dateValue.getTime()
+            )}`
+          );
+        } else if (typeof dateValue === "string") {
+          const parsed = new Date(dateValue);
+          console.log(
+            `${context}: String - ${dateValue} - Parsed to: ${parsed.toISOString()} - Valid: ${!isNaN(
+              parsed.getTime()
+            )}`
+          );
+        } else {
+          console.log(
+            `${context}: Unknown type - ${typeof dateValue} - ${String(
+              dateValue
+            )}`
+          );
+        }
+      } catch (error) {
+        console.error(`${context}: Error logging date:`, error);
+      }
+    },
+    []
+  );
 
   return (
     <Holds className="w-full h-full">
@@ -360,7 +389,15 @@ export default function TimeCardHighlights({
                 </Holds>{" "}
               </Grids>{" "}
               {highlightTimesheet
-                .filter((sheet) => sheet.endTime) // Additional filter to ensure we only show complete timesheets
+                .filter((sheet) => {
+                  // Only show if endTime is a valid Date
+                  if (!sheet.endTime) return false;
+                  const dateObj =
+                    sheet.endTime instanceof Date
+                      ? sheet.endTime
+                      : new Date(sheet.endTime);
+                  return !isNaN(dateObj.getTime());
+                })
                 .map((sheet) => {
                   // Ensure focusIds exists and is an array before using includes
                   const isFocused =
@@ -417,7 +454,7 @@ export default function TimeCardHighlights({
                           // Completely remove this onClick as it might interfere// Prevent button from capturing clicks in review mode
                         >
                           {sheet.startTime && sheet.endTime ? (
-                            <Grids cols={"7"} className="w-full h-full">
+                            <Grids cols={"8"} className="w-full h-full">
                               <Holds className="col-start-1 col-end-2 p-2">
                                 <Images
                                   titleImg={
@@ -435,12 +472,13 @@ export default function TimeCardHighlights({
                                   className="m-auto w-8 h-8"
                                 />
                               </Holds>
-                              <Holds className="col-start-2 col-end-4 border-x-[3px] border-black h-full">
+                              <Holds className="col-start-2 col-end-5 border-x-[3px] border-black h-full">
+                                {" "}
                                 <Holds className="h-full justify-center border-b-[1.5px] border-black">
                                   {" "}
                                   <Inputs
-                                    type="text"
-                                    value={formatTimeLocal(sheet.startTime)}
+                                    type="time"
+                                    value={formatTimeForInput(sheet.startTime)}
                                     onChange={(e) =>
                                       handleLocalChange(
                                         sheet.id,
@@ -459,12 +497,12 @@ export default function TimeCardHighlights({
                                     background={isFocused ? "orange" : "white"}
                                     disabled={!edit}
                                   />
-                                </Holds>
+                                </Holds>{" "}
                                 <Holds className="h-full w-full justify-center border-t-[1.5px] border-black">
                                   {" "}
                                   <Inputs
-                                    type="text"
-                                    value={formatTimeLocal(sheet.endTime)}
+                                    type="time"
+                                    value={formatTimeForInput(sheet.endTime)}
                                     onChange={(e) =>
                                       handleLocalChange(
                                         sheet.id,
@@ -485,7 +523,7 @@ export default function TimeCardHighlights({
                                   />
                                 </Holds>
                               </Holds>
-                              <Holds className="col-start-4 col-end-8 h-full">
+                              <Holds className="col-start-5 col-end-9 h-full">
                                 <Holds className="border-b-[1.5px] border-black h-full justify-center">
                                   {" "}
                                   <Inputs
@@ -543,17 +581,20 @@ export default function TimeCardHighlights({
               currentEditingId
                 ? {
                     id:
-                      editedHighlightTimesheet.find(
-                        (item) => item.id === currentEditingId
+                      highlightTimesheet.find(
+                        (item: TimesheetHighlights) =>
+                          item.id === currentEditingId
                       )?.id || "",
 
                     code:
                       highlightTimesheet.find(
-                        (item) => item.id === currentEditingId
+                        (item: TimesheetHighlights) =>
+                          item.id === currentEditingId
                       )?.jobsiteId || "",
                     label:
                       highlightTimesheet.find(
-                        (item) => item.id === currentEditingId
+                        (item: TimesheetHighlights) =>
+                          item.id === currentEditingId
                       )?.Jobsite?.name || "",
                   }
                 : undefined
@@ -575,16 +616,19 @@ export default function TimeCardHighlights({
               currentEditingId
                 ? {
                     id:
-                      editedHighlightTimesheet.find(
-                        (item) => item.id === currentEditingId
+                      highlightTimesheet.find(
+                        (item: TimesheetHighlights) =>
+                          item.id === currentEditingId
                       )?.id || "",
                     code:
                       highlightTimesheet.find(
-                        (item) => item.id === currentEditingId
+                        (item: TimesheetHighlights) =>
+                          item.id === currentEditingId
                       )?.costcode || "",
                     label:
                       highlightTimesheet.find(
-                        (item) => item.id === currentEditingId
+                        (item: TimesheetHighlights) =>
+                          item.id === currentEditingId
                       )?.costcode || "",
                   }
                 : undefined

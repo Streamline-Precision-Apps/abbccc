@@ -3,7 +3,7 @@ import {
   Permission,
   WorkType,
   FormStatus,
-  EquipmentStatus,
+  EquipmentState,
   EquipmentTags,
   Priority,
 } from "../lib/enums";
@@ -187,6 +187,7 @@ export type TimeSheets = {
   duration: number | null;
 };
 
+
 export type EquipmentLog = {
   id: string;
   employeeId: string;
@@ -198,7 +199,7 @@ export type EquipmentLog = {
 export type EquipmentFetchEQ = {
   Equipment: {
     id: string;
-    status: EquipmentStatus;
+    status: EquipmentState;
     name: string;
     createdAt: Date;
     updatedAt: Date;
@@ -296,7 +297,6 @@ export type EquipmentHauledItem = {
     name: string;
   };
   JobSite: {
-    // Changed from JobSiteHauledName to JobSite
     id: string;
     name: string;
   };
@@ -901,7 +901,8 @@ export type TimesheetFilter =
   | "tascoHaulLogs"
   | "tascoRefuelLogs"
   | "equipmentLogs"
-  | "equipmentRefuelLogs";
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
 
 // Helper: Flatten EquipmentLogsData to array of { id, startTime, endTime }
 export function flattenEquipmentLogs(

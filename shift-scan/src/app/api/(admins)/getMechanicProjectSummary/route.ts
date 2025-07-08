@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from '@sentry/nextjs';
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -34,6 +35,7 @@ export async function GET() {
 
     return NextResponse.json(maintenanceSummary);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching maintenance summary:", error);
     const errorMessage =
       error instanceof Error

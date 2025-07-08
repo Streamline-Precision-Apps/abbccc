@@ -388,3 +388,5 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 12/17/2024
 
 - Worked with Devun on Database reconfiguration.
+
+

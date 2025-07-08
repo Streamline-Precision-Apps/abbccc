@@ -18,50 +18,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
-
-interface FieldOption {
-  id: string;
-  fieldId: string;
-  value: string;
-}
-
-interface Field {
-  label: string;
-  name: string;
-  type: string;
-  required: boolean;
-  order: number;
-  defaultValue?: string | null;
-  placeholder?: string | null;
-  maxLength?: number | null;
-  helperText?: string | null;
-  Options?: FieldOption[];
-}
-
-interface Grouping {
-  id: string;
-  title: string;
-  order: number;
-  Fields: Field[];
-}
-
-interface Submission {
-  id: string;
-  title: string;
-  formTemplateId: string;
-  userId: string;
-  formType: string;
-  data: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
-  submittedAt: string;
-  status: string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-}
+import { Grouping, Submission } from "./hooks/types";
 
 interface SubmissionTableProps {
   groupings: Grouping[];
@@ -71,6 +28,9 @@ interface SubmissionTableProps {
   setPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
   pageSize: number;
+  setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
+  setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
+  onDeleteSubmission: (id: string) => void;
 }
 
 /**
@@ -84,6 +44,9 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
   setPage,
   setPageSize,
   pageSize,
+  setShowFormSubmission,
+  setSelectedSubmissionId,
+  onDeleteSubmission,
 }) => {
   // Flatten all fields from all groupings, ordered
   const fields = groupings
@@ -91,7 +54,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
     .sort((a, b) => a.order - b.order);
 
   return (
-    <ScrollArea className="bg-slate-50 w-full rounded-lg h-full relative">
+    <ScrollArea className="bg-slate-50 w-full rounded-lg h-[85vh] relative">
       <Table className="bg-slate-50 w-full h-full">
         <TableHeader className="rounded-t-md">
           <TableRow>
@@ -99,7 +62,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
               Submitted By
             </TableHead>
             {fields.map((field) => (
-              <TableHead key={field.name} className="text-xs">
+              <TableHead key={field.label} className="text-xs">
                 {field.label}
               </TableHead>
             ))}
@@ -119,11 +82,50 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     <TableCell className="text-xs">
                       {submission.User.firstName} {submission.User.lastName}
                     </TableCell>
-                    {fields.map((field) => (
-                      <TableCell key={field.name} className="text-xs">
-                        {submission.data[field.name] ?? ""}
-                      </TableCell>
-                    ))}
+                    {fields.map((field) => {
+                      const val = submission.data[field.id];
+                      let display = val;
+                      // If the field is a date or time, format it
+                      if (
+                        val &&
+                        (field.type === "DATE" || field.type === "TIME")
+                      ) {
+                        try {
+                          display = format(new Date(val), "P");
+                        } catch {
+                          display = val;
+                        }
+                      }
+                      // If the value is an array (e.g., MULTISELECT), join with commas
+                      // If the value is an array (e.g., MULTISELECT or multiple selection), process it
+                      if (Array.isArray(val)) {
+                        // Check if it's an array of objects (like from SEARCH_ASSET or SEARCH_PERSON with multiple=true)
+                        if (
+                          val.length > 0 &&
+                          typeof val[0] === "object" &&
+                          val[0] !== null
+                        ) {
+                          // Extract the name property from each object in the array
+                          display = val
+                            .map((item: any) => item?.name || "")
+                            .filter(Boolean)
+                            .join(", ");
+                        } else {
+                          display = val.join(", ");
+                        }
+                      }
+                      // If the value is an object (like from SEARCH_ASSET or SEARCH_PERSON)
+                      else if (val && typeof val === "object" && val !== null) {
+                        // Display the name property of the object
+                        display = val.name || "";
+                      }
+
+                      return (
+                        <TableCell key={field.id} className="text-xs">
+                          {display ?? ""}
+                        </TableCell>
+                      );
+                    })}
                     <TableCell className="text-xs">
                       {submission.status}
                     </TableCell>
@@ -136,22 +138,8 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                           variant="ghost"
                           size={"icon"}
                           onClick={() => {
-                            // Handle export form action
-                            console.log("Export Form:", submission.id);
-                          }}
-                        >
-                          <img
-                            src="/export.svg"
-                            alt="Export Form"
-                            className="h-4 w-4 cursor-pointer"
-                          />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size={"icon"}
-                          onClick={() => {
-                            // Handle edit form action
-                            console.log("Edit Form:", submission.id);
+                            setShowFormSubmission(true);
+                            setSelectedSubmissionId(submission.id);
                           }}
                         >
                           <img
@@ -164,8 +152,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                           variant="ghost"
                           size={"icon"}
                           onClick={() => {
-                            // Handle delete form action
-                            console.log("Delete Form:", submission.id);
+                            onDeleteSubmission(submission.id);
                           }}
                         >
                           <img

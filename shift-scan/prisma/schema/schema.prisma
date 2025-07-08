@@ -64,11 +64,6 @@ enum EquipmentState {
   RETIRED
 }
 
-// used to track status process
-//* IN_PROGRESS: The process is currently ongoing.
-//* PENDING: The process is waiting for approval or action.
-//* APPROVED: The process has been approved.
-//* REJECTED: The process has been rejected or denied.
 enum ApprovalStatus {
   DRAFT
   PENDING
@@ -77,24 +72,18 @@ enum ApprovalStatus {
 }
 
 enum ReportStatus {
-  PENDING // Report is queued but not yet processed
-  RUNNING // Report is currently being generated
-  COMPLETED // Report has finished successfully
-  FAILED // Report encountered an error
-  CANCELED // Report was manually canceled
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELED
 }
 
 enum ReportVisibility {
-  PRIVATE // Only the creator can view the report
-  MANAGEMENT // All users with manager role can access
-  COMPANY // Visible to all company users
+  PRIVATE
+  MANAGEMENT
+  COMPANY
 }
-
-// used to track status process similar to ApprovalStatus but for forms
-//* DRAFT: The form is being created and not yet submitted.
-//* PENDING: The form has been submitted and is awaiting review.
-//* APPROVED: The form has been reviewed and approved.
-//* DENIED: The form has been reviewed and denied.
 
 enum FormStatus {
   DRAFT
@@ -103,18 +92,42 @@ enum FormStatus {
   DENIED
 }
 
+enum FormTemplateStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
 enum FieldType {
-  HEADER
-  PARAGRAPH
   TEXT
   TEXTAREA
   NUMBER
   DATE
-  FILE
+  DATE_TIME
+  TIME
   DROPDOWN
   CHECKBOX
+  HEADER
+  PARAGRAPH
   MULTISELECT
   RADIO
   SEARCH_PERSON
   SEARCH_ASSET
+}
+
+enum AssetType {
+  EQUIPMENT
+  JOBSITES
+  COST_CODES
+  CLIENTS
+}
+
+enum FormTemplateCategory {
+  GENERAL
+  MAINTENANCE
+  SAFETY
+  INSPECTION
+  INCIDENT
+  FINANCE
+  OTHER
 }

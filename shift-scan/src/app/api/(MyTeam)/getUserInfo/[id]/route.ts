@@ -1,7 +1,7 @@
-"use server";
-import { NextResponse, NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { NextResponse, NextRequest } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 type Params = { id: string };
 
@@ -71,9 +71,10 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       },
     });
   } catch (error) {
-    console.error("Error fetching employee data:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching employee data:', error);
 
-    let errorMessage = "Failed to fetch employee data";
+    let errorMessage = 'Failed to fetch employee data';
     if (error instanceof Error) {
       errorMessage = error.message;
     }

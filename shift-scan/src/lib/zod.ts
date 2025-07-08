@@ -1,24 +1,47 @@
-import { object, string, z } from "zod";
 
+import { object, string, z } from 'zod';
+import { reportError } from './sentryErrorHandler';
+
+/**
+ * Zod schema for sign-in validation.
+ */
 export const signInSchema = object({
-  username: string({ required_error: "username is required" }).min(
+  username: string({ required_error: 'username is required' }).min(
     1,
-    "Username is required"
+    'Username is required'
   ),
-  password: string({ required_error: "Password is required" })
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
+  password: string({ required_error: 'Password is required' })
+    .min(1, 'Password is required')
+    .min(8, 'Password must be more than 8 characters')
+    .max(32, 'Password must be less than 32 characters'),
 });
 
+/**
+ * Zod schema for timesheet validation.
+ * Wraps refinements in try/catch to report errors to Sentry.
+ */
 export const TimesheetSchema = z.object({
-  submitDate: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-    message: "Invalid date format",
+  submitDate: z.string().refine((date) => {
+    try {
+      return !isNaN(new Date(date).getTime());
+    } catch (error) {
+      reportError(error, { location: 'zod/TimesheetSchema/submitDate', date });
+      return false;
+    }
+  }, {
+    message: 'Invalid date format',
   }),
   id: z.string(),
   userId: z.string(),
-  date: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-    message: "Invalid date format",
+  date: z.string().refine((date) => {
+    try {
+      return !isNaN(new Date(date).getTime());
+    } catch (error) {
+      reportError(error, { location: 'zod/TimesheetSchema/date', date });
+      return false;
+    }
+  }, {
+    message: 'Invalid date format',
   }),
   jobsiteId: z.string(),
   costcode: z.string(),

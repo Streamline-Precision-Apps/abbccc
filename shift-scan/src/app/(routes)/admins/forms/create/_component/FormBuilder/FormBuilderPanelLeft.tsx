@@ -26,160 +26,6 @@ export function FormBuilderPanelLeft({
     value: string | boolean
   ) => void;
 }) {
-  // Render field preview
-  const renderFieldPreview = (field: FormField) => {
-    const baseProps = {
-      placeholder: field.placeholder,
-      className: "w-full bg-white rounded-lg text-xs",
-      disabled: true,
-    };
-
-    switch (field.type) {
-      case "text":
-        return <Input {...baseProps} />;
-      case "number":
-        return <Input {...baseProps} type="number" />;
-      case "date":
-        return <Input {...baseProps} type="date" />;
-      case "time":
-        return <Input {...baseProps} type="time" />;
-      case "text_area":
-        return <Textarea {...baseProps} rows={3} />;
-
-      case "dropdown":
-        return (
-          <Select disabled>
-            <SelectTrigger className="w-full bg-white rounded-lg text-xs">
-              <SelectValue placeholder="Select an option" />
-            </SelectTrigger>
-          </Select>
-        );
-      case "rating":
-        return (
-          <div className="flex space-x-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <img key={star} src="/star.svg" alt="star" className="w-4 h-4" />
-            ))}
-          </div>
-        );
-      case "radio":
-        return (
-          <div className="flex flex-col space-y-2">
-            {(field.options || ["Option 1", "Option 2"]).map(
-              (option, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    disabled
-                    className="rounded-full"
-                    name={`radio-${field.id}`}
-                  />
-                  <span className="text-xs">{option}</span>
-                </div>
-              )
-            )}
-          </div>
-        );
-      case "Worker":
-        return (
-          <div className="flex items-center bg-white rounded-lg border px-2 py-1">
-            <img
-              src="/searchLeft.svg"
-              alt="search"
-              className="w-4 h-4 mr-2 opacity-60"
-            />
-            <Input
-              type="text"
-              className="w-full bg-transparent text-xs outline-none border-none"
-              disabled
-            />
-          </div>
-        );
-      case "Asset":
-        return (
-          <div className="flex items-center bg-white rounded-lg border px-2 py-1">
-            <img
-              src="/searchLeft.svg"
-              alt="search"
-              className="w-4 h-4 mr-2 opacity-60"
-            />
-            <div className="flex-col w-full">
-              <Input
-                type="text"
-                className="w-full bg-transparent text-xs outline-none border-none"
-                placeholder="Search for an asset..."
-                disabled
-              />
-            </div>
-          </div>
-        );
-      case "header":
-        return (
-          <h2
-            className={`text-${
-              field.headerSize === "H1"
-                ? "2xl"
-                : field.headerSize === "H2"
-                ? "xl"
-                : field.headerSize === "H3"
-                ? "lg"
-                : field.headerSize === "H4"
-                ? "md"
-                : field.headerSize === "H5"
-                ? "sm"
-                : "xs"
-            }  ${
-              field.content === ""
-                ? "text-gray-400 font-bold"
-                : "text-gray-800 font-bold"
-            }`}
-          >
-            {field.content || "Enter Header Text"}
-          </h2>
-        );
-      case "paragraph":
-        return (
-          <p
-            className={`text-${
-              field.headerSize === "P1"
-                ? "2xl"
-                : field.headerSize === "P2"
-                ? "xl"
-                : field.headerSize === "P3"
-                ? "lg"
-                : field.headerSize === "P4"
-                ? "md"
-                : field.headerSize === "P5"
-                ? "sm"
-                : "xs"
-            }  ${field.content === "" ? "text-gray-400" : "text-gray-800"}`}
-          >
-            {field.content || "Enter Header Text"}
-          </p>
-        );
-      case "multiselect":
-        return (
-          <>
-            {field.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  className="rounded"
-                  name={`checkbox-${field.id}`}
-                  value={option}
-                  checked={false}
-                  disabled
-                />
-                <span className="text-xs">{option}</span>
-              </div>
-            ))}
-          </>
-        );
-      default:
-        return <Input {...baseProps} />;
-    }
-  };
-
   return (
     <ScrollArea className="w-full h-full bg-white bg-opacity-40 rounded-tl-lg rounded-bl-lg  relative">
       <Tabs defaultValue="settings" className="w-full h-full p-4 ">
@@ -199,8 +45,8 @@ export function FormBuilderPanelLeft({
         </TabsList>
         <TabsContent value="settings">
           <div className="flex flex-col mt-4">
-            <Label htmlFor="name" className="text-xs ">
-              Form Name
+            <Label htmlFor="name" className="text-xs">
+              Form Name <span className="text-red-500">*</span>
             </Label>
             <Input
               type="text"
@@ -209,10 +55,13 @@ export function FormBuilderPanelLeft({
               value={formSettings.name}
               onChange={(e) => updateFormSettings("name", e.target.value)}
               placeholder="Enter Form Name"
-              className="mb-4 bg-white rounded-lg text-xs"
+              className="bg-white rounded-lg text-xs"
             />
+            {!formSettings.name.trim() && (
+              <span className="mt-1 text-xs text-red-500">Required</span>
+            )}
           </div>
-          <div className=" w-full mb-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="description" className="text-xs">
               Description
             </Label>
@@ -228,47 +77,55 @@ export function FormBuilderPanelLeft({
               className="bg-white rounded-lg text-xs "
             />
           </div>
-          <div className=" w-full mb-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="category" className="text-xs">
-              Category
+              Category <span className="text-red-500">*</span>
             </Label>
             <Select
               name="category"
-              value={formSettings.category}
-              onValueChange={(value) => updateFormSettings("category", value)}
+              value={formSettings.formType}
+              onValueChange={(value) => updateFormSettings("formType", value)}
             >
               <SelectTrigger className="w-full bg-white rounded-lg text-xs">
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="safety">Safety</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-                <SelectItem value="inspection">Inspection</SelectItem>
-                <SelectItem value="incident">Incident Report</SelectItem>
-                <SelectItem value="general">General</SelectItem>
+                <SelectItem value="SAFETY">Safety</SelectItem>
+                <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                <SelectItem value="INSPECTION">Inspection</SelectItem>
+                <SelectItem value="INCIDENT">Incident Report</SelectItem>
+                <SelectItem value="GENERAL">General</SelectItem>
+                <SelectItem value="FINANCE">Finance</SelectItem>
+                <SelectItem value="OTHER">Other</SelectItem>
               </SelectContent>
             </Select>
+            {!formSettings.formType && (
+              <span className="mt-1 text-xs text-red-500">Required</span>
+            )}
           </div>
-          <div className=" w-full mb-6">
+          <div className=" w-full mt-4">
             <Label htmlFor="status" className="text-xs">
-              Status
+              Status <span className="text-red-500">*</span>
             </Label>
             <Select
               name="status"
-              value={formSettings.status}
-              onValueChange={(value) => updateFormSettings("status", value)}
+              value={formSettings.isActive}
+              onValueChange={(value) => updateFormSettings("isActive", value)}
             >
               <SelectTrigger className="w-full bg-white rounded-lg text-xs">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="ARCHIVED">Archived</SelectItem>
+                <SelectItem value="DRAFT">Draft</SelectItem>
               </SelectContent>
             </Select>
+            {!formSettings.isActive && (
+              <span className="mt-1 text-xs text-red-500">Required</span>
+            )}
           </div>
-          <div className="w-full flex flex-row justify-between items-center ">
+          <div className="mt-4 w-full flex flex-row justify-between items-center ">
             <Label htmlFor="airplane-mode" className="text-xs">
               Require Signature
             </Label>
@@ -312,14 +169,14 @@ export function FormBuilderPanelLeft({
               {formFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="flex flex-row  items-center gap-2 rounded-lg"
+                  className="flex flex-row items-center gap-2 rounded-lg"
                 >
                   <p className="text-xs font-semibold">{index + 1}.</p>
 
                   <Button
                     size={"icon"}
                     variant="default"
-                    className={`w-8 h-6 ${(() => {
+                    className={`w-8 h-auto p-1 justify-start ${(() => {
                       const typeDef = fieldTypes.find(
                         (t) => t.name === field.type
                       );
@@ -349,7 +206,7 @@ export function FormBuilderPanelLeft({
                   {field.type === "dropdown" ||
                     (field.type === "multiselect" && (
                       <p className="w-fit text-xs text-gray-500">
-                        {`${field.options?.length || 0} options`}
+                        {`${field.Options?.length || 0}`}
                       </p>
                     ))}
                   {field.required && (

@@ -1,7 +1,7 @@
-"use server";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 /**
  * Get equipment details by QR code ID
@@ -66,9 +66,10 @@ export async function GET(
 
     return NextResponse.json(equipment);
   } catch (error) {
-    console.error("Error fetching equipment data:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching equipment data:', error);
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to fetch equipment data";
+      error instanceof Error ? error.message : 'Failed to fetch equipment data';
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -29,19 +29,49 @@ export async function GET(request: Request, { params }: { params: Params }) {
     const usersLog = await prisma.employeeEquipmentLog.findFirst({
       where: {
         id: formId,
-        TimeSheet: {
-          userId: userId,
-        },
       },
-      include: {
-        Equipment: true,
-        RefuelLog: true,
+      select: {
+        id: true,
+        equipmentId: true,
+        startTime: true,
+        endTime: true,
+        comment: true,
+        Equipment: {
+          select: {
+            id: true,
+            name: true,
+            state: true,
+            equipmentTag: true,
+            equipmentVehicleInfo: {
+              select: {
+                make: true,
+                model: true,
+                year: true,
+                licensePlate: true,
+                mileage: true,
+              },
+            },
+          },
+        },
+        RefuelLog: {
+          select: {
+            id: true,
+            gallonsRefueled: true,
+          },
+        },
+        Maintenance: {
+          select: {
+            id: true,
+            equipmentIssue: true,
+            additionalInfo: true,
+          },
+        },
       },
     });
 
     if (!usersLog) {
       return NextResponse.json(
-        { message: "No log found for this user and form ID." },
+        { error: "No log found for the given ID" },
         { status: 404 }
       );
     }

@@ -80,9 +80,9 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Use startTime and endTime as ISO strings (or null)
     const timesheetData: any = {
       date: data.form.date.toISOString(),
-      userId: data.form.user.id,
-      jobsiteId: data.form.jobsite.id,
-      costcode: data.form.costcode.name, // costcode is referenced by name in schema
+      User: { connect: { id: data.form.user.id } },
+      Jobsite: { connect: { id: data.form.jobsite.id } },
+      CostCode: { connect: { name: data.form.costcode.name } },
       workType: data.form.workType as WorkType,
       createdByAdmin: true,
       status: "APPROVED" as ApprovalStatus, // Default status, can be updated later

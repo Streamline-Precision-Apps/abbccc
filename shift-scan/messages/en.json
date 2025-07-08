@@ -267,7 +267,9 @@
     "IsActive": "Is Site Active?",
     "Temporary": "Temporary",
     "NameExample": "Enter a name for the site",
-    "Address": "Address",
+    "Address": "New Address",
+    "NewAddress": "New Address?",
+    "ClientName": "Client Name",
     "AddressInformation": "Enter Street address here...",
     "ZipCode": "Enter zip code...",
     "StateTitle": "ID",
@@ -372,6 +374,7 @@
     "EQTotalTime": "Total Time",
     "Continue": "Continue",
     "NoDataFoundForCurrentDate": "No Data Found For Current Date",
+    "mechanicLogs": "Mechanic Logs",
     "TimeCardHighlights": {
       "NoTimecardDataAvailable": " No timecard data available",
       "StartEnd": "Start & End",
@@ -441,7 +444,13 @@
     "Edit": "Edit",
     "Delete": "Delete",
     "NoEquipmentLogs": "No logs found for the day selected.",
-    "ID": "Id: #"
+    "ID": "Id: #",
+    "TimeCardMechanicLogs": {
+      "NoMechanicLogsAvailable": "No mechanic logs available for this day.",
+      "Equipment": "Equipment",
+      "StartTime": "Start Time",
+      "EndTime": "End Time"
+    }
   },
   "TimeCardSwiper": {
     "highlight": "Time Sheet Highlights",
@@ -614,6 +623,8 @@
     "EndTime": "End Time",
     "NoTeamMembers": "No team members found",
     "Hrs": "Hrs",
+    "Error": "Error",
+    "Loading": "Loading...",
     "ReviewYourTeam": "Review Your Team"
   },
 

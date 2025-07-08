@@ -1,8 +1,8 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 import withPWA from "@ducanh2912/next-pwa";
 
 /** @type {import('next').NextConfig} */
-
 const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 const pwaConfig = {
@@ -34,8 +34,21 @@ const pwaConfig = {
 
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"], // replace bcryptjs with zod if needed
+    serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
   },
 };
 
-export default withPWA(pwaConfig)(withNextIntl(nextConfig));
+// Apply plugins in the correct order:
+// 1. next-intl → 2. PWA → 3. Sentry
+const combinedConfig = withPWA(pwaConfig)(withNextIntl(nextConfig));
+
+// Export the final config with Sentry
+export default withSentryConfig(combinedConfig, {
+  org: "walksean06",
+  project: "javascript-nextjs",
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  tunnelRoute: "/monitoring", // Proxy route (optional)
+  disableLogger: true, // Reduces bundle size
+  automaticVercelMonitors: true, // For Vercel Cron Jobs
+});

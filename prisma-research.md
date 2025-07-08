@@ -1,5 +1,123 @@
 # Prisma
 
+## Prisma research notes.
+- npx prisma migrate dev is a command that applies the migrations to the database.
+- if you want to make a migration without applying it to the database, you can use npx prisma migrate dev --create-only.
+- npx prisma db push is a command that applies the schema changes to the database without creating a migration.
+- npx prisma deploy is a command that applies the migrations to the database and updates the schema on the database.
+- npx prisma migrate dev --name="migration-name"
+- if your migration failed, you need to run npx prisma migrate resolve --rolled-back "migration-name"  to mark the migration as rolled back.
+- Migrations is not something you want to fix things from the past, but is something you want to fix things moving forward.
+Pre-Production (During Development)
+1. Initial Setup
+bash
+npm install prisma --save-dev
+npx prisma init
+2. Define Your Schema
+Edit prisma/schema.prisma to define models, relations, enums, etc.
+
+3. Create and Apply Migrations (Frequent during development)
+bash
+# After each schema change:
+npx prisma migrate dev --name "init"  # For first migration
+npx prisma migrate dev --name "add_user_model"  # Subsequent migrations
+4. Generate Prisma Client
+bash
+npx prisma generate
+# This happens automatically with `prisma migrate dev`
+5. Reset Database (When needed)
+bash
+npx prisma migrate reset
+6. Inspect Database
+bash
+npx prisma studio  # GUI to view data
+npx prisma db pull  # Introspect existing DB to create schema (if starting from existing DB)
+7. Seed Database (Optional)
+bash
+npx prisma db seed
+# Configure seed script in package.json
+## Post-Production (After Development Complete)
+1. Create Production Migration
+bash
+npx prisma migrate deploy
+2. Generate Production Client
+bash
+npx prisma generate
+3. Database Maintenance Commands
+bash
+npx prisma migrate diff  # Compare schema changes
+npx prisma db push  # Emergency schema updates (use with caution)
+4. Production Environment Variables
+Ensure DATABASE_URL in production environment points to production DB
+
+Workflow Differences: Development vs Production
+Development Phase:
+Frequent schema changes
+
+Use prisma migrate dev for all migrations
+
+Database resets are common
+
+May use db push for quick prototyping (not recommended for team projects)
+
+Seed data often refreshed
+
+Production Phase:
+Schema changes require careful planning
+
+Use prisma migrate deploy to apply migrations
+
+Never use reset or db push in production
+
+Migration rollbacks require new migration files
+
+Data preservation is critical
+
+Team Collaboration Best Practices
+Schema Changes:
+
+Always create a new migration file for each change
+
+Never edit migration files directly after they've been run by teammates
+
+Use descriptive migration names
+
+Version Control:
+
+Commit both schema.prisma and migration files
+
+Do not commit the migrations folder's _journal table
+
+Code Reviews:
+
+Review schema changes carefully
+
+Verify migration SQL before applying to production
+
+Environment Management:
+
+Maintain separate databases for dev, staging, and production
+
+Use different .env files for each environment
+
+Emergency Production Scenario
+If you need to modify production schema urgently:
+
+bash
+# 1. Create a new migration from your local changes
+npx prisma migrate dev --name "emergency_fix"
+
+# 2. Review the generated SQL carefully
+
+# 3. Apply to production
+npx prisma migrate deploy
+
+# 4. Generate updated client
+npx prisma generate
+
+# 5. Redeploy application
+Remember that in production, all schema changes should go through proper testing in staging environments first whenever possible.
+
 ### What is Prisma?
 
 - it is an ORM that is used to make writing databases easier and fast

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
@@ -28,6 +29,7 @@ export async function GET(
     // Return the found materials (state mileage)
     return NextResponse.json(material);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Error fetching materials:", error);
     return NextResponse.json(
       { error: "Failed to fetch material" },
