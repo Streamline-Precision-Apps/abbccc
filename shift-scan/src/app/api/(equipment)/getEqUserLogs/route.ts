@@ -13,17 +13,13 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const currentDate = new Date();
-    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-
+    // Find all logs for the user via TimeSheet relation
     const usersLogs = await prisma.employeeEquipmentLog.findMany({
       where: {
-        employeeId: userId,
-        createdAt: {
-          lte: currentDate,
-          gte: past24Hours,
+        TimeSheet: {
+          userId: userId,
         },
-        isFinished: false,
+        // Add any other filters you need here
       },
       include: {
         Equipment: {
@@ -31,27 +27,24 @@ export async function GET() {
             name: true,
           },
         },
-        RefuelLogs: true,
+        RefuelLog: true,
       },
     });
 
     if (!usersLogs || usersLogs.length === 0) {
       return NextResponse.json(
-        { message: "No unfinished logs found in the past 24 hours." },
+        { message: "No unfinished logs found." },
         { status: 404 }
       );
     }
 
-    console.log("usersLogs: ", usersLogs);
     return NextResponse.json(usersLogs);
   } catch (error) {
-    console.error("Error fetching users logs:", error);
-
-    let errorMessage = "Failed to fetch users logs";
+    console.error("Error fetching logs:", error);
+    let errorMessage = "Failed to fetch logs";
     if (error instanceof Error) {
       errorMessage = error.message;
     }
-
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

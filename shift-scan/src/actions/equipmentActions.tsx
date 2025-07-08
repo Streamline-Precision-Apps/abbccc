@@ -25,9 +25,24 @@ export async function fetchEq(employeeId: string, date: string) {
   const endOfDay = new Date(date);
   endOfDay.setUTCHours(23, 59, 59, 999);
 
+  // Find the user's open timesheet for the given day
+  const timeSheet = await prisma.timeSheet.findFirst({
+    where: {
+      userId: employeeId,
+      startTime: { lte: endOfDay.toISOString() },
+      OR: [
+        { endTime: null },
+        { endTime: { gte: startOfDay.toISOString() } },
+      ],
+    },
+    select: { id: true },
+  });
+
+  if (!timeSheet) return [];
+
   const eqlogs = await prisma.employeeEquipmentLog.findMany({
     where: {
-      employeeId: employeeId,
+      timeSheetId: timeSheet.id,
       startTime: {
         gte: startOfDay.toISOString(),
         lte: endOfDay.toISOString(),
@@ -39,16 +54,16 @@ export async function fetchEq(employeeId: string, date: string) {
   });
 
   // Ensure no null values are present
-  const filteredEqLogs = eqlogs.filter((log) => log.Equipment !== null);
+  const filteredEqLogs = eqlogs.filter(
+    (log) => log.Equipment !== undefined && log.Equipment !== null
+  );
 
-  console.log("\n\n\nEquipment Logs:", filteredEqLogs);
   revalidatePath("/dashboard/myTeam/" + employeeId);
   return filteredEqLogs;
 }
 
 export async function updateEq(formData1: FormData) {
   {
-    console.log(formData1);
     const id = formData1.get("id") as string;
     const e = formData1.get("qrId") as string;
     const alter = await prisma.equipment.findUnique({
@@ -56,8 +71,6 @@ export async function updateEq(formData1: FormData) {
         qrId: e,
       },
     });
-
-    console.log(alter);
 
     await prisma.employeeEquipmentLog.update({
       where: {
@@ -77,7 +90,6 @@ export async function updateEq(formData1: FormData) {
 export async function getEquipmentForms() {
   try {
     const equipmentForms = await prisma.equipment.findMany();
-    console.log(equipmentForms);
     return equipmentForms;
   } catch (error) {
     console.error("Error fetching equipment forms:", error);
@@ -103,7 +115,6 @@ export async function fetchByNameEquipment(name: string) {
     const equipment = await prisma.equipment.findFirst({
       where: name ? { name } : undefined,
     });
-    console.log(equipment);
     return equipment;
   } catch (error) {
     console.error("Error fetching equipment:", error);
@@ -113,9 +124,6 @@ export async function fetchByNameEquipment(name: string) {
 
 // Create equipment
 export async function createEquipment(formData: FormData) {
-  console.log("Creating equipment...");
-  console.log(formData);
-
   try {
     const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
     const make = formData.get("make") as string;
@@ -176,16 +184,16 @@ export async function createEquipment(formData: FormData) {
       }
 
       // Create PendingApproval for the new equipment
-      await prisma.pendingApproval.create({
-        data: {
-          entityType: "EQUIPMENT",
-          equipmentId: newEquipment.id,
-          createdById: createdById,
-          approvalStatus: "PENDING",
-          comment: comment,
-          jobsiteId: jobsiteId || undefined,
-        },
-      });
+      // await prisma.pendingApproval.create({
+      //   data: {
+      //     entityType: "EQUIPMENT",
+      //     equipmentId: newEquipment.id,
+      //     createdById: createdById,
+      //     approvalStatus: "PENDING",
+      //     comment: comment,
+      //     jobsiteId: jobsiteId || undefined,
+      //   },
+      // });
 
       return newEquipment;
     });
@@ -208,7 +216,6 @@ export async function deleteEquipment(id: string) {
     await prisma.equipment.delete({
       where: { id },
     });
-    console.log("Equipment deleted successfully.");
   } catch (error) {
     console.error("Error deleting equipment:", error);
     throw error;
@@ -231,12 +238,8 @@ export async function deleteEquipmentbyId(formData: FormData) {
 
 export async function CreateEmployeeEquipmentLog(formData: FormData) {
   try {
-    console.log("Creating EmployeeEquipmentLog...");
-    console.log(formData);
-
     const employeeId = formData.get("employeeId") as string;
     const equipmentId = formData.get("equipmentId") as string;
-    const jobsiteId = formData.get("jobsiteId") as string;
 
     // Execute all operations in a transaction
     const result = await prisma.$transaction(async (tx) => {
@@ -261,20 +264,18 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
           ? "TASCO"
           : "GENERAL";
       // 3. Create the EmployeeEquipmentLog entry
+      if (!timeSheet?.id) {
+        throw new Error("No open timesheet found for this user. Cannot create equipment log.");
+      }
       const newLog = await tx.employeeEquipmentLog.create({
         data: {
-          employeeId,
           equipmentId,
-          timeSheetId: timeSheet?.id || null,
-          jobsiteId,
+          timeSheetId: timeSheet.id, // always a string
           startTime: new Date().toISOString(),
           endTime: formData.get("endTime")
             ? new Date(formData.get("endTime") as string)
-            : null,
-          workType: workType,
+            : undefined,
           comment: formData.get("comment") as string,
-          isFinished: false,
-          status: "PENDING",
         },
       });
 
@@ -326,7 +327,6 @@ export async function createMaintenanceRequest(formData: FormData) {
 
 export async function deleteEmployeeEquipmentLog(id: string) {
   try {
-    console.log("Deleting employee equipment log:", id);
     await prisma.employeeEquipmentLog.delete({
       where: { id },
     });
@@ -358,7 +358,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     if (!session) {
       throw new Error("Unauthorized user");
     }
-    console.log("Update EmployeeEquipmentLog:", formData);
 
     await prisma.$transaction(async (prisma) => {
       const id = formData.get("id") as string;
@@ -388,17 +387,17 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         ? Number(actualGallonsStr)
         : null;
 
-      // Prepare RefuelLogs data based on form values
-      let refuelLogsUpdate = {};
+      // Prepare RefuelLog data based on form values
+      let refuelLogUpdate = {};
 
       if (disconnectRefuelLog) {
         // Explicitly disconnect refuel log when requested
-        refuelLogsUpdate = {
+        refuelLogUpdate = {
           disconnect: true,
         };
       } else if (gallonsRefueled && actualRefuelLogId) {
         // Update existing refuel log
-        refuelLogsUpdate = {
+        refuelLogUpdate = {
           update: {
             where: { id: actualRefuelLogId },
             data: { gallonsRefueled },
@@ -406,13 +405,13 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         };
       } else if (gallonsRefueled) {
         // Create new refuel log
-        refuelLogsUpdate = {
+        refuelLogUpdate = {
           create: {
             gallonsRefueled,
           },
         };
       }
-      // If no refuel log data provided, don't include any RefuelLogs updates
+      // If no refuel log data provided, don't include any RefuelLog updates
 
       // Update the employee equipment log
       const log = await prisma.employeeEquipmentLog.update({
@@ -421,9 +420,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
           startTime,
           endTime: endTime ? endTime : new Date().toISOString(),
           comment,
-          isFinished: true,
-          ...(Object.keys(refuelLogsUpdate).length > 0
-            ? { RefuelLogs: refuelLogsUpdate }
+          ...(Object.keys(refuelLogUpdate).length > 0
+            ? { RefuelLog: refuelLogUpdate }
             : {}),
         },
       });
@@ -549,7 +547,6 @@ export async function updateEquipment(formData: FormData) {
 }
 export async function updateEquipmentID(formData: FormData) {
   try {
-    console.log(formData);
     const id = formData.get("id") as string;
 
     await prisma.equipment.update({
@@ -567,16 +564,24 @@ export async function updateEquipmentID(formData: FormData) {
 
 export async function UpdateSubmit(formData: FormData) {
   try {
-    console.log("Sever action formData: ", formData);
-    const id = formData.get("id") as string;
+    const userId = formData.get("id") as string;
+
+    // Find all open timesheets for this user
+    const openTimeSheets = await prisma.timeSheet.findMany({
+      where: { userId, endTime: null },
+      select: { id: true },
+    });
+    const openTimeSheetIds = openTimeSheets.map((ts) => ts.id);
+
+    if (openTimeSheetIds.length === 0) return;
 
     const logs = await prisma.employeeEquipmentLog.updateMany({
       where: {
-        employeeId: id,
-        isFinished: false,
+        timeSheetId: { in: openTimeSheetIds },
+        endTime: null, // Only unfinished logs
       },
       data: {
-        isFinished: true,
+        endTime: new Date().toISOString(), // Mark as finished by setting endTime
       },
     });
 
@@ -590,13 +595,11 @@ export async function UpdateSubmit(formData: FormData) {
 
 export async function DeleteLogs(formData: FormData) {
   try {
-    console.log(formData);
     const id = formData.get("id") as string;
 
     const deletedLog = await prisma.employeeEquipmentLog.delete({
       where: { id },
     });
-    console.log(deletedLog);
     // Revalidate the path to reflect changes
     revalidatePath("/dashboard/equipment");
   } catch (error) {
@@ -606,14 +609,11 @@ export async function DeleteLogs(formData: FormData) {
 }
 export async function updateAllEquipment(formData: FormData) {
   try {
-    console.log("Update All Equipment Items: ", formData);
-
     const id = formData.get("id") as string;
     const equipmentId = formData.get("equipmentId") as string;
     const startTime = formData.get("startTime") as string;
     const endTime = formData.get("endTime") as string;
     const comment = formData.get("comment") as string;
-    const isFinished = formData.get("isFinished") === "true";
     const equipmentState = formData.get("Equipment.status") as EquipmentState;
     const equipmentIssue = formData.get("equipmentIssue") as string;
     const additionalInfo = formData.get("additionalInfo") as string;
@@ -648,7 +648,6 @@ export async function updateAllEquipment(formData: FormData) {
           startTime,
           endTime: endTime || new Date().toISOString(),
           comment,
-          isFinished,
           Equipment: {
             update: {
               state: equipmentState,
