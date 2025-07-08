@@ -128,7 +128,7 @@ export async function createEquipment(formData: FormData) {
     );
     const mileage = Number(formData.get("mileage") as string);
     const name = formData.get("temporaryEquipmentName") as string;
-    const comment = formData.get("creationReasoning") as string;
+    const creationReason = formData.get("creationReasoning") as string;
     const jobsiteId = formData.get("jobsiteLocation") as string;
     const qrId = formData.get("eqCode") as string;
     const createdById = formData.get("createdById") as string;
@@ -147,6 +147,7 @@ export async function createEquipment(formData: FormData) {
             qrId,
             name,
             description,
+            creationReason,
             equipmentTag,
           },
         });
@@ -161,6 +162,7 @@ export async function createEquipment(formData: FormData) {
             qrId,
             name,
             description,
+            creationReason,
             equipmentVehicleInfo: {
               create: {
                 make,
