@@ -118,22 +118,7 @@ export const fieldTypes = [
     icon: "/radio.svg",
     color: "bg-teal-400",
   },
-  {
-    name: "HEADER",
-    label: "Header",
-    description: "Large text header",
-    icon: "/header.svg",
-    color: "bg-blue-500",
-    section: "Formatting",
-  },
-  {
-    name: "PARAGRAPH",
-    label: "Paragraph",
-    description: "Text block",
-    icon: "/drag.svg",
-    color: "bg-green-500",
-    section: "Formatting",
-  },
+
   {
     name: "MULTISELECT",
     label: "Multiselect",
@@ -622,9 +607,7 @@ export default function FormEditor({
                           {/* Field options */}
                           {field.type !== "DATE" &&
                             field.type !== "TIME" &&
-                            field.type !== "CHECKBOX" &&
-                            field.type !== "PARAGRAPH" &&
-                            field.type !== "HEADER" && (
+                            field.type !== "CHECKBOX" && (
                               <Toggle
                                 className="bg-white rounded-lg text-xs"
                                 pressed={advancedOptionsOpen[field.id] || false}

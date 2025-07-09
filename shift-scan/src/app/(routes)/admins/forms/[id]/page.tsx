@@ -819,6 +819,10 @@ export default function FormPage({ params }: { params: { id: string } }) {
             id={selectedSubmissionId}
             formTemplate={formTemplate}
             closeModal={() => setShowFormSubmission(false)}
+            onSuccess={() => {
+              setShowFormSubmission(false);
+              triggerRerender();
+            }}
           />
         )}
       </div>

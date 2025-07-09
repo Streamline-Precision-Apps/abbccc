@@ -48,15 +48,15 @@ function mapFieldType(type: string): FieldType {
     TEXTAREA: FieldType.TEXTAREA,
     NUMBER: FieldType.NUMBER,
     DATE: FieldType.DATE,
-    TIME: FieldType.DATE, // Using DATE for time as well
+    TIME: FieldType.TIME, // Using DATE for time as well
     DROPDOWN: FieldType.DROPDOWN,
     CHECKBOX: FieldType.CHECKBOX,
-    FILE: FieldType.FILE,
-    RATING: FieldType.TEXT, // Fallback to TEXT for rating
     RADIO: FieldType.RADIO,
     MULTISELECT: FieldType.MULTISELECT,
     SEARCH_PERSON: FieldType.SEARCH_PERSON,
     SEARCH_ASSET: FieldType.SEARCH_ASSET,
+    PARAGRAPH: FieldType.PARAGRAPH,
+    HEADER: FieldType.HEADER,
   };
 
   return typeMap[type.toUpperCase()] || FieldType.TEXT;
