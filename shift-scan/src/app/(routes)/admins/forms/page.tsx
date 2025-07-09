@@ -193,7 +193,7 @@ export default function Forms() {
 
   // Main render
   return (
-    <div className="h-full w-full flex flex-row">
+    <div className="h-full w-full flex flex-row p-4">
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>

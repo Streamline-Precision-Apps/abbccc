@@ -42,11 +42,7 @@ export default function LeftSidebar() {
   ];
 
   return (
-    <div
-      className={`h-full w-[250px] bg-opacity-40  p-3  shrink-0 ${
-        isOpen ? "block" : "hidden"
-      }`}
-    >
+    <div className={`h-full w-fit bg-opacity-40  p-2 `}>
       <div className="flex items-center justify-center bg-white  rounded-lg p-1">
         <img src="/logo.svg" alt="logo" className="w-24 h-auto" />
       </div>

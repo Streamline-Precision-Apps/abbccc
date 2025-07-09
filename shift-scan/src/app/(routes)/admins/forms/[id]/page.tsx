@@ -1,15 +1,4 @@
 "use client";
-{
-  /* things to do:
-  - Implement form submission filtering by who submitted the form and form Id - done
-  - Implement form submission dropdown to select form status -done
-  - Implement form submissionAt range filtering -done
-  - Implement Editing form submission - done
-  - Implement form submission deletion - done
-  - Implement form submission export to csv and xlsx - done
-  - Implement form Approval for form submission
-  */
-}
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import SearchBar from "../../personnel/components/SearchBar";
@@ -23,7 +12,6 @@ import {
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
 import { FormIndividualTemplate } from "./_component/hooks/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -58,6 +46,15 @@ import { FormStatus } from "@/lib/enums";
 import { ExportModal } from "../_components/List/exportModal";
 import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
 import CreateFormSubmissionModal from "./_component/CreateFormSubmissionModal";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { form } from "@nextui-org/theme";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,8 +84,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
   const [showDeleteSubmissionDialog, setShowDeleteSubmissionDialog] =
     useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [formTemplate, setFormTemplate] =
-    useState<FormIndividualTemplate | null>(null);
+  const [formTemplate, setFormTemplate] = useState<FormIndividualTemplate>();
   const [loading, setLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -198,6 +194,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
     setPendingSubmissionDeleteId(null);
   };
 
+  const triggerRerender = () => setRefreshKey((k) => k + 1);
   /**
    * Handles status change for the form template.
    * @param status The new status to set (ACTIVE, ARCHIVED, DRAFT)
@@ -470,54 +467,241 @@ export default function FormPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const triggerRerender = () => setRefreshKey((k) => k + 1);
+  const renderTableSection = () => {
+    if (loading) {
+      return (
+        <>
+          <Table className="bg-white rounded-t-lg w-full h-full rounded-lg">
+            <TableHeader className="rounded-t-md">
+              <TableRow>
+                <TableHead className="text-xs rounded-tl-md">
+                  <Skeleton className="h-4 w-20" />
+                </TableHead>
+                {[...Array(4)].map((_, i) => (
+                  <TableHead key={i} className="text-xs">
+                    <Skeleton className="h-4 w-20" />
+                  </TableHead>
+                ))}
+                <TableHead className="text-xs">
+                  <Skeleton className="h-4 w-12" />
+                </TableHead>
+                <TableHead className="text-xs">
+                  <Skeleton className="h-4 w-20" />
+                </TableHead>
+                <TableHead className="text-xs text-center">
+                  <Skeleton className="h-4 w-16 mx-auto" />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="bg-white h-full w-full">
+              {[...Array(25)].map((_, rowIdx) => (
+                <TableRow key={rowIdx} className="bg-white">
+                  <TableCell className="text-xs">
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  {[...Array(4)].map((_, colIdx) => (
+                    <TableCell key={colIdx} className="text-xs">
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                  ))}
+                  <TableCell className="text-xs">
+                    <Skeleton className="h-4 w-12" />
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell className="w-[160px]">
+                    <div className="flex flex-row justify-center gap-2">
+                      <Skeleton className="h-6 w-6 rounded-full" />
+                      <Skeleton className="h-6 w-6 rounded-full" />
+                      <Skeleton className="h-6 w-6 rounded-full" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+            <Skeleton className="h-4 w-32" />
+            <div className="flex flex-row gap-2 items-center">
+              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    if (formTemplate && formTemplate !== null) {
+      return (
+        <>
+          <SubmissionTable
+            groupings={formTemplate.FormGrouping}
+            submissions={formTemplate.Submissions}
+            setShowFormSubmission={setShowFormSubmission}
+            setSelectedSubmissionId={setSelectedSubmissionId}
+            onDeleteSubmission={openHandleDeleteSubmission}
+            totalPages={formTemplate.totalPages || 1}
+            page={page}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            pageSize={pageSize}
+            loading={loading}
+          />
+          {formTemplate.Submissions &&
+            formTemplate.Submissions.length === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <p className="text-xs text-muted-foreground select-none">
+                  No submissions found.
+                </p>
+              </div>
+            )}
+          {/* Only show pagination if there are submissions */}
+          {formTemplate.Submissions &&
+            formTemplate.Submissions.length > 0 &&
+            formTemplate.totalPages &&
+            formTemplate.totalPages > 0 && (
+              <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center px-2 bg-white border-t border-gray-200 rounded-b-lg">
+                <div className="text-xs text-gray-600">
+                  Showing page {page} of{" "}
+                  {formTemplate.totalPages > 0 ? formTemplate.totalPages : 1} (
+                  {formTemplate.Submissions.length} total)
+                </div>
+                <div className="flex flex-row gap-2 items-center">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (page > 1) setPage(page - 1);
+                          }}
+                          aria-disabled={page === 1}
+                        />
+                      </PaginationItem>
+                      {Array.from(
+                        {
+                          length:
+                            formTemplate.totalPages > 0
+                              ? formTemplate.totalPages
+                              : 1,
+                        },
+                        (_, i) => (
+                          <PaginationItem key={i + 1}>
+                            <PaginationLink
+                              href="#"
+                              isActive={page === i + 1}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setPage(i + 1);
+                              }}
+                            >
+                              {i + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )
+                      )}
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (
+                              page <
+                              ((formTemplate.totalPages ?? 1) > 0
+                                ? formTemplate.totalPages ?? 1
+                                : 1)
+                            )
+                              setPage(page + 1);
+                          }}
+                          aria-disabled={
+                            page ===
+                            (formTemplate.totalPages > 0
+                              ? formTemplate.totalPages
+                              : 1)
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                  <select
+                    className="ml-2 px-1 py-1 rounded text-xs border"
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                      setPage(1);
+                    }}
+                  >
+                    {[5, 10, 20, 50].map((size) => (
+                      <option key={size} value={size}>
+                        {size} Rows
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+        </>
+      );
+    }
+
+    return (
+      <div className="bg-white bg-opacity-80 h-[85vh] pb-[1.5em] w-full flex items-center justify-center rounded-lg">
+        <p className="text-sm font-bold text-red-500">
+          Error: Form Template does not exist
+        </p>
+      </div>
+    );
+  };
+
   return (
-    <div>
+    <div className={`w-full h-full flex flex-col p-4`}>
       {/* Create Section Modal */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Form Template?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this form template? All form data
+              will be permanently deleted. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Delete Submission Confirmation Dialog */}
+      <Dialog
+        open={showDeleteSubmissionDialog}
+        onOpenChange={setShowDeleteSubmissionDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Form Submission?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this form submission? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelSubmissionDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmSubmissionDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div>
-        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Delete Form Template?</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete this form template? All form
-                data will be permanently deleted. This action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={cancelDelete}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={confirmDelete}>
-                Delete
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog
-          open={showDeleteSubmissionDialog}
-          onOpenChange={setShowDeleteSubmissionDialog}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Delete Form Submission?</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete this form submission? This
-                action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={cancelSubmissionDelete}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={confirmSubmissionDelete}>
-                Delete
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
         {showExportModal && (
           <ExportModal
             setDateRange={setExportDateRange}
@@ -528,9 +712,30 @@ export default function FormPage({ params }: { params: { id: string } }) {
             onExport={handleExport}
           />
         )}
+        {showCreateModal && formTemplate && (
+          <CreateFormSubmissionModal
+            formTemplate={formTemplate}
+            closeModal={() => setShowCreateModal(false)}
+            onSuccess={() => {
+              setShowCreateModal(false);
+              triggerRerender();
+            }}
+          />
+        )}
+        {showFormSubmission && selectedSubmissionId && formTemplate && (
+          <EditFormSubmissionModal
+            id={selectedSubmissionId}
+            formTemplate={formTemplate}
+            closeModal={() => setShowFormSubmission(false)}
+            onSuccess={() => {
+              setShowFormSubmission(false);
+              triggerRerender();
+            }}
+          />
+        )}
       </div>
-      <div className="flex flex-row gap-1 mb-4 ">
-        <div className="w-full flex flex-row gap-5">
+      <div className="w-full flex flex-row gap-4 ">
+        <div className="w-full flex flex-row gap-5 mb-2">
           <div className="flex items-center justify-center">
             <Button
               variant="ghost"
@@ -717,114 +922,8 @@ export default function FormPage({ params }: { params: { id: string } }) {
           </Button>
         </div>
       </div>
-      <div className="h-full w-full">
-        {loading ? (
-          <div className="bg-white bg-opacity-80 h-[85vh] pb-[1.5em] w-full flex flex-col gap-4 rounded-lg relative">
-            <ScrollArea className="w-full h-full rounded-lg">
-              <Table className="bg-white rounded-t-lg w-full h-full">
-                <TableHeader className="rounded-t-md">
-                  <TableRow>
-                    <TableHead className="text-xs rounded-tl-md">
-                      <Skeleton className="h-4 w-20" />
-                    </TableHead>
-                    {[...Array(4)].map((_, i) => (
-                      <TableHead key={i} className="text-xs">
-                        <Skeleton className="h-4 w-20" />
-                      </TableHead>
-                    ))}
-                    <TableHead className="text-xs">
-                      <Skeleton className="h-4 w-12" />
-                    </TableHead>
-                    <TableHead className="text-xs">
-                      <Skeleton className="h-4 w-20" />
-                    </TableHead>
-                    <TableHead className="text-xs text-center">
-                      <Skeleton className="h-4 w-16 mx-auto" />
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="bg-white h-full w-full">
-                  {[...Array(25)].map((_, rowIdx) => (
-                    <TableRow key={rowIdx} className="bg-white">
-                      <TableCell className="text-xs">
-                        <Skeleton className="h-4 w-20" />
-                      </TableCell>
-                      {[...Array(4)].map((_, colIdx) => (
-                        <TableCell key={colIdx} className="text-xs">
-                          <Skeleton className="h-4 w-20" />
-                        </TableCell>
-                      ))}
-                      <TableCell className="text-xs">
-                        <Skeleton className="h-4 w-12" />
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        <Skeleton className="h-4 w-20" />
-                      </TableCell>
-                      <TableCell className="w-[160px]">
-                        <div className="flex flex-row justify-center gap-2">
-                          <Skeleton className="h-6 w-6 rounded-full" />
-                          <Skeleton className="h-6 w-6 rounded-full" />
-                          <Skeleton className="h-6 w-6 rounded-full" />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-            <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-              <Skeleton className="h-4 w-32" />
-              <div className="flex flex-row gap-2 items-center">
-                <Skeleton className="h-8 w-32" />
-                <Skeleton className="h-8 w-20" />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            {formTemplate && formTemplate !== null ? (
-              <SubmissionTable
-                groupings={formTemplate.FormGrouping}
-                submissions={formTemplate.Submissions}
-                totalPages={formTemplate.totalPages || 1}
-                page={page}
-                setPage={setPage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                setShowFormSubmission={setShowFormSubmission}
-                setSelectedSubmissionId={setSelectedSubmissionId}
-                onDeleteSubmission={openHandleDeleteSubmission}
-              />
-            ) : (
-              <div className="bg-white bg-opacity-80 h-[85vh] pb-[1.5em] w-full flex items-center justify-center rounded-lg">
-                <p className="text-sm font-bold text-red-500">
-                  Error: Form Template does not exist
-                </p>
-              </div>
-            )}
-          </>
-        )}
-        {showCreateModal && formTemplate && (
-          <CreateFormSubmissionModal
-            formTemplate={formTemplate}
-            closeModal={() => setShowCreateModal(false)}
-            onSuccess={() => {
-              setShowCreateModal(false);
-              triggerRerender();
-            }}
-          />
-        )}
-        {showFormSubmission && selectedSubmissionId && (
-          <EditFormSubmissionModal
-            id={selectedSubmissionId}
-            formTemplate={formTemplate}
-            closeModal={() => setShowFormSubmission(false)}
-            onSuccess={() => {
-              setShowFormSubmission(false);
-              triggerRerender();
-            }}
-          />
-        )}
+      <div className="bg-white bg-opacity-80 h-[85vh] pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
+        {renderTableSection()}
       </div>
     </div>
   );

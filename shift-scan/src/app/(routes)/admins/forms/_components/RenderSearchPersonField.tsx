@@ -72,6 +72,11 @@ export default function RenderSearchPersonField({
       ? [formData[field.id]]
       : [];
 
+    // Filter out already selected people from userOptions
+    const filteredUserOptions = userOptions.filter(
+      (option) => !selectedPeople.some((p: any) => p.id === option.value)
+    );
+
     const showError = field.required && selectedPeople.length === 0;
 
     return (
@@ -87,7 +92,7 @@ export default function RenderSearchPersonField({
 
         {/* Combobox for selecting people */}
         <Combobox
-          options={userOptions}
+          options={filteredUserOptions}
           value=""
           onChange={(val, option) => {
             if (option) {
@@ -114,7 +119,7 @@ export default function RenderSearchPersonField({
         />
         {/* Display selected people as tags */}
         {selectedPeople.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2 mb-1">
+          <div className="max-w-md flex flex-wrap gap-1 mt-2 mb-1">
             {selectedPeople.map((person: any, idx: number) => (
               <div
                 key={idx}

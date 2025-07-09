@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
 import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -7,7 +12,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableHeader,
@@ -31,6 +36,7 @@ interface SubmissionTableProps {
   setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
   setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
   onDeleteSubmission: (id: string) => void;
+  loading: false;
 }
 
 /**
@@ -54,192 +60,162 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
     .sort((a, b) => a.order - b.order);
 
   return (
-    <ScrollArea className="bg-slate-50 w-full rounded-lg h-[85vh] relative">
-      <Table className="bg-slate-50 w-full h-full">
-        <TableHeader className="rounded-t-md">
-          <TableRow>
-            <TableHead className="text-xs rounded-tl-md">
-              Submitted By
-            </TableHead>
-            {fields.map((field) => (
-              <TableHead key={field.label} className="text-xs">
-                {field.label}
-              </TableHead>
-            ))}
-            <TableHead className="text-xs">Status</TableHead>
-            <TableHead className="text-xs">Submitted At</TableHead>
-            <TableHead className="text-xs text-center">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="bg-white h-full w-full">
-          {submissions && submissions.length > 0
-            ? submissions.map((submission) =>
-                submission == null ? null : (
-                  <TableRow
-                    key={submission.id}
-                    className="bg-white hover:bg-gray-50"
-                  >
-                    <TableCell className="text-xs">
-                      {submission.User.firstName} {submission.User.lastName}
-                    </TableCell>
-                    {fields.map((field) => {
-                      const val = submission.data[field.id];
-                      let display = val;
-                      // If the field is a date or time, format it
-                      if (
-                        val &&
-                        (field.type === "DATE" || field.type === "TIME")
-                      ) {
-                        try {
-                          display = format(new Date(val), "P");
-                        } catch {
-                          display = val;
-                        }
-                      }
-                      // If the value is an array (e.g., MULTISELECT), join with commas
-                      // If the value is an array (e.g., MULTISELECT or multiple selection), process it
-                      if (Array.isArray(val)) {
-                        // Check if it's an array of objects (like from SEARCH_ASSET or SEARCH_PERSON with multiple=true)
-                        if (
-                          val.length > 0 &&
-                          typeof val[0] === "object" &&
-                          val[0] !== null
-                        ) {
-                          // Extract the name property from each object in the array
-                          display = val
-                            .map((item: any) => item?.name || "")
-                            .filter(Boolean)
-                            .join(", ");
-                        } else {
-                          display = val.join(", ");
-                        }
-                      }
-                      // If the value is an object (like from SEARCH_ASSET or SEARCH_PERSON)
-                      else if (val && typeof val === "object" && val !== null) {
-                        // Display the name property of the object
-                        display = val.name || "";
-                      }
-
-                      return (
-                        <TableCell key={field.id} className="text-xs">
-                          {display ?? ""}
-                        </TableCell>
-                      );
-                    })}
-                    <TableCell className="text-xs">
-                      {submission.status}
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {format(new Date(submission.submittedAt), "PPp")}
-                    </TableCell>
-                    <TableCell className="w-[160px]">
-                      <div className="flex flex-row justify-center">
-                        <Button
-                          variant="ghost"
-                          size={"icon"}
-                          onClick={() => {
-                            setShowFormSubmission(true);
-                            setSelectedSubmissionId(submission.id);
-                          }}
-                        >
-                          <img
-                            src="/formEdit.svg"
-                            alt="Edit Form"
-                            className="h-4 w-4 cursor-pointer"
-                          />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size={"icon"}
-                          onClick={() => {
-                            onDeleteSubmission(submission.id);
-                          }}
-                        >
-                          <img
-                            src="/trash-red.svg"
-                            alt="Delete Form"
-                            className="h-4 w-4 cursor-pointer"
-                          />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              )
-            : null}
-        </TableBody>
-      </Table>
-
-      {submissions && submissions.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-xs text-muted-foreground select-none">
-            No submissions found.
-          </p>
-        </div>
-      )}
-
-      {totalPages && (
-        <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-          <div className="text-xs text-gray-600">
-            Showing page {page} of {totalPages} ({submissions.length} total)
-          </div>
-          <div className="flex flex-row gap-2 items-center">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (page > 1) setPage(page - 1);
-                    }}
-                    aria-disabled={page === 1}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink
-                      href="#"
-                      isActive={page === i + 1}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(i + 1);
-                      }}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (page < (totalPages || 1)) setPage(page + 1);
-                    }}
-                    aria-disabled={page === totalPages}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-            <select
-              className="ml-2 px-1 py-1 rounded text-xs border"
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
+    <Table className="w-full h-full bg-white relative rounded-xl">
+      <TableHeader className="rounded-t-md ">
+        <TableRow className="">
+          <TableHead className="text-xs text-center rounded-tl-md min-w-[80px]">
+            Submitted By
+          </TableHead>
+          {fields.map((field) => (
+            <TableHead
+              key={field.label}
+              className="text-xs text-center max-w-[200px]"
             >
-              {[5, 10, 20, 50].map((size) => (
-                <option key={size} value={size}>
-                  {size} Rows
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
-    </ScrollArea>
+              {field.label}
+            </TableHead>
+          ))}
+          <TableHead className="text-xs text-center ">Status</TableHead>
+          <TableHead className="text-xs text-center ">Submitted At</TableHead>
+          <TableHead className="text-xs text-center bg-gray-50 rounded-tr-lg sticky right-0 z-10 ">
+            Actions
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+
+      <TableBody className="bg-white h-full w-full text-center ">
+        {submissions && submissions.length > 0
+          ? submissions.map((submission) =>
+              submission == null ? null : (
+                <TableRow key={submission.id}>
+                  <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                    {submission.User.firstName} {submission.User.lastName}
+                  </TableCell>
+                  {fields.map((field) => {
+                    const val = submission.data[field.id];
+
+                    // If the field is a date or time, format it
+                    let display = val;
+                    let isObject = false;
+                    let isArrayOfObjects = false;
+
+                    if (
+                      val &&
+                      (field.type === "DATE" || field.type === "TIME")
+                    ) {
+                      try {
+                        display = format(new Date(val), "P");
+                      } catch {
+                        display = val;
+                      }
+                    } else if (val && field.type === "CHECKBOX") {
+                      display = val ? "Yes" : "No";
+                    } else if (Array.isArray(val)) {
+                      if (
+                        val.length > 0 &&
+                        typeof val[0] === "object" &&
+                        val[0] !== null
+                      ) {
+                        // Array of objects
+                        isArrayOfObjects = true;
+                      } else {
+                        display = val.join(", ");
+                      }
+                    } else if (val && typeof val === "object" && val !== null) {
+                      // Single object
+                      isObject = true;
+                      display = val.name || "";
+                    }
+
+                    return (
+                      <TableCell
+                        key={field.id}
+                        className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80"
+                      >
+                        {isArrayOfObjects ? (
+                          val.length > 3 ? (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="bg-blue-50 rounded px-2 py-1 border border-blue-200 text-xs text-blue-700 cursor-pointer min-w-[48px]"
+                                >
+                                  {val.length} submissions
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-64 max-h-64 overflow-y-auto">
+                                <div className="flex flex-wrap gap-1 ">
+                                  {val.map((item: any, idx: number) => (
+                                    <div
+                                      key={item.id || idx}
+                                      className="bg-blue-50 rounded px-2 py-1 inline-block border border-blue-200 mb-1"
+                                    >
+                                      {item.name || ""}
+                                    </div>
+                                  ))}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {val.map((item: any, idx: number) => (
+                                <div
+                                  key={item.id || idx}
+                                  className="bg-blue-50 rounded px-2 py-1 inline-block border border-blue-200"
+                                >
+                                  {item.name || ""}
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        ) : (
+                          display ?? ""
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                  <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                    {submission.status}
+                  </TableCell>
+                  <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                    {format(new Date(submission.submittedAt), "PPp")}
+                  </TableCell>
+                  <TableCell className="text-xs border border-slate-200 px-2 bg-slate-50/80 bg-gray-50 sticky right-0 z-10">
+                    <div className="flex flex-row justify-center">
+                      <Button
+                        variant="ghost"
+                        size={"icon"}
+                        onClick={() => {
+                          setShowFormSubmission(true);
+                          setSelectedSubmissionId(submission.id);
+                        }}
+                      >
+                        <img
+                          src="/formEdit.svg"
+                          alt="Edit Form"
+                          className="h-4 w-4 cursor-pointer"
+                        />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size={"icon"}
+                        onClick={() => {
+                          onDeleteSubmission(submission.id);
+                        }}
+                      >
+                        <img
+                          src="/trash-red.svg"
+                          alt="Delete Form"
+                          className="h-4 w-4 cursor-pointer"
+                        />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            )
+          : null}
+      </TableBody>
+    </Table>
   );
 };
 
