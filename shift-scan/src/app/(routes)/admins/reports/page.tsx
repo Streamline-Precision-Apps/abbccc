@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -96,7 +96,10 @@ export default function AdminReports() {
           </Select>
         </div>
       </div>
-      <ScrollArea className="h-full w-full row-span-1 bg-white rounded-lg border border-slate-200 relative">
+      <ScrollArea
+        alwaysVisible
+        className="h-full w-full row-span-1 bg-white rounded-lg  border border-slate-200 relative"
+      >
         {selectedReport ? (
           selectedReport.render()
         ) : (
@@ -106,6 +109,13 @@ export default function AdminReports() {
             </p>
           </div>
         )}
+
+        <div className="h-3 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
+          <ScrollBar
+            orientation="horizontal"
+            className="w-full h-3 ml-2 mr-2 rounded-full"
+          />
+        </div>
       </ScrollArea>
     </div>
   );
