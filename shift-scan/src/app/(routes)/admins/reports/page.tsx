@@ -1,158 +1,112 @@
 "use client";
 
-import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import { Selects } from "@/components/(reusable)/selects";
-import { Buttons } from "@/components/(reusable)/buttons";
-import SearchBar from "../personnel/components/SearchBar";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useSidebar } from "@/components/ui/sidebar";
+import TascoReport from "./_reports/tascoReport";
+import { useState } from "react";
+
+export const reports = [
+  {
+    id: "tasco-report",
+    label: "Tasco Report",
+    description:
+      "Sorts all Tasco data by date and shows,[ Id, shift Type, Submitted Date, Employee, Date worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, Screened or Unscreened]",
+    render: () => <TascoReport />,
+  },
+  {
+    id: "ifta-report",
+    label: "IFTA Report",
+    description: "Shows details of IFTA...",
+    render: () => <></>,
+  },
+  {
+    id: "overweight-report",
+    label: "OverWeight Report",
+    description:
+      "Sorts by truck and date, showing [Date, Truck Id, Operator, Equipment, OverWeight Amount, Total Mileage]",
+    render: () => <></>,
+  },
+];
 
 export default function AdminReports() {
+  const { setOpen, open } = useSidebar();
+  const [selectedReportId, setSelectedReportId] = useState<string | undefined>(
+    undefined
+  );
+  const selectedReport = reports.find((r) => r.id === selectedReportId);
   return (
-    <Holds className="h-full w-full flex-col gap-4">
-      <Holds className="h-fit w-full gap-1 p-4">
-        <Texts size={"md"} text={"white"} className="text-left font-bold">
-          Reports Management
-        </Texts>
-        <Texts size={"sm"} text={"white"} className="text-left">
-          Create, manage, and track report templates and submissions
-        </Texts>
-      </Holds>
-      <Holds position={"row"} className="h-fit w-full px-4 gap-4">
-        <Holds
-          position={"left"}
-          background={"white"}
-          className="h-full w-full max-w-[250px] py-2"
-        >
-          <SearchBar
-            term={""}
-            handleSearchChange={(e) => console.log(e)}
-            placeholder={"Search forms..."}
-            textSize="xs"
-            imageSize="6"
-          />
-        </Holds>
-        <Holds
-          position={"left"}
-          background={"white"}
-          className="h-full w-full max-w-[250px]"
-        >
-          <Selects
-            defaultValue="all"
-            onChange={(e) => console.log(e)}
-            className="w-full h-full text-xs border-none outline-hidden px-2 "
-          >
-            <option value="all">All Forms</option>
-            <option value="incident">Incident Report</option>
-            <option value="equipment">Equipment Log</option>
-            <option value="maintenance">Maintenance Request</option>
-            <option value="safety">Safety Inspection</option>
-          </Selects>
-        </Holds>
-        <Holds position={"row"} className="w-full max-w-[160px] h-full">
-          <Texts
-            position={"left"}
-            size={"sm"}
-            text={"white"}
-            className="font-bold"
-          >
-            10 of 10 forms
-          </Texts>
-        </Holds>
-        <Holds position={"row"} className="w-full justify-end h-full">
-          <Buttons
-            position={"right"}
-            shadow={"none"}
-            background={"custom"}
-            className="border-none w-fit h-full px-4  bg-sky-500 hover:bg-sky-600 text-white"
-          >
-            <Holds position={"row"} className="items-center">
+    <div className="w-full p-4 grid grid-rows-[3rem_1fr] gap-4">
+      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between ">
+        <div className="w-full flex flex-row gap-5 ">
+          <div className="flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+              }`}
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
               <img
-                src="/plus.svg"
-                alt="Create New Form"
-                className="h-4 w-4 mr-2"
+                src={open ? "/condense-white.svg" : "/condense.svg"}
+                alt="logo"
+                className="w-4 h-auto object-contain "
               />
-              <Texts size={"sm"} text={"black"}>
-                Create New Form
-              </Texts>
-            </Holds>
-          </Buttons>
-        </Holds>
-      </Holds>
-      <Holds className="h-full w-full px-4 ">
-        <Holds background={"white"} className="h-full w-full p-4 ">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="border-b">
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Category</th>
-                <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Submissions</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Created At</th>
-                <th className="px-4 py-2 text-left">Last modified</th>
-                <th className="px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b">
-                <td className="px-4 py-2 text-left">Incident Report</td>
-                <td className="px-4 py-2 text-left">Incident Report</td>
-                <td className="px-4 py-2 text-left">
-                  This form is used to report an incident
-                </td>
-                <td className="px-4 py-2 text-left">5</td>
-                <td className="px-4 py-2 text-left">Active</td>
-                <td className="px-4 py-2 text-left">2023-01-01</td>
-                <td className="px-4 py-2 text-left">2023-01-01</td>
-                <td className="px-4 py-2 text-left">
-                  <Buttons
-                    shadow={"none"}
-                    background={"custom"}
-                    className="border-none w-fit h-full justify-center items-center "
-                  >
-                    <img
-                      src="/eye.svg"
-                      alt="Edit Form"
-                      className="h-4 w-4 mr-4 "
-                    />
-                  </Buttons>
-                  <Buttons
-                    shadow={"none"}
-                    background={"custom"}
-                    className="border-none w-fit h-full  "
-                  >
-                    <img
-                      src="/formEdit.svg"
-                      alt="Edit Form"
-                      className="h-4 w-4 mr-4"
-                    />
-                  </Buttons>
-                  <Buttons
-                    shadow={"none"}
-                    background={"custom"}
-                    className="border-none w-fit h-full justify-center "
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 80 100"
-                      className="h-4 w-4 mr-4 fill-red-600"
-                    >
-                      <path
-                        d="M76.1035 24.0039C77.6888 24.0841 78.9492 25.3948 78.9492 27C78.9492 28.6052 77.6888 29.9159 76.1035 29.9961L75.9492 30H4.05078C2.39393 30 1.05078 28.6569 1.05078 27C1.05078 25.3431 2.39393 24 4.05078 24H75.9492L76.1035 24.0039Z"
-                        fill=""
-                      />
-                      <path
-                        d="M70.3613 24.0098C73.8523 24.2036 76.4709 27.3605 75.958 30.8682L66.5977 94.8682L66.5518 95.1426C66.0263 97.8592 63.7035 99.8663 60.9395 99.9932L60.6611 100H20.3516L20.0742 99.9932C17.3099 99.8666 14.9864 97.8594 14.4609 95.1426L14.415 94.8682L5.05566 30.8682C4.54271 27.3606 7.16047 24.2038 10.6514 24.0098L10.9922 24H70.0205L70.3613 24.0098ZM20.3516 94H60.6611L70.0205 30H10.9922L20.3516 94ZM40.5059 39C42.1627 39 43.5059 40.3431 43.5059 42V86C43.5059 87.6569 42.1627 89 40.5059 89C38.849 89 37.5059 87.6569 37.5059 86V42C37.5059 40.3431 38.849 39 40.5059 39ZM24.0391 39.0117C25.6388 38.88 27.0566 40.0281 27.2764 41.6006L27.2939 41.7539L31.1152 84.8848C31.2613 86.5351 30.0408 87.9831 28.3896 88.1191C26.7384 88.2551 25.281 87.0273 25.1348 85.377L21.3135 42.2461L21.3037 42.0918C21.244 40.5063 22.4394 39.1435 24.0391 39.0117ZM53.4893 41.7539C53.6355 40.1036 55.0929 38.8758 56.7441 39.0117C58.3953 39.1477 59.6158 40.5958 59.4697 42.2461L55.6484 85.377L55.6309 85.5303C55.4111 87.1028 53.9933 88.2509 52.3936 88.1191C50.7939 87.9874 49.5984 86.6245 49.6582 85.0391L49.668 84.8848L53.4893 41.7539ZM50.709 0C54.0227 0 56.709 2.68629 56.709 6V9L56.7168 9.30859C56.8774 12.4789 59.4988 15 62.709 15H75.9492L76.1035 15.0039C77.6888 15.0841 78.9492 16.3948 78.9492 18C78.9492 19.6052 77.6888 20.9159 76.1035 20.9961L75.9492 21H4.05078C2.39393 21 1.05078 19.6569 1.05078 18C1.05078 16.3431 2.39393 15 4.05078 15H17.291L17.5996 14.9922C20.6677 14.8367 23.1278 12.3767 23.2832 9.30859L23.291 9V6C23.291 2.68638 25.9774 0.000147198 29.291 0H50.709ZM29.291 9C29.291 11.1864 28.7033 13.2346 27.6816 15H52.3184C51.2967 13.2346 50.709 11.1864 50.709 9V6H29.291V9Z"
-                        fill=""
-                      />
-                    </svg>
-                  </Buttons>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Holds>
-      </Holds>
-    </Holds>
+            </Button>
+          </div>
+          <div className="w-full flex flex-col gap-1">
+            <p className="text-left w-fit text-base text-white font-bold">
+              Reports
+            </p>
+            <p className="text-left text-xs text-white">
+              Run select reports and download them in CSV or Excel reports
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col justify-center">
+          <Label htmlFor="report" className="w-[180px] mb-1 text-white">
+            Select a report
+          </Label>
+          <Select
+            name="report"
+            onValueChange={setSelectedReportId}
+            value={selectedReportId}
+          >
+            <SelectTrigger className="w-[180px] bg-white">
+              <SelectValue placeholder="Select a report" />
+            </SelectTrigger>
+            <SelectContent>
+              {reports.map((report) => (
+                <SelectItem key={report.id} value={report.id}>
+                  {report.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <ScrollArea className="h-full w-full row-span-1 bg-white rounded-lg border border-slate-200 relative">
+        {selectedReport ? (
+          selectedReport.render()
+        ) : (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+            <p className="text-sm text-slate-400 ">
+              Select a report to view its details.
+            </p>
+          </div>
+        )}
+      </ScrollArea>
+    </div>
   );
 }
