@@ -14,7 +14,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div>
+    <div className="h-full w-full flex flex-row p-4">
       <div className="flex flex-col h-full w-full">
         <div className="flex flex-row gap-5 mb-4">
           <div className="flex items-center justify-center">

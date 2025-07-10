@@ -5,15 +5,6 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
   Table,
   TableHeader,
   TableBody,
@@ -37,6 +28,7 @@ interface SubmissionTableProps {
   setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
   onDeleteSubmission: (id: string) => void;
   loading: false;
+  isSignatureRequired?: boolean;
 }
 
 /**
@@ -45,14 +37,10 @@ interface SubmissionTableProps {
 const SubmissionTable: React.FC<SubmissionTableProps> = ({
   groupings,
   submissions,
-  totalPages,
-  page,
-  setPage,
-  setPageSize,
-  pageSize,
   setShowFormSubmission,
   setSelectedSubmissionId,
   onDeleteSubmission,
+  isSignatureRequired = false,
 }) => {
   // Flatten all fields from all groupings, ordered
   const fields = groupings
@@ -76,6 +64,9 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
           ))}
           <TableHead className="text-xs text-center ">Status</TableHead>
           <TableHead className="text-xs text-center ">Submitted At</TableHead>
+          {isSignatureRequired && (
+            <TableHead className="text-xs text-center ">Signature</TableHead>
+          )}
           <TableHead className="text-xs text-center bg-gray-50 rounded-tr-lg sticky right-0 z-10 ">
             Actions
           </TableHead>
@@ -179,6 +170,18 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                   <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
                     {format(new Date(submission.submittedAt), "PPp")}
                   </TableCell>
+                  {isSignatureRequired && (
+                    <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                      {/* Render signature info here, e.g. a checkmark or signature image if available */}
+                      {submission.data.signature ? (
+                        <span className="text-green-600 font-bold">Signed</span>
+                      ) : (
+                        <span className="text-red-500 font-bold">
+                          Not Signed
+                        </span>
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell className="text-xs border border-slate-200 px-2 bg-slate-50/80 bg-gray-50 sticky right-0 z-10">
                     <div className="flex flex-row justify-center">
                       <Button

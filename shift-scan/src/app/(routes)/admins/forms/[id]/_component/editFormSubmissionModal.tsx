@@ -205,12 +205,31 @@ export default function EditFormSubmissionModal({
     setErrors((prev) => ({ ...prev, [fieldId]: fieldError }));
   };
 
+  // Signature state for editing
+  const [signatureChecked, setSignatureChecked] = useState(false);
+
   const saveChanges = async () => {
     if (!formSubmission) return;
+    if (
+      formTemplate?.isSignatureRequired &&
+      !editData.signature &&
+      !signatureChecked
+    ) {
+      toast.error("You must electronically sign this submission.");
+      return;
+    }
     try {
+      const updatedData = { ...editData };
+      if (
+        formTemplate?.isSignatureRequired &&
+        !editData.signature &&
+        signatureChecked
+      ) {
+        updatedData.signature = true;
+      }
       const res = await updateFormSubmission({
         submissionId: formSubmission.id,
-        data: editData,
+        data: updatedData,
       });
       if (res.success) {
         toast.success("Submission updated successfully");
@@ -444,6 +463,23 @@ export default function EditFormSubmissionModal({
             </div>
           </div>
           <div className="w-full">{renderFields()}</div>
+          {formTemplate?.isSignatureRequired && !editData.signature && (
+            <div className="w-full flex flex-row items-center gap-2 mb-2 mt-2">
+              <input
+                type="checkbox"
+                id="signature-checkbox-edit"
+                checked={signatureChecked}
+                onChange={(e) => setSignatureChecked(e.target.checked)}
+                className="accent-emerald-500 h-4 w-4"
+              />
+              <label
+                htmlFor="signature-checkbox-edit"
+                className="text-xs text-gray-700 select-none cursor-pointer"
+              >
+                I electronically sign this submission.
+              </label>
+            </div>
+          )}
           <div className="w-full flex flex-row justify-end gap-2">
             <Button
               size={"sm"}
