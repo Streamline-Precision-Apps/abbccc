@@ -19,6 +19,8 @@ import CostCodeSideBar from "./components/costcode/sidebar/CostCodeSideBar";
 import CostCodeMainContent from "./components/costcode/components/CostCodeMainContent";
 import { useAssets } from "./hooks/useAssets";
 import { useTagsForm } from "./components/costcode/hooks/useTagsForm";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function Assets() {
   const [assets, setAssets] = useState<"Equipment" | "CostCode" | "Jobsite">(
@@ -199,144 +201,163 @@ export default function Assets() {
     refreshTags: fetchTagSummaries,
     onDeletionSuccess: handleDeletionSuccess,
   });
+  const { open, setOpen } = useSidebar();
 
   return (
-    <Holds background={"white"} className="h-full w-full rounded-[10px]">
-      <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
-        <Grids
-          cols={"10"}
-          gap={"5"}
-          className="w-full h-full p-3 rounded-[10px]"
-        >
-          <Holds className="w-full h-full col-start-1 col-end-3">
-            <Grids className="w-full h-full grid-rows-[40px_40px_40px_1fr] gap-4">
-              <Selects
-                onChange={(e) =>
-                  handleAssetChange(
-                    e.target.value as "Equipment" | "CostCode" | "Jobsite"
-                  )
+    <div className="w-full p-4 grid grid-rows-[2rem_1fr]">
+      <div className="w-full flex flex-row gap-5 ">
+        <div className="flex items-center justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+              open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+            }`}
+            onClick={() => {
+              setOpen(!open);
+            }}
+          >
+            <img
+              src={open ? "/condense-white.svg" : "/condense.svg"}
+              alt="logo"
+              className="w-4 h-auto object-contain "
+            />
+          </Button>
+        </div>
+        <div>
+          <p className="text-base text-white font-bold">Asset Management</p>
+        </div>
+      </div>
+
+      <Grids cols={"10"} gap={"5"} className="w-full h-full p-3 rounded-[10px]">
+        <Holds className="w-full h-full col-start-1 col-end-3">
+          <Grids className="w-full h-full grid-rows-[40px_40px_40px_1fr] gap-4">
+            <Selects
+              onChange={(e) =>
+                handleAssetChange(
+                  e.target.value as "Equipment" | "CostCode" | "Jobsite"
+                )
+              }
+              value={assets}
+              className="w-full h-full text-center text-sm border-2 outline-solid outline-[1px] outline-black outline-offset-0"
+            >
+              {ASSET_TYPES.map((asset) => (
+                <option key={asset.value} value={asset.value}>
+                  {asset.name}
+                </option>
+              ))}
+            </Selects>
+            {assets === "Equipment" ? (
+              <EquipmentSideBar
+                setAssets={setAssets}
+                assets={assets}
+                equipments={equipmentSummaries}
+                selectEquipment={selectEquipment}
+                setSelectEquipment={handleEquipmentSelection}
+                hasUnsavedChanges={hasUnsavedChanges}
+                setHasUnsavedChanges={setHasUnsavedChanges}
+                setEquipmentUIState={setEquipmentUIState}
+                equipmentUIState={equipmentUIState}
+                loading={loadingStates.equipmentSummary}
+              />
+            ) : assets === "Jobsite" ? (
+              <JobsiteSideBar
+                assets={assets}
+                setAssets={setAssets}
+                jobsites={jobsiteSummaries}
+                setSelectJobsite={handleJobsiteSelection}
+                selectJobsite={selectJobsite}
+                hasUnsavedChanges={hasUnsavedChanges}
+                jobsiteUIState={jobsiteUIState}
+                setJobsiteUIState={setJobsiteUIState}
+                loading={loadingStates.jobsiteSummary}
+              />
+            ) : assets === "CostCode" ? (
+              <CostCodeSideBar
+                assets={assets}
+                setAssets={setAssets}
+                costCodes={costCodeSummaries}
+                setSelectCostCode={handleCostCodeSelection}
+                tagSummaries={tagSummaries}
+                selectTag={selectTag}
+                selectCostCode={selectCostCode}
+                hasUnsavedChanges={hasUnsavedChanges}
+                costCodeUIState={costCodeUIState}
+                setCostCodeUIState={setCostCodeUIState}
+                loading={loadingStates.costCodeSummary}
+                setSelectTag={handleTagSelection}
+                onCostCodeToggle={
+                  costCodeUIState === "creatingGroups" && creationHandlers
+                    ? creationHandlers.handleCostCodeToggle
+                    : tagFormHook.handleCostCodeToggle
                 }
-                value={assets}
-                className="w-full h-full text-center text-sm border-2 outline-solid outline-[1px] outline-black outline-offset-0"
-              >
-                {ASSET_TYPES.map((asset) => (
-                  <option key={asset.value} value={asset.value}>
-                    {asset.name}
-                  </option>
-                ))}
-              </Selects>
-              {assets === "Equipment" ? (
-                <EquipmentSideBar
-                  setAssets={setAssets}
-                  assets={assets}
-                  equipments={equipmentSummaries}
-                  selectEquipment={selectEquipment}
-                  setSelectEquipment={handleEquipmentSelection}
-                  hasUnsavedChanges={hasUnsavedChanges}
-                  setHasUnsavedChanges={setHasUnsavedChanges}
-                  setEquipmentUIState={setEquipmentUIState}
-                  equipmentUIState={equipmentUIState}
-                  loading={loadingStates.equipmentSummary}
-                />
-              ) : assets === "Jobsite" ? (
-                <JobsiteSideBar
-                  assets={assets}
-                  setAssets={setAssets}
-                  jobsites={jobsiteSummaries}
-                  setSelectJobsite={handleJobsiteSelection}
-                  selectJobsite={selectJobsite}
-                  hasUnsavedChanges={hasUnsavedChanges}
-                  jobsiteUIState={jobsiteUIState}
-                  setJobsiteUIState={setJobsiteUIState}
-                  loading={loadingStates.jobsiteSummary}
-                />
-              ) : assets === "CostCode" ? (
-                <CostCodeSideBar
-                  assets={assets}
-                  setAssets={setAssets}
-                  costCodes={costCodeSummaries}
-                  setSelectCostCode={handleCostCodeSelection}
-                  tagSummaries={tagSummaries}
-                  selectTag={selectTag}
-                  selectCostCode={selectCostCode}
-                  hasUnsavedChanges={hasUnsavedChanges}
-                  costCodeUIState={costCodeUIState}
-                  setCostCodeUIState={setCostCodeUIState}
-                  loading={loadingStates.costCodeSummary}
-                  setSelectTag={handleTagSelection}
-                  onCostCodeToggle={
-                    costCodeUIState === "creatingGroups" && creationHandlers
-                      ? creationHandlers.handleCostCodeToggle
-                      : tagFormHook.handleCostCodeToggle
-                  }
-                  onCostCodeToggleAll={
-                    costCodeUIState === "creatingGroups" && creationHandlers
-                      ? creationHandlers.handleCostCodeToggleAll
-                      : tagFormHook.handleCostCodeToggleAll
-                  }
-                  tagFormData={
-                    costCodeUIState === "creatingGroups" && creationHandlers
-                      ? {
-                          id: "temp-creation",
-                          name: "Creating New Group",
-                          description: "Temporary creation object",
-                          CostCodes: creationHandlers.formData.costCodes,
-                        }
-                      : tagFormHook.formData
-                  }
-                />
-              ) : null}
-            </Grids>
-          </Holds>
-          {assets === "Equipment" ? (
-            <EquipmentMainContent
-              assets={assets}
-              selectEquipment={selectEquipment}
-              setSelectEquipment={setSelectEquipment}
-              onUnsavedChangesChange={setHasUnsavedChanges}
-              refreshEquipments={fetchEquipmentSummaries}
-              loading={loadingStates.equipmentDetails}
-              setEquipmentUIState={setEquipmentUIState}
-              equipmentUIState={equipmentUIState}
-              setHasUnsavedChanges={setHasUnsavedChanges}
-            />
-          ) : assets === "Jobsite" ? (
-            <JobsiteMainContent
-              assets={assets}
-              selectJobsite={selectJobsite}
-              setSelectJobsite={setSelectJobsite}
-              onUnsavedChangesChange={setHasUnsavedChanges}
-              refreshJobsites={fetchJobsiteSummaries}
-              loading={loadingStates.jobsiteDetails}
-              jobsiteUIState={jobsiteUIState}
-              setJobsiteUIState={setJobsiteUIState}
-              setHasUnsavedChanges={setHasUnsavedChanges}
-              tagFormHook={tagFormHook}
-              tagSummaries={tagSummaries}
-              clients={clients}
-            />
-          ) : assets === "CostCode" ? (
-            <CostCodeMainContent
-              assets={assets}
-              selectCostCode={selectCostCode}
-              setSelectCostCode={setSelectCostCode}
-              setHasUnsavedChanges={setHasUnsavedChanges}
-              refreshCostCodes={fetchCostCodeSummaries}
-              refreshTags={fetchTagSummaries}
-              CostCodeLoading={loadingStates.costCodeDetails}
-              TagLoading={loadingStates.tagDetails}
-              tagSummaries={tagSummaries}
-              setSelectTag={setSelectTag}
-              costCodeUIState={costCodeUIState}
-              setCostCodeUIState={setCostCodeUIState}
-              tagFormHook={tagFormHook}
-              onCreationHandlersReady={setCreationHandlers}
-              deletionSuccessMessage={deletionSuccessMessage}
-              handleDeletionSuccess={handleDeletionSuccess}
-            />
-          ) : null}
-        </Grids>
-      </Holds>
+                onCostCodeToggleAll={
+                  costCodeUIState === "creatingGroups" && creationHandlers
+                    ? creationHandlers.handleCostCodeToggleAll
+                    : tagFormHook.handleCostCodeToggleAll
+                }
+                tagFormData={
+                  costCodeUIState === "creatingGroups" && creationHandlers
+                    ? {
+                        id: "temp-creation",
+                        name: "Creating New Group",
+                        description: "Temporary creation object",
+                        CostCodes: creationHandlers.formData.costCodes,
+                      }
+                    : tagFormHook.formData
+                }
+              />
+            ) : null}
+          </Grids>
+        </Holds>
+        {assets === "Equipment" ? (
+          <EquipmentMainContent
+            assets={assets}
+            selectEquipment={selectEquipment}
+            setSelectEquipment={setSelectEquipment}
+            onUnsavedChangesChange={setHasUnsavedChanges}
+            refreshEquipments={fetchEquipmentSummaries}
+            loading={loadingStates.equipmentDetails}
+            setEquipmentUIState={setEquipmentUIState}
+            equipmentUIState={equipmentUIState}
+            setHasUnsavedChanges={setHasUnsavedChanges}
+          />
+        ) : assets === "Jobsite" ? (
+          <JobsiteMainContent
+            assets={assets}
+            selectJobsite={selectJobsite}
+            setSelectJobsite={setSelectJobsite}
+            onUnsavedChangesChange={setHasUnsavedChanges}
+            refreshJobsites={fetchJobsiteSummaries}
+            loading={loadingStates.jobsiteDetails}
+            jobsiteUIState={jobsiteUIState}
+            setJobsiteUIState={setJobsiteUIState}
+            setHasUnsavedChanges={setHasUnsavedChanges}
+            tagFormHook={tagFormHook}
+            tagSummaries={tagSummaries}
+            clients={clients}
+          />
+        ) : assets === "CostCode" ? (
+          <CostCodeMainContent
+            assets={assets}
+            selectCostCode={selectCostCode}
+            setSelectCostCode={setSelectCostCode}
+            setHasUnsavedChanges={setHasUnsavedChanges}
+            refreshCostCodes={fetchCostCodeSummaries}
+            refreshTags={fetchTagSummaries}
+            CostCodeLoading={loadingStates.costCodeDetails}
+            TagLoading={loadingStates.tagDetails}
+            tagSummaries={tagSummaries}
+            setSelectTag={setSelectTag}
+            costCodeUIState={costCodeUIState}
+            setCostCodeUIState={setCostCodeUIState}
+            tagFormHook={tagFormHook}
+            onCreationHandlersReady={setCreationHandlers}
+            deletionSuccessMessage={deletionSuccessMessage}
+            handleDeletionSuccess={handleDeletionSuccess}
+          />
+        ) : null}
+      </Grids>
 
       {/* Confirmation Modal for Asset Type Change */}
       <DiscardChangesModal
@@ -345,6 +366,6 @@ export default function Assets() {
         cancelDiscard={handleCancelAssetChange}
         message="You have unsaved changes. Switching asset types will discard them. Are you sure you want to continue?"
       />
-    </Holds>
+    </div>
   );
 }

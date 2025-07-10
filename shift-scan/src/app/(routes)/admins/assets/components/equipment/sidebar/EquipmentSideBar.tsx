@@ -13,6 +13,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import EquipmentRow from "./EquipmentRow";
 import { Equipment, EquipmentSummary } from "../../../types";
 import Spinner from "@/components/(animations)/spinner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function EquipmentSideBar({
   assets,
@@ -107,7 +108,7 @@ export default function EquipmentSideBar({
         background={"white"}
         className={`${
           loading && "animate-pulse"
-        } w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto no-scrollbar`}
+        } w-full h-full row-span-2 rounded-[10px] p-3 overflow-y-auto `}
       >
         {loading ? (
           <Holds className="h-full w-full justify-center items-center">
