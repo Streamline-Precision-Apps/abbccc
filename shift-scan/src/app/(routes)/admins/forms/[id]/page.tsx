@@ -54,7 +54,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { form } from "@nextui-org/theme";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -414,18 +413,51 @@ export default function FormPage({ params }: { params: { id: string } }) {
             ? `${submission.User.firstName} ${submission.User.lastName}`
             : "";
           const submittedAt =
-            submission.submittedAt || submission.createdAt || "";
+            format(submission.submittedAt, "yyyy-MM-dd") ||
+            format(submission.createdAt, "yyyy-MM-dd") ||
+            "";
           return [
             submission.id,
             user,
             submittedAt,
             ...fields.map((field: any) => {
-              // Prefer field.id as key, fallback to label
-              return (
+              const value =
                 submission.data?.[field.id] ??
                 submission.data?.[field.label] ??
-                ""
-              );
+                "";
+              // Custom export logic for SEARCH_PERSON and SEARCH_ASSET
+              if (field.type === "SEARCH_PERSON") {
+                if (Array.isArray(value)) {
+                  return value
+                    .map((v: any) => v?.name)
+                    .filter(Boolean)
+                    .join(", ");
+                }
+                if (typeof value === "object" && value !== null) {
+                  return value.name || "";
+                }
+                return "";
+              }
+              if (field.type === "SEARCH_ASSET") {
+                if (Array.isArray(value)) {
+                  return value
+                    .map((v: any) => v?.name)
+                    .filter(Boolean)
+                    .join(", ");
+                }
+                if (typeof value === "object" && value !== null) {
+                  return value.name || "";
+                }
+                return "";
+              }
+              // Default: handle objects/arrays as before
+              if (typeof value === "object" && value !== null) {
+                if (Array.isArray(value)) {
+                  return value.join(", ");
+                }
+                return JSON.stringify(value);
+              }
+              return value;
             }),
           ];
         });
@@ -443,7 +475,11 @@ export default function FormPage({ params }: { params: { id: string } }) {
           const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`
+            `form_submissions_${exportDateRange.from
+              ?.toISOString()
+              .slice(0, 10)}_${exportDateRange.to
+              ?.toISOString()
+              .slice(0, 10)}.csv`
           );
         } else {
           const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -453,7 +489,11 @@ export default function FormPage({ params }: { params: { id: string } }) {
           const blob = new Blob([wbout], { type: "application/octet-stream" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `form_submissions_${exportDateRange.from
+              ?.toISOString()
+              .slice(0, 10)}_${exportDateRange.to
+              ?.toISOString()
+              .slice(0, 10)}.xlsx`
           );
         }
 
@@ -547,6 +587,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
             setPageSize={setPageSize}
             pageSize={pageSize}
             loading={loading}
+            isSignatureRequired={formTemplate.isSignatureRequired}
           />
           {formTemplate.Submissions &&
             formTemplate.Submissions.length === 0 && (

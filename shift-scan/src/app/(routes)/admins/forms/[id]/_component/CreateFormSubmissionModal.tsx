@@ -1,5 +1,5 @@
 "use client";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { createFormSubmission } from "@/actions/records-forms";
@@ -201,16 +201,26 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
   };
 
+  // Signature state
+  const [signatureChecked, setSignatureChecked] = useState(false);
+
   const handleSubmit = async () => {
     setSubmittedByTouched(true);
     if (!submittedBy) {
       toast.error("'Submitted By' is required");
       return;
     }
+    if (formTemplate.isSignatureRequired && !signatureChecked) {
+      toast.error("You must electronically sign this submission.");
+      return;
+    }
     setLoading(true);
     try {
       // Process formData to ensure asset data is properly formatted
       const processedFormData = { ...formData };
+      if (formTemplate.isSignatureRequired) {
+        processedFormData.signature = true;
+      }
 
       const res = await createFormSubmission({
         formTemplateId: formTemplate.id,
@@ -267,6 +277,24 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               costCodeOptions={costCodeOptions}
             />
           </div>
+          {formTemplate.isSignatureRequired && (
+            <div className="w-full flex flex-row items-center gap-2 mb-2 mt-2">
+              <input
+                type="checkbox"
+                id="signature-checkbox"
+                checked={signatureChecked}
+                onChange={(e) => setSignatureChecked(e.target.checked)}
+                className="accent-emerald-500 h-4 w-4"
+                disabled={loading}
+              />
+              <label
+                htmlFor="signature-checkbox"
+                className="text-xs text-gray-700 select-none cursor-pointer"
+              >
+                I electronically sign this submission.
+              </label>
+            </div>
+          )}
           <div className="w-full flex flex-row justify-end gap-2">
             <Button
               size={"sm"}
