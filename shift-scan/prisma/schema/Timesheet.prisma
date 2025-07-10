@@ -70,7 +70,7 @@ model TascoLog {
   equipmentId        String?
   laborType          String?
   materialType       String?
-  screenType         LoadType            @default(UNSCREENED)
+  screenType         LoadType?
   LoadQuantity       Int                 @default(0)
   RefuelLogs         RefuelLog[]
   Equipment          Equipment?          @relation(fields: [equipmentId], references: [id])

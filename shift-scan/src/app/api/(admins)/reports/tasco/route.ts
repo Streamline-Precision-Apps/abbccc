@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { LoadType } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ export async function GET(req: Request) {
                 name: true,
               },
             },
+            screenType: true,
             LoadQuantity: true,
             materialType: true,
           },
@@ -56,13 +58,40 @@ export async function GET(req: Request) {
       (item) => Array.isArray(item.TascoLogs) && item.TascoLogs.length > 0
     );
 
-    if (!filteredReport.length) {
+    const tascoReport = filteredReport.map((log) => ({
+      id: log.TascoLogs[0].id, // Assuming you want the first log's ID
+      shiftType: log.TascoLogs[0].shiftType,
+      submittedDate: log.date,
+      employee: `${log.User.firstName} ${log.User.lastName}`,
+      dateWorked: log.date,
+      laborType: log.TascoLogs[0].laborType,
+      equipment: log.TascoLogs[0].Equipment?.name ?? "",
+      loadsABCDE:
+        log.TascoLogs[0].laborType === "tascoEEquipment" ||
+        log.TascoLogs[0].laborType === "tascoAbcdEquipment" ||
+        log.TascoLogs[0].laborType === "tascoAbcdLabor"
+          ? log.TascoLogs[0].LoadQuantity
+          : 0,
+      loadsF:
+        log.TascoLogs[0].laborType === "tascoF"
+          ? log.TascoLogs[0].LoadQuantity
+          : 0,
+      materials: log.TascoLogs[0].materialType ?? "",
+      startTime: log.startTime,
+      endTime: log.endTime,
+      LoadType:
+        log.TascoLogs[0].screenType === "SCREENED"
+          ? LoadType.SCREENED
+          : LoadType.UNSCREENED,
+    }));
+
+    if (!tascoReport.length) {
       return NextResponse.json(
         { error: "No timesheets with TascoLogs found" },
         { status: 404 }
       );
     }
-    return NextResponse.json(filteredReport);
+    return NextResponse.json(tascoReport);
   } catch (error) {
     Sentry.captureException(error);
     console.error("Error fetching timesheet by id:", error);
