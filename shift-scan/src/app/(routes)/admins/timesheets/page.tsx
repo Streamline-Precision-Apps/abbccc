@@ -8,7 +8,6 @@ import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverTrigger,
@@ -332,7 +331,7 @@ export default function AdminTimesheets() {
   };
 
   return (
-    <div className="h-full w-full flex flex-col gap-4">
+    <div className="h-full w-full flex flex-col p-4 gap-4">
       <TimesheetDescription
         setShowCreateModal={setShowCreateModal}
         setExportModal={setExportModal}
@@ -347,8 +346,8 @@ export default function AdminTimesheets() {
         />
       )}
 
-      <div className="h-fit w-full flex flex-row px-4 gap-4">
-        <div className="bg-white rounded-lg h-full w-full max-w-[450px] py-2">
+      <div className="w-full h-full flex flex-row  gap-4">
+        <div className="bg-white rounded-lg h-full max-h-8 w-full max-w-[450px] py-2">
           <SearchBar
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -357,15 +356,19 @@ export default function AdminTimesheets() {
             imageSize="6"
           />
         </div>
-        <div className="w-fit min-w-[40px] h-full flex flex-row">
+        <div className="w-fit min-w-[40px] h-full max-h-8 flex flex-row">
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="bg-white h-full w-full max-w-[40px] justify-center items-center"
+                className="bg-white h-full max-h-8 w-full max-w-[40px] justify-center items-center"
               >
-                <img src="/filterDials.svg" alt="Filter" className="h-4 w-4" />
+                <img
+                  src="/filterDials.svg"
+                  alt="Filter"
+                  className="h-full w-full object-contain p-3"
+                />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="min-w-[320px] p-4 ">
@@ -415,7 +418,7 @@ export default function AdminTimesheets() {
             </PopoverContent>
           </Popover>
         </div>
-        <div className=" w-[300px] h-full items-center flex text-xs text-white">
+        <div className=" w-[300px] h-full max-h-8  my-auto items-center flex text-xs text-white">
           {pageSize === sortedTimesheets.length && (
             <>
               {pageSize} of {total} rows
@@ -424,7 +427,7 @@ export default function AdminTimesheets() {
         </div>
       </div>
       {/* ...existing code... */}
-      <div className="h-full w-full px-4 overflow-auto ">
+      <div className="h-full w-full overflow-auto ">
         <TimesheetViewAll
           showPendingOnly={showPendingOnly}
           timesheets={sortedTimesheets}
