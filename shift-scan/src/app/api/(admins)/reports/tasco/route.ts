@@ -71,11 +71,11 @@ export async function GET(req: Request) {
         log.TascoLogs[0].laborType === "tascoAbcdEquipment" ||
         log.TascoLogs[0].laborType === "tascoAbcdLabor"
           ? log.TascoLogs[0].LoadQuantity
-          : 0,
+          : null,
       loadsF:
         log.TascoLogs[0].laborType === "tascoF"
           ? log.TascoLogs[0].LoadQuantity
-          : 0,
+          : null,
       materials: log.TascoLogs[0].materialType ?? "",
       startTime: log.startTime,
       endTime: log.endTime,
