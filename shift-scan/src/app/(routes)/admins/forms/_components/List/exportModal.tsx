@@ -43,7 +43,7 @@ const ExportModal = ({
             <div className="flex flex-col  mb-6">
               <div className="flex flex-row gap-2">
                 <Download className="h-5 w-5" />
-                <h2 className="text-base font-bold">Export Timesheet Data</h2>
+                <h2 className="text-base font-bold">Export Form Data</h2>
               </div>
               <p className="text-xs text-muted-foreground mb-2">
                 Select a date range, apply filters, and choose your preferred
