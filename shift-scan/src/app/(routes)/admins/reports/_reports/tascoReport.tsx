@@ -115,27 +115,33 @@ export default function TascoReport() {
                 {row.laborType === "tascoAbcdEquipment"
                   ? "Equipment Operator"
                   : row.laborType === "tascoEEquipment"
-                  ? null
+                  ? "-"
                   : row.laborType === "tascoAbcdLabor"
                   ? "Equipment Operator"
-                  : row.laborType}
-              </TableCell>
-              <TableCell className="text-center">{row.equipment}</TableCell>
-              <TableCell className="text-center">{row.loadsABCDE}</TableCell>
-              <TableCell className="text-center">{row.loadsF}</TableCell>
-              <TableCell className="text-center">{row.materials}</TableCell>
-              <TableCell className="text-center">
-                {format(row.startTime, "HH:mm")}
+                  : "-"}
               </TableCell>
               <TableCell className="text-center">
-                {format(row.endTime, "HH:mm")}
+                {row.equipment || "-"}
+              </TableCell>
+              <TableCell className="text-center">
+                {row.loadsABCDE || "-"}
+              </TableCell>
+              <TableCell className="text-center">{row.loadsF || "-"}</TableCell>
+              <TableCell className="text-center">
+                {row.materials || "-"}
+              </TableCell>
+              <TableCell className="text-center">
+                {format(row.startTime, "HH:mm") || "-"}
+              </TableCell>
+              <TableCell className="text-center">
+                {format(row.endTime, "HH:mm") || "-"}
               </TableCell>
               <TableCell className="text-center">
                 {row.LoadType === "SCREENED"
                   ? "Screened"
                   : row.LoadType === "UNSCREENED"
                   ? "Unscreened"
-                  : null}
+                  : "-"}
               </TableCell>
             </TableRow>
           ))
