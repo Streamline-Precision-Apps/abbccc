@@ -1,3 +1,5 @@
+import { ApprovalStatus } from "@/lib/enums";
+
 /**
  * Equipment domain type matching the current Prisma schema.
  * - Removed obsolete fields: status, isActive, inUse
@@ -23,12 +25,6 @@ export type Equipment = {
     mileage: number | null;
   };
 };
-export type ApprovalStatus =
-  | "PENDING"
-  | "APPROVED"
-  | "REJECTED"
-  | "CHANGES_REQUESTED";
-
 // Summary type for equipment listing
 export type EquipmentSummary = {
   id: string;

@@ -40,6 +40,7 @@ import {
 import { ExportModal } from "./_components/List/exportModal";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
+import { format } from "date-fns";
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
@@ -137,18 +138,51 @@ export default function Forms() {
             ? `${submission.User.firstName} ${submission.User.lastName}`
             : "";
           const submittedAt =
-            submission.submittedAt || submission.createdAt || "";
+            format(submission.submittedAt, "yyyy-MM-dd") ||
+            format(submission.createdAt, "yyyy-MM-dd") ||
+            "";
           return [
             submission.id,
             user,
             submittedAt,
             ...fields.map((field: any) => {
-              // Prefer field.id as key, fallback to label
-              return (
+              const value =
                 submission.data?.[field.id] ??
                 submission.data?.[field.label] ??
-                ""
-              );
+                "";
+              // Custom export logic for SEARCH_PERSON and SEARCH_ASSET
+              if (field.type === "SEARCH_PERSON") {
+                if (Array.isArray(value)) {
+                  return value
+                    .map((v: any) => v?.name)
+                    .filter(Boolean)
+                    .join(", ");
+                }
+                if (typeof value === "object" && value !== null) {
+                  return value.name || "";
+                }
+                return "";
+              }
+              if (field.type === "SEARCH_ASSET") {
+                if (Array.isArray(value)) {
+                  return value
+                    .map((v: any) => v?.name)
+                    .filter(Boolean)
+                    .join(", ");
+                }
+                if (typeof value === "object" && value !== null) {
+                  return value.name || "";
+                }
+                return "";
+              }
+              // Default: handle objects/arrays as before
+              if (typeof value === "object" && value !== null) {
+                if (Array.isArray(value)) {
+                  return value.join(", ");
+                }
+                return JSON.stringify(value);
+              }
+              return value;
             }),
           ];
         });
@@ -193,7 +227,7 @@ export default function Forms() {
 
   // Main render
   return (
-    <div className="h-full w-full flex flex-row">
+    <div className="h-full w-full flex flex-row p-4">
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>

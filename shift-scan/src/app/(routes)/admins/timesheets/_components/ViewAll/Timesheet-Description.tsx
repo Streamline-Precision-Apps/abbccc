@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useSidebar } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 type timesheetPending = {
   length: number;
@@ -18,15 +20,36 @@ export default function TimesheetDescription({
   showPendingOnly: boolean;
   approvalInbox: timesheetPending | null;
 }) {
+  const { setOpen, open } = useSidebar();
   return (
-    <div className="h-fit flex flex-row w-full justify-between items-center px-4 py-2">
-      <div className="min-w-[900px] flex flex-col gap-1">
-        <p className="text-left w-fit text-lg text-white font-bold">
-          Timesheets Management
-        </p>
-        <p className="text-left text-sm text-white">
-          Create, manage, and track timesheet submissions
-        </p>
+    <div className="h-fit w-full flex flex-row justify-between mb-4">
+      <div className="w-full flex flex-row gap-5 ">
+        <div className="flex items-center justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+              open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+            }`}
+            onClick={() => {
+              setOpen(!open);
+            }}
+          >
+            <img
+              src={open ? "/condense-white.svg" : "/condense.svg"}
+              alt="logo"
+              className="w-4 h-auto object-contain "
+            />
+          </Button>
+        </div>
+        <div className="w-full flex flex-col gap-1">
+          <p className="text-left w-fit text-base text-white font-bold">
+            Timesheets Management
+          </p>
+          <p className="text-left text-xs text-white">
+            Create, manage, and track timesheets
+          </p>
+        </div>
       </div>
       <div className="w-full flex flex-row justify-end h-full">
         <Button
