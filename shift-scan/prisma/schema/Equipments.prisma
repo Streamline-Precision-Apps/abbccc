@@ -36,7 +36,7 @@ model EquipmentVehicleInfo {
   licensePlate           String?
   registrationExpiration DateTime?
   mileage                Int?
-  Equipment              Equipment @relation(fields: [id], references: [id])
+  Equipment              Equipment @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 model EmployeeEquipmentLog {
