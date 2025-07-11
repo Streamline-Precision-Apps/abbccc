@@ -13,20 +13,33 @@ export interface EquipmentVehicleInfo {
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
  */
-export interface EquipmentSummary {
+export type Equipment = {
   id: string;
+  qrId: string;
   name: string;
-  description: string;
-  equipmentTag: "EQUIPMENT" | "VEHICLE" | "TRUCK" | "TRAILER";
-  state: "AVAILABLE" | "NEEDS_REPAIR" | "IN_USE" | "MAINTENANCE" | "RETIRED";
+  description?: string;
+  equipmentTag: string;
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
-  createdAt: string;
-  updatedAt: string;
-  equipmentVehicleInfo: EquipmentVehicleInfo | null;
-}
-export const useEquipmentData = () => {
-  const [equipmentDetails, setEquipmentDetails] = useState<EquipmentSummary[]>(
-    []
+  state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
+  isDisabledByAdmin: boolean;
+  overWeight: boolean;
+  currentWeight: number | null;
+  createdById: string;
+  createdVia: string;
+  updatedAt: Date;
+  creationReason?: string;
+  equipmentVehicleInfo?: {
+    make: string | null;
+    model: string | null;
+    year: string | null;
+    licensePlate: string | null;
+    registrationExpiration: Date | null;
+    mileage: number | null;
+  };
+};
+export const useEquipmentDataById = (id: string) => {
+  const [equipmentDetails, setEquipmentDetails] = useState<Equipment | null>(
+    null
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -37,7 +50,7 @@ export const useEquipmentData = () => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/getEquipmentDetails");
+        const response = await fetch("/api/getEquipmentByEquipmentId/" + id);
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
         }
