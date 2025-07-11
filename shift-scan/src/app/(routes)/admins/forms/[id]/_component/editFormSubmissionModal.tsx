@@ -32,15 +32,27 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
+import RenderTextArea from "../../_components/RenderTextAreaField";
+import RenderNumberField from "../../_components/RenderNumberField";
+import RenderDateField from "../../_components/RenderDateField";
+import RenderTimeField from "../../_components/RenderTimeField";
+import RenderDropdownField from "../../_components/RenderDropdownField";
+import RenderRadioField from "../../_components/RenderRadioField";
+import RenderCheckboxField from "../../_components/RenderCheckboxField";
+import RenderMultiselectField from "../../_components/RenderMultiselectField";
+import RenderSearchPersonField from "../../_components/RenderSearchPersonField";
+import RenderSearchAssetField from "../../_components/RenderSearchAssetField";
 
 export default function EditFormSubmissionModal({
   id,
   closeModal,
   formTemplate,
+  onSuccess,
 }: {
   id: string;
   closeModal: () => void;
   formTemplate: FormIndividualTemplate | null;
+  onSuccess: () => void;
 }) {
   const [loading, setLoading] = useState(true);
   const [formSubmission, setFormSubmission] =
@@ -171,20 +183,57 @@ export default function EditFormSubmissionModal({
     fetchCostCodes();
   }, []);
 
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+
+  const handleFieldTouch = (fieldId: string) => {
+    setTouchedFields((prev) => ({ ...prev, [fieldId]: true }));
+  };
+
+  const validateField = (fieldId: string, value: any, required: boolean) => {
+    if (required && !value) {
+      return "This field is required.";
+    }
+    return null;
+  };
+
   const handleFieldChange = (fieldId: string, value: any) => {
     setEditData((prev) => ({ ...prev, [fieldId]: value }));
+    const fieldError = validateField(fieldId, value, true); // Assuming all fields are required for now
+    setErrors((prev) => ({ ...prev, [fieldId]: fieldError }));
   };
+
+  // Signature state for editing
+  const [signatureChecked, setSignatureChecked] = useState(false);
 
   const saveChanges = async () => {
     if (!formSubmission) return;
+    if (
+      formTemplate?.isSignatureRequired &&
+      !editData.signature &&
+      !signatureChecked
+    ) {
+      toast.error("You must electronically sign this submission.");
+      return;
+    }
     try {
+      const updatedData = { ...editData };
+      if (
+        formTemplate?.isSignatureRequired &&
+        !editData.signature &&
+        signatureChecked
+      ) {
+        updatedData.signature = true;
+      }
       const res = await updateFormSubmission({
         submissionId: formSubmission.id,
-        data: editData,
+        data: updatedData,
       });
       if (res.success) {
         toast.success("Submission updated successfully");
-        closeModal();
+        onSuccess();
       } else {
         toast.error(res.error || "Failed to update submission");
       }
@@ -234,472 +283,134 @@ export default function EditFormSubmissionModal({
     if (!formSubmission?.FormTemplate?.FormGrouping) return null;
     return formSubmission.FormTemplate.FormGrouping.map((group) => (
       <div key={group.id} className="mb-4">
-        {group.title && (
-          <p className="font-semibold text-base mb-2">{group.title}</p>
-        )}
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           {group.Fields.map((field) => {
+            const options = field.Options || [];
             const value = editData[field.id] ?? "";
+            const error = errors[field.id];
+            const isTouched = touchedFields[field.id];
+
             // Render input based on field type
             switch (field.type) {
               case "TEXTAREA":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Textarea
-                      className="border rounded px-2 py-1"
-                      value={value}
-                      onChange={(e) =>
-                        handleFieldChange(field.id, e.target.value)
-                      }
-                    />
-                  </div>
+                  <RenderTextArea
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                  />
                 );
               case "NUMBER":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Input
-                      type="number"
-                      className="border rounded px-2 py-1"
-                      value={value}
-                      onChange={(e) =>
-                        handleFieldChange(field.id, e.target.value)
-                      }
-                    />
-                  </div>
+                  <RenderNumberField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                  />
                 );
               case "DATE":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Input
-                          readOnly
-                          value={
-                            value ? format(new Date(value), "yyyy-MM-dd") : ""
-                          }
-                          type="Date"
-                          placeholder="Select date"
-                          className="border rounded px-2 py-1 cursor-pointer bg-white"
-                        />
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={value ? new Date(value) : undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              handleFieldChange(field.id, date.toISOString());
-                            }
-                          }}
-                        />
-                        {value && (
-                          <Button
-                            variant="outline"
-                            className="w-full text-xs text-blue-600 "
-                            onClick={() => handleFieldChange(field.id, "")}
-                            type="button"
-                          >
-                            Clear date
-                          </Button>
-                        )}
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  <RenderDateField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                  />
                 );
               case "TIME":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Input
-                          readOnly
-                          value={value ? value : ""}
-                          type="time"
-                          placeholder="Select time"
-                          className="border rounded px-2 py-1 cursor-pointer bg-white"
-                        />
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-2" align="start">
-                        <input
-                          type="time"
-                          className="border rounded px-2 py-1 w-full"
-                          value={value || ""}
-                          onChange={(e) =>
-                            handleFieldChange(field.id, e.target.value)
-                          }
-                        />
-                        {value && (
-                          <Button
-                            variant="outline"
-                            className="w-full text-xs text-blue-600 mt-2"
-                            onClick={() => handleFieldChange(field.id, "")}
-                            type="button"
-                          >
-                            Clear time
-                          </Button>
-                        )}
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  <RenderTimeField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                  />
                 );
               case "DROPDOWN":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </label>
-                    <Select
-                      value={value}
-                      onValueChange={(val) => handleFieldChange(field.id, val)}
-                    >
-                      <SelectTrigger className="border rounded px-2 py-1 bg-white">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.Options?.map((opt) => (
-                          <SelectItem key={opt.id} value={opt.value}>
-                            {opt.value}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <RenderDropdownField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                    options={options}
+                  />
                 );
               case "RADIO":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <RadioGroup
-                      value={value}
-                      onValueChange={(val) => handleFieldChange(field.id, val)}
-                      className="flex flex-row gap-2"
-                    >
-                      {field.Options?.map((opt) => (
-                        <Label
-                          key={opt.id}
-                          className="flex items-center gap-1 cursor-pointer select-none"
-                        >
-                          <RadioGroupItem
-                            value={opt.value}
-                            id={`${field.id}-radio-${opt.id}`}
-                          />
-                          <span>{opt.value}</span>
-                        </Label>
-                      ))}
-                    </RadioGroup>
-                  </div>
+                  <RenderRadioField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                    options={options}
+                  />
                 );
               case "CHECKBOX":
                 return (
-                  <div
-                    key={field.id}
-                    className="flex flex-row items-center gap-2"
-                  >
-                    <Checkbox
-                      checked={!!value}
-                      onCheckedChange={(checked) =>
-                        handleFieldChange(field.id, checked)
-                      }
-                      id={`checkbox-${field.id}`}
-                    />
-                    <Label
-                      className="text-sm font-medium"
-                      htmlFor={`checkbox-${field.id}`}
-                    >
-                      {field.label}
-                    </Label>
-                  </div>
-                );
-              case "HEADER":
-                return (
-                  <div key={field.id} className="col-span-2">
-                    <h2 className="text-xl font-bold my-2">{field.content}</h2>
-                  </div>
-                );
-              case "PARAGRAPH":
-                return (
-                  <div key={field.id} className="col-span-2">
-                    <p className="text-gray-700 my-2">{field.content}</p>
-                  </div>
+                  <RenderCheckboxField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                  />
                 );
               case "MULTISELECT":
                 return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <div className="flex flex-col gap-1 border rounded px-2 py-2 bg-white">
-                      {field.Options?.map((opt) => (
-                        <label
-                          key={opt.id}
-                          className="flex items-center gap-2 cursor-pointer select-none"
-                        >
-                          <Checkbox
-                            checked={
-                              Array.isArray(value)
-                                ? value.includes(opt.value)
-                                : false
-                            }
-                            onCheckedChange={(checked) => {
-                              let newValue = Array.isArray(value)
-                                ? [...value]
-                                : [];
-                              if (checked) {
-                                if (!newValue.includes(opt.value))
-                                  newValue.push(opt.value);
-                              } else {
-                                newValue = newValue.filter(
-                                  (v) => v !== opt.value
-                                );
-                              }
-                              handleFieldChange(field.id, newValue);
-                            }}
-                            id={`${field.id}-${opt.id}`}
-                          />
-                          <span>{opt.value}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+                  <RenderMultiselectField
+                    field={field}
+                    value={value}
+                    options={options}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                  />
                 );
               case "SEARCH_PERSON":
-                if (field.multiple) {
-                  // For multiple selection of people
-                  const selectedPeople = Array.isArray(editData[field.id])
-                    ? editData[field.id]
-                    : editData[field.id]
-                    ? [editData[field.id]]
-                    : [];
-
-                  return (
-                    <div key={field.id} className="flex flex-col">
-                      <Label className="text-sm font-medium mb-1">
-                        {field.label}
-                      </Label>
-
-                      {/* Combobox for selecting people */}
-                      <Combobox
-                        options={userOptions}
-                        value={editData[field.id]?.id || ""}
-                        onChange={(val, option) => {
-                          if (option) {
-                            // Check if person is already selected
-                            const isSelected = selectedPeople.some(
-                              (p: any) => p.id === option.value
-                            );
-
-                            if (!isSelected) {
-                              const newPerson = {
-                                id: option.value,
-                                name: option.label,
-                              };
-
-                              const updatedPeople = [
-                                ...selectedPeople,
-                                newPerson,
-                              ];
-                              handleFieldChange(field.id, updatedPeople);
-                            }
-                          }
-                        }}
-                        placeholder="Click To Add More"
-                        filterKeys={["value", "label"]}
-                      />
-
-                      {/* Display selected people as tags */}
-                      {selectedPeople.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2 mb-1">
-                          {selectedPeople.map((person: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
-                            >
-                              <span>{person.name}</span>
-                              <button
-                                type="button"
-                                className="text-blue-800 hover:text-blue-900"
-                                onClick={() => {
-                                  const updatedPeople = selectedPeople.filter(
-                                    (_: any, i: number) => i !== idx
-                                  );
-                                  handleFieldChange(
-                                    field.id,
-                                    updatedPeople.length ? updatedPeople : null
-                                  );
-                                }}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                } else {
-                  // For single person selection (existing behavior)
-                  return (
-                    <div key={field.id} className="flex flex-col">
-                      <Combobox
-                        label={field.label}
-                        options={userOptions}
-                        value={editData[field.id]?.id || ""}
-                        onChange={(val, option) => {
-                          if (option) {
-                            // Store the selected value in formData instead of a separate asset state
-                            handleFieldChange(field.id, {
-                              id: option.value,
-                              name: option.label,
-                            });
-                          } else {
-                            handleFieldChange(field.id, null);
-                          }
-                        }}
-                      />
-                    </div>
-                  );
-                }
+                return (
+                  <RenderSearchPersonField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    error={error}
+                    userOptions={userOptions}
+                    formData={editData}
+                  />
+                );
               case "SEARCH_ASSET":
-                // Determine which options to use based on the field filter
-                let assetOptions = clientOptions;
-                let assetType = "client";
-
-                if (field.filter) {
-                  switch (field.filter.toUpperCase()) {
-                    case "Equipment":
-                    case "EQUIPMENT":
-                      assetOptions = equipmentOptions;
-                      assetType = "equipment";
-                      break;
-                    case "Jobsites":
-                    case "JOBSITES":
-                      assetOptions = jobsiteOptions;
-                      assetType = "jobsite";
-                      break;
-                    case "Cost Codes":
-                    case "COST_CODES":
-                      assetOptions = costCodeOptions;
-                      assetType = "costCode";
-                      break;
-                    case "Clients":
-                    case "CLIENTS":
-                      assetOptions = clientOptions;
-                      assetType = "client";
-                      break;
-                  }
-                }
-
-                if (field.multiple) {
-                  // For multiple selection of assets
-                  const selectedAssets = Array.isArray(editData[field.id])
-                    ? editData[field.id]
-                    : editData[field.id]
-                    ? [editData[field.id]]
-                    : [];
-
-                  return (
-                    <div key={field.id} className="flex flex-col">
-                      <Label className="text-sm font-medium mb-1">
-                        {field.label}
-                      </Label>
-
-                      {/* Combobox for selecting assets */}
-                      <Combobox
-                        options={assetOptions}
-                        value=""
-                        onChange={(val, option) => {
-                          if (option) {
-                            // Check if asset is already selected
-                            const isSelected = selectedAssets.some(
-                              (a: any) => a.id === option.value
-                            );
-
-                            if (!isSelected) {
-                              const newAsset = {
-                                id: option.value,
-                                name: option.label,
-                                type: assetType,
-                              };
-
-                              const updatedAssets = [
-                                ...selectedAssets,
-                                newAsset,
-                              ];
-                              handleFieldChange(field.id, updatedAssets);
-                            }
-                          }
-                        }}
-                        placeholder={`Select ${assetType}`}
-                        filterKeys={["value", "label"]}
-                      />
-                      {/* Display selected assets as tags */}
-                      {selectedAssets.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2 mb-1">
-                          {selectedAssets.map((asset: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center gap-1"
-                            >
-                              <span>{asset.name}</span>
-                              <button
-                                type="button"
-                                className="text-green-800 hover:text-green-900"
-                                onClick={() => {
-                                  const updatedAssets = selectedAssets.filter(
-                                    (_: any, i: number) => i !== idx
-                                  );
-                                  handleFieldChange(
-                                    field.id,
-                                    updatedAssets.length ? updatedAssets : null
-                                  );
-                                }}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                } else {
-                  // For single asset selection (existing behavior)
-                  return (
-                    <div key={field.id} className="flex flex-col">
-                      <Combobox
-                        label={field.label}
-                        options={assetOptions}
-                        value={formSubmission.data[field.id]?.id || ""}
-                        onChange={(val, option) => {
-                          if (option) {
-                            // Store the selected value in formData instead of a separate asset state
-                            handleFieldChange(field.id, {
-                              id: option.value,
-                              name: option.label,
-                              type: assetType,
-                            });
-                          } else {
-                            handleFieldChange(field.id, null);
-                          }
-                        }}
-                      />
-                    </div>
-                  );
-                }
+                return (
+                  <RenderSearchAssetField
+                    field={field}
+                    value={value}
+                    handleFieldChange={handleFieldChange}
+                    handleFieldTouch={handleFieldTouch}
+                    touchedFields={touchedFields}
+                    clientOptions={clientOptions}
+                    equipmentOptions={equipmentOptions}
+                    jobsiteOptions={jobsiteOptions}
+                    costCodeOptions={costCodeOptions}
+                    formData={editData}
+                  />
+                );
               default:
                 return (
                   <div key={field.id} className="flex flex-col">
@@ -708,12 +419,18 @@ export default function EditFormSubmissionModal({
                     </Label>
                     <Input
                       type="text"
-                      className="border rounded px-2 py-1"
+                      className={`border rounded px-2 py-1 ${
+                        isTouched && error ? "border-red-500" : ""
+                      }`}
                       value={value}
                       onChange={(e) =>
                         handleFieldChange(field.id, e.target.value)
                       }
+                      onBlur={() => handleFieldTouch(field.id)}
                     />
+                    {isTouched && error && (
+                      <p className="text-xs text-red-500 mt-1">{error}</p>
+                    )}
                   </div>
                 );
             }
@@ -746,6 +463,23 @@ export default function EditFormSubmissionModal({
             </div>
           </div>
           <div className="w-full">{renderFields()}</div>
+          {formTemplate?.isSignatureRequired && !editData.signature && (
+            <div className="w-full flex flex-row items-center gap-2 mb-2 mt-2">
+              <input
+                type="checkbox"
+                id="signature-checkbox-edit"
+                checked={signatureChecked}
+                onChange={(e) => setSignatureChecked(e.target.checked)}
+                className="accent-emerald-500 h-4 w-4"
+              />
+              <label
+                htmlFor="signature-checkbox-edit"
+                className="text-xs text-gray-700 select-none cursor-pointer"
+              >
+                I electronically sign this submission.
+              </label>
+            </div>
+          )}
           <div className="w-full flex flex-row justify-end gap-2">
             <Button
               size={"sm"}

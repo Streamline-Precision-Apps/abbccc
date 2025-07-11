@@ -18,6 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
+import { list } from "postcss";
 
 export interface ComboboxOption {
   value: string;
@@ -34,6 +35,9 @@ interface ComboboxProps {
   disabled?: boolean;
   filterKeys?: string[]; // List of keys to filter on (e.g. ["label", "email"])
   font?: "font-semibold" | "font-bold" | "font-normal"; // Optional font weight
+  required?: boolean; // Add required prop
+  errorMessage?: string; // Optional error message for validation
+  listData?: string[];
 }
 
 export function Combobox({
@@ -45,9 +49,13 @@ export function Combobox({
   disabled = false,
   filterKeys = ["label"], // Default to label only
   font = "font-semibold", // Default font weight
+  required = false, // Default to not required
+  errorMessage = "This field is required.", // Default error message
+  listData = [], // Optional list data for error highlighting
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [touched, setTouched] = useState(false); // Track if the field has been interacted with
 
   // Advanced filter: match if any filterKey contains the search string
   const filteredOptions = options.filter((option) => {
@@ -73,6 +81,8 @@ export function Combobox({
     });
   });
 
+  const showError = required && touched && !value; // Determine if error should be shown
+
   return (
     <div>
       {label && <label className={`block text-xs ${font} mb-1`}>{label}</label>}
@@ -82,8 +92,11 @@ export function Combobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between"
+            className={`w-full justify-between ${
+              showError && listData.length < 1 ? "border-red-500" : ""
+            }`}
             disabled={disabled}
+            onBlur={() => setTouched(true)} // Mark as touched on blur
           >
             {value
               ? options.find((option) => option.value === value)?.label

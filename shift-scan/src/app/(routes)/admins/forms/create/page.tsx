@@ -13,7 +13,7 @@ export default function CreateFormPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="h-full w-full flex flex-row">
+    <div className="h-full w-full flex flex-row p-4">
       <div className="h-full w-full relative">
         <div className="flex flex-row gap-5 mb-4 ">
           <div className="flex items-center justify-center">
