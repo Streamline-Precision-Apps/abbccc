@@ -57,6 +57,9 @@ export async function GET() {
       await Promise.all([
         prisma.employeeEquipmentLog.findMany({
           where: {
+            TimeSheet: {
+              userId: userId,
+            },
             endTime: null,
           },
           include: {

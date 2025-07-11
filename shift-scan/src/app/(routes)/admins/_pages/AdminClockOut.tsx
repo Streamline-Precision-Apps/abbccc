@@ -159,7 +159,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   if (step === 1) {
     return (
       <Holds className="h-[500px] overflow-y-auto ">
-        <Holds background={"white"} className="row-span-3 h-full">
+        <Holds background={"white"} className="row-span-3 h-full border-[3px] border-green-500">
           <Contents width={"section"}>
             <Grids rows={"5"} gap={"5"}>
               <Holds className="row-span-2 h-full my-auto">

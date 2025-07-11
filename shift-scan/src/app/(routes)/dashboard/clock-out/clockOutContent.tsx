@@ -186,7 +186,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
     return (
       <Bases>
         <Contents>
-          <Holds background={"white"} className="h-full">
+          <Holds background={"white"} className="h-full border-[3px] border-red-500">
             <Comment
               handleClick={handleNextStep}
               clockInRole={""}
