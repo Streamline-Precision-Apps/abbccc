@@ -11,7 +11,7 @@ export type Equipment = {
   name: string;
   description?: string;
   equipmentTag: string;
-  approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "CHANGES_REQUESTED";
+  approvalStatus: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
   isDisabledByAdmin: boolean;
   overWeight: boolean;
