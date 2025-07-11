@@ -1146,6 +1146,7 @@
     "SelectMaterial": "Select Material",
     "NoMaterialsHauledRecorded": "No Materials Hauled Recorded",
     "NoMaterialTypeSelected": "No Material Type Selected",
+    "MileageAndComments": "Mileage & Comments",
     "FetchingError": "An error occurred while fetching received content"
   },
 
