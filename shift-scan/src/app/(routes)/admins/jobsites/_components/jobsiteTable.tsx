@@ -14,10 +14,12 @@ export default function JobsiteTable({
   jobsiteDetails,
   openHandleDelete,
   openHandleEdit,
+  openHandleQr,
 }: {
   jobsiteDetails: JobsiteSummary[];
   openHandleDelete: (id: string) => void;
   openHandleEdit: (id: string) => void;
+  openHandleQr: (id: string) => void;
 }) {
   const header = [
     "ID",
@@ -86,7 +88,7 @@ export default function JobsiteTable({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => openHandleEdit(jobsite.id)}
+                  onClick={() => openHandleQr(jobsite.id)}
                 >
                   <img src="/qrCode.svg" alt="Edit" className="w-4 h-4" />
                 </Button>
