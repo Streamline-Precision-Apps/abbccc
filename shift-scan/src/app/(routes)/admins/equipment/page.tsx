@@ -18,11 +18,30 @@ import { deleteEquipment } from "@/actions/AssetActions";
 import EditEquipmentModal from "./_components/EditEquipmentModal";
 import CreateEquipmentModal from "./_components/CreateEquipmentModal";
 import { Badge } from "@/components/ui/badge";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function EquipmentPage() {
   const { setOpen, open } = useSidebar();
   const [searchTerm, setSearchTerm] = useState("");
-  const { loading, equipmentDetails, rerender } = useEquipmentData();
+  const {
+    loading,
+    equipmentDetails,
+    rerender,
+    total,
+    page,
+    pageSize,
+    totalPages,
+    setTotal,
+    setPage,
+    setPageSize,
+    setTotalPages,
+  } = useEquipmentData();
 
   // State for modals
   const [editEquipmentModal, setEditEquipmentModal] = useState(false);
@@ -151,24 +170,85 @@ export default function EquipmentPage() {
           </Button>
         </div>
       </div>
-
-      <ScrollArea
-        alwaysVisible
-        className="h-[85vh] w-full  bg-white rounded-lg  border border-slate-200 relative pr-2"
-      >
-        <EquipmentTable
-          equipmentDetails={filteredEquipment}
-          openHandleDelete={openHandleDelete}
-          openHandleEdit={openHandleEdit}
-        />
-        <ScrollBar orientation="vertical" />
-        <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-          <ScrollBar
-            orientation="horizontal"
-            className="w-full h-3 ml-2 mr-2 rounded-full"
+      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        <ScrollArea
+          alwaysVisible
+          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
+        >
+          <EquipmentTable
+            equipmentDetails={filteredEquipment}
+            openHandleDelete={openHandleDelete}
+            openHandleEdit={openHandleEdit}
           />
-        </div>
-      </ScrollArea>
+          <ScrollBar orientation="vertical" />
+          <div className="h-1 absolute bottom-0 right-0 left-0">
+            <ScrollBar
+              orientation="horizontal"
+              className="w-full h-3 ml-2 mr-2 rounded-full"
+            />
+          </div>
+        </ScrollArea>
+        {totalPages && (
+          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+            <div className="text-xs text-gray-600">
+              Showing page {page} of {totalPages} ({total} total)
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.max(1, page - 1));
+                      }}
+                      aria-disabled={page === 1}
+                      tabIndex={page === 1 ? -1 : 0}
+                      style={{
+                        pointerEvents: page === 1 ? "none" : undefined,
+                        opacity: page === 1 ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <span className="text-xs border rounded py-1 px-2">
+                      {page}
+                    </span>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.min(totalPages, page + 1));
+                      }}
+                      aria-disabled={page === totalPages}
+                      tabIndex={page === totalPages ? -1 : 0}
+                      style={{
+                        pointerEvents: page === totalPages ? "none" : undefined,
+                        opacity: page === totalPages ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+              <select
+                className="ml-2 px-1 py-1 rounded text-xs border"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {[25, 50, 75, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size} Rows
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
       {editEquipmentModal && pendingEditId && (
         <EditEquipmentModal
           cancel={() => setEditEquipmentModal(false)}

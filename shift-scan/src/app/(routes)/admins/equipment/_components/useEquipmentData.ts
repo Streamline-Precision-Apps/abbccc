@@ -30,6 +30,10 @@ export const useEquipmentData = () => {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [total, setTotal] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(25);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -37,12 +41,16 @@ export const useEquipmentData = () => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/getEquipmentDetails");
+        const response = await fetch(
+          `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`
+        );
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
         }
         const data = await response.json();
-        setEquipmentDetails(data);
+        setEquipmentDetails(data.equipment);
+        setTotal(data.total);
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Failed to fetch equipment details:", error);
       } finally {
@@ -50,7 +58,7 @@ export const useEquipmentData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey]);
+  }, [refreshKey, page, pageSize]);
 
   return {
     equipmentDetails,
@@ -58,5 +66,15 @@ export const useEquipmentData = () => {
     loading,
     setLoading,
     rerender,
+    // Pagination state
+    total,
+    page,
+    pageSize,
+    totalPages,
+    // Pagination handlers
+    setTotal,
+    setPage,
+    setPageSize,
+    setTotalPages,
   };
 };
