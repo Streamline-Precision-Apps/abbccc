@@ -96,10 +96,10 @@ export default function JobsitePage() {
           </div>
           <div className="w-full flex flex-col gap-1">
             <p className="text-left w-fit text-base text-white font-bold">
-              Equipment Management
+              Jobsite Management
             </p>
             <p className="text-left text-xs text-white">
-              Create, edit, and manage equipment details
+              Create, edit, and manage jobsite details
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function JobsitePage() {
             <SearchBar
               term={searchTerm}
               handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search by name, make, or model..."}
+              placeholder={"Search by name or client..."}
               textSize="xs"
               imageSize="6"
             />

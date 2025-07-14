@@ -9,12 +9,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
-import { registerEquipment } from "@/actions/AssetActions";
+import { useEffect, useState } from "react";
+import { createJobsiteAdmin } from "@/actions/AssetActions";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { StateOptions } from "@/data/stateValues";
+import { Combobox } from "@/components/ui/combobox";
+type TagSummary = {
+  id: string;
+  name: string;
+};
 
+type ClientsSummary = {
+  id: string;
+  name: string;
+};
 export default function CreateJobsiteModal({
   cancel,
   rerender,
@@ -23,116 +33,113 @@ export default function CreateJobsiteModal({
   rerender: () => void;
 }) {
   const { data: session } = useSession();
+  const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
+  const [clients, setClients] = useState<ClientsSummary[]>([]);
   if (!session) {
     toast.error("You must be logged in to create equipment.");
     return null;
   }
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const [tag, client] = await Promise.all([
+          fetch("/api/getTagSummary"),
+          fetch("/api/getClientsSummary"),
+        ]).then((res) => Promise.all(res.map((r) => r.json())));
+
+        setTagSummaries(tag);
+        setClients(client);
+      } catch (error) {
+        console.error("Failed to fetch tags:", error);
+      }
+    };
+    fetchTags();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    equipmentTag: "",
-    status: "APPROVED",
-    IsActive: true,
-    inUse: false,
-    overWeight: null,
-    currentWeight: null,
-    equipmentVehicleInfo: {
-      make: "",
-      model: "",
-      year: "",
-      licensePlate: "",
-      registrationExpiration: null,
-      mileage: null,
+    ApprovalStatus: "APPROVED",
+    isActive: false,
+    Address: {
+      street: "",
+      city: "",
+      state: "",
+      zipCode: "",
     },
+    Client: {
+      id: "",
+    },
+    CCTags: [{ id: "", name: "" }],
+    CreatedVia: "ADMIN",
+    createdById: session.user.id,
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // Handles both input and select changes for address fields
+  const handleAddressChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+      | { name: string; value: string | number }
   ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
+    let name: string, value: string | number, type: string | undefined;
+    if ("target" in e) {
+      name = e.target.name;
+      value = e.target.value;
+      type = (e.target as HTMLInputElement).type;
+    } else {
+      name = e.name;
+      value = e.value;
+      type = undefined;
+    }
+    setFormData((prev: typeof formData) => ({
       ...prev,
-      [name]: type === "number" ? (value === "" ? null : Number(value)) : value,
-    }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "overWeight"
-          ? value === "true"
-            ? true
-            : value === "false"
-            ? false
-            : null
-          : value,
-    }));
-  };
-
-  const handleVehicleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      equipmentVehicleInfo: {
-        ...prev.equipmentVehicleInfo,
+      Address: {
+        ...prev.Address,
         [name]:
           type === "number" ? (value === "" ? null : Number(value)) : value,
       },
     }));
   };
 
-  const hasVehicleInfo =
-    formData.equipmentTag === "TRUCK" ||
-    formData.equipmentTag === "VEHICLE" ||
-    formData.equipmentTag === "TRAILER";
-
   const [submitting, setSubmitting] = useState(false);
-
-  const handleCreateEquipment = async () => {
+  const handleCreateJobsite = async () => {
     setSubmitting(true);
     try {
       // Basic validation
       if (!formData.name.trim()) {
-        toast.error("Equipment name is required");
+        toast.error("Jobsite name is required");
         setSubmitting(false);
         return;
       }
-      if (!formData.equipmentTag) {
-        toast.error("Equipment type is required");
-        setSubmitting(false);
-        return;
-      }
+
       // Prepare payload
       const payload = {
         name: formData.name.trim(),
         description: formData.description?.trim() || "",
-        equipmentTag: formData.equipmentTag,
-        overWeight: formData.overWeight,
-        currentWeight: formData.currentWeight,
-        equipmentVehicleInfo: hasVehicleInfo
-          ? {
-              make: formData.equipmentVehicleInfo?.make || null,
-              model: formData.equipmentVehicleInfo?.model || null,
-              year: formData.equipmentVehicleInfo?.year || null,
-              licensePlate: formData.equipmentVehicleInfo?.licensePlate || null,
-              registrationExpiration: formData.equipmentVehicleInfo
-                ?.registrationExpiration
-                ? new Date(formData.equipmentVehicleInfo.registrationExpiration)
-                : null,
-              mileage: formData.equipmentVehicleInfo?.mileage ?? null,
-            }
-          : undefined,
+        ApprovalStatus: formData.ApprovalStatus,
+        isActive: formData.isActive,
+        Address: {
+          street: formData.Address.street.trim(),
+          city: formData.Address.city.trim(),
+          state: formData.Address.state.trim(),
+          zipCode: formData.Address.zipCode.trim(),
+        },
+        Client: {
+          id: formData.Client.id,
+        },
+        CCTags: formData.CCTags ? [formData.CCTags] : [],
+        CreatedVia: formData.CreatedVia,
+        createdById: session.user.id,
       };
-      const createdById = session.user.id;
-      const result = await registerEquipment(payload, createdById);
+
+      const result = await createJobsiteAdmin({ payload });
       if (result.success) {
-        toast.success("Equipment created successfully!");
+        toast.success("Jobsite created successfully!");
         rerender();
         cancel();
       } else {
-        toast.error(result.error || "Failed to create equipment");
+        toast.error("Failed to create jobsite");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to create equipment");
@@ -146,250 +153,233 @@ export default function CreateJobsiteModal({
       <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col gap-4 w-full">
           <div>
-            <h2 className="text-lg font-semibold">Create Equipment</h2>
-            <p className="text-sm text-gray-600">
-              Fill in the details to create new equipment.
+            <h2 className="text-lg font-semibold">Create Jobsite</h2>
+            <p className="text-xs text-gray-600">
+              Fill in the details to create a new jobsite.
             </p>
           </div>
           <div>
             <div className="flex flex-col gap-4">
+              <div className="flex flex-col">
+                <Label htmlFor="client-id" className={`text-sm `}>
+                  Client ID <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  name="client-id"
+                  value={formData.Client.id}
+                  onValueChange={(selected) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      Client: {
+                        ...prev.Client,
+                        id: selected,
+                      },
+                    }))
+                  }
+                >
+                  <SelectTrigger id="jobsite-cctags" className="text-xs">
+                    <SelectValue placeholder="Select a cost code group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map((client) => (
+                      <SelectItem key={client.id} value={client.id}>
+                        {client.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
-                <Label htmlFor="name" className={`text-sm `}>
-                  Equipment Name <span className="text-red-500">*</span>
+                <Label htmlFor="jobsite-name" className={`text-sm `}>
+                  Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
+                  id="jobsite-name"
                   type="text"
                   name="name"
                   value={formData.name}
-                  onChange={handleInputChange}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   className="w-full text-xs"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="description" className="text-sm font-medium">
-                  Equipment Description
+                <Label
+                  htmlFor="jobsite-description"
+                  className="text-sm font-medium"
+                >
+                  Description
                 </Label>
                 <Textarea
-                  name="description" // Corresponds to formData key
+                  id="jobsite-description"
+                  name="description"
                   rows={4}
                   value={formData.description}
-                  onChange={handleInputChange}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   className="w-full text-xs min-h-[96px]"
-                  placeholder="Enter equipment description..."
+                  placeholder="Enter jobsite description..."
                   style={{ resize: "none" }}
                 />
               </div>
 
               <div>
-                <Label htmlFor="currentWeight" className={`text-sm `}>
-                  {`Current Weight (lbs)`}
-                  <span className="text-red-500">*</span>
+                <Label htmlFor="jobsite-active-status" className={`text-sm `}>
+                  Active Status
+                </Label>
+                <Select
+                  name="isActive"
+                  value={formData.isActive ? "true" : "false"}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      isActive: value === "true",
+                    }))
+                  }
+                >
+                  <SelectTrigger id="jobsite-active-status" className="text-xs">
+                    <SelectValue placeholder="Select Active Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Active</SelectItem>
+                    <SelectItem value="false">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="my-2">
+                <p className="text-xs text-gray-600">
+                  Please provide the jobsite's address details.
+                </p>
+              </div>
+              <div>
+                <Label
+                  htmlFor="jobsite-street"
+                  className={`text-sm font-medium `}
+                >
+                  Street <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  type="number"
-                  name="currentWeight" // Corresponds to formData key
-                  onChange={handleInputChange}
-                  value={
-                    formData.currentWeight === null
-                      ? ""
-                      : formData.currentWeight
-                  } // Handle null value for input
-                  placeholder="0"
-                  className="text-xs"
+                  id="jobsite-street"
+                  name="street"
+                  value={formData.Address.street}
+                  onChange={handleAddressChange}
+                  className="w-full text-xs"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="overWeight" className={`text-sm `}>
-                  Overweight Equipment
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange("overWeight", value)
-                  }
-                  name="overWeight" // Corresponds to formData key
-                  value={
-                    formData.overWeight === true
-                      ? "true"
-                      : formData.overWeight === false
-                      ? "false"
-                      : ""
-                  }
+                <Label
+                  htmlFor="jobsite-city"
+                  className={`text-sm font-medium `}
                 >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Select Weight Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Yes</SelectItem>
-                    <SelectItem value="false">No</SelectItem>
-                  </SelectContent>
-                </Select>
+                  City <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="jobsite-city"
+                  name="city"
+                  value={formData.Address.city}
+                  onChange={handleAddressChange}
+                  className="w-full text-xs"
+                  required
+                />
               </div>
               <div>
                 <Label
-                  htmlFor="equipmentTag"
+                  htmlFor="jobsite-state"
                   className={`text-sm font-medium `}
                 >
-                  Equipment Type <span className="text-red-500">*</span>
+                  State <span className="text-red-500">*</span>
                 </Label>
                 <Select
-                  name="equipmentTag" // Corresponds to formData key
-                  value={formData.equipmentTag}
+                  name="state"
+                  value={formData.Address.state}
                   onValueChange={(value) =>
-                    handleSelectChange("equipmentTag", value)
+                    handleAddressChange({ name: "state", value })
                   }
                 >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Select Equipment Type" />
+                  <SelectTrigger id="jobsite-state" className="text-xs">
+                    <SelectValue placeholder="Select a State" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="TRUCK">Truck</SelectItem>
-                    <SelectItem value="TRAILER">Trailer</SelectItem>
-                    <SelectItem value="VEHICLE">Vehicle</SelectItem>
-                    <SelectItem value="EQUIPMENT">Equipment</SelectItem>
+                    {StateOptions.map((state) => (
+                      <SelectItem key={state.value} value={state.value}>
+                        {state.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-              {/* Conditional rendering for vehicle specific fields */}
-              {hasVehicleInfo && formData.equipmentVehicleInfo && (
-                <>
-                  <div>
-                    <Label htmlFor="make" className={`text-sm font-medium `}>
-                      Vehicle Make <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      name="make" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.make || ""}
-                      onChange={handleVehicleInfoChange}
-                      placeholder="Make"
-                      className="text-xs"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="model" className={`text-sm font-medium`}>
-                      Vehicle Model <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      name="model" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.model || ""}
-                      onChange={handleVehicleInfoChange}
-                      placeholder="Model"
-                      className="text-xs"
-                      required
-                    />
-                  </div>
 
-                  <div>
-                    <Label htmlFor="year" className={`text-sm font-medium `}>
-                      Vehicle Year <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      type="text" // Changed to text to allow YYYY, can also be number
-                      inputMode="numeric"
-                      pattern="[0-9]{4}"
-                      maxLength={4}
-                      name="year" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.year || ""}
-                      onChange={handleVehicleInfoChange}
-                      placeholder="YYYY"
-                      className="text-xs"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="licensePlate"
-                      className={`text-sm font-medium `}
-                    >
-                      License Plate <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      name="licensePlate" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.licensePlate || ""}
-                      onChange={handleVehicleInfoChange}
-                      placeholder="License Plate"
-                      className="text-xs"
-                      required
-                    />
-                  </div>
-
-                  {/* DatePicker for registrationExpiration - Assuming you have a DatePicker component */}
-                  <div>
-                    <Label
-                      htmlFor="registrationExpiration"
-                      className={`text-sm `}
-                    >
-                      Registration Expiration{" "}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    {/* Replace with your actual DatePicker component */}
-                    <Input // Placeholder for DatePicker
-                      type="date"
-                      name="registrationExpiration"
-                      value={
-                        formData.equipmentVehicleInfo?.registrationExpiration
-                          ? new Date(
-                              formData.equipmentVehicleInfo.registrationExpiration
-                            )
-                              .toISOString()
-                              .split("T")[0]
-                          : ""
-                      }
-                      onChange={handleVehicleInfoChange}
-                      className="w-full text-xs"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="mileage" className={`text-sm `}>
-                      Vehicle Mileage <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      type="number"
-                      name="mileage" // Corresponds to equipmentVehicleInfo key
-                      value={
-                        formData.equipmentVehicleInfo?.mileage === null
-                          ? ""
-                          : formData.equipmentVehicleInfo?.mileage
-                      }
-                      onChange={handleVehicleInfoChange}
-                      placeholder="Mileage"
-                      className="text-xs"
-                      required
-                    />
-                  </div>
-                </>
-              )}
+              <div>
+                <Label htmlFor="jobsite-zip" className={`text-sm font-medium `}>
+                  Zip Code <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="jobsite-zip"
+                  name="zipCode"
+                  value={formData.Address.zipCode}
+                  onChange={handleAddressChange}
+                  className="w-full text-xs"
+                  required
+                />
+              </div>
             </div>
-            <div className="flex flex-col p-1 mt-3">
-              <p className="text-base font-medium">
-                Safety Documents and Policies
+            <div className="my-4">
+              <p className="text-xs text-gray-600">
+                Please Select the cost code groups to associate with the
+                jobsite.
               </p>
-              <p className="text-sm text-slate-500">Coming Soon!</p>
             </div>
+            {tagSummaries && (
+              <div>
+                <Label htmlFor="isActive" className="text-sm font-medium">
+                  Cost Code Tags
+                </Label>
+                <Combobox
+                  options={tagSummaries.map((tag) => ({
+                    label: tag.name,
+                    value: tag.id,
+                  }))}
+                  // name prop removed, not supported by ComboboxProps
+                  value={formData.CCTags.map((tag) => tag.id)}
+                  onChange={(selectedIds: string[]) => {
+                    setFormData((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            CCTags: tagSummaries.filter((tag) =>
+                              selectedIds.includes(tag.id)
+                            ),
+                          }
+                        : prev
+                    );
+                  }}
+                />
+              </div>
+            )}
           </div>
           <div className="flex flex-row justify-end gap-2 w-full">
             <Button
               variant="outline"
-              className="bg-emerald-400 text-white"
-              onClick={handleCreateEquipment}
-              disabled={submitting}
-            >
-              {submitting ? "Creating..." : "Create Equipment"}
-            </Button>
-
-            <Button
-              variant="outline"
               onClick={cancel}
-              className="bg-red-400 text-white "
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
             >
               Cancel
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleCreateJobsite}
+              className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
+                submitting ? "opacity-50" : ""
+              }`}
+            >
+              {submitting ? "Creating..." : "Create Jobsite"}
             </Button>
           </div>
         </div>

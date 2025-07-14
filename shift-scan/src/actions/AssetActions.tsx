@@ -1,9 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { EquipmentTags, EquipmentState, ApprovalStatus } from "@/lib/enums";
+import { EquipmentTags, ApprovalStatus, CreatedVia } from "@/lib/enums";
 import * as Sentry from "@sentry/nextjs";
-import App from "next/app";
 import { Prisma } from "@prisma/client";
 
 type VehicleInfo = {
@@ -393,9 +392,184 @@ export async function updateJobsite(formData: FormData) {
 }
 
 /**
+ * Server action to update equipment asset data
+ * Handles both basic jobsite data and vehicle information
+ */
+export async function updateJobsiteAdmin(formData: FormData) {
+  console.log("Updating jobsite...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      throw new Error("Jobsite ID is required");
+    }
+
+    // Fetch existing jobsite early
+    const existingJobsite = await prisma.jobsite.findUnique({
+      where: { id },
+      include: { CCTags: true },
+    });
+
+    if (!existingJobsite) {
+      throw new Error("Jobsite not found");
+    }
+
+    const updateData: Prisma.JobsiteUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("description")) {
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    }
+    if (formData.has("approvalStatus")) {
+      updateData.approvalStatus = formData.get(
+        "approvalStatus"
+      ) as ApprovalStatus;
+    }
+    if (formData.has("isActive")) {
+      updateData.isActive = formData.get("isActive") === "true";
+    }
+    if (formData.has("creationReason")) {
+      updateData.creationReason = formData.get("creationReason") as string;
+    }
+    if (formData.has("updatedAt")) {
+      const updatedAt = formData.get("updatedAt");
+      updateData.updatedAt =
+        updatedAt && updatedAt !== "null" && updatedAt !== "undefined"
+          ? new Date(updatedAt as string)
+          : new Date();
+    } else {
+      updateData.updatedAt = new Date();
+    }
+    if (formData.has("cCTags")) {
+      const cCTagsString = formData.get("cCTags") as string;
+      const cCTagsArray = JSON.parse(cCTagsString || "[]");
+      updateData.CCTags = {
+        set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
+      };
+    }
+
+    const updatedJobsite = await prisma.jobsite.update({
+      where: { id },
+      data: updateData,
+      include: { CCTags: true },
+    });
+
+    revalidatePath("/admins/jobsites");
+
+    console.log("Jobsite updated successfully:", updatedJobsite.id);
+    return {
+      success: true,
+      data: updatedJobsite,
+      message: "Jobsite updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating jobsite:", error);
+    throw new Error(
+      `Failed to update jobsite: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+/**
  * Alternative function for creating jobsite that accepts a structured object
  * Useful for direct TypeScript integration with forms
  */
+
+export async function createJobsiteAdmin({
+  payload,
+}: {
+  payload: {
+    name: string;
+    description: string;
+    ApprovalStatus: string;
+    isActive: boolean;
+    Address: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+    Client: {
+      id: string;
+    };
+    CreatedVia: string;
+    createdById: string;
+  };
+}) {
+  try {
+    console.log("Creating jobsite...");
+    console.log(payload);
+    await prisma.$transaction(async (prisma) => {
+      const existingAddress = await prisma.address.findFirst({
+        where: {
+          street: payload.Address.street.trim(),
+          city: payload.Address.city.trim(),
+          state: payload.Address.state.trim(),
+          zipCode: payload.Address.zipCode.trim(),
+        },
+      });
+
+      if (existingAddress) {
+        await prisma.jobsite.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.ApprovalStatus as ApprovalStatus,
+            isActive: payload.isActive,
+            createdVia: payload.CreatedVia as CreatedVia,
+            Address: {
+              connect: { id: existingAddress.id },
+            },
+            Client: {
+              connect: { id: payload.Client.id },
+            },
+            createdBy: {
+              connect: { id: payload.createdById.trim() },
+            },
+          },
+        });
+      } else {
+        await prisma.jobsite.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.ApprovalStatus as ApprovalStatus,
+            isActive: payload.isActive,
+            createdVia: payload.CreatedVia as CreatedVia,
+            Address: {
+              create: {
+                street: payload.Address.street.trim(),
+                city: payload.Address.city.trim(),
+                state: payload.Address.state.trim(),
+                zipCode: payload.Address.zipCode.trim(),
+              },
+            },
+            Client: {
+              connect: { id: payload.Client.id },
+            },
+            createdBy: {
+              connect: { id: payload.createdById.trim() },
+            },
+          },
+        });
+      }
+    });
+
+    return {
+      success: true,
+      message: "Jobsite created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating jobsite:", error);
+    throw error;
+  }
+}
+
 export async function createJobsiteFromObject(jobsiteData: {
   name: string;
   clientId: string;
