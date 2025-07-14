@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEquipmentDataById } from "./useEquipmentDataById";
+import { useJobsiteDataById } from "./useJobsiteDataById";
 import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { SquareCheck, SquareXIcon } from "lucide-react";
@@ -44,7 +44,7 @@ type Equipment = {
   };
 };
 
-export default function EditEquipmentModal({
+export default function EditJobsiteModal({
   cancel,
   pendingEditId,
   rerender,
@@ -53,7 +53,7 @@ export default function EditEquipmentModal({
   pendingEditId: string;
   rerender: () => void;
 }) {
-  const { equipmentDetails, loading } = useEquipmentDataById(pendingEditId);
+  const { equipmentDetails, loading } = useJobsiteDataById(pendingEditId);
   const [formData, setFormData] = useState<Equipment | null>(null);
   const [originalForm, setOriginalForm] = useState<Equipment | null>(null);
 

@@ -6,16 +6,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EquipmentSummary } from "./useEquipmentData";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { JobsiteSummary } from "./useJobsiteData";
 
-export default function EquipmentTable({
-  equipmentDetails,
+export default function JobsiteTable({
+  jobsiteDetails,
   openHandleDelete,
   openHandleEdit,
 }: {
-  equipmentDetails: EquipmentSummary[];
+  jobsiteDetails: JobsiteSummary[];
   openHandleDelete: (id: string) => void;
   openHandleEdit: (id: string) => void;
 }) {
@@ -23,13 +23,11 @@ export default function EquipmentTable({
     "ID",
     "Name",
     "Description",
-    "Vehicle Make",
-    "Vehicle Model",
-    "Vehicle Year",
-    "Equipment Type",
-    "Equipment State",
-    "Approval Status",
     "Created At",
+    "Active",
+    "Site Address",
+    "Client Name",
+    "Approval Status",
     "Updated At",
     "Actions",
   ];
@@ -49,57 +47,60 @@ export default function EquipmentTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {equipmentDetails.map((equipment) => (
-          <TableRow
-            className="odd:bg-white even:bg-gray-100 "
-            key={equipment.id}
-          >
+        {jobsiteDetails.map((jobsite) => (
+          <TableRow className="odd:bg-white even:bg-gray-100 " key={jobsite.id}>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.id}
+              {jobsite.id}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.name}
+              {jobsite.name}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.description}
+              {jobsite.description || "No description available"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentVehicleInfo?.make}
+              {jobsite.createdAt
+                ? format(new Date(jobsite.createdAt), "MM/dd/yyyy")
+                : "N/A"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentVehicleInfo?.model}
+              {jobsite.isActive ? "Active" : "Inactive"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentVehicleInfo?.year}
+              {`${jobsite.Address.street} ${jobsite.Address.city}, ${jobsite.Address.state} ${jobsite.Address.zipCode}`}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentTag}
+              {jobsite.Client.name || "No client available"}
             </TableCell>
-            <TableCell className="border-r border-gray-200 text-xs text-center">
-              {equipment.state}
+            <TableCell className=" border-r border-gray-200 text-xs text-center">
+              {jobsite.approvalStatus.toLowerCase().slice(0, 1).toUpperCase() +
+                jobsite.approvalStatus.slice(1).toLowerCase()}
             </TableCell>
-            <TableCell className="text-xs border-r border-gray-200 text-center">
-              {equipment.approvalStatus}
-            </TableCell>
-            <TableCell className="border-r border-gray-200  text-xs text-center">
-              {format(equipment.createdAt, "MM/dd/yy")}
-            </TableCell>
-            <TableCell className="border-r border-gray-200 text-xs text-center">
-              {format(equipment.updatedAt, "MM/dd/yy")}
+            <TableCell className=" border-r border-gray-200 text-xs text-center">
+              {jobsite.updatedAt
+                ? format(new Date(jobsite.updatedAt), "MM/dd/yyyy")
+                : "N/A"}
             </TableCell>
             <TableCell className="text-xs text-center">
-              <div className="flex flex-row ">
+              <div className="flex flex-row items-center justify-center ">
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => openHandleEdit(equipment.id)}
+                  onClick={() => openHandleEdit(jobsite.id)}
+                >
+                  <img src="/qrCode.svg" alt="Edit" className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openHandleEdit(jobsite.id)}
                 >
                   <img src="/formEdit.svg" alt="Edit" className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => openHandleDelete(equipment.id)}
+                  onClick={() => openHandleDelete(jobsite.id)}
                 >
                   <img src="/trash-red.svg" alt="Delete" className="w-4 h-4" />
                 </Button>

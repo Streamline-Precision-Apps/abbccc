@@ -1,11 +1,79 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
+import SearchBar from "../personnel/components/SearchBar";
+import { useState } from "react";
+import JobsiteTable from "./_components/jobsiteTable";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { deleteEquipment } from "@/actions/AssetActions";
 
-export default function JobsitesPage() {
+import { Badge } from "@/components/ui/badge";
+import { useJobsiteData } from "./_components/useJobsiteData";
+import EditJobsiteModal from "./_components/EditJobsiteModal";
+import CreateJobsiteModal from "./_components/CreateJobsiteModal";
+
+export default function JobsitePage() {
   const { setOpen, open } = useSidebar();
+  const [searchTerm, setSearchTerm] = useState("");
+  const { loading, jobsiteDetails, rerender } = useJobsiteData();
+
+  // State for modals
+  const [editJobsiteModal, setEditJobsiteModal] = useState(false);
+  const [createJobsiteModal, setCreateJobsiteModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+
+  //Approval Button States
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
+
+  const openHandleEdit = (id: string) => {
+    setPendingEditId(id);
+    setEditJobsiteModal(true);
+  };
+
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (pendingDeleteId) {
+      await deleteEquipment(pendingDeleteId);
+      setShowDeleteDialog(false);
+      setPendingDeleteId(null);
+      rerender();
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setPendingDeleteId(null);
+  };
+
+  // Count all pending items
+  const pendingCount = jobsiteDetails.filter(
+    (item) => item.approvalStatus === "PENDING"
+  ).length;
+
+  // Filter job sites by name and by approval status if showPendingOnly is active
+  const filteredJobsites = jobsiteDetails.filter((item) => {
+    if (showPendingOnly && item.approvalStatus !== "PENDING") return false;
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return true;
+    return item.name.toLowerCase().includes(term);
+  });
+
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
       <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
         <div className="w-full flex flex-row gap-5 ">
           <div className="flex items-center justify-center">
@@ -28,25 +96,104 @@ export default function JobsitesPage() {
           </div>
           <div className="w-full flex flex-col gap-1">
             <p className="text-left w-fit text-base text-white font-bold">
-              Reports
+              Equipment Management
             </p>
             <p className="text-left text-xs text-white">
-              Run select reports and download them in CSV or Excel reports
+              Create, edit, and manage equipment details
             </p>
           </div>
         </div>
       </div>
+      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
+        <div className="flex flex-row w-full gap-4 mb-2">
+          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
+            <SearchBar
+              term={searchTerm}
+              handleSearchChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={"Search by name, make, or model..."}
+              textSize="xs"
+              imageSize="6"
+            />
+          </div>
+        </div>
+        <div className="flex flex-row justify-end w-full gap-4">
+          <Button onClick={() => setCreateJobsiteModal(true)}>
+            <img src="/plus-white.svg" alt="Add Jobsite" className="w-4 h-4" />
+            <p className="text-left text-xs text-white">New Jobsite</p>
+          </Button>
+          <Button
+            onClick={() => setShowPendingOnly(!showPendingOnly)}
+            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
+              showPendingOnly ? "ring-2 ring-red-400" : ""
+            }`}
+          >
+            <div className="flex flex-row items-center">
+              <img
+                src="/inbox-white.svg"
+                alt="Approval"
+                className="h-4 w-4 mr-2"
+              />
+              <p className="text-white text-sm font-extrabold">Approval</p>
+              {pendingCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                  {pendingCount}
+                </Badge>
+              )}
+            </div>
+          </Button>
+        </div>
+      </div>
+
       <ScrollArea
         alwaysVisible
-        className="h-full w-full row-span-1 bg-white rounded-lg  border border-slate-200 relative"
+        className="h-[85vh] w-full  bg-white rounded-lg  border border-slate-200 relative pr-2"
       >
-        <div className="h-3 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
+        <JobsiteTable
+          jobsiteDetails={filteredJobsites}
+          openHandleDelete={openHandleDelete}
+          openHandleEdit={openHandleEdit}
+        />
+        <ScrollBar orientation="vertical" />
+        <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
           <ScrollBar
             orientation="horizontal"
             className="w-full h-3 ml-2 mr-2 rounded-full"
           />
         </div>
       </ScrollArea>
+      {editJobsiteModal && pendingEditId && (
+        <EditJobsiteModal
+          cancel={() => setEditJobsiteModal(false)}
+          pendingEditId={pendingEditId}
+          rerender={rerender}
+        />
+      )}
+      {createJobsiteModal && (
+        <CreateJobsiteModal
+          cancel={() => setCreateJobsiteModal(false)}
+          rerender={rerender}
+        />
+      )}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Jobsite</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this jobsite? All jobsite data
+              will be permanently deleted including Timesheets. This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

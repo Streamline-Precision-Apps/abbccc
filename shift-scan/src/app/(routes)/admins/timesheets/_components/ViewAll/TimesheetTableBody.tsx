@@ -40,7 +40,10 @@ export function TimesheetTableBody({
     return (
       <TableBody>
         <TableRow>
-          <TableCell colSpan={14} className="text-center py-4 text-gray-400">
+          <TableCell
+            colSpan={14}
+            className="border-r border-gray-200 text-xs text-center"
+          >
             {showPendingOnly ? (
               <div className=" justify-center flex flex-wrap ">
                 <p className="text-sm ">
@@ -59,34 +62,34 @@ export function TimesheetTableBody({
     <TableBody className="divide-y divide-gray-200 bg-white">
       {timesheets.map((timesheet) => (
         <TableRow
-          className="hover:bg-gray-50 transition-colors text-xs"
+          className="border-r border-gray-200 text-xs text-center"
           key={timesheet.id}
         >
-          <TableCell className="px-4 py-2 border-r border-gray-100 ">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.id}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.date, "MM/dd/yyyy")}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.User.firstName} {timesheet.User.lastName}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.Jobsite?.name}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.CostCode?.name}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.startTime, "hh:mm a")}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.endTime ? format(timesheet.endTime, "hh:mm a") : ""}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.comment}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.status === "PENDING" ? (
               <span className="text-app-orange">Pending</span>
             ) : timesheet.status === "APPROVED" ? (
@@ -97,7 +100,7 @@ export function TimesheetTableBody({
               <span className="text-app-red">Rejected</span>
             )}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.workType === "TRUCK_DRIVER" ? (
               <span>Trucking</span>
             ) : timesheet.workType === "TASCO" ? (
@@ -108,13 +111,13 @@ export function TimesheetTableBody({
               <span>Mechanic</span>
             ) : null}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.createdAt, "MM/dd/yyyy")}
           </TableCell>
-          <TableCell className="px-4 py-2 border-r border-gray-100">
+          <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.updatedAt, "MM/dd/yyyy")}
           </TableCell>
-          <TableCell className="p-4 py-2 sticky right-0 bg-white border-l border-gray-200">
+          <TableCell className=" sticky right-0 border-r border-gray-200 text-xs text-center">
             <Button
               variant={"link"}
               size={"icon"}
