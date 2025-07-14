@@ -15,6 +15,7 @@ export interface EquipmentVehicleInfo {
  */
 export interface EquipmentSummary {
   id: string;
+  qrId: string;
   name: string;
   description: string;
   equipmentTag: "EQUIPMENT" | "VEHICLE" | "TRUCK" | "TRAILER";
