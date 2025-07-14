@@ -57,7 +57,7 @@ export default function CostCodePage() {
   } = useTagData();
 
   // Combine loading states for both cost codes and tags for a unified loading experience
-  const loadingState = loading || tagLoading;
+  const loadingState = loading && tagLoading;
 
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
 
@@ -236,6 +236,18 @@ export default function CostCodePage() {
         >
           {/* Loading overlay */}
           {loadingState && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          {loading && !tagLoading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          {tagLoading && !loading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
               <Spinner size={20} />
               <span className="text-lg text-gray-500">Loading...</span>
