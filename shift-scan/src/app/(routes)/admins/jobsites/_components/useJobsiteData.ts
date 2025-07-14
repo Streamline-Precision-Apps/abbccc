@@ -1,6 +1,6 @@
 "use client";
 import { ApprovalStatus } from "@/lib/enums";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export type JobsiteSummary = {
   id: string;
@@ -29,7 +29,7 @@ export const useJobsiteData = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
 
   const rerender = () => setRefreshKey((k) => k + 1);
@@ -55,7 +55,7 @@ export const useJobsiteData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey]);
+  }, [refreshKey, page, pageSize]);
 
   return {
     jobsiteDetails,

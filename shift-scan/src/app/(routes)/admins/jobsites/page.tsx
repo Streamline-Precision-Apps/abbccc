@@ -282,27 +282,28 @@ export default function JobsitePage() {
           </Button>
         </div>
       </div>
-
-      <ScrollArea
-        alwaysVisible
-        className="h-[85vh] w-full  bg-white rounded-lg  border border-slate-200 relative pr-2"
-      >
-        <JobsiteTable
-          jobsiteDetails={paginatedJobsites}
-          openHandleDelete={openHandleDelete}
-          openHandleEdit={openHandleEdit}
-          openHandleQr={openHandleQr}
-        />
-        <ScrollBar orientation="vertical" />
-        <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-          <ScrollBar
-            orientation="horizontal"
-            className="w-full h-3 ml-2 mr-2 rounded-full"
+      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        <ScrollArea
+          alwaysVisible
+          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
+        >
+          <JobsiteTable
+            jobsiteDetails={paginatedJobsites}
+            openHandleDelete={openHandleDelete}
+            openHandleEdit={openHandleEdit}
+            openHandleQr={openHandleQr}
           />
-        </div>
+          <ScrollBar orientation="vertical" />
+          <div className="h-1  absolute bottom-0 right-0 left-0">
+            <ScrollBar
+              orientation="horizontal"
+              className="w-full h-3 ml-2 mr-2 rounded-full"
+            />
+          </div>
+        </ScrollArea>
         {/* Pagination Controls */}
         {totalPages && (
-          <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
             <div className="text-xs text-gray-600">
               Showing page {page} of {totalPages} ({total} total)
             </div>
@@ -352,7 +353,7 @@ export default function JobsitePage() {
                   setPage(1);
                 }}
               >
-                {[5, 10, 20, 50].map((size) => (
+                {[25, 50, 75, 100].map((size) => (
                   <option key={size} value={size}>
                     {size} Rows
                   </option>
@@ -361,7 +362,7 @@ export default function JobsitePage() {
             </div>
           </div>
         )}
-      </ScrollArea>
+      </div>
       {editJobsiteModal && pendingEditId && (
         <EditJobsiteModal
           cancel={() => setEditJobsiteModal(false)}

@@ -35,7 +35,7 @@ export default function JobsiteTable({
   ];
 
   return (
-    <Table className="w-full">
+    <Table className="w-full mb-10">
       <TableHeader>
         <TableRow>
           {header.map((h) => (
