@@ -201,7 +201,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
       </Bases>
     );
   }
-  if (step === 1 && !reviewYourTeam) {
+  // Step 1: Review Your Day - Always shown for everyone
+  if (step === 1) {
     return (
       <ReviewYourDay
         handleClick={handleNextStep}
@@ -212,7 +213,9 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
       />
     );
   }
-  if (step === 1 && reviewYourTeam) {
+
+  // Step 2: Review Your Team - Only shown for managers with team members
+  if (step === 2 && reviewYourTeam) {
     return (
       <ReviewYourTeam
         handleClick={handleNextStep}
@@ -230,7 +233,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
     );
   }
 
-  if (step === 2 && editFilter !== null) {
+  if (step === 3 && editFilter !== null) {
     return (
       <EditTeamTimeSheet
         prevStep={prevStep}
@@ -240,7 +243,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         setFocusIds={setFocusIds}
       />
     );
-  } else if (step === 2) {
+  } else if ((step === 2 && !reviewYourTeam) || (step === 3 && reviewYourTeam && editFilter === null)) {
+    // PreInjuryReport for non-managers at step 2, or managers at step 3 (after team review)
     return (
       <PreInjuryReport
         handleCheckboxChange={handleCheckboxChange}
@@ -251,7 +255,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         prevStep={prevStep}
       />
     );
-  } else if (step === 3 && path === "Injury") {
+  } else if ((step === 3 && !reviewYourTeam && path === "Injury") || (step === 4 && reviewYourTeam && path === "Injury")) {
+    // Injury Report step - adjust step number based on whether team review was shown
     return (
       <InjuryReportContent
         base64String={base64String}
@@ -259,7 +264,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         prevStep={prevStep}
       />
     );
-  } else if (step === 3 && path === "clockOut") {
+  } else if ((step === 3 && !reviewYourTeam && path === "clockOut") || (step === 4 && reviewYourTeam && path === "clockOut")) {
+    // Final Clock-Out step - adjust step number based on whether team review was shown
     return (
       <LaborClockOut
         prevStep={prevStep}
