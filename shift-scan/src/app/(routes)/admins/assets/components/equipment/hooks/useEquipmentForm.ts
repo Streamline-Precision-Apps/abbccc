@@ -12,6 +12,7 @@ import {
   deleteEquipment,
 } from "@/actions/AssetActions";
 import { Equipment } from "../../../types";
+import { ApprovalStatus } from "@/lib/enums";
 
 interface UseEquipmentFormProps {
   selectEquipment: Equipment | null;
@@ -217,12 +218,8 @@ export const useEquipmentForm = ({
           name: result.data.name,
           description: result.data.description || "",
           equipmentTag: result.data.equipmentTag,
-          approvalStatus:
-            result.data.approvalStatus === 'IN_PROGRESS'
-              ? 'PENDING'
-              : (['PENDING', 'APPROVED', 'REJECTED', 'CHANGES_REQUESTED'].includes(result.data.approvalStatus)
-                  ? result.data.approvalStatus
-                  : 'PENDING'),
+
+          approvalStatus: result.data.approvalStatus as ApprovalStatus,
           state: result.data.state,
           isDisabledByAdmin: result.data.isDisabledByAdmin,
           overWeight: result.data.overWeight ?? false,

@@ -89,7 +89,9 @@ model TruckingLog {
   timeSheetId       String
   laborType         String
   taskName          String?
-  equipmentId       String?
+  equipmentId       String? // this is the truck switch to equipment hauled
+  trailerNumber     String? // make connection to trailer
+  truckNumber       String? // make connection to truck
   startingMileage   Int?
   endingMileage     Int?
   truckLaborLogId   String?
@@ -120,17 +122,21 @@ model StateMileage {
 }
 
 model Material {
-  id                 String      @id @default(uuid())
+  id                 String        @id @default(uuid())
   truckingLogId      String
   LocationOfMaterial String?
   name               String?
-  quantity           Int?
+  quantity           Float? // chaged to float
+  unit               materialUnit?
   materialWeight     Float?
-  lightWeight        Float?
-  grossWeight        Float?
   loadType           LoadType?
-  createdAt          DateTime?   @default(now())
-  TruckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+  createdAt          DateTime?     @default(now())
+  TruckingLog        TruckingLog   @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+}
+
+enum materialUnit {
+  TONS
+  YARDS
 }
 
 model RefuelLog {
@@ -149,6 +155,8 @@ model EquipmentHauled {
   id            String      @id @default(uuid())
   truckingLogId String
   equipmentId   String?
+  startMileage  Int?
+  endMileage    Int?
   createdAt     DateTime    @default(now())
   jobSiteId     String?
   Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
