@@ -716,25 +716,28 @@ export async function deleteEquipment(id: string) {
 /**
  * Server action to create a new cost code
  */
-export async function createCostCode(costCodeData: {
-  cCNumber: string;
-  cCName: string;
+export async function createCostCode(payload: {
+  code: string;
+  name: string;
   isActive: boolean;
-  CCTags?: { id: string; name: string }[];
+  CCTags: {
+    id: string;
+    name: string;
+  }[];
 }) {
   console.log("Creating new cost code...");
-  console.log(costCodeData);
+  console.log(payload);
 
   try {
     // Validate required fields
-    if (!costCodeData.cCName?.trim()) {
+    if (!payload.name?.trim()) {
       throw new Error("Cost code name is required");
     }
 
     // Check if cost code with the same name already exists
     const existingCostCode = await prisma.costCode.findUnique({
       where: {
-        name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
+        name: `${payload.code.trim()} ${payload.name.trim()}`,
       },
     });
 
@@ -745,10 +748,10 @@ export async function createCostCode(costCodeData: {
     // Create the new cost code
     const newCostCode = await prisma.costCode.create({
       data: {
-        name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
-        isActive: costCodeData.isActive,
+        name: `${payload.code.trim()} ${payload.name.trim()}`,
+        isActive: payload.isActive,
         CCTags: {
-          connect: costCodeData.CCTags?.map((tag) => ({ id: tag.id })) || [],
+          connect: payload.CCTags?.map((tag) => ({ id: tag.id })) || [],
         },
       },
     });
