@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 export type JobsiteSummary = {
   id: string;
   name: string;
+  qrId: string;
   description: string;
   isActive: boolean;
   approvalStatus: ApprovalStatus;

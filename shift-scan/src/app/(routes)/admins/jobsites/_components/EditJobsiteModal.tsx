@@ -24,7 +24,7 @@ export default function EditJobsiteModal({
 }) {
   const { jobSiteDetails, tagSummaries, clients, loading } =
     useJobsiteDataById(pendingEditId);
-  const [formData, setFormData] = useState<Jobsite | null>(null);
+  const [formData, setFormData] = useState<Jobsite>();
   const [originalForm, setOriginalForm] = useState<Jobsite | null>(null);
 
   useEffect(() => {
@@ -88,6 +88,14 @@ export default function EditJobsiteModal({
       </div>
     );
   }
+
+  // Merge selected tags into tagSummaries to ensure all selected tags are present in options
+  const allTags = [
+    ...tagSummaries,
+    ...formData.CCTags.filter(
+      (tag) => !tagSummaries.some((t) => t.id === tag.id)
+    ),
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -199,7 +207,7 @@ export default function EditJobsiteModal({
                   Cost Code Tags
                 </Label>
                 <Combobox
-                  options={tagSummaries.map((tag) => ({
+                  options={allTags.map((tag) => ({
                     label: tag.name,
                     value: tag.id,
                   }))}
