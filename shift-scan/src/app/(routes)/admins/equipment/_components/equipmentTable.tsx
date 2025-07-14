@@ -14,8 +14,10 @@ export default function EquipmentTable({
   equipmentDetails,
   openHandleDelete,
   openHandleEdit,
+  openHandleQr,
 }: {
   equipmentDetails: EquipmentSummary[];
+  openHandleQr: (id: string) => void;
   openHandleDelete: (id: string) => void;
   openHandleEdit: (id: string) => void;
 }) {
@@ -89,6 +91,13 @@ export default function EquipmentTable({
             </TableCell>
             <TableCell className="text-xs text-center">
               <div className="flex flex-row ">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openHandleQr(equipment.id)}
+                >
+                  <img src="/qrCode.svg" alt="Edit" className="w-4 h-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"
