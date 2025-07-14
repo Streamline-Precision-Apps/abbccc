@@ -17,6 +17,7 @@ import {
 import { deleteEquipment } from "@/actions/AssetActions";
 import EditEquipmentModal from "./_components/EditEquipmentModal";
 import CreateEquipmentModal from "./_components/CreateEquipmentModal";
+import { Badge } from "@/components/ui/badge";
 
 export default function EquipmentPage() {
   const { setOpen, open } = useSidebar();
@@ -29,6 +30,9 @@ export default function EquipmentPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+
+  //Approval Button States
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
@@ -54,8 +58,14 @@ export default function EquipmentPage() {
     setPendingDeleteId(null);
   };
 
-  // Filter equipment by name, make, or model
+  // Count all pending items
+  const pendingCount = equipmentDetails.filter(
+    (item) => item.approvalStatus === "PENDING"
+  ).length;
+
+  // Filter equipment by name, make, or model, and by approval status if showPendingOnly is active
   const filteredEquipment = equipmentDetails.filter((item) => {
+    if (showPendingOnly && item.approvalStatus !== "PENDING") return false;
     const term = searchTerm.trim().toLowerCase();
     if (!term) return true;
     const nameMatch = item.name.toLowerCase().includes(term);
@@ -111,21 +121,33 @@ export default function EquipmentPage() {
           </div>
         </div>
         <div className="flex flex-row justify-end w-full gap-4">
-          <Button>
-            <img
-              src="/plus-white.svg"
-              alt="Add Equipment"
-              className="w-4 h-4"
-            />
-            <p className="text-left text-xs text-white">Approve</p>
-          </Button>
           <Button onClick={() => setCreateEquipmentModal(true)}>
             <img
               src="/plus-white.svg"
               alt="Add Equipment"
               className="w-4 h-4"
             />
-            <p className="text-left text-xs text-white">Create Equipment</p>
+            <p className="text-left text-xs text-white">New Equipment</p>
+          </Button>
+          <Button
+            onClick={() => setShowPendingOnly(!showPendingOnly)}
+            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
+              showPendingOnly ? "ring-2 ring-red-400" : ""
+            }`}
+          >
+            <div className="flex flex-row items-center">
+              <img
+                src="/inbox-white.svg"
+                alt="Approval"
+                className="h-4 w-4 mr-2"
+              />
+              <p className="text-white text-sm font-extrabold">Approval</p>
+              {pendingCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                  {pendingCount}
+                </Badge>
+              )}
+            </div>
           </Button>
         </div>
       </div>
@@ -151,6 +173,7 @@ export default function EquipmentPage() {
         <EditEquipmentModal
           cancel={() => setEditEquipmentModal(false)}
           pendingEditId={pendingEditId}
+          rerender={rerender}
         />
       )}
       {createEquipmentModal && (
