@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
 import SearchBar from "../personnel/components/SearchBar";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import JobsiteTable from "./_components/jobsiteTable";
 import QRCode from "qrcode";
 import {
@@ -14,17 +14,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteEquipment } from "@/actions/AssetActions";
+import { deleteJobsite } from "@/actions/AssetActions";
 
 import { Badge } from "@/components/ui/badge";
 import { JobsiteSummary, useJobsiteData } from "./_components/useJobsiteData";
 import EditJobsiteModal from "./_components/EditJobsiteModal";
 import CreateJobsiteModal from "./_components/CreateJobsiteModal";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 export default function JobsitePage() {
   const { setOpen, open } = useSidebar();
   const [searchTerm, setSearchTerm] = useState("");
-  const { loading, jobsiteDetails, rerender } = useJobsiteData();
+  const {
+    loading,
+    jobsiteDetails,
+    rerender,
+    total,
+    page,
+    pageSize,
+    setPage,
+    setPageSize,
+  } = useJobsiteData();
 
   // State for modals
   const [editJobsiteModal, setEditJobsiteModal] = useState(false);
@@ -36,8 +54,10 @@ export default function JobsitePage() {
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [pendingQrId, setPendingQrId] = useState<string | null>(null);
 
-  //Approval Button States
+  // Approval Button States
   const [showPendingOnly, setShowPendingOnly] = useState(false);
+
+  // Pagination state
 
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
@@ -51,7 +71,7 @@ export default function JobsitePage() {
 
   const confirmDelete = async () => {
     if (pendingDeleteId) {
-      await deleteEquipment(pendingDeleteId);
+      await deleteJobsite(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
       rerender();
@@ -68,13 +88,28 @@ export default function JobsitePage() {
     (item) => item.approvalStatus === "PENDING"
   ).length;
 
-  // Filter job sites by name and by approval status if showPendingOnly is active
+  // Filter job sites by name or client name and by approval status if showPendingOnly is active
   const filteredJobsites = jobsiteDetails.filter((item) => {
     if (showPendingOnly && item.approvalStatus !== "PENDING") return false;
     const term = searchTerm.trim().toLowerCase();
-    if (!term) return true;
-    return item.name.toLowerCase().includes(term);
+    if (!term || term.length < 3) return true;
+    const jobsiteName = item.name?.toLowerCase() || "";
+    const clientName = item.Client?.name?.toLowerCase() || "";
+    return jobsiteName.includes(term) || clientName.includes(term);
   });
+
+  // Pagination logic
+  const totalJobsites = filteredJobsites.length;
+  const totalPages = Math.ceil(totalJobsites / pageSize);
+  const paginatedJobsites = filteredJobsites.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
+  // Reset to page 1 if search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, showPendingOnly]);
 
   const openHandleQr = (id: string) => {
     setPendingQrId(id);
@@ -253,7 +288,7 @@ export default function JobsitePage() {
         className="h-[85vh] w-full  bg-white rounded-lg  border border-slate-200 relative pr-2"
       >
         <JobsiteTable
-          jobsiteDetails={filteredJobsites}
+          jobsiteDetails={paginatedJobsites}
           openHandleDelete={openHandleDelete}
           openHandleEdit={openHandleEdit}
           openHandleQr={openHandleQr}
@@ -265,6 +300,67 @@ export default function JobsitePage() {
             className="w-full h-3 ml-2 mr-2 rounded-full"
           />
         </div>
+        {/* Pagination Controls */}
+        {totalPages && (
+          <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+            <div className="text-xs text-gray-600">
+              Showing page {page} of {totalPages} ({total} total)
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.max(1, page - 1));
+                      }}
+                      aria-disabled={page === 1}
+                      tabIndex={page === 1 ? -1 : 0}
+                      style={{
+                        pointerEvents: page === 1 ? "none" : undefined,
+                        opacity: page === 1 ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <span className="text-xs border rounded py-1 px-2">
+                      {page}
+                    </span>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.min(totalPages, page + 1));
+                      }}
+                      aria-disabled={page === totalPages}
+                      tabIndex={page === totalPages ? -1 : 0}
+                      style={{
+                        pointerEvents: page === totalPages ? "none" : undefined,
+                        opacity: page === totalPages ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+              <select
+                className="ml-2 px-1 py-1 rounded text-xs border"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {[5, 10, 20, 50].map((size) => (
+                  <option key={size} value={size}>
+                    {size} Rows
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </ScrollArea>
       {editJobsiteModal && pendingEditId && (
         <EditJobsiteModal

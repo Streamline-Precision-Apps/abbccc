@@ -3,13 +3,8 @@ import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
-
-/**
- * Get summary information of all jobsites (just id and name)
- * Used for lightweight jobsite listing in admin assets page
- */
-export async function GET() {
+export const dynamic = "force-dynamic";
+export async function GET(req: Request) {
   try {
     // Authenticate the user
     const session = await auth();
@@ -19,8 +14,20 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch only essential fields from jobsites
+    // Parse query params for pagination
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    // Fetch total count for pagination
+    const total = await prisma.jobsite.count();
+
+    // Fetch only essential fields from jobsites, paginated
     const jobsiteSummary = await prisma.jobsite.findMany({
+      skip,
+      take,
       select: {
         id: true,
         name: true,
@@ -51,14 +58,13 @@ export async function GET() {
       },
     });
 
-    if (!jobsiteSummary || jobsiteSummary.length === 0) {
-      return NextResponse.json(
-        { message: "No jobsites found." },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(jobsiteSummary);
+    return NextResponse.json({
+      jobsites: jobsiteSummary,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    });
   } catch (error) {
     Sentry.captureException(error);
     console.error("Error fetching jobsite summary:", error);

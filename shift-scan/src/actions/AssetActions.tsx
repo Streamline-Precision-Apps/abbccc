@@ -663,6 +663,7 @@ export async function deleteJobsite(id: string) {
     revalidateTag("jobsites");
     revalidateTag("assets");
     revalidatePath("/admins/assets");
+    revalidatePath("/admins/jobsites");
 
     return { success: true, message: "Jobsite deleted successfully" };
   } catch (error) {
