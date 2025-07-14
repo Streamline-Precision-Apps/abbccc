@@ -14,7 +14,6 @@ export default function EquipmentTable({
   equipmentDetails,
   openHandleDelete,
   openHandleEdit,
-  openHandleQr,
 }: {
   equipmentDetails: EquipmentSummary[];
   openHandleQr: (id: string) => void;
@@ -25,9 +24,9 @@ export default function EquipmentTable({
     "ID",
     "Name",
     "Description",
-    "Vehicle Make",
-    "Vehicle Model",
-    "Vehicle Year",
+    "Make",
+    "Model",
+    "Year",
     "Equipment Type",
     "Equipment State",
     "Approval Status",
@@ -35,6 +34,10 @@ export default function EquipmentTable({
     "Updated At",
     "Actions",
   ];
+
+  function openHandleQr(id: string): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <Table className="w-full">
@@ -57,37 +60,37 @@ export default function EquipmentTable({
             key={equipment.id}
           >
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.id}
+              {equipment.id || "-"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.name}
+              {equipment.name || "-"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.description}
+              {equipment.description || "-"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentVehicleInfo?.make}
+              {equipment.equipmentVehicleInfo?.make || "-"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentVehicleInfo?.model}
+              {equipment.equipmentVehicleInfo?.model || "-"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentVehicleInfo?.year}
+              {equipment.equipmentVehicleInfo?.year || "-"}
             </TableCell>
             <TableCell className=" border-r border-gray-200 text-xs text-center">
-              {equipment.equipmentTag}
+              {equipment.equipmentTag || "-"}
             </TableCell>
             <TableCell className="border-r border-gray-200 text-xs text-center">
-              {equipment.state}
+              {equipment.state || "-"}
             </TableCell>
             <TableCell className="text-xs border-r border-gray-200 text-center">
-              {equipment.approvalStatus}
+              {equipment.approvalStatus || "-"}
             </TableCell>
             <TableCell className="border-r border-gray-200  text-xs text-center">
-              {format(equipment.createdAt, "MM/dd/yy")}
+              {format(equipment.createdAt, "MM/dd/yy") || "-"}
             </TableCell>
             <TableCell className="border-r border-gray-200 text-xs text-center">
-              {format(equipment.updatedAt, "MM/dd/yy")}
+              {format(equipment.updatedAt, "MM/dd/yy") || "-"}
             </TableCell>
             <TableCell className="text-xs text-center">
               <div className="flex flex-row ">

@@ -24,11 +24,10 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationPrevious,
   PaginationNext,
-  PaginationEllipsis,
 } from "@/components/ui/pagination";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function JobsitePage() {
   const { setOpen, open } = useSidebar();
@@ -287,6 +286,13 @@ export default function JobsitePage() {
           alwaysVisible
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
         >
+          {/* Loading overlay */}
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
           <JobsiteTable
             jobsiteDetails={paginatedJobsites}
             openHandleDelete={openHandleDelete}

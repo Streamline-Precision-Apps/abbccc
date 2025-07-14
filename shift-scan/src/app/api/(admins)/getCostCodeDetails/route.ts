@@ -6,8 +6,8 @@ import { auth } from "@/auth";
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
 /**
- * Get summary information of all tags (just id and name)
- * Used for lightweight tag listing in admin assets page
+ * Get summary information of all cost codes (just id and name)
+ * Used for lightweight cost code listing in admin assets page
  */
 export async function GET(req: Request) {
   try {
@@ -18,8 +18,6 @@ export async function GET(req: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    // Parse query params for pagination
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
@@ -27,23 +25,33 @@ export async function GET(req: Request) {
     const take = pageSize;
 
     // Fetch total count for pagination
-    const total = await prisma.cCTag.count();
-
-    // Fetch only essential fields from tags
-    const tagSummary = await prisma.cCTag.findMany({
+    const total = await prisma.costCode.count();
+    // Fetch only essential fields from cost codes
+    const costCodeSummary = await prisma.costCode.findMany({
       skip,
       take,
+      include: {
+        CCTags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: {
         name: "asc",
       },
     });
 
-    if (!tagSummary || tagSummary.length === 0) {
-      return NextResponse.json({ message: "No tags found." }, { status: 404 });
+    if (!costCodeSummary || costCodeSummary.length === 0) {
+      return NextResponse.json(
+        { message: "No cost codes found." },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
-      tags: tagSummary,
+      costCodes: costCodeSummary,
       total,
       page,
       pageSize,
@@ -51,9 +59,11 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     Sentry.captureException(error);
-    console.error("Error fetching tag summary:", error);
+    console.error("Error fetching cost code summary:", error);
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to fetch tag summary";
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch cost code summary";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

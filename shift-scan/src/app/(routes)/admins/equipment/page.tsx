@@ -29,6 +29,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function EquipmentPage() {
   const { setOpen, open } = useSidebar();
@@ -280,6 +281,13 @@ export default function EquipmentPage() {
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
         <ScrollArea
           alwaysVisible
           className="h-[80vh] w-full  bg-slate-50 rounded-t-lg  border border-slate-200 relative pr-3 "
