@@ -2,7 +2,9 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { TimesheetFilter, JobsiteData, EquipmentData } from "@/lib/types";
-import TimeCardEquipmentLogs from "./TimeCardEquipmentLogs";
+import TimeCardEquipmentLogs, {
+  TimeCardEquipmentLogsRef,
+} from "./TimeCardEquipmentLogs";
 import TimeCardEquipmentRefuelLogs from "./TimeCardEquipmentRefuelLogs";
 import TimeCardHighlights from "./TimeCardHighlights";
 import TimeCardMechanicLogs, {
@@ -27,6 +29,7 @@ import {
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
 import { useTranslations } from "next-intl";
+import { RefObject } from "react";
 
 type ProcessedMaterialLog = {
   id: string;
@@ -128,6 +131,7 @@ interface TimeSheetRendererProps {
   handleSelectEntity: (id: string) => void;
   isReviewYourTeam?: boolean; // NEW: optional, defaults to false
   allEquipment: { id: string; qrId: string; name: string }[];
+  equipmentLogsRef?: RefObject<TimeCardEquipmentLogsRef>;
 }
 
 const getTypedOnDataChange = <T,>(
@@ -163,6 +167,7 @@ export default function TimeSheetRenderer({
   handleSelectEntity,
   isReviewYourTeam = false,
   allEquipment,
+  equipmentLogsRef,
 }: TimeSheetRendererProps) {
   const t = useTranslations("MyTeam");
   const isEmptyData = !data || (Array.isArray(data) && data.length === 0);
@@ -799,6 +804,7 @@ export default function TimeSheetRenderer({
 
           return (
             <TimeCardEquipmentLogs
+              ref={equipmentLogsRef}
               equipmentLogs={formattedData}
               edit={edit}
               manager={manager}
@@ -815,6 +821,7 @@ export default function TimeSheetRenderer({
         // Regular format from EditTeamTimeSheet
         return (
           <TimeCardEquipmentLogs
+            ref={equipmentLogsRef}
             equipmentLogs={data as EquipmentLogsData}
             edit={edit}
             manager={manager}
@@ -842,11 +849,77 @@ export default function TimeSheetRenderer({
             "employeeEquipmentLogId" in arr[0]
           );
         };
+
+        // Type guard for the specific API format with EmployeeEquipmentLogs
+        const hasEmployeeEquipmentLogs = (
+          item: unknown
+        ): item is { EmployeeEquipmentLogs: unknown[] } => {
+          return (
+            !!item &&
+            typeof item === "object" &&
+            "EmployeeEquipmentLogs" in item &&
+            Array.isArray(
+              (item as { EmployeeEquipmentLogs: unknown[] })
+                .EmployeeEquipmentLogs
+            )
+          );
+        };
+
         let logs: EquipmentRefuelLog[] = [];
+
+        console.log("equipmentRefuelLogs processing data:", data);
+
         if (Array.isArray(data)) {
           if (isEquipmentRefuelLogArray(data)) {
             logs = data;
+          } else if (data.length > 0 && hasEmployeeEquipmentLogs(data[0])) {
+            // Handle the specific API format: [{ EmployeeEquipmentLogs: [...] }]
+            console.log("Found EmployeeEquipmentLogs format");
+            logs = data.flatMap((item) => {
+              const equipmentLogsContainer = item as {
+                EmployeeEquipmentLogs: unknown[];
+              };
+              return equipmentLogsContainer.EmployeeEquipmentLogs.map(
+                (equipmentLog: unknown) => {
+                  const log = equipmentLog as {
+                    id: string;
+                    equipmentId: string;
+                    RefuelLog?: {
+                      id: string;
+                      gallonsRefueled: number | null;
+                    };
+                    Equipment?: {
+                      id: string;
+                      name: string;
+                    };
+                  };
+
+                  const equipmentId =
+                    log.Equipment?.id || log.equipmentId || "";
+                  const equipmentName = log.Equipment?.name || "";
+
+                  if (log.RefuelLog) {
+                    return {
+                      id: log.RefuelLog.id,
+                      equipmentId,
+                      equipmentName,
+                      gallonsRefueled: log.RefuelLog.gallonsRefueled ?? null,
+                      employeeEquipmentLogId: log.id,
+                    };
+                  } else {
+                    return {
+                      id: "",
+                      equipmentId,
+                      equipmentName,
+                      gallonsRefueled: null,
+                      employeeEquipmentLogId: log.id,
+                    };
+                  }
+                }
+              );
+            });
           } else {
+            // Handle other array formats (existing logic)
             logs = (data as unknown[]).flatMap((log) => {
               const equipmentLog = log as EquipmentLog;
               const equipmentId =
@@ -960,6 +1033,8 @@ export default function TimeSheetRenderer({
             ];
           }
         }
+
+        console.log("equipmentRefuelLogs processed logs:", logs);
         return (
           <TimeCardEquipmentRefuelLogs
             edit={edit}

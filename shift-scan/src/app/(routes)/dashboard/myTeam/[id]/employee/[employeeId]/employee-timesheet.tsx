@@ -44,6 +44,7 @@ import { updateEquipmentRefuelLogs } from "@/actions/myTeamsActions";
 import { flattenEquipmentLogs, isEquipmentLogsData } from "@/lib/types";
 import { flattenEquipmentRefuelLogs } from "@/lib/types";
 import { useAllEquipment } from "@/hooks/useAllEquipment";
+import { TimeCardEquipmentLogsRef } from "./TimeCardEquipmentLogs";
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -111,6 +112,7 @@ export interface EmployeeTimeSheetsProps {
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | TruckingMileageData
+      | MaintenanceLogData
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
@@ -139,6 +141,7 @@ export function EmployeeTimeSheets({
 }: EmployeeTimeSheetsProps): JSX.Element {
   // --- State ---
   const t = useTranslations("MyTeam");
+  const equipmentLogsRef = useRef<TimeCardEquipmentLogsRef>(null);
   const [changes, setChanges] = useState<
     | TimesheetHighlights[]
     | TruckingMaterialHaulLog[]
@@ -160,6 +163,7 @@ export function EmployeeTimeSheets({
       }[]
     | { id: string; gallonsRefueled?: number | null }[]
     | TruckingMileageData
+    | MaintenanceLogData
   >([]);
   const [originalData, setOriginalData] = useState<typeof data | null>(
     data ? JSON.parse(JSON.stringify(data)) : null
@@ -451,36 +455,45 @@ export function EmployeeTimeSheets({
         return;
       }
       if (timeSheetFilter === "equipmentLogs") {
-        if (!isEquipmentLogsData(changes)) {
-          console.warn("Invalid changes type for equipmentLogs");
+        // Get current updates from the equipment logs component using ref
+        const equipmentUpdates = equipmentLogsRef.current?.getCurrentUpdates();
+        if (!equipmentUpdates || equipmentUpdates.length === 0) {
+          console.warn("No equipment logs updates found.");
           return;
         }
-        const flattened = flattenEquipmentLogs(changes);
-        const updates = flattened.filter(
+
+        const validUpdates = equipmentUpdates.filter(
           (log) => log && log.id && log.startTime && log.endTime
         );
-        if (updates.length === 0) {
+
+        if (validUpdates.length === 0) {
           console.warn("No valid equipment logs to update.");
           return;
         }
-        const result = await parentOnSaveChanges(updates);
+
+        console.log("Saving equipment logs updates:", validUpdates);
+        const result = await parentOnSaveChanges(validUpdates);
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
         return;
       }
       if (timeSheetFilter === "equipmentRefuelLogs") {
-        // Use flattenEquipmentRefuelLogs to get the correct flat array
-        const updates = flattenEquipmentRefuelLogs(
-          Array.isArray(changes)
-            ? (changes as EmployeeEquipmentLogWithRefuel[])
-            : []
-        );
-        if (updates.length === 0) {
+        // Handle EquipmentRefuelLog[] directly (already flattened from TimeCardEquipmentRefuelLogs)
+        const equipmentRefuelUpdates = Array.isArray(changes)
+          ? (changes as { id: string; gallonsRefueled?: number | null }[])
+          : [];
+
+        if (equipmentRefuelUpdates.length === 0) {
           console.warn("No valid equipment refuel logs to update.");
           return;
         }
-        const result = await updateEquipmentRefuelLogs(updates);
+
+        console.log(
+          "Saving equipment refuel logs updates:",
+          equipmentRefuelUpdates
+        );
+        const result = await updateEquipmentRefuelLogs(equipmentRefuelUpdates);
         console.log("Equipment refuel log update result:", result);
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
@@ -634,6 +647,7 @@ export function EmployeeTimeSheets({
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | TruckingMileageData
+      | MaintenanceLogData
   ) => {
     if (timeSheetFilter === "truckingMaterialHaulLogs") {
       setChanges(updatedData as TruckingMaterialHaulLogData);
@@ -643,6 +657,24 @@ export function EmployeeTimeSheets({
     if (timeSheetFilter === "truckingRefuelLogs") {
       setChanges(updatedData as TruckingRefuelLogData);
       setNewData(updatedData as TruckingRefuelLogData);
+      return;
+    }
+    if (timeSheetFilter === "equipmentRefuelLogs") {
+      // Handle EquipmentRefuelLog[] - only keep id and gallonsRefueled for saving
+      console.log("handleDataChange equipmentRefuelLogs:", updatedData);
+      const equipmentRefuelChanges = Array.isArray(updatedData)
+        ? (updatedData as { id: string; gallonsRefueled?: number | null }[])
+        : [];
+      console.log("equipmentRefuelChanges:", equipmentRefuelChanges);
+      setChanges(equipmentRefuelChanges);
+      setNewData(updatedData as typeof newData);
+      return;
+    }
+    if (timeSheetFilter === "mechanicLogs") {
+      // Handle MaintenanceLogData
+      console.log("handleDataChange mechanicLogs:", updatedData);
+      setChanges(updatedData as MaintenanceLogData);
+      setNewData(updatedData as typeof newData);
       return;
     }
     const changesArray = Array.isArray(updatedData)
@@ -724,7 +756,7 @@ export function EmployeeTimeSheets({
                 <option value="equipmentLogs">{t("equipmentLogs")}</option>
                 <option value="equipmentRefuelLogs">
                   {t("equipmentRefuelLogs")}
-                </option>{" "}
+                </option>
                 <option value="mechanicLogs">{t("mechanicLogs")}</option>
               </Selects>
             </Holds>
@@ -740,9 +772,9 @@ export function EmployeeTimeSheets({
                     onClick={handleSave}
                     disabled={
                       loading ||
-                      !Array.isArray(changes) ||
-                      changes.length === 0 ||
-                      isSaving
+                      isSaving ||
+                      (timeSheetFilter !== "equipmentLogs" &&
+                        (!Array.isArray(changes) || changes.length === 0))
                     }
                   >
                     {isSaving ? (
@@ -814,6 +846,7 @@ export function EmployeeTimeSheets({
               handleSelectEntity={handleSelectEntity}
               isReviewYourTeam={isReviewYourTeam}
               allEquipment={allEquipment}
+              equipmentLogsRef={equipmentLogsRef}
             />
           )}
         </Contents>
