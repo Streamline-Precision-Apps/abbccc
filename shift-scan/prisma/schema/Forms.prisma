@@ -1,15 +1,16 @@
 model FormTemplate {
-  id                  String           @id @default(uuid())
+  id                  String               @id @default(uuid())
   companyId           String
   name                String
-  formType            String?
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  isActive            Boolean          @default(false)
-  isSignatureRequired Boolean          @default(false)
+  description         String? // description of the form
+  formType            FormTemplateCategory @default(GENERAL)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  isActive            FormTemplateStatus   @default(DRAFT)
+  isSignatureRequired Boolean              @default(false)
   Submissions         FormSubmission[]
-  Company             Company          @relation(fields: [companyId], references: [id])
-  FormGrouping        FormGrouping[]   @relation("FormGroupingToFormTemplate")
+  Company             Company              @relation(fields: [companyId], references: [id])
+  FormGrouping        FormGrouping[]       @relation("FormGroupingToFormTemplate")
 }
 
 model FormGrouping {
@@ -23,15 +24,16 @@ model FormGrouping {
 model FormField {
   id             String            @id @default(uuid())
   formGroupingId String
-  label          String
-  name           String
+  label          String // question or field name
   type           FieldType
   required       Boolean           @default(false)
   order          Int
-  defaultValue   String?
   placeholder    String?
+  minLength      Int? // used for text fields to set minimum character length
   maxLength      Int?
-  helperText     String?
+  multiple       Boolean?          @default(false) // used for select fields to allow multiple selections to be made
+  content        String?
+  filter         String? // used for filtering options in select fields
   FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
   Options        FormFieldOption[]
 }
@@ -69,21 +71,4 @@ model FormApproval {
   comment          String?
   FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   Approver         User?          @relation(fields: [signedBy], references: [id])
-}
-
-enum FormStatus {
-  PENDING
-  APPROVED
-  DENIED
-  DRAFT
-}
-
-enum FieldType {
-  TEXT
-  TEXTAREA
-  NUMBER
-  DATE
-  FILE
-  DROPDOWN
-  CHECKBOX
 }

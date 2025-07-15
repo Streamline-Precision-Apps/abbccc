@@ -27,7 +27,7 @@ export default function TruckDriverNotes({
         maxLength={40}
         value={notes}
         placeholder={t("WriteYourNotesHere")}
-        className="h-full w-full text-base focus:outline-none focus:ring-transparent focus:border-current "
+        className="h-full w-full text-base focus:outline-hidden focus:ring-transparent focus:border-current "
         onChange={(e) => setNotes(e.target.value)}
         onBlur={(e) => UpdateNotes()}
       />

@@ -21,7 +21,7 @@ type EquipmentRefuelLog = {
 type TimeCardEquipmentRefuelLogsProps = {
   edit: boolean;
   manager: string;
-  equipmentRefuelLogs: EmployeeEquipmentLogWithRefuel[] | null;
+  equipmentRefuelLogs: EquipmentRefuelLog[] | null;
   onDataChange: (data: EquipmentRefuelLog[]) => void;
   focusIds: string[];
   setFocusIds: (ids: string[]) => void;
@@ -54,7 +54,7 @@ export default function TimeCardEquipmentRefuelLogs({
     refuelId: string,
     logId: string,
     fieldName: string,
-    originalValue: any
+    originalValue: string | number | null
   ) => {
     const key = getInputKey(refuelId, logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -65,48 +65,14 @@ export default function TimeCardEquipmentRefuelLogs({
     refuelId: string,
     logId: string,
     fieldName: string,
-    value: any
+    value: string | number | null
   ) => {
     setInputValues((prev) => ({
       ...prev,
       [getInputKey(refuelId, logId, fieldName)]: value,
     }));
   };
-  // Update parent state only when field loses focus (onBlur)
-  const handleBlur = (refuelId: string, logId: string, field: string) => {
-    const key = getInputKey(refuelId, logId, field);
-
-    if (key in inputValues) {
-      const value = inputValues[key];
-      // Make sure value is not null before passing to handleRefuelChange
-      if (value !== null) {
-        handleRefuelChange(refuelId, logId, value as string);
-      }
-
-      // Clear from local state to avoid duplicate processing
-      setInputValues((prev) => {
-        const newState = { ...prev };
-        delete newState[key];
-        return newState;
-      });
-    }
-  };
-
-  // Flatten the logs to pair each RefuelLog with its Equipment
-  const flattenRefuelLogs = useCallback(
-    (logs: EmployeeEquipmentLogWithRefuel[]): EquipmentRefuelLog[] => {
-      return logs.flatMap((log) =>
-        log.RefuelLogs.map((refuel) => ({
-          id: refuel.id,
-          equipmentId: log.Equipment?.id || "",
-          equipmentName: log.Equipment?.name || "",
-          gallonsRefueled: refuel.gallonsRefueled,
-          employeeEquipmentLogId: log.id,
-        }))
-      );
-    },
-    []
-  );
+  // Remove flattenRefuelLogs and reconstructEquipmentRefuelLogs, and update usages to work directly with EquipmentRefuelLog[]
 
   const [flattenedLogs, setFlattenedLogs] = useState<EquipmentRefuelLog[]>([]);
   const [changesWereMade, setChangesWereMade] = useState(false);
@@ -114,47 +80,14 @@ export default function TimeCardEquipmentRefuelLogs({
   // Reset when edit mode is turned off or when new data comes in
   useEffect(() => {
     if (equipmentRefuelLogs) {
-      const filteredLogs = equipmentRefuelLogs.filter(
-        (log) => log.RefuelLogs && log.RefuelLogs.length > 0
-      );
-      const newFlattenedLogs = flattenRefuelLogs(filteredLogs);
-
-      setFlattenedLogs(newFlattenedLogs);
+      setFlattenedLogs(equipmentRefuelLogs);
       setChangesWereMade(false);
-      if (!changesWereMade) {
-        setFlattenedLogs(newFlattenedLogs);
-      }
     } else {
       setFlattenedLogs([]);
     }
-  }, [equipmentRefuelLogs, flattenRefuelLogs]);
-
-  useEffect(() => {
-    // Flatten the logs to pair each RefuelLog with its Equipment
-    // If you use local state, sync it here
-    // setEditedEquipmentRefuelLogs(equipmentRefuelLogs ?? []);
   }, [equipmentRefuelLogs]);
 
-  // Helper to reconstruct the nested structure with updated gallons
-  const reconstructEquipmentRefuelLogs = (
-    original: EmployeeEquipmentLogWithRefuel[],
-    updated: EquipmentRefuelLog[]
-  ): EmployeeEquipmentLogWithRefuel[] => {
-    return original.map((log) => ({
-      ...log,
-      RefuelLogs: log.RefuelLogs.map((refuel) => {
-        const found = updated.find(
-          (u) => u.id === refuel.id && u.employeeEquipmentLogId === log.id
-        );
-        return found &&
-          typeof found.gallonsRefueled === "number" &&
-          found.gallonsRefueled !== null
-          ? { ...refuel, gallonsRefueled: found.gallonsRefueled }
-          : refuel;
-      }),
-    }));
-  };
-
+  // Update the value in the flat array and notify parent
   const handleRefuelChange = useCallback(
     (id: string, employeeEquipmentLogId: string, value: string) => {
       const updatedLogs = flattenedLogs.map((log) => {
@@ -162,27 +95,52 @@ export default function TimeCardEquipmentRefuelLogs({
           log.id === id &&
           log.employeeEquipmentLogId === employeeEquipmentLogId
         ) {
+          // Only update gallonsRefueled, keep other fields the same
           return {
             ...log,
-            gallonsRefueled: value ? Number(value) : null,
+            gallonsRefueled:
+              value !== "" && value !== null ? Number(value) : null,
           };
         }
         return log;
       });
-
       setChangesWereMade(true);
       setFlattenedLogs(updatedLogs);
-      // Reconstruct the nested structure and send to parent
-      if (equipmentRefuelLogs) {
-        const updatedNested = reconstructEquipmentRefuelLogs(
-          equipmentRefuelLogs,
-          updatedLogs
-        );
-        onDataChange(updatedNested as any); // Cast if needed for prop type
-      }
+      // Do NOT call onDataChange(updatedLogs) here, only call onBlur to avoid UI disappearing on every keystroke
     },
-    [flattenedLogs, onDataChange, equipmentRefuelLogs]
+    [flattenedLogs]
   );
+
+  // Only notify parent on blur (when editing is done)
+  const handleBlur = (refuelId: string, logId: string, field: string) => {
+    const key = getInputKey(refuelId, logId, field);
+    if (key in inputValues) {
+      const value = inputValues[key];
+      if (value !== null) {
+        // Update local state first
+        handleRefuelChange(refuelId, logId, value as string);
+        // Then notify parent with the latest flattenedLogs
+        setTimeout(() => {
+          onDataChange(
+            flattenedLogs.map((log) =>
+              log.id === refuelId && log.employeeEquipmentLogId === logId
+                ? {
+                    ...log,
+                    gallonsRefueled:
+                      value !== "" && value !== null ? Number(value) : null,
+                  }
+                : log
+            )
+          );
+        }, 0);
+      }
+      setInputValues((prev) => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }
+  };
 
   const isEmptyData = flattenedLogs.length === 0;
 
@@ -242,12 +200,14 @@ export default function TimeCardEquipmentRefuelLogs({
                           {" "}
                           <Inputs
                             type="number"
-                            value={getDisplayValue(
-                              log.id,
-                              log.employeeEquipmentLogId,
-                              "gallonsRefueled",
-                              log.gallonsRefueled?.toString() || ""
-                            )}
+                            value={
+                              getDisplayValue(
+                                log.id,
+                                log.employeeEquipmentLogId,
+                                "gallonsRefueled",
+                                log.gallonsRefueled?.toString() || ""
+                              ) ?? ""
+                            }
                             background={isFocused ? "orange" : "white"}
                             onChange={(e) =>
                               handleLocalChange(

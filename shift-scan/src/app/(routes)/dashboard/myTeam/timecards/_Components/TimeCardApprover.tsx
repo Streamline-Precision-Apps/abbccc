@@ -117,6 +117,7 @@ import {
   useRef,
   useState,
   useCallback,
+  use,
 } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -126,6 +127,7 @@ import Spinner from "@/components/(animations)/spinner";
 import EquipmentLogsSection from "./EquipmentLogsSection";
 import { ApproveUsersTimeSheets } from "@/actions/ManagerTimeCardActions";
 import { PullToRefresh } from "@/components/(animations)/pullToRefresh";
+import { useScrollSwipeHandlers } from "@/hooks/useScrollSwipeHandlers";
 
 export default function TimeCardApprover({
   loading,
@@ -149,6 +151,9 @@ export default function TimeCardApprover({
   const swipeRef = useRef<TinderSwipeRef>(null);
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
+
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollSwipeHandlers = useScrollSwipeHandlers(setIsScrolling);
 
   // Memoized calculation of total time for performance
   const calculateTotalTime = useCallback((timeSheets: TimeSheet[]): string => {
@@ -288,7 +293,7 @@ export default function TimeCardApprover({
       <Grids rows={"8"} className="h-full w-full pb-5">
         <Holds
           className={`${
-            completed ? "row-start-1 row-end-9" : "row-start-1 row-end-8"
+            completed ? "row-start-1 row-end-9" : "row-start-1 row-end-8 "
           } h-full w-full`}
         >
           <Contents>
@@ -362,6 +367,8 @@ export default function TimeCardApprover({
                       {viewOption === "highlight" && (
                         <GeneralReviewSection
                           currentTimeSheets={currentTimeSheets}
+                          scrollSwipeHandlers={scrollSwipeHandlers}
+                          isScrolling={isScrolling}
                         />
                       )}
                       {viewOption === "Trucking" && (
@@ -397,12 +404,15 @@ export default function TimeCardApprover({
         </Holds>
 
         {/* Controls - Only show when not loading and not completed */}
+
         {!loading && !completed && (
-          <CardControls
-            completed={completed}
-            handleEditClick={handleEditClick}
-            handleApproveClick={handleApproveClick}
-          />
+          <Holds className="row-start-8 row-end-9 w-full h-full">
+            <CardControls
+              completed={completed}
+              handleEditClick={handleEditClick}
+              handleApproveClick={handleApproveClick}
+            />
+          </Holds>
         )}
       </Grids>
     </Holds>

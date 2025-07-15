@@ -1,9 +1,9 @@
 export const getActivePage = (pathname: string) => {
-return {
+  return {
     isPersonnelPage: pathname.includes("/admins/personnel"),
     isAssetsPage: pathname.includes("/admins/assets"),
-    isReportsPage: pathname.includes("/admins/reports"),
+    isRecordsPage: pathname.includes("/admins/records"),
     isHomePage: pathname === "/admins",
     isInboxPage: pathname.includes("/admins/inbox"),
-};
+  };
 };

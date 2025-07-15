@@ -47,7 +47,7 @@ export default function HamburgerMenuNew() {
             alt="profile"
             className={
               image
-                ? "mx-auto w-16 h-auto border-[2px] border-black rounded-full justify-center"
+                ? "mx-auto w-16 h-auto border-2 border-black rounded-full justify-center"
                 : "mx-auto w-16 h-auto"
             }
           />

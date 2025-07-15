@@ -7,7 +7,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
-import { EquipmentStatus } from "@/lib/types";
+import { EquipmentState } from "@/lib/enums";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
@@ -17,7 +17,7 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { useNotification } from "@/app/context/NotificationContext";
 import { EquipmentLog, MaintenanceFormData, Priority } from "../types";
 import { Title } from "../../../mechanic/_components/Title";
-import { EquipmentState } from "@prisma/client";
+// Removed duplicate import of EquipmentState
 import { form } from "@nextui-org/theme";
 
 interface MaintenanceLogEquipmentProps {
@@ -66,19 +66,19 @@ export default function MaintenanceLogEquipment({
           formState.fullyOperational ? (
             <Holds className="row-start-1 row-end-8 h-full">
               <Holds className="flex justify-center items-center h-full w-full">
-                <Titles size="h3">Equipment Marked as Fully Operational</Titles>
+                <Titles size="h3">{t("EquipmentOperational")}</Titles>
               </Holds>
             </Holds>
           ) : (
             <Holds className="row-start-1 row-end-8 h-full">
               <Holds>
                 <Texts size="p6" text={"italic"} className="mb-2">
-                  {"To make a request please update the following fields:"}
+                  {t("UpdateFields")}
                 </Texts>
               </Holds>
               <Holds className="relative">
                 <Labels size="p6">
-                  Equipment Status <span className="text-red-500">*</span>
+                  {t("EquipmentStatus")} <span className="text-red-500">*</span>
                 </Labels>
                 <Selects
                   value={formState.equipment.status}
@@ -90,19 +90,19 @@ export default function MaintenanceLogEquipment({
                   }
                   className="w-full text-base text-center"
                 >
-                  <option value="AVAILABLE">Select a Status</option>
-                  <option value="MAINTENANCE">Maintenance Required</option>
-                  <option value="NEEDS_REPAIR">Needs Repair</option>
+                  <option value="AVAILABLE">{t("SelectAStatus")}</option>
+                  <option value="MAINTENANCE">{t("MaintenanceRequired")}</option>
+                  <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
                 </Selects>
               </Holds>
 
               <Holds className="relative">
                 <Labels size="p6">
-                  Equipment Issue <span className="text-red-500">*</span>
+                  {t("EquipmentIssue")} <span className="text-red-500">*</span>
                 </Labels>
                 <TextAreas
                   maxLength={40}
-                  placeholder="Describe the equipment issue..."
+                  placeholder={t("DescribeTheEquipmentIssue")}
                   value={formState.maintenanceId?.equipmentIssue || ""}
                   onChange={(e) =>
                     handleFieldChange(
@@ -124,10 +124,10 @@ export default function MaintenanceLogEquipment({
               </Holds>
 
               <Holds className="relative">
-                <Labels size="p6">Additional Information</Labels>
+                <Labels size="p6">{t("AdditionalInformation")}</Labels>
                 <TextAreas
                   maxLength={40}
-                  placeholder="Provide any additional information..."
+                  placeholder={t("ProvideAnyAdditionalInformation")}
                   value={formState.maintenanceId?.additionalInfo || ""}
                   onChange={(e) =>
                     handleFieldChange(
@@ -156,7 +156,7 @@ export default function MaintenanceLogEquipment({
                     className="mt-4 py-2"
                   >
                     <Holds className="flex  items-center justify-center">
-                      <Titles size="h6">{"Withdraw  Request"}</Titles>
+                      <Titles size="h6">{t("WithdrawRequest")}</Titles>
                     </Holds>
                   </Buttons>
                 )}
@@ -185,7 +185,7 @@ export default function MaintenanceLogEquipment({
                 onClick={handleConfirmDelete}
               >
                 <Holds>
-                  <Titles size="h5">{"yes, withdraw"}</Titles>
+                  <Titles size="h5">{t("YesWithdraw")}</Titles>
                 </Holds>
               </Buttons>
               <Buttons
@@ -195,7 +195,7 @@ export default function MaintenanceLogEquipment({
                 onClick={() => setShowConfirmDialog(false)}
               >
                 <Holds>
-                  <Titles size="h5">{"no, cancel"}</Titles>
+                  <Titles size="h5">{t("NoCancel")}</Titles>
                 </Holds>
               </Buttons>
             </Holds>

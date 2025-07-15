@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { UserSettings } from "@/lib/types";
-import { Prisma } from "@prisma/client";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -12,12 +11,78 @@ enum FormStatus {
   DRAFT = "DRAFT",
 }
 
-export async function updateSettings(data: UserSettings) {
-  const { userId, ...settings } = data;
-  await prisma.userSettings.update({
-    where: { userId: userId },
-    data: settings,
-  });
+// Accepts contact info and settings, updates User, Contacts, and UserSettings as needed
+export async function updateSettings(data: {
+  userId: string;
+  phoneNumber?: string;
+  email?: string;
+  emergencyContact?: string;
+  emergencyContactNumber?: string;
+  language?: string;
+  generalReminders?: boolean;
+  personalReminders?: boolean;
+  cameraAccess?: boolean;
+  locationAccess?: boolean;
+  cookiesAccess?: boolean;
+}) {
+  const {
+    userId,
+    phoneNumber,
+    email,
+    emergencyContact,
+    emergencyContactNumber,
+    ...settings
+  } = data;
+
+  // Update User email if provided
+  if (email !== undefined) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { email },
+    });
+  }
+
+  // Update Contacts info if provided
+  if (
+    phoneNumber !== undefined ||
+    emergencyContact !== undefined ||
+    emergencyContactNumber !== undefined
+  ) {
+    await prisma.contacts.upsert({
+      where: { userId },
+      update: {
+        phoneNumber,
+        emergencyContact,
+        emergencyContactNumber,
+      },
+      create: {
+        userId,
+        phoneNumber: phoneNumber || "",
+        emergencyContact: emergencyContact || "",
+        emergencyContactNumber: emergencyContactNumber || "",
+      },
+    });
+  }
+
+  // Update UserSettings if any settings provided
+  const userSettingsFields: (keyof typeof settings)[] = [
+    "language",
+    "generalReminders",
+    "personalReminders",
+    "cameraAccess",
+    "locationAccess",
+    "cookiesAccess",
+  ];
+  const hasSettings = userSettingsFields.some(
+    (key) => settings[key] !== undefined
+  );
+  if (hasSettings) {
+    await prisma.userSettings.update({
+      where: { userId },
+      data: settings,
+    });
+  }
+
   // Revalidate the path to show updated data
   revalidatePath("/hamburger/settings");
 }
@@ -43,11 +108,11 @@ export async function createFormSubmission(formData: FormData) {
       throw new Error("Form template not found");
     }
 
-    // Initialize the data object with field.name as keys
+    // Initialize the data object with field.label as keys and field.content as default value
     const initialData: Record<string, string> = {};
     for (const group of formTemplate.FormGrouping) {
       for (const field of group.Fields) {
-        initialData[field.name] = field.defaultValue || ""; // Set default values if available
+        initialData[field.label] = field.content || ""; // Set default values if available
       }
     }
 
@@ -382,14 +447,5 @@ export async function updateFormApproval(formData: FormData) {
     return { approval, updatedSubmission }; // Return both updated records
   } catch (error) {
     console.error("Error updating form approval:", error);
-
-    // Handle specific Prisma errors
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        throw new Error("Record not found. Please check the provided IDs.");
-      }
-    }
-
-    throw new Error("Failed to update form approval");
   }
 }

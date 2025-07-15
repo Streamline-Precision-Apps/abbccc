@@ -26,31 +26,16 @@ export async function GET(request: Request, { params }: { params: Params }) {
       return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });
     }
 
-    const currentDate = new Date();
-    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-
     const usersLog = await prisma.employeeEquipmentLog.findFirst({
       where: {
         id: formId,
-        employeeId: userId,
-        createdAt: {
-          lte: currentDate,
-          gte: past24Hours,
-        },
       },
       select: {
         id: true,
         equipmentId: true,
-        jobsiteId: true,
         startTime: true,
         endTime: true,
         comment: true,
-        createdAt: true,
-        updatedAt: true,
-        isFinished: true,
-        status: true,
-        workType: true,
-        relatedLogId: true,
         Equipment: {
           select: {
             id: true,
@@ -68,13 +53,13 @@ export async function GET(request: Request, { params }: { params: Params }) {
             },
           },
         },
-        RefuelLogs: {
+        RefuelLog: {
           select: {
             id: true,
             gallonsRefueled: true,
           },
         },
-        MaintenanceId: {
+        Maintenance: {
           select: {
             id: true,
             equipmentIssue: true,
@@ -86,7 +71,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
     if (!usersLog) {
       return NextResponse.json(
-        { error: "No log found for the given ID and timeframe" },
+        { error: "No log found for the given ID" },
         { status: 404 }
       );
     }

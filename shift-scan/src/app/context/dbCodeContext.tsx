@@ -71,6 +71,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           url === "/break" ||
           url === "/dashboard/truckingAssistant" ||
           url === "/dashboard/clock-out" ||
+          url === "/dashboard/qr-generator/add-equipment" ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getJobsites");

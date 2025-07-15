@@ -1,9 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
-
 import { revalidatePath, revalidateTag } from "next/cache";
-export type LoadType = "UNSCREENED" | "SCREENED";
 
 /* EQUIPMENT Hauled */
 //------------------------------------------------------------------
@@ -134,22 +132,21 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
   const equipmentQrId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
-  // First check if equipment exists
+  // First check if equipment exists, using qrId to find it
   const equipmentExists = await prisma.equipment.findUnique({
     where: { qrId: equipmentQrId },
   });
 
-
   if (!equipmentExists) {
-    throw new Error(`Equipment with ID ${equipmentQrId} not found`);
+    throw new Error(`Equipment with QR ID ${equipmentQrId} not found`);
   }
 
-  // Then proceed with update
+  // Then proceed with update, using the actual equipment's id for the relationship
   const updatedLog = await prisma.equipmentHauled.update({
     where: { id },
     data: {
       truckingLogId,
-      equipmentId: equipmentQrId,
+      equipmentId: equipmentExists.id, // Use equipment's id, not qrId
     },
   });
 
@@ -378,13 +375,15 @@ export async function createRefuelLog(formData: FormData) {
 export async function createRefuelEquipmentLog(formData: FormData) {
   console.log("Creating refuel logs...");
   console.log(formData);
-  
+
   const employeeEquipmentLogId = formData.get(
     "employeeEquipmentLogId"
   ) as string;
-  
+
   const gallonsRefueledStr = formData.get("gallonsRefueled") as string | null;
-  const gallonsRefueled = gallonsRefueledStr ? parseFloat(gallonsRefueledStr) : null;
+  const gallonsRefueled = gallonsRefueledStr
+    ? parseFloat(gallonsRefueledStr)
+    : null;
 
   const refueledLogs = await prisma.refuelLog.create({
     data: {
@@ -396,7 +395,7 @@ export async function createRefuelEquipmentLog(formData: FormData) {
   console.log(refueledLogs);
   revalidatePath(`/dashboard/equipment/${employeeEquipmentLogId}`);
   revalidatePath("/dashboard/truckingAssistant");
-  
+
   const { id } = refueledLogs;
   const data = { id, gallonsRefueled, employeeEquipmentLogId };
   return data;

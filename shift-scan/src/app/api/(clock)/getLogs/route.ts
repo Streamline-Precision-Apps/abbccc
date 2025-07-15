@@ -1,7 +1,8 @@
-"use server";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 // TypeScript Types for Safety and Consistency
 type EquipmentLog = {
@@ -13,7 +14,6 @@ type EquipmentLog = {
     qrId: string;
     name: string;
   } | null;
-  submitted: boolean;
 };
 
 type MaintenanceLog = {
@@ -51,18 +51,13 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const currentDate = new Date();
-  const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-
   try {
     // Fetch all data concurrently using Promise.all
     const [employeeLogs, maintenanceLogs, truckingLogs, tascoLogs] =
       await Promise.all([
         prisma.employeeEquipmentLog.findMany({
           where: {
-            employeeId: userId,
-            createdAt: { lte: currentDate, gte: past24Hours },
-            isFinished: false,
+            endTime: null,
           },
           include: {
             Equipment: {
@@ -158,18 +153,17 @@ export async function GET() {
     ): boolean => requiredFields.some((field) => !item[field]);
 
     // Mapping Employee Equipment Logs
-    const mappedEquipmentLogs: EquipmentLog[] = employeeLogs.map((log) => ({
+    const mappedEmployeeLogs: EquipmentLog[] = employeeLogs.map((log) => ({
       id: log.id.toString(),
       type: "equipment",
-      userId: log.employeeId,
+      userId: userId,
       equipment: log.Equipment
         ? {
-            id: log.Equipment.id,
+            id: log.Equipment.id.toString(),
             qrId: log.Equipment.qrId,
             name: log.Equipment.name,
           }
         : null,
-      submitted: log.isFinished,
     }));
 
     // Mapping Maintenance Logs
@@ -241,7 +235,7 @@ export async function GET() {
 
     // Combine All Logs
     const combinedLogs = [
-      ...mappedEquipmentLogs,
+      ...mappedEmployeeLogs,
       ...mappedMaintenanceLogs,
       ...mappedTruckingLogs,
       ...mappedTascoLog,
@@ -249,9 +243,10 @@ export async function GET() {
 
     return NextResponse.json(combinedLogs);
   } catch (error) {
-    console.error("Error fetching logs:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching logs:', error);
     return NextResponse.json(
-      { error: "Failed to fetch logs" },
+      { error: 'Failed to fetch logs' },
       { status: 500 }
     );
   }

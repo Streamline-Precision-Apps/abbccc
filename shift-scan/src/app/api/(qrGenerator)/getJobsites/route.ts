@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -32,9 +33,10 @@ export async function GET() {
 
     return NextResponse.json(jobCodes);
   } catch (error) {
-    console.error("Error fetching job codes:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching job codes:', error);
 
-    let errorMessage = "Failed to fetch job codes";
+    let errorMessage = 'Failed to fetch job codes';
     if (error instanceof Error) {
       errorMessage = error.message;
     }

@@ -2,17 +2,10 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import {
-  TimeSheet,
-  TimesheetHighlights,
-  TimesheetUpdate,
-  TruckingMileageUpdate,
-} from "@/lib/types";
-import { WorkType } from "@prisma/client";
-import { error } from "console";
+import { TimesheetHighlights, TimesheetUpdate } from "@/lib/types";
+import { WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
-import { form } from "@nextui-org/theme";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -189,6 +182,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
       data: {
         endTime: formatISO(formData.get("endTime") as string),
         comment: formData.get("timesheetComments") as string,
+        status: "PENDING",
       },
     });
     console.log("Timesheet updated successfully.");
@@ -221,6 +215,7 @@ export async function breakOutTimeSheet(formData: FormData) {
       data: {
         endTime,
         comment,
+        status: "PENDING",
       },
     });
     console.log("Timesheet updated successfully.");
@@ -342,7 +337,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
   try {
     const session = await auth();
     if (!session) {
-      throw error("Unauthorized user");
+      throw Error("Unauthorized user");
     }
     // verify data is passed through
     console.log("formData:", formData);
@@ -355,6 +350,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
       data: {
         endTime: formatISO(formData.get("endTime") as string),
         comment: formData.get("timeSheetComments") as string,
+        status: "PENDING",
       },
     });
 
@@ -423,6 +419,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -498,6 +495,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -551,6 +549,28 @@ export async function handleTascoTimeSheet(formData: FormData) {
         materialType = formData.get("materialType") as string;
       } else {
         materialType = undefined;
+      }      // Log the equipment ID for debugging
+      console.log("Equipment ID for connection:", equipmentId);
+
+      // First, check if equipment exists before trying to connect
+      let equipmentExists = false;
+      let equipmentData = null;
+      if (equipmentId) {
+        equipmentData = await prisma.equipment.findFirst({
+          where: { 
+            OR: [
+              { qrId: equipmentId },
+              { id: equipmentId }
+            ]
+          },
+        });
+        
+        if (equipmentData) {
+          equipmentExists = true;
+          console.log("Found equipment:", equipmentData);
+        } else {
+          console.error("No equipment found with ID or qrId:", equipmentId);
+        }
       }
 
       // Create a new TimeSheet
@@ -561,13 +581,12 @@ export async function handleTascoTimeSheet(formData: FormData) {
           User: { connect: { id: userId } },
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
-          workType: "TASCO",
-          TascoLogs: {
+          workType: "TASCO",          TascoLogs: {
             create: {
               shiftType,
               laborType: laborType,
-              ...(equipmentId && {
-                Equipment: { connect: { qrId: equipmentId } },
+              ...(equipmentExists && equipmentData && {
+                Equipment: { connect: { id: equipmentData.id } },
               }),
               ...(materialType && {
                 TascoMaterialTypes: { connect: { name: materialType } },
@@ -594,6 +613,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previousTimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -689,6 +709,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
           data: {
             endTime: formatISO(formData.get("endTime") as string),
             comment: previoustimeSheetComments,
+            status: "PENDING",
           },
         });
 
@@ -865,14 +886,6 @@ export async function returnToPrevWork(formData: FormData) {
     console.error("Error updating timesheet:", error);
   }
 }
-//---------
-//---------  Delete TimeSheet by id - will be used by Admin only
-//---------
-export async function deleteTimeSheet(id: string) {
-  await prisma.timeSheet.delete({
-    where: { id },
-  });
-}
 
 export async function updateTimesheetHighlights(
   updatedTimesheets: TimesheetUpdate[]
@@ -911,7 +924,10 @@ export async function updateTimesheetHighlights(
 }
 
 // Approve all pending timesheets for a user
-export async function approvePendingTimesheets(userId: string, managerName?: string) {
+export async function approvePendingTimesheets(
+  userId: string,
+  managerName?: string
+) {
   try {
     // Find all pending timesheets for the user
     const pendingTimesheets = await prisma.timeSheet.findMany({
@@ -932,7 +948,9 @@ export async function approvePendingTimesheets(userId: string, managerName?: str
       },
       data: {
         status: "APPROVED",
-        statusComment: managerName ? `Approved by ${managerName}` : "Approved by manager",
+        statusComment: managerName
+          ? `Approved by ${managerName}`
+          : "Approved by manager",
       },
     });
     revalidatePath("/dashboard/myTeam/timecards");

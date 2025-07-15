@@ -1,6 +1,7 @@
 "use server";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -8,16 +9,17 @@ export async function GET() {
 
     if (!tags || tags.length === 0) {
       return NextResponse.json(
-        { message: "No tags found" },
+        { message: 'No tags found' },
         { status: 404 }
       );
     }
 
     return NextResponse.json(tags);
   } catch (error) {
-    console.error("Error fetching tags:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching tags:', error);
 
-    let errorMessage = "Failed to fetch tags";
+    let errorMessage = 'Failed to fetch tags';
     if (error instanceof Error) {
       errorMessage = error.message;
     }

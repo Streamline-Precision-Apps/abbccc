@@ -5,6 +5,7 @@ import {
   Priority,
   WorkType,
   LoadType,
+  FormTemplateCategory,
 } from "@prisma/client";
 
 export const now = new Date();
@@ -13,16 +14,96 @@ export const now = new Date();
 function formatName(label: string): string {
   return label.toLowerCase().replace(/\s+/g, "_");
 }
+/* Addresses */
+export const initialAddresses: Prisma.AddressCreateInput[] = [
+  {
+    id: "1",
+    street: "120 S 100 W",
+    city: "Burley",
+    state: "ID",
+    zipCode: "83318",
+    country: "US",
+  },
+  {
+    id: "2",
+    street: "123 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "3",
+    street: "456 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "4",
+    street: "789 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "5",
+    street: "101 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "6",
+    street: "102 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "7",
+    street: "103 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "8",
+    street: "104 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "9",
+    street: "105 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+  {
+    id: "10",
+    street: "106 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+  },
+];
 
 /* COMPANY */
 export const initialCompany: Prisma.CompanyCreateInput[] = [
   {
     id: "1",
     name: "Streamline Precision LLC",
-    address: "120 S 100 W",
-    city: "Burley",
-    state: "ID",
-    zipCode: "83318",
+    Address: { connect: { id: "1" } },
     Users: { connect: [] },
   },
 ];
@@ -32,7 +113,7 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   {
     id: "ft1",
     name: "Leave Request Form",
-    formType: "Leave Request",
+    formType: "GENERAL",
     isSignatureRequired: true,
     Company: { connect: { id: "1" } },
     FormGrouping: {
@@ -44,21 +125,18 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
             create: [
               {
                 label: "Request Start Date",
-                name: formatName("Request Start Date"),
                 type: FieldType.DATE,
                 required: true,
                 order: 1,
               },
               {
                 label: "Request End Date",
-                name: formatName("Request End Date"),
                 type: FieldType.DATE,
                 required: true,
                 order: 2,
               },
               {
                 label: "Request Type",
-                name: formatName("Request Type"),
                 type: FieldType.DROPDOWN,
                 required: true,
                 order: 3,
@@ -74,7 +152,6 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
               },
               {
                 label: "Comments",
-                name: formatName("Comments"),
                 type: FieldType.TEXTAREA,
                 required: false,
                 order: 4,
@@ -88,7 +165,7 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   },
   {
     name: "Injury Report Form",
-    formType: "Injury Report",
+    formType: "INCIDENT",
     isSignatureRequired: true,
     Company: { connect: { id: "1" } },
     FormGrouping: {
@@ -100,7 +177,6 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
             create: [
               {
                 label: "Describe the Injury",
-                name: formatName("Describe the Injury"),
                 type: FieldType.TEXTAREA,
                 required: true,
                 order: 1,
@@ -108,14 +184,12 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
               },
               {
                 label: "I contacted My Supervisor",
-                name: formatName("I contacted My Supervisor"),
                 type: FieldType.CHECKBOX,
                 required: true,
                 order: 2,
               },
               {
                 label: "This is my signature",
-                name: formatName("This is my signature"),
                 type: FieldType.CHECKBOX,
                 required: true,
                 order: 3,
@@ -135,15 +209,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j123",
     name: "Jobsite 1",
     description: "Description for Jobsite 1",
-    address: "123 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
+    Address: { connect: { id: "1" } },
     comment: "Comments for Jobsite 1",
     Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -153,15 +221,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j234",
     name: "Jobsite 2",
     description: "Description for Jobsite 2",
-    address: "456 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "67890",
-    country: "Country",
+    Address: { connect: { id: "2" } },
     comment: "Comments for Jobsite 2",
     Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -170,15 +232,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j345",
     name: "Jobsite 3",
     description: "Description for Jobsite 3",
-    address: "789 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
+    Address: { connect: { id: "3" } },
     comment: "Comments for Jobsite 3",
     Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -187,15 +243,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j456",
     name: "Jobsite 4",
     description: "Description for Jobsite 4",
-    address: "101 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
+    Address: { connect: { id: "4" } },
     comment: "Comments for Jobsite 4",
     Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -204,15 +254,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "j567",
     name: "Jobsite 5",
     description: "Description for Jobsite 5",
-    address: "102 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
+    Address: { connect: { id: "5" } },
     comment: "Comments for Jobsite 5",
     Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -221,15 +265,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "TASCO",
     name: "Tasco Jobsite",
     description: "Tasco Jobsite",
-    address: "123 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
+    Address: { connect: { id: "6" } },
     comment: "Comments for Jobsite 1",
     Client: { connect: { id: "client2" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -238,15 +276,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "MECHANIC",
     name: "Mechanic Jobsite",
     description: "Mechanic Jobsite",
-    address: "123 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
-    comment: "Comment for Mechanic Jobsite",
-    Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
+    Address: { connect: { id: "7" } },
+    comment: "Comments for Jobsite 2",
+    Client: { connect: { id: "client2" } },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -255,15 +287,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     qrId: "TRUCK",
     name: "Truck Jobsite",
     description: "Truck Jobsite",
-    address: "123 Main St",
-    city: "City",
-    state: "State",
-    zipCode: "12345",
-    country: "Country",
-    comment: "Comment for Truck Jobsite",
-    Client: { connect: { id: "client1" } },
-    Company: { connect: { id: "1" } },
-    EmployeeEquipmentLogs: { connect: [] },
+    Address: { connect: { id: "8" } },
+    comment: "Comments for Jobsite 3",
+    Client: { connect: { id: "client2" } },
     TimeSheets: { connect: [] },
     CCTags: { connect: [] },
     EquipmentHauled: { connect: [] },
@@ -292,13 +318,9 @@ export const initialClients: Prisma.ClientCreateInput[] = [
     id: "client1",
     name: "ABC Construction",
     description: "Primary construction client",
-    address: "789 Industrial Blvd",
-    city: "Burley",
-    state: "ID",
-    zipCode: "83318",
-    country: "US",
-    phone: "555-0101",
-    email: "contact@abcconstruction.com",
+    Address: { connect: { id: "9" } },
+    contactPhone: "555-555-0101",
+    contactEmail: "contact@abcconstruction.com",
     contactPerson: "John Smith",
     Company: { connect: { id: "1" } },
   },
@@ -306,13 +328,9 @@ export const initialClients: Prisma.ClientCreateInput[] = [
     id: "client2",
     name: "Tasco Industries",
     description: "Secondary industrial client",
-    address: "456 Factory Road",
-    city: "Burley",
-    state: "ID",
-    zipCode: "83318",
-    country: "US",
-    phone: "555-0202",
-    email: "contact@tascoindustries.com",
+    Address: { connect: { id: "10" } },
+    contactPhone: "555-555-0202",
+    contactEmail: "contact@tascoindustries.com",
     contactPerson: "Jane Johnson",
     Company: { connect: { id: "1" } },
   },
@@ -335,6 +353,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "123-456-7890",
+        emergencyContact: "Roger Rabbit",
+        emergencyContactNumber: "098-765-4321",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "2",
@@ -351,6 +378,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "Jane Doe",
+        emergencyContactNumber: "123-456-7890",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "3",
@@ -367,6 +403,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "John Doe",
+        emergencyContactNumber: "123-456-7890",
+        createdAt: new Date("2021-06-01T00:00:00.000Z"),
+        updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+      },
+    },
   },
   {
     id: "4",
@@ -383,6 +428,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "183-416-7890",
+        emergencyContact: "Lola Bunny",
+        emergencyContactNumber: "218-765-4021",
+        createdAt: new Date("2022-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2022-01-01T00:00:00.000Z"),
+      },
+    },
   },
   {
     id: "5",
@@ -399,6 +453,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "USER",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "183-416-7890",
+        emergencyContact: "Buggs Bunny",
+        emergencyContactNumber: "218-765-4021",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "6",
@@ -415,6 +478,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "123-456-7890",
+        emergencyContact: "Jessica Rabbit",
+        emergencyContactNumber: "098-765-4321",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "7",
@@ -431,6 +503,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "8",
@@ -447,6 +528,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "9",
@@ -463,6 +553,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "10",
@@ -479,6 +578,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
   {
     id: "11",
@@ -495,6 +603,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
     Company: { connect: { id: "1" } },
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: new Date("2021-06-01T00:00:00.000Z"),
+        updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+      },
+    },
   },
   {
     id: "12",
@@ -511,109 +628,15 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "SUPERADMIN",
     image: "",
     Company: { connect: { id: "1" } },
-  },
-];
-
-/* Contacts */
-/* CONTACTS */
-/* Assuming you have defined a Contacts model in your Prisma schema,
-   this array will seed one contact record per user. */
-export const initialContacts: Prisma.ContactsCreateInput[] = [
-  {
-    User: { connect: { id: "1" } },
-    phoneNumber: "123-456-7890",
-    emergencyContact: "Roger Rabbit",
-    emergencyContactNumber: "098-765-4321",
-    createdAt: new Date("2022-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "2" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "Jane Doe",
-    emergencyContactNumber: "123-456-7890",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "3" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "John Doe",
-    emergencyContactNumber: "123-456-7890",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "4" } },
-    phoneNumber: "183-416-7890",
-    emergencyContact: "Lola Bunny",
-    emergencyContactNumber: "218-765-4021",
-    createdAt: new Date("2022-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "5" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "Buggs Bunny",
-    emergencyContactNumber: "098-745-4121",
-    createdAt: new Date("2022-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2022-01-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "6" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "Jessica Rabbit",
-    emergencyContactNumber: "098-765-4321",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "7" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "8" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "9" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "10" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "11" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
-  },
-  {
-    User: { connect: { id: "12" } },
-    phoneNumber: "987-654-3210",
-    emergencyContact: "your wife",
-    emergencyContactNumber: "218-765-4311",
-    createdAt: new Date("2021-06-01T00:00:00.000Z"),
-    updatedAt: new Date("2021-06-01T00:00:00.000Z"),
+    Contact: {
+      create: {
+        phoneNumber: "987-654-3210",
+        emergencyContact: "your wife",
+        emergencyContactNumber: "218-765-4311",
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
   },
 ];
 
@@ -1487,13 +1510,10 @@ export const initialEmployeeEquipmentLogs: Prisma.EmployeeEquipmentLogCreateInpu
   [
     {
       Equipment: { connect: { id: "eq1" } },
-      Jobsite: { connect: { qrId: "j123" } },
-      User: { connect: { id: "1" } },
       startTime: new Date(now.getTime() - 3600000),
       endTime: new Date(),
       comment: "Equipment log test entry",
-      isFinished: true,
-      status: FormStatus.APPROVED,
+      TimeSheet: { connect: { id: "ts1" } },
     },
   ];
 
@@ -1522,7 +1542,7 @@ export const initialFormSubmissions: Prisma.FormSubmissionCreateInput[] = [
     title: "Test Submission",
     FormTemplate: { connect: { id: "ft1" } },
     User: { connect: { id: "1" } },
-    formType: "Leave Request",
+    formType: "GENERAL",
     data: {},
     submittedAt: new Date(),
     status: FormStatus.APPROVED,
@@ -1753,80 +1773,5 @@ export const initialTascoLogs: Prisma.TascoLogCreateInput[] = [
     Equipment: { connect: { qrId: "TRK-9" } },
     laborType: "Truck Driver",
     LoadQuantity: 5,
-  },
-];
-
-/* PENDING APPROVALS (replacement for CreationLogs) */
-export const initialPendingApprovals: Prisma.PendingApprovalCreateInput[] = [
-  {
-    entityType: "EQUIPMENT",
-    comment: "Field manager created new equipment eq1",
-    proposedChanges: {
-      name: "TRK-007 Kenworth W900",
-      description: "Field-created truck",
-      equipmentTag: "TRUCK",
-    },
-    approvalStatus: "APPROVED",
-    approvalComment: "Approved by office admin",
-    approvedAt: new Date(),
-    CreatedBy: { connect: { id: "1" } },
-    ApprovedBy: { connect: { id: "7" } },
-    Equipment: { connect: { id: "eq1" } },
-  },
-  {
-    entityType: "JOBSITE",
-    comment: "Field manager created new jobsite",
-    proposedChanges: {
-      name: "Jobsite 1",
-      address: "123 Main St",
-      city: "City",
-    },
-    approvalStatus: "PENDING",
-    CreatedBy: { connect: { id: "1" } },
-    Jobsite: { connect: { id: "1" } },
-  },
-];
-
-/* AUDIT LOGS (replacement for CreationLogs) */
-export const initialAuditLogs: Prisma.AuditLogCreateInput[] = [
-  {
-    entityType: "EQUIPMENT",
-    action: "CREATED",
-    changes: {
-      before: null,
-      after: {
-        name: "TRK-007 Kenworth W900",
-        state: "OPERATIONAL",
-        equipmentTag: "TRUCK",
-      },
-    },
-    comment: "Equipment created by field manager",
-    User: { connect: { id: "1" } },
-    Equipment: { connect: { id: "eq1" } },
-  },
-  {
-    entityType: "EQUIPMENT",
-    action: "APPROVED",
-    changes: {
-      before: { approvalStatus: "PENDING" },
-      after: { approvalStatus: "APPROVED" },
-    },
-    comment: "Equipment approved by office admin",
-    User: { connect: { id: "7" } },
-    Equipment: { connect: { id: "eq1" } },
-  },
-  {
-    entityType: "JOBSITE",
-    action: "CREATED",
-    changes: {
-      before: null,
-      after: {
-        name: "Jobsite 1",
-        address: "123 Main St",
-      },
-    },
-    comment: "Jobsite created by field manager",
-    User: { connect: { id: "1" } },
-    Jobsite: { connect: { id: "1" } },
   },
 ];
