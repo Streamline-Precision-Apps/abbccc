@@ -56,14 +56,14 @@ export default function UsageData({
       setShowRefuelInput(true);
     } else {
       // If there's an existing log, don't allow unchecking
-      setNotification("Delete refuel log first to uncheck", "error");
+      setNotification(t("DeleteRefuelLogFirst"), "error");
     }
   };
 
   const handleCreateRefuel = () => {
     const gallons = parseFloat(newRefuelGallons);
     if (!newRefuelGallons || isNaN(gallons) || gallons <= 0) {
-      setNotification("Please enter a valid number of gallons", "error");
+      setNotification(t("ValidGallons"), "error");
       return;
     }
 
@@ -78,7 +78,7 @@ export default function UsageData({
     setShowRefuelInput(false);
 
     setNotification(
-      "Changes will be saved when you click Finish Logs",
+      t("ClickFinishLogs"),
       "success"
     );
   };
@@ -86,12 +86,12 @@ export default function UsageData({
   const handleUpdateRefuel = () => {
     const gallons = parseFloat(newRefuelGallons);
     if (!newRefuelGallons || isNaN(gallons) || gallons <= 0) {
-      setNotification("Please enter a valid number of gallons", "error");
+      setNotification(t("ValidGallons"), "error");
       return;
     }
 
     if (!refuelLog) {
-      setNotification("No refuel log to update", "error");
+      setNotification(t("NoRefuelLogToUpdate"), "error");
       return;
     }
 
@@ -105,7 +105,7 @@ export default function UsageData({
     setShowRefuelInput(false);
 
     setNotification(
-      "Changes will be saved when you click Finish Logs",
+      t("ClickFinishLogs"),
       "success"
     );
   };
@@ -117,7 +117,7 @@ export default function UsageData({
       setShowRefuelInput(false);
       setNewRefuelGallons("");
       setNotification(
-        "Refuel log removed. Changes will be saved when you click Finish Logs",
+        t("RefuelLogRemoved"),
         "success"
       );
     }
@@ -127,8 +127,8 @@ export default function UsageData({
     <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar">
       <Holds className="w-full">
         <Holds position={"row"} className="w-full">
-          <Holds className="w-full">
-            <Labels size="p5">Start Time</Labels>
+          <Holds className="w-[90]">
+            <Labels size="p5">{t("StartTime")}</Labels>
             <Inputs
               type="time"
               value={
@@ -147,7 +147,7 @@ export default function UsageData({
             />
           </Holds>
           <Holds className="w-full">
-            <Labels size="p5">End Time</Labels>
+            <Labels size="p5">{t("EndTime")}</Labels>
             <Inputs
               type="time"
               value={
@@ -167,7 +167,7 @@ export default function UsageData({
           </Holds>
         </Holds>
         <Texts position={"right"} size="p6">
-          <span className="italic mr-1">Duration:</span> {formattedTime}
+          <span className="italic mr-1">{t("Duration:")}</span> {formattedTime}
         </Texts>
       </Holds>
 
@@ -175,7 +175,7 @@ export default function UsageData({
         <Labels size="p5">{t("Comment")}</Labels>
         <TextAreas
           maxLength={40}
-          placeholder="Enter comments here..."
+          placeholder={t("EnterCommentsHere")}
           value={formState.comment || ""}
           onChange={(e) => handleFieldChange("comment", e.target.value)}
           className="text-sm"
@@ -209,7 +209,7 @@ export default function UsageData({
         </Holds>
         <Holds size={"80"} className="h-full justify-center">
           <Texts position={"left"} size="p3">
-            Fully Operational? <span className="text-red-500">*</span>
+            {t("FullyOperational")} <span className="text-red-500">*</span>
           </Texts>
         </Holds>
       </Holds>
@@ -229,14 +229,14 @@ export default function UsageData({
           </Holds>
           <Holds size={"80"} className="h-full justify-center">
             <Texts position={"left"} size="p3">
-              Equipment Refueled?
+              {t("EquipmentRefueled")}
             </Texts>
           </Holds>
         </Holds>
 
         {showRefuelInput && (
           <Holds background="white" className=" mb-3">
-            <Labels size="p5">Gallons Refueled</Labels>
+            <Labels size="p5">{t("GallonsRefueled")}</Labels>
             <Inputs
               type="number"
               step="0.1"
@@ -253,7 +253,7 @@ export default function UsageData({
                 className="w-full"
                 onClick={refuelLog ? handleUpdateRefuel : handleCreateRefuel}
               >
-                {refuelLog ? "Update" : "Save"}
+                {refuelLog ? t("Update") : t("Save")}
               </Buttons>
               <Buttons
                 shadow="none"
@@ -268,7 +268,7 @@ export default function UsageData({
                   }
                 }}
               >
-                {refuelLog ? "Delete" : "Cancel"}
+                {refuelLog ? t("DeleteLog") : t("Cancel")}
               </Buttons>
             </Holds>
           </Holds>
@@ -281,7 +281,7 @@ export default function UsageData({
               className="w-full h-full justify-center items-center"
             >
               <Texts size="p5" className="text-green-700">
-                {refuelLog?.gallonsRefueled || 0} gallons refueled
+                {refuelLog?.gallonsRefueled || 0} {t("GallonsRefueled")}
               </Texts>
 
               <Buttons

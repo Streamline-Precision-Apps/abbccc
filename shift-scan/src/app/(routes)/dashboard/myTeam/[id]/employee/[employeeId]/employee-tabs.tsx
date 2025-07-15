@@ -30,6 +30,7 @@ import {
   EquipmentHauledItem,
   MaintenanceLog,
 } from "@/lib/types";
+import { MaintenanceLogData } from "./TimeCardMechanicLogs";
 import {
   updateTruckingHaulLogs,
   updateTimesheetHighlights,
@@ -41,6 +42,7 @@ import {
   updateTruckingStateLogs,
   updateEquipmentRefuelLogs,
   updateTruckingMileage,
+  updateMaintenanceLogs,
 } from "@/actions/myTeamsActions";
 import {
   flattenMaterialLogs,
@@ -528,49 +530,26 @@ export default function EmployeeTabs() {
             if (!Array.isArray(changes)) {
               console.warn("Invalid maintenance log changes");
               return;
-            } // Create a server action to update MaintenanceLog data
-            const updateMaintenanceLogs = async (logs: MaintenanceLog[]) => {
-              const formData = new FormData();
-              logs.forEach((log, index) => {
-                formData.append(`logs[${index}].id`, log.id);
-                formData.append(
-                  `logs[${index}].startTime`,
-                  log.startTime ? new Date(log.startTime).toISOString() : ""
-                );
-                formData.append(
-                  `logs[${index}].endTime`,
-                  log.endTime ? new Date(log.endTime).toISOString() : ""
-                );
-              });
+            }
+            
+            // Transform the MaintenanceLog data to match the server action format
+            const maintenanceUpdates = (changes as MaintenanceLog[]).map((log) => ({
+              id: log.id,
+              startTime: log.startTime ? new Date(log.startTime) : undefined,
+              endTime: log.endTime ? new Date(log.endTime) : undefined,
+            }));
 
-              try {
-                const response = await fetch("/api/updateMaintenanceLogs", {
-                  method: "POST",
-                  body: formData,
-                });
-
-                if (!response.ok) {
-                  throw new Error("Failed to update maintenance logs");
-                }
-
-                const result = await response.json();
-                return { success: true, data: result };
-              } catch (error) {
-                console.error("Error updating maintenance logs:", error);
-                return { success: false, error };
-              }
-            };
-
-            const result = await updateMaintenanceLogs(
-              changes as MaintenanceLog[]
-            );
-
+            console.log("Saving maintenance logs updates:", maintenanceUpdates);
+            const result = await updateMaintenanceLogs(maintenanceUpdates);
+            
             if (result?.success) {
               await Promise.all([
                 fetchTimesheetsForDate(date),
                 fetchTimesheetsForFilter(timeSheetFilter),
               ]);
               setEdit(false);
+            } else {
+              console.error("Failed to update maintenance logs:", result?.error);
             }
             break;
           }
@@ -733,6 +712,7 @@ export interface EmployeeTimeSheetsProps {
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | EquipmentLogChange[]
+      | MaintenanceLogData
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
