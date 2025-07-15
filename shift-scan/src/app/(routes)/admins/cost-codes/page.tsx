@@ -251,16 +251,20 @@ export default function CostCodePage() {
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
         >
           {/* Loading overlay */}
-          {filteredTags.length === 0 && pageState === "Tags" && (
-            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
-              <span className="text-lg text-gray-500">No Results found</span>
-            </div>
-          )}
-          {filteredCostCodes.length === 0 && pageState === "CostCode" && (
-            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
-              <span className="text-lg text-gray-500">No Results found</span>
-            </div>
-          )}
+          {filteredTags.length === 0 &&
+            pageState === "Tags" &&
+            loading === false && (
+              <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
+                <span className="text-lg text-gray-500">No Results found</span>
+              </div>
+            )}
+          {filteredCostCodes.length === 0 &&
+            pageState === "CostCode" &&
+            loading === false && (
+              <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
+                <span className="text-lg text-gray-500">No Results found</span>
+              </div>
+            )}
           {loadingState && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
               <Spinner size={20} />
