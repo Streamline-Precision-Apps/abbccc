@@ -82,25 +82,16 @@ export default function EditJobsiteModal({
   if (loading || !formData || !originalForm || !tagSummaries || !clients) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+        <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
           <div className="text-lg">Loading...</div>
         </div>
       </div>
     );
   }
 
-  // Merge selected tags into tagSummaries to ensure all selected tags are present in options
-  const safeTagSummaries = Array.isArray(tagSummaries) ? tagSummaries : [];
-  const allTags = [
-    ...safeTagSummaries,
-    ...formData.CCTags.filter(
-      (tag) => !safeTagSummaries.some((t) => t.id === tag.id)
-    ),
-  ];
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col w-full ">
           <div className="flex flex-row justify-between mb-4">
             <p className="text-xs  text-gray-500">
@@ -204,29 +195,61 @@ export default function EditJobsiteModal({
             </div>
             {tagSummaries && (
               <div>
-                <Label htmlFor="isActive" className="text-sm font-medium">
-                  Cost Code Tags
-                </Label>
-                <Combobox
-                  options={allTags.map((tag) => ({
-                    label: tag.name,
-                    value: tag.id,
-                  }))}
-                  // name prop removed, not supported by ComboboxProps
-                  value={formData.CCTags.map((tag) => tag.id)}
-                  onChange={(selectedIds: string[]) => {
-                    setFormData((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            CCTags: tagSummaries.filter((tag) =>
-                              selectedIds.includes(tag.id)
-                            ),
-                          }
-                        : prev
-                    );
-                  }}
-                />
+                <div>
+                  <Label htmlFor="isActive" className="text-sm font-medium">
+                    Cost Code Tags
+                  </Label>
+                  <Combobox
+                    options={tagSummaries.map((tag) => ({
+                      label: tag.name,
+                      value: tag.id,
+                    }))}
+                    value={formData.CCTags.map((tag) => tag.id)}
+                    onChange={(selectedIds: string[]) => {
+                      setFormData((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              CCTags: tagSummaries.filter((tag) =>
+                                selectedIds.includes(tag.id)
+                              ),
+                            }
+                          : prev
+                      );
+                    }}
+                  />
+                </div>
+                <div className="min-h-[100px] border border-gray-200 rounded p-2 mt-2">
+                  <div className=" flex flex-wrap gap-2">
+                    {formData.CCTags.map((js) => (
+                      <div
+                        key={js.id}
+                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span>{js.name}</span>
+                        <button
+                          type="button"
+                          className="text-blue-800 hover:text-blue-900"
+                          onClick={() => {
+                            setFormData((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    CCTags: prev.CCTags.filter(
+                                      (j) => j.id !== js.id
+                                    ),
+                                  }
+                                : prev
+                            );
+                          }}
+                          aria-label={`Remove ${js.name}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>

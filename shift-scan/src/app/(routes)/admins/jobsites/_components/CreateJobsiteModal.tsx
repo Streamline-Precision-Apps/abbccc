@@ -48,7 +48,14 @@ export default function CreateJobsiteModal({
           fetch("/api/getClientsSummary"),
         ]).then((res) => Promise.all(res.map((r) => r.json())));
 
-        setTagSummaries(tag);
+        const filteredTags = tag.tags.map(
+          (tag: { id: string; name: string }) => ({
+            id: tag.id,
+            name: tag.name,
+          })
+        );
+        setTagSummaries(filteredTags);
+
         setClients(client);
       } catch (error) {
         console.error("Failed to fetch tags:", error);
@@ -338,29 +345,62 @@ export default function CreateJobsiteModal({
             </div>
             {tagSummaries && (
               <div>
-                <Label htmlFor="isActive" className="text-sm font-medium">
-                  Cost Code Tags
-                </Label>
-                <Combobox
-                  options={tagSummaries.map((tag) => ({
-                    label: tag.name,
-                    value: tag.id,
-                  }))}
-                  // name prop removed, not supported by ComboboxProps
-                  value={formData.CCTags.map((tag) => tag.id)}
-                  onChange={(selectedIds: string[]) => {
-                    setFormData((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            CCTags: tagSummaries.filter((tag) =>
-                              selectedIds.includes(tag.id)
-                            ),
-                          }
-                        : prev
-                    );
-                  }}
-                />
+                <div>
+                  <Label htmlFor="isActive" className="text-sm font-medium">
+                    Cost Code Tags
+                  </Label>
+                  <Combobox
+                    options={tagSummaries.map((tag) => ({
+                      label: tag.name,
+                      value: tag.id,
+                    }))}
+                    // name prop removed, not supported by ComboboxProps
+                    value={formData.CCTags.map((tag) => tag.id)}
+                    onChange={(selectedIds: string[]) => {
+                      setFormData((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              CCTags: tagSummaries.filter((tag) =>
+                                selectedIds.includes(tag.id)
+                              ),
+                            }
+                          : prev
+                      );
+                    }}
+                  />
+                </div>
+                <div className="min-h-[100px] border border-gray-200 rounded p-2 mt-2">
+                  <div className=" flex flex-wrap gap-2">
+                    {formData.CCTags.map((js) => (
+                      <div
+                        key={js.id}
+                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span>{js.name}</span>
+                        <button
+                          type="button"
+                          className="text-blue-800 hover:text-blue-900"
+                          onClick={() => {
+                            setFormData((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    CCTags: prev.CCTags.filter(
+                                      (j) => j.id !== js.id
+                                    ),
+                                  }
+                                : prev
+                            );
+                          }}
+                          aria-label={`Remove ${js.name}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
