@@ -5,6 +5,7 @@ import {
   Priority,
   WorkType,
   LoadType,
+  FormTemplateCategory,
 } from "@prisma/client";
 
 export const now = new Date();
@@ -112,7 +113,7 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   {
     id: "ft1",
     name: "Leave Request Form",
-    formType: "Leave Request",
+    formType: "GENERAL",
     isSignatureRequired: true,
     Company: { connect: { id: "1" } },
     FormGrouping: {
@@ -124,21 +125,18 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
             create: [
               {
                 label: "Request Start Date",
-                name: formatName("Request Start Date"),
                 type: FieldType.DATE,
                 required: true,
                 order: 1,
               },
               {
                 label: "Request End Date",
-                name: formatName("Request End Date"),
                 type: FieldType.DATE,
                 required: true,
                 order: 2,
               },
               {
                 label: "Request Type",
-                name: formatName("Request Type"),
                 type: FieldType.DROPDOWN,
                 required: true,
                 order: 3,
@@ -154,7 +152,6 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
               },
               {
                 label: "Comments",
-                name: formatName("Comments"),
                 type: FieldType.TEXTAREA,
                 required: false,
                 order: 4,
@@ -168,7 +165,7 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   },
   {
     name: "Injury Report Form",
-    formType: "Injury Report",
+    formType: "INCIDENT",
     isSignatureRequired: true,
     Company: { connect: { id: "1" } },
     FormGrouping: {
@@ -180,7 +177,6 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
             create: [
               {
                 label: "Describe the Injury",
-                name: formatName("Describe the Injury"),
                 type: FieldType.TEXTAREA,
                 required: true,
                 order: 1,
@@ -188,14 +184,12 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
               },
               {
                 label: "I contacted My Supervisor",
-                name: formatName("I contacted My Supervisor"),
                 type: FieldType.CHECKBOX,
                 required: true,
                 order: 2,
               },
               {
                 label: "This is my signature",
-                name: formatName("This is my signature"),
                 type: FieldType.CHECKBOX,
                 required: true,
                 order: 3,
@@ -1548,7 +1542,7 @@ export const initialFormSubmissions: Prisma.FormSubmissionCreateInput[] = [
     title: "Test Submission",
     FormTemplate: { connect: { id: "ft1" } },
     User: { connect: { id: "1" } },
-    formType: "Leave Request",
+    formType: "GENERAL",
     data: {},
     submittedAt: new Date(),
     status: FormStatus.APPROVED,
