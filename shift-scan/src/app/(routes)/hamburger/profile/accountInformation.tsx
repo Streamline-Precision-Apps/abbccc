@@ -13,7 +13,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
 import { updateSettings } from "@/actions/hamburgerActions";
 
-
 type Employee = {
   id: string;
   firstName: string;
@@ -48,21 +47,20 @@ export default function AccountInformation({
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
   const [editContactModalOpen, setEditContactModalOpen] = useState(false);
   const [formState, setFormState] = useState({
-    phoneNumber: employee?.Contact?.phoneNumber || '',
-    email: employee?.email || '',
-    emergencyContact: employee?.Contact?.emergencyContact || '',
-    emergencyContactNumber: employee?.Contact?.emergencyContactNumber || '',
+    phoneNumber: employee?.Contact?.phoneNumber || "",
+    email: employee?.email || "",
+    emergencyContact: employee?.Contact?.emergencyContact || "",
+    emergencyContactNumber: employee?.Contact?.emergencyContactNumber || "",
   });
   const [formLoading, setFormLoading] = useState(false);
-
 
   // Handlers for opening modal
   const openEditContactModal = () => {
     setFormState({
-      phoneNumber: employee?.Contact?.phoneNumber || '',
-      email: employee?.email || '',
-      emergencyContact: employee?.Contact?.emergencyContact || '',
-      emergencyContactNumber: employee?.Contact?.emergencyContactNumber || '',
+      phoneNumber: employee?.Contact?.phoneNumber || "",
+      email: employee?.email || "",
+      emergencyContact: employee?.Contact?.emergencyContact || "",
+      emergencyContactNumber: employee?.Contact?.emergencyContactNumber || "",
     });
     setEditContactModalOpen(true);
   };
@@ -82,11 +80,11 @@ export default function AccountInformation({
         email: formState.email,
         emergencyContact: formState.emergencyContact,
         emergencyContactNumber: formState.emergencyContactNumber,
-      } as any);
+      });
       await reloadEmployee();
       setEditContactModalOpen(false);
     } catch (err) {
-      console.error('Failed to save contact info:', err);
+      console.error("Failed to save contact info:", err);
     } finally {
       setFormLoading(false);
     }
@@ -96,10 +94,10 @@ export default function AccountInformation({
   const handleDiscardContact = () => {
     setEditContactModalOpen(false);
     setFormState({
-      phoneNumber: employee?.Contact?.phoneNumber || '',
-      email: employee?.email || '',
-      emergencyContact: employee?.Contact?.emergencyContact || '',
-      emergencyContactNumber: employee?.Contact?.emergencyContactNumber || '',
+      phoneNumber: employee?.Contact?.phoneNumber || "",
+      email: employee?.email || "",
+      emergencyContact: employee?.Contact?.emergencyContact || "",
+      emergencyContactNumber: employee?.Contact?.emergencyContactNumber || "",
     });
   };
 
@@ -189,28 +187,46 @@ export default function AccountInformation({
             <EditableFields
               value={formState.phoneNumber}
               isChanged={false}
-              onChange={e => setFormState(s => ({ ...s, phoneNumber: e.target.value }))}
+              onChange={(e) =>
+                setFormState((s) => ({ ...s, phoneNumber: e.target.value }))
+              }
             />
             <Labels size={"p6"}>{t("Email")}</Labels>
             <EditableFields
               value={formState.email}
               isChanged={false}
-              onChange={e => setFormState(s => ({ ...s, email: e.target.value }))}
+              onChange={(e) =>
+                setFormState((s) => ({ ...s, email: e.target.value }))
+              }
             />
             <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
             <EditableFields
               value={formState.emergencyContact}
               isChanged={false}
-              onChange={e => setFormState(s => ({ ...s, emergencyContact: e.target.value }))}
+              onChange={(e) =>
+                setFormState((s) => ({
+                  ...s,
+                  emergencyContact: e.target.value,
+                }))
+              }
             />
             <Labels size={"p6"}>{t("EmergencyContactNumber")}</Labels>
             <EditableFields
               value={formState.emergencyContactNumber}
               isChanged={false}
-              onChange={e => setFormState(s => ({ ...s, emergencyContactNumber: e.target.value }))}
+              onChange={(e) =>
+                setFormState((s) => ({
+                  ...s,
+                  emergencyContactNumber: e.target.value,
+                }))
+              }
             />
             <Holds position="row" className="mt-4 gap-2">
-              <Buttons background="green" onClick={handleSaveContact} disabled={formLoading}>
+              <Buttons
+                background="green"
+                onClick={handleSaveContact}
+                disabled={formLoading}
+              >
                 {formLoading ? t("Saving") : t("Save")}
               </Buttons>
               <Buttons background="red" onClick={handleDiscardContact}>

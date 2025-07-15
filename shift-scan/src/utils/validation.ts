@@ -13,7 +13,7 @@ import {
   Material,
   RefuelLog,
   StateMileage,
-} from "../app/(routes)/admins/records/[url]/@timesheets/_components/Edit/types";
+} from "../lib/types";
 
 /** Checks if a maintenance log is complete. */
 export function isMaintenanceLogComplete(log: MaintenanceLog): boolean {
@@ -32,12 +32,9 @@ export function isTruckingLogComplete(log: TruckingLog): boolean {
 /** Checks if a Tasco log is complete. */
 export function isTascoLogComplete(log: TascoLog): boolean {
   return !!(
-    log.Equipment &&
-    log.shiftType &&
-    log.laborType &&
-    log.materialType &&
-    typeof log.LoadQuantity === "number" &&
-    log.LoadQuantity > 0
+    log.equipmentId &&
+    typeof log.loadsHauled === "number" &&
+    log.loadsHauled > 0
   );
 }
 
@@ -50,27 +47,17 @@ export function isEmployeeEquipmentLogComplete(
 
 /** Checks if an Equipment Hauled entry is complete. */
 export function isEquipmentHauledComplete(eq: EquipmentHauled): boolean {
-  return !!(eq.equipmentId && eq.jobSiteId);
+  return !!eq.equipmentId;
 }
 
 /** Checks if a Material entry is complete. */
 export function isMaterialComplete(mat: Material): boolean {
-  return !!(
-    mat.LocationOfMaterial &&
-    mat.name &&
-    mat.materialWeight &&
-    mat.lightWeight &&
-    mat.grossWeight &&
-    mat.loadType
-  );
+  return !!mat.name;
 }
 
 /** Checks if a Refuel Log entry is complete (Trucking or Tasco). */
 export function isRefuelLogComplete(ref: RefuelLog): boolean {
-  return !!(
-    ref.gallonsRefueled &&
-    (ref.milesAtFueling !== undefined || ref.gallonsRefueled > 0)
-  );
+  return typeof ref.gallonsRefueled === "number" && ref.gallonsRefueled > 0;
 }
 
 /** Checks if a State Mileage entry is complete. */

@@ -56,13 +56,13 @@ export async function GET(
       fields: group.Fields.map((field) => ({
         id: field.id,
         label: field.label,
-        name: field.name,
+        name: field.id, // Use field.id as the name since FormField doesn't have a name property
         type: field.type,
         required: field.required,
         order: field.order,
-        defaultValue: field.defaultValue,
+        defaultValue: undefined, // FormField doesn't have defaultValue
         placeholder: field.placeholder,
-        helperText: field.helperText,
+        helperText: field.content, // Use content as helperText
         options: field.Options.map((option) => option.value), // Extract dropdown options
       })),
     })),

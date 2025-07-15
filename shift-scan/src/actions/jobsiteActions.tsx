@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 
@@ -93,7 +94,7 @@ export async function createJobsite(formData: FormData) {
           : [ccTagsRaw as string];
       }
 
-      const data: any = {
+      const data: Prisma.JobsiteCreateInput = {
         name,
         qrId,
         description: creationReasoning,
@@ -103,13 +104,15 @@ export async function createJobsite(formData: FormData) {
         updatedAt: new Date(),
         ...(ccTagIds.length > 0 && {
           CCTags: {
-            connect: ccTagIds.map((id) => ({ id })),
+            connect: ccTagIds.map((id: string) => ({ id })),
           },
         }),
       };
 
       if (createdById) {
-        data.createdBy = { connect: { id: createdById } };
+        (data as Prisma.JobsiteCreateInput).createdBy = {
+          connect: { id: createdById },
+        };
       }
 
       if (newAddress) {

@@ -193,7 +193,7 @@ const TimeCardEquipmentLogs = forwardRef<
     };
     const processLogs = useCallback((): ProcessedEquipmentLog[] => {
       // If equipmentLogs is nested, flatten it. If it's flat, use as is.
-      let logs: any[] = [];
+      let logs: EmployeeEquipmentLogData[] = [];
       if (
         Array.isArray(equipmentLogs) &&
         equipmentLogs.length > 0 &&
@@ -211,8 +211,8 @@ const TimeCardEquipmentLogs = forwardRef<
           )
           .flatMap((log) => log.EmployeeEquipmentLogs || []);
       } else if (Array.isArray(equipmentLogs)) {
-        // Flat array
-        logs = equipmentLogs;
+        // Flat array - this shouldn't happen with EquipmentLogsData type, but handle it
+        logs = [];
       }
 
       // Only process logs with valid Equipment object
@@ -230,10 +230,10 @@ const TimeCardEquipmentLogs = forwardRef<
         .map((log) => {
           // Safely parse dates
           const { date: start, formatted: formattedStart } = createSafeDate(
-            log.startTime
+            log.startTime!
           );
           const { date: end, formatted: formattedEnd } = createSafeDate(
-            log.endTime
+            log.endTime!
           );
 
           // Calculate duration only if both dates are valid
@@ -255,8 +255,8 @@ const TimeCardEquipmentLogs = forwardRef<
 
           return {
             id: log.id,
-            equipmentId: log.Equipment.id,
-            equipmentName: log.Equipment.name,
+            equipmentId: log.Equipment!.id,
+            equipmentName: log.Equipment!.name,
             usageTime: usageTime,
             startTime: formattedStart,
             endTime: formattedEnd,
