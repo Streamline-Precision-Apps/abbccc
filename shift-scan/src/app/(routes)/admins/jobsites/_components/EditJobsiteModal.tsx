@@ -79,7 +79,7 @@ export default function EditJobsiteModal({
     }
   };
 
-  if (loading || !formData || !originalForm) {
+  if (loading || !formData || !originalForm || !tagSummaries || !clients) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
         <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
@@ -90,10 +90,11 @@ export default function EditJobsiteModal({
   }
 
   // Merge selected tags into tagSummaries to ensure all selected tags are present in options
+  const safeTagSummaries = Array.isArray(tagSummaries) ? tagSummaries : [];
   const allTags = [
-    ...tagSummaries,
+    ...safeTagSummaries,
     ...formData.CCTags.filter(
-      (tag) => !tagSummaries.some((t) => t.id === tag.id)
+      (tag) => !safeTagSummaries.some((t) => t.id === tag.id)
     ),
   ];
 

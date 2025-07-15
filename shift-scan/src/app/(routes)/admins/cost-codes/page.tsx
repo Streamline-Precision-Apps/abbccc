@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteCostCode } from "@/actions/AssetActions";
+import { deleteCostCode, deleteTag } from "@/actions/AssetActions";
 import {
   CostCodeSummary,
   useCostCodeData,
@@ -30,6 +30,8 @@ import CreateCostCodeModal from "./_components/CreateCostCodeModal";
 import EditCostCodeModal from "./_components/EditCostCodeModal";
 import { useTagData } from "./_components/useTagData";
 import TagTable from "./_components/TagTable";
+import CreateTagModal from "./_components/CreateTagModal";
+import EditTagModal from "./_components/EditTagModal";
 
 export default function CostCodePage() {
   const { setOpen, open } = useSidebar();
@@ -61,46 +63,27 @@ export default function CostCodePage() {
 
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
 
-  // State for modals
+  // State for modals, dialogs, and pending actions
+  // Cost Codes
   const [editCostCodeModal, setEditCostCodeModal] = useState(false);
   const [createCostCodeModal, setCreateCostCodeModal] = useState(false);
-
-  // State for pending edit tag modal
-  const [pendingEditTagModal, setPendingEditTagModal] = useState(false);
-  const [createTagModal, setCreateTagModal] = useState(false);
-
-  // State for delete confirmation dialog
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
 
-  // State for tag management
+  // Tags
+  const [createTagModal, setCreateTagModal] = useState(false);
+  const [editTagModal, setEditTagModal] = useState(false);
   const [showDeleteTagDialog, setShowDeleteTagDialog] = useState(false);
   const [pendingTagEditId, setPendingTagEditId] = useState<string | null>(null);
   const [pendingTagDeleteId, setPendingTagDeleteId] = useState<string | null>(
     null
   );
 
-  // Pagination state
-
+  // Cost Codes helper functions
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
     setEditCostCodeModal(true);
-  };
-
-  const openHandleTagEdit = (id: string) => {
-    setPendingTagEditId(id);
-    setPendingEditTagModal(true);
-  };
-
-  const openHandleDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteDialog(true);
-  };
-
-  const openHandleTagDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteTagDialog(true);
   };
 
   const confirmDelete = async () => {
@@ -115,6 +98,37 @@ export default function CostCodePage() {
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
+  };
+
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
+  // Tag helper functions
+
+  const confirmTagDelete = async () => {
+    if (pendingTagDeleteId) {
+      await deleteTag(pendingTagDeleteId);
+      setShowDeleteTagDialog(false);
+      setPendingTagDeleteId(null);
+      tagRerender();
+    }
+  };
+
+  const cancelTagDelete = () => {
+    setShowDeleteTagDialog(false);
+    setPendingTagDeleteId(null);
+  };
+
+  const openHandleTagEdit = (id: string) => {
+    setPendingTagEditId(id);
+    setEditTagModal(true);
+  };
+
+  const openHandleTagDelete = (id: string) => {
+    setPendingTagDeleteId(id);
+    setShowDeleteTagDialog(true);
   };
 
   // Simple filter by cost code name
@@ -419,6 +433,19 @@ export default function CostCodePage() {
           rerender={rerender}
         />
       )}
+      {createTagModal && (
+        <CreateTagModal
+          cancel={() => setCreateTagModal(false)}
+          rerender={tagRerender}
+        />
+      )}
+      {editTagModal && pendingTagEditId && (
+        <EditTagModal
+          cancel={() => setEditTagModal(false)}
+          pendingEditId={pendingTagEditId}
+          rerender={tagRerender}
+        />
+      )}
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
@@ -435,6 +462,27 @@ export default function CostCodePage() {
               Cancel
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteTagDialog} onOpenChange={setShowDeleteTagDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Tag</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this Tag? All Tag data will be
+              permanently deleted including Timesheets. This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelTagDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmTagDelete}>
               Delete
             </Button>
           </DialogFooter>
