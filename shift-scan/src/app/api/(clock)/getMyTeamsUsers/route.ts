@@ -41,7 +41,8 @@ export async function GET(
       crew.Users.forEach((user) => {
         //! Put comment line back in after testing.
         // if (user.id !== userId && !userMap.has(user.id) && user.clockedIn === false) {
-        if (!userMap.has(user.id) && user.clockedIn === false) {
+        // if (!userMap.has(user.id) && user.clockedIn === false) {
+        if (!userMap.has(user.id)) {
           userMap.set(user.id, user);
         }
       });

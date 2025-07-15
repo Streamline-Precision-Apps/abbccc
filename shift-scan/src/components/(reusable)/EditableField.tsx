@@ -103,7 +103,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
               checked={checked}
               onChange={onChange}
               placeholder={placeholder || ""}
-              className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
+              className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
               max={max}
               min={min}
               readOnly={readonly}
@@ -114,7 +114,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
           {isChanged && onRevert && (
             <button
               type="button"
-              className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
+              className="w-10 h-full shrink-0 flex items-center justify-center   transition-colors"
               title="Revert changes"
               onClick={onRevert}
             >
@@ -142,7 +142,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
               checked={checked}
               onChange={onChange}
               placeholder={placeholder || ""}
-              className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
+              className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
               minLength={minLength}
               maxLength={maxLength}
               pattern={pattern}
@@ -154,7 +154,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
           {isChanged && onRevert && (
             <button
               type="button"
-              className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
+              className="w-10 h-full shrink-0 flex items-center justify-center   transition-colors"
               title="Revert changes"
               onClick={onRevert}
             >
@@ -183,7 +183,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
             disabled={disable}
             onChange={onChange}
             placeholder={placeholder || ""}
-            className="h-full w-full min-h-[100px] border-none focus:outline-none px-3 py-2 bg-transparent disabled:bg-app-gray resize-none"
+            className="h-full w-full min-h-[100px] border-none focus:outline-hidden px-3 py-2 bg-transparent disabled:bg-app-gray resize-none"
             readOnly={readonly}
             rows={rows}
           />
@@ -193,7 +193,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
         {isChanged && onRevert && (
           <button
             type="button"
-            className="w-10 flex-shrink-0 flex items-start justify-center pt-2 transition-colors"
+            className="w-10 shrink-0 flex items-start justify-center pt-2 transition-colors"
             title="Revert changes"
             onClick={onRevert}
           >
@@ -220,7 +220,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
             name={name}
             disabled={disable}
             onChange={onChange}
-            className="h-full w-full border-none focus:outline-none px-3 bg-transparent disabled:bg-app-gray"
+            className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
           >
             {options.map((option, index) => (
               <option key={index} value={option.value}>
@@ -234,7 +234,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
         {isChanged && onRevert && (
           <button
             type="button"
-            className="w-10 h-full flex-shrink-0 flex items-center justify-center   transition-colors"
+            className="w-10 h-full shrink-0 flex items-center justify-center   transition-colors"
             title="Revert changes"
             onClick={onRevert}
           >

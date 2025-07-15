@@ -1,61 +1,12 @@
-// This file holds all the types that will be used in the app
-import { Permission } from "@prisma/client"; // i removed the ebnum formSatus hope no breaks
-// this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
-
-//--------------------------------------------------------------------------------------
-// example of using zod for types
-// this synchronize the type needed and updates based on zod data validation.
-
-import { z } from "zod";
-import { clockInFormSchema } from "./validation";
-// whatever i am looking for in the zod data validation will automatically update here
-
-export type clockInForm = z.infer<typeof clockInFormSchema>;
-// -------------------------------------------------------------------------------------
-export enum TimeOffRequestType {
-  FAMILY_MEDICAL = "FAMILY_MEDICAL",
-  MILITARY = "MILITARY",
-  PAID_VACATION = "PAID_VACATION",
-  NON_PAID_PERSONAL = "NON_PAID_PERSONAL",
-  SICK = "SICK",
-}
-
-export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
-
-export enum FormStatus {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  DENIED = "DENIED",
-  DRAFT = "DRAFT",
-}
-
-export enum TimeSheetStatus {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  DENIED = "DENIED",
-}
-
-export enum WorkType {
-  MECHANIC = "MECHANIC",
-  LABOR = "LABOR",
-  TASCO = "TASCO",
-  TRUCK_DRIVER = "TRUCK_DRIVER",
-}
-
-export enum Priority {
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  PENDING = "PENDING",
-  TODAY = "TODAY",
-  repaired = "REPAIRED",
-}
-
-export type EquipmentStatus =
-  | "OPERATIONAL"
-  | "NEEDS_REPAIR"
-  | "NEEDS_MAINTENANCE";
+import {
+  Permission,
+  WorkType,
+  FormStatus,
+  EquipmentState,
+  EquipmentTags,
+  Priority,
+} from "../lib/enums";
 
 export type LogItem = {
   id: string;
@@ -133,34 +84,6 @@ export type UserTraining = {
   userId: string;
   trainingId: string;
   isCompleted: boolean;
-};
-
-// moved to searchUser.ts
-/**
- * User search result type for API responses.
- * Dates are always returned as ISO strings or null.
- */
-export type SearchUser = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  permission: Permission;
-  DOB: string | null;
-  truckView: boolean;
-  mechanicView: boolean;
-  laborView: boolean;
-  tascoView: boolean;
-  image: string | null;
-  terminationDate: string | null;
-  accountSetup: boolean;
-};
-
-// moved to personnel.ts
-export type SearchCrew = {
-  id: string;
-  name: string;
-  leadId: string;
 };
 
 export type CustomSession = {
@@ -264,6 +187,7 @@ export type TimeSheets = {
   duration: number | null;
 };
 
+
 export type EquipmentLog = {
   id: string;
   employeeId: string;
@@ -275,7 +199,7 @@ export type EquipmentLog = {
 export type EquipmentFetchEQ = {
   Equipment: {
     id: string;
-    status: EquipmentStatus;
+    status: EquipmentState;
     name: string;
     createdAt: Date;
     updatedAt: Date;
@@ -373,7 +297,6 @@ export type EquipmentHauledItem = {
     name: string;
   };
   JobSite: {
-    // Changed from JobSiteHauledName to JobSite
     id: string;
     name: string;
   };
@@ -754,23 +677,6 @@ export type Equipment = {
   inUse?: boolean;
 };
 
-export type ListEquipmentContext = {
-  id: string;
-  qrId: string;
-  name: string;
-  description?: string;
-  equipmentTag: "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
-  status: "OPERATIONAL" | "NEEDS_REPAIR" | "NEEDS_MAINTENANCE";
-  make?: string | null;
-  model?: string | null;
-  year?: string | null;
-  licensePlate?: string | null;
-  registrationExpiration?: string | null;
-  mileage?: number | null;
-  isActive: boolean;
-  inUse: boolean;
-};
-
 export type CompleteListEquipment = {
   id: string;
   qrId: string;
@@ -995,27 +901,44 @@ export type TimesheetFilter =
   | "tascoHaulLogs"
   | "tascoRefuelLogs"
   | "equipmentLogs"
-  | "equipmentRefuelLogs";
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
 
 // Helper: Flatten EquipmentLogsData to array of { id, startTime, endTime }
-export function flattenEquipmentLogs(logs: EquipmentLogsData): { id: string; startTime: Date; endTime: Date }[] {
+export function flattenEquipmentLogs(
+  logs: EquipmentLogsData
+): { id: string; startTime: Date; endTime: Date }[] {
   return logs
     .flatMap((item) => item.EmployeeEquipmentLogs)
-    .filter((log): log is EmployeeEquipmentLogData => !!log && typeof log.id === 'string')
+    .filter(
+      (log): log is EmployeeEquipmentLogData =>
+        !!log && typeof log.id === "string"
+    )
     .map((log) => ({
       id: log.id,
       startTime: log.startTime ? new Date(log.startTime) : null,
       endTime: log.endTime ? new Date(log.endTime) : null,
     }))
-    .filter((log) => log.startTime && log.endTime) as { id: string; startTime: Date; endTime: Date }[];
+    .filter((log) => log.startTime && log.endTime) as {
+    id: string;
+    startTime: Date;
+    endTime: Date;
+  }[];
 }
 
 // Helper: Flatten EquipmentRefuelLogs to array of { id, gallonsRefueled }
-export function flattenEquipmentRefuelLogs(logs: EmployeeEquipmentLogWithRefuel[]): { id: string; gallonsRefueled: number | null }[] {
+export function flattenEquipmentRefuelLogs(
+  logs: EmployeeEquipmentLogWithRefuel[]
+): { id: string; gallonsRefueled: number | null }[] {
   return logs.flatMap((log) =>
     (log.RefuelLogs ?? []).map((refuel) => ({
       id: refuel.id,
-      gallonsRefueled: typeof refuel.gallonsRefueled === 'number' ? refuel.gallonsRefueled : refuel.gallonsRefueled ? Number(refuel.gallonsRefueled) : null,
+      gallonsRefueled:
+        typeof refuel.gallonsRefueled === "number"
+          ? refuel.gallonsRefueled
+          : refuel.gallonsRefueled
+          ? Number(refuel.gallonsRefueled)
+          : null,
     }))
   );
 }
@@ -1025,8 +948,8 @@ export function isEquipmentLogsData(data: unknown): data is EquipmentLogsData {
   return (
     Array.isArray(data) &&
     data.length > 0 &&
-    typeof data[0] === 'object' &&
-    'EmployeeEquipmentLogs' in data[0]
+    typeof data[0] === "object" &&
+    "EmployeeEquipmentLogs" in data[0]
   );
 }
 
@@ -1035,4 +958,25 @@ export type crewUsers = {
   firstName: string;
   lastName: string;
   clockedIn: boolean;
+};
+
+export type SearchCrew = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type SearchUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  permission: Permission;
+  DOB: string;
+  truckView: boolean;
+  mechanicView: boolean;
+  laborView: boolean;
+  tascoView: boolean;
+  image: string | null;
+  terminationDate: Date | null;
 };

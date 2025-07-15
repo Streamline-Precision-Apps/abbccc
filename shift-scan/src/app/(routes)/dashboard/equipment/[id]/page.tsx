@@ -21,7 +21,6 @@ import UsageData from "./_components/UsageData";
 import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { EquipmentStatus, FormStatus } from "@/lib/types";
 
 import {
   UnifiedEquipmentState,
@@ -31,6 +30,7 @@ import {
   Refueled,
   EquipmentState,
 } from "./types";
+import { FormStatus } from "@/lib/enums";
 
 // Helper function to transform API response to form state
 function transformApiToFormState(
@@ -39,7 +39,6 @@ function transformApiToFormState(
   return {
     id: apiData.id,
     equipmentId: apiData.equipmentId,
-    employeeId: apiData.employeeId,
     startTime: apiData.startTime || "",
     endTime: apiData.endTime || "",
     comment: apiData.comment || "",
@@ -75,14 +74,13 @@ function createInitialState(): UnifiedEquipmentState {
     formState: {
       id: "",
       equipmentId: "",
-      employeeId: "",
       startTime: "",
       endTime: "",
       comment: "",
       isFinished: false,
       equipment: {
         name: "",
-        status: "OPERATIONAL" as EquipmentStatus, // Default to OPERATIONAL
+        status: "OPERATIONAL" as EquipmentState, // Default to OPERATIONAL
       },
       maintenanceId: null,
       refuelLogs: null,
@@ -450,7 +448,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               onClick={() => router.push("/dashboard/equipment")}
               background="lightBlue"
             >
-              <Titles size="h5">Back to Equipment</Titles>
+              <Titles size="h5">{t("BacktoEquipment")}</Titles>
             </Buttons>
           </Holds>
         </Contents>
@@ -496,7 +494,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   isComplete={true}
                   isLoading={state.isLoading}
                 >
-                  Usage Data
+                  {t("UsageData")}
                 </NewTab>
                 <NewTab
                   isActive={state.tab === 2}
@@ -506,7 +504,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   isComplete={true}
                   isLoading={state.isLoading}
                 >
-                  Maintenance Log
+                  {t("MaintenanceLog")}
                 </NewTab>
               </Holds>
               <Holds
@@ -559,7 +557,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                           background="red"
                           className="w-full "
                         >
-                          <Titles size="h5">Delete Log</Titles>
+                          <Titles size="h5">{t("DeleteLog")}</Titles>
                         </Buttons>
 
                         {state.hasChanged && (
@@ -580,7 +578,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                             className="w-full "
                             disabled={!isFormValid()}
                           >
-                            <Titles size="h5">Finish Logs</Titles>
+                            <Titles size="h5">{t("FinishLogs")}</Titles>
                           </Buttons>
                         )}
                       </Holds>

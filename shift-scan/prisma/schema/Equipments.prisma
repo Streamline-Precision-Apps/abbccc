@@ -3,16 +3,15 @@ model Equipment {
   qrId                  String                 @unique
   name                  String
   description           String
+  creationReason        String? // Reason for creating the equipment
   equipmentTag          EquipmentTags          @default(EQUIPMENT)
   state                 EquipmentState         @default(AVAILABLE)
   isDisabledByAdmin     Boolean                @default(false)
-  approvalStatus        ApprovalStatus         @default(APPROVED) // Field-created equipment starts PENDING
+  approvalStatus        ApprovalStatus         @default(PENDING)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   overWeight            Boolean?               @default(false)
   currentWeight         Float?                 @default(0)
-  PendingApprovals      PendingApproval[]
-  AuditLogs             AuditLog[]
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   EquipmentHauled       EquipmentHauled[]
   equipmentVehicleInfo  EquipmentVehicleInfo?
@@ -20,54 +19,13 @@ model Equipment {
   TascoLogs             TascoLog[]
   TruckingLogs          TruckingLog[]
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
+  createdById           String?
+  createdBy             User?                  @relation(fields: [createdById], references: [id])
+  createdVia            CreatedVia             @default(MOBILE)
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
   @@index([approvalStatus])
-}
-
-// Major changes done to a jobsite, equipment, or other entity that require approval not done by the admin
-
-model PendingApproval {
-  id              String         @id @default(uuid())
-  entityType      EntityType
-  equipmentId     String?
-  jobsiteId       String?
-  createdById     String // Manager who created it in field
-  approvalStatus  ApprovalStatus @default(PENDING)
-  approvedById    String? // Office admin who approved/rejected
-  comment         String? // Initial creation comment
-  approvalComment String? // Office feedback
-  proposedChanges Json? // What the field manager suggested
-  officeChanges   Json? // What the office actually implemented
-  createdAt       DateTime       @default(now())
-  approvedAt      DateTime?
-
-  CreatedBy  User       @relation("PendingApprovalCreatedBy", fields: [createdById], references: [id])
-  ApprovedBy User?      @relation("PendingApprovalApprovedBy", fields: [approvedById], references: [id])
-  Equipment  Equipment? @relation(fields: [equipmentId], references: [id])
-  Jobsite    Jobsite?   @relation(fields: [jobsiteId], references: [id])
-
-  @@index([entityType, equipmentId, jobsiteId])
-  @@index([approvalStatus, createdAt])
-}
-
-model AuditLog {
-  id          String      @id @default(uuid())
-  entityType  EntityType
-  equipmentId String?
-  jobsiteId   String?
-  action      AuditAction
-  userId      String? // Who performed the action
-  changes     Json? // What changed (before/after values)
-  comment     String?
-  createdAt   DateTime    @default(now())
-
-  User      User?      @relation(fields: [userId], references: [id])
-  Equipment Equipment? @relation(fields: [equipmentId], references: [id])
-  Jobsite   Jobsite?   @relation(fields: [jobsiteId], references: [id])
-
-  @@index([entityType, equipmentId, jobsiteId, createdAt])
 }
 
 model EquipmentVehicleInfo {
@@ -82,40 +40,17 @@ model EquipmentVehicleInfo {
 }
 
 model EmployeeEquipmentLog {
-  id          String     @id @default(uuid())
-  equipmentId String
-  jobsiteId   String
-  employeeId  String
-  startTime   DateTime?
-  endTime     DateTime?
-  comment     String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  isFinished  Boolean    @default(false)
-  status      FormStatus @default(PENDING)
-  timeSheetId String?
-
-  // Polymorphic design for work type tracking
-  workType     EquipmentUsageType @default(GENERAL)
-  relatedLogId String? // Points to specific work log (TascoLog, TruckingLog, etc.)
-
-  User          User         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  Equipment     Equipment    @relation(fields: [equipmentId], references: [id])
-  Jobsite       Jobsite      @relation(fields: [jobsiteId], references: [id])
-  TimeSheet     TimeSheet?   @relation(fields: [timeSheetId], references: [id])
-  MaintenanceId Maintenance?
-  RefuelLogs    RefuelLog?
-
-  @@index([workType, relatedLogId])
-}
-
-model EquipmentHauled {
-  id            String      @id @default(uuid())
-  truckingLogId String
+  id            String       @id @default(uuid())
+  timeSheetId   String // only need the connection to create a log which makes sense
   equipmentId   String?
-  createdAt     DateTime    @default(now())
-  jobSiteId     String?
-  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
-  JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
-  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id])
+  maintenanceId String? // a possible connection to EquipmentLog
+  startTime     DateTime     @default(now()) // when creating a log, it starts now
+  endTime       DateTime?
+  comment       String?
+  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
+  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade) //connection to make a maintenance log
+  RefuelLog     RefuelLog?
+
+  @@index([timeSheetId, equipmentId, maintenanceId])
 }

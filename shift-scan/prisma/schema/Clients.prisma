@@ -1,24 +1,30 @@
 model Client {
-    id            String   @id @default(uuid())
-    name          String   @unique
-    description   String?
-    address       String?
-    city          String?
-    state         String?
-    zipCode       String?
-    country       String   @default("US")
-    phone         String?
-    email         String?
-    contactPerson String?
-    isActive      Boolean  @default(true)
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+  id             String         @id @default(uuid())
+  name           String         @unique
+  description    String?
+  creationReason String? // Reason for creating the client
+  approvalStatus ApprovalStatus @default(PENDING) // PENDING, APPROVED, REJECTED
+  contactPerson  String?
+  contactEmail   String?
+  contactPhone   String?
+  hasProject     Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  companyId      String
+  createdById    String?
+  createdBy      User?          @relation(fields: [createdById], references: [id])
+  createdVia     CreatedVia     @default(ADMIN)
+  Company        Company        @relation(fields: [companyId], references: [id])
+  jobsiteId      String?
+  Jobsites       Jobsite[]
+  addressId      String?
+  Address        Address?       @relation(fields: [addressId], references: [id])
 
-    // Multi-tenant relationships
-    companyId String // Which company this client belongs to
-    Company   Company   @relation(fields: [companyId], references: [id])
-    Jobsites  Jobsite[]
+  @@index([companyId, name])
+  @@index([hasProject])
+}
 
-    @@index([companyId, name])
-    @@index([isActive])
+enum CreatedVia {
+  ADMIN
+  MOBILE
 }

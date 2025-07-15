@@ -27,7 +27,10 @@ import {
   TascoRefuelLogData,
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
+  EquipmentHauledItem,
+  MaintenanceLog,
 } from "@/lib/types";
+import { MaintenanceLogData } from "./TimeCardMechanicLogs";
 import {
   updateTruckingHaulLogs,
   updateTimesheetHighlights,
@@ -39,9 +42,14 @@ import {
   updateTruckingStateLogs,
   updateEquipmentRefuelLogs,
   updateTruckingMileage,
+  updateMaintenanceLogs,
 } from "@/actions/myTeamsActions";
-import { flattenMaterialLogs } from "./TimeCardTruckingMaterialLogs";
+import {
+  flattenMaterialLogs,
+  ProcessedMaterialLog,
+} from "./TimeCardTruckingMaterialLogs";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
+import { useAllEquipment } from "@/hooks/useAllEquipment";
 
 // Helper to flatten nested refuel logs for server submission
 const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
@@ -66,6 +74,11 @@ const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
   });
   return result;
 };
+
+// Local type for haul log changes
+interface HaulLogChange {
+  TruckingLogs: TruckingEquipmentHaulLog[];
+}
 
 // Add a type for material haul log changes
 interface TruckingMaterialHaulLog {
@@ -116,6 +129,27 @@ function isEquipmentLogChange(
   );
 }
 
+// Type guard for HaulLogChange
+function isHaulLogChangeArray(arr: unknown): arr is HaulLogChange[] {
+  return (
+    Array.isArray(arr) &&
+    arr.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        "TruckingLogs" in item &&
+        Array.isArray((item as HaulLogChange).TruckingLogs) &&
+        (item as HaulLogChange).TruckingLogs.every(
+          (log) =>
+            log &&
+            typeof log === "object" &&
+            "EquipmentHauled" in log &&
+            Array.isArray(log.EquipmentHauled)
+        )
+    )
+  );
+}
+
 export default function EmployeeTabs() {
   const t = useTranslations("MyTeam");
   const router = useRouter();
@@ -153,6 +187,10 @@ export default function EmployeeTabs() {
     updateDate: fetchTimesheetsForDate,
     updateFilter: fetchTimesheetsForFilter,
   } = useTimesheetData(employeeId as string | undefined, date, timeSheetFilter);
+
+  console.log("EmployeeTabs - Timesheet Data:", timesheetData);
+
+  const allEquipment = useAllEquipment();
 
   const loading = loadingEmployee || loadingTimesheets;
 
@@ -316,25 +354,21 @@ export default function EmployeeTabs() {
           }
 
           case "truckingEquipmentHaulLogs": {
-            // Only proceed if changes is an array and has the expected structure
-            if (
-              !Array.isArray(changes) ||
-              !changes.every(
-                (item) => typeof item === "object" && "TruckingLogs" in item
-              )
-            ) {
+            if (!isHaulLogChangeArray(changes)) {
               console.warn("No valid haul log changes to send");
               return;
             }
-            const haulLogChanges = changes as Array<{ TruckingLogs: any[] }>;
-
+            const haulLogChanges = changes;
             const updates = haulLogChanges.flatMap((item) =>
-              (item.TruckingLogs || []).flatMap((log: any) =>
-                (log.EquipmentHauled || []).map((hauledItem: any) => ({
-                  id: hauledItem.id,
-                  equipmentId: hauledItem.Equipment?.id,
-                  jobSiteId: hauledItem.JobSite?.id,
-                }))
+              (item.TruckingLogs || []).flatMap(
+                (log: TruckingEquipmentHaulLog) =>
+                  (log.EquipmentHauled || []).map(
+                    (hauledItem: EquipmentHauledItem) => ({
+                      id: hauledItem.id,
+                      equipmentId: hauledItem.Equipment?.id,
+                      jobSiteId: hauledItem.JobSite?.id,
+                    })
+                  )
               )
             );
 
@@ -353,10 +387,9 @@ export default function EmployeeTabs() {
             }
             break;
           }
-
           case "truckingMaterialHaulLogs": {
             // Accept both flat and nested structure
-            let formattedChanges: any[] = [];
+            let formattedChanges: ProcessedMaterialLog[] = [];
             if (
               Array.isArray(changes) &&
               changes.length > 0 &&
@@ -366,7 +399,7 @@ export default function EmployeeTabs() {
                 changes as TruckingMaterialHaulLogData
               );
             } else if (Array.isArray(changes)) {
-              formattedChanges = changes;
+              formattedChanges = changes as ProcessedMaterialLog[];
             }
             if (
               Array.isArray(formattedChanges) &&
@@ -378,7 +411,11 @@ export default function EmployeeTabs() {
           }
           case "truckingRefuelLogs": {
             // Accept both flat and nested structure
-            let formattedChanges: any[] = [];
+            let formattedChanges: {
+              id: string;
+              gallonsRefueled?: number | null;
+              milesAtFueling?: number | null;
+            }[] = [];
             if (
               Array.isArray(changes) &&
               changes.length > 0 &&
@@ -388,7 +425,11 @@ export default function EmployeeTabs() {
                 changes as TruckingRefuelLogData
               );
             } else if (Array.isArray(changes)) {
-              formattedChanges = changes;
+              formattedChanges = changes as {
+                id: string;
+                gallonsRefueled?: number | null;
+                milesAtFueling?: number | null;
+              }[];
             }
             if (
               Array.isArray(formattedChanges) &&
@@ -483,6 +524,35 @@ export default function EmployeeTabs() {
               console.error("Invalid changes type");
             }
             break;
+
+          // Handle mechanicLogs (MaintenanceLog data)
+          case "mechanicLogs": {
+            if (!Array.isArray(changes)) {
+              console.warn("Invalid maintenance log changes");
+              return;
+            }
+            
+            // Transform the MaintenanceLog data to match the server action format
+            const maintenanceUpdates = (changes as MaintenanceLog[]).map((log) => ({
+              id: log.id,
+              startTime: log.startTime ? new Date(log.startTime) : undefined,
+              endTime: log.endTime ? new Date(log.endTime) : undefined,
+            }));
+
+            console.log("Saving maintenance logs updates:", maintenanceUpdates);
+            const result = await updateMaintenanceLogs(maintenanceUpdates);
+            
+            if (result?.success) {
+              await Promise.all([
+                fetchTimesheetsForDate(date),
+                fetchTimesheetsForFilter(timeSheetFilter),
+              ]);
+              setEdit(false);
+            } else {
+              console.error("Failed to update maintenance logs:", result?.error);
+            }
+            break;
+          }
         }
 
         await Promise.all([
@@ -592,6 +662,7 @@ export default function EmployeeTabs() {
                   onCancelEdits={onCancelEdits}
                   fetchTimesheetsForDate={fetchTimesheetsForDate}
                   fetchTimesheetsForFilter={fetchTimesheetsForFilter}
+                  allEquipment={allEquipment}
                 />
               )}
             </Holds>
@@ -641,6 +712,7 @@ export interface EmployeeTimeSheetsProps {
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | EquipmentLogChange[]
+      | MaintenanceLogData
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;

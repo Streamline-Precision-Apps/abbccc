@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -37,9 +38,10 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Error fetching teams:", error);
+    Sentry.captureException(error);
+    console.error('Error fetching teams:', error);
 
-    let errorMessage = "Failed to fetch teams";
+    let errorMessage = 'Failed to fetch teams';
     if (error instanceof Error) {
       errorMessage = error.message;
     }

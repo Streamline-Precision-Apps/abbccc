@@ -69,7 +69,7 @@ export default function SearchBar({
                 value={searchTerm}
                 onChange={onSearchChange}
                 placeholder={t("SearchBarPlaceholder")}
-                className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
+                className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-hidden rounded-[10px]"
               />
             </Holds>
             <Holds size={"10"}></Holds>

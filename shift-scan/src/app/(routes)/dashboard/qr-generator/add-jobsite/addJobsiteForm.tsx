@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import React, { useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { createJobsite, jobExists } from "@/actions/jobsiteActions";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
@@ -32,21 +33,31 @@ export default function AddJobsiteForm() {
     temporaryJobsiteName: "",
     creationComment: "",
     creationReasoning: "",
+    clientName: "",
   });
+
+  // Checkbox state
+  const [newAddress, setNewAddress] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form validation
   const isFormValid =
-    formData.address.trim() !== "" &&
-    formData.city.trim() !== "" &&
-    formData.state.trim() !== "" &&
-    formData.zipCode.trim() !== "" &&
     formData.temporaryJobsiteName.trim() !== "" &&
     formData.creationComment.trim() !== "" &&
     formData.creationReasoning.trim() !== "" &&
     qrCode.trim() !== "" &&
-    userId;
+    userId &&
+    (!newAddress ||
+      (formData.address.trim() !== "" &&
+        formData.city.trim() !== "" &&
+        formData.state.trim() !== "" &&
+        formData.zipCode.trim() !== "" &&
+        formData.clientName.trim() !== ""));
+  // Checkbox handler
+  const handleCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewAddress(e.target.checked);
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -80,22 +91,19 @@ export default function AddJobsiteForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!isFormValid || !userId) return;
-
     setIsSubmitting(true);
-
     try {
       const formDataToSend = new FormData();
+      // Always send newAddress state
+      formDataToSend.append("newAddress", newAddress ? "true" : "false");
       // Append all form data
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
       formDataToSend.append("qrCode", qrCode);
       formDataToSend.append("createdById", userId);
-
       const response = await createJobsite(formDataToSend);
-
       if (response) {
         router.push("/dashboard/qr-generator");
       }
@@ -116,77 +124,103 @@ export default function AddJobsiteForm() {
       <Holds background={"white"} className="row-start-2 row-end-8 h-full">
         <form onSubmit={handleSubmit} className="h-full w-full">
           <Contents width={"section"}>
-            <Grids rows={"9"} gap={"5"} className="h-full w-full pb-5">
-              {/* Address Section */}
-              <Holds className="row-start-1 row-end-4 h-full">
-                <Holds className="py-3">
-                  <Titles position={"left"} size={"h3"}>
-                    {t("Address")}
-                  </Titles>
-                </Holds>
-
-                <Holds className="h-full pb-3">
-                  <Inputs
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    placeholder={t("AddressInformation")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
+            <Grids rows={"10"} gap={"5"} className="h-full w-full pb-5">
+              {/* New Address Title and Checkbox */}
+              <Holds className="row-start-1 row-end-2 h-full pt-5">
+                <Titles position={"left"} size={"h3"}>
+                  {t("Address")}
+                </Titles>
+                <div className="mt-3">
+                  <CheckBox
+                    id="newAddress"
+                    name="newAddress"
+                    label={t("NewAddress")}
+                    checked={newAddress}
+                    onChange={handleCheckBoxChange}
+                    size={2}
                   />
-                </Holds>
+                </div>
+              </Holds>
 
-                <Holds className="h-full pb-3">
-                  <Inputs
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    placeholder={t("City")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-
-                <Holds position={"row"} className="w-full pb-3 gap-x-3">
-                  <Holds className="w-1/2">
-                    <Selects
-                      name="state"
-                      value={formData.state}
-                      className="text-xs py-2 text-center"
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="">Select State</option>
-                      {StateOptions.map((state) => (
-                        <option key={state.value} value={state.value}>
-                          {state.label}
-                        </option>
-                      ))}
-                    </Selects>
-                  </Holds>
-
-                  <Holds className="w-1/2">
+              {/* Address Section (conditionally rendered) */}
+              {newAddress && (
+                <Holds className="row-start-3 row-end-6 h-full mb-8">
+                  {/* Client Name Input */}
+                  <Holds className="pb-3">
                     <Inputs
-                      type="text" // Changed from number to allow for international formats
-                      name="zipCode"
-                      value={formData.zipCode}
-                      placeholder={t("ZipCode")}
-                      className="text-xs py-2 text-center"
+                      type="text"
+                      name="clientName"
+                      value={formData.clientName}
+                      placeholder={t("ClientName")}
+                      className="text-xs pl-3 py-2"
                       onChange={handleInputChange}
-                      required
+                      required={newAddress}
                     />
                   </Holds>
+
+                  <Holds className="pb-3">
+                    <Inputs
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      placeholder={t("AddressInformation")}
+                      className="text-xs pl-3 py-2"
+                      onChange={handleInputChange}
+                      required={newAddress}
+                    />
+                  </Holds>
+
+                  <Holds className="pb-3">
+                    <Inputs
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      placeholder={t("City")}
+                      className="text-xs pl-3 py-2"
+                      onChange={handleInputChange}
+                      required={newAddress}
+                    />
+                  </Holds>
+
+                  <Holds position={"row"} className="w-full pb-3 gap-x-3">
+                    <Holds className="w-1/2">
+                      <Selects
+                        name="state"
+                        value={formData.state}
+                        className="text-xs py-2 text-center"
+                        onChange={handleInputChange}
+                        required={newAddress}
+                      >
+                        <option value="">Select State</option>
+                        {StateOptions.map((state) => (
+                          <option key={state.value} value={state.value}>
+                            {state.label}
+                          </option>
+                        ))}
+                      </Selects>
+                    </Holds>
+
+                    <Holds className="w-1/2">
+                      <Inputs
+                        type="text"
+                        name="zipCode"
+                        value={formData.zipCode}
+                        placeholder={t("ZipCode")}
+                        className="text-xs py-2 text-center"
+                        onChange={handleInputChange}
+                        required={newAddress}
+                      />
+                    </Holds>
+                  </Holds>
                 </Holds>
-              </Holds>
+              )}
 
               {/* Creation Details Section */}
               <Holds
                 background={"white"}
-                className="row-start-4 row-end-9 h-full"
+                className="row-start-6 row-end-10 h-full"
               >
-                <Holds className="pb-5">
+                <Holds className="pb-3">
                   <Titles position={"left"} size={"h3"}>
                     {t("CreationDetails")}
                   </Titles>
@@ -228,14 +262,14 @@ export default function AddJobsiteForm() {
               </Holds>
 
               {/* Submit Button */}
-              <Holds className="row-start-9 row-end-10 h-full">
+              <Holds className="row-start-10 row-end-11 h-full">
                 <Buttons
                   background={isFormValid ? "green" : "darkGray"}
                   type="submit"
                   disabled={!isFormValid || isSubmitting}
                 >
                   <Titles size={"h2"}>
-                    {isSubmitting ? t("Submitting...") : t("SubmitJobsite")}
+                    {isSubmitting ? t("Submitting") : t("SubmitJobsite")}
                   </Titles>
                 </Buttons>
               </Holds>

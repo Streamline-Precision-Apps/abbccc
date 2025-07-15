@@ -59,8 +59,8 @@ export default function EquipmentLogContent() {
 
   const filteredLogs =
     active === 1
-      ? logs.filter((log) => !log.isFinished)
-      : logs.filter((log) => log.isFinished);
+      ? logs.filter((log) => !log.endTime)
+      : logs.filter((log) => !!log.endTime);
 
   const handleDelete = async (id: string) => {
     try {
@@ -108,7 +108,7 @@ export default function EquipmentLogContent() {
                     titleImageAlt="Clock"
                     isComplete={true}
                   >
-                    <Titles size={"h4"}>Current Logs</Titles>
+                    <Titles size={"h4"}>{t("CurrentLogs")}</Titles>
                   </NewTab>
                   <NewTab
                     onClick={() => setActive(2)}
@@ -117,7 +117,7 @@ export default function EquipmentLogContent() {
                     titleImageAlt="Finished logs Icon"
                     isComplete={true}
                   >
-                    <Titles size={"h4"}>Finished Logs</Titles>
+                    <Titles size={"h4"}>{t("FinishedLogs")}</Titles>
                   </NewTab>
                 </Holds>
 
