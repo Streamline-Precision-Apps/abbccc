@@ -716,6 +716,73 @@ export async function deleteEquipment(id: string) {
 /**
  * Server action to create a new cost code
  */
+export async function updateCostCodeAdmin(formData: FormData) {
+  console.log("Updating cost code...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      throw new Error("Jobsite ID is required");
+    }
+
+    // Fetch existing jobsite early
+    const existingJobsite = await prisma.costCode.findUnique({
+      where: { id },
+      include: {
+        CCTags: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
+    if (!existingJobsite) {
+      throw new Error("Jobsite not found");
+    }
+
+    const updateData: Prisma.CostCodeUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("isActive")) {
+      updateData.isActive = formData.get("isActive") === "true";
+    }
+
+    if (formData.has("cCTags")) {
+      const cCTagsString = formData.get("cCTags") as string;
+      const cCTagsArray = JSON.parse(cCTagsString || "[]");
+      updateData.CCTags = {
+        set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
+      };
+    }
+
+    updateData.updatedAt = new Date();
+
+    const updatedCostCode = await prisma.costCode.update({
+      where: { id },
+      data: updateData,
+      include: { CCTags: true },
+    });
+
+    revalidatePath("/admins/cost-codes");
+
+    console.log("Cost code updated successfully:", updatedCostCode.id);
+    return {
+      success: true,
+      data: updatedCostCode,
+      message: "Cost code updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating jobsite:", error);
+    throw new Error(
+      `Failed to update jobsite: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
 export async function createCostCode(payload: {
   code: string;
   name: string;
@@ -953,6 +1020,82 @@ export async function deleteCostCode(id: string) {
   }
 }
 
+export async function updateTagAdmin(formData: FormData) {
+  console.log("Updating tag ...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+    if (!id) {
+      throw new Error("Tag ID is required");
+    }
+
+    // Fetch existing tag early
+    const existingTag = await prisma.cCTag.findUnique({
+      where: { id },
+      include: {
+        Jobsites: { select: { id: true, name: true } },
+        CostCodes: { select: { id: true, name: true } },
+      },
+    });
+    if (!existingTag) {
+      throw new Error("Tag not found");
+    }
+
+    const updateData: Prisma.CCTagUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("description")) {
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    }
+
+    // Handle Jobsites relation
+    if (formData.has("Jobsites")) {
+      const jobsitesString = formData.get("Jobsites") as string;
+      const jobsitesArray = JSON.parse(jobsitesString || "[]");
+      updateData.Jobsites = {
+        set: jobsitesArray.map((id: string) => ({ id })),
+      };
+    }
+
+    // Handle CostCodes relation
+    if (formData.has("CostCodeTags")) {
+      const costCodesString = formData.get("CostCodeTags") as string;
+      const costCodesArray = JSON.parse(costCodesString || "[]");
+      updateData.CostCodes = {
+        set: costCodesArray.map((id: string) => ({ id })),
+      };
+    }
+
+    const updatedTag = await prisma.cCTag.update({
+      where: { id },
+      data: updateData,
+      include: {
+        Jobsites: { select: { id: true, name: true } },
+        CostCodes: { select: { id: true, name: true } },
+      },
+    });
+
+    revalidatePath("/admins/cost-codes");
+
+    console.log("Tag updated successfully:", updatedTag.id);
+    return {
+      success: true,
+      data: updatedTag,
+      message: "Tag updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating tag:", error);
+    throw new Error(
+      `Failed to update tag: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
 export async function updateTags(
   id: string,
   tagData: Partial<{
@@ -1110,42 +1253,43 @@ export async function deleteTag(id: string) {
   }
 }
 
-export async function createTag({
-  name,
-  description,
-  CostCodes,
-}: {
+export async function createTag(payload: {
   name: string;
   description: string;
-  CostCodes: {
+  CostCode: {
+    id: string;
+    name: string;
+  }[];
+  Jobsites: {
     id: string;
     name: string;
   }[];
 }) {
   console.log("Creating new tag...", {
-    name,
-    description,
-    costCodesCount: CostCodes.length,
+    name: payload.name,
+    description: payload.description,
+    costCodesCount: payload.CostCode.length,
+    jobsitesCount: payload.Jobsites.length,
   });
 
   try {
     // Validate required fields
-    if (!name?.trim()) {
+    if (!payload.name?.trim()) {
       throw new Error("Tag name is required");
     }
 
-    if (!description?.trim()) {
+    if (!payload.description?.trim()) {
       throw new Error("Tag description is required");
     }
 
-    if (!CostCodes || CostCodes.length === 0) {
+    if (!payload.CostCode || payload.CostCode.length === 0) {
       throw new Error("At least one cost code must be selected");
     }
 
     // Check if tag with the same name already exists
     const existingTag = await prisma.cCTag.findUnique({
       where: {
-        name: name.trim(),
+        name: payload.name.trim(),
       },
     });
 
@@ -1157,7 +1301,7 @@ export async function createTag({
     const existingCostCodes = await prisma.costCode.findMany({
       where: {
         id: {
-          in: CostCodes.map((cc) => cc.id),
+          in: payload.CostCode.map((cc) => cc.id),
         },
       },
       select: {
@@ -1166,21 +1310,52 @@ export async function createTag({
       },
     });
 
-    if (existingCostCodes.length !== CostCodes.length) {
+    if (existingCostCodes.length !== payload.CostCode.length) {
       throw new Error("One or more selected cost codes do not exist");
     }
 
-    // Create the new tag with associated cost codes
+    // Validate that all provided jobsites exist (optional, but recommended)
+    if (payload.Jobsites && payload.Jobsites.length > 0) {
+      const existingJobsites = await prisma.jobsite.findMany({
+        where: {
+          id: {
+            in: payload.Jobsites.map((js) => js.id),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
+      if (existingJobsites.length !== payload.Jobsites.length) {
+        throw new Error("One or more selected jobsites do not exist");
+      }
+    }
+
+    // Create the new tag with associated cost codes and jobsites
     const newTag = await prisma.cCTag.create({
       data: {
-        name: name.trim(),
-        description: description.trim(),
+        name: payload.name.trim(),
+        description: payload.description.trim(),
         CostCodes: {
-          connect: CostCodes.map((cc) => ({ id: cc.id })),
+          connect: payload.CostCode.map((cc) => ({ id: cc.id })),
         },
+        Jobsites:
+          payload.Jobsites && payload.Jobsites.length > 0
+            ? {
+                connect: payload.Jobsites.map((js) => ({ id: js.id })),
+              }
+            : undefined,
       },
       include: {
         CostCodes: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Jobsites: {
           select: {
             id: true,
             name: true,
@@ -1209,13 +1384,3 @@ export async function createTag({
     };
   }
 }
-
-/** Layout for server actions 
-export async function (formData: FormData) {
-  try {
-  } catch (error) {
-    console.error("Error creating jobsite:", error);
-    throw error;
-  }
-}
-*/

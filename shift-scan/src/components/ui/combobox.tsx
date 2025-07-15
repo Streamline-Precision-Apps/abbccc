@@ -92,7 +92,7 @@ export function Combobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={`w-full justify-between ${
+            className={`w-full justify-between text-xs overflow-hidden ${
               showError && listData.length < 1 ? "border-red-500" : ""
             }`}
             disabled={disabled}
@@ -107,7 +107,7 @@ export function Combobox({
             <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 min-w-[200px]">
+        <PopoverContent className="w-full p-0 min-w-[200px] text-xs ">
           <Command>
             <CommandInput
               placeholder={`Search...`}

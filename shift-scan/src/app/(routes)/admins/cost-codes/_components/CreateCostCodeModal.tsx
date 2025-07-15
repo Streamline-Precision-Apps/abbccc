@@ -3,22 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { createCostCode, createJobsiteAdmin } from "@/actions/AssetActions";
-import { Textarea } from "@/components/ui/textarea";
+import { createCostCode } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { StateOptions } from "@/data/stateValues";
 import { Combobox } from "@/components/ui/combobox";
 import { TagSummary } from "./useTagData";
-import { code } from "@nextui-org/theme";
 
 export default function CreateCostCodeModal({
   cancel,
@@ -40,7 +30,6 @@ export default function CreateCostCodeModal({
       try {
         const res = await fetch("/api/getTagSummary");
         const data = await res.json();
-        // If API returns { tags: [...] }
         setTagSummaries(data.tags || []);
       } catch (error) {
         console.error("Failed to fetch tags:", error);
@@ -65,22 +54,29 @@ export default function CreateCostCodeModal({
   const handleCreateJobsite = async () => {
     setSubmitting(true);
     try {
-      // Basic validation
-      if (!formData.name.trim()) {
-        toast.error("Jobsite name is required");
+      if (!formData.code.trim()) {
+        toast.error("Cost code number is required");
         setSubmitting(false);
         return;
       }
 
+      if (!formData.name.trim()) {
+        toast.error("Cost code name is required");
+        setSubmitting(false);
+        return;
+      }
       // Prepare payload
       const payload = {
         code: formData.code.trim(),
         name: formData.name.trim(),
         isActive: formData.isActive,
-        CCTags: formData.CCTags.map((tag) => ({
-          id: tag.id,
-          name: tag.name,
-        })),
+        CCTags: [
+          ...formData.CCTags.map((tag) => ({
+            id: tag.id,
+            name: tag.name,
+          })),
+          { id: "c6d1c13a-5c60-4abb-8afb-b89c5e4426b3", name: "All" },
+        ],
       };
 
       const result = await createCostCode(payload);
@@ -110,8 +106,8 @@ export default function CreateCostCodeModal({
           </div>
           <div>
             <div className="flex flex-col gap-4">
-              <div className="mt-4">
-                <Label htmlFor="cc-number" className={`text-sm `}>
+              <div className="">
+                <Label htmlFor="cc-number" className={`text-xs `}>
                   Number <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -130,7 +126,7 @@ export default function CreateCostCodeModal({
             </div>
             <div className="flex flex-col gap-4">
               <div className="mt-4">
-                <Label htmlFor="cc-name" className={`text-sm `}>
+                <Label htmlFor="cc-name" className={`text-xs `}>
                   Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -146,16 +142,19 @@ export default function CreateCostCodeModal({
                 />
               </div>
             </div>
+            <div className="mt-6 border-t border-gray-200 pt-2">
+              <p className="text-base text-gray-400">{`Add Costcode to Tags`}</p>
+            </div>
             {tagSummaries && (
               <div className="mt-4">
-                <Label htmlFor="isActive" className="text-sm font-medium">
-                  Cost Code Tags
-                </Label>
                 <Combobox
-                  options={tagSummaries.map((tag) => ({
-                    label: tag.name,
-                    value: tag.id,
-                  }))}
+                  label={` Tags (Optional)`}
+                  options={tagSummaries
+                    .filter((tag) => tag.name.toLowerCase() !== "all")
+                    .map((tag) => ({
+                      label: tag.name,
+                      value: tag.id,
+                    }))}
                   value={formData.CCTags.map((tag) => tag.id)}
                   onChange={(selectedIds: string[]) => {
                     setFormData((prev) => ({
@@ -165,7 +164,11 @@ export default function CreateCostCodeModal({
                       ),
                     }));
                   }}
+                  placeholder="Select one or more tags..."
                 />
+                <p className="text-xs pt-1 flex flex-row justify-end text-gray-400">
+                  {`Automatically connects to main list.`}
+                </p>
               </div>
             )}
           </div>
