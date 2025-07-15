@@ -59,7 +59,13 @@ export const useJobsiteDataById = (id: string) => {
         ]).then((res) => Promise.all(res.map((r) => r.json())));
 
         setJobSiteDetails(jobsiteDetails);
-        setTagSummaries(tag);
+        const filteredTags = tag.tags.map(
+          (tag: { id: string; name: string }) => ({
+            id: tag.id,
+            name: tag.name,
+          })
+        );
+        setTagSummaries(filteredTags);
         setClients(client);
       } catch (error) {
         console.error("Failed to fetch job site details:", error);

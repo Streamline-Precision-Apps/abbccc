@@ -36,6 +36,7 @@ import EditTagModal from "./_components/EditTagModal";
 export default function CostCodePage() {
   const { setOpen, open } = useSidebar();
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchTag, setSearchTag] = useState("");
   const {
     loading,
     CostCodeDetails,
@@ -57,12 +58,9 @@ export default function CostCodePage() {
     setPage: setTagPage,
     setPageSize: setTagPageSize,
   } = useTagData();
-
   // Combine loading states for both cost codes and tags for a unified loading experience
   const loadingState = loading && tagLoading;
-
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
-
   // State for modals, dialogs, and pending actions
   // Cost Codes
   const [editCostCodeModal, setEditCostCodeModal] = useState(false);
@@ -70,7 +68,6 @@ export default function CostCodePage() {
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
   // Tags
   const [createTagModal, setCreateTagModal] = useState(false);
   const [editTagModal, setEditTagModal] = useState(false);
@@ -79,13 +76,11 @@ export default function CostCodePage() {
   const [pendingTagDeleteId, setPendingTagDeleteId] = useState<string | null>(
     null
   );
-
   // Cost Codes helper functions
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
     setEditCostCodeModal(true);
   };
-
   const confirmDelete = async () => {
     if (pendingDeleteId) {
       await deleteCostCode(pendingDeleteId);
@@ -94,19 +89,15 @@ export default function CostCodePage() {
       rerender();
     }
   };
-
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
   };
-
   const openHandleDelete = (id: string) => {
     setPendingDeleteId(id);
     setShowDeleteDialog(true);
   };
-
   // Tag helper functions
-
   const confirmTagDelete = async () => {
     if (pendingTagDeleteId) {
       await deleteTag(pendingTagDeleteId);
@@ -115,25 +106,26 @@ export default function CostCodePage() {
       tagRerender();
     }
   };
-
   const cancelTagDelete = () => {
     setShowDeleteTagDialog(false);
     setPendingTagDeleteId(null);
   };
-
   const openHandleTagEdit = (id: string) => {
     setPendingTagEditId(id);
     setEditTagModal(true);
   };
-
   const openHandleTagDelete = (id: string) => {
     setPendingTagDeleteId(id);
     setShowDeleteTagDialog(true);
   };
-
   // Simple filter by cost code name
   const filteredCostCodes = CostCodeDetails.filter((costCode) =>
     costCode.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Simple filter by tag name
+  const filteredTags = tagDetails.filter((tag) =>
+    tag.name.toLowerCase().includes(searchTag.toLowerCase())
   );
 
   // Pagination logic
@@ -144,9 +136,9 @@ export default function CostCodePage() {
     page * pageSize
   );
 
-  const totalTags = tagDetails.length;
+  const totalTags = filteredTags.length;
   const totalPagesTags = Math.ceil(totalTags / tagPageSize);
-  const paginatedTags = tagDetails.slice(
+  const paginatedTags = filteredTags.slice(
     (tagPage - 1) * tagPageSize,
     tagPage * tagPageSize
   );
@@ -196,13 +188,23 @@ export default function CostCodePage() {
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-4 mb-2">
           <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search by name..."}
-              textSize="xs"
-              imageSize="6"
-            />
+            {pageState === "CostCode" ? (
+              <SearchBar
+                term={searchTerm}
+                handleSearchChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={"Search by name..."}
+                textSize="xs"
+                imageSize="6"
+              />
+            ) : (
+              <SearchBar
+                term={searchTag}
+                handleSearchChange={(e) => setSearchTag(e.target.value)}
+                placeholder={"Search by name..."}
+                textSize="xs"
+                imageSize="6"
+              />
+            )}
           </div>
         </div>
         <div className="flex flex-row justify-end w-full gap-4">
@@ -249,6 +251,16 @@ export default function CostCodePage() {
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
         >
           {/* Loading overlay */}
+          {filteredTags.length === 0 && pageState === "Tags" && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
+              <span className="text-lg text-gray-500">No Results found</span>
+            </div>
+          )}
+          {filteredCostCodes.length === 0 && pageState === "CostCode" && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
+              <span className="text-lg text-gray-500">No Results found</span>
+            </div>
+          )}
           {loadingState && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
               <Spinner size={20} />
@@ -291,7 +303,7 @@ export default function CostCodePage() {
         {/* Pagination Controls */}
         {pageState === "CostCode" ? (
           <>
-            {totalPages && (
+            {totalPages > 1 && (
               <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
                 <div className="text-xs text-gray-600">
                   Showing page {page} of {totalPages} ({total} total)
@@ -355,7 +367,7 @@ export default function CostCodePage() {
           </>
         ) : (
           <>
-            {totalPagesTags && (
+            {totalPagesTags > 1 && (
               <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
                 <div className="text-xs text-gray-600">
                   Showing page {tagPage - 1} of {totalPagesTags - 1} (
