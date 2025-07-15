@@ -1384,3 +1384,35 @@ export async function createTag(payload: {
     };
   }
 }
+
+export async function deleteClient(id: string) {
+  console.log("Deleting client with ID:", id);
+
+  try {
+    // Check for related records before deletion
+    const clientWithRelations = await prisma.client.findUnique({
+      where: { id },
+    });
+
+    if (!clientWithRelations) {
+      throw new Error("Client not found");
+    }
+    // Delete the client
+    await prisma.client.delete({
+      where: { id },
+    });
+
+    revalidatePath("/admins/clients");
+
+    return {
+      success: true,
+      message: "Client deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
