@@ -1715,8 +1715,7 @@ export const initialMaterials: Prisma.MaterialCreateInput[] = [
     quantity: 5,
     loadType: LoadType.SCREENED,
     materialWeight: 2.0,
-    lightWeight: 15.5,
-    grossWeight: 17.5,
+    unit: "TONS",
   },
   {
     LocationOfMaterial: "Supplier B",
@@ -1725,8 +1724,7 @@ export const initialMaterials: Prisma.MaterialCreateInput[] = [
     quantity: 3,
     loadType: LoadType.UNSCREENED,
     materialWeight: 5.4,
-    lightWeight: 12.5,
-    grossWeight: 17.9,
+    unit: "TONS",
   },
 ];
 

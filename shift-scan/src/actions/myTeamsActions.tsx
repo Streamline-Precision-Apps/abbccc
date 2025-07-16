@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { materialUnit } from "@/lib/enums";
 import { TimesheetUpdate, TruckingEquipmentHaulUpdate } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
@@ -227,8 +228,8 @@ export async function updateTruckingMaterialLogs(
     name?: string;
     LocationOfMaterial?: string;
     materialWeight?: number | null;
-    lightWeight?: number | null;
-    grossWeight?: number | null;
+    quantity?: number;
+    unit?: materialUnit;
   }>
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
@@ -255,10 +256,8 @@ export async function updateTruckingMaterialLogs(
               update.materialWeight !== undefined
                 ? update.materialWeight
                 : null,
-            lightWeight:
-              update.lightWeight !== undefined ? update.lightWeight : null,
-            grossWeight:
-              update.grossWeight !== undefined ? update.grossWeight : null,
+            quantity: update.quantity || 0,
+            unit: (update.unit as materialUnit) || "lbs",
           },
         })
       );
