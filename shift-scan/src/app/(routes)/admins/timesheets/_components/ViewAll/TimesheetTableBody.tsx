@@ -69,7 +69,7 @@ export function TimesheetTableBody({
             {timesheet.id}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.date, "MM/dd/yyyy")}
+            {format(timesheet.date, "MM/dd/yy")}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.User.firstName} {timesheet.User.lastName}
@@ -90,7 +90,7 @@ export function TimesheetTableBody({
             {timesheet.comment}
           </TableCell>
 
-          <TableCell className="border-r border-gray-200 text-xs text-center">
+          <TableCell className="border-r border-gray-200 text-xs text-center min-w-[120px]">
             {timesheet.status === "PENDING" ? (
               <span className=" bg-yellow-300 px-3 py-1 rounded-xl ">
                 Pending
@@ -119,10 +119,10 @@ export function TimesheetTableBody({
             ) : null}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.createdAt, "MM/dd/yyyy")}
+            {format(timesheet.createdAt, "MM/dd/yy")}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.updatedAt, "MM/dd/yyyy")}
+            {format(timesheet.updatedAt, "MM/dd/yy")}
           </TableCell>
           <TableCell className=" sticky right-0 border-r border-gray-200 text-xs text-center">
             <Button

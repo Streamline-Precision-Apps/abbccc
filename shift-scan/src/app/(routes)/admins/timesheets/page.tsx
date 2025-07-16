@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import SearchBar from "../personnel/components/SearchBar";
-
 import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";
@@ -17,7 +16,6 @@ import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal"
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 import { toast } from "sonner";
-
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
@@ -213,20 +211,6 @@ export default function AdminTimesheets() {
     setPageSize(Number(e.target.value));
   };
 
-  /**
-   * Handles exporting timesheets as CSV or XLSX, with optional date range and field selection.
-   * Dates are formatted as MM-DD-YYYY, times as hh:mm a.
-   * @param exportFormat Export format: 'csv' or 'xlsx'.
-   * @param dateRange Optional date range to filter export.
-   * @param selectedFields Array of field keys to include in export.
-   */
-  /**
-   * Handles exporting timesheets as CSV or XLSX, with optional date range and field selection.
-   * Only APPROVED timesheets are exported. Dates are formatted as MM-DD-YYYY, times as hh:mm a.
-   * @param exportFormat Export format: 'csv' or 'xlsx'.
-   * @param dateRange Optional date range to filter export.
-   * @param selectedFields Array of field keys to include in export.
-   */
   const handleExport = (
     exportFormat: "csv" | "xlsx",
     dateRange?: { from?: Date; to?: Date },
@@ -534,9 +518,9 @@ export default function AdminTimesheets() {
         />
       )}
       {/* ...existing code... */}
-      {showEditModal && (
+      {showEditModal && editingId && (
         <EditTimesheetModal
-          timesheetId={editingId || ""}
+          timesheetId={editingId}
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
           onUpdated={refetchAll}
