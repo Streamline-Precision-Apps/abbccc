@@ -115,27 +115,29 @@ export default function AdminReports() {
           </Button>
         </div>
       </div>
-      <ScrollArea
-        alwaysVisible
-        className="h-full w-full row-span-1 bg-white rounded-lg  border border-slate-200 relative"
-      >
-        {selectedReport ? (
-          selectedReport.render()
-        ) : (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-            <p className="text-sm text-slate-400 ">
-              Select a report to view its details.
-            </p>
-          </div>
-        )}
+      <div className="h-[90vh] rounded-lg  w-full relative bg-white">
+        <ScrollArea
+          alwaysVisible
+          className="h-[85vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
+        >
+          {selectedReport ? (
+            selectedReport.render()
+          ) : (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+              <p className="text-base text-slate-400 ">
+                Select a report to view its details.
+              </p>
+            </div>
+          )}
 
-        <div className="h-3 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-          <ScrollBar
-            orientation="horizontal"
-            className="w-full h-3 ml-2 mr-2 rounded-full"
-          />
-        </div>
-      </ScrollArea>
+          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
+            <ScrollBar
+              orientation="horizontal"
+              className="w-full h-1 ml-2 mr-2 rounded-full"
+            />
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 }
