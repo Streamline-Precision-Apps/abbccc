@@ -30,6 +30,47 @@ export default function Signature({ setBase64String }: SignatureProps) {
     }
   }, []);
 
+  // Touch event handlers for mobile/tablet support
+  const getTouchPos = (touch: React.Touch) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    setIsDrawing(true);
+    setIsSigned(true);
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx && event.touches.length > 0) {
+        const { x, y } = getTouchPos(event.touches[0]);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+    }
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (isDrawing && canvasRef.current && event.touches.length > 0) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) {
+        const { x, y } = getTouchPos(event.touches[0]);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    }
+    event.preventDefault(); // Prevent scrolling while drawing
+  };
+
+  const handleTouchEnd = (_event: React.TouchEvent<HTMLCanvasElement>) => {
+    setIsDrawing(false);
+  };
+
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
     setIsSigned(true);
@@ -83,9 +124,7 @@ export default function Signature({ setBase64String }: SignatureProps) {
     <>
       <Grids rows={"6"} className="my-5 ">
         <Holds className="row-span-5 h-full justify-center">
-          <Texts size={"p4"}>
-            {isSaved ? "Saved" : `${t("SignHere")}`}
-          </Texts>
+          <Texts size={"p4"}>{isSaved ? "Saved" : `${t("SignHere")}`}</Texts>
           <canvas
             ref={canvasRef}
             width={250}
@@ -94,6 +133,9 @@ export default function Signature({ setBase64String }: SignatureProps) {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           />
         </Holds>
         <Holds position={"row"} className="row-span-1 h-full">
