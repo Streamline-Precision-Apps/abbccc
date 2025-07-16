@@ -1494,17 +1494,17 @@ export async function updateClientAdmin(formData: FormData) {
       throw new Error("Jobsite ID is required");
     }
 
-    // Fetch existing jobsite early
-    const existingJobsite = await prisma.jobsite.findUnique({
+    // Fetch existing client early
+    const existingClient = await prisma.client.findUnique({
       where: { id },
-      include: { CCTags: true },
+      include: { Address: true },
     });
 
-    if (!existingJobsite) {
-      throw new Error("Jobsite not found");
+    if (!existingClient) {
+      throw new Error("Client not found");
     }
 
-    const updateData: Prisma.JobsiteUpdateInput = {};
+    const updateData: Prisma.ClientUpdateInput = {};
     if (formData.has("name")) {
       updateData.name = (formData.get("name") as string)?.trim();
     }
@@ -1517,48 +1517,57 @@ export async function updateClientAdmin(formData: FormData) {
         "approvalStatus"
       ) as ApprovalStatus;
     }
-    if (formData.has("isActive")) {
-      updateData.isActive = formData.get("isActive") === "true";
+    if (formData.has("contactPerson")) {
+      updateData.contactPerson = (
+        formData.get("contactPerson") as string
+      )?.trim();
+    }
+    if (formData.has("contactEmail")) {
+      updateData.contactEmail = (
+        formData.get("contactEmail") as string
+      )?.trim();
+    }
+    if (formData.has("contactPhone")) {
+      updateData.contactPhone = (
+        formData.get("contactPhone") as string
+      )?.trim();
     }
     if (formData.has("creationReason")) {
       updateData.creationReason = formData.get("creationReason") as string;
     }
-    if (formData.has("updatedAt")) {
-      const updatedAt = formData.get("updatedAt");
-      updateData.updatedAt =
-        updatedAt && updatedAt !== "null" && updatedAt !== "undefined"
-          ? new Date(updatedAt as string)
-          : new Date();
-    } else {
-      updateData.updatedAt = new Date();
-    }
-    if (formData.has("cCTags")) {
-      const cCTagsString = formData.get("cCTags") as string;
-      const cCTagsArray = JSON.parse(cCTagsString || "[]");
-      updateData.CCTags = {
-        set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
+    updateData.updatedAt = new Date();
+    if (formData.has("Address")) {
+      const addressString = formData.get("Address") as string;
+      const addressData = JSON.parse(addressString || "{}");
+      updateData.Address = {
+        update: {
+          street: addressData.street?.trim(),
+          city: addressData.city?.trim(),
+          state: addressData.state?.trim(),
+          zipCode: addressData.zipCode?.trim(),
+        },
       };
     }
 
-    const updatedJobsite = await prisma.jobsite.update({
+    const updatedClient = await prisma.client.update({
       where: { id },
       data: updateData,
-      include: { CCTags: true },
+      include: { Address: true },
     });
 
-    revalidatePath("/admins/jobsites");
+    revalidatePath("/admins/clients");
 
-    console.log("Jobsite updated successfully:", updatedJobsite.id);
+    console.log("Client updated successfully:", updatedClient.id);
     return {
       success: true,
-      data: updatedJobsite,
-      message: "Jobsite updated successfully",
+      data: updatedClient,
+      message: "Client updated successfully",
     };
   } catch (error) {
     Sentry.captureException(error);
-    console.error("Error updating jobsite:", error);
+    console.error("Error updating client:", error);
     throw new Error(
-      `Failed to update jobsite: ${
+      `Failed to update client: ${
         error instanceof Error ? error.message : "Unknown error"
       }`
     );
