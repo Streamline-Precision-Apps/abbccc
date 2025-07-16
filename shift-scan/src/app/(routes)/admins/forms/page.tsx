@@ -43,6 +43,72 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+// Form field definition
+interface FormField {
+  id: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  order?: number;
+  placeholder?: string | null;
+  minLength?: number | null;
+  maxLength?: number | null;
+  multiple?: boolean | null;
+  content?: string | null;
+  filter?: string | null;
+  Options?: Array<{ id: string; fieldId: string; value: string }>;
+}
+
+// Search person type for form values
+interface SearchPersonValue {
+  name: string;
+  [key: string]: unknown;
+}
+
+// Search asset type for form values
+interface SearchAssetValue {
+  name: string;
+  [key: string]: unknown;
+}
+
+export interface FormItem {
+  id: string;
+  name: string;
+  description: string | null;
+  formType: string;
+  _count: {
+    Submissions: number;
+  };
+  isActive: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+// Form status enum
+enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+}
+
+// Form submission definition
+interface FormSubmission {
+  id: string;
+  title?: string | null;
+  formTemplateId?: string;
+  userId?: string;
+  data?: Record<string, unknown>;
+  User?: {
+    firstName: string;
+    lastName: string;
+  };
+  submittedAt?: Date | null;
+  createdAt: string | Date;
+  updatedAt?: string | Date;
+  status?: FormStatus;
+  formType?: string | null;
+}
+
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
 export default function Forms() {
@@ -130,56 +196,62 @@ export default function Forms() {
           "Submission ID",
           "Submitted By",
           "Submitted At",
-          ...fields.map((field: any) => field.label),
+          ...fields.map((field: FormField) => field.label),
         ];
 
         // Build rows from submissions
-        const rows = (submissions || []).map((submission: any) => {
+        const rows = (submissions || []).map((submission) => {
           const user = submission.User
             ? `${submission.User.firstName} ${submission.User.lastName}`
             : "";
           const submittedAt =
-            format(submission.submittedAt, "yyyy-MM-dd") ||
-            format(submission.createdAt, "yyyy-MM-dd") ||
+            (submission.submittedAt
+              ? format(submission.submittedAt, "yyyy-MM-dd")
+              : "") ||
+            (submission.createdAt
+              ? format(new Date(submission.createdAt), "yyyy-MM-dd")
+              : "") ||
             "";
           return [
             submission.id,
             user,
             submittedAt,
-            ...fields.map((field: any) => {
+            ...fields.map((field: FormField) => {
               const value =
-                submission.data?.[field.id] ??
-                submission.data?.[field.label] ??
+                submission.data?.[field.id as keyof typeof submission.data] ??
+                submission.data?.[
+                  field.label as keyof typeof submission.data
+                ] ??
                 "";
               // Custom export logic for SEARCH_PERSON and SEARCH_ASSET
               if (field.type === "SEARCH_PERSON") {
                 if (Array.isArray(value)) {
                   return value
-                    .map((v: any) => v?.name)
+                    .map((v: SearchPersonValue) => v?.name)
                     .filter(Boolean)
                     .join(", ");
                 }
                 if (typeof value === "object" && value !== null) {
-                  return value.name || "";
+                  return (value as SearchPersonValue).name || "";
                 }
                 return "";
               }
               if (field.type === "SEARCH_ASSET") {
                 if (Array.isArray(value)) {
                   return value
-                    .map((v: any) => v?.name)
+                    .map((v: SearchAssetValue) => v?.name)
                     .filter(Boolean)
                     .join(", ");
                 }
                 if (typeof value === "object" && value !== null) {
-                  return value.name || "";
+                  return (value as SearchAssetValue).name || "";
                 }
                 return "";
               }
               // Default: handle objects/arrays as before
               if (typeof value === "object" && value !== null) {
                 if (Array.isArray(value)) {
-                  return value.join(", ");
+                  return (value as unknown[]).join(", ");
                 }
                 return JSON.stringify(value);
               }

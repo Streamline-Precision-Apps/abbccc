@@ -405,7 +405,7 @@ export interface FormSubmissionWithTemplate {
   formTemplateId: string;
   userId: string;
   formType: string | null;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean | null>;
   createdAt: string;
   updatedAt: string;
   submittedAt: string | null;
@@ -536,7 +536,7 @@ export async function getFormSubmissions(
 // Update a form submission's data (for editing submissions)
 export interface UpdateFormSubmissionInput {
   submissionId: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean | null>;
 }
 
 // Create a new form submission
@@ -544,7 +544,7 @@ import { FormStatus } from "@prisma/client";
 
 export interface CreateFormSubmissionInput {
   formTemplateId: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean | null>;
   submittedBy: {
     id: string;
     firstName: string;

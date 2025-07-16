@@ -18,9 +18,12 @@ import {
   isRefuelLogComplete,
   isStateMileageComplete,
 } from "./utils/validation";
-import { useTimesheetData } from "./hooks/useTimesheetData";
+import {
+  EditTimesheetModalProps,
+  TimesheetData,
+  useTimesheetData,
+} from "./hooks/useTimesheetData";
 import { useTimesheetLogs } from "./hooks/useTimesheetLogs";
-import { EditTimesheetModalProps, TimesheetData } from "./types";
 import { toast } from "sonner";
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
@@ -75,68 +78,17 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
-    // Validation: all logs must be complete if visible
-    if (
-      showMaintenance &&
-      form.MaintenanceLogs.some((log) => !isMaintenanceLogComplete(log))
-    ) {
-      setError(
-        "Invalid Maintenance log submission. Please complete all fields before submitting again."
-      );
-      return;
-    }
-    if (
-      showTrucking &&
-      (form.TruckingLogs.some((log) => !isTruckingLogComplete(log)) ||
-        form.TruckingLogs.some((log) =>
-          log.EquipmentHauled.some((eq: any) => !isEquipmentHauledComplete(eq))
-        ) ||
-        form.TruckingLogs.some((log) =>
-          log.Materials.some((mat: any) => !isMaterialComplete(mat))
-        ) ||
-        form.TruckingLogs.some((log) =>
-          log.RefuelLogs.some((ref: any) => !isRefuelLogComplete(ref))
-        ) ||
-        form.TruckingLogs.some((log) =>
-          log.StateMileages.some((sm: any) => !isStateMileageComplete(sm))
-        ))
-    ) {
-      setError(
-        "Invalid Trucking log submission. Please complete all fields in all nested logs before submitting again."
-      );
-      return;
-    }
-    if (
-      showTasco &&
-      (form.TascoLogs.some((log) => !isTascoLogComplete(log)) ||
-        form.TascoLogs.some((log) =>
-          log.RefuelLogs.some((ref: any) => !isRefuelLogComplete(ref))
-        ))
-    ) {
-      setError(
-        "Invalid Tasco log submission. Please complete all fields in all nested logs before submitting again."
-      );
-      return;
-    }
-    if (
-      showEquipment &&
-      form.EmployeeEquipmentLogs.some(
-        (log) => !isEmployeeEquipmentLogComplete(log)
-      )
-    ) {
-      setError(
-        "Invalid Equipment log submission. Please complete all fields before submitting again."
-      );
-      return;
-    }
-    setLoading(true);
-    setError(null);
     try {
-      await adminUpdateTimesheet(timesheetId, form);
+      setLoading(true);
+      setError(null);
+      const form = new FormData();
+      form.append("id", timesheetId);
+      form.append("data", JSON.stringify(form));
+      await adminUpdateTimesheet(form);
       if (onUpdated) onUpdated();
       onClose();
       toast.success("Timesheet updated successfully");
-    } catch (err: any) {
+    } catch (error) {
       toast.error(`Failed to update timesheet ${form.id}`);
       setError("Failed to update timesheet in admin records.");
     } finally {

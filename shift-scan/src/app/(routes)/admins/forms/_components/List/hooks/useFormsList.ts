@@ -54,14 +54,25 @@ export function useFormsList() {
 
   // Filter by search and formType
   const filteredForms = useMemo(() => {
-    return forms.filter((form) => {
-      const matchesName = searchTerm.trim()
-        ? form.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
-        : true;
-      const matchesType =
-        formType === "ALL" ? true : form.formType === formType;
-      return matchesName && matchesType;
-    });
+    return forms
+      .filter((form) => {
+        const matchesName = searchTerm.trim()
+          ? form.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+          : true;
+        const matchesType =
+          formType === "ALL" ? true : form.formType === formType;
+        return matchesName && matchesType;
+      })
+      .map((form) => ({
+        id: form.id,
+        name: form.name,
+        description: null, // Add description to match FormItem interface
+        formType: form.formType || "UNKNOWN",
+        _count: form._count,
+        isActive: form.isActive ? "ACTIVE" : "DRAFT",
+        createdAt: form.createdAt || new Date().toISOString(),
+        updatedAt: form.updatedAt || new Date().toISOString(),
+      }));
   }, [forms, searchTerm, formType]);
 
   return {

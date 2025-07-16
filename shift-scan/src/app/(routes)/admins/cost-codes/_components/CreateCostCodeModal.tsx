@@ -17,13 +17,7 @@ export default function CreateCostCodeModal({
   cancel: () => void;
   rerender: () => void;
 }) {
-  const { data: session } = useSession();
   const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
-
-  if (!session) {
-    toast.error("You must be logged in to create equipment.");
-    return null;
-  }
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -87,8 +81,9 @@ export default function CreateCostCodeModal({
       } else {
         toast.error("Failed to create Cost Code");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create Cost Code");
+    } catch (error) {
+      console.error("Error creating cost code:", error);
+      toast.error("An error occurred while creating the Cost Code");
     } finally {
       setSubmitting(false);
     }

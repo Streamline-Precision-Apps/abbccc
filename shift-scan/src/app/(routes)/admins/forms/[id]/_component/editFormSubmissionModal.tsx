@@ -13,25 +13,7 @@ import Spinner from "@/components/(animations)/spinner";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Combobox } from "@/components/ui/combobox";
 import RenderTextArea from "../../_components/RenderTextAreaField";
 import RenderNumberField from "../../_components/RenderNumberField";
 import RenderDateField from "../../_components/RenderDateField";
@@ -57,7 +39,9 @@ export default function EditFormSubmissionModal({
   const [loading, setLoading] = useState(true);
   const [formSubmission, setFormSubmission] =
     useState<FormSubmissionWithTemplate | null>(null);
-  const [editData, setEditData] = useState<Record<string, any>>({});
+  const [editData, setEditData] = useState<
+    Record<string, string | number | boolean | null>
+  >({});
 
   // State for different asset types
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
@@ -109,13 +93,30 @@ export default function EditFormSubmissionModal({
         return;
       }
       setFormSubmission(submission as unknown as FormSubmissionWithTemplate);
-      setEditData(
+
+      // Convert submission data to the correct type
+      const processedData: Record<string, string | number | boolean | null> =
+        {};
+      if (
         submission &&
-          typeof submission.data === "object" &&
-          submission.data !== null
-          ? { ...submission.data }
-          : {}
-      );
+        typeof submission.data === "object" &&
+        submission.data !== null
+      ) {
+        Object.entries(submission.data).forEach(([key, value]) => {
+          if (
+            typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean" ||
+            value === null
+          ) {
+            processedData[key] = value;
+          } else if (value !== undefined) {
+            // Convert any other types to string
+            processedData[key] = String(value);
+          }
+        });
+      }
+      setEditData(processedData);
       setLoading(false);
     };
     fetchData();
@@ -192,15 +193,47 @@ export default function EditFormSubmissionModal({
     setTouchedFields((prev) => ({ ...prev, [fieldId]: true }));
   };
 
-  const validateField = (fieldId: string, value: any, required: boolean) => {
-    if (required && !value) {
+  const validateField = (
+    fieldId: string,
+    value:
+      | string
+      | number
+      | boolean
+      | null
+      | Date
+      | string[]
+      | object
+      | undefined,
+    required: boolean
+  ) => {
+    if (required && (value === null || value === undefined || value === "")) {
       return "This field is required.";
     }
     return null;
   };
 
-  const handleFieldChange = (fieldId: string, value: any) => {
-    setEditData((prev) => ({ ...prev, [fieldId]: value }));
+  const handleFieldChange = (
+    fieldId: string,
+    value: string | Date | string[] | object | boolean | number | null
+  ) => {
+    // Convert value to compatible type for our state
+    let compatibleValue: string | number | boolean | null = null;
+
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      compatibleValue = value;
+    } else if (value instanceof Date) {
+      compatibleValue = value.toISOString();
+    } else if (Array.isArray(value)) {
+      compatibleValue = value.join(",");
+    } else if (value !== null && typeof value === "object") {
+      compatibleValue = JSON.stringify(value);
+    }
+
+    setEditData((prev) => ({ ...prev, [fieldId]: compatibleValue }));
     const fieldError = validateField(fieldId, value, true); // Assuming all fields are required for now
     setErrors((prev) => ({ ...prev, [fieldId]: fieldError }));
   };
@@ -219,7 +252,11 @@ export default function EditFormSubmissionModal({
       return;
     }
     try {
-      const updatedData = { ...editData };
+      // Create a properly typed data object for submission
+      const updatedData: Record<string, string | number | boolean | null> = {
+        ...editData,
+      };
+
       if (
         formTemplate?.isSignatureRequired &&
         !editData.signature &&
@@ -227,10 +264,13 @@ export default function EditFormSubmissionModal({
       ) {
         updatedData.signature = true;
       }
+
+      // Submit with correct typing
       const res = await updateFormSubmission({
         submissionId: formSubmission.id,
         data: updatedData,
       });
+
       if (res.success) {
         toast.success("Submission updated successfully");
         onSuccess();
@@ -286,17 +326,74 @@ export default function EditFormSubmissionModal({
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           {group.Fields.map((field) => {
             const options = field.Options || [];
-            const value = editData[field.id] ?? "";
+            // Get raw value from state
+            const rawValue = editData[field.id];
+            // Default to empty string if no value
+            const defaultValue = "";
             const error = errors[field.id];
             const isTouched = touchedFields[field.id];
+
+            // Convert value based on field type with overloaded types
+            function getFieldValue(type: "CHECKBOX"): boolean;
+            function getFieldValue(type: "MULTISELECT"): string[];
+            function getFieldValue(
+              type:
+                | "NUMBER"
+                | "TEXTAREA"
+                | "DATE"
+                | "TIME"
+                | "DROPDOWN"
+                | "RADIO"
+                | "SEARCH_PERSON"
+                | "SEARCH_ASSET"
+                | "TEXT"
+            ): string;
+            function getFieldValue(type: string): string | boolean | string[] {
+              if (rawValue === null || rawValue === undefined)
+                return type === "CHECKBOX"
+                  ? false
+                  : type === "MULTISELECT"
+                  ? []
+                  : defaultValue;
+
+              switch (type) {
+                case "NUMBER":
+                  return typeof rawValue === "number"
+                    ? rawValue.toString()
+                    : typeof rawValue === "string"
+                    ? rawValue
+                    : defaultValue;
+                case "CHECKBOX":
+                  return typeof rawValue === "boolean"
+                    ? rawValue
+                    : rawValue === "true"
+                    ? true
+                    : rawValue === "false"
+                    ? false
+                    : false;
+                case "MULTISELECT":
+                  return typeof rawValue === "string"
+                    ? rawValue.split(",").filter(Boolean)
+                    : Array.isArray(rawValue)
+                    ? rawValue
+                    : [String(rawValue)];
+                default:
+                  return typeof rawValue === "string"
+                    ? rawValue
+                    : rawValue !== null
+                    ? String(rawValue)
+                    : defaultValue;
+              }
+            }
 
             // Render input based on field type
             switch (field.type) {
               case "TEXTAREA":
                 return (
                   <RenderTextArea
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("TEXTAREA")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -306,8 +403,9 @@ export default function EditFormSubmissionModal({
               case "NUMBER":
                 return (
                   <RenderNumberField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("NUMBER")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -317,8 +415,9 @@ export default function EditFormSubmissionModal({
               case "DATE":
                 return (
                   <RenderDateField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("DATE")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -328,8 +427,9 @@ export default function EditFormSubmissionModal({
               case "TIME":
                 return (
                   <RenderTimeField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("TIME")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -339,8 +439,9 @@ export default function EditFormSubmissionModal({
               case "DROPDOWN":
                 return (
                   <RenderDropdownField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("DROPDOWN")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -351,8 +452,9 @@ export default function EditFormSubmissionModal({
               case "RADIO":
                 return (
                   <RenderRadioField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("RADIO")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -363,8 +465,9 @@ export default function EditFormSubmissionModal({
               case "CHECKBOX":
                 return (
                   <RenderCheckboxField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("CHECKBOX")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -374,8 +477,9 @@ export default function EditFormSubmissionModal({
               case "MULTISELECT":
                 return (
                   <RenderMultiselectField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("MULTISELECT")}
                     options={options}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
@@ -386,8 +490,9 @@ export default function EditFormSubmissionModal({
               case "SEARCH_PERSON":
                 return (
                   <RenderSearchPersonField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("SEARCH_PERSON")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -399,8 +504,9 @@ export default function EditFormSubmissionModal({
               case "SEARCH_ASSET":
                 return (
                   <RenderSearchAssetField
+                    key={field.id}
                     field={field}
-                    value={value}
+                    value={getFieldValue("SEARCH_ASSET")}
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
@@ -422,7 +528,7 @@ export default function EditFormSubmissionModal({
                       className={`border rounded px-2 py-1 ${
                         isTouched && error ? "border-red-500" : ""
                       }`}
-                      value={value}
+                      value={getFieldValue("TEXT")}
                       onChange={(e) =>
                         handleFieldChange(field.id, e.target.value)
                       }

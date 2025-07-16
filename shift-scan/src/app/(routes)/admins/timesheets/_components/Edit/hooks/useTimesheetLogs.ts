@@ -43,7 +43,7 @@ export function useTimesheetLogs(
       logType: keyof TimesheetData,
       logIndex: number,
       field: keyof T,
-      value: any
+      value: string | number | null | { id: string; name: string }
     ) => {
       setForm((prev) =>
         prev
@@ -67,21 +67,22 @@ export function useTimesheetLogs(
       nestedType: T,
       nestedIndex: number,
       field: keyof TruckingNestedTypeMap[T],
-      value: any
+      value: string | number | null
     ) => {
       setForm((prev) =>
         prev
           ? {
               ...prev,
-              [logType]: (prev[logType] as any[]).map((log, idx) =>
+              [logType]: (prev[logType] as TruckingLog[]).map((log, idx) =>
                 idx === logIndex
                   ? {
                       ...log,
-                      [nestedType]: log[nestedType].map(
-                        (item: TruckingNestedTypeMap[T], nidx: number) =>
-                          nidx === nestedIndex
-                            ? { ...item, [field]: value }
-                            : item
+                      [nestedType]: (
+                        log[nestedType] as TruckingNestedTypeMap[T][]
+                      ).map((item, nidx) =>
+                        nidx === nestedIndex
+                          ? { ...item, [field]: value }
+                          : item
                       ),
                     }
                   : log

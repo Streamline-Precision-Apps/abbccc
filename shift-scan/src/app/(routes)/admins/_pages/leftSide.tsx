@@ -101,8 +101,8 @@ export default function LeftSidebar() {
                   .join("/");
                 const isActive = itemBase === pathBase;
                 return (
-                  <Link href={item.link} className="w-full">
-                    <SidebarMenuItem key={item.title} className="py-2">
+                  <Link key={item.id} href={item.link} className="w-full">
+                    <SidebarMenuItem className="py-2">
                       <div
                         className={`flex flex-row items-center gap-4 p-2 rounded-lg transition-colors ${
                           isActive ? "bg-app-dark-blue text-white" : ""

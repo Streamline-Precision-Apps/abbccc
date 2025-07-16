@@ -8,18 +8,13 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { FormItem } from "./hooks/types";
 
 export interface ListProps {
-  forms: any[];
+  forms: FormItem[];
   loading: boolean;
   page: number;
   pageSize: number;
@@ -179,13 +174,7 @@ const List: React.FC<ListProps> = ({
                 <TableCell className="w-[160px]">
                   <div className="flex flex-row justify-center">
                     <Link href={`/admins/forms/${form.id}`}>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          form.id;
-                        }}
-                      >
+                      <Button variant="ghost" size={"icon"}>
                         <img
                           src="/eye.svg"
                           alt="View Form"

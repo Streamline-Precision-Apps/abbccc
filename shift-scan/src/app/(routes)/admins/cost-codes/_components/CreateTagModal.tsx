@@ -30,14 +30,19 @@ export default function CreateTagModal({
   cancel: () => void;
   rerender: () => void;
 }) {
-  const { data: session } = useSession();
   const [jobsite, setJobsite] = useState<JobsiteSummary[]>([]);
   const [costCode, setCostCode] = useState<CostCodeSummary[]>([]);
-
-  if (!session) {
-    toast.error("You must be logged in to create equipment.");
-    return null;
-  }
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    Jobsites: Array<{ id: string; name: string }>;
+    CostCodes: Array<{ id: string; name: string }>;
+  }>({
+    name: "",
+    description: "",
+    Jobsites: [],
+    CostCodes: [],
+  });
 
   useEffect(() => {
     const fetchJobsites = async () => {
@@ -88,18 +93,6 @@ export default function CreateTagModal({
     fetchCostCodes();
   }, []);
 
-  const [formData, setFormData] = useState<{
-    name: string;
-    description: string;
-    Jobsites: Array<{ id: string; name: string }>;
-    CostCodes: Array<{ id: string; name: string }>;
-  }>({
-    name: "",
-    description: "",
-    Jobsites: [],
-    CostCodes: [],
-  });
-
   const [submitting, setSubmitting] = useState(false);
   const handleCreateJobsite = async () => {
     setSubmitting(true);
@@ -138,8 +131,9 @@ export default function CreateTagModal({
       } else {
         toast.error("Failed to create Tag");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create Tag. Please try again.");
+    } catch (error) {
+      console.error("Error creating tag:", error);
+      toast.error("Failed to create Tag. Please try again.");
     } finally {
       setSubmitting(false);
     }

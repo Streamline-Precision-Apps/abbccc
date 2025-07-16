@@ -1376,7 +1376,7 @@ export async function createClientAdmin({
       state: string;
       zipCode: string;
     };
-    createdById: string;
+    createdById?: string;
   };
 }) {
   try {
@@ -1409,7 +1409,7 @@ export async function createClientAdmin({
               connect: { id: "1", name: "Streamline Precision LLC" },
             },
             createdBy: {
-              connect: { id: payload.createdById.trim() },
+              connect: { id: payload.createdById?.trim() },
             },
           },
         });
@@ -1435,7 +1435,7 @@ export async function createClientAdmin({
               connect: { id: "1", name: "Streamline Precision LLC" },
             },
             createdBy: {
-              connect: { id: payload.createdById.trim() },
+              connect: { id: payload.createdById?.trim() },
             },
           },
         });
