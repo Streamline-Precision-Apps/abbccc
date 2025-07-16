@@ -89,15 +89,22 @@ export function TimesheetTableBody({
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.comment}
           </TableCell>
+
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.status === "PENDING" ? (
-              <span className="text-app-orange">Pending</span>
-            ) : timesheet.status === "APPROVED" ? (
-              <span className="text-app-dark-green">Approved</span>
+              <span className=" bg-yellow-300 px-3 py-1 rounded-xl ">
+                Pending
+              </span>
             ) : timesheet.status === "DRAFT" ? (
-              <span className="text-app-blue">In Progress</span>
+              <span className=" bg-sky-200 px-3 py-1 rounded-xl ">
+                In Progress
+              </span>
+            ) : timesheet.status === "APPROVED" ? (
+              <span className=" bg-green-300 px-3 py-1 rounded-xl">
+                Approved
+              </span>
             ) : (
-              <span className="text-app-red">Rejected</span>
+              <span className="bg-red-300 px-3 py-1 rounded-xl ">Rejected</span>
             )}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">

@@ -1,8 +1,5 @@
-"use client";
-
 import * as React from "react";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ChevronsUpDownIcon, CheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,7 +14,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
 
 export interface ComboboxOption {
   value: string;
@@ -25,10 +21,10 @@ export interface ComboboxOption {
   [key: string]: string | number | boolean | undefined;
 }
 
-interface ComboboxProps {
+interface SingleComboboxProps {
   options: ComboboxOption[];
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: string;
+  onChange: (value: string, option?: ComboboxOption) => void;
   placeholder?: string;
   label?: string;
   disabled?: boolean;
@@ -36,10 +32,9 @@ interface ComboboxProps {
   font?: "font-semibold" | "font-bold" | "font-normal";
   required?: boolean;
   errorMessage?: string;
-  listData?: string[];
 }
 
-export function Combobox({
+export function SingleCombobox({
   options,
   value,
   onChange,
@@ -50,20 +45,15 @@ export function Combobox({
   font = "font-semibold",
   required = false,
   errorMessage = "This field is required.",
-  listData = [],
-}: ComboboxProps) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [touched, setTouched] = useState(false); // Track if the field has been interacted with
+}: SingleComboboxProps) {
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
+  const [touched, setTouched] = React.useState(false);
 
-  // Advanced filter: match if any filterKey contains the search string
   const filteredOptions = options.filter((option) => {
-    // If search is empty, show all
     if (!search.trim()) return true;
-    // Defensive: filterKeys must be array of strings
     if (!Array.isArray(filterKeys)) return true;
     return filterKeys.some((key) => {
-      // Support nested keys like 'user.firstName'
       const value = key
         .split(".")
         .reduce<unknown>(
@@ -80,7 +70,7 @@ export function Combobox({
     });
   });
 
-  const showError = required && touched && (!value || value.length === 0);
+  const showError = required && touched && !value;
 
   return (
     <div>
@@ -92,16 +82,14 @@ export function Combobox({
             role="combobox"
             aria-expanded={open}
             className={`w-full justify-between text-xs overflow-hidden ${
-              showError && listData.length < 1 ? "border-red-500" : ""
+              showError ? "border-red-500" : ""
             }`}
             disabled={disabled}
             onBlur={() => setTouched(true)}
           >
-            {value && value.length > 0
-              ? options
-                  .filter((option) => value.includes(option.value))
-                  .map((option) => option.label)
-                  .join(", ")
+            {value
+              ? options.find((option) => option.value === value)?.label ||
+                placeholder
               : placeholder}
             <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -117,26 +105,20 @@ export function Combobox({
               <CommandEmpty>No option found.</CommandEmpty>
               <CommandGroup>
                 {filteredOptions.map((option) => {
-                  const checked = value.includes(option.value);
+                  const checked = value === option.value;
                   return (
                     <CommandItem
                       key={option.value}
                       value={option.label}
                       onSelect={() => {
-                        let newValue: string[];
-                        if (checked) {
-                          newValue = value.filter((v) => v !== option.value);
-                        } else {
-                          newValue = [...value, option.value];
-                        }
-                        onChange(newValue);
+                        onChange(option.value, option);
+                        setOpen(false);
                       }}
                     >
                       <CheckIcon
-                        className={cn(
-                          "mr-2 h-4 w-4",
+                        className={`mr-2 h-4 w-4 ${
                           checked ? "opacity-100" : "opacity-0"
-                        )}
+                        }`}
                       />
                       {option.label}
                     </CommandItem>

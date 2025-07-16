@@ -17,6 +17,7 @@ import {
   FormTemplateCategory,
   FormTemplateStatus,
   CreatedVia,
+  materialUnit,
 } from "@prisma/client";
 
 export {
@@ -36,4 +37,5 @@ export {
   FormTemplateCategory,
   FormTemplateStatus,
   CreatedVia,
+  materialUnit,
 };

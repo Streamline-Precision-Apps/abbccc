@@ -1,7 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Combobox } from "@/components/ui/combobox";
+import {
+  SingleCombobox,
+  ComboboxOption,
+} from "@/components/ui/single-combobox";
 import {
   Select,
   SelectContent,
@@ -34,9 +36,9 @@ interface Material {
   id: string;
   LocationOfMaterial: string;
   name: string;
+  quantity: string;
+  unit: string;
   materialWeight: number;
-  lightWeight: number;
-  grossWeight: number;
   loadType: string;
 }
 interface RefuelLog {
@@ -161,11 +163,24 @@ export default function EditGeneralSection({
       </div>
       <div className="flex flex-row items-end col-span-2">
         <div className="w-fit">
-          <Combobox
+          {/* Single value combobox for User */}
+          <SingleCombobox
             label="User"
             options={userOptions}
             value={form.User?.id}
-            onChange={() => {}}
+            onChange={(val: string, option?: ComboboxOption) => {
+              const selected = option
+                ? {
+                    id: option.value,
+                    firstName: (option as any).firstName || "",
+                    lastName: (option as any).lastName || "",
+                  }
+                : { id: "", firstName: "", lastName: "" };
+              setForm({
+                ...form,
+                User: selected,
+              });
+            }}
             placeholder="Select user"
             filterKeys={["value", "label"]}
             disabled
@@ -174,11 +189,11 @@ export default function EditGeneralSection({
       </div>
       {/* Jobsite */}
       <div className="w-1/2">
-        <Combobox
+        <SingleCombobox
           label="Project"
           options={jobsiteOptions}
           value={form.Jobsite?.id}
-          onChange={(val, option) => {
+          onChange={(val: string, option?: ComboboxOption) => {
             const selected = jobsites.find((j) => j.id === val);
             setForm({
               ...form,
@@ -192,11 +207,11 @@ export default function EditGeneralSection({
       </div>
       {/* Costcode */}
       <div className="w-1/2">
-        <Combobox
+        <SingleCombobox
           label="Cost Code"
           options={costCodeOptions}
           value={form.CostCode?.id}
-          onChange={(val, option) => {
+          onChange={(val: string, option?: ComboboxOption) => {
             setForm({
               ...form,
               CostCode: option

@@ -52,7 +52,7 @@ export function useTimesheetData(form: TimesheetData | null) {
         .map((j: { id: string; name: string }) => ({ id: j.id, name: j.name }));
       setUsers(users);
       setJobsites(filteredJobsites);
-      setEquipment(equipment);
+      setEquipment(equipment as EquipmentOption[]);
     }
     fetchDropdowns();
   }, []);

@@ -59,9 +59,9 @@ export function CreateTimesheetModal({
   type TruckingMaterialDraft = {
     location: string;
     name: string;
+    quantity: string;
+    unit: string;
     materialWeight: string;
-    lightWeight: string;
-    grossWeight: string;
     loadType: "screened" | "unscreened" | "";
   };
   type TruckingLogDraft = {

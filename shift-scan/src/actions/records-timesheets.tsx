@@ -1,19 +1,9 @@
 "use server";
-import { TimesheetData } from "@/app/(routes)/admins/records/[url]/@timesheets/_components/Edit/types";
-import { LoadType, WorkType } from "@/lib/enums";
+import { LoadType, WorkType, materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { ApprovalStatus } from "@prisma/client";
-import type {
-  TruckingLog,
-  EquipmentHauled,
-  Material,
-  RefuelLog,
-  StateMileage,
-} from "@/app/(routes)/admins/records/[url]/@timesheets/_components/Edit/types";
-import { el } from "date-fns/locale";
+import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 
 export type TimesheetSubmission = {
   form: {
@@ -42,8 +32,8 @@ export type TimesheetSubmission = {
       location: string;
       name: string;
       materialWeight: string;
-      lightWeight: string;
-      grossWeight: string;
+      quantity: string;
+      unit: string;
       loadType: "screened" | "unscreened" | "";
     }>;
     refuelLogs: Array<{
@@ -147,8 +137,8 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             materialWeight: mat.materialWeight
               ? parseFloat(mat.materialWeight)
               : null,
-            lightWeight: mat.lightWeight ? parseFloat(mat.lightWeight) : null,
-            grossWeight: mat.grossWeight ? parseFloat(mat.grossWeight) : null,
+            quantity: mat.quantity ? parseFloat(mat.quantity) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType
               ? (mat.loadType.toUpperCase() as LoadType)
               : null,
@@ -417,10 +407,8 @@ export async function adminUpdateTimesheet(id: string, data: TimesheetData) {
               mat.materialWeight !== undefined
                 ? Number(mat.materialWeight)
                 : null,
-            lightWeight:
-              mat.lightWeight !== undefined ? Number(mat.lightWeight) : null,
-            grossWeight:
-              mat.grossWeight !== undefined ? Number(mat.grossWeight) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
+            quantity: mat.quantity ? Number(mat.quantity) : null,
             loadType: mat.loadType ? mat.loadType.toUpperCase() : null,
           };
           if (mat.id && existingMat.find((m) => m.id === mat.id)) {

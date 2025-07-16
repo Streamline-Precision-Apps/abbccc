@@ -20,6 +20,7 @@ import React, { Dispatch, SetStateAction, use, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
 import { DateTimePicker } from "../DateTimePicker";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 export default function GeneralSection({
   form,
   setForm,
@@ -126,7 +127,7 @@ export default function GeneralSection({
       </div>
       {/* User */}
       <div className="w-[350px]">
-        <Combobox
+        <SingleCombobox
           label="User"
           options={userOptions}
           value={form.user.id}
@@ -143,7 +144,7 @@ export default function GeneralSection({
       </div>
       {/* Jobsite */}
       <div className="w-[350px]">
-        <Combobox
+        <SingleCombobox
           label="Jobsite"
           options={jobsiteOptions}
           value={form.jobsite.id}
@@ -161,7 +162,7 @@ export default function GeneralSection({
       </div>
       {/* Costcode */}
       <div className="w-[350px]">
-        <Combobox
+        <SingleCombobox
           label="Cost Code"
           options={costCodeOptions}
           value={form.costcode.id}
