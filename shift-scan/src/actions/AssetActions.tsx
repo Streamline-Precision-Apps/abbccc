@@ -5,31 +5,6 @@ import { EquipmentTags, ApprovalStatus, CreatedVia } from "@/lib/enums";
 import * as Sentry from "@sentry/nextjs";
 import { Prisma } from "@prisma/client";
 
-type VehicleInfo = {
-  make: string | null;
-  model: string | null;
-  year: string | null;
-  licensePlate: string | null;
-  registrationExpiration: Date | null;
-  mileage: number;
-};
-
-interface EquipmentUpdateData {
-  name: string | undefined;
-  description: string;
-  equipmentTag: EquipmentTags;
-  currentWeight: number;
-  overWeight: boolean;
-  updatedAt: Date;
-  approvalStatus?: ApprovalStatus;
-  isDisabledByAdmin?: boolean;
-  equipmentVehicleInfo?: {
-    create?: VehicleInfo;
-    update?: VehicleInfo;
-    delete?: boolean;
-  };
-}
-
 /**
  * Server action to update equipment asset data
  * Handles both basic equipment data and vehicle information
@@ -1382,6 +1357,98 @@ export async function createTag(payload: {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
+  }
+}
+
+export async function createClientAdmin({
+  payload,
+}: {
+  payload: {
+    name: string;
+    description: string;
+    approvalStatus: string;
+    contactPerson: string;
+    contactEmail: string;
+    contactPhone: string;
+    Address: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+    createdById: string;
+  };
+}) {
+  try {
+    console.log("Creating jobsite...");
+    console.log(payload);
+    await prisma.$transaction(async (prisma) => {
+      const existingAddress = await prisma.address.findFirst({
+        where: {
+          street: payload.Address.street.trim(),
+          city: payload.Address.city.trim(),
+          state: payload.Address.state.trim(),
+          zipCode: payload.Address.zipCode.trim(),
+        },
+      });
+
+      if (existingAddress) {
+        await prisma.client.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.approvalStatus as ApprovalStatus,
+            contactPerson: payload.contactPerson.trim(),
+            contactEmail: payload.contactEmail.trim(),
+            contactPhone: payload.contactPhone.trim(),
+            createdVia: "ADMIN",
+            Address: {
+              connect: { id: existingAddress.id },
+            },
+            Company: {
+              connect: { id: "1", name: "Streamline Precision LLC" },
+            },
+            createdBy: {
+              connect: { id: payload.createdById.trim() },
+            },
+          },
+        });
+      } else {
+        await prisma.client.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.approvalStatus as ApprovalStatus,
+            contactPerson: payload.contactPerson.trim(),
+            contactEmail: payload.contactEmail.trim(),
+            contactPhone: payload.contactPhone.trim(),
+            createdVia: "ADMIN",
+            Address: {
+              create: {
+                street: payload.Address.street.trim(),
+                city: payload.Address.city.trim(),
+                state: payload.Address.state.trim(),
+                zipCode: payload.Address.zipCode.trim(),
+              },
+            },
+            Company: {
+              connect: { id: "1", name: "Streamline Precision LLC" },
+            },
+            createdBy: {
+              connect: { id: payload.createdById.trim() },
+            },
+          },
+        });
+      }
+    });
+
+    return {
+      success: true,
+      message: "Jobsite created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating jobsite:", error);
+    throw error;
   }
 }
 
