@@ -71,7 +71,7 @@ const List: React.FC<ListProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white pt-2">
-            {[...Array(pageSize)].map((_, i) => (
+            {[...Array(20)].map((_, i) => (
               <TableRow key={i}>
                 <TableCell className="text-xs">
                   <Skeleton className="h-4 w-3/4 mb-1" />

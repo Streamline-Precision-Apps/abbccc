@@ -1,5 +1,4 @@
 "use client";
-
 import SearchBar from "../personnel/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -84,30 +83,7 @@ export interface FormItem {
   updatedAt: string | Date;
 }
 
-// Form status enum
-enum FormStatus {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-}
 
-// Form submission definition
-interface FormSubmission {
-  id: string;
-  title?: string | null;
-  formTemplateId?: string;
-  userId?: string;
-  data?: Record<string, unknown>;
-  User?: {
-    firstName: string;
-    lastName: string;
-  };
-  submittedAt?: Date | null;
-  createdAt: string | Date;
-  updatedAt?: string | Date;
-  status?: FormStatus;
-  formType?: string | null;
-}
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
