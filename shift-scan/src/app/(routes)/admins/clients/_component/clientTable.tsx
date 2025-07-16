@@ -131,13 +131,19 @@ export default function ClientTable({
                 >
                   <img src="/formEdit.svg" alt="Edit" className="w-4 h-4" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => openHandleDelete(client.id)}
-                >
-                  <img src="/trash-red.svg" alt="Delete" className="w-4 h-4" />
-                </Button>
+                {client.Jobsites.length === 0 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openHandleDelete(client.id)}
+                  >
+                    <img
+                      src="/trash-red.svg"
+                      alt="Delete"
+                      className="w-4 h-4"
+                    />
+                  </Button>
+                )}
               </div>
             </TableCell>
           </TableRow>

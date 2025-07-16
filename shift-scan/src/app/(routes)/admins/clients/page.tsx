@@ -25,6 +25,8 @@ import ClientTable from "./_component/clientTable";
 import Spinner from "@/components/(animations)/spinner";
 import { Badge } from "@/components/ui/badge";
 import CreateClientModal from "./_component/CreateClientModal";
+import EditClientModal from "./_component/EditClientModal";
+import { set } from "date-fns";
 
 export default function ClientsPage() {
   const { setOpen, open } = useSidebar();
@@ -32,9 +34,9 @@ export default function ClientsPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-  const [editCostCodeModal, setEditCostCodeModal] = useState(false);
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [createClientModal, setCreateClientModal] = useState(false);
+  const [editClientModal, setEditClientModal] = useState(false);
   const {
     loading,
     ClientDetails,
@@ -83,7 +85,7 @@ export default function ClientsPage() {
   // Helper Function
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
-    setEditCostCodeModal(true);
+    setEditClientModal(true);
   };
   const confirmDelete = async () => {
     if (pendingDeleteId) {
@@ -261,6 +263,14 @@ export default function ClientsPage() {
       {createClientModal && (
         <CreateClientModal
           cancel={() => setCreateClientModal(false)}
+          rerender={rerender}
+        />
+      )}
+
+      {editClientModal && pendingEditId && (
+        <EditClientModal
+          cancel={() => setEditClientModal(false)}
+          pendingEditId={pendingEditId}
           rerender={rerender}
         />
       )}
