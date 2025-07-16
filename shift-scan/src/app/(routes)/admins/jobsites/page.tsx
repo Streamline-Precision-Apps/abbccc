@@ -308,7 +308,7 @@ export default function JobsitePage() {
           </div>
         </ScrollArea>
         {/* Pagination Controls */}
-        {totalPages && (
+        {totalPages > 1 && (
           <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
             <div className="text-xs text-gray-600">
               Showing page {page} of {totalPages} ({total} total)
