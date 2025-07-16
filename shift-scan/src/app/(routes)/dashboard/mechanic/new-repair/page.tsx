@@ -216,7 +216,7 @@ export default function CreateMechanicProjectProcess() {
                 <Holds className="h-full row-start-1 row-end-2">
                   <TitleBoxes onClick={prevStep}>
                     <Holds position={"row"}>
-                      <Titles size="h3">{"Select Equipment"}</Titles>
+                      <Titles size="h3">{t("SelectEquipment")}</Titles>
                       <Images
                         titleImg="/mechanic.svg"
                         titleImgAlt="Mechanic"

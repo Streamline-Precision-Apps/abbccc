@@ -8,6 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
@@ -30,6 +31,7 @@ export default function EquipmentSelectorView({
   jobSite: Option;
 }) {
   const router = useRouter();
+  const t = useTranslations("Equipment");
   const { data: session } = useSession();
   if (!session) {
     router.push("/signin"); // Redirect to sign-in if not authenticated
@@ -61,7 +63,7 @@ export default function EquipmentSelectorView({
             }}
           >
             <Holds className="flex items-center justify-end w-full h-full">
-              <Titles size={"h2"}>Select Equipment</Titles>
+              <Titles size={"h2"}>{t("SelectEquipment")}</Titles>
             </Holds>
           </TitleBoxes>
         </Holds>
@@ -87,7 +89,7 @@ export default function EquipmentSelectorView({
                   background="orange"
                   className="py-3"
                 >
-                  <Titles size={"h4"}>Submit Selection</Titles>
+                  <Titles size={"h4"}>{t("SubmitSelection")}</Titles>
                 </Buttons>
               </Holds>
             </Grids>
