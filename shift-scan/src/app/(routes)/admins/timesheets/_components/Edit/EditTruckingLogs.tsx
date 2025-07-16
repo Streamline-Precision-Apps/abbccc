@@ -19,13 +19,17 @@ import { Label } from "@/components/ui/label";
 
 interface EditTruckingLogsProps {
   logs: TruckingLog[];
-  onLogChange: (idx: number, field: keyof TruckingLog, value: any) => void;
+  onLogChange: (
+    idx: number,
+    field: keyof TruckingLog,
+    value: string | number | null
+  ) => void;
   handleNestedLogChange: <T extends TruckingNestedType>(
     logIndex: number,
     nestedType: T,
     nestedIndex: number,
     field: keyof TruckingNestedTypeMap[T],
-    value: any
+    value: string | number | null
   ) => void;
   originalLogs?: TruckingLog[];
   onUndoLogField?: (idx: number, field: keyof TruckingLog) => void;
@@ -75,20 +79,21 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
   onUndoNestedLogField,
 }) => {
   // Helper functions to check completeness of each nested log type
-  const isEquipmentHauledComplete = (eq: any) =>
-    !!(eq.equipmentId && eq.jobSiteId);
-  const isMaterialComplete = (mat: any) =>
+  const isEquipmentHauledComplete = (
+    eq: TruckingNestedTypeMap["EquipmentHauled"]
+  ) => !!(eq.equipmentId && eq.jobSiteId);
+  const isMaterialComplete = (mat: TruckingNestedTypeMap["Materials"]) =>
     !!(
       mat.LocationOfMaterial &&
       mat.name &&
       mat.materialWeight &&
-      mat.lightWeight &&
-      mat.grossWeight &&
+      mat.quantity &&
+      mat.unit &&
       mat.loadType
     );
-  const isRefuelLogComplete = (ref: any) =>
+  const isRefuelLogComplete = (ref: TruckingNestedTypeMap["RefuelLogs"]) =>
     !!(ref.gallonsRefueled && ref.milesAtFueling);
-  const isStateMileageComplete = (sm: any) =>
+  const isStateMileageComplete = (sm: TruckingNestedTypeMap["StateMileages"]) =>
     !!(sm.state && sm.stateLineMileage);
 
   return (

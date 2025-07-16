@@ -11,8 +11,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
-import { FormIndividualTemplate } from "./_component/hooks/types";
+import {
+  FormIndividualTemplate,
+  Submission,
+  Fields as FormField,
+} from "./_component/hooks/types";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Additional type definitions
+// Using a type that's compatible with what's expected by the component
+interface FormSubmission {
+  id: string;
+  title: string | null;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: Record<string, unknown> | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  submittedAt: string | Date | null;
+  status: string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+interface PersonSearchResult {
+  name: string;
+  [key: string]: unknown;
+}
+
+interface AssetSearchResult {
+  name: string;
+  [key: string]: unknown;
+}
 import {
   Table,
   TableHeader,
@@ -55,6 +89,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { FormTemplate } from "../_components/List/hooks/types";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -402,49 +437,66 @@ export default function FormPage({ params }: { params: { id: string } }) {
           "Submission ID",
           "Submitted By",
           "Submitted At",
-          ...fields.map((field: any) => field.label),
+          ...fields.map((field: FormField) => field.label),
         ];
 
         // Build rows from submissions
-        const rows = (submissions || []).map((submission: any) => {
-          const user = submission.User
-            ? `${submission.User.firstName} ${submission.User.lastName}`
+        const rows = (submissions || []).map((submission) => {
+          const typedSubmission = submission as unknown as {
+            id: string;
+            User?: { firstName: string; lastName: string };
+            submittedAt?: Date;
+            createdAt: Date;
+            data?: Record<string, unknown>;
+          };
+
+          const user = typedSubmission.User
+            ? `${typedSubmission.User.firstName} ${typedSubmission.User.lastName}`
             : "";
           const submittedAt =
-            format(submission.submittedAt, "yyyy-MM-dd") ||
-            format(submission.createdAt, "yyyy-MM-dd") ||
+            (typedSubmission.submittedAt &&
+              format(typedSubmission.submittedAt, "yyyy-MM-dd")) ||
+            format(typedSubmission.createdAt, "yyyy-MM-dd") ||
             "";
           return [
-            submission.id,
+            typedSubmission.id,
             user,
             submittedAt,
-            ...fields.map((field: any) => {
-              const value =
-                submission.data?.[field.id] ??
-                submission.data?.[field.label] ??
-                "";
+            ...fields.map((field: FormField) => {
+              const data = typedSubmission.data as
+                | Record<string, unknown>
+                | undefined;
+              const value = data?.[field.id] ?? data?.[field.label] ?? "";
               // Custom export logic for SEARCH_PERSON and SEARCH_ASSET
               if (field.type === "SEARCH_PERSON") {
                 if (Array.isArray(value)) {
                   return value
-                    .map((v: any) => v?.name)
+                    .map((v) => {
+                      const person = v as { name?: string };
+                      return person?.name;
+                    })
                     .filter(Boolean)
                     .join(", ");
                 }
                 if (typeof value === "object" && value !== null) {
-                  return value.name || "";
+                  const person = value as { name?: string };
+                  return person.name || "";
                 }
                 return "";
               }
               if (field.type === "SEARCH_ASSET") {
                 if (Array.isArray(value)) {
                   return value
-                    .map((v: any) => v?.name)
+                    .map((v) => {
+                      const asset = v as { name?: string };
+                      return asset?.name;
+                    })
                     .filter(Boolean)
                     .join(", ");
                 }
                 if (typeof value === "object" && value !== null) {
-                  return value.name || "";
+                  const asset = value as { name?: string };
+                  return asset.name || "";
                 }
                 return "";
               }

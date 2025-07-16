@@ -20,91 +20,11 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { DateTimePicker } from "../DateTimePicker";
-
-interface MaintenanceLog {
-  id: string;
-  startTime: string;
-  endTime: string;
-  maintenanceId: string;
-}
-interface EquipmentHauled {
-  id: string;
-  equipmentId: string;
-  jobSiteId: string;
-}
-interface Material {
-  id: string;
-  LocationOfMaterial: string;
-  name: string;
-  quantity: string;
-  unit: string;
-  materialWeight: number;
-  loadType: string;
-}
-interface RefuelLog {
-  id: string;
-  gallonsRefueled: number;
-  milesAtFueling?: number;
-}
-interface StateMileage {
-  id: string;
-  state: string;
-  stateLineMileage: number;
-}
-interface TruckingLog {
-  id: string;
-  equipmentId: string;
-  startingMileage: number;
-  endingMileage: number;
-  EquipmentHauled: EquipmentHauled[];
-  Materials: Material[];
-  RefuelLogs: RefuelLog[];
-  StateMileages: StateMileage[];
-}
-interface TascoLog {
-  id: string;
-  shiftType: string;
-  laborType: string;
-  materialType: string;
-  LoadQuantity: number;
-  RefuelLogs: RefuelLog[];
-  Equipment: { id: string; name: string } | null;
-}
-interface EmployeeEquipmentLog {
-  id: string;
-  equipmentId: string;
-  startTime: string;
-  endTime: string;
-  Equipment: { id: string; name: string } | null;
-}
-
-interface TimesheetData {
-  id: string;
-  date: Date | string;
-  User: { id: string; firstName: string; lastName: string };
-  Jobsite: { id: string; name: string };
-  CostCode: { id: string; name: string };
-  startTime: string;
-  endTime: string;
-  workType: string;
-  comment: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  MaintenanceLogs: MaintenanceLog[];
-  TruckingLogs: TruckingLog[];
-  TascoLogs: TascoLog[];
-  EmployeeEquipmentLogs: EmployeeEquipmentLog[];
-}
+import { TimesheetData } from "./hooks/useTimesheetData";
 
 export interface EditGeneralSectionProps {
-  form: {
-    User: { id: string; firstName: string; lastName: string };
-    Jobsite: { id: string; name: string };
-    CostCode: { id: string; name: string };
-    [key: string]: any;
-  };
-  setForm: (f: any) => void;
+  form: TimesheetData; // Allow form to be null initially
+  setForm: React.Dispatch<React.SetStateAction<TimesheetData | null>>;
   userOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -145,7 +65,7 @@ export default function EditGeneralSection({
             </label>
             <PopoverTrigger asChild>
               <Button
-                disabled={form.date}
+                disabled
                 type="button"
                 variant="outline"
                 className="w-[160px] justify-start text-left font-normal"
@@ -172,8 +92,12 @@ export default function EditGeneralSection({
               const selected = option
                 ? {
                     id: option.value,
-                    firstName: (option as any).firstName || "",
-                    lastName: (option as any).lastName || "",
+                    firstName:
+                      (option as ComboboxOption & { firstName?: string })
+                        .firstName || "",
+                    lastName:
+                      (option as ComboboxOption & { lastName?: string })
+                        .lastName || "",
                   }
                 : { id: "", firstName: "", lastName: "" };
               setForm({
@@ -271,7 +195,7 @@ export default function EditGeneralSection({
             onValueChange={(val) =>
               handleChange({
                 target: { name: "workType", value: val },
-              } as any)
+              } as React.ChangeEvent<HTMLInputElement>)
             }
           >
             <SelectTrigger className="border rounded px-2 py-1 w-full">

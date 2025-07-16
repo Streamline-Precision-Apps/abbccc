@@ -1,4 +1,3 @@
-import { Combobox } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
 import RenderTextArea from "./RenderTextAreaField";
 import RenderNumberField from "./RenderNumberField";
@@ -14,6 +13,17 @@ import RenderInputField from "./RenderInputField";
 import { FormIndividualTemplate } from "../[id]/_component/hooks/types";
 import { Fields } from "../[id]/_component/CreateFormSubmissionModal";
 import { useState } from "react";
+import { SingleCombobox } from "@/components/ui/single-combobox";
+
+// Define a FormFieldValue type to represent all possible field values
+type FormFieldValue =
+  | string
+  | Date
+  | string[]
+  | object
+  | boolean
+  | number
+  | null;
 
 export default function RenderFields({
   formTemplate,
@@ -28,18 +38,15 @@ export default function RenderFields({
   jobsiteOptions = [],
   costCodeOptions = [],
 }: {
-  formTemplate: FormIndividualTemplate | null;
+  formTemplate: FormIndividualTemplate;
   userOptions: { value: string; label: string }[];
   submittedBy: { id: string; firstName: string; lastName: string } | null;
   setSubmittedBy: (
     user: { id: string; firstName: string; lastName: string } | null
   ) => void;
   submittedByTouched: boolean;
-  formData: Record<string, any>;
-  handleFieldChange: (
-    fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
-  ) => void;
+  formData: Record<string, FormFieldValue>;
+  handleFieldChange: (fieldId: string, value: FormFieldValue) => void;
   clientOptions: { value: string; label: string }[];
   equipmentOptions?: { value: string; label: string }[];
   jobsiteOptions?: { value: string; label: string }[];
@@ -53,11 +60,42 @@ export default function RenderFields({
     setTouchedFields((prev) => ({ ...prev, [fieldId]: true }));
   };
 
-  const handleFieldValidation = (field: Fields, value: any) => {
-    if (field.required && !value) {
+  const handleFieldValidation = (field: Fields, value: FormFieldValue) => {
+    if (
+      field.required &&
+      (value === null || value === undefined || value === "")
+    ) {
       return `Required`;
     }
     return null;
+  };
+
+  // Helper function to get correctly typed value based on field type
+  const getTypedValue = (
+    field: Fields,
+    rawValue: FormFieldValue
+  ): FormFieldValue => {
+    if (rawValue === null || rawValue === undefined) {
+      switch (field.type) {
+        case "INPUT":
+        case "TEXTAREA":
+        case "DROPDOWN":
+        case "RADIO":
+        case "TIME":
+          return "";
+        case "NUMBER":
+          return 0;
+        case "CHECKBOX":
+          return false;
+        case "DATE":
+          return null;
+        case "MULTISELECT":
+          return [];
+        default:
+          return "";
+      }
+    }
+    return rawValue;
   };
 
   if (!formTemplate?.FormGrouping) return null;
@@ -67,7 +105,7 @@ export default function RenderFields({
         <Label className="text-sm font-medium mb-1 ">
           Submitted By <span className="text-red-500">*</span>
         </Label>
-        <Combobox
+        <SingleCombobox
           options={userOptions}
           value={submittedBy?.id || ""}
           onChange={(val, option) => {
@@ -92,7 +130,9 @@ export default function RenderFields({
         <div key={group.id} className="mb-4">
           <div className="flex flex-col gap-5">
             {group.Fields.map((field: Fields) => {
-              const value = formData[field.id] ?? "";
+              // Get properly typed value based on field type
+              const rawValue = field.id in formData ? formData[field.id] : null;
+              const value = getTypedValue(field, rawValue);
               const options = field.Options || [];
               const error = handleFieldValidation(field, value);
 
@@ -101,7 +141,7 @@ export default function RenderFields({
                   return (
                     <RenderTextArea
                       field={field}
-                      value={value}
+                      value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
@@ -112,7 +152,7 @@ export default function RenderFields({
                   return (
                     <RenderNumberField
                       field={field}
-                      value={value}
+                      value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
@@ -123,7 +163,7 @@ export default function RenderFields({
                   return (
                     <RenderDateField
                       field={field}
-                      value={value}
+                      value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
@@ -134,7 +174,7 @@ export default function RenderFields({
                   return (
                     <RenderTimeField
                       field={field}
-                      value={value}
+                      value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
@@ -145,7 +185,7 @@ export default function RenderFields({
                   return (
                     <RenderDropdownField
                       field={field}
-                      value={value}
+                      value={value as string}
                       options={options}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
@@ -157,7 +197,7 @@ export default function RenderFields({
                   return (
                     <RenderRadioField
                       field={field}
-                      value={value}
+                      value={value as string}
                       options={options}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
@@ -169,7 +209,7 @@ export default function RenderFields({
                   return (
                     <RenderCheckboxField
                       field={field}
-                      value={value}
+                      value={value as string | boolean}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
@@ -196,7 +236,7 @@ export default function RenderFields({
                   return (
                     <RenderMultiselectField
                       field={field}
-                      value={value}
+                      value={value as string | string[]}
                       options={options}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
@@ -208,7 +248,7 @@ export default function RenderFields({
                   return (
                     <RenderSearchPersonField
                       field={field}
-                      value={value}
+                      value={value as string}
                       userOptions={userOptions} // Use the userOptions array
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
@@ -221,7 +261,7 @@ export default function RenderFields({
                   return (
                     <RenderSearchAssetField
                       field={field}
-                      value={value}
+                      value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
@@ -237,7 +277,7 @@ export default function RenderFields({
                   return (
                     <RenderInputField
                       field={field}
-                      value={value}
+                      value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}

@@ -1,8 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
+export const dynamic = "force-dynamic";
 export async function GET(
   request: Request,
   { params }: { params: { crewId: string } }
@@ -36,7 +36,7 @@ export async function GET(
     }
 
     // Collect all unique users from all crews, excluding the current user
-    const userMap = new Map<string, typeof crews[0]["Users"][0]>();
+    const userMap = new Map<string, (typeof crews)[0]["Users"][0]>();
     crews.forEach((crew) => {
       crew.Users.forEach((user) => {
         //! Put comment line back in after testing.

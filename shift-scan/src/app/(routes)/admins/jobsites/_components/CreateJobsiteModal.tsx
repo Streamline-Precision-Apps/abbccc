@@ -35,10 +35,6 @@ export default function CreateJobsiteModal({
   const { data: session } = useSession();
   const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
   const [clients, setClients] = useState<ClientsSummary[]>([]);
-  if (!session) {
-    toast.error("You must be logged in to create equipment.");
-    return null;
-  }
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -80,7 +76,7 @@ export default function CreateJobsiteModal({
     },
     CCTags: [{ id: "", name: "" }],
     CreatedVia: "ADMIN",
-    createdById: session.user.id,
+    createdById: "",
   });
 
   // Handles both input and select changes for address fields
@@ -108,8 +104,8 @@ export default function CreateJobsiteModal({
       },
     }));
   };
-
   const [submitting, setSubmitting] = useState(false);
+
   const handleCreateJobsite = async () => {
     setSubmitting(true);
     try {
@@ -137,7 +133,7 @@ export default function CreateJobsiteModal({
         },
         CCTags: formData.CCTags ? [formData.CCTags] : [],
         CreatedVia: formData.CreatedVia,
-        createdById: session.user.id,
+        createdById: session?.user.id ? session.user.id : "",
       };
 
       const result = await createJobsiteAdmin({ payload });
@@ -148,8 +144,8 @@ export default function CreateJobsiteModal({
       } else {
         toast.error("Failed to create jobsite");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create equipment");
+    } catch (error) {
+      toast.error("Failed to create jobsite");
     } finally {
       setSubmitting(false);
     }
@@ -261,7 +257,7 @@ export default function CreateJobsiteModal({
               </div>
               <div className="my-2">
                 <p className="text-xs text-gray-600">
-                  Please provide the jobsite's address details.
+                  Please provide the jobsite&apos;s address details.
                 </p>
               </div>
               <div>

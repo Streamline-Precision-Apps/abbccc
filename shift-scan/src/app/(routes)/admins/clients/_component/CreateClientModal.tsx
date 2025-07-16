@@ -24,10 +24,6 @@ export default function CreateClientModal({
   rerender: () => void;
 }) {
   const { data: session } = useSession();
-  if (!session) {
-    toast.error("You must be logged in to create equipment.");
-    return null;
-  }
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,7 +38,7 @@ export default function CreateClientModal({
       state: "",
       zipCode: "",
     },
-    createdById: session.user.id,
+    createdById: session?.user.id,
   });
 
   const handleAddressChange = (
@@ -71,6 +67,7 @@ export default function CreateClientModal({
   };
 
   const [submitting, setSubmitting] = useState(false);
+
   const handleCreateJobsite = async () => {
     setSubmitting(true);
     try {
@@ -95,7 +92,7 @@ export default function CreateClientModal({
           state: formData.Address.state.trim(),
           zipCode: formData.Address.zipCode.trim(),
         },
-        createdById: session.user.id,
+        createdById: session?.user.id,
       };
 
       const result = await createClientAdmin({ payload });
@@ -106,8 +103,11 @@ export default function CreateClientModal({
       } else {
         toast.error("Failed to create client");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create equipment");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create client"
+      );
+      console.error(error);
     } finally {
       setSubmitting(false);
     }

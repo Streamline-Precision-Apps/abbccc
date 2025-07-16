@@ -260,6 +260,12 @@ export function CreateTimesheetModal({
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Map tascoLogs to match server expectations (loadsHauled)
+      const mappedTascoLogs = tascoLogs.map((log) => ({
+        ...log,
+        loadsHauled: log.loadQuantity,
+        loadQuantity: undefined, // Remove loadQuantity
+      }));
       const data = {
         form: {
           ...form,
@@ -268,7 +274,7 @@ export function CreateTimesheetModal({
         },
         maintenanceLogs,
         truckingLogs,
-        tascoLogs,
+        tascoLogs: mappedTascoLogs,
         laborLogs,
       };
       await adminCreateTimesheet(data);

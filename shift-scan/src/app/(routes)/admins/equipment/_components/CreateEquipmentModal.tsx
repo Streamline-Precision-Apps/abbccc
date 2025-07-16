@@ -23,11 +23,6 @@ export default function CreateEquipmentModal({
   rerender: () => void;
 }) {
   const { data: session } = useSession();
-  if (!session) {
-    toast.error("You must be logged in to create equipment.");
-    return null;
-  }
-
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -125,7 +120,12 @@ export default function CreateEquipmentModal({
             }
           : undefined,
       };
-      const createdById = session.user.id;
+      const createdById = session?.user.id;
+      if (!createdById) {
+        toast.error("You must be logged in to create equipment.");
+        setSubmitting(false);
+        return;
+      }
       const result = await registerEquipment(payload, createdById);
       if (result.success) {
         toast.success("Equipment created successfully!");
@@ -134,8 +134,9 @@ export default function CreateEquipmentModal({
       } else {
         toast.error(result.error || "Failed to create equipment");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create equipment");
+    } catch (error) {
+      console.error("Error creating equipment:", error);
+      toast.error("Failed to create equipment");
     } finally {
       setSubmitting(false);
     }

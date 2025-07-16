@@ -18,14 +18,18 @@ import { Input } from "@/components/ui/input";
 
 interface EditTascoLogsProps {
   logs: TascoLog[];
-  onLogChange: (idx: number, field: keyof TascoLog, value: any) => void;
+  onLogChange: (
+    idx: number,
+    field: keyof TascoLog,
+    value: string | number | null | { id: string; name: string }
+  ) => void;
   handleNestedLogChange: <T extends TruckingNestedType>(
     logType: keyof TimesheetData,
     logIndex: number,
     nestedType: T,
     nestedIndex: number,
     field: keyof TruckingNestedTypeMap[T],
-    value: any
+    value: string | number | null
   ) => void;
   originalLogs?: TascoLog[];
   onUndoLogField?: (idx: number, field: keyof TascoLog) => void;
@@ -50,8 +54,9 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   deleteTascoRefuelLog,
 }) => {
   // Helper function to check completeness of a Tasco RefuelLog
-  const isTascoRefuelLogComplete = (ref: any) =>
-    !!(ref.gallonsRefueled && ref.gallonsRefueled > 0);
+  const isTascoRefuelLogComplete = (
+    ref: TimesheetData["TascoLogs"][number]["RefuelLogs"][number]
+  ) => !!(ref.gallonsRefueled && ref.gallonsRefueled > 0);
 
   return (
     <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
