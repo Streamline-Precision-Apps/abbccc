@@ -6,6 +6,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, use, useEffect } from "react";
 
@@ -21,6 +22,7 @@ export default function SelectEquipment({
   setError: Dispatch<SetStateAction<string | null>>;
 }) {
   const router = useRouter();
+  const t = useTranslations("Equipment");
 
   useEffect(() => {
     setTimeout(() => {
@@ -34,7 +36,7 @@ export default function SelectEquipment({
         <Holds className="h-full row-start-1 row-end-2 ">
           <TitleBoxes onClick={() => router.push("/dashboard/equipment")}>
             <Holds className="h-full justify-end">
-              <Titles size={"h2"}>Scan Equipment</Titles>
+              <Titles size={"h2"}>{t("ScanEquipment")}</Titles>
             </Holds>
           </TitleBoxes>
         </Holds>
@@ -65,7 +67,7 @@ export default function SelectEquipment({
                   setMethod("Scan");
                 }}
               >
-                <Titles size={"h4"}>Scan QR</Titles>
+                <Titles size={"h4"}>{t("ScanQR")}</Titles>
               </Buttons>
             </Holds>
             <Holds>
@@ -76,7 +78,7 @@ export default function SelectEquipment({
                   setMethod("Select");
                 }}
               >
-                <Titles size={"h4"}>Select Manually</Titles>
+                <Titles size={"h4"}>{t("SelectManually")}</Titles>
               </Buttons>
             </Holds>
           </Contents>

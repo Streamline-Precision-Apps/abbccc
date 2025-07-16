@@ -240,6 +240,8 @@ export default function ProfilePage({ userId }: { userId: string }) {
                   employee={employee}
                   signatureBase64String={signatureBase64String}
                   setSignatureBase64String={setSignatureBase64String}
+                  userId={userId}
+                  reloadEmployee={fetchEmployee}
                 />
               )}
               {activeTab === 2 && (

@@ -78,7 +78,6 @@ export default function TruckDriver() {
   const [notes, setNotes] = useState<string>("");
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [material, setMaterial] = useState<Material[]>();
-  const [laborType, setLaborType] = useState<LaborType[]>([]);
 
   const [isComplete, setIsComplete] = useState({
     haulingLogsTab: true,
@@ -153,7 +152,6 @@ export default function TruckDriver() {
           `/api/getTruckingLogs/stateMileage/${timeSheetId}`,
           `/api/getTruckingLogs/material/${timeSheetId}`,
           `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
-          `/api/getTruckingLogs/laborType/${timeSheetId}`,
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
@@ -170,7 +168,6 @@ export default function TruckDriver() {
           setMaterial(data[4]);
         }
         setEquipmentHauled(data[5]);
-        setLaborType(data[6]);
       } catch (error) {
         console.error(t("FetchingError"), error);
       } finally {
@@ -211,8 +208,7 @@ export default function TruckDriver() {
             setNotes={setNotes}
             endMileage={endMileage}
             setEndMileage={setEndMileage}
-            laborType={laborType}
-            setLaborType={setLaborType}
+
           />
         )}
 
