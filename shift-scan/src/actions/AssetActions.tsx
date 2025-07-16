@@ -1,73 +1,9 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { EquipmentTags, EquipmentState } from "@/lib/enums";
+import { EquipmentTags, ApprovalStatus, CreatedVia } from "@/lib/enums";
 import * as Sentry from "@sentry/nextjs";
-
-type VehicleInfo = {
-  make: string | null;
-  model: string | null;
-  year: string | null;
-  licensePlate: string | null;
-  registrationExpiration: Date | null;
-  mileage: number;
-};
-
-interface EquipmentUpdateData {
-  name: string | undefined;
-  description: string;
-  equipmentTag: EquipmentTags;
-  currentWeight: number;
-  overWeight: boolean;
-  updatedAt: Date;
-  equipmentVehicleInfo?: {
-    create?: VehicleInfo;
-    update?: VehicleInfo;
-    delete?: boolean;
-  };
-}
-
-/**
- * Utility function to validate jobsite input data
- */
-function validateJobsiteData(data: {
-  name?: string;
-  description?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  country?: string;
-}) {
-  const errors: string[] = [];
-
-  if (!data.name?.trim()) {
-    errors.push("Jobsite name is required");
-  }
-
-  if (!data.description?.trim()) {
-    errors.push("Jobsite description is required");
-  }
-
-  // Optional: Add more specific validation rules
-  if (data.name && data.name.trim().length < 2) {
-    errors.push("Jobsite name must be at least 2 characters long");
-  }
-
-  if (data.description && data.description.trim().length < 5) {
-    errors.push("Jobsite description must be at least 5 characters long");
-  }
-
-  if (
-    data.zipCode &&
-    data.zipCode.trim() &&
-    !/^\d{5}(-\d{4})?$/.test(data.zipCode.trim())
-  ) {
-    errors.push("Zip code must be in format 12345 or 12345-6789");
-  }
-
-  return errors;
-}
+import { Prisma } from "@prisma/client";
 
 /**
  * Server action to update equipment asset data
@@ -75,23 +11,15 @@ function validateJobsiteData(data: {
  */
 export async function updateEquipmentAsset(formData: FormData) {
   console.log("Updating equipment asset...");
-
+  console.log(formData);
   try {
-    // Extract basic equipment data
     const id = formData.get("id") as string;
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
-    // const status = formData.get("status") as EquipmentStatus;
-    const currentWeight =
-      parseFloat(formData.get("currentWeight") as string) || 0;
-    const overWeight = formData.get("overWeight") === "true";
 
     if (!id) {
       throw new Error("Equipment ID is required");
     }
 
-    // Check if equipment exists
+    // Fetch existing equipment early
     const existingEquipment = await prisma.equipment.findUnique({
       where: { id },
       include: { equipmentVehicleInfo: true },
@@ -101,75 +29,88 @@ export async function updateEquipmentAsset(formData: FormData) {
       throw new Error("Equipment not found");
     }
 
-    // Prepare update data
-    const updateData: EquipmentUpdateData = {
-      name: name?.trim(),
-      description: description?.trim() || "",
-      equipmentTag: equipmentTag,
-      currentWeight: currentWeight,
-      overWeight: overWeight,
-      updatedAt: new Date(),
-    };
+    const updateData: Prisma.EquipmentUpdateInput = {};
+    if (formData.has("name"))
+      updateData.name = (formData.get("name") as string)?.trim();
+    if (formData.has("description"))
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    if (formData.has("equipmentTag"))
+      updateData.equipmentTag = formData.get("equipmentTag") as EquipmentTags;
+    if (formData.has("currentWeight"))
+      updateData.currentWeight =
+        parseFloat(formData.get("currentWeight") as string) || 0;
+    if (formData.has("overWeight"))
+      updateData.overWeight = formData.get("overWeight") === "true";
+    if (formData.has("approvalStatus"))
+      updateData.approvalStatus = formData.get(
+        "approvalStatus"
+      ) as ApprovalStatus;
+    if (formData.has("isDisabledByAdmin"))
+      updateData.isDisabledByAdmin = Boolean(formData.get("isDisabledByAdmin"));
+    if (formData.has("creationReason"))
+      updateData.creationReason = formData.get("creationReason") as string;
+    updateData.updatedAt = new Date();
 
-    // Handle vehicle information for VEHICLE and TRUCK types
-    if (equipmentTag === "VEHICLE" || equipmentTag === "TRUCK") {
-      const make = formData.get("make") as string;
-      const model = formData.get("model") as string;
-      const year = formData.get("year") as string;
-      const licensePlate = formData.get("licensePlate") as string;
-      const registrationExpirationStr = formData.get(
-        "registrationExpiration"
-      ) as string;
-      const mileage = parseInt(formData.get("mileage") as string) || 0;
+    const tag = formData.get("equipmentTag") as EquipmentTags;
 
-      // Convert registration expiration to ISO string if provided
-      let registrationExpiration: Date | null = null;
-      if (registrationExpirationStr) {
-        registrationExpiration = new Date(registrationExpirationStr);
+    if (tag === "VEHICLE" || tag === "TRUCK") {
+      const vehicleCreateData: Prisma.EquipmentVehicleInfoCreateWithoutEquipmentInput =
+        {};
+      const vehicleUpdateData: Prisma.EquipmentVehicleInfoUpdateWithoutEquipmentInput =
+        {};
+
+      if (formData.has("make")) {
+        const val = (formData.get("make") as string)?.trim();
+        vehicleCreateData.make = val;
+        vehicleUpdateData.make = val;
+      }
+      if (formData.has("model")) {
+        const val = (formData.get("model") as string)?.trim();
+        vehicleCreateData.model = val;
+        vehicleUpdateData.model = val;
+      }
+      if (formData.has("year")) {
+        const val = (formData.get("year") as string)?.trim();
+        vehicleCreateData.year = val;
+        vehicleUpdateData.year = val;
+      }
+      if (formData.has("licensePlate")) {
+        const val = (formData.get("licensePlate") as string)?.trim();
+        vehicleCreateData.licensePlate = val;
+        vehicleUpdateData.licensePlate = val;
+      }
+      if (formData.has("registrationExpiration")) {
+        const regExp = new Date(
+          formData.get("registrationExpiration") as string
+        );
+        vehicleCreateData.registrationExpiration = regExp;
+        vehicleUpdateData.registrationExpiration = regExp;
+      }
+      if (formData.has("mileage")) {
+        const mileage = parseInt(formData.get("mileage") as string) || 0;
+        vehicleCreateData.mileage = mileage;
+        vehicleUpdateData.mileage = mileage;
       }
 
-      const vehicleData = {
-        make: make?.trim() || null,
-        model: model?.trim() || null,
-        year: year?.trim() || null,
-        licensePlate: licensePlate?.trim() || null,
-        registrationExpiration: registrationExpiration,
-        mileage: mileage,
-      };
-
-      // Check if vehicle info exists, update or create accordingly
-      if (existingEquipment.equipmentVehicleInfo) {
-        updateData.equipmentVehicleInfo = {
-          update: vehicleData,
-        };
-      } else {
-        updateData.equipmentVehicleInfo = {
-          create: vehicleData,
-        };
-      }
-    } else {
-      // For non-vehicle equipment, remove vehicle info if it exists
-      if (existingEquipment.equipmentVehicleInfo) {
-        updateData.equipmentVehicleInfo = {
-          delete: true,
-        };
-      }
+      updateData.equipmentVehicleInfo = existingEquipment.equipmentVehicleInfo
+        ? { update: vehicleUpdateData }
+        : { create: vehicleCreateData };
+    } else if (existingEquipment.equipmentVehicleInfo) {
+      updateData.equipmentVehicleInfo = { delete: true };
     }
 
-    // Perform the update
     const updatedEquipment = await prisma.equipment.update({
       where: { id },
       data: updateData,
-      include: {
-        equipmentVehicleInfo: true,
-      },
+      include: { equipmentVehicleInfo: true },
     });
 
-    // Revalidate relevant paths and tags
     revalidateTag("equipment");
     revalidateTag("assets");
     revalidatePath("/admins/assets");
     revalidatePath(`/admins/assets/${id}`);
+    revalidatePath("/admins/equipment");
 
     console.log("Equipment updated successfully:", updatedEquipment.id);
     return {
@@ -426,9 +367,184 @@ export async function updateJobsite(formData: FormData) {
 }
 
 /**
+ * Server action to update equipment asset data
+ * Handles both basic jobsite data and vehicle information
+ */
+export async function updateJobsiteAdmin(formData: FormData) {
+  console.log("Updating jobsite...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      throw new Error("Jobsite ID is required");
+    }
+
+    // Fetch existing jobsite early
+    const existingJobsite = await prisma.jobsite.findUnique({
+      where: { id },
+      include: { CCTags: true },
+    });
+
+    if (!existingJobsite) {
+      throw new Error("Jobsite not found");
+    }
+
+    const updateData: Prisma.JobsiteUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("description")) {
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    }
+    if (formData.has("approvalStatus")) {
+      updateData.approvalStatus = formData.get(
+        "approvalStatus"
+      ) as ApprovalStatus;
+    }
+    if (formData.has("isActive")) {
+      updateData.isActive = formData.get("isActive") === "true";
+    }
+    if (formData.has("creationReason")) {
+      updateData.creationReason = formData.get("creationReason") as string;
+    }
+    if (formData.has("updatedAt")) {
+      const updatedAt = formData.get("updatedAt");
+      updateData.updatedAt =
+        updatedAt && updatedAt !== "null" && updatedAt !== "undefined"
+          ? new Date(updatedAt as string)
+          : new Date();
+    } else {
+      updateData.updatedAt = new Date();
+    }
+    if (formData.has("cCTags")) {
+      const cCTagsString = formData.get("cCTags") as string;
+      const cCTagsArray = JSON.parse(cCTagsString || "[]");
+      updateData.CCTags = {
+        set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
+      };
+    }
+
+    const updatedJobsite = await prisma.jobsite.update({
+      where: { id },
+      data: updateData,
+      include: { CCTags: true },
+    });
+
+    revalidatePath("/admins/jobsites");
+
+    console.log("Jobsite updated successfully:", updatedJobsite.id);
+    return {
+      success: true,
+      data: updatedJobsite,
+      message: "Jobsite updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating jobsite:", error);
+    throw new Error(
+      `Failed to update jobsite: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+/**
  * Alternative function for creating jobsite that accepts a structured object
  * Useful for direct TypeScript integration with forms
  */
+
+export async function createJobsiteAdmin({
+  payload,
+}: {
+  payload: {
+    name: string;
+    description: string;
+    ApprovalStatus: string;
+    isActive: boolean;
+    Address: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+    Client: {
+      id: string;
+    };
+    CreatedVia: string;
+    createdById: string;
+  };
+}) {
+  try {
+    console.log("Creating jobsite...");
+    console.log(payload);
+    await prisma.$transaction(async (prisma) => {
+      const existingAddress = await prisma.address.findFirst({
+        where: {
+          street: payload.Address.street.trim(),
+          city: payload.Address.city.trim(),
+          state: payload.Address.state.trim(),
+          zipCode: payload.Address.zipCode.trim(),
+        },
+      });
+
+      if (existingAddress) {
+        await prisma.jobsite.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.ApprovalStatus as ApprovalStatus,
+            isActive: payload.isActive,
+            createdVia: payload.CreatedVia as CreatedVia,
+            Address: {
+              connect: { id: existingAddress.id },
+            },
+            Client: {
+              connect: { id: payload.Client.id },
+            },
+            createdBy: {
+              connect: { id: payload.createdById.trim() },
+            },
+          },
+        });
+      } else {
+        await prisma.jobsite.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.ApprovalStatus as ApprovalStatus,
+            isActive: payload.isActive,
+            createdVia: payload.CreatedVia as CreatedVia,
+            Address: {
+              create: {
+                street: payload.Address.street.trim(),
+                city: payload.Address.city.trim(),
+                state: payload.Address.state.trim(),
+                zipCode: payload.Address.zipCode.trim(),
+              },
+            },
+            Client: {
+              connect: { id: payload.Client.id },
+            },
+            createdBy: {
+              connect: { id: payload.createdById.trim() },
+            },
+          },
+        });
+      }
+    });
+
+    return {
+      success: true,
+      message: "Jobsite created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating jobsite:", error);
+    throw error;
+  }
+}
+
 export async function createJobsiteFromObject(jobsiteData: {
   name: string;
   clientId: string;
@@ -522,6 +638,7 @@ export async function deleteJobsite(id: string) {
     revalidateTag("jobsites");
     revalidateTag("assets");
     revalidatePath("/admins/assets");
+    revalidatePath("/admins/jobsites");
 
     return { success: true, message: "Jobsite deleted successfully" };
   } catch (error) {
@@ -574,25 +691,95 @@ export async function deleteEquipment(id: string) {
 /**
  * Server action to create a new cost code
  */
-export async function createCostCode(costCodeData: {
-  cCNumber: string;
-  cCName: string;
+export async function updateCostCodeAdmin(formData: FormData) {
+  console.log("Updating cost code...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      throw new Error("Jobsite ID is required");
+    }
+
+    // Fetch existing jobsite early
+    const existingJobsite = await prisma.costCode.findUnique({
+      where: { id },
+      include: {
+        CCTags: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
+    if (!existingJobsite) {
+      throw new Error("Jobsite not found");
+    }
+
+    const updateData: Prisma.CostCodeUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("isActive")) {
+      updateData.isActive = formData.get("isActive") === "true";
+    }
+
+    if (formData.has("cCTags")) {
+      const cCTagsString = formData.get("cCTags") as string;
+      const cCTagsArray = JSON.parse(cCTagsString || "[]");
+      updateData.CCTags = {
+        set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
+      };
+    }
+
+    updateData.updatedAt = new Date();
+
+    const updatedCostCode = await prisma.costCode.update({
+      where: { id },
+      data: updateData,
+      include: { CCTags: true },
+    });
+
+    revalidatePath("/admins/cost-codes");
+
+    console.log("Cost code updated successfully:", updatedCostCode.id);
+    return {
+      success: true,
+      data: updatedCostCode,
+      message: "Cost code updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating jobsite:", error);
+    throw new Error(
+      `Failed to update jobsite: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
+export async function createCostCode(payload: {
+  code: string;
+  name: string;
   isActive: boolean;
-  CCTags?: { id: string; name: string }[];
+  CCTags: {
+    id: string;
+    name: string;
+  }[];
 }) {
   console.log("Creating new cost code...");
-  console.log(costCodeData);
+  console.log(payload);
 
   try {
     // Validate required fields
-    if (!costCodeData.cCName?.trim()) {
+    if (!payload.name?.trim()) {
       throw new Error("Cost code name is required");
     }
 
     // Check if cost code with the same name already exists
     const existingCostCode = await prisma.costCode.findUnique({
       where: {
-        name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
+        name: `${payload.code.trim()} ${payload.name.trim()}`,
       },
     });
 
@@ -603,10 +790,10 @@ export async function createCostCode(costCodeData: {
     // Create the new cost code
     const newCostCode = await prisma.costCode.create({
       data: {
-        name: `${costCodeData.cCNumber.trim()} ${costCodeData.cCName.trim()}`,
-        isActive: costCodeData.isActive,
+        name: `${payload.code.trim()} ${payload.name.trim()}`,
+        isActive: payload.isActive,
         CCTags: {
-          connect: costCodeData.CCTags?.map((tag) => ({ id: tag.id })) || [],
+          connect: payload.CCTags?.map((tag) => ({ id: tag.id })) || [],
         },
       },
     });
@@ -808,6 +995,82 @@ export async function deleteCostCode(id: string) {
   }
 }
 
+export async function updateTagAdmin(formData: FormData) {
+  console.log("Updating tag ...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+    if (!id) {
+      throw new Error("Tag ID is required");
+    }
+
+    // Fetch existing tag early
+    const existingTag = await prisma.cCTag.findUnique({
+      where: { id },
+      include: {
+        Jobsites: { select: { id: true, name: true } },
+        CostCodes: { select: { id: true, name: true } },
+      },
+    });
+    if (!existingTag) {
+      throw new Error("Tag not found");
+    }
+
+    const updateData: Prisma.CCTagUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("description")) {
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    }
+
+    // Handle Jobsites relation
+    if (formData.has("Jobsites")) {
+      const jobsitesString = formData.get("Jobsites") as string;
+      const jobsitesArray = JSON.parse(jobsitesString || "[]");
+      updateData.Jobsites = {
+        set: jobsitesArray.map((id: string) => ({ id })),
+      };
+    }
+
+    // Handle CostCodes relation
+    if (formData.has("CostCodeTags")) {
+      const costCodesString = formData.get("CostCodeTags") as string;
+      const costCodesArray = JSON.parse(costCodesString || "[]");
+      updateData.CostCodes = {
+        set: costCodesArray.map((id: string) => ({ id })),
+      };
+    }
+
+    const updatedTag = await prisma.cCTag.update({
+      where: { id },
+      data: updateData,
+      include: {
+        Jobsites: { select: { id: true, name: true } },
+        CostCodes: { select: { id: true, name: true } },
+      },
+    });
+
+    revalidatePath("/admins/cost-codes");
+
+    console.log("Tag updated successfully:", updatedTag.id);
+    return {
+      success: true,
+      data: updatedTag,
+      message: "Tag updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating tag:", error);
+    throw new Error(
+      `Failed to update tag: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
 export async function updateTags(
   id: string,
   tagData: Partial<{
@@ -965,42 +1228,43 @@ export async function deleteTag(id: string) {
   }
 }
 
-export async function createTag({
-  name,
-  description,
-  CostCodes,
-}: {
+export async function createTag(payload: {
   name: string;
   description: string;
-  CostCodes: {
+  CostCode: {
+    id: string;
+    name: string;
+  }[];
+  Jobsites: {
     id: string;
     name: string;
   }[];
 }) {
   console.log("Creating new tag...", {
-    name,
-    description,
-    costCodesCount: CostCodes.length,
+    name: payload.name,
+    description: payload.description,
+    costCodesCount: payload.CostCode.length,
+    jobsitesCount: payload.Jobsites.length,
   });
 
   try {
     // Validate required fields
-    if (!name?.trim()) {
+    if (!payload.name?.trim()) {
       throw new Error("Tag name is required");
     }
 
-    if (!description?.trim()) {
+    if (!payload.description?.trim()) {
       throw new Error("Tag description is required");
     }
 
-    if (!CostCodes || CostCodes.length === 0) {
+    if (!payload.CostCode || payload.CostCode.length === 0) {
       throw new Error("At least one cost code must be selected");
     }
 
     // Check if tag with the same name already exists
     const existingTag = await prisma.cCTag.findUnique({
       where: {
-        name: name.trim(),
+        name: payload.name.trim(),
       },
     });
 
@@ -1012,7 +1276,7 @@ export async function createTag({
     const existingCostCodes = await prisma.costCode.findMany({
       where: {
         id: {
-          in: CostCodes.map((cc) => cc.id),
+          in: payload.CostCode.map((cc) => cc.id),
         },
       },
       select: {
@@ -1021,21 +1285,52 @@ export async function createTag({
       },
     });
 
-    if (existingCostCodes.length !== CostCodes.length) {
+    if (existingCostCodes.length !== payload.CostCode.length) {
       throw new Error("One or more selected cost codes do not exist");
     }
 
-    // Create the new tag with associated cost codes
+    // Validate that all provided jobsites exist (optional, but recommended)
+    if (payload.Jobsites && payload.Jobsites.length > 0) {
+      const existingJobsites = await prisma.jobsite.findMany({
+        where: {
+          id: {
+            in: payload.Jobsites.map((js) => js.id),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
+      if (existingJobsites.length !== payload.Jobsites.length) {
+        throw new Error("One or more selected jobsites do not exist");
+      }
+    }
+
+    // Create the new tag with associated cost codes and jobsites
     const newTag = await prisma.cCTag.create({
       data: {
-        name: name.trim(),
-        description: description.trim(),
+        name: payload.name.trim(),
+        description: payload.description.trim(),
         CostCodes: {
-          connect: CostCodes.map((cc) => ({ id: cc.id })),
+          connect: payload.CostCode.map((cc) => ({ id: cc.id })),
         },
+        Jobsites:
+          payload.Jobsites && payload.Jobsites.length > 0
+            ? {
+                connect: payload.Jobsites.map((js) => ({ id: js.id })),
+              }
+            : undefined,
       },
       include: {
         CostCodes: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Jobsites: {
           select: {
             id: true,
             name: true,
@@ -1065,12 +1360,216 @@ export async function createTag({
   }
 }
 
-/** Layout for server actions 
-export async function (formData: FormData) {
+export async function createClientAdmin({
+  payload,
+}: {
+  payload: {
+    name: string;
+    description: string;
+    approvalStatus: string;
+    contactPerson: string;
+    contactEmail: string;
+    contactPhone: string;
+    Address: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+    createdById?: string;
+  };
+}) {
   try {
+    console.log("Creating jobsite...");
+    console.log(payload);
+    await prisma.$transaction(async (prisma) => {
+      const existingAddress = await prisma.address.findFirst({
+        where: {
+          street: payload.Address.street.trim(),
+          city: payload.Address.city.trim(),
+          state: payload.Address.state.trim(),
+          zipCode: payload.Address.zipCode.trim(),
+        },
+      });
+
+      if (existingAddress) {
+        await prisma.client.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.approvalStatus as ApprovalStatus,
+            contactPerson: payload.contactPerson.trim(),
+            contactEmail: payload.contactEmail.trim(),
+            contactPhone: payload.contactPhone.trim(),
+            createdVia: "ADMIN",
+            Address: {
+              connect: { id: existingAddress.id },
+            },
+            Company: {
+              connect: { id: "1", name: "Streamline Precision LLC" },
+            },
+            createdBy: {
+              connect: { id: payload.createdById?.trim() },
+            },
+          },
+        });
+      } else {
+        await prisma.client.create({
+          data: {
+            name: payload.name.trim(),
+            description: payload.description.trim(),
+            approvalStatus: payload.approvalStatus as ApprovalStatus,
+            contactPerson: payload.contactPerson.trim(),
+            contactEmail: payload.contactEmail.trim(),
+            contactPhone: payload.contactPhone.trim(),
+            createdVia: "ADMIN",
+            Address: {
+              create: {
+                street: payload.Address.street.trim(),
+                city: payload.Address.city.trim(),
+                state: payload.Address.state.trim(),
+                zipCode: payload.Address.zipCode.trim(),
+              },
+            },
+            Company: {
+              connect: { id: "1", name: "Streamline Precision LLC" },
+            },
+            createdBy: {
+              connect: { id: payload.createdById?.trim() },
+            },
+          },
+        });
+      }
+    });
+
+    return {
+      success: true,
+      message: "Jobsite created successfully",
+    };
   } catch (error) {
     console.error("Error creating jobsite:", error);
     throw error;
   }
 }
-*/
+
+export async function deleteClient(id: string) {
+  console.log("Deleting client with ID:", id);
+
+  try {
+    // Check for related records before deletion
+    const clientWithRelations = await prisma.client.findUnique({
+      where: { id },
+    });
+
+    if (!clientWithRelations) {
+      throw new Error("Client not found");
+    }
+    // Delete the client
+    await prisma.client.delete({
+      where: { id },
+    });
+
+    revalidatePath("/admins/clients");
+
+    return {
+      success: true,
+      message: "Client deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+export async function updateClientAdmin(formData: FormData) {
+  console.log("Updating client...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      throw new Error("Jobsite ID is required");
+    }
+
+    // Fetch existing client early
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      include: { Address: true },
+    });
+
+    if (!existingClient) {
+      throw new Error("Client not found");
+    }
+
+    const updateData: Prisma.ClientUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("description")) {
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    }
+    if (formData.has("approvalStatus")) {
+      updateData.approvalStatus = formData.get(
+        "approvalStatus"
+      ) as ApprovalStatus;
+    }
+    if (formData.has("contactPerson")) {
+      updateData.contactPerson = (
+        formData.get("contactPerson") as string
+      )?.trim();
+    }
+    if (formData.has("contactEmail")) {
+      updateData.contactEmail = (
+        formData.get("contactEmail") as string
+      )?.trim();
+    }
+    if (formData.has("contactPhone")) {
+      updateData.contactPhone = (
+        formData.get("contactPhone") as string
+      )?.trim();
+    }
+    if (formData.has("creationReason")) {
+      updateData.creationReason = formData.get("creationReason") as string;
+    }
+    updateData.updatedAt = new Date();
+    if (formData.has("Address")) {
+      const addressString = formData.get("Address") as string;
+      const addressData = JSON.parse(addressString || "{}");
+      updateData.Address = {
+        update: {
+          street: addressData.street?.trim(),
+          city: addressData.city?.trim(),
+          state: addressData.state?.trim(),
+          zipCode: addressData.zipCode?.trim(),
+        },
+      };
+    }
+
+    const updatedClient = await prisma.client.update({
+      where: { id },
+      data: updateData,
+      include: { Address: true },
+    });
+
+    revalidatePath("/admins/clients");
+
+    console.log("Client updated successfully:", updatedClient.id);
+    return {
+      success: true,
+      data: updatedClient,
+      message: "Client updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating client:", error);
+    throw new Error(
+      `Failed to update client: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}

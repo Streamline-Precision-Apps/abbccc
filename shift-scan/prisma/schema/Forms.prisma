@@ -2,12 +2,12 @@ model FormTemplate {
   id                  String               @id @default(uuid())
   companyId           String
   name                String
-  description         String? // description of the form
-  formType            FormTemplateCategory @default(GENERAL)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-  isActive            FormTemplateStatus   @default(DRAFT)
   isSignatureRequired Boolean              @default(false)
+  description         String?
+  isActive            FormTemplateStatus   @default(DRAFT)
+  formType            FormTemplateCategory @default(GENERAL)
   Submissions         FormSubmission[]
   Company             Company              @relation(fields: [companyId], references: [id])
   FormGrouping        FormGrouping[]       @relation("FormGroupingToFormTemplate")
@@ -24,16 +24,16 @@ model FormGrouping {
 model FormField {
   id             String            @id @default(uuid())
   formGroupingId String
-  label          String // question or field name
+  label          String
   type           FieldType
   required       Boolean           @default(false)
   order          Int
   placeholder    String?
-  minLength      Int? // used for text fields to set minimum character length
   maxLength      Int?
-  multiple       Boolean?          @default(false) // used for select fields to allow multiple selections to be made
+  minLength      Int?
   content        String?
-  filter         String? // used for filtering options in select fields
+  filter         String?
+  multiple       Boolean?          @default(false)
   FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
   Options        FormFieldOption[]
 }
