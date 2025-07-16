@@ -1483,3 +1483,84 @@ export async function deleteClient(id: string) {
     };
   }
 }
+
+export async function updateClientAdmin(formData: FormData) {
+  console.log("Updating client...");
+  console.log(formData);
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      throw new Error("Jobsite ID is required");
+    }
+
+    // Fetch existing jobsite early
+    const existingJobsite = await prisma.jobsite.findUnique({
+      where: { id },
+      include: { CCTags: true },
+    });
+
+    if (!existingJobsite) {
+      throw new Error("Jobsite not found");
+    }
+
+    const updateData: Prisma.JobsiteUpdateInput = {};
+    if (formData.has("name")) {
+      updateData.name = (formData.get("name") as string)?.trim();
+    }
+    if (formData.has("description")) {
+      updateData.description =
+        (formData.get("description") as string)?.trim() || "";
+    }
+    if (formData.has("approvalStatus")) {
+      updateData.approvalStatus = formData.get(
+        "approvalStatus"
+      ) as ApprovalStatus;
+    }
+    if (formData.has("isActive")) {
+      updateData.isActive = formData.get("isActive") === "true";
+    }
+    if (formData.has("creationReason")) {
+      updateData.creationReason = formData.get("creationReason") as string;
+    }
+    if (formData.has("updatedAt")) {
+      const updatedAt = formData.get("updatedAt");
+      updateData.updatedAt =
+        updatedAt && updatedAt !== "null" && updatedAt !== "undefined"
+          ? new Date(updatedAt as string)
+          : new Date();
+    } else {
+      updateData.updatedAt = new Date();
+    }
+    if (formData.has("cCTags")) {
+      const cCTagsString = formData.get("cCTags") as string;
+      const cCTagsArray = JSON.parse(cCTagsString || "[]");
+      updateData.CCTags = {
+        set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
+      };
+    }
+
+    const updatedJobsite = await prisma.jobsite.update({
+      where: { id },
+      data: updateData,
+      include: { CCTags: true },
+    });
+
+    revalidatePath("/admins/jobsites");
+
+    console.log("Jobsite updated successfully:", updatedJobsite.id);
+    return {
+      success: true,
+      data: updatedJobsite,
+      message: "Jobsite updated successfully",
+    };
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error("Error updating jobsite:", error);
+    throw new Error(
+      `Failed to update jobsite: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
