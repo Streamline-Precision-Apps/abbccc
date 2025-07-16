@@ -68,7 +68,6 @@ export default function EditClientModal({
       fd.append("contactEmail", formData.contactEmail || "");
       fd.append("contactPhone", formData.contactPhone || "");
       fd.append("Address", JSON.stringify(formData.Address));
-
       const result = await updateClientAdmin(fd);
 
       if (result?.success) {
