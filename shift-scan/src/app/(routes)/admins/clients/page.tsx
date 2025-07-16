@@ -23,6 +23,8 @@ import { useClientData } from "./_component/useClientData";
 import { deleteClient } from "@/actions/AssetActions";
 import ClientTable from "./_component/clientTable";
 import Spinner from "@/components/(animations)/spinner";
+import { Badge } from "@/components/ui/badge";
+import CreateClientModal from "./_component/CreateClientModal";
 
 export default function ClientsPage() {
   const { setOpen, open } = useSidebar();
@@ -31,6 +33,8 @@ export default function ClientsPage() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [editCostCodeModal, setEditCostCodeModal] = useState(false);
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
+  const [createClientModal, setCreateClientModal] = useState(false);
   const {
     loading,
     ClientDetails,
@@ -42,7 +46,12 @@ export default function ClientsPage() {
     setPageSize,
   } = useClientData();
 
+  const pendingCount = ClientDetails.filter(
+    (item) => item.approvalStatus === "PENDING"
+  ).length;
+
   const filteredClientDetails = ClientDetails.filter((client) => {
+    if (showPendingOnly && client.approvalStatus !== "PENDING") return false;
     const term = searchTerm.toLowerCase();
     return (
       client.id.toLowerCase().includes(term) ||
@@ -138,9 +147,29 @@ export default function ClientsPage() {
           </div>
         </div>
         <div className="flex flex-row justify-end w-full gap-4">
-          <Button onClick={() => {}}>
+          <Button onClick={() => setCreateClientModal(true)}>
             <img src="/plus-white.svg" alt="Add Client" className="w-4 h-4" />
             <p className="text-left text-xs text-white">New Client</p>
+          </Button>
+          <Button
+            onClick={() => setShowPendingOnly(!showPendingOnly)}
+            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
+              showPendingOnly ? "ring-2 ring-red-400" : ""
+            }`}
+          >
+            <div className="flex flex-row items-center">
+              <img
+                src="/inbox-white.svg"
+                alt="Approval"
+                className="h-4 w-4 mr-2"
+              />
+              <p className="text-white text-sm font-extrabold">Approval</p>
+              {pendingCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                  {pendingCount}
+                </Badge>
+              )}
+            </div>
           </Button>
         </div>
       </div>
@@ -156,7 +185,7 @@ export default function ClientsPage() {
             </div>
           )}
           <ClientTable
-            clientDetails={filteredClientDetails}
+            clientDetails={paginatedClientDetails}
             openHandleEdit={openHandleEdit}
             openHandleDelete={openHandleDelete}
           />
@@ -228,6 +257,15 @@ export default function ClientsPage() {
           </div>
         )}
       </div>
+      {/* Create Modal */}
+      {createClientModal && (
+        <CreateClientModal
+          cancel={() => setCreateClientModal(false)}
+          rerender={rerender}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
