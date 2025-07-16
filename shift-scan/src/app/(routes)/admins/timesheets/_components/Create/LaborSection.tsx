@@ -2,6 +2,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 
 export type LaborLogDraft = {
   equipment: { id: string; name: string };
@@ -37,7 +38,7 @@ export function LaborSection({
           className="flex flex-col gap-4 py-2 mb-4 border p-4 rounded relative "
         >
           <div className="w-[350px] mt-4">
-            <Combobox
+            <SingleCombobox
               options={equipmentOptions}
               value={log.equipment.id}
               onChange={(val, option) => {

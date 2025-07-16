@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { DateTimePicker } from "../DateTimePicker";
 import { Combobox } from "@/components/ui/combobox";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 
 interface MaintenanceLog {
   id: string;
@@ -49,11 +50,11 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
       >
         <div className="flex items-end">
           <div className="min-w-[200px]">
-            <Combobox
+            <SingleCombobox
               label="Maintenance ID"
               options={maintenanceOptions}
               value={log.maintenanceId}
-              onChange={(val, option) => onLogChange(idx, "maintenanceId", val)}
+              onChange={(val) => onLogChange(idx, "maintenanceId", val)}
               placeholder="Select maintenance ID"
               filterKeys={["value", "label"]}
             />

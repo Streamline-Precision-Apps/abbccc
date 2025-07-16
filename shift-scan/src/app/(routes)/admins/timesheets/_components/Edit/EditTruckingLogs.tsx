@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { StateOptions } from "@/data/stateValues";
 import {
@@ -15,6 +14,8 @@ import {
   TruckingNestedType,
   TruckingNestedTypeMap,
 } from "./types";
+import { SingleCombobox } from "@/components/ui/single-combobox";
+import { Label } from "@/components/ui/label";
 
 interface EditTruckingLogsProps {
   logs: TruckingLog[];
@@ -99,7 +100,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
             <div className="flex flex-row items-end gap-x-2">
               <div className="min-w-[350px]">
                 <label className="block text-xs">Equipment ID</label>
-                <Combobox
+                <SingleCombobox
                   font={"font-normal"}
                   options={equipmentOptions}
                   value={log.equipmentId}
@@ -262,7 +263,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               >
                 <div className="flex flex-row items-end gap-x-2">
                   <div className="min-w-[350px] w-fit items-end">
-                    <Combobox
+                    <SingleCombobox
                       font={"font-normal"}
                       label="Equipment ID"
                       options={equipmentOptions}
@@ -307,7 +308,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 </div>
                 <div className="flex flex-row items-end gap-x-2">
                   <div className="min-w-[350px] w-fit items-end">
-                    <Combobox
+                    <SingleCombobox
                       font={"font-normal"}
                       label="Jobsite"
                       options={jobsiteOptions}
@@ -560,20 +561,20 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 <div className="flex flex-col gap-4 mb-2">
                   <div className="flex flex-row gap-1 items-end">
                     <div>
-                      <label htmlFor="lightWeight" className="text-xs ">
-                        Light Weight
-                      </label>
+                      <Label htmlFor="Quantity" className="text-xs ">
+                        Quantity
+                      </Label>
                       <Input
-                        name="lightWeight"
+                        name="quantity"
                         type="number"
-                        placeholder="Enter Weight"
-                        value={mat.lightWeight > 0 ? mat.lightWeight : ""}
+                        placeholder="Enter Quantity"
+                        value={mat.quantity ? mat.quantity : ""}
                         onChange={(e) =>
                           handleNestedLogChange(
                             idx,
                             "Materials",
                             matIdx,
-                            "lightWeight",
+                            "quantity",
                             e.target.value
                           )
                         }
@@ -581,10 +582,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       />
                     </div>
                     {originalLogs[idx] &&
-                      originalLogs[idx].Materials?.[matIdx]?.lightWeight !==
+                      originalLogs[idx].Materials?.[matIdx]?.quantity !==
                         undefined &&
-                      mat.lightWeight !==
-                        originalLogs[idx].Materials[matIdx].lightWeight &&
+                      mat.quantity !==
+                        originalLogs[idx].Materials[matIdx].quantity &&
                       onUndoNestedLogField && (
                         <div className="w-fit ">
                           <Button
@@ -596,7 +597,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                                 idx,
                                 "Materials",
                                 matIdx,
-                                "lightWeight"
+                                "quantity"
                               )
                             }
                           >
@@ -607,31 +608,34 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                   </div>
                   <div className="flex flex-row gap-1 items-end">
                     <div>
-                      <label htmlFor="grossWeight" className="text-xs ">
-                        Gross Weight
-                      </label>
-                      <Input
-                        name="grossWeight"
-                        type="number"
-                        placeholder="Enter Weight"
-                        value={mat.grossWeight > 0 ? mat.grossWeight : ""}
-                        onChange={(e) =>
+                      <Label htmlFor="unit" className="text-xs ">
+                        Unit
+                      </Label>
+                      <Select
+                        value={mat.unit}
+                        onValueChange={(val) =>
                           handleNestedLogChange(
                             idx,
                             "Materials",
                             matIdx,
-                            "grossWeight",
-                            e.target.value
+                            "unit",
+                            val
                           )
                         }
-                        className="w-[350px] text-xs"
-                      />
+                      >
+                        <SelectTrigger className="w-[350px] text-xs">
+                          <SelectValue placeholder="Enter Unit Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="TONS">TONS</SelectItem>
+                          <SelectItem value="YARDS">YARDS</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     {originalLogs[idx] &&
-                      originalLogs[idx].Materials?.[matIdx]?.grossWeight !==
+                      originalLogs[idx].Materials?.[matIdx]?.unit !==
                         undefined &&
-                      mat.grossWeight !==
-                        originalLogs[idx].Materials[matIdx].grossWeight &&
+                      mat.unit !== originalLogs[idx].Materials[matIdx].unit &&
                       onUndoNestedLogField && (
                         <div className="w-fit ">
                           <Button
@@ -643,7 +647,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                                 idx,
                                 "Materials",
                                 matIdx,
-                                "grossWeight"
+                                "unit"
                               )
                             }
                           >

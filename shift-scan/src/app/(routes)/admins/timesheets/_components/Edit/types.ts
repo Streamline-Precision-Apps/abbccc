@@ -23,11 +23,12 @@ export interface Material {
   id: string;
   LocationOfMaterial: string;
   name: string;
+  quantity: string;
+  unit: string;
   materialWeight: number;
-  lightWeight: number;
-  grossWeight: number;
   loadType: string;
 }
+
 export interface RefuelLog {
   id: string;
   gallonsRefueled: number;

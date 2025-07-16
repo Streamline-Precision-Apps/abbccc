@@ -26,7 +26,6 @@ import Spinner from "@/components/(animations)/spinner";
 import { Badge } from "@/components/ui/badge";
 import CreateClientModal from "./_component/CreateClientModal";
 import EditClientModal from "./_component/EditClientModal";
-import { set } from "date-fns";
 
 export default function ClientsPage() {
   const { setOpen, open } = useSidebar();
