@@ -170,7 +170,6 @@ export async function updateTruckingHaulLogs(
       },
     });
 
-
     console.log("[SERVER] Processing updates for:", validUpdates);
 
     // Start a transaction
@@ -581,6 +580,76 @@ export async function updateEquipmentRefuelLogs(
     };
   } catch (error) {
     console.error("Error updating equipment logs:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+// For TimeCardMechanicLogs (MaintenanceLogs)
+export async function updateMaintenanceLogs(
+  updates: {
+    id: string;
+    startTime?: Date;
+    endTime?: Date;
+  }[]
+): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
+  try {
+    console.log("[SERVER] Updating maintenance logs:", updates);
+    const session = await auth();
+    if (!session) throw new Error("Unauthorized");
+
+    const validUpdates = updates.filter(
+      (update) => update.id && (update.startTime || update.endTime)
+    );
+
+    if (validUpdates.length === 0) {
+      console.warn("[SERVER] No valid maintenance logs to update");
+      return {
+        success: false,
+        error: "No valid maintenance logs to update",
+      };
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatePromises = validUpdates.map((update) => {
+        const updateData: {
+          startTime?: Date;
+          endTime?: Date;
+        } = {};
+
+        if (update.startTime) {
+          updateData.startTime = update.startTime;
+        }
+        if (update.endTime) {
+          updateData.endTime = update.endTime;
+        }
+
+        return tx.maintenanceLog.update({
+          where: { id: update.id },
+          data: updateData,
+        });
+      });
+
+      return await Promise.all(updatePromises);
+    });
+
+    console.log(
+      "[SERVER] Successfully updated",
+      result.length,
+      "maintenance logs"
+    );
+
+    revalidatePath("/dashboard/myTeam");
+    revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
+
+    return {
+      success: true,
+      updatedCount: result.length,
+    };
+  } catch (error) {
+    console.error("[SERVER] Error updating maintenance logs:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
