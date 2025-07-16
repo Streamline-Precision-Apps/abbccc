@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import { DateTimePicker } from "../DateTimePicker";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 
 interface EmployeeEquipmentLog {
   id: string;
@@ -55,7 +56,7 @@ export const EditEmployeeEquipmentLogs: React.FC<
         >
           <div className="flex flex-row row-start-1 row-end-2 col-span-2 items-end">
             <div className="w-[350px]">
-              <Combobox
+              <SingleCombobox
                 font={"font-normal"}
                 label="Equipment ID"
                 options={equipmentOptions}
