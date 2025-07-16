@@ -1,0 +1,42 @@
+// Types for useFormsList hook
+
+export interface FormFieldOptions {
+  id: string;
+  fieldId: string;
+  value: string;
+}
+
+export interface FormField {
+  id: string;
+  label: string;
+  name: string;
+  type: string;
+  required: boolean;
+  order: number;
+  defaultValue?: string;
+  placeholder?: string;
+  maxLength?: number;
+  helperText?: string;
+  options?: FormFieldOptions[];
+}
+
+export interface FormGrouping {
+  id: string;
+  title: string;
+  order: number;
+  fields: FormField[];
+}
+
+export interface FormTemplate {
+  _count: {
+    Submissions: number;
+  };
+  id: string;
+  name: string;
+  formType?: string;
+  isActive?: boolean;
+  isSignatureRequired?: boolean;
+  groupings: FormGrouping[];
+  createdAt?: string;
+  updatedAt?: string;
+}
