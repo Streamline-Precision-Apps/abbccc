@@ -47,7 +47,7 @@ const List: React.FC<ListProps> = ({
   openHandleDelete,
 }) => {
   return (
-    <div className="bg-white bg-opacity-80 h-[85vh] pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
+    <>
       {loading ? (
         <Table className="w-full h-full bg-white rounded-lg">
           <TableHeader className="bg-gray-100 rounded-lg ">
@@ -236,64 +236,7 @@ const List: React.FC<ListProps> = ({
           </TableBody>
         </Table>
       )}
-      {/* Pagination Controls */}
-      <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-        <div className="text-xs text-gray-600">
-          Showing page {page} of {totalPages} ({total} total)
-        </div>
-        <div className="flex flex-row gap-2 items-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(Math.max(1, page - 1));
-                  }}
-                  aria-disabled={page === 1}
-                  tabIndex={page === 1 ? -1 : 0}
-                  style={{
-                    pointerEvents: page === 1 ? "none" : undefined,
-                    opacity: page === 1 ? 0.5 : 1,
-                  }}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <span className="text-xs border rounded py-1 px-2">{page}</span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(Math.min(totalPages, page + 1));
-                  }}
-                  aria-disabled={page === totalPages}
-                  tabIndex={page === totalPages ? -1 : 0}
-                  style={{
-                    pointerEvents: page === totalPages ? "none" : undefined,
-                    opacity: page === totalPages ? 0.5 : 1,
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-          <select
-            className="ml-2 px-1 py-1 rounded text-xs border"
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            {[5, 10, 20, 50].map((size) => (
-              <option key={size} value={size}>
-                {size} Rows
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 

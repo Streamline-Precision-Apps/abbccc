@@ -128,7 +128,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                               <PopoverTrigger asChild>
                                 <button
                                   type="button"
-                                  className="bg-blue-50 rounded px-2 py-1 border border-blue-200 text-xs text-blue-700 cursor-pointer min-w-[48px]"
+                                  className="bg-blue-50 rounded-lg px-2 py-1 border border-blue-200 text-xs text-blue-700 cursor-pointer min-w-[48px]"
                                 >
                                   {val.length} submissions
                                 </button>
@@ -138,7 +138,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                                   {val.map((item: any, idx: number) => (
                                     <div
                                       key={item.id || idx}
-                                      className="bg-blue-50 rounded px-2 py-1 inline-block border border-blue-200 mb-1"
+                                      className="bg-blue-50 rounded-lg px-2 py-1 inline-block border border-blue-200 mb-1"
                                     >
                                       {item.name || ""}
                                     </div>
@@ -151,7 +151,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                               {val.map((item: any, idx: number) => (
                                 <div
                                   key={item.id || idx}
-                                  className="bg-blue-50 rounded px-2 py-1 inline-block border border-blue-200"
+                                  className="bg-sky-200 rounded-lg px-2 py-1 inline-block border border-blue-200"
                                 >
                                   {item.name || ""}
                                 </div>
@@ -174,7 +174,9 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
                       {/* Render signature info here, e.g. a checkmark or signature image if available */}
                       {submission.data.signature ? (
-                        <span className="text-green-600 font-bold">Signed</span>
+                        <span className="text-emerald-600 font-bold">
+                          Signed
+                        </span>
                       ) : (
                         <span className="text-red-500 font-bold">
                           Not Signed

@@ -27,10 +27,10 @@ export interface FormIndividualTemplate {
   isSignatureRequired: boolean;
   FormGrouping: Grouping[];
   Submissions: Submission[];
-  total?: number;
-  page?: number;
-  pageSize?: number;
-  totalPages?: number;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export interface Grouping {
