@@ -81,10 +81,11 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const form = new FormData();
-      form.append("id", timesheetId);
-      form.append("data", JSON.stringify(form));
-      await adminUpdateTimesheet(form);
+      const formData = new FormData();
+      formData.append("id", timesheetId);
+      formData.append("data", JSON.stringify(form)); // 'form' is your TimesheetData object
+      await adminUpdateTimesheet(formData);
+
       if (onUpdated) onUpdated();
       onClose();
       toast.success("Timesheet updated successfully");

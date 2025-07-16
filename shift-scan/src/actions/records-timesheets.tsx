@@ -234,12 +234,181 @@ export async function adminDeleteTimesheet(id: string) {
   }
 }
 
+/**
+ * Updates a timesheet and all attached logs and connections.
+ * Replaces all logs for the timesheet with the new data from the form.
+ * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
+ */
+
+/**
+ * Updates a timesheet and all attached logs and connections.
+ * Replaces all logs for the timesheet with the new data from the form.
+ * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
+ */
 export async function adminUpdateTimesheet(formData: FormData) {
   const id = formData.get("id") as string;
-  if (!id) {
-    throw new Error("Timesheet ID is required for update.");
+  const dataJson = formData.get("data") as string;
+  if (!id || !dataJson) {
+    throw new Error("Timesheet ID and data are required for update.");
   }
+  const data: TimesheetData = JSON.parse(dataJson);
 
+  await prisma.$transaction(async (tx) => {
+    // Update main timesheet fields
+    await tx.timeSheet.update({
+      where: { id },
+      data: {
+        date: data.date ? new Date(data.date) : undefined,
+        startTime: data.startTime ? new Date(data.startTime) : undefined,
+        endTime: data.endTime ? new Date(data.endTime) : undefined,
+        comment: data.comment ?? undefined,
+        workType: data.workType as WorkType,
+        status: data.status as ApprovalStatus,
+        Jobsite: data.Jobsite?.id
+          ? { connect: { id: data.Jobsite.id } }
+          : undefined,
+        CostCode: data.CostCode?.name
+          ? { connect: { name: data.CostCode.name } }
+          : undefined,
+        User: data.User?.id ? { connect: { id: data.User.id } } : undefined,
+      },
+    });
+
+    // Delete all existing logs
+    await Promise.all([
+      tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.truckingLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.tascoLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } }),
+    ]);
+
+    // Maintenance Logs
+    for (const log of data.MaintenanceLogs || []) {
+      if (!log.maintenanceId) continue;
+      await tx.maintenanceLog.create({
+        data: {
+          timeSheetId: id,
+          maintenanceId: log.maintenanceId,
+          userId: data.User?.id ?? undefined,
+          startTime: log.startTime ?? undefined,
+          endTime: log.endTime ?? undefined,
+        },
+      });
+    }
+
+    // Trucking Logs
+    for (const tlog of data.TruckingLogs || []) {
+      if (!tlog.equipmentId) continue;
+      const truckingLog = await tx.truckingLog.create({
+        data: {
+          timeSheetId: id,
+          equipmentId: tlog.equipmentId,
+          startingMileage: tlog.startingMileage
+            ? Number(tlog.startingMileage)
+            : null,
+          endingMileage: tlog.endingMileage ? Number(tlog.endingMileage) : null,
+          laborType: "truckDriver",
+        },
+      });
+      // Equipment Hauled
+      for (const eq of tlog.EquipmentHauled || []) {
+        if (!eq.equipmentId) continue;
+        await tx.equipmentHauled.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            equipmentId: eq.equipmentId,
+            jobSiteId: eq.jobSiteId,
+          },
+        });
+      }
+      // Materials
+      for (const mat of tlog.Materials || []) {
+        await tx.material.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            LocationOfMaterial: mat.LocationOfMaterial ?? "",
+            name: mat.name,
+            materialWeight: mat.materialWeight
+              ? Number(mat.materialWeight)
+              : null,
+            quantity: mat.quantity ? Number(mat.quantity) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
+            loadType: mat.loadType
+              ? (mat.loadType.toUpperCase() as LoadType)
+              : undefined,
+          },
+        });
+      }
+      // Refuel Logs
+      for (const ref of tlog.RefuelLogs || []) {
+        await tx.refuelLog.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            gallonsRefueled: ref.gallonsRefueled
+              ? Number(ref.gallonsRefueled)
+              : undefined,
+            milesAtFueling: ref.milesAtFueling
+              ? Number(ref.milesAtFueling)
+              : undefined,
+          },
+        });
+      }
+      // State Mileages
+      for (const sm of tlog.StateMileages || []) {
+        await tx.stateMileage.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            state: sm.state,
+            stateLineMileage: sm.stateLineMileage
+              ? Number(sm.stateLineMileage)
+              : null,
+          },
+        });
+      }
+    }
+
+    // Tasco Logs
+    for (const tlog of data.TascoLogs || []) {
+      if (!tlog.shiftType) continue;
+      const tascoLog = await tx.tascoLog.create({
+        data: {
+          timeSheetId: id,
+          shiftType: tlog.shiftType,
+          laborType: tlog.laborType,
+          materialType: tlog.materialType,
+          LoadQuantity: tlog.LoadQuantity
+            ? Number(tlog.LoadQuantity)
+            : undefined,
+          equipmentId: tlog.Equipment?.id ?? undefined,
+        },
+      });
+      // Refuel Logs for Tasco
+      for (const ref of tlog.RefuelLogs || []) {
+        await tx.refuelLog.create({
+          data: {
+            tascoLogId: tascoLog.id,
+            gallonsRefueled: ref.gallonsRefueled
+              ? Number(ref.gallonsRefueled)
+              : undefined,
+          },
+        });
+      }
+    }
+
+    // Employee Equipment Logs
+    for (const log of data.EmployeeEquipmentLogs || []) {
+      if (!log.equipmentId) continue;
+      await tx.employeeEquipmentLog.create({
+        data: {
+          equipmentId: log.equipmentId,
+          startTime: log.startTime ?? undefined,
+          endTime: log.endTime ?? undefined,
+          timeSheetId: id,
+        },
+      });
+    }
+  });
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
+  return true;
 }
