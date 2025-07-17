@@ -87,7 +87,7 @@ export const InjuryReportContent = ({
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="h-full w-full">
+        <Holds background={"white"} className="h-full w-full border-red-500 border-[3px]">
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 ">
               <TitleBoxes onClick={prevStep}>

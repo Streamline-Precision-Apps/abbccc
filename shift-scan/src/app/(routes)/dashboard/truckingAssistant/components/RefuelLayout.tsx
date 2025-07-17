@@ -25,6 +25,7 @@ export default function RefuelLayout({
   setActiveTab,
   isLoading,
   isComplete,
+  startingMileage,
 }: {
   truckingLog: string | undefined;
   refuelLogs: Refueled[] | undefined;
@@ -38,6 +39,7 @@ export default function RefuelLayout({
     stateMileageTab: boolean;
     refuelLogsTab: boolean;
   };
+  startingMileage: number | null;
 }) {
   const t = useTranslations("TruckingAssistant");
   const AddRefuelLog = async () => {
@@ -98,6 +100,7 @@ export default function RefuelLayout({
           <RefuelLogsList
             refuelLogs={refuelLogs}
             setRefuelLogs={setRefuelLogs}
+            startingMileage={startingMileage}
           />
         </Contents>
       </Holds>

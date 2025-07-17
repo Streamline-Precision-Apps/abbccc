@@ -24,6 +24,7 @@ export default function StateLog({
   setActiveTab,
   isLoading,
   isComplete,
+  startingMileage,
 }: {
   truckingLog: string | undefined;
   StateMileage: StateMileage[] | undefined;
@@ -39,6 +40,7 @@ export default function StateLog({
     stateMileageTab: boolean;
     refuelLogsTab: boolean;
   };
+  startingMileage: number | null;
 }) {
   const t = useTranslations("TruckingAssistant");
   const AddStateMileage = async () => {
@@ -100,6 +102,7 @@ export default function StateLog({
               StateOptions={StateOptions}
               StateMileage={StateMileage}
               setStateMileage={setStateMileage}
+              startingMileage={startingMileage}
             />
           </Contents>
         </Holds>
