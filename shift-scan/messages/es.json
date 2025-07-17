@@ -382,6 +382,8 @@
     "ScanJobSiteOrTruck": "Escanear Sitio de Trabajo o Camiones",
     "ChangeJobsite": "Cambiar Sitio de Trabajo",
     "Truck-label": "Camión",
+    "Trailer-label": "Seleccionar Remolque",
+    "NoTrailerOption": "Sin remolque",
     "Mileage": "Kilometraje"
   },
   "ClockOut": {

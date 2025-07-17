@@ -95,6 +95,7 @@ export async function GET() {
             id: true,
             endingMileage: true,
             laborType: true,
+            startingMileage: true,
             StateMileages: {
               select: {
                 id: true,
@@ -115,6 +116,7 @@ export async function GET() {
                 LocationOfMaterial: true,
                 quantity: true,
                 name: true,
+                materialWeight: true,
               },
             },
             EquipmentHauled: {
@@ -149,11 +151,89 @@ export async function GET() {
         }),
       ]);
 
-    // Reusable function to check incomplete fields
-    const isFieldIncomplete = (
-      item: Record<string, unknown>,
-      requiredFields: string[]
-    ): boolean => requiredFields.some((field) => !item[field]);
+    // Enhanced validation functions for different field types
+    const validateField = {
+      // Basic validation - field must not be empty/null/undefined
+      required: (value: unknown): boolean => {
+        return value !== null && value !== undefined && value !== "";
+      },
+      
+      // Mileage validation - must exist and be >= starting mileage
+      mileage: (value: unknown, startingMileage: number | null): boolean => {
+        if (!validateField.required(value)) return false;
+        if (startingMileage === null) return true; // Can't validate without starting mileage
+        return typeof value === 'number' && value >= startingMileage;
+      },
+      
+      // Numeric validation - must be a positive number
+      positiveNumber: (value: unknown): boolean => {
+        if (!validateField.required(value)) return false;
+        return typeof value === 'number' && value > 0;
+      }
+    };
+
+    // Validation rules for each log type
+    const validateTruckingLog = (log: {
+      laborType: string;
+      startingMileage: number | null;
+      endingMileage: number | null;
+      StateMileages: Array<{state: string | null; stateLineMileage: number | null}>;
+      RefuelLogs: Array<{gallonsRefueled: number | null; milesAtFueling: number | null}>;
+      Materials: Array<{LocationOfMaterial: string | null; name: string | null; quantity: number | null; materialWeight: number | null}>;
+      EquipmentHauled: Array<{equipmentId: string | null; jobSiteId: string | null}>;
+    }) => {
+      const startingMileage = log.startingMileage;
+      
+      // Calculate minimum end mileage (highest mileage from all logs)
+      let maxMileage = startingMileage || 0;
+      
+      // Check state mileage logs
+      log.StateMileages.forEach((stateLog) => {
+        if (stateLog.stateLineMileage && stateLog.stateLineMileage > maxMileage) {
+          maxMileage = stateLog.stateLineMileage;
+        }
+      });
+      
+      // Check refuel logs
+      log.RefuelLogs.forEach((refuelLog) => {
+        if (refuelLog.milesAtFueling && refuelLog.milesAtFueling > maxMileage) {
+          maxMileage = refuelLog.milesAtFueling;
+        }
+      });
+      
+      return {
+        // State mileage validation
+        stateMileage: log.StateMileages.some((item) => 
+          !validateField.required(item.state) || 
+          !validateField.mileage(item.stateLineMileage, startingMileage)
+        ),
+        
+        // Refuel logs validation  
+        refueled: log.RefuelLogs.some((item) =>
+          !validateField.positiveNumber(item.gallonsRefueled) ||
+          !validateField.mileage(item.milesAtFueling, startingMileage)
+        ),
+        
+        // Material validation
+        material: log.Materials.some((item) =>
+          !validateField.required(item.LocationOfMaterial) ||
+          !validateField.required(item.name) ||
+          !validateField.positiveNumber(item.materialWeight)
+        ),
+        
+        // Equipment hauled validation
+        equipmentHauled: log.EquipmentHauled.some((item) =>
+          !validateField.required(item.equipmentId) ||
+          !validateField.required(item.jobSiteId)
+        ),
+        
+        // Enhanced ending mileage validation for truck drivers
+        endingMileage: log.laborType === "truckDriver" && (
+          !validateField.required(log.endingMileage) ||
+          (log.endingMileage !== null && log.endingMileage < maxMileage)
+        )
+      };
+    };
 
     // Mapping Employee Equipment Logs
     const mappedEmployeeLogs: EquipmentLog[] = employeeLogs.map((log) => ({
@@ -181,30 +261,20 @@ export async function GET() {
     );
 
     // Mapping Trucking Logs and Checking for Incomplete Fields
-    // Mapping Trucking Logs and Checking for Incomplete Fields
     const mappedTruckingLogs: TruckingLog[] = truckingLogs
       .map((log) => {
-        // Check if endingMileage is required
-        const isEndingMileageRequired =
-          log.laborType === "truckDriver" && log.endingMileage === null;
+        const validation = validateTruckingLog(log);
+        
         return {
           id: log.id,
           type: "Trucking Assistant",
           laborType: log.laborType,
           endingMileage: log.endingMileage,
-          stateMileage: log.StateMileages.some((item) =>
-            isFieldIncomplete(item, ["state", "stateLineMileage"])
-          ),
-          refueled: log.RefuelLogs.some((item) =>
-            isFieldIncomplete(item, ["gallonsRefueled", "milesAtFueling"])
-          ),
-          material: log.Materials.some((item) =>
-            isFieldIncomplete(item, ["LocationOfMaterial", "quantity", "name"])
-          ),
-          equipmentHauled: log.EquipmentHauled.some((item) =>
-            isFieldIncomplete(item, ["equipmentId", "jobSiteId"])
-          ),
-          incomplete: isEndingMileageRequired, // Track incomplete status
+          stateMileage: validation.stateMileage,
+          refueled: validation.refueled,
+          material: validation.material,
+          equipmentHauled: validation.equipmentHauled,
+          incomplete: validation.endingMileage,
         };
       })
       .filter((log) => {
@@ -227,7 +297,7 @@ export async function GET() {
           laborType: log.laborType,
           loadQuantity: log.LoadQuantity,
           refueled: log.RefuelLogs.some((item) =>
-            isFieldIncomplete(item, ["gallonsRefueled"])
+            !validateField.positiveNumber(item.gallonsRefueled)
           ),
         };
       })

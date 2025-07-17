@@ -5,6 +5,7 @@ import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import VerificationStep from "./verification-step";
 import TruckClockInForm from "./(Truck)/truckClockInForm";
+import TrailerSelector from "./(Truck)/trailerSelector";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -73,6 +74,12 @@ export default function NewClockProcess({
 
   // Truck states
   const [truck, setTruck] = useState<Option>({
+    id: "",
+    label: "",
+    code: "",
+  });
+  // Trailer state
+  const [trailer, setTrailer] = useState<Option>({
     id: "",
     label: "",
     code: "",
@@ -485,11 +492,42 @@ export default function NewClockProcess({
           setStep={setStep}
         />
       )}
+      {/* Trailer selection step for trucking */}
       {step === 6 && clockInRole === "truck" && (
+        <Holds background={"white"} className="h-full w-full">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full w-full">
+              <TitleBoxes onClick={handlePrevStep}>
+                <Titles size={"h1"}>{t("Trailer-label")}</Titles>
+              </TitleBoxes>
+            </Holds>
+            <Holds className="row-start-2 row-end-8 h-full w-full">
+              <Contents width="section">
+                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+                  <Holds className={"row-start-1 row-end-7 h-full w-full "}>
+                    <TrailerSelector
+                      onTrailerSelect={(trailer) => setTrailer(trailer || { id: "", code: "", label: "" })}
+                      initialValue={trailer}
+                    />
+                  </Holds>
+                  <Holds className="row-start-7 row-end-8 w-full justify-center">
+                    <StepButtons
+                      handleNextStep={handleNextStep}
+                      disabled={trailer.id === ""}
+                    />
+                  </Holds>
+                </Grids>
+              </Contents>
+            </Holds>
+          </Grids>
+        </Holds>
+      )}
+      {step === 7 && clockInRole === "truck" && (
         <TruckVerificationStep
           jobsite={jobsite}
           laborType={laborType}
           truck={truck}
+          trailer={trailer}
           handlePrevStep={handlePrevStep}
           startingMileage={startingMileage}
           type={type}

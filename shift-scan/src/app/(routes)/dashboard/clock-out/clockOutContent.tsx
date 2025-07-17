@@ -23,6 +23,7 @@ export type TimeSheet = {
   startTime: string;
   endTime: string | null;
   workType: string;
+  status: string; // Added status for filtering
   Jobsite: {
     name: string;
   };
@@ -32,7 +33,12 @@ export type TimeSheet = {
   }[];
 };
 
-export default function ClockOutContent({ manager }: { manager: boolean }) {
+interface ClockOutContentProps {
+  userId: string;
+  permission: string;
+}
+
+export default function ClockOutContent({ userId, permission }: ClockOutContentProps) {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
@@ -41,7 +47,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
   const { currentView } = useCurrentView();
   const [commentsValue, setCommentsValue] = useState("");
   const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
-  const [reviewYourTeam, setReviewYourTeam] = useState<boolean>(false);
+  // Removed reviewYourTeam state, not needed for manager flow
   const [pendingTimeSheets, setPendingTimeSheets] = useState<TimeSheet>();
   const [editFilter, setEditFilter] = useState<TimesheetFilter | null>(null);
   const [editDate, setEditDate] = useState<string>("");
@@ -53,9 +59,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
     console.log("currentStep: ", step);
   }, [step]);
 
-  useEffect(() => {
-    console.log("reviewYourTeam: ", reviewYourTeam);
-  }, [reviewYourTeam]);
+
 
   useEffect(() => {
     console.log("path: ", path);
@@ -82,60 +86,33 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
     setStep((prevStep) => prevStep - 1); // Increment function
   };
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch("/api/getComment");
-        const data = await response.json();
-        setCommentsValue(data.comment || "");
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-    fetchComments();
-  }, []);
 
+  // Batch fetch all clock-out details (timesheets, comment, signature)
   useEffect(() => {
-    // Fetching the signature only once
-    const fetchSignature = async () => {
+    const fetchClockoutDetails = async () => {
       setLoading(true);
       try {
-        const response = await window.fetch("/api/getUserSignature");
-        const json = await response.json();
-        const signature = json.signature;
-        setBase64String(signature);
-      } catch (error) {
-        console.error("Error fetching signature:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSignature();
-  }, [currentView]);
-
-  useEffect(() => {
-    const fetchTimesheets = async () => {
-      try {
-        const response = await fetch("/api/getTodaysTimesheets");
+        const response = await fetch("/api/clockoutDetails");
         const data = await response.json();
-
-        const activeTimeSheet = data
+        setTimesheets(data.timesheets || []);
+        setCommentsValue(data.comment || "");
+        setBase64String(data.signature || "");
+        // Set the most recent active timesheet (endTime === null)
+        const activeTimeSheet = (data.timesheets || [])
           .filter((timesheet: TimeSheet) => timesheet.endTime === null)
           .sort(
             (a: TimeSheet, b: TimeSheet) =>
               new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-          )[0]; // Get the most recent one
-
-        // Set state with both all pending timesheets and the active one
+          )[0];
         setPendingTimeSheets(activeTimeSheet || null);
-
-        setTimesheets(data);
       } catch (error) {
-        console.error("Error fetching timesheets:", error);
+        console.error("Error fetching clock-out details:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchTimesheets();
-  }, []);
+    fetchClockoutDetails();
+  }, [currentView]);
 
   useEffect(() => {
     const fetchTeamMembers = async () => {
@@ -143,9 +120,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         const response = await fetch("/api/getMyTeamsUsers");
         const data = await response.json();
         setTeamUsers(data);
-        if (data.length > 0) {
-          setReviewYourTeam(true);
-        }
+        // No need to set reviewYourTeam, managers always see ReviewYourTeam
       } catch (error) {
         console.error("Error fetching timesheets:", error);
       }
@@ -188,7 +163,7 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         <Contents>
           <Holds background={"white"} className="h-full border-[3px] border-red-500">
             <Comment
-              handleClick={handleNextStep}
+              handleClick={() => setStep(1)}
               clockInRole={""}
               setCommentsValue={setCommentsValue}
               commentsValue={commentsValue}
@@ -201,39 +176,46 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
       </Bases>
     );
   }
-  // Step 1: Review Your Day - Always shown for everyone
+  // Step 1: Review Step - Show ReviewYourTeam if manager, else ReviewYourDay
   if (step === 1) {
-    return (
-      <ReviewYourDay
-        handleClick={handleNextStep}
-        prevStep={prevStep}
-        loading={loading}
-        timesheets={timesheets}
-        setReviewYourTeam={setReviewYourTeam}
-      />
-    );
+    // Show ReviewYourTeam if user has team members, else ReviewYourDay
+    if (teamUsers && teamUsers.length > 0) {
+      // Filter timesheets for DRAFT or PENDING with no endTime
+      const reviewableTimesheets = timesheets.filter(
+        (ts) =>
+          ts.endTime === null &&
+          (ts.status === 'DRAFT' || ts.status === 'PENDING')
+      );
+      // Optionally, you can use reviewableTimesheets for debugging or future logic
+      return (
+        <ReviewYourTeam
+          handleClick={handleNextStep}
+          prevStep={prevStep}
+          loading={loading}
+          manager={userId}
+          setEditDate={setEditDate}
+          editFilter={editFilter}
+          setEditFilter={setEditFilter}
+          focusIds={focusIds}
+          setFocusIds={setFocusIds}
+          setEmployeeId={setEmployeeId}
+          crewMembers={teamUsers}
+        />
+      );
+    } else {
+      return (
+        <ReviewYourDay
+          handleClick={handleNextStep}
+          prevStep={prevStep}
+          loading={loading}
+          timesheets={timesheets}
+          setReviewYourTeam={() => {}}
+        />
+      );
+    }
   }
 
-  // Step 2: Review Your Team - Only shown for managers with team members
-  if (step === 2 && reviewYourTeam) {
-    return (
-      <ReviewYourTeam
-        handleClick={handleNextStep}
-        prevStep={prevStep}
-        loading={loading}
-        manager={typeof manager === "string" ? manager : "Manager"}
-        setEditDate={setEditDate}
-        editFilter={editFilter}
-        setEditFilter={setEditFilter}
-        focusIds={focusIds}
-        setFocusIds={setFocusIds}
-        setEmployeeId={setEmployeeId}
-        crewMembers={teamUsers}
-      />
-    );
-  }
-
-  if (step === 3 && editFilter !== null) {
+  if (step === 2 && editFilter !== null) {
     return (
       <EditTeamTimeSheet
         prevStep={prevStep}
@@ -243,8 +225,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         setFocusIds={setFocusIds}
       />
     );
-  } else if ((step === 2 && !reviewYourTeam) || (step === 3 && reviewYourTeam && editFilter === null)) {
-    // PreInjuryReport for non-managers at step 2, or managers at step 3 (after team review)
+  } else if ((step === 2 && editFilter === null) || (step === 1 && teamUsers && teamUsers.length > 0 && editFilter === null)) {
+    // PreInjuryReport for both managers and non-managers after review step
     return (
       <PreInjuryReport
         handleCheckboxChange={handleCheckboxChange}
@@ -255,8 +237,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         prevStep={prevStep}
       />
     );
-  } else if ((step === 3 && !reviewYourTeam && path === "Injury") || (step === 4 && reviewYourTeam && path === "Injury")) {
-    // Injury Report step - adjust step number based on whether team review was shown
+  } else if ((step === 2 && path === "Injury") || (step === 3 && path === "Injury")) {
+    // Injury Report step
     return (
       <InjuryReportContent
         base64String={base64String}
@@ -264,8 +246,8 @@ export default function ClockOutContent({ manager }: { manager: boolean }) {
         prevStep={prevStep}
       />
     );
-  } else if ((step === 3 && !reviewYourTeam && path === "clockOut") || (step === 4 && reviewYourTeam && path === "clockOut")) {
-    // Final Clock-Out step - adjust step number based on whether team review was shown
+  } else if ((step === 2 && path === "clockOut") || (step === 3 && path === "clockOut")) {
+    // Final Clock-Out step
     return (
       <LaborClockOut
         prevStep={prevStep}
