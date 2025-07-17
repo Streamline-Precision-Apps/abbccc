@@ -38,7 +38,7 @@ export function TimesheetTableBody({
 }: TimesheetTableBodyProps) {
   if (timesheets.length === 0) {
     return (
-      <TableBody>
+      <TableBody className="divide-y divide-gray-200 bg-white">
         <TableRow>
           <TableCell
             colSpan={14}
@@ -62,7 +62,7 @@ export function TimesheetTableBody({
     <TableBody className="divide-y divide-gray-200 bg-white">
       {timesheets.map((timesheet) => (
         <TableRow
-          className="border-r border-gray-200 text-xs text-center"
+          className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
           key={timesheet.id}
         >
           <TableCell className="border-r border-gray-200 text-xs text-center">
