@@ -79,6 +79,7 @@ export default function TruckDriver() {
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [material, setMaterial] = useState<Material[]>();
   const [laborType, setLaborType] = useState<LaborType[]>([]);
+  const [startingMileage, setStartingMileage] = useState<number | null>(null);
 
   const [isComplete, setIsComplete] = useState({
     haulingLogsTab: true,
@@ -86,6 +87,41 @@ export default function TruckDriver() {
     stateMileageTab: true,
     refuelLogsTab: true,
   });
+
+  // Helper function to calculate the minimum required ending mileage
+  const getMinimumEndMileage = (): number | null => {
+    if (!startingMileage) return null;
+
+    let maxMileage = startingMileage;
+
+    // Check state mileage logs
+    if (StateMileage && StateMileage.length > 0) {
+      StateMileage.forEach((log) => {
+        if (log.stateLineMileage && log.stateLineMileage > maxMileage) {
+          maxMileage = log.stateLineMileage;
+        }
+      });
+    }
+
+    // Check refuel logs
+    if (refuelLogs && refuelLogs.length > 0) {
+      refuelLogs.forEach((log) => {
+        if (log.milesAtFueling && log.milesAtFueling > maxMileage) {
+          maxMileage = log.milesAtFueling;
+        }
+      });
+    }
+
+    return maxMileage;
+  };
+
+  // Enhanced validation for end mileage
+  const isEndMileageValid = (): boolean => {
+    if (endMileage === null) return false;
+    const minRequired = getMinimumEndMileage();
+    if (minRequired === null) return true;
+    return endMileage >= minRequired;
+  };
 
   const validateCompletion = () => {
     setIsComplete({
@@ -98,23 +134,36 @@ export default function TruckDriver() {
           material.every(
             (item) =>
               item.LocationOfMaterial &&
-              item.grossWeight &&
+              // TODO: These fields don't exist in current database schema - temporarily commented out
+              // item.grossWeight &&
               item.name &&
-              item.materialWeight &&
-              item.lightWeight
+              item.materialWeight
+              // && item.lightWeight
           )
       ),
-      notesTab: endMileage !== null,
+      notesTab: isEndMileageValid(),
       stateMileageTab: Boolean(
         StateMileage &&
           StateMileage.length >= 0 &&
-          StateMileage.every((item) => item.state && item.stateLineMileage)
+          StateMileage.every(
+            (item) =>
+              item.state &&
+              item.stateLineMileage !== null &&
+              item.stateLineMileage !== undefined &&
+              startingMileage !== null &&
+              item.stateLineMileage >= startingMileage
+          )
       ),
       refuelLogsTab: Boolean(
         refuelLogs &&
           refuelLogs.length >= 0 &&
           refuelLogs.every(
-            (item) => item.gallonsRefueled && item.milesAtFueling
+            (item) =>
+              item.gallonsRefueled &&
+              item.milesAtFueling !== null &&
+              item.milesAtFueling !== undefined &&
+              startingMileage !== null &&
+              item.milesAtFueling >= startingMileage
           )
       ),
     });
@@ -123,14 +172,16 @@ export default function TruckDriver() {
 
   useEffect(() => {
     validateCompletion();
-  }, [equipmentHauled, material, endMileage, notes, StateMileage, refuelLogs]);
+  }, [equipmentHauled, material, endMileage, notes, StateMileage, refuelLogs, startingMileage]);
 
   useEffect(() => {
     const fetchTruckingLog = async () => {
       try {
+        console.log("Fetching trucking log ID..."); // Debug log
         const res = await fetch(`/api/getTruckingLogs/truckingId`);
         if (!res.ok) throw new Error(t("FailedToFetchTruckingLogs"));
         const data = await res.json();
+        console.log("Received trucking log ID:", data); // Debug log
         setTimeSheetId(data);
       } catch (error) {
         console.error(t("ErrorFetchingTruckingLogs"), error);
@@ -143,34 +194,46 @@ export default function TruckDriver() {
   useEffect(() => {
     if (!timeSheetId) return;
 
+    // Clear all previous state before fetching new data
+    setEndMileage(null);
+    setNotes("");
+    setRefuelLogs([]);
+    setStateMileage([]);
+    setMaterial([]);
+    setEquipmentHauled([]);
+    setLaborType([]);
+    setStartingMileage(null);
+
     const fetchData = async () => {
       setIsLoading(true);
       try {
+        console.log("Fetching data for timeSheetId:", timeSheetId); // Debug log
+
         const endpoints = [
-          `/api/getTruckingLogs/endingMileage/${timeSheetId}`,
-          `/api/getTruckingLogs/notes/${timeSheetId}`,
-          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,
-          `/api/getTruckingLogs/stateMileage/${timeSheetId}`,
-          `/api/getTruckingLogs/material/${timeSheetId}`,
-          `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
-          `/api/getTruckingLogs/laborType/${timeSheetId}`,
+          `/api/getTruckingLogs/endingMileage/${timeSheetId}`,         // 0
+          `/api/getTruckingLogs/notes/${timeSheetId}`,                 // 1
+          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,          // 2
+          `/api/getTruckingLogs/stateMileage/${timeSheetId}`,          // 3
+          `/api/getTruckingLogs/material/${timeSheetId}`,              // 4
+          `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,       // 5
+          `/api/getTruckingLogs/laborType/${timeSheetId}`,             // 6
+          `/api/getTruckingLogs/startingMileage/${timeSheetId}`,       // 7
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
         const data = await Promise.all(responses.map((res) => res.json()));
 
-        setEndMileage(data[0].endingMileage || null);
+        console.log("Fetched data:", data); // Debug log
 
+        // Map data in the same order as endpoints
+        setEndMileage(data[0]?.endingMileage || null);
         setNotes(data[1] || "");
-        setRefuelLogs(data[2]);
-        setStateMileage(data[3]);
-        if (data[4] === Error) {
-          setMaterial([]);
-        } else {
-          setMaterial(data[4]);
-        }
-        setEquipmentHauled(data[5]);
-        setLaborType(data[6]);
+        setRefuelLogs(data[2] || []);
+        setStateMileage(data[3] || []);
+        setMaterial(data[4] || []);
+        setEquipmentHauled(data[5] || []);
+        setLaborType(data[6] || []);
+        setStartingMileage(data[7]?.startingMileage || null);
       } catch (error) {
         console.error(t("FetchingError"), error);
       } finally {
@@ -213,6 +276,9 @@ export default function TruckDriver() {
             setEndMileage={setEndMileage}
             laborType={laborType}
             setLaborType={setLaborType}
+            startingMileage={startingMileage}
+            stateMileage={StateMileage}
+            refuelLogs={refuelLogs}
           />
         )}
 
@@ -225,6 +291,7 @@ export default function TruckDriver() {
             StateMileage={StateMileage}
             setStateMileage={setStateMileage}
             truckingLog={timeSheetId}
+            startingMileage={startingMileage}
           />
         )}
         {activeTab === 4 && (
@@ -236,6 +303,7 @@ export default function TruckDriver() {
             truckingLog={timeSheetId}
             refuelLogs={refuelLogs}
             setRefuelLogs={setRefuelLogs}
+            startingMileage={startingMileage}
           />
         )}
       </Holds>

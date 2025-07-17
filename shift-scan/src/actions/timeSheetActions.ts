@@ -58,10 +58,11 @@ export async function fetchTimesheets(employeeId: string, date: string) {
   endOfDay.setUTCHours(23, 59, 59, 999);
 
   try {
-    // Fetch timesheets from Prisma
+    // Fetch timesheets from Prisma, include both DRAFT and PENDING for this user
     const timeSheets = await prisma.timeSheet.findMany({
       where: {
         userId: employeeId,
+        status: { in: ["DRAFT", "PENDING"] },
         date: {
           gte: startOfDay.toISOString(), // Start of the day in UTC
           lte: endOfDay.toISOString(), // End of the day in UTC
@@ -78,7 +79,7 @@ export async function fetchTimesheets(employeeId: string, date: string) {
       },
     });
 
-    console.log("Fetched Timesheets:", timeSheets);
+    console.log("Fetched Timesheets (DRAFT & PENDING):", timeSheets);
 
     // Convert fetched ISO times to local timezone
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;

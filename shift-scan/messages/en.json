@@ -574,6 +574,8 @@
     "Date-label": "Date",
     "JobSite-label": "Jobsite",
     "Truck-label": "Truck",
+    "Trailer-label": "Select a Trailer",
+    "NoTrailerOption": "No Trailer",
     "CostCode-label": "Cost Code",
     "Confirmation-job-message-1": "Process Completed",
     "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
