@@ -1,41 +1,9 @@
-type MaterialFormData = {
-  location: string;
-  name: string;
-  materialWeight: string;
-  lightWeight: string;
-  grossWeight: string;
-  loadType: string;
-  id?: string;
-};
-
-type RefuelFormData = {
-  gallonsRefueled: string;
-  milesAtFueling: string;
-  id?: string;
-};
-
-/**
- * Type guard for MaterialFormData
- */
-function isMaterialFormData(m: unknown): m is MaterialFormData {
-  return typeof m === "object" && m !== null && "location" in m && "name" in m;
-}
-
-/**
- * Type guard for RefuelFormData
- */
-function isRefuelFormData(r: unknown): r is RefuelFormData {
-  return typeof r === "object" && r !== null && "gallonsRefueled" in r;
-}
-("use server");
-import type { TimeSheet, Material, Refueled } from "@/lib/types";
-import { LoadType, WorkType } from "@/lib/enums";
+"use server";
+import { LoadType, WorkType, materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ApprovalStatus } from "@prisma/client";
-import { el } from "date-fns/locale";
+import { ApprovalStatus, Prisma } from "@prisma/client";
+import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 
 export type TimesheetSubmission = {
   form: {
@@ -64,8 +32,8 @@ export type TimesheetSubmission = {
       location: string;
       name: string;
       materialWeight: string;
-      lightWeight: string;
-      grossWeight: string;
+      quantity: string;
+      unit: string;
       loadType: "screened" | "unscreened" | "";
     }>;
     refuelLogs: Array<{
@@ -168,13 +136,9 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             name: mat.name,
             materialWeight: mat.materialWeight
               ? parseFloat(mat.materialWeight)
-              : undefined,
-            lightWeight: mat.lightWeight
-              ? parseFloat(mat.lightWeight)
-              : undefined,
-            grossWeight: mat.grossWeight
-              ? parseFloat(mat.grossWeight)
-              : undefined,
+              : null,
+            quantity: mat.quantity ? parseFloat(mat.quantity) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType
               ? (mat.loadType.toUpperCase() as LoadType)
               : undefined,
@@ -270,405 +234,181 @@ export async function adminDeleteTimesheet(id: string) {
   }
 }
 
-export async function adminUpdateTimesheet(id: string, data: TimeSheet) {
-  // Update the main timesheet and all related logs in a transaction
-  console.log("Updating timesheet with data:", data);
+/**
+ * Updates a timesheet and all attached logs and connections.
+ * Replaces all logs for the timesheet with the new data from the form.
+ * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
+ */
+
+/**
+ * Updates a timesheet and all attached logs and connections.
+ * Replaces all logs for the timesheet with the new data from the form.
+ * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
+ */
+export async function adminUpdateTimesheet(formData: FormData) {
+  const id = formData.get("id") as string;
+  const dataJson = formData.get("data") as string;
+  if (!id || !dataJson) {
+    throw new Error("Timesheet ID and data are required for update.");
+  }
+  const data: TimesheetData = JSON.parse(dataJson);
 
   await prisma.$transaction(async (tx) => {
-    // Update main timesheet
-    const timesheetData: Prisma.TimeSheetUpdateInput = {
-      date: typeof data.date === "string" ? data.date : data.date.toISOString(),
-      workType: data.workType,
-      status: data.status as ApprovalStatus,
-      startTime: data.startTime ? new Date(data.startTime) : undefined,
-      endTime: data.endTime ? new Date(data.endTime) : undefined,
-      ...(data.userId && { User: { connect: { id: data.userId } } }),
-      ...(data.jobsiteId && { Jobsite: { connect: { id: data.jobsiteId } } }),
-      ...(data.costcode && { CostCode: { connect: { name: data.costcode } } }),
-    };
+    // Update main timesheet fields
     await tx.timeSheet.update({
       where: { id },
-      data: timesheetData,
+      data: {
+        date: data.date ? new Date(data.date) : undefined,
+        startTime: data.startTime ? new Date(data.startTime) : undefined,
+        endTime: data.endTime ? new Date(data.endTime) : undefined,
+        comment: data.comment ?? undefined,
+        workType: data.workType as WorkType,
+        status: data.status as ApprovalStatus,
+        Jobsite: data.Jobsite?.id
+          ? { connect: { id: data.Jobsite.id } }
+          : undefined,
+        CostCode: data.CostCode?.name
+          ? { connect: { name: data.CostCode.name } }
+          : undefined,
+        User: data.User?.id ? { connect: { id: data.User.id } } : undefined,
+      },
     });
 
-    // Delete all logs for work types that are NOT the selected one
-    if (data.workType !== "MECHANIC") {
-      await tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } });
-    }
-    if (data.workType !== "TRUCK_DRIVER") {
-      const truckingLogs = await tx.truckingLog.findMany({
-        where: { timeSheetId: id },
+    // Delete all existing logs
+    await Promise.all([
+      tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.truckingLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.tascoLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } }),
+    ]);
+
+    // Maintenance Logs
+    for (const log of data.MaintenanceLogs || []) {
+      if (!log.maintenanceId) continue;
+      await tx.maintenanceLog.create({
+        data: {
+          timeSheetId: id,
+          maintenanceId: log.maintenanceId,
+          userId: data.User?.id ?? undefined,
+          startTime: log.startTime ?? undefined,
+          endTime: log.endTime ?? undefined,
+        },
       });
-      const truckingLogIds = truckingLogs.map((tl: { id: string }) => tl.id);
-      if (truckingLogIds.length > 0) {
-        await tx.equipmentHauled.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-        await tx.material.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-        await tx.refuelLog.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-        await tx.stateMileage.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-      }
-      await tx.truckingLog.deleteMany({ where: { timeSheetId: id } });
-    }
-    if (data.workType !== "TASCO") {
-      const tascoLogs = await tx.tascoLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const tascoLogIds = tascoLogs.map((tl: { id: string }) => tl.id);
-      if (tascoLogIds.length > 0) {
-        await tx.refuelLog.deleteMany({
-          where: { tascoLogId: { in: tascoLogIds } },
-        });
-      }
-      await tx.tascoLog.deleteMany({ where: { timeSheetId: id } });
-    }
-    if (data.workType !== "LABOR") {
-      await tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } });
     }
 
-    if (data.workType === "MECHANIC") {
-      const existingMaintenance = await tx.maintenanceLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const updatedIds = (data.maintenanceLogs ?? [])
-        .map((log: { id: string }) => log.id)
-        .filter(Boolean);
-      for (const old of existingMaintenance) {
-        if (!updatedIds.includes(old.id)) {
-          await tx.maintenanceLog.delete({ where: { id: old.id } });
-        }
-      }
-      for (const log of data.maintenanceLogs ?? []) {
-        const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
-          TimeSheet: { connect: { id: data.id } },
-          User: { connect: { id: data.userId } },
-          Maintenance: { connect: { id: log.maintenanceId } },
-          startTime: log.startTime ? new Date(log.startTime) : new Date(),
-          endTime: log.endTime ? new Date(log.endTime) : new Date(),
-        };
-        const exists = existingMaintenance.find(
-          (l: { id: string }) => l.id === log.id
-        );
-        if (log.id && exists) {
-          await tx.maintenanceLog.update({
-            where: { id: log.id },
-            data: maintenanceLogData,
-          });
-        } else {
-          await tx.maintenanceLog.create({ data: maintenanceLogData });
-        }
-      }
-    } else if (data.workType === "TRUCK_DRIVER") {
-      const existingTrucking = await tx.truckingLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const updatedTruckingIds = (data.truckingLogs ?? [])
-        .map((log: { id: string }) => log.id)
-        .filter(Boolean);
-      for (const old of existingTrucking) {
-        if (!updatedTruckingIds.includes(old.id)) {
-          await tx.truckingLog.delete({ where: { id: old.id } });
-        }
-      }
-      for (const tlog of data.truckingLogs ?? []) {
-        let truckingLogId = tlog.id;
-        const truckingLogData: Prisma.TruckingLogCreateInput = {
-          TimeSheet: { connect: { id } },
+    // Trucking Logs
+    for (const tlog of data.TruckingLogs || []) {
+      if (!tlog.equipmentId) continue;
+      const truckingLog = await tx.truckingLog.create({
+        data: {
+          timeSheetId: id,
+          equipmentId: tlog.equipmentId,
+          startingMileage: tlog.startingMileage
+            ? Number(tlog.startingMileage)
+            : null,
+          endingMileage: tlog.endingMileage ? Number(tlog.endingMileage) : null,
           laborType: "truckDriver",
-          Equipment: tlog.equipmentId
-            ? { connect: { id: tlog.equipmentId } }
-            : undefined,
-          startingMileage: tlog.startingMileage ?? undefined,
-          endingMileage: tlog.endingMileage ?? undefined,
-        };
-        if (
-          tlog.id &&
-          existingTrucking.find((l: { id: string }) => l.id === tlog.id)
-        ) {
-          await tx.truckingLog.update({
-            where: { id: tlog.id },
-            data: truckingLogData,
-          });
-        } else {
-          const created = await tx.truckingLog.create({
-            data: truckingLogData,
-          });
-          truckingLogId = created.id;
-        }
-        const existingEq = await tx.equipmentHauled.findMany({
-          where: { truckingLogId },
-        });
-        const updatedEqIds = (tlog.equipmentHauled ?? [])
-          .map((eq: { id: string }) => eq.id)
-          .filter(Boolean);
-        for (const old of existingEq) {
-          if (!updatedEqIds.includes(old.id)) {
-            await tx.equipmentHauled.delete({ where: { id: old.id } });
-          }
-        }
-        for (const eq of tlog.equipmentHauled ?? []) {
-          const eqData: Prisma.EquipmentHauledCreateInput = {
-            TruckingLog: { connect: { id: truckingLogId } },
-            Equipment: eq.equipmentId
-              ? { connect: { id: eq.equipmentId } }
-              : undefined,
-            // If you have jobsiteId, use it; otherwise, remove this line
-          };
-          if (eq.id && existingEq.find((e: { id: string }) => e.id === eq.id)) {
-            await tx.equipmentHauled.update({
-              where: { id: eq.id },
-              data: eqData,
-            });
-          } else {
-            await tx.equipmentHauled.create({ data: eqData });
-          }
-        }
-        const existingMat = await tx.material.findMany({
-          where: { truckingLogId },
-        });
-        const updatedMatIds = (tlog.material ?? [])
-          .map((mat: { id: string }) => mat.id)
-          .filter(Boolean);
-        for (const old of existingMat) {
-          if (!updatedMatIds.includes(old.id)) {
-            await tx.material.delete({ where: { id: old.id } });
-          }
-        }
-        for (const mat of tlog.material ?? []) {
-          if (isMaterialFormData(mat)) {
-            const matData: Prisma.MaterialCreateInput = {
-              TruckingLog: { connect: { id: truckingLogId } },
-              LocationOfMaterial: mat.location,
-              name: mat.name,
-              materialWeight:
-                mat.materialWeight !== undefined
-                  ? Number(mat.materialWeight)
-                  : undefined,
-              lightWeight:
-                mat.lightWeight !== undefined
-                  ? Number(mat.lightWeight)
-                  : undefined,
-              grossWeight:
-                mat.grossWeight !== undefined
-                  ? Number(mat.grossWeight)
-                  : undefined,
-              loadType: mat.loadType
-                ? (mat.loadType.toUpperCase() as LoadType)
-                : undefined,
-            };
-            if (
-              mat.id &&
-              existingMat.find((m: { id: string }) => m.id === mat.id)
-            ) {
-              await tx.material.update({
-                where: { id: mat.id },
-                data: matData,
-              });
-            } else {
-              await tx.material.create({ data: matData });
-            }
-          } else {
-            // fallback for Material type with additional properties
-            const materialData = mat as Material & {
-              LocationOfMaterial?: string;
-              materialWeight?: number;
-              lightWeight?: number;
-              grossWeight?: number;
-              loadType?: LoadType;
-            };
-            await tx.material.create({
-              data: {
-                TruckingLog: { connect: { id: truckingLogId } },
-                LocationOfMaterial: materialData.LocationOfMaterial || null,
-                name: materialData.name || null,
-                materialWeight: materialData.materialWeight || null,
-                lightWeight: materialData.lightWeight || null,
-                grossWeight: materialData.grossWeight || null,
-                loadType: materialData.loadType || null,
-              },
-            });
-          }
-        }
-        const existingRef = await tx.refuelLog.findMany({
-          where: { truckingLogId },
-        });
-        const updatedRefIds = (tlog.refueled ?? [])
-          .map((ref: { id: string }) => ref.id)
-          .filter(Boolean);
-        for (const old of existingRef) {
-          if (!updatedRefIds.includes(old.id)) {
-            await tx.refuelLog.delete({ where: { id: old.id } });
-          }
-        }
-        for (const ref of tlog.refueled ?? []) {
-          if (isRefuelFormData(ref)) {
-            const refData: Prisma.RefuelLogCreateInput = {
-              TruckingLog: { connect: { id: truckingLogId } },
-              gallonsRefueled:
-                ref.gallonsRefueled !== undefined
-                  ? Number(ref.gallonsRefueled)
-                  : undefined,
-              milesAtFueling:
-                ref.milesAtFueling !== undefined
-                  ? Number(ref.milesAtFueling)
-                  : undefined,
-            };
-            if (
-              ref.id &&
-              existingRef.find((r: { id: string }) => r.id === ref.id)
-            ) {
-              await tx.refuelLog.update({
-                where: { id: ref.id },
-                data: refData,
-              });
-            } else {
-              await tx.refuelLog.create({ data: refData });
-            }
-          } else {
-            // fallback for Refueled type
-            const refuelData = ref as Refueled & {
-              gallonsRefueled?: number;
-              milesAtFueling?: number;
-            };
-            await tx.refuelLog.create({
-              data: {
-                TruckingLog: { connect: { id: truckingLogId } },
-                gallonsRefueled: refuelData.gallonsRefueled || null,
-                milesAtFueling: refuelData.milesAtFueling || null,
-              },
-            });
-          }
-        }
-        const existingSM = await tx.stateMileage.findMany({
-          where: { truckingLogId },
-        });
-        const updatedSMIds = (tlog.stateMileage ?? [])
-          .map((sm: { id: string }) => sm.id)
-          .filter(Boolean);
-        for (const old of existingSM) {
-          if (!updatedSMIds.includes(old.id)) {
-            await tx.stateMileage.delete({ where: { id: old.id } });
-          }
-        }
-        for (const sm of tlog.stateMileage ?? []) {
-          const smData: Prisma.StateMileageCreateInput = {
-            TruckingLog: { connect: { id: truckingLogId } },
-            state: sm.state,
-            stateLineMileage:
-              sm.stateLineMileage !== undefined
-                ? Number(sm.stateLineMileage)
-                : undefined,
-          };
-          if (sm.id && existingSM.find((s: { id: string }) => s.id === sm.id)) {
-            await tx.stateMileage.update({
-              where: { id: sm.id },
-              data: smData,
-            });
-          } else {
-            await tx.stateMileage.create({ data: smData });
-          }
-        }
-      }
-    } else if (data.workType === "TASCO") {
-      const existingTasco = await tx.tascoLog.findMany({
-        where: { timeSheetId: id },
+        },
       });
-      const updatedTascoIds = (data.tascoLogs ?? [])
-        .map((log) => log.id)
-        .filter((id): id is string => Boolean(id));
-      for (const old of existingTasco) {
-        if (!updatedTascoIds.includes(old.id)) {
-          await tx.tascoLog.delete({ where: { id: old.id } });
-        }
-      }
-      for (const tlog of data.tascoLogs ?? []) {
-        let tascoLogId = tlog.id;
-        const tascoLogData: Prisma.TascoLogCreateInput = {
-          TimeSheet: { connect: { id } },
-          shiftType: tlog.shiftType,
-          laborType: tlog.laborType,
-          LoadQuantity: tlog.loadsHauled ? Number(tlog.loadsHauled) : undefined,
-          Equipment: tlog.equipmentId
-            ? { connect: { id: tlog.equipmentId } }
-            : undefined,
-        };
-        if (tlog.id && existingTasco.find((l) => l.id === tlog.id)) {
-          await tx.tascoLog.update({
-            where: { id: tlog.id },
-            data: tascoLogData,
-          });
-        } else {
-          const created = await tx.tascoLog.create({ data: tascoLogData });
-          tascoLogId = created.id;
-        }
-        const existingRef = await tx.refuelLog.findMany({
-          where: { tascoLogId },
+      // Equipment Hauled
+      for (const eq of tlog.EquipmentHauled || []) {
+        if (!eq.equipmentId) continue;
+        await tx.equipmentHauled.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            equipmentId: eq.equipmentId,
+            jobSiteId: eq.jobSiteId,
+          },
         });
-        const updatedRefIds = (tlog.refueled ?? [])
-          .map((ref) => ref.id)
-          .filter((id): id is string => Boolean(id));
-        for (const old of existingRef) {
-          if (!updatedRefIds.includes(old.id)) {
-            await tx.refuelLog.delete({ where: { id: old.id } });
-          }
-        }
-        for (const ref of tlog.refueled ?? []) {
-          const refData: Prisma.RefuelLogCreateInput = {
-            TascoLog: { connect: { id: tascoLogId } },
+      }
+      // Materials
+      for (const mat of tlog.Materials || []) {
+        await tx.material.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            LocationOfMaterial: mat.LocationOfMaterial ?? "",
+            name: mat.name,
+            materialWeight: mat.materialWeight
+              ? Number(mat.materialWeight)
+              : null,
+            quantity: mat.quantity ? Number(mat.quantity) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
+            loadType: mat.loadType
+              ? (mat.loadType.toUpperCase() as LoadType)
+              : undefined,
+          },
+        });
+      }
+      // Refuel Logs
+      for (const ref of tlog.RefuelLogs || []) {
+        await tx.refuelLog.create({
+          data: {
+            truckingLogId: truckingLog.id,
             gallonsRefueled: ref.gallonsRefueled
               ? Number(ref.gallonsRefueled)
               : undefined,
-          };
-          if (ref.id && existingRef.find((r) => r.id === ref.id)) {
-            await tx.refuelLog.update({ where: { id: ref.id }, data: refData });
-          } else {
-            await tx.refuelLog.create({ data: refData });
-          }
-        }
+            milesAtFueling: ref.milesAtFueling
+              ? Number(ref.milesAtFueling)
+              : undefined,
+          },
+        });
       }
-    } else if (data.workType === "LABOR") {
-      const existingEmpEq = await tx.employeeEquipmentLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const updatedEmpEqIds = (data.employeeEquipmentLogs ?? [])
-        .map((log: { id: string }) => log.id)
-        .filter(Boolean);
-      for (const old of existingEmpEq) {
-        if (!updatedEmpEqIds.includes(old.id)) {
-          await tx.employeeEquipmentLog.delete({ where: { id: old.id } });
-        }
+      // State Mileages
+      for (const sm of tlog.StateMileages || []) {
+        await tx.stateMileage.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            state: sm.state,
+            stateLineMileage: sm.stateLineMileage
+              ? Number(sm.stateLineMileage)
+              : null,
+          },
+        });
       }
-      for (const log of data.employeeEquipmentLogs ?? []) {
-        const empEqData: Prisma.EmployeeEquipmentLogCreateInput = {
-          Equipment: log.equipmentId
-            ? { connect: { id: log.equipmentId } }
+    }
+
+    // Tasco Logs
+    for (const tlog of data.TascoLogs || []) {
+      if (!tlog.shiftType) continue;
+      const tascoLog = await tx.tascoLog.create({
+        data: {
+          timeSheetId: id,
+          shiftType: tlog.shiftType,
+          laborType: tlog.laborType,
+          materialType: tlog.materialType,
+          LoadQuantity: tlog.LoadQuantity
+            ? Number(tlog.LoadQuantity)
             : undefined,
-          startTime: log.startTime ? new Date(log.startTime) : undefined,
-          endTime: log.endTime ? new Date(log.endTime) : undefined,
-          TimeSheet: { connect: { id } },
-        };
-        if (
-          log.id &&
-          existingEmpEq.find((l: { id: string }) => l.id === log.id)
-        ) {
-          await tx.employeeEquipmentLog.update({
-            where: { id: log.id },
-            data: empEqData,
-          });
-        } else {
-          await tx.employeeEquipmentLog.create({ data: empEqData });
-        }
+          equipmentId: tlog.Equipment?.id ?? undefined,
+        },
+      });
+      // Refuel Logs for Tasco
+      for (const ref of tlog.RefuelLogs || []) {
+        await tx.refuelLog.create({
+          data: {
+            tascoLogId: tascoLog.id,
+            gallonsRefueled: ref.gallonsRefueled
+              ? Number(ref.gallonsRefueled)
+              : undefined,
+          },
+        });
       }
-    } else {
-      throw new Error(`Unsupported work type: ${data.workType}`);
+    }
+
+    // Employee Equipment Logs
+    for (const log of data.EmployeeEquipmentLogs || []) {
+      if (!log.equipmentId) continue;
+      await tx.employeeEquipmentLog.create({
+        data: {
+          equipmentId: log.equipmentId,
+          startTime: log.startTime ?? undefined,
+          endTime: log.endTime ?? undefined,
+          timeSheetId: id,
+        },
+      });
     }
   });
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
+  return true;
 }

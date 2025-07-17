@@ -7,16 +7,22 @@ import {
 } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 
+// ============================================================================
 // Types for form builder
+// ----------------------------------------------------------------------------
 export interface FormFieldData {
   id: string;
+  formGroupingId: string;
   label: string;
   type: string;
   required: boolean;
   order: number;
   placeholder?: string;
-  maxLength?: number;
-  groupId?: string; // For associating with sections
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
+  multiple?: boolean;
+  content?: string | null;
+  filter?: string | null;
   Options?: { id: string; value: string }[];
 }
 
@@ -24,8 +30,8 @@ export interface FormSettingsData {
   name: string;
   description: string;
   formType: string;
-  status: string;
   requireSignature: boolean;
+  isActive: string;
 }
 
 export interface SaveFormData {
@@ -34,52 +40,56 @@ export interface SaveFormData {
   companyId: string;
   formId?: string; // for updates
 }
-
+// ----------------------------------------------------------------------------
 // Helper function to map field type string to FieldType enum
 function mapFieldType(type: string): FieldType {
   const typeMap: Record<string, FieldType> = {
-    text: FieldType.TEXT,
-    textarea: FieldType.TEXTAREA,
-    text_area: FieldType.TEXTAREA,
-    number: FieldType.NUMBER,
-    date: FieldType.DATE,
-    time: FieldType.DATE, // Using DATE for time as well
-    dropdown: FieldType.DROPDOWN,
-    checkbox: FieldType.CHECKBOX,
-    file: FieldType.FILE,
-    rating: FieldType.TEXT, // Fallback to TEXT for rating
+    TEXT: FieldType.TEXT,
+    TEXTAREA: FieldType.TEXTAREA,
+    NUMBER: FieldType.NUMBER,
+    DATE: FieldType.DATE,
+    TIME: FieldType.TIME, // Using DATE for time as well
+    DROPDOWN: FieldType.DROPDOWN,
+    CHECKBOX: FieldType.CHECKBOX,
+    RADIO: FieldType.RADIO,
+    MULTISELECT: FieldType.MULTISELECT,
+    SEARCH_PERSON: FieldType.SEARCH_PERSON,
+    SEARCH_ASSET: FieldType.SEARCH_ASSET,
+    PARAGRAPH: FieldType.PARAGRAPH,
+    HEADER: FieldType.HEADER,
   };
 
-  return typeMap[type.toLowerCase()] || FieldType.TEXT;
+  return typeMap[type.toUpperCase()] || FieldType.TEXT;
 }
-
-// Create or update a form template
+// ----------------------------------------------------------------------------
 export async function saveFormTemplate(data: SaveFormData) {
   try {
     const { settings, fields, companyId } = data;
     console.log("Saving form template with data:", data);
 
     // Start a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // Create new form
       const formTemplate = await tx.formTemplate.create({
         data: {
-          companyId,
+          companyId: companyId || "1", // fallback for now
           name: settings.name,
-          formType: settings.formType as FormTemplateCategory, // Ensure formType is cast to enum
-          isActive: (settings.status as FormTemplateStatus) || "DRAFT",
+          description: settings.description || null,
+          formType: settings.formType as FormTemplateCategory,
+          isActive: settings.isActive as FormTemplateStatus,
           isSignatureRequired: settings.requireSignature,
         },
       });
+      console.log("Created form template");
 
-      // Create form grouping (one grouping per form for simplicity)
+      // Always create a grouping for this form
       const formGrouping = await tx.formGrouping.create({
         data: {
           title: settings.name,
           order: 0,
         },
       });
-
+      console.log("Created form grouping:");
       // Connect form template to grouping
       await tx.formTemplate.update({
         where: { id: formTemplate.id },
@@ -90,8 +100,15 @@ export async function saveFormTemplate(data: SaveFormData) {
         },
       });
 
-      // Create form fields
+      // Create all form fields
       for (const field of fields) {
+        if (
+          ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
+            field.type?.toUpperCase?.()
+          ) &&
+          !field.Options
+        ) {
+        }
         const formField = await tx.formField.create({
           data: {
             formGroupingId: formGrouping.id,
@@ -100,7 +117,11 @@ export async function saveFormTemplate(data: SaveFormData) {
             required: field.required,
             order: field.order,
             placeholder: field.placeholder,
-            maxLength: field.maxLength,
+            multiple: field.multiple || false,
+            content: field.content || null,
+            filter: field.filter || null,
+            minLength: field.minLength ?? undefined,
+            maxLength: field.maxLength ?? undefined,
           },
         });
 
@@ -123,43 +144,13 @@ export async function saveFormTemplate(data: SaveFormData) {
             });
           }
         }
-
-        // Handle additional types
-        if (field.type === "TEXTAREA" || field.type === "TEXT") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              maxLength: field.maxLength,
-            },
-          });
-        }
-
-        if (field.type === "NUMBER") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              maxLength: field.maxLength,
-            },
-          });
-        }
-
-        if (field.type === "DATE" || field.type === "TIME") {
-          await tx.formField.update({
-            where: { id: formField.id },
-            data: {
-              placeholder: field.placeholder,
-            },
-          });
-        }
       }
-
-      return formTemplate;
+      return;
     });
 
     revalidatePath("/admins/records/forms");
     return {
       success: true,
-      formId: result.id,
       message: "Form saved successfully",
     };
   } catch (error) {
@@ -167,7 +158,6 @@ export async function saveFormTemplate(data: SaveFormData) {
     return { success: false, error: "Failed to save form template" };
   }
 }
-
 export async function updateFormTemplate(data: SaveFormData) {
   try {
     const { settings, fields, formId } = data;
@@ -182,7 +172,7 @@ export async function updateFormTemplate(data: SaveFormData) {
       data: {
         name: settings.name,
         formType: settings.formType as FormTemplateCategory,
-        isActive: (settings.status as FormTemplateStatus) || "DRAFT",
+        isActive: (settings.isActive as FormTemplateStatus) || "DRAFT",
         isSignatureRequired: settings.requireSignature,
         description: settings.description,
       },
@@ -240,7 +230,11 @@ export async function updateFormTemplate(data: SaveFormData) {
             required: field.required,
             order: field.order,
             placeholder: field.placeholder,
+            minLength: field.minLength,
             maxLength: field.maxLength,
+            multiple: field.multiple,
+            content: field.content,
+            filter: field.filter,
             formGroupingId,
           },
         });
@@ -260,6 +254,10 @@ export async function updateFormTemplate(data: SaveFormData) {
             order: field.order,
             placeholder: field.placeholder,
             maxLength: field.maxLength,
+            minLength: field.minLength,
+            multiple: field.multiple || false,
+            content: field.content || null,
+            filter: field.filter || null,
           },
         });
         formFieldId = created.id;
@@ -317,7 +315,6 @@ export async function updateFormTemplate(data: SaveFormData) {
     return { success: false, error: "Failed to update form template" };
   }
 }
-// Delete form template
 export async function deleteFormTemplate(formId: string) {
   try {
     await prisma.formTemplate.delete({
@@ -333,7 +330,10 @@ export async function deleteFormTemplate(formId: string) {
     return { success: false, error: "Failed to delete form template" };
   }
 }
-// used in the form/id page.tsx
+// ===========================================================================
+
+// ===========================================================================
+// */admins/form/[id]/page.tsx*
 export async function archiveFormTemplate(formId: string) {
   try {
     await prisma.formTemplate.update({
@@ -374,5 +374,243 @@ export async function draftFormTemplate(formId: string) {
   } catch (error) {
     console.error("Error drafting form template:", error);
     return { success: false, error: "Failed to draft form template" };
+  }
+}
+// ===========================================================================
+export async function getFormTemplate(formId: string) {
+  try {
+    const formTemplate = await prisma.formTemplate.findUnique({
+      where: { id: formId },
+      include: {
+        FormGrouping: {
+          include: {
+            Fields: true,
+          },
+        },
+      },
+    });
+    return formTemplate;
+  } catch (error) {
+    console.error("Error fetching form template:", error);
+    return null;
+  }
+}
+
+/**
+ * Represents a single form submission with all related data for editing.
+ */
+export interface FormSubmissionWithTemplate {
+  id: string;
+  title: string | null;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: Record<string, string | number | boolean | null>;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string | null;
+  status: string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  FormTemplate: {
+    id: string;
+    name: string;
+    description: string | null;
+    formType: string;
+    createdAt: string;
+    updatedAt: string;
+    isActive: string;
+    isSignatureRequired: boolean;
+    FormGrouping: Array<{
+      id: string;
+      title: string | null;
+      order: number;
+      Fields: Array<{
+        id: string;
+        formGroupingId: string;
+        label: string;
+        type: string;
+        required: boolean;
+        order: number;
+        placeholder?: string | null;
+        minLength?: number | null;
+        maxLength?: number | null;
+        multiple?: boolean | null;
+        content?: string | null;
+        filter?: string | null;
+        Options?: Array<{
+          id: string;
+          fieldId: string;
+          value: string;
+        }>;
+      }>;
+    }>;
+  };
+}
+
+export async function getFormSubmissionById(submissionId: string) {
+  try {
+    const submission = await prisma.formSubmission.findUnique({
+      where: { id: submissionId },
+      include: {
+        User: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+        FormTemplate: {
+          include: {
+            FormGrouping: {
+              include: {
+                Fields: {
+                  include: {
+                    Options: true, // if you need select/radio options
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return submission;
+  } catch (error) {
+    console.error("Error fetching form submission:", error);
+    return null;
+  }
+}
+
+export async function getFormTemplateById(templateId: string) {
+  try {
+    const template = await prisma.formTemplate.findUnique({
+      where: { id: templateId },
+      include: {
+        FormGrouping: {
+          include: {
+            Fields: {
+              include: {
+                Options: true, // if you need select/radio options
+              },
+            },
+          },
+        },
+      },
+    });
+    return template;
+  } catch (error) {
+    console.error("Error fetching form submission:", error);
+    return null;
+  }
+}
+
+export async function getFormSubmissions(
+  formId: string,
+  dateRange?: {
+    from?: Date;
+    to?: Date;
+  }
+) {
+  try {
+    const formSubmissions = await prisma.formSubmission.findMany({
+      where: {
+        formTemplateId: formId,
+        submittedAt: { gte: dateRange?.from, lte: dateRange?.to },
+      },
+      include: {
+        User: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+    return formSubmissions;
+  } catch (error) {
+    console.error("Error fetching form submissions:", error);
+    return null;
+  }
+}
+
+// Update a form submission's data (for editing submissions)
+export interface UpdateFormSubmissionInput {
+  submissionId: string;
+  data: Record<string, string | number | boolean | null>;
+}
+
+// Create a new form submission
+import { FormStatus } from "@prisma/client";
+
+export interface CreateFormSubmissionInput {
+  formTemplateId: string;
+  data: Record<string, string | number | boolean | null>;
+  submittedBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+/**
+ * Creates a new form submission record.
+ * @param input - The form template id, data, and optional userId/status
+ */
+export async function createFormSubmission(input: CreateFormSubmissionInput) {
+  try {
+    const { formTemplateId, data, submittedBy } = input;
+    if (!submittedBy.id) {
+      throw new Error("Submitted By is required");
+    }
+
+    const created = await prisma.formSubmission.create({
+      data: {
+        formTemplateId,
+        userId: submittedBy.id,
+        data,
+        status: FormStatus.APPROVED,
+        submittedAt: new Date(),
+      },
+    });
+    revalidatePath(`/admins/forms/${formTemplateId}`);
+    return { success: true, submission: created };
+  } catch (error) {
+    console.error("Error creating form submission:", error);
+    return { success: false, error: "Failed to create form submission" };
+  }
+}
+
+/**
+ * Updates a form submission's data and updatedAt timestamp.
+ * @param input - The submission id and new data object
+ */
+export async function updateFormSubmission(input: UpdateFormSubmissionInput) {
+  try {
+    const { submissionId, data } = input;
+    const updated = await prisma.formSubmission.update({
+      where: { id: submissionId },
+      data: {
+        data,
+        updatedAt: new Date(),
+      },
+    });
+    revalidatePath(`/admins/forms/${updated.formTemplateId}`);
+    return { success: true, submission: updated };
+  } catch (error) {
+    console.error("Error updating form submission:", error);
+    return { success: false, error: "Failed to update form submission" };
+  }
+}
+
+export async function deleteFormSubmission(submissionId: string) {
+  try {
+    const submission = await prisma.formSubmission.delete({
+      where: { id: submissionId },
+    });
+    revalidatePath(`/admins/forms/${submission.formTemplateId}`);
+    return { success: true, message: "Form submission deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting form submission:", error);
+    return { success: false, error: "Failed to delete form submission" };
   }
 }

@@ -2,8 +2,8 @@ model Client {
   id             String         @id @default(uuid())
   name           String         @unique
   description    String?
-  creationReason String? // Reason for creating the client
-  approvalStatus ApprovalStatus @default(PENDING) // PENDING, APPROVED, REJECTED
+  creationReason String?
+  approvalStatus ApprovalStatus @default(PENDING)
   contactPerson  String?
   contactEmail   String?
   contactPhone   String?
@@ -12,13 +12,13 @@ model Client {
   updatedAt      DateTime       @updatedAt
   companyId      String
   createdById    String?
-  createdBy      User?          @relation(fields: [createdById], references: [id])
   createdVia     CreatedVia     @default(ADMIN)
-  Company        Company        @relation(fields: [companyId], references: [id])
   jobsiteId      String?
-  Jobsites       Jobsite[]
   addressId      String?
   Address        Address?       @relation(fields: [addressId], references: [id])
+  Company        Company        @relation(fields: [companyId], references: [id])
+  createdBy      User?          @relation(fields: [createdById], references: [id])
+  Jobsites       Jobsite[]
 
   @@index([companyId, name])
   @@index([hasProject])

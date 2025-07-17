@@ -22,18 +22,21 @@ import { useState } from "react";
 export interface ComboboxOption {
   value: string;
   label: string;
-  [key: string]: string | number | boolean | undefined; // Allow extra fields for advanced filtering, but no any
+  [key: string]: string | number | boolean | undefined;
 }
 
 interface ComboboxProps {
   options: ComboboxOption[];
-  value: string;
-  onChange: (value: string, option?: ComboboxOption) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
   placeholder?: string;
   label?: string;
   disabled?: boolean;
-  filterKeys?: string[]; // List of keys to filter on (e.g. ["label", "email"])
-  font?: "font-semibold" | "font-bold" | "font-normal"; // Optional font weight
+  filterKeys?: string[];
+  font?: "font-semibold" | "font-bold" | "font-normal";
+  required?: boolean;
+  errorMessage?: string;
+  listData?: string[];
 }
 
 export function Combobox({
@@ -43,11 +46,15 @@ export function Combobox({
   placeholder = "Select...",
   label,
   disabled = false,
-  filterKeys = ["label"], // Default to label only
-  font = "font-semibold", // Default font weight
+  filterKeys = ["label"],
+  font = "font-semibold",
+  required = false,
+  errorMessage = "This field is required.",
+  listData = [],
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [touched, setTouched] = useState(false); // Track if the field has been interacted with
 
   // Advanced filter: match if any filterKey contains the search string
   const filteredOptions = options.filter((option) => {
@@ -73,6 +80,8 @@ export function Combobox({
     });
   });
 
+  const showError = required && touched && (!value || value.length === 0);
+
   return (
     <div>
       {label && <label className={`block text-xs ${font} mb-1`}>{label}</label>}
@@ -82,16 +91,22 @@ export function Combobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between"
+            className={`w-full justify-between text-xs overflow-hidden ${
+              showError && listData.length < 1 ? "border-red-500" : ""
+            }`}
             disabled={disabled}
+            onBlur={() => setTouched(true)}
           >
-            {value
-              ? options.find((option) => option.value === value)?.label
+            {value && value.length > 0
+              ? options
+                  .filter((option) => value.includes(option.value))
+                  .map((option) => option.label)
+                  .join(", ")
               : placeholder}
             <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 min-w-[200px]">
+        <PopoverContent className="w-full p-0 min-w-[200px] text-xs ">
           <Command>
             <CommandInput
               placeholder={`Search...`}
@@ -101,24 +116,32 @@ export function Combobox({
             <CommandList>
               <CommandEmpty>No option found.</CommandEmpty>
               <CommandGroup>
-                {filteredOptions.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.label} // Use the id as the value for selection
-                    onSelect={() => {
-                      onChange(option.value, option); // Pass id and option
-                      setOpen(false);
-                    }}
-                  >
-                    <CheckIcon
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === option.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {option.label}
-                  </CommandItem>
-                ))}
+                {filteredOptions.map((option) => {
+                  const checked = value.includes(option.value);
+                  return (
+                    <CommandItem
+                      key={option.value}
+                      value={option.label}
+                      onSelect={() => {
+                        let newValue: string[];
+                        if (checked) {
+                          newValue = value.filter((v) => v !== option.value);
+                        } else {
+                          newValue = [...value, option.value];
+                        }
+                        onChange(newValue);
+                      }}
+                    >
+                      <CheckIcon
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          checked ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {option.label}
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </CommandList>
           </Command>

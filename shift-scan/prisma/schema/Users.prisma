@@ -14,24 +14,24 @@ model User {
   permission           Permission           @default(USER)
   image                String?
   startDate            DateTime?            @default(now())
-  terminationDate      DateTime? // Nullable, used for terminated users
+  terminationDate      DateTime?
   accountSetup         Boolean              @default(false)
   clockedIn            Boolean              @default(false)
   companyId            String
   passwordResetTokenId String?
   workTypeId           String?
+  Client               Client[]
   Contact              Contacts?
+  Equipment            Equipment[]
   FormApprovals        FormApproval[]
   FormSubmissions      FormSubmission[]
+  Jobsite              Jobsite[]
   MaintenanceLogs      MaintenanceLog[]
   PasswordResetTokens  PasswordResetToken[]
   TimeSheets           TimeSheet[]
   Company              Company              @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
-  Client               Client[]
-  Equipment            Equipment[]
-  Jobsite              Jobsite[]
 
   @@unique([firstName, lastName, DOB])
   @@index([email])
