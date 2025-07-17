@@ -108,7 +108,7 @@ export default function EquipmentLogContent() {
                     titleImageAlt="Clock"
                     isComplete={true}
                   >
-                    <Titles size={"h4"}>Current Logs</Titles>
+                    <Titles size={"h4"}>{t("CurrentLogs")}</Titles>
                   </NewTab>
                   <NewTab
                     onClick={() => setActive(2)}
@@ -117,7 +117,7 @@ export default function EquipmentLogContent() {
                     titleImageAlt="Finished logs Icon"
                     isComplete={true}
                   >
-                    <Titles size={"h4"}>Finished Logs</Titles>
+                    <Titles size={"h4"}>{t("FinishedLogs")}</Titles>
                   </NewTab>
                 </Holds>
 

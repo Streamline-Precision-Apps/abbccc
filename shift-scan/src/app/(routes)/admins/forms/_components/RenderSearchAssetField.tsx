@@ -1,6 +1,5 @@
 "use client";
-import { Combobox } from "@/components/ui/combobox";
-import { Input } from "@/components/ui/input";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 import { Label } from "@/components/ui/label";
 export interface Fields {
   id: string;
@@ -23,6 +22,14 @@ interface FieldOption {
   fieldId: string;
   value: string;
 }
+
+// Define an Asset interface to replace any type
+interface Asset {
+  id: string;
+  name: string;
+  type: string;
+}
+
 export default function RenderSearchAssetField({
   field,
   handleFieldChange,
@@ -65,7 +72,7 @@ export default function RenderSearchAssetField({
     fieldId: string,
     value: string | Date | string[] | object | boolean | number | null
   ) => void;
-  formData: Record<string, any>;
+  formData: Record<string, unknown>;
   handleFieldTouch: (fieldId: string) => void;
   touchedFields: Record<string, boolean>;
 }) {
@@ -99,10 +106,10 @@ export default function RenderSearchAssetField({
 
   if (field.multiple) {
     // For multiple selection of assets
-    const selectedAssets = Array.isArray(formData[field.id])
-      ? formData[field.id]
+    const selectedAssets: Asset[] = Array.isArray(formData[field.id])
+      ? (formData[field.id] as Asset[])
       : formData[field.id]
-      ? [formData[field.id]]
+      ? [formData[field.id] as Asset]
       : [];
 
     const showError = field.required && selectedAssets.length === 0;
@@ -119,14 +126,14 @@ export default function RenderSearchAssetField({
         </Label>
 
         {/* Combobox for selecting assets */}
-        <Combobox
+        <SingleCombobox
           options={assetOptions}
-          value=""
+          value={""}
           onChange={(val, option) => {
             if (option) {
               // Check if asset is already selected
               const isSelected = selectedAssets.some(
-                (a: any) => a.id === option.value
+                (a: Asset) => a.id === option.value
               );
 
               if (!isSelected) {
@@ -143,13 +150,11 @@ export default function RenderSearchAssetField({
           }}
           placeholder={`Select ${assetType}...`}
           filterKeys={["value", "label"]}
-          required={field.required}
-          listData={selectedAssets}
         />
         {/* Display selected assets as tags */}
         {selectedAssets.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2 mb-1">
-            {selectedAssets.map((asset: any, idx: number) => (
+            {selectedAssets.map((asset: Asset, idx: number) => (
               <div
                 key={idx}
                 className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center gap-1"
@@ -160,7 +165,7 @@ export default function RenderSearchAssetField({
                   className="text-green-800 hover:text-green-900"
                   onClick={() => {
                     const updatedAssets = selectedAssets.filter(
-                      (_: any, i: number) => i !== idx
+                      (_: Asset, i: number) => i !== idx
                     );
                     handleFieldChange(
                       field.id,
@@ -192,9 +197,9 @@ export default function RenderSearchAssetField({
           {field.label}{" "}
           {field.required && <span className="text-red-500">*</span>}
         </Label>
-        <Combobox
+        <SingleCombobox
           options={assetOptions}
-          value={formData[field.id]?.id || ""}
+          value={(formData[field.id] as Asset | undefined)?.id || ""}
           onChange={(val, option) => {
             if (option) {
               // Store the selected value in formData instead of a separate asset state
@@ -207,7 +212,6 @@ export default function RenderSearchAssetField({
               handleFieldChange(field.id, null);
             }
           }}
-          required={field.required}
         />
         {/* Show error message if required and no assets selected */}
         {field.required && touchedFields[field.id] && (

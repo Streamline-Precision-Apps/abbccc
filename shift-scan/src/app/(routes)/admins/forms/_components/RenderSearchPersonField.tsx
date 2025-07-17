@@ -1,6 +1,7 @@
 "use client";
-import { Combobox } from "@/components/ui/combobox";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 import { Label } from "@/components/ui/label";
+import type { ComboboxOption } from "@/components/ui/single-combobox";
 export interface Fields {
   id: string;
   formGroupingId: string;
@@ -21,6 +22,12 @@ interface FieldOption {
   id: string;
   fieldId: string;
   value: string;
+}
+
+// Define a Person interface to replace any type
+interface Person {
+  id: string;
+  name: string;
 }
 export default function RenderSearchPersonField({
   field,
@@ -60,21 +67,21 @@ export default function RenderSearchPersonField({
     fieldId: string,
     value: string | Date | string[] | object | boolean | number | null
   ) => void;
-  formData: Record<string, any>;
+  formData: Record<string, unknown>;
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
 }) {
   if (field.multiple) {
-    const selectedPeople = Array.isArray(formData[field.id])
-      ? formData[field.id]
+    const selectedPeople: Person[] = Array.isArray(formData[field.id])
+      ? (formData[field.id] as Person[])
       : formData[field.id]
-      ? [formData[field.id]]
+      ? [formData[field.id] as Person]
       : [];
 
     // Filter out already selected people from userOptions
     const filteredUserOptions = userOptions.filter(
-      (option) => !selectedPeople.some((p: any) => p.id === option.value)
+      (option) => !selectedPeople.some((p: Person) => p.id === option.value)
     );
 
     const showError = field.required && selectedPeople.length === 0;
@@ -91,14 +98,14 @@ export default function RenderSearchPersonField({
         </Label>
 
         {/* Combobox for selecting people */}
-        <Combobox
+        <SingleCombobox
           options={filteredUserOptions}
-          value=""
+          value={""}
           onChange={(val, option) => {
             if (option) {
               // Check if person is already selected
               const isSelected = selectedPeople.some(
-                (p: any) => p.id === option.value
+                (p: Person) => p.id === option.value
               );
 
               if (!isSelected) {
@@ -112,15 +119,13 @@ export default function RenderSearchPersonField({
               }
             }
           }}
-          listData={selectedPeople}
           placeholder="Select people..."
           filterKeys={["value", "label"]}
-          required={field.required}
         />
         {/* Display selected people as tags */}
         {selectedPeople.length > 0 && (
           <div className="max-w-md flex flex-wrap gap-1 mt-2 mb-1">
-            {selectedPeople.map((person: any, idx: number) => (
+            {selectedPeople.map((person: Person, idx: number) => (
               <div
                 key={idx}
                 className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
@@ -131,7 +136,7 @@ export default function RenderSearchPersonField({
                   className="text-blue-800 hover:text-blue-900"
                   onClick={() => {
                     const updatedPeople = selectedPeople.filter(
-                      (_: any, i: number) => i !== idx
+                      (_: Person, i: number) => i !== idx
                     );
                     handleFieldChange(
                       field.id,
@@ -163,9 +168,9 @@ export default function RenderSearchPersonField({
           {field.label}{" "}
           {field.required && <span className="text-red-500">*</span>}
         </Label>
-        <Combobox
+        <SingleCombobox
           options={userOptions}
-          value={formData[field.id]?.id || ""}
+          value={(formData[field.id] as Person | undefined)?.id || ""}
           onChange={(val, option) => {
             if (option) {
               // Store the selected value in formData instead of a separate asset state
@@ -177,7 +182,6 @@ export default function RenderSearchPersonField({
               handleFieldChange(field.id, null);
             }
           }}
-          required={field.required}
         />
         {showError && touchedFields[field.id] && (
           <p className="text-xs text-red-500 mt-1">This field is required.</p>

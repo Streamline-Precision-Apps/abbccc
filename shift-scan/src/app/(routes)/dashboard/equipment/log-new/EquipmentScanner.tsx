@@ -6,6 +6,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 type Option = {
@@ -32,6 +33,7 @@ export default function EquipmentScanner({
   const [loading, setLoading] = useState(false);
   const id = useSession().data?.user.id;
   const router = useRouter();
+  const t = useTranslations("Equipment");
 
   // Handle the QR scan completion
   const handleScanComplete = async (scannedId: string) => {
@@ -52,7 +54,7 @@ export default function EquipmentScanner({
     } catch (error) {
       console.error("Error submitting equipment log:", error);
       setEquipmentQr(null);
-      setError("Qr code does not exist. Please try again.");
+      setError(t("scanError"));
       setStep(1);
       // Handle error state if needed
     } finally {
@@ -78,7 +80,7 @@ export default function EquipmentScanner({
             }}
           >
             <Holds className="h-full justify-end">
-              <Titles size={"h2"}>Scan Equipment</Titles>
+              <Titles size={"h2"}>{t("ScanEquipment")}</Titles>
             </Holds>
           </TitleBoxes>
         </Holds>

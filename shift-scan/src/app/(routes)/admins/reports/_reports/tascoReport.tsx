@@ -11,6 +11,7 @@ import {
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { ExportReportModal } from "../ExportModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TABLE_HEADERS = [
   "Id",
@@ -191,90 +192,124 @@ export default function TascoReport({
 
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {TABLE_HEADERS.map((header) => (
-              <TableHead key={header} className="text-center min-w-[100px]">
-                {header}
-              </TableHead>
+      {loading ? (
+        <Table className="w-full h-full bg-white rounded-lg">
+          <TableHeader className="bg-gray-100 rounded-lg ">
+            <TableRow className="h-10">
+              {TABLE_HEADERS.map((header, idx) => (
+                <TableHead key={header} className="text-center min-w-[100px]">
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white pt-2">
+            {[...Array(20)].map((_, i) => (
+              <TableRow key={i}>
+                {TABLE_HEADERS.map((_, idx) => (
+                  <TableCell
+                    key={idx}
+                    className="text-center border border-slate-300"
+                  >
+                    <Skeleton className="h-8 w-full mx-auto" />
+                  </TableCell>
+                ))}
+              </TableRow>
             ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading ? (
+          </TableBody>
+        </Table>
+      ) : (
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={TABLE_HEADERS.length} className="text-center">
-                Loading...
-              </TableCell>
+              {TABLE_HEADERS.map((header) => (
+                <TableHead key={header} className="text-center min-w-[100px]">
+                  {header}
+                </TableHead>
+              ))}
             </TableRow>
-          ) : data.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={TABLE_HEADERS.length} className="text-center">
-                No data available.
-              </TableCell>
-            </TableRow>
-          ) : (
-            data.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="text-center w-fit border border-slate-300">
-                  {row.id}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.shiftType === "ABCD Shift"
-                    ? "TASCO - A, B, C, D Shift"
-                    : row.shiftType === "E Shift"
-                    ? "TASCO - E Shift Mud Conditioning"
-                    : row.shiftType}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {format(row.submittedDate, "yyyy/MM/dd")}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.employee}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {format(row.dateWorked, "yyyy/MM/dd")}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.laborType === "tascoAbcdEquipment"
-                    ? "Equipment Operator"
-                    : row.laborType === "tascoEEquipment"
-                    ? "-"
-                    : row.laborType === "tascoAbcdLabor"
-                    ? "Equipment Operator"
-                    : "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.equipment || "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.loadsABCDE || "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.loadsF || "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.materials || "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {format(row.startTime, "HH:mm") || "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {format(row.endTime, "HH:mm") || "-"}
-                </TableCell>
-                <TableCell className="text-center border border-slate-300">
-                  {row.LoadType === "SCREENED"
-                    ? "Screened"
-                    : row.LoadType === "UNSCREENED"
-                    ? "Unscreened"
-                    : "-"}
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={TABLE_HEADERS.length}
+                  className="text-center"
+                >
+                  Loading...
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : data.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={TABLE_HEADERS.length}
+                  className="text-center"
+                >
+                  No data available.
+                </TableCell>
+              </TableRow>
+            ) : (
+              data.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="text-center w-fit border border-slate-300">
+                    {row.id}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.shiftType === "ABCD Shift"
+                      ? "TASCO - A, B, C, D Shift"
+                      : row.shiftType === "E shift"
+                      ? "TASCO - E Shift Mud Conditioning"
+                      : row.shiftType}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {format(row.submittedDate, "yyyy/MM/dd")}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.employee}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {format(row.dateWorked, "yyyy/MM/dd")}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.laborType === "tascoAbcdEquipment"
+                      ? "Equipment Operator"
+                      : row.laborType === "tascoEEquipment"
+                      ? "-"
+                      : row.laborType === "tascoAbcdLabor"
+                      ? "Equipment Operator"
+                      : "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.equipment || "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.loadsABCDE || "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.loadsF || "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.materials || "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {format(row.startTime, "HH:mm") || "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {format(row.endTime, "HH:mm") || "-"}
+                  </TableCell>
+                  <TableCell className="text-center border border-slate-300">
+                    {row.LoadType === "SCREENED"
+                      ? "Screened"
+                      : row.LoadType === "UNSCREENED"
+                      ? "Unscreened"
+                      : "-"}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      )}
       {showExportModal && (
         <ExportReportModal
           onClose={() => setShowExportModal(false)}

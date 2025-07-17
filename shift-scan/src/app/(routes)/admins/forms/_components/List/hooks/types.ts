@@ -40,3 +40,16 @@ export interface FormTemplate {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface FormItem {
+  id: string;
+  name: string;
+  description: string | null;
+  formType: string;
+  _count: {
+    Submissions: number;
+  };
+  isActive: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}

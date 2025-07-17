@@ -1,48 +1,17 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useJobsiteDataById } from "./useJobsiteDataById";
+
+import { Jobsite, useJobsiteDataById } from "./useJobsiteDataById";
 import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { SquareCheck, SquareXIcon } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
-import { updateEquipmentAsset } from "@/actions/AssetActions";
+import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
-
-type Equipment = {
-  id: string;
-  qrId: string;
-  name: string;
-  description?: string;
-  equipmentTag: string;
-  approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
-  state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
-  isDisabledByAdmin: boolean;
-  overWeight: boolean;
-  currentWeight: number | null;
-  createdById: string;
-  createdVia: string;
-  updatedAt: Date;
-  creationReason?: string;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
-  };
-};
+import { Combobox } from "@/components/ui/combobox";
+import { Switch } from "@/components/ui/switch";
 
 export default function EditJobsiteModal({
   cancel,
@@ -53,16 +22,17 @@ export default function EditJobsiteModal({
   pendingEditId: string;
   rerender: () => void;
 }) {
-  const { equipmentDetails, loading } = useJobsiteDataById(pendingEditId);
-  const [formData, setFormData] = useState<Equipment | null>(null);
-  const [originalForm, setOriginalForm] = useState<Equipment | null>(null);
+  const { jobSiteDetails, tagSummaries, clients, loading } =
+    useJobsiteDataById(pendingEditId);
+  const [formData, setFormData] = useState<Jobsite>();
+  const [originalForm, setOriginalForm] = useState<Jobsite | null>(null);
 
   useEffect(() => {
-    if (equipmentDetails) {
-      setFormData(equipmentDetails);
-      setOriginalForm(equipmentDetails);
+    if (jobSiteDetails) {
+      setFormData(jobSiteDetails);
+      setOriginalForm(jobSiteDetails);
     }
-  }, [equipmentDetails]);
+  }, [jobSiteDetails]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -79,98 +49,40 @@ export default function EditJobsiteModal({
     );
   };
 
-  const handleVehicleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => {
-      if (!prev) return prev;
-      const prevInfo = prev.equipmentVehicleInfo ?? {
-        make: null,
-        model: null,
-        year: null,
-        licensePlate: null,
-        registrationExpiration: null,
-        mileage: null,
-      };
-      return {
-        ...prev,
-        equipmentVehicleInfo: {
-          ...prevInfo,
-          [name]:
-            type === "number" ? (value === "" ? null : Number(value)) : value,
-        },
-      };
-    });
-  };
-
-  const hasVehicleInfo = !!formData?.equipmentVehicleInfo;
-
   const handleSaveChanges = async () => {
-    if (!formData) return;
-
+    if (!formData) {
+      toast.error("No form data to save.");
+      return;
+    }
     try {
       const fd = new FormData();
-
-      // Required ID
       fd.append("id", formData.id);
+      fd.append("name", formData.name);
+      fd.append("description", formData.description || "");
+      fd.append("creationReason", formData.creationReason || "");
+      fd.append("approvalStatus", formData.approvalStatus);
+      fd.append("isActive", String(formData.isActive));
+      fd.append("CCTags", JSON.stringify(formData.CCTags.map((tag) => tag.id)));
 
-      // Conditionally append fields if they are set
-      if (formData.name) fd.append("name", formData.name);
-      if (formData.description) fd.append("description", formData.description);
-      if (formData.equipmentTag)
-        fd.append("equipmentTag", formData.equipmentTag);
-      if (formData.currentWeight !== undefined) {
-        fd.append("currentWeight", String(formData.currentWeight));
-      }
-      if (formData.overWeight !== undefined) {
-        fd.append("overWeight", String(formData.overWeight));
-      }
-      if (formData.approvalStatus) {
-        fd.append("approvalStatus", formData.approvalStatus);
-      }
-      if (formData.isDisabledByAdmin !== undefined) {
-        fd.append("isDisabledByAdmin", String(formData.isDisabledByAdmin));
-      }
-      if (formData.creationReason) {
-        fd.append("creationReason", formData.creationReason);
-      }
+      const result = await updateJobsiteAdmin(fd);
 
-      // Conditionally append vehicle info only if it's applicable
-      const tag = formData.equipmentTag;
-      const v = formData.equipmentVehicleInfo;
-      if ((tag === "VEHICLE" || tag === "TRUCK") && v) {
-        if (v.make) fd.append("make", v.make);
-        if (v.model) fd.append("model", v.model);
-        if (v.year) fd.append("year", v.year);
-        if (v.licensePlate) fd.append("licensePlate", v.licensePlate);
-        if (v.registrationExpiration) {
-          fd.append(
-            "registrationExpiration",
-            new Date(v.registrationExpiration).toISOString()
-          );
-        }
-        if (v.mileage !== undefined && v.mileage !== null) {
-          fd.append("mileage", String(v.mileage));
-        }
-      }
-
-      const result = await updateEquipmentAsset(fd);
       if (result?.success) {
-        toast.success("Equipment updated successfully.");
+        toast.success("Jobsite updated successfully.");
         cancel();
         rerender();
       } else {
-        throw new Error(result?.message || "Failed to update equipment.");
+        throw new Error(result?.message || "Failed to update jobsite.");
       }
     } catch (err) {
-      toast.error("Error updating equipment. Please try again.");
+      toast.error("Error updating jobsite. Please try again.");
       console.error(err);
     }
   };
 
-  if (loading || !formData || !originalForm) {
+  if (loading || !formData || !originalForm || !tagSummaries || !clients) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+        <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
           <div className="text-lg">Loading...</div>
         </div>
       </div>
@@ -179,25 +91,25 @@ export default function EditJobsiteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col w-full ">
           <div className="flex flex-row justify-between mb-4">
             <p className="text-xs  text-gray-500">
               {`last updated at ${format(formData.updatedAt, "PPpp")}`}
             </p>
-            <div className="flex flex-row gap-4 items-center justify-end">
+            <div className="flex items-center gap-4">
+              <Label className="ml-2">
+                {formData.isActive ? "Active" : "Inactive"}
+              </Label>
               <Switch
-                checked={formData.isDisabledByAdmin}
-                onCheckedChange={(checked) => {
-                  setFormData((prev) => ({
-                    ...prev!,
-                    isDisabledByAdmin: checked,
-                  }));
+                checked={formData.isActive}
+                onCheckedChange={(value) => {
+                  setFormData((prev) => {
+                    if (!prev) return prev;
+                    return { ...prev, isActive: value };
+                  });
                 }}
               />
-              <p className="text-xs text-gray-600">
-                {formData.isDisabledByAdmin ? "Disabled " : "Enabled"}
-              </p>
             </div>
           </div>
           <div className="flex flex-row justify-between ">
@@ -230,7 +142,19 @@ export default function EditJobsiteModal({
               </div>
             </div>
           </div>
-
+          <div className="flex flex-col mb-2">
+            <Label htmlFor="name" className="text-sm">
+              Client
+            </Label>
+            <Input
+              type="text"
+              name="name"
+              value={formData.Client?.name || ""}
+              onChange={handleInputChange}
+              className="w-full text-xs"
+              disabled
+            />
+          </div>
           <div className="flex flex-col gap-4 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
               <div className="flex flex-col">
@@ -247,7 +171,7 @@ export default function EditJobsiteModal({
             )}
             <div>
               <Label htmlFor="name" className="text-sm">
-                Equipment Name
+                Name
               </Label>
               <Input
                 type="text"
@@ -260,7 +184,7 @@ export default function EditJobsiteModal({
             </div>
             <div>
               <Label htmlFor="description" className="text-sm font-medium">
-                Equipment Description
+                Description
               </Label>
               <Textarea
                 name="description"
@@ -269,84 +193,64 @@ export default function EditJobsiteModal({
                 className="w-full text-xs"
               />
             </div>
-            <div>
-              <Label htmlFor="currentWeight" className="text-sm">
-                Overweight Equipment
-              </Label>
-              <Select
-                name="overWeight"
-                value={formData.overWeight ? "true" : "false"}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev!,
-                    overWeight: value === "true",
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full text-xs">
-                  <SelectValue placeholder="Select Overweight Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="true">Yes</SelectItem>
-                  <SelectItem value="false">No</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="currentWeight" className="text-sm">
-                Overweight amount (lbs)
-              </Label>
-              <Input
-                type="number"
-                name="currentWeight"
-                value={formData.currentWeight ?? ""}
-                onChange={handleInputChange}
-                className="text-xs"
-                required
-                disabled={formData.overWeight === false}
-              />
-            </div>
-
-            {/* Add more fields as needed */}
-            {hasVehicleInfo && (
-              <>
+            {tagSummaries && (
+              <div>
                 <div>
-                  <Label htmlFor="make" className="text-sm font-medium">
-                    Vehicle Make
+                  <Label htmlFor="isActive" className="text-sm font-medium">
+                    Cost Code Tags
                   </Label>
-                  <Input
-                    type="text"
-                    name="make"
-                    value={formData.equipmentVehicleInfo?.make || ""}
-                    onChange={handleVehicleInfoChange}
-                    className="text-xs"
+                  <Combobox
+                    options={tagSummaries.map((tag) => ({
+                      label: tag.name,
+                      value: tag.id,
+                    }))}
+                    value={formData.CCTags.map((tag) => tag.id)}
+                    onChange={(selectedIds: string[]) => {
+                      setFormData((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              CCTags: tagSummaries.filter((tag) =>
+                                selectedIds.includes(tag.id)
+                              ),
+                            }
+                          : prev
+                      );
+                    }}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="model" className="text-sm font-medium">
-                    Vehicle Model
-                  </Label>
-                  <Input
-                    type="text"
-                    name="model"
-                    value={formData.equipmentVehicleInfo?.model || ""}
-                    onChange={handleVehicleInfoChange}
-                    className="text-xs"
-                  />
+                <div className="min-h-[100px] border border-gray-200 rounded p-2 mt-2">
+                  <div className=" flex flex-wrap gap-2">
+                    {formData.CCTags.map((js) => (
+                      <div
+                        key={js.id}
+                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span>{js.name}</span>
+                        <button
+                          type="button"
+                          className="text-blue-800 hover:text-blue-900"
+                          onClick={() => {
+                            setFormData((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    CCTags: prev.CCTags.filter(
+                                      (j) => j.id !== js.id
+                                    ),
+                                  }
+                                : prev
+                            );
+                          }}
+                          aria-label={`Remove ${js.name}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="year" className="text-sm font-medium">
-                    Vehicle Year
-                  </Label>
-                  <Input
-                    type="text"
-                    name="year"
-                    value={formData.equipmentVehicleInfo?.year || ""}
-                    onChange={handleVehicleInfoChange}
-                    className="text-xs"
-                  />
-                </div>
-              </>
+              </div>
             )}
           </div>
           <div className="flex flex-row justify-end gap-2 w-full">
@@ -403,10 +307,10 @@ export default function EditJobsiteModal({
               variant="outline"
               onClick={handleSaveChanges}
               className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
+                loading ? "opacity-50" : ""
               }`}
             >
-              Save Changes
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
           <div className="flex flex-row justify-end mt-4">

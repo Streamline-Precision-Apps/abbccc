@@ -11,8 +11,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
-import { FormIndividualTemplate } from "./_component/hooks/types";
+import {
+  FormIndividualTemplate,
+  Submission,
+  Fields as FormField,
+} from "./_component/hooks/types";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Additional type definitions
+// Using a type that's compatible with what's expected by the component
+interface FormSubmission {
+  id: string;
+  title: string | null;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: Record<string, unknown> | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  submittedAt: string | Date | null;
+  status: string;
+  User: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+interface PersonSearchResult {
+  name: string;
+  [key: string]: unknown;
+}
+
+interface AssetSearchResult {
+  name: string;
+  [key: string]: unknown;
+}
 import {
   Table,
   TableHeader,
@@ -54,6 +88,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { FormTemplate } from "../_components/List/hooks/types";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -194,10 +231,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
   };
 
   const triggerRerender = () => setRefreshKey((k) => k + 1);
-  /**
-   * Handles status change for the form template.
-   * @param status The new status to set (ACTIVE, ARCHIVED, DRAFT)
-   */
+
   const handleStatusChange = async (
     status: "ACTIVE" | "ARCHIVED" | "DRAFT"
   ) => {
@@ -404,49 +438,66 @@ export default function FormPage({ params }: { params: { id: string } }) {
           "Submission ID",
           "Submitted By",
           "Submitted At",
-          ...fields.map((field: any) => field.label),
+          ...fields.map((field: FormField) => field.label),
         ];
 
         // Build rows from submissions
-        const rows = (submissions || []).map((submission: any) => {
-          const user = submission.User
-            ? `${submission.User.firstName} ${submission.User.lastName}`
+        const rows = (submissions || []).map((submission) => {
+          const typedSubmission = submission as unknown as {
+            id: string;
+            User?: { firstName: string; lastName: string };
+            submittedAt?: Date;
+            createdAt: Date;
+            data?: Record<string, unknown>;
+          };
+
+          const user = typedSubmission.User
+            ? `${typedSubmission.User.firstName} ${typedSubmission.User.lastName}`
             : "";
           const submittedAt =
-            format(submission.submittedAt, "yyyy-MM-dd") ||
-            format(submission.createdAt, "yyyy-MM-dd") ||
+            (typedSubmission.submittedAt &&
+              format(typedSubmission.submittedAt, "yyyy-MM-dd")) ||
+            format(typedSubmission.createdAt, "yyyy-MM-dd") ||
             "";
           return [
-            submission.id,
+            typedSubmission.id,
             user,
             submittedAt,
-            ...fields.map((field: any) => {
-              const value =
-                submission.data?.[field.id] ??
-                submission.data?.[field.label] ??
-                "";
+            ...fields.map((field: FormField) => {
+              const data = typedSubmission.data as
+                | Record<string, unknown>
+                | undefined;
+              const value = data?.[field.id] ?? data?.[field.label] ?? "";
               // Custom export logic for SEARCH_PERSON and SEARCH_ASSET
               if (field.type === "SEARCH_PERSON") {
                 if (Array.isArray(value)) {
                   return value
-                    .map((v: any) => v?.name)
+                    .map((v) => {
+                      const person = v as { name?: string };
+                      return person?.name;
+                    })
                     .filter(Boolean)
                     .join(", ");
                 }
                 if (typeof value === "object" && value !== null) {
-                  return value.name || "";
+                  const person = value as { name?: string };
+                  return person.name || "";
                 }
                 return "";
               }
               if (field.type === "SEARCH_ASSET") {
                 if (Array.isArray(value)) {
                   return value
-                    .map((v: any) => v?.name)
+                    .map((v) => {
+                      const asset = v as { name?: string };
+                      return asset?.name;
+                    })
                     .filter(Boolean)
                     .join(", ");
                 }
                 if (typeof value === "object" && value !== null) {
-                  return value.name || "";
+                  const asset = value as { name?: string };
+                  return asset.name || "";
                 }
                 return "";
               }
@@ -597,92 +648,6 @@ export default function FormPage({ params }: { params: { id: string } }) {
                 </p>
               </div>
             )}
-          {/* Only show pagination if there are submissions */}
-          {formTemplate.Submissions &&
-            formTemplate.Submissions.length > 0 &&
-            formTemplate.totalPages &&
-            formTemplate.totalPages > 0 && (
-              <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center px-2 bg-white border-t border-gray-200 rounded-b-lg">
-                <div className="text-xs text-gray-600">
-                  Showing page {page} of{" "}
-                  {formTemplate.totalPages > 0 ? formTemplate.totalPages : 1} (
-                  {formTemplate.Submissions.length} total)
-                </div>
-                <div className="flex flex-row gap-2 items-center">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (page > 1) setPage(page - 1);
-                          }}
-                          aria-disabled={page === 1}
-                        />
-                      </PaginationItem>
-                      {Array.from(
-                        {
-                          length:
-                            formTemplate.totalPages > 0
-                              ? formTemplate.totalPages
-                              : 1,
-                        },
-                        (_, i) => (
-                          <PaginationItem key={i + 1}>
-                            <PaginationLink
-                              href="#"
-                              isActive={page === i + 1}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setPage(i + 1);
-                              }}
-                            >
-                              {i + 1}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )
-                      )}
-                      <PaginationItem>
-                        <PaginationNext
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (
-                              page <
-                              ((formTemplate.totalPages ?? 1) > 0
-                                ? formTemplate.totalPages ?? 1
-                                : 1)
-                            )
-                              setPage(page + 1);
-                          }}
-                          aria-disabled={
-                            page ===
-                            (formTemplate.totalPages > 0
-                              ? formTemplate.totalPages
-                              : 1)
-                          }
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                  <select
-                    className="ml-2 px-1 py-1 rounded text-xs border"
-                    value={pageSize}
-                    onChange={(e) => {
-                      setPageSize(Number(e.target.value));
-                      setPage(1);
-                    }}
-                  >
-                    {[5, 10, 20, 50].map((size) => (
-                      <option key={size} value={size}>
-                        {size} Rows
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
         </>
       );
     }
@@ -697,85 +662,8 @@ export default function FormPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className={`w-full h-full flex flex-col p-4`}>
-      {/* Create Section Modal */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Form Template?</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this form template? All form data
-              will be permanently deleted. This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelDelete}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      {/* Delete Submission Confirmation Dialog */}
-      <Dialog
-        open={showDeleteSubmissionDialog}
-        onOpenChange={setShowDeleteSubmissionDialog}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Form Submission?</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this form submission? This action
-              cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelSubmissionDelete}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmSubmissionDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <div>
-        {showExportModal && (
-          <ExportModal
-            setDateRange={setExportDateRange}
-            dateRange={exportDateRange}
-            onClose={() => {
-              setShowExportModal(false);
-            }}
-            onExport={handleExport}
-          />
-        )}
-        {showCreateModal && formTemplate && (
-          <CreateFormSubmissionModal
-            formTemplate={formTemplate}
-            closeModal={() => setShowCreateModal(false)}
-            onSuccess={() => {
-              setShowCreateModal(false);
-              triggerRerender();
-            }}
-          />
-        )}
-        {showFormSubmission && selectedSubmissionId && formTemplate && (
-          <EditFormSubmissionModal
-            id={selectedSubmissionId}
-            formTemplate={formTemplate}
-            closeModal={() => setShowFormSubmission(false)}
-            onSuccess={() => {
-              setShowFormSubmission(false);
-              triggerRerender();
-            }}
-          />
-        )}
-      </div>
-      <div className="w-full flex flex-row gap-4 ">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
         <div className="w-full flex flex-row gap-5 mb-2">
           <div className="flex items-center justify-center">
             <Button
@@ -817,7 +705,7 @@ export default function FormPage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-      <div className="h-fit w-full flex flex-row justify-between gap-2 mb-4 ">
+      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="w-full flex flex-row gap-4 ">
           <Button
             variant="outline"
@@ -963,9 +851,162 @@ export default function FormPage({ params }: { params: { id: string } }) {
           </Button>
         </div>
       </div>
-      <div className="bg-white bg-opacity-80 h-[85vh] pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
-        {renderTableSection()}
+      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
+        <ScrollArea
+          alwaysVisible
+          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
+        >
+          {renderTableSection()}
+          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
+            <ScrollBar
+              orientation="horizontal"
+              className="w-full h-3 ml-2 mr-2 rounded-full"
+            />
+          </div>
+        </ScrollArea>
+        {formTemplate && (
+          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
+            <div className="text-xs text-gray-600">
+              Showing page {page} of {formTemplate.totalPages} (
+              {formTemplate.total} total)
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.max(1, page - 1));
+                      }}
+                      aria-disabled={page === 1}
+                      tabIndex={page === 1 ? -1 : 0}
+                      style={{
+                        pointerEvents: page === 1 ? "none" : undefined,
+                        opacity: page === 1 ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <span className="text-xs border rounded py-1 px-2">
+                      {page}
+                    </span>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.min(formTemplate.totalPages, page + 1));
+                      }}
+                      aria-disabled={page === formTemplate.totalPages}
+                      tabIndex={page === formTemplate.totalPages ? -1 : 0}
+                      style={{
+                        pointerEvents:
+                          page === formTemplate.totalPages ? "none" : undefined,
+                        opacity: page === formTemplate.totalPages ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+              <select
+                className="ml-2 px-1 py-1 rounded text-xs border"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {[25, 50, 75, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size} Rows
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </div>
+      {/* Create Section Modal */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Form Template?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this form template? All form data
+              will be permanently deleted. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Delete Submission Confirmation Dialog */}
+      <Dialog
+        open={showDeleteSubmissionDialog}
+        onOpenChange={setShowDeleteSubmissionDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Form Submission?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this form submission? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelSubmissionDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmSubmissionDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {showExportModal && (
+        <ExportModal
+          setDateRange={setExportDateRange}
+          dateRange={exportDateRange}
+          onClose={() => {
+            setShowExportModal(false);
+          }}
+          onExport={handleExport}
+        />
+      )}
+      {showCreateModal && formTemplate && (
+        <CreateFormSubmissionModal
+          formTemplate={formTemplate}
+          closeModal={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            setShowCreateModal(false);
+            triggerRerender();
+          }}
+        />
+      )}
+      {showFormSubmission && selectedSubmissionId && formTemplate && (
+        <EditFormSubmissionModal
+          id={selectedSubmissionId}
+          formTemplate={formTemplate}
+          closeModal={() => setShowFormSubmission(false)}
+          onSuccess={() => {
+            setShowFormSubmission(false);
+            triggerRerender();
+          }}
+        />
+      )}
     </div>
   );
 }

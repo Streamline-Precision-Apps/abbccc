@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { DateTimePicker } from "../DateTimePicker";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 
 export type MaintenanceLogDraft = {
   startTime: string;
@@ -40,7 +41,7 @@ export function MaintenanceSection({
           className="flex flex-col gap-6 mb-4 border rounded p-4 relative"
         >
           <div className="flex flex-col gap-4 pt-4 pb-2">
-            <Combobox
+            <SingleCombobox
               label="Project"
               options={maintenanceEquipmentOptions}
               value={log.maintenanceId}

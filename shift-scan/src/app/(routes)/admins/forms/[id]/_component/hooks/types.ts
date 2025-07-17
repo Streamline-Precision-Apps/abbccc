@@ -4,7 +4,7 @@ export interface Submission {
   formTemplateId: string;
   userId: string;
   formType: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
   submittedAt: string;
@@ -27,10 +27,10 @@ export interface FormIndividualTemplate {
   isSignatureRequired: boolean;
   FormGrouping: Grouping[];
   Submissions: Submission[];
-  total?: number;
-  page?: number;
-  pageSize?: number;
-  totalPages?: number;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export interface Grouping {
@@ -68,7 +68,7 @@ export interface FormSubmissionWithTemplate {
   formTemplateId: string;
   userId: string;
   formType: string | null;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
   submittedAt: Date | null;

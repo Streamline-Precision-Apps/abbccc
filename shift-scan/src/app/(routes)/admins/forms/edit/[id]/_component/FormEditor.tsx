@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Toggle } from "@/components/ui/toggle";
@@ -172,7 +172,7 @@ function SortableItem({
     transition,
     border: isDragging ? "2px dashed #00f" : "none", // Show border when dragging
     backgroundColor: isDragging ? "#f0f8ff" : "transparent",
-    pointerEvents: isDragging ? ("none" as "none") : ("auto" as "auto"), // Correctly typed pointerEvents
+    pointerEvents: isDragging ? ("none" as const) : ("auto" as const), // Correctly typed pointerEvents
   };
 
   return (
@@ -390,10 +390,10 @@ export default function FormEditor({
     }
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       setFormFields((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);

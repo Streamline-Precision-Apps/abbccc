@@ -13,13 +13,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { FormBuilderPanelLeft } from "./FormBuilderPanelLeft";
 import { FormBuilderPanelRight } from "./FormBuilderPanelRight";
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import FormBuilderPlaceholder from "./FormBuilderPlaceholder";
 import { toast } from "sonner";
 import { saveFormTemplate } from "@/actions/records-forms";
 import Spinner from "@/components/(animations)/spinner";
+import SortableItem from "./sortableItem";
 
 // Types for form building
 export interface FormField {
@@ -141,52 +141,6 @@ export const fieldTypes = [
     color: "bg-orange-400",
   },
 ];
-
-function SortableItem({
-  id,
-  children,
-  editingFieldId,
-}: {
-  id: string;
-  children: React.ReactNode;
-  editingFieldId?: string | null;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString({
-      x: 0, // Restrict drag to Y-axis
-      y: transform?.y || 0,
-      scaleX: 1,
-      scaleY: 1,
-    }),
-    transition,
-    border: isDragging ? "2px dashed #00f" : "none", // Show border when dragging
-    backgroundColor: isDragging ? "#f0f8ff" : "transparent",
-    pointerEvents: isDragging ? ("none" as "none") : ("auto" as "auto"), // Correctly typed pointerEvents
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="relative"
-    >
-      {children}
-    </div>
-  );
-}
 
 export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   // Form state
@@ -353,10 +307,10 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     }
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       setFormFields((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);

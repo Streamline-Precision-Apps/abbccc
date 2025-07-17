@@ -3,9 +3,13 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
 import SearchBar from "../personnel/components/SearchBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EquipmentTable from "./_components/equipmentTable";
-import { useEquipmentData } from "./_components/useEquipmentData";
+import {
+  EquipmentSummary,
+  useEquipmentData,
+} from "./_components/useEquipmentData";
+import QRCode from "qrcode";
 import {
   Dialog,
   DialogContent,
@@ -18,11 +22,31 @@ import { deleteEquipment } from "@/actions/AssetActions";
 import EditEquipmentModal from "./_components/EditEquipmentModal";
 import CreateEquipmentModal from "./_components/CreateEquipmentModal";
 import { Badge } from "@/components/ui/badge";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function EquipmentPage() {
   const { setOpen, open } = useSidebar();
   const [searchTerm, setSearchTerm] = useState("");
-  const { loading, equipmentDetails, rerender } = useEquipmentData();
+  const {
+    loading,
+    equipmentDetails,
+    rerender,
+    total,
+    page,
+    pageSize,
+    totalPages,
+    setTotal,
+    setPage,
+    setPageSize,
+    setTotalPages,
+  } = useEquipmentData();
 
   // State for modals
   const [editEquipmentModal, setEditEquipmentModal] = useState(false);
@@ -30,6 +54,7 @@ export default function EquipmentPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const [pendingQrId, setPendingQrId] = useState<string | null>(null);
 
   //Approval Button States
   const [showPendingOnly, setShowPendingOnly] = useState(false);
@@ -51,6 +76,110 @@ export default function EquipmentPage() {
       setPendingDeleteId(null);
       rerender();
     }
+  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, showPendingOnly]);
+
+  const openHandleQr = (id: string) => {
+    setPendingQrId(id);
+    const equipment = equipmentDetails.find((j) => j.id === id);
+    if (equipment) {
+      printQRCode(equipment);
+    }
+  };
+
+  const printQRCode = async (equipment: EquipmentSummary) => {
+    if (!pendingQrId) return;
+    const url = await QRCode.toDataURL(equipment.qrId || "");
+    // Open a new window for printing
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to print the QR code");
+      return;
+    }
+
+    // Write HTML content to the new window
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Print QR Code - ${equipment.name || "Equipment"}</title>
+        <style>
+          body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+          }
+          .qr-code-container {
+            text-align: center;
+          }
+          .qr-code {
+            width: 300px;
+            height: 300px;
+            border: 4px solid black;
+            border-radius: 10px;
+            margin-bottom: 20px;
+          }
+          .equipment-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .equipment-id {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+          }
+          .equipment-description {
+            font-size: 16px;
+            color: #555;
+            max-width: 350px;
+            padding: 0 20px;
+            line-height: 1.4;
+            margin-top: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+          }
+          @media print {
+            body {
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="qr-code-container">
+          <div class="equipment-name">${equipment.name || "N/A"}</div>
+          <img src="${url}" alt="QR Code" class="qr-code" />
+          <div class="equipment-id">ID: ${equipment.qrId || "N/A"}</div>
+          <div class="equipment-description">${
+            equipment.description
+              ? `Brief Description:\n${equipment.description || ""}`
+              : ""
+          }</div>
+        </div>
+        <script>
+          // Print and close window when loaded
+          window.onload = function() {
+            window.print();
+            // Close after printing is done or canceled
+            setTimeout(() => window.close());
+          };
+        </script>
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
   };
 
   const cancelDelete = () => {
@@ -151,24 +280,94 @@ export default function EquipmentPage() {
           </Button>
         </div>
       </div>
-
-      <ScrollArea
-        alwaysVisible
-        className="h-[85vh] w-full  bg-white rounded-lg  border border-slate-200 relative pr-2"
-      >
-        <EquipmentTable
-          equipmentDetails={filteredEquipment}
-          openHandleDelete={openHandleDelete}
-          openHandleEdit={openHandleEdit}
-        />
-        <ScrollBar orientation="vertical" />
-        <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-          <ScrollBar
-            orientation="horizontal"
-            className="w-full h-3 ml-2 mr-2 rounded-full"
+      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
+        <ScrollArea
+          alwaysVisible
+          className="h-[80vh] w-full  bg-slate-50 rounded-t-lg  border border-slate-200 relative pr-3 "
+        >
+          <EquipmentTable
+          loading={loading}
+            equipmentDetails={filteredEquipment}
+            openHandleDelete={openHandleDelete}
+            openHandleEdit={openHandleEdit}
+            openHandleQr={openHandleQr}
           />
-        </div>
-      </ScrollArea>
+          <ScrollBar orientation="vertical" />
+          <div className="h-1 absolute bottom-0 right-0 left-0">
+            <ScrollBar
+              orientation="horizontal"
+              className="w-full h-3 ml-2 mr-2 rounded-full "
+            />
+          </div>
+        </ScrollArea>
+        {totalPages > 1 && (
+          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
+            <div className="text-xs text-gray-600">
+              Showing page {page} of {totalPages} ({total} total)
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.max(1, page - 1));
+                      }}
+                      aria-disabled={page === 1}
+                      tabIndex={page === 1 ? -1 : 0}
+                      style={{
+                        pointerEvents: page === 1 ? "none" : undefined,
+                        opacity: page === 1 ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <span className="text-xs border rounded py-1 px-2">
+                      {page}
+                    </span>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.min(totalPages, page + 1));
+                      }}
+                      aria-disabled={page === totalPages}
+                      tabIndex={page === totalPages ? -1 : 0}
+                      style={{
+                        pointerEvents: page === totalPages ? "none" : undefined,
+                        opacity: page === totalPages ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+              <select
+                className="ml-2 px-1 py-1 rounded text-xs border"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {[25, 50, 75, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size} Rows
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
       {editEquipmentModal && pendingEditId && (
         <EditEquipmentModal
           cancel={() => setEditEquipmentModal(false)}

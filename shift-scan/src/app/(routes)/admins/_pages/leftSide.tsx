@@ -18,7 +18,13 @@ export default function LeftSidebar() {
   const { open: isOpen } = useSidebar();
 
   const Page = [
-    // { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
+    {
+      id: 1,
+      title: "Dashboard",
+      img: "home",
+      white: "home-white",
+      link: "/admins",
+    },
     {
       id: 2,
       title: "Personnel",
@@ -53,13 +59,6 @@ export default function LeftSidebar() {
       img: "admin",
       white: "admin-white",
       link: "/admins/clients",
-    },
-    {
-      id: 3,
-      title: "Assets",
-      img: "equipment",
-      white: "equipment-white",
-      link: "/admins/assets",
     },
     {
       id: 4,
@@ -108,10 +107,10 @@ export default function LeftSidebar() {
                   .join("/");
                 const isActive = itemBase === pathBase;
                 return (
-                  <SidebarMenuItem key={item.title} className="py-2">
-                    <Link href={item.link} className="w-full">
+                  <Link key={item.id} href={item.link} className="w-full">
+                    <SidebarMenuItem className="py-2">
                       <div
-                        className={`flex flex-row items-center gap-2 p-2 rounded-lg transition-colors ${
+                        className={`flex flex-row items-center gap-4 p-2 rounded-lg transition-colors ${
                           isActive ? "bg-app-dark-blue text-white" : ""
                         }`}
                       >
@@ -121,13 +120,15 @@ export default function LeftSidebar() {
                           className="w-4 h-4"
                         />
                         <p
-                          className={`text-sm ${isActive ? "text-white" : ""}`}
+                          className={`text-base ${
+                            isActive ? "text-white" : ""
+                          }`}
                         >
                           {item.title}
                         </p>
                       </div>
-                    </Link>
-                  </SidebarMenuItem>
+                    </SidebarMenuItem>
+                  </Link>
                 );
               })}
             </SidebarMenu>

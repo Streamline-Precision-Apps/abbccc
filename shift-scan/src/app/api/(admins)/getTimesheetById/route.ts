@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -83,15 +83,15 @@ export async function GET(req: Request) {
                 // Add more fields as needed
               },
             },
-            // Materials
+
             Materials: {
               select: {
                 id: true,
                 LocationOfMaterial: true,
                 name: true,
+                quantity: true,
+                unit: true,
                 materialWeight: true,
-                lightWeight: true,
-                grossWeight: true,
                 loadType: true,
               },
             },

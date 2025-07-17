@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React from "react";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 
 export type TascoLogDraft = {
   shiftType: "ABCD Shift" | "E Shift" | "F Shift" | "";
@@ -82,7 +83,7 @@ export function TascoSection({
               </SelectContent>
             </Select>
             <div className="w-fit min-w-[300px]">
-              <Combobox
+              <SingleCombobox
                 options={materialTypes.map((m) => ({
                   value: m.name,
                   label: m.name,
@@ -114,7 +115,7 @@ export function TascoSection({
             <div className="flex flex-col gap-2 rounded border p-4">
               {log.equipment.map((eq, eqIdx) => (
                 <div key={eq.id || eqIdx} className="flex gap-1 items-center">
-                  <Combobox
+                  <SingleCombobox
                     label="Equipment"
                     options={equipmentOptions}
                     value={eq.id}
