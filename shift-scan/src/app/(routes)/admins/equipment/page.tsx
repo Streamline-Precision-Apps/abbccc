@@ -293,6 +293,7 @@ export default function EquipmentPage() {
           className="h-[80vh] w-full  bg-slate-50 rounded-t-lg  border border-slate-200 relative pr-3 "
         >
           <EquipmentTable
+          loading={loading}
             equipmentDetails={filteredEquipment}
             openHandleDelete={openHandleDelete}
             openHandleEdit={openHandleEdit}

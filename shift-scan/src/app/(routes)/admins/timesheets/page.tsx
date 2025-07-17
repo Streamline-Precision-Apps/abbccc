@@ -14,7 +14,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
-import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 import { toast } from "sonner";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
@@ -28,6 +27,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Spinner from "@/components/(animations)/spinner";
 /**
  * Timesheet domain entity.
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
@@ -184,9 +192,11 @@ export default function AdminTimesheets() {
 
   const handleDeleteClick = (id: string) => {
     setDeletingId(id);
+    setIsDeleting(true);
   };
   const handleDeleteCancel = () => {
     setDeletingId(null);
+    setIsDeleting(false);
   };
   const handleDeleteConfirm = async () => {
     if (!deletingId) return;
@@ -413,6 +423,12 @@ export default function AdminTimesheets() {
       </div>
       {/* ...existing code... */}
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
         <ScrollArea
           alwaysVisible
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
@@ -526,13 +542,25 @@ export default function AdminTimesheets() {
           onUpdated={refetchAll}
         />
       )}
-      <TimesheetDeleteModal
-        isOpen={!!deletingId}
-        onClose={handleDeleteCancel}
-        onDelete={handleDeleteConfirm}
-        isDeleting={isDeleting}
-        itemName={deletingId || undefined}
-      />
+      <Dialog open={isDeleting} onOpenChange={setIsDeleting}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Timesheet</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this timesheet? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleDeleteCancel}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

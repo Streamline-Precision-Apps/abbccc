@@ -294,6 +294,7 @@ export default function JobsitePage() {
             </div>
           )}
           <JobsiteTable
+            loading={loading}
             jobsiteDetails={paginatedJobsites}
             openHandleDelete={openHandleDelete}
             openHandleEdit={openHandleEdit}
