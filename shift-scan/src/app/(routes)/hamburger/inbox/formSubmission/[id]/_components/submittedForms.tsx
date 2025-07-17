@@ -4,6 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { FormInput } from "./formInput";
+import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { useEffect, useState } from "react";
 import { deleteFormSubmission, savePending } from "@/actions/hamburgerActions";
 import { Titles } from "@/components/(reusable)/titles";
@@ -166,26 +167,12 @@ export default function SubmittedForms({
           >
             <Grids rows={"6"} gap={"3"} className="h-full w-full">
               <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-hidden no-scrollbar">
-                {formData?.groupings?.map((group) => (
-                  <Holds key={group.id} className="pb-2">
-                    {group.title && (
-                      <Texts size={"p6"}>{group.title || ""}</Texts>
-                    )}
-                    {group.fields.map((field) => {
-                      return (
-                        <Holds key={field.id} className="pt-2">
-                          <FormInput
-                            key={field.name} // Use field.name as the key
-                            field={field}
-                            formValues={formValues}
-                            setFormValues={updateFormValues}
-                            readOnly={submissionStatus !== "PENDING"}
-                          />
-                        </Holds>
-                      );
-                    })}
-                  </Holds>
-                ))}
+                <FormFieldRenderer
+                  formData={formData}
+                  formValues={formValues}
+                  setFormValues={updateFormValues}
+                  readOnly={submissionStatus !== "PENDING"}
+                />
 
                 <Holds className="h-full w-full pt-4">
                   {submissionStatus === "PENDING" && (
