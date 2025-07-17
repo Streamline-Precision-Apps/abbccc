@@ -70,7 +70,7 @@ const List: React.FC<ListProps> = ({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-white pt-2">
+          <TableBody className="divide-y divide-gray-200 bg-white">
             {[...Array(20)].map((_, i) => (
               <TableRow key={i}>
                 <TableCell className="text-xs">
@@ -125,9 +125,9 @@ const List: React.FC<ListProps> = ({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-white pt-2">
+          <TableBody className="divide-y divide-gray-200 bg-white">
             {forms.map((form) => (
-              <TableRow key={form.id}>
+              <TableRow key={form.id} className="odd:bg-white even:bg-gray-100">
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-semibold">{form.name}</span>
