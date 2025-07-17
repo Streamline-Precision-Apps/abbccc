@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FormInput } from "./formInput";
+import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { FormEvent } from "react";
 import { deleteFormSubmission, saveDraft } from "@/actions/hamburgerActions";
 import { debounce } from "lodash";
@@ -124,7 +125,7 @@ export default function FormDraft({
   ): boolean => {
     for (const group of formData.groupings) {
       for (const field of group.fields) {
-        if (field.required && !formValues[field.name]) {
+        if (field.required && !formValues[field.id]) {
           return false;
         }
       }
@@ -185,23 +186,12 @@ export default function FormDraft({
                       onChange={(e) => setFormTitle(e.target.value)}
                     />
                   </Holds>
-                  {formData?.groupings?.map((group) => (
-                    <Holds key={group.id} className="">
-                      {group.title && <h3>{group.title || ""}</h3>}
-                      {group.fields.map((field) => {
-                        return (
-                          <Holds key={field.id}>
-                            <FormInput
-                              key={field.name} // Use field.name as the key
-                              field={field}
-                              formValues={formValues}
-                              setFormValues={updateFormValues}
-                            />
-                          </Holds>
-                        );
-                      })}
-                    </Holds>
-                  ))}
+                  <FormFieldRenderer
+                    formData={formData}
+                    formValues={formValues}
+                    setFormValues={updateFormValues}
+                    readOnly={false}
+                  />
                   <Holds>
                     {formData.isSignatureRequired && (
                       <Holds className="h-full w-full">
