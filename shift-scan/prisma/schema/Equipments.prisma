@@ -3,7 +3,7 @@ model Equipment {
   qrId                  String                 @unique
   name                  String
   description           String
-  creationReason        String? // Reason for creating the equipment
+  creationReason        String?
   equipmentTag          EquipmentTags          @default(EQUIPMENT)
   state                 EquipmentState         @default(AVAILABLE)
   isDisabledByAdmin     Boolean                @default(false)
@@ -12,16 +12,16 @@ model Equipment {
   updatedAt             DateTime               @updatedAt
   overWeight            Boolean?               @default(false)
   currentWeight         Float?                 @default(0)
+  createdById           String?
+  createdVia            CreatedVia             @default(MOBILE)
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
+  createdBy             User?                  @relation(fields: [createdById], references: [id])
   EquipmentHauled       EquipmentHauled[]
   equipmentVehicleInfo  EquipmentVehicleInfo?
   Maintenances          Maintenance[]
   TascoLogs             TascoLog[]
   TruckingLogs          TruckingLog[]
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
-  createdById           String?
-  createdBy             User?                  @relation(fields: [createdById], references: [id])
-  createdVia            CreatedVia             @default(MOBILE)
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
@@ -36,20 +36,20 @@ model EquipmentVehicleInfo {
   licensePlate           String?
   registrationExpiration DateTime?
   mileage                Int?
-  Equipment              Equipment @relation(fields: [id], references: [id])
+  Equipment              Equipment @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 model EmployeeEquipmentLog {
   id            String       @id @default(uuid())
-  timeSheetId   String // only need the connection to create a log which makes sense
+  timeSheetId   String
   equipmentId   String?
-  maintenanceId String? // a possible connection to EquipmentLog
-  startTime     DateTime     @default(now()) // when creating a log, it starts now
+  maintenanceId String?
+  startTime     DateTime     @default(now())
   endTime       DateTime?
   comment       String?
-  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
   Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
-  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade) //connection to make a maintenance log
+  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
   RefuelLog     RefuelLog?
 
   @@index([timeSheetId, equipmentId, maintenanceId])
