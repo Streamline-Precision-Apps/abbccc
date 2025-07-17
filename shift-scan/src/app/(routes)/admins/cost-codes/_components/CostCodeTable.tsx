@@ -83,7 +83,7 @@ export default function CostCodeTable({
           ))}
         </TableBody>
       ) : (
-        <TableBody>
+        <TableBody className="divide-y divide-gray-200 bg-white">
           {costCodeDetails.map((costCode) => (
             <TableRow
               className="odd:bg-white even:bg-gray-100 "

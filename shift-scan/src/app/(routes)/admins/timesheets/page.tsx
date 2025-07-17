@@ -35,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Spinner from "@/components/(animations)/spinner";
 /**
  * Timesheet domain entity.
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
@@ -422,6 +423,12 @@ export default function AdminTimesheets() {
       </div>
       {/* ...existing code... */}
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
         <ScrollArea
           alwaysVisible
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
