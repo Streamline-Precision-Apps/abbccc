@@ -11,8 +11,11 @@ import { useUserEdit } from "@/app/context/(admin)/UserEditContext";
 import PersonnelSideBar from "./components/PersonnelSideBar";
 import PersonnelMainContent from "./components/PersonnelMainContent";
 import { useCrewEdit } from "@/app/context/(admin)/CrewEditContext";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function Personnel() {
+  const { setOpen, open } = useSidebar();
   const {
     loading,
     crew,
@@ -152,70 +155,94 @@ export default function Personnel() {
   );
 
   return (
-    <Holds background={"white"} className="h-full w-full rounded-[10px]">
-      <Holds background={"adminBlue"} className="h-full w-full rounded-[10px]">
-        <Grids
-          cols={"10"}
-          gap={"5"}
-          className="w-full h-full p-3 rounded-[10px]"
-        >
-          {/* Sidebar with search and list, make it scrollable only in the list area */}
-          <PersonnelSideBar
-            view={view}
-            setView={setView}
-            crew={crew}
-            loading={loading}
-            term={term}
-            setTerm={setTerm}
-            handleSearchChange={handleSearchChange}
-            filteredList={filteredList}
-            userEditStates={userEditStates}
-            isUserEditStateDirty={isUserEditStateDirty}
-            discardUserEditChanges={discardUserEditChanges}
-            crewCreationState={crewCreationState}
-            selectLead={selectLead}
-            addMembers={addMembers}
-            removeMembers={removeMembers}
-            crewEditStates={crewEditStates}
-            updateCrewEditState={updateCrewEditState}
-            isCrewEditStateDirty={isCrewEditStateDirty}
-            discardCrewEditChanges={discardCrewEditChanges}
-            isRegistrationFormDirty={isRegistrationFormDirty}
-            resetRegistrationState={resetRegistrationState}
-            isCrewCreationFormDirty={isCrewCreationFormDirty}
-            resetCrewCreationState={resetCrewCreationState}
-          />
-          {/* Main content area, also scrollable if needed */}
-          {/* Display logic based on new state variables */}
-          <PersonnelMainContent
-            view={view}
-            setView={setView}
-            crew={crew}
-            employees={employees}
-            registrationState={registrationState}
-            updateRegistrationForm={updateRegistrationForm}
-            updateRegistrationCrews={updateRegistrationCrews}
-            handleRegistrationSubmit={handleRegistrationSubmit}
-            crewCreationState={crewCreationState}
-            updateCrewForm={updateCrewForm}
-            handleCrewSubmit={handleCrewSubmit}
-            userEditStates={userEditStates}
-            updateUserEditState={updateUserEditState}
-            retainOnlyUserEditState={retainOnlyUserEditState}
-            discardUserEditChanges={discardUserEditChanges}
-            crewEditStates={crewEditStates}
-            updateCrewEditState={updateCrewEditState}
-            retainOnlyCrewEditState={retainOnlyCrewEditState}
-            discardCrewEditChanges={discardCrewEditChanges}
-            isCrewEditStateDirty={isCrewEditStateDirty}
-            initializeCrewEditState={initializeCrewEditState}
-            setCrewCreationSuccess={setCrewCreationSuccess}
-            fetchAllData={fetchAllData}
-            isUserEditStateDirty={isUserEditStateDirty}
-            isCrewCreationFormDirty={isCrewCreationFormDirty}
-          />
-        </Grids>
-      </Holds>
-    </Holds>
+    <div className="w-full p-4 grid grid-rows-[3rem_1fr] gap-4">
+      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
+        <div className="w-full flex flex-row gap-5 ">
+          <div className="flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
+                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
+              }`}
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
+              <img
+                src={open ? "/condense-white.svg" : "/condense.svg"}
+                alt="logo"
+                className="w-4 h-auto object-contain "
+              />
+            </Button>
+          </div>
+          <div className="w-full flex flex-col gap-1">
+            <p className="text-left w-fit text-base text-white font-bold">
+              Personnel Management
+            </p>
+            <p className="text-left text-xs text-white">
+              Manage employees and crews
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="w-full h-full grid grid-cols-10 gap-5 bg-white bg-opacity-50 p-4 rounded-[10px]">
+        {/* Sidebar with search and list, make it scrollable only in the list area */}
+        <PersonnelSideBar
+          view={view}
+          setView={setView}
+          crew={crew}
+          loading={loading}
+          term={term}
+          setTerm={setTerm}
+          handleSearchChange={handleSearchChange}
+          filteredList={filteredList}
+          userEditStates={userEditStates}
+          isUserEditStateDirty={isUserEditStateDirty}
+          discardUserEditChanges={discardUserEditChanges}
+          crewCreationState={crewCreationState}
+          selectLead={selectLead}
+          addMembers={addMembers}
+          removeMembers={removeMembers}
+          crewEditStates={crewEditStates}
+          updateCrewEditState={updateCrewEditState}
+          isCrewEditStateDirty={isCrewEditStateDirty}
+          discardCrewEditChanges={discardCrewEditChanges}
+          isRegistrationFormDirty={isRegistrationFormDirty}
+          resetRegistrationState={resetRegistrationState}
+          isCrewCreationFormDirty={isCrewCreationFormDirty}
+          resetCrewCreationState={resetCrewCreationState}
+        />
+        {/* Main content area, also scrollable if needed */}
+        {/* Display logic based on new state variables */}
+        <PersonnelMainContent
+          view={view}
+          setView={setView}
+          crew={crew}
+          employees={employees}
+          registrationState={registrationState}
+          updateRegistrationForm={updateRegistrationForm}
+          updateRegistrationCrews={updateRegistrationCrews}
+          handleRegistrationSubmit={handleRegistrationSubmit}
+          crewCreationState={crewCreationState}
+          updateCrewForm={updateCrewForm}
+          handleCrewSubmit={handleCrewSubmit}
+          userEditStates={userEditStates}
+          updateUserEditState={updateUserEditState}
+          retainOnlyUserEditState={retainOnlyUserEditState}
+          discardUserEditChanges={discardUserEditChanges}
+          crewEditStates={crewEditStates}
+          updateCrewEditState={updateCrewEditState}
+          retainOnlyCrewEditState={retainOnlyCrewEditState}
+          discardCrewEditChanges={discardCrewEditChanges}
+          isCrewEditStateDirty={isCrewEditStateDirty}
+          initializeCrewEditState={initializeCrewEditState}
+          setCrewCreationSuccess={setCrewCreationSuccess}
+          fetchAllData={fetchAllData}
+          isUserEditStateDirty={isUserEditStateDirty}
+          isCrewCreationFormDirty={isCrewCreationFormDirty}
+        />
+      </div>
+    </div>
   );
 }
