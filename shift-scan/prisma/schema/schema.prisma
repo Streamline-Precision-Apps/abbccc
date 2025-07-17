@@ -116,7 +116,7 @@ enum FieldType {
   TEXTAREA
   NUMBER
   DATE
-  FILE
+  FILE // Skip this
   DROPDOWN
   CHECKBOX
   MULTISELECT

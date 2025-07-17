@@ -13,6 +13,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Texts } from "@/components/(reusable)/texts";
 import { useRouter } from "next/navigation";
+import { PullToRefresh } from '@/components/(animations)/pullToRefresh';
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState(1);
@@ -32,6 +33,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     solution,
     diagnosedProblem,
     setDiagnosedProblem,
+    handleRefresh,
   } = useProjectData(params.id);
 
   const router = useRouter();
@@ -39,40 +41,43 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     <Bases>
       <Contents>
         <Grids rows="7" gap="5" className="h-full">
-          <Holds background="white" className="row-span-1 h-full">
-            <TitleBoxes onClick={() => router.push("/dashboard")}>
-              <Texts>{projectData?.title || ""}</Texts>
-            </TitleBoxes>
-          </Holds>
+          {!modalOpen && (
+            <Holds background="white" className="row-span-1 h-full">
+              <TitleBoxes onClick={() => router.push("/dashboard")}> 
+                <Texts>{projectData?.title || ""}</Texts>
+              </TitleBoxes>
+            </Holds>
+          )}
           <Holds className="h-full row-span-6">
             <ProjectTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               loading={loading}
             />
+            <PullToRefresh onRefresh={handleRefresh}>
+              {/* Tab Content */}
+              {activeTab === 1 && (
+                <ReceivedInfoTab
+                  loading={loading}
+                  problemReceived={projectData?.problemReceived || ""}
+                  additionalNotes={projectData?.additionalNotes || ""}
+                  myComment={myComment}
+                  hasBeenDelayed={projectData?.hasBeenDelayed || false}
+                  onLeaveProject={handleLeaveProject}
+                />
+              )}
 
-            {activeTab === 1 && (
-              <ReceivedInfoTab
-                loading={loading}
-                problemReceived={projectData?.problemReceived || ""}
-                additionalNotes={projectData?.additionalNotes || ""}
-                myComment={myComment}
-                hasBeenDelayed={projectData?.hasBeenDelayed || false}
-                onLeaveProject={handleLeaveProject}
-              />
-            )}
-
-            {activeTab === 2 && (
-              <CommentsTab
-                activeUsers={activeUsers}
-                myComment={myComment}
-                setMyComment={setMyComment}
-                loading={loading}
-                onFinishProject={() => setModalOpen(true)}
-                myMaintenanceLogs={myMaintenanceLogs}
-              />
-            )}
-
+              {activeTab === 2 && (
+                <CommentsTab
+                  activeUsers={activeUsers}
+                  myComment={myComment}
+                  setMyComment={setMyComment}
+                  loading={loading}
+                  onFinishProject={() => setModalOpen(true)}
+                  myMaintenanceLogs={myMaintenanceLogs}
+                />
+              )}
+            </PullToRefresh>
             <FinishProjectModal
               isOpen={modalOpen}
               onClose={() => setModalOpen(false)}
