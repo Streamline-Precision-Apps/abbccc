@@ -38,7 +38,7 @@ export function TimesheetTableBody({
 }: TimesheetTableBodyProps) {
   if (timesheets.length === 0) {
     return (
-      <TableBody>
+      <TableBody className="divide-y divide-gray-200 bg-white">
         <TableRow>
           <TableCell
             colSpan={14}
@@ -62,14 +62,14 @@ export function TimesheetTableBody({
     <TableBody className="divide-y divide-gray-200 bg-white">
       {timesheets.map((timesheet) => (
         <TableRow
-          className="border-r border-gray-200 text-xs text-center"
+          className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
           key={timesheet.id}
         >
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.id}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.date, "MM/dd/yyyy")}
+            {format(timesheet.date, "MM/dd/yy")}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.User.firstName} {timesheet.User.lastName}
@@ -89,15 +89,22 @@ export function TimesheetTableBody({
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.comment}
           </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
+
+          <TableCell className="border-r border-gray-200 text-xs text-center min-w-[120px]">
             {timesheet.status === "PENDING" ? (
-              <span className="text-app-orange">Pending</span>
-            ) : timesheet.status === "APPROVED" ? (
-              <span className="text-app-dark-green">Approved</span>
+              <span className=" bg-yellow-300 px-3 py-1 rounded-xl ">
+                Pending
+              </span>
             ) : timesheet.status === "DRAFT" ? (
-              <span className="text-app-blue">In Progress</span>
+              <span className=" bg-sky-200 px-3 py-1 rounded-xl ">
+                In Progress
+              </span>
+            ) : timesheet.status === "APPROVED" ? (
+              <span className=" bg-green-300 px-3 py-1 rounded-xl">
+                Approved
+              </span>
             ) : (
-              <span className="text-app-red">Rejected</span>
+              <span className="bg-red-300 px-3 py-1 rounded-xl ">Rejected</span>
             )}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -112,10 +119,10 @@ export function TimesheetTableBody({
             ) : null}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.createdAt, "MM/dd/yyyy")}
+            {format(timesheet.createdAt, "MM/dd/yy")}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.updatedAt, "MM/dd/yyyy")}
+            {format(timesheet.updatedAt, "MM/dd/yy")}
           </TableCell>
           <TableCell className=" sticky right-0 border-r border-gray-200 text-xs text-center">
             <Button

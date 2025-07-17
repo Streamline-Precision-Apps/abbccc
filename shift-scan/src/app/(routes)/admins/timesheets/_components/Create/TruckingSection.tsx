@@ -1,4 +1,3 @@
-import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StateOptions } from "@/data/stateValues";
@@ -10,13 +9,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React from "react";
+import { SingleCombobox } from "@/components/ui/single-combobox";
 
 export type TruckingMaterialDraft = {
   location: string;
   name: string;
+  quantity: string;
+  unit: string;
   materialWeight: string;
-  lightWeight: string;
-  grossWeight: string;
   loadType: "screened" | "unscreened" | "";
 };
 export type TruckingLogDraft = {
@@ -62,7 +62,7 @@ export function TruckingSection({
         <div key={idx} className="flex flex-col gap-6 mb-4 border-b pb-4">
           <div className="flex flex-col gap-4 py-2">
             <div className="w-[350px]">
-              <Combobox
+              <SingleCombobox
                 options={equipmentOptions}
                 value={log.equipmentId}
                 onChange={(val, option) => {
@@ -126,7 +126,7 @@ export function TruckingSection({
                 className="flex flex-col gap-4 mb-2 rounded p-4 border relative"
               >
                 <div className="w-[350px]">
-                  <Combobox
+                  <SingleCombobox
                     options={equipmentOptions}
                     value={eq.equipment.id}
                     onChange={(val, option) => {
@@ -141,7 +141,7 @@ export function TruckingSection({
                   />
                 </div>
                 <div className="w-[350px]">
-                  <Combobox
+                  <SingleCombobox
                     options={jobsiteOptions}
                     value={eq.jobsite.id}
                     onChange={(val, option) => {
@@ -186,8 +186,8 @@ export function TruckingSection({
                     location: "",
                     name: "",
                     materialWeight: "",
-                    lightWeight: "",
-                    grossWeight: "",
+                    quantity: "",
+                    unit: "",
                     loadType: "",
                   });
                   setTruckingLogs(updated);
@@ -237,11 +237,10 @@ export function TruckingSection({
                   <Input
                     type="number"
                     placeholder="Light Weight"
-                    value={mat.lightWeight}
+                    value={mat.quantity}
                     onChange={(e) => {
                       const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].lightWeight =
-                        e.target.value;
+                      updated[idx].materials[matIdx].quantity = e.target.value;
                       setTruckingLogs(updated);
                     }}
                     className="w-[350px]"
@@ -249,11 +248,10 @@ export function TruckingSection({
                   <Input
                     type="number"
                     placeholder="Gross Weight"
-                    value={mat.grossWeight}
+                    value={mat.unit}
                     onChange={(e) => {
                       const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].grossWeight =
-                        e.target.value;
+                      updated[idx].materials[matIdx].unit = e.target.value;
                       setTruckingLogs(updated);
                     }}
                     className="w-[350px]"

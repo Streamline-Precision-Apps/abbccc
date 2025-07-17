@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 // Force this route to be dynamic
 export const dynamic = "force-dynamic";
@@ -105,8 +105,8 @@ export async function GET(request: Request) {
                     name: true,
                     quantity: true,
                     loadType: true,
-                    grossWeight: true,
-                    lightWeight: true,
+                    unit: true,
+                    LocationOfMaterial: true,
                     materialWeight: true,
                   },
                 },
@@ -187,9 +187,9 @@ export async function GET(request: Request) {
     return NextResponse.json(crew);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching crew data:', error);
+    console.error("Error fetching crew data:", error);
 
-    let errorMessage = 'Failed to fetch crew data';
+    let errorMessage = "Failed to fetch crew data";
     if (error instanceof Error) {
       errorMessage = error.message;
     }

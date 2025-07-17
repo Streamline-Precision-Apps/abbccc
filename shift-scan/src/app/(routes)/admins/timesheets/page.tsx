@@ -1,9 +1,6 @@
 "use client";
-
-import { Texts } from "@/components/(reusable)/texts";
 import { Button } from "@/components/ui/button";
 import SearchBar from "../personnel/components/SearchBar";
-
 import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import { TimeSheetStatus, WorkType } from "@/lib/enums";
@@ -17,13 +14,28 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
-import TimesheetDeleteModal from "./_components/ViewAll/TimesheetDeleteModal";
 import { toast } from "sonner";
-
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
 import { ExportModal } from "./_components/Export/ExportModal";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Spinner from "@/components/(animations)/spinner";
 /**
  * Timesheet domain entity.
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
@@ -74,8 +86,6 @@ export default function AdminTimesheets() {
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const pageSizeOptions = [25, 50, 75, 100];
-  const [sortField, setSortField] = useState<keyof Timesheet | "">("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
     to: Date | undefined;
@@ -182,9 +192,11 @@ export default function AdminTimesheets() {
 
   const handleDeleteClick = (id: string) => {
     setDeletingId(id);
+    setIsDeleting(true);
   };
   const handleDeleteCancel = () => {
     setDeletingId(null);
+    setIsDeleting(false);
   };
   const handleDeleteConfirm = async () => {
     if (!deletingId) return;
@@ -209,20 +221,6 @@ export default function AdminTimesheets() {
     setPageSize(Number(e.target.value));
   };
 
-  /**
-   * Handles exporting timesheets as CSV or XLSX, with optional date range and field selection.
-   * Dates are formatted as MM-DD-YYYY, times as hh:mm a.
-   * @param exportFormat Export format: 'csv' or 'xlsx'.
-   * @param dateRange Optional date range to filter export.
-   * @param selectedFields Array of field keys to include in export.
-   */
-  /**
-   * Handles exporting timesheets as CSV or XLSX, with optional date range and field selection.
-   * Only APPROVED timesheets are exported. Dates are formatted as MM-DD-YYYY, times as hh:mm a.
-   * @param exportFormat Export format: 'csv' or 'xlsx'.
-   * @param dateRange Optional date range to filter export.
-   * @param selectedFields Array of field keys to include in export.
-   */
   const handleExport = (
     exportFormat: "csv" | "xlsx",
     dateRange?: { from?: Date; to?: Date },
@@ -331,7 +329,7 @@ export default function AdminTimesheets() {
   };
 
   return (
-    <div className="h-full w-full flex flex-col p-4 gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
       <TimesheetDescription
         setShowCreateModal={setShowCreateModal}
         setExportModal={setExportModal}
@@ -339,115 +337,195 @@ export default function AdminTimesheets() {
         showPendingOnly={showPendingOnly}
         approvalInbox={approvalInbox}
       />
+      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
+        <div className="flex flex-row w-full gap-4 mb-2">
+          <div className="bg-white rounded-lg h-full max-h-8 w-full max-w-[450px] py-2">
+            <SearchBar
+              term={searchTerm}
+              handleSearchChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={"Search by id, employee, Profit Id or cost code..."}
+              textSize="xs"
+              imageSize="6"
+            />
+          </div>
+          <div className="w-fit min-w-[40px] h-full max-h-8 flex flex-row">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="bg-white h-full max-h-8 w-full max-w-[40px] justify-center items-center"
+                >
+                  <img
+                    src="/filterDials.svg"
+                    alt="Filter"
+                    className="h-full w-full object-contain p-2 "
+                  />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="min-w-[320px] p-4 ">
+                <div className="">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block mb-1 font-semibold">
+                      Date Range
+                    </label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="p-2 flex-shrink-0"
+                      onClick={() =>
+                        setDateRange({ from: undefined, to: undefined })
+                      }
+                      aria-label="Clear date range"
+                    >
+                      <img
+                        src="/trash-red.svg"
+                        alt="Clear date range"
+                        className="h-5 w-5"
+                      />
+                    </Button>
+                  </div>
+
+                  <div className="mt-2 text-xs text-center text-muted-foreground">
+                    {dateRange.from && dateRange.to ? (
+                      `${format(dateRange.from, "PPP")} - ${format(
+                        dateRange.to,
+                        "PPP"
+                      )}`
+                    ) : dateRange.from ? (
+                      `${format(dateRange.from, "PPP")} - ...`
+                    ) : (
+                      <span>Pick a date range</span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center gap-2 overflow-visible">
+                    <Calendar
+                      mode="range"
+                      selected={dateRange}
+                      onSelect={(value) =>
+                        setDateRange({ from: value?.from, to: value?.to })
+                      }
+                      autoFocus
+                    />
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className=" w-[300px] h-full max-h-8  my-auto items-center flex text-xs text-white">
+            {pageSize === sortedTimesheets.length && (
+              <>
+                {pageSize} of {total} rows
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* ...existing code... */}
+      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
+        <ScrollArea
+          alwaysVisible
+          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
+        >
+          <TimesheetViewAll
+            showPendingOnly={showPendingOnly}
+            timesheets={sortedTimesheets}
+            loading={loading}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            pageSizeOptions={pageSizeOptions}
+            onPageSizeChange={handlePageSizeChange}
+            onPageChange={setPage}
+            onDeleteClick={handleDeleteClick}
+            deletingId={deletingId}
+            isDeleting={isDeleting}
+            onEditClick={(id: string) => {
+              setEditingId(id);
+              setShowEditModal(true);
+            }}
+          />
+          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
+            <ScrollBar
+              orientation="horizontal"
+              className="w-full h-3 ml-2 mr-2 rounded-full"
+            />
+          </div>
+        </ScrollArea>
+        {totalPages > 1 && (
+          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
+            <div className="text-xs text-gray-600">
+              Showing page {page} of {totalPages} ({total} total)
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.max(1, page - 1));
+                      }}
+                      aria-disabled={page === 1}
+                      tabIndex={page === 1 ? -1 : 0}
+                      style={{
+                        pointerEvents: page === 1 ? "none" : undefined,
+                        opacity: page === 1 ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <span className="text-xs border rounded py-1 px-2">
+                      {page}
+                    </span>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Math.min(totalPages, page + 1));
+                      }}
+                      aria-disabled={page === totalPages}
+                      tabIndex={page === totalPages ? -1 : 0}
+                      style={{
+                        pointerEvents: page === totalPages ? "none" : undefined,
+                        opacity: page === totalPages ? 0.5 : 1,
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+              <select
+                className="ml-2 px-1 py-1 rounded text-xs border"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {[25, 50, 75, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size} Rows
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
       {showCreateModal && (
         <CreateTimesheetModal
           onClose={() => setShowCreateModal(false)}
           onCreated={refetchAll}
         />
       )}
-
-      <div className="w-full h-full flex flex-row  gap-4">
-        <div className="bg-white rounded-lg h-full max-h-8 w-full max-w-[450px] py-2">
-          <SearchBar
-            term={searchTerm}
-            handleSearchChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={"Search by id, employee, Profit Id or cost code..."}
-            textSize="xs"
-            imageSize="6"
-          />
-        </div>
-        <div className="w-fit min-w-[40px] h-full max-h-8 flex flex-row">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-white h-full max-h-8 w-full max-w-[40px] justify-center items-center"
-              >
-                <img
-                  src="/filterDials.svg"
-                  alt="Filter"
-                  className="h-full w-full object-contain p-3"
-                />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="min-w-[320px] p-4 ">
-              <div className="">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block mb-1 font-semibold">Date Range</label>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="p-2 flex-shrink-0"
-                    onClick={() =>
-                      setDateRange({ from: undefined, to: undefined })
-                    }
-                    aria-label="Clear date range"
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Clear date range"
-                      className="h-5 w-5"
-                    />
-                  </Button>
-                </div>
-
-                <div className="mt-2 text-xs text-center text-muted-foreground">
-                  {dateRange.from && dateRange.to ? (
-                    `${format(dateRange.from, "PPP")} - ${format(
-                      dateRange.to,
-                      "PPP"
-                    )}`
-                  ) : dateRange.from ? (
-                    `${format(dateRange.from, "PPP")} - ...`
-                  ) : (
-                    <span>Pick a date range</span>
-                  )}
-                </div>
-                <div className="flex items-center justify-center gap-2 overflow-visible">
-                  <Calendar
-                    mode="range"
-                    selected={dateRange}
-                    onSelect={(value) =>
-                      setDateRange({ from: value?.from, to: value?.to })
-                    }
-                    autoFocus
-                  />
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div className=" w-[300px] h-full max-h-8  my-auto items-center flex text-xs text-white">
-          {pageSize === sortedTimesheets.length && (
-            <>
-              {pageSize} of {total} rows
-            </>
-          )}
-        </div>
-      </div>
-      {/* ...existing code... */}
-      <div className="h-full w-full overflow-auto ">
-        <TimesheetViewAll
-          showPendingOnly={showPendingOnly}
-          timesheets={sortedTimesheets}
-          loading={loading}
-          page={page}
-          totalPages={totalPages}
-          total={total}
-          pageSize={pageSize}
-          pageSizeOptions={pageSizeOptions}
-          onPageSizeChange={handlePageSizeChange}
-          onPageChange={setPage}
-          onDeleteClick={handleDeleteClick}
-          deletingId={deletingId}
-          isDeleting={isDeleting}
-          onEditClick={(id: string) => {
-            setEditingId(id);
-            setShowEditModal(true);
-          }}
-        />
-      </div>
       {/* Export Modal */}
       {exportModal && (
         <ExportModal
@@ -456,21 +534,33 @@ export default function AdminTimesheets() {
         />
       )}
       {/* ...existing code... */}
-      {showEditModal && (
+      {showEditModal && editingId && (
         <EditTimesheetModal
-          timesheetId={editingId || ""}
+          timesheetId={editingId}
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
           onUpdated={refetchAll}
         />
       )}
-      <TimesheetDeleteModal
-        isOpen={!!deletingId}
-        onClose={handleDeleteCancel}
-        onDelete={handleDeleteConfirm}
-        isDeleting={isDeleting}
-        itemName={deletingId || undefined}
-      />
+      <Dialog open={isDeleting} onOpenChange={setIsDeleting}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Timesheet</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this timesheet? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleDeleteCancel}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

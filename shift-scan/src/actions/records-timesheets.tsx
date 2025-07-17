@@ -1,19 +1,9 @@
 "use server";
-import { TimesheetData } from "@/app/(routes)/admins/records/[url]/@timesheets/_components/Edit/types";
-import { LoadType, WorkType } from "@/lib/enums";
+import { LoadType, WorkType, materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ApprovalStatus } from "@prisma/client";
-import type {
-  TruckingLog,
-  EquipmentHauled,
-  Material,
-  RefuelLog,
-  StateMileage,
-} from "@/app/(routes)/admins/records/[url]/@timesheets/_components/Edit/types";
-import { el } from "date-fns/locale";
+import { ApprovalStatus, Prisma } from "@prisma/client";
+import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 
 export type TimesheetSubmission = {
   form: {
@@ -42,8 +32,8 @@ export type TimesheetSubmission = {
       location: string;
       name: string;
       materialWeight: string;
-      lightWeight: string;
-      grossWeight: string;
+      quantity: string;
+      unit: string;
       loadType: "screened" | "unscreened" | "";
     }>;
     refuelLogs: Array<{
@@ -59,7 +49,7 @@ export type TimesheetSubmission = {
     shiftType: "ABCD Shift" | "E Shift" | "F Shift" | "";
     laborType: "Equipment Operator" | "Labor" | "";
     materialType: string;
-    loadQuantity: string;
+    loadsHauled: string;
     refuelLogs: Array<{ gallonsRefueled: string }>;
     equipment: Array<{ id: string; name: string }>;
   }>;
@@ -78,19 +68,19 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Create the main timesheet
 
     // Use startTime and endTime as ISO strings (or null)
-    const timesheetData: any = {
+    const timesheetData: Prisma.TimeSheetCreateInput = {
       date: data.form.date.toISOString(),
       User: { connect: { id: data.form.user.id } },
       Jobsite: { connect: { id: data.form.jobsite.id } },
       CostCode: { connect: { name: data.form.costcode.name } },
       workType: data.form.workType as WorkType,
       createdByAdmin: true,
-      status: "APPROVED" as ApprovalStatus, // Default status, can be updated later
-      // Add other fields as needed
+      status: "APPROVED" as ApprovalStatus,
+      startTime: data.form.startTime
+        ? new Date(data.form.startTime)
+        : new Date(),
+      endTime: data.form.endTime ? new Date(data.form.endTime) : new Date(),
     };
-    if (data.form.startTime)
-      timesheetData.startTime = new Date(data.form.startTime);
-    if (data.form.endTime) timesheetData.endTime = new Date(data.form.endTime);
     const timesheet = await tx.timeSheet.create({
       data: timesheetData,
     });
@@ -98,13 +88,13 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Maintenance Logs
     for (const log of data.maintenanceLogs) {
       if (!log.maintenanceId) continue;
-      const maintenanceLogData: any = {
-        timeSheetId: timesheet.id,
-        userId: data.form.user.id,
-        maintenanceId: log.maintenanceId,
+      const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
+        TimeSheet: { connect: { id: timesheet.id } },
+        User: { connect: { id: data.form.user.id } },
+        Maintenance: { connect: { id: log.maintenanceId } },
+        startTime: log.startTime ? new Date(log.startTime) : new Date(),
+        endTime: log.endTime ? new Date(log.endTime) : new Date(),
       };
-      if (log.startTime) maintenanceLogData.startTime = new Date(log.startTime);
-      if (log.endTime) maintenanceLogData.endTime = new Date(log.endTime);
       await tx.maintenanceLog.create({
         data: maintenanceLogData,
       });
@@ -147,11 +137,11 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             materialWeight: mat.materialWeight
               ? parseFloat(mat.materialWeight)
               : null,
-            lightWeight: mat.lightWeight ? parseFloat(mat.lightWeight) : null,
-            grossWeight: mat.grossWeight ? parseFloat(mat.grossWeight) : null,
+            quantity: mat.quantity ? parseFloat(mat.quantity) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType
               ? (mat.loadType.toUpperCase() as LoadType)
-              : null,
+              : undefined,
           },
         });
       }
@@ -162,10 +152,10 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             truckingLogId: truckingLog.id,
             gallonsRefueled: ref.gallonsRefueled
               ? parseFloat(ref.gallonsRefueled)
-              : null,
+              : undefined,
             milesAtFueling: ref.milesAtFueling
               ? parseInt(ref.milesAtFueling)
-              : null,
+              : undefined,
           },
         });
       }
@@ -192,8 +182,13 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
           shiftType: tlog.shiftType,
           laborType: tlog.laborType,
           materialType: tlog.materialType,
-          LoadQuantity: tlog.loadQuantity ? parseInt(tlog.loadQuantity) : 0,
-          equipmentId: tlog.equipment[0]?.id || null,
+          LoadQuantity: tlog.loadsHauled
+            ? parseInt(tlog.loadsHauled)
+            : undefined,
+          equipmentId:
+            tlog.equipment && tlog.equipment.length > 0
+              ? tlog.equipment[0].id
+              : undefined,
         },
       });
       // Refuel Logs for Tasco
@@ -203,7 +198,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             tascoLogId: tascoLog.id,
             gallonsRefueled: ref.gallonsRefueled
               ? parseFloat(ref.gallonsRefueled)
-              : null,
+              : undefined,
           },
         });
       }
@@ -215,8 +210,8 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       await tx.employeeEquipmentLog.create({
         data: {
           equipmentId: log.equipment.id,
-          startTime: log.startTime ? new Date(log.startTime) : undefined,
-          endTime: log.endTime ? new Date(log.endTime) : undefined,
+          ...(log.startTime ? { startTime: new Date(log.startTime) } : {}),
+          ...(log.endTime ? { endTime: new Date(log.endTime) } : {}),
           timeSheetId: timesheet.id,
         },
       });
@@ -239,346 +234,181 @@ export async function adminDeleteTimesheet(id: string) {
   }
 }
 
-export async function adminUpdateTimesheet(id: string, data: TimesheetData) {
-  // Update the main timesheet and all related logs in a transaction
-  console.log("Updating timesheet with data:", data);
+/**
+ * Updates a timesheet and all attached logs and connections.
+ * Replaces all logs for the timesheet with the new data from the form.
+ * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
+ */
+
+/**
+ * Updates a timesheet and all attached logs and connections.
+ * Replaces all logs for the timesheet with the new data from the form.
+ * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
+ */
+export async function adminUpdateTimesheet(formData: FormData) {
+  const id = formData.get("id") as string;
+  const dataJson = formData.get("data") as string;
+  if (!id || !dataJson) {
+    throw new Error("Timesheet ID and data are required for update.");
+  }
+  const data: TimesheetData = JSON.parse(dataJson);
 
   await prisma.$transaction(async (tx) => {
-    // Update main timesheet
-    const timesheetData: any = {
-      date: typeof data.date === "string" ? data.date : data.date.toISOString(),
-      userId: data.User?.id,
-      jobsiteId: data.Jobsite?.id,
-      costcode: data.CostCode?.name,
-      workType: data.workType,
-      status: data.status,
-    };
-    if (data.startTime) timesheetData.startTime = new Date(data.startTime);
-    if (data.endTime) timesheetData.endTime = new Date(data.endTime);
+    // Update main timesheet fields
     await tx.timeSheet.update({
       where: { id },
-      data: timesheetData,
+      data: {
+        date: data.date ? new Date(data.date) : undefined,
+        startTime: data.startTime ? new Date(data.startTime) : undefined,
+        endTime: data.endTime ? new Date(data.endTime) : undefined,
+        comment: data.comment ?? undefined,
+        workType: data.workType as WorkType,
+        status: data.status as ApprovalStatus,
+        Jobsite: data.Jobsite?.id
+          ? { connect: { id: data.Jobsite.id } }
+          : undefined,
+        CostCode: data.CostCode?.name
+          ? { connect: { name: data.CostCode.name } }
+          : undefined,
+        User: data.User?.id ? { connect: { id: data.User.id } } : undefined,
+      },
     });
 
-    // Delete all logs for work types that are NOT the selected one
-    if (data.workType !== "MECHANIC") {
-      await tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } });
-    }
-    if (data.workType !== "TRUCK_DRIVER") {
-      // Delete all trucking logs and their nested logs
-      const truckingLogs = await tx.truckingLog.findMany({
-        where: { timeSheetId: id },
+    // Delete all existing logs
+    await Promise.all([
+      tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.truckingLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.tascoLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } }),
+    ]);
+
+    // Maintenance Logs
+    for (const log of data.MaintenanceLogs || []) {
+      if (!log.maintenanceId) continue;
+      await tx.maintenanceLog.create({
+        data: {
+          timeSheetId: id,
+          maintenanceId: log.maintenanceId,
+          userId: data.User?.id ?? undefined,
+          startTime: log.startTime ?? undefined,
+          endTime: log.endTime ?? undefined,
+        },
       });
-      const truckingLogIds = truckingLogs.map((tl) => tl.id);
-      if (truckingLogIds.length > 0) {
-        await tx.equipmentHauled.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-        await tx.material.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-        await tx.refuelLog.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-        await tx.stateMileage.deleteMany({
-          where: { truckingLogId: { in: truckingLogIds } },
-        });
-      }
-      await tx.truckingLog.deleteMany({ where: { timeSheetId: id } });
-    }
-    if (data.workType !== "TASCO") {
-      // Delete all tasco logs and their nested refuel logs
-      const tascoLogs = await tx.tascoLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const tascoLogIds = tascoLogs.map((tl) => tl.id);
-      if (tascoLogIds.length > 0) {
-        await tx.refuelLog.deleteMany({
-          where: { tascoLogId: { in: tascoLogIds } },
-        });
-      }
-      await tx.tascoLog.deleteMany({ where: { timeSheetId: id } });
-    }
-    if (data.workType !== "LABOR") {
-      await tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } });
     }
 
-    if (data.workType === "MECHANIC") {
-      // --- Maintenance Logs ---
-      const existingMaintenance = await tx.maintenanceLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const updatedIds = data.MaintenanceLogs.map((log) => log.id).filter(
-        Boolean
-      );
-      for (const old of existingMaintenance) {
-        if (!updatedIds.includes(old.id)) {
-          await tx.maintenanceLog.delete({ where: { id: old.id } });
-        }
-      }
-      for (const log of data.MaintenanceLogs) {
-        const maintenanceLogData: any = {
-          timeSheetId: data.id,
-          userId: data.User?.id,
-          maintenanceId: log.maintenanceId,
-        };
-        if (log.startTime)
-          maintenanceLogData.startTime = new Date(log.startTime);
-        if (log.endTime) maintenanceLogData.endTime = new Date(log.endTime);
-        // If the id exists in the DB, update, else create
-        const exists = existingMaintenance.find((l) => l.id === log.id);
-        if (log.id && exists) {
-          await tx.maintenanceLog.update({
-            where: { id: log.id },
-            data: maintenanceLogData,
-          });
-        } else {
-          await tx.maintenanceLog.create({ data: maintenanceLogData });
-        }
-      }
-    } else if (data.workType === "TRUCK_DRIVER") {
-      // --- Trucking Logs ---
-      const existingTrucking = await tx.truckingLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const updatedTruckingIds = data.TruckingLogs.map((log) => log.id).filter(
-        Boolean
-      );
-      for (const old of existingTrucking) {
-        if (!updatedTruckingIds.includes(old.id)) {
-          await tx.truckingLog.delete({ where: { id: old.id } });
-        }
-      }
-      for (const tlog of data.TruckingLogs) {
-        let truckingLogId = tlog.id;
-        const truckingLogData: any = {
+    // Trucking Logs
+    for (const tlog of data.TruckingLogs || []) {
+      if (!tlog.equipmentId) continue;
+      const truckingLog = await tx.truckingLog.create({
+        data: {
           timeSheetId: id,
-          laborType: "truckDriver",
           equipmentId: tlog.equipmentId,
-          startingMileage: tlog.startingMileage ?? null,
-          endingMileage: tlog.endingMileage ?? null,
-        };
-        if (tlog.id && existingTrucking.find((l) => l.id === tlog.id)) {
-          await tx.truckingLog.update({
-            where: { id: tlog.id },
-            data: truckingLogData,
-          });
-        } else {
-          const created = await tx.truckingLog.create({
-            data: truckingLogData,
-          });
-          truckingLogId = created.id;
-        }
-        // Equipment Hauled
-        const existingEq = await tx.equipmentHauled.findMany({
-          where: { truckingLogId },
-        });
-        const updatedEqIds = tlog.EquipmentHauled.map((eq) => eq.id).filter(
-          Boolean
-        );
-        for (const old of existingEq) {
-          if (!updatedEqIds.includes(old.id)) {
-            await tx.equipmentHauled.delete({ where: { id: old.id } });
-          }
-        }
-        for (const eq of tlog.EquipmentHauled) {
-          const eqData: any = {
-            truckingLogId,
+          startingMileage: tlog.startingMileage
+            ? Number(tlog.startingMileage)
+            : null,
+          endingMileage: tlog.endingMileage ? Number(tlog.endingMileage) : null,
+          laborType: "truckDriver",
+        },
+      });
+      // Equipment Hauled
+      for (const eq of tlog.EquipmentHauled || []) {
+        if (!eq.equipmentId) continue;
+        await tx.equipmentHauled.create({
+          data: {
+            truckingLogId: truckingLog.id,
             equipmentId: eq.equipmentId,
             jobSiteId: eq.jobSiteId,
-          };
-          if (eq.id && existingEq.find((e) => e.id === eq.id)) {
-            await tx.equipmentHauled.update({
-              where: { id: eq.id },
-              data: eqData,
-            });
-          } else {
-            await tx.equipmentHauled.create({ data: eqData });
-          }
-        }
-        // Materials
-        const existingMat = await tx.material.findMany({
-          where: { truckingLogId },
+          },
         });
-        const updatedMatIds = tlog.Materials.map((mat) => mat.id).filter(
-          Boolean
-        );
-        for (const old of existingMat) {
-          if (!updatedMatIds.includes(old.id)) {
-            await tx.material.delete({ where: { id: old.id } });
-          }
-        }
-        for (const mat of tlog.Materials) {
-          const matData: any = {
-            truckingLogId,
-            LocationOfMaterial: mat.LocationOfMaterial,
+      }
+      // Materials
+      for (const mat of tlog.Materials || []) {
+        await tx.material.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            LocationOfMaterial: mat.LocationOfMaterial ?? "",
             name: mat.name,
-            materialWeight:
-              mat.materialWeight !== undefined
-                ? Number(mat.materialWeight)
-                : null,
-            lightWeight:
-              mat.lightWeight !== undefined ? Number(mat.lightWeight) : null,
-            grossWeight:
-              mat.grossWeight !== undefined ? Number(mat.grossWeight) : null,
-            loadType: mat.loadType ? mat.loadType.toUpperCase() : null,
-          };
-          if (mat.id && existingMat.find((m) => m.id === mat.id)) {
-            await tx.material.update({ where: { id: mat.id }, data: matData });
-          } else {
-            await tx.material.create({ data: matData });
-          }
-        }
-        // Refuel Logs
-        const existingRef = await tx.refuelLog.findMany({
-          where: { truckingLogId },
+            materialWeight: mat.materialWeight
+              ? Number(mat.materialWeight)
+              : null,
+            quantity: mat.quantity ? Number(mat.quantity) : null,
+            unit: mat.unit ? (mat.unit as materialUnit) : null,
+            loadType: mat.loadType
+              ? (mat.loadType.toUpperCase() as LoadType)
+              : undefined,
+          },
         });
-        const updatedRefIds = tlog.RefuelLogs.map((ref) => ref.id).filter(
-          Boolean
-        );
-        for (const old of existingRef) {
-          if (!updatedRefIds.includes(old.id)) {
-            await tx.refuelLog.delete({ where: { id: old.id } });
-          }
-        }
-        for (const ref of tlog.RefuelLogs) {
-          const refData: any = {
-            truckingLogId,
-            gallonsRefueled:
-              ref.gallonsRefueled !== undefined
-                ? Number(ref.gallonsRefueled)
-                : null,
-            milesAtFueling:
-              ref.milesAtFueling !== undefined
-                ? Number(ref.milesAtFueling)
-                : null,
-          };
-          if (ref.id && existingRef.find((r) => r.id === ref.id)) {
-            await tx.refuelLog.update({ where: { id: ref.id }, data: refData });
-          } else {
-            await tx.refuelLog.create({ data: refData });
-          }
-        }
-        // State Mileages
-        const existingSM = await tx.stateMileage.findMany({
-          where: { truckingLogId },
+      }
+      // Refuel Logs
+      for (const ref of tlog.RefuelLogs || []) {
+        await tx.refuelLog.create({
+          data: {
+            truckingLogId: truckingLog.id,
+            gallonsRefueled: ref.gallonsRefueled
+              ? Number(ref.gallonsRefueled)
+              : undefined,
+            milesAtFueling: ref.milesAtFueling
+              ? Number(ref.milesAtFueling)
+              : undefined,
+          },
         });
-        const updatedSMIds = tlog.StateMileages.map((sm) => sm.id).filter(
-          Boolean
-        );
-        for (const old of existingSM) {
-          if (!updatedSMIds.includes(old.id)) {
-            await tx.stateMileage.delete({ where: { id: old.id } });
-          }
-        }
-        for (const sm of tlog.StateMileages) {
-          const smData: any = {
-            truckingLogId,
+      }
+      // State Mileages
+      for (const sm of tlog.StateMileages || []) {
+        await tx.stateMileage.create({
+          data: {
+            truckingLogId: truckingLog.id,
             state: sm.state,
-            stateLineMileage:
-              sm.stateLineMileage !== undefined
-                ? Number(sm.stateLineMileage)
-                : null,
-          };
-          if (sm.id && existingSM.find((s) => s.id === sm.id)) {
-            await tx.stateMileage.update({
-              where: { id: sm.id },
-              data: smData,
-            });
-          } else {
-            await tx.stateMileage.create({ data: smData });
-          }
-        }
+            stateLineMileage: sm.stateLineMileage
+              ? Number(sm.stateLineMileage)
+              : null,
+          },
+        });
       }
-    } else if (data.workType === "TASCO") {
-      // --- Tasco Logs ---
-      const existingTasco = await tx.tascoLog.findMany({
-        where: { timeSheetId: id },
-      });
-      const updatedTascoIds = data.TascoLogs.map((log) => log.id).filter(
-        Boolean
-      );
-      for (const old of existingTasco) {
-        if (!updatedTascoIds.includes(old.id)) {
-          await tx.tascoLog.delete({ where: { id: old.id } });
-        }
-      }
-      for (const tlog of data.TascoLogs) {
-        let tascoLogId = tlog.id;
-        const tascoLogData: any = {
+    }
+
+    // Tasco Logs
+    for (const tlog of data.TascoLogs || []) {
+      if (!tlog.shiftType) continue;
+      const tascoLog = await tx.tascoLog.create({
+        data: {
           timeSheetId: id,
           shiftType: tlog.shiftType,
           laborType: tlog.laborType,
           materialType: tlog.materialType,
-          LoadQuantity: tlog.LoadQuantity ?? 0,
-          equipmentId: tlog.Equipment?.id || null,
-        };
-        if (tlog.id && existingTasco.find((l) => l.id === tlog.id)) {
-          await tx.tascoLog.update({
-            where: { id: tlog.id },
-            data: tascoLogData,
-          });
-        } else {
-          const created = await tx.tascoLog.create({ data: tascoLogData });
-          tascoLogId = created.id;
-        }
-        // Refuel Logs for Tasco
-        const existingRef = await tx.refuelLog.findMany({
-          where: { tascoLogId },
-        });
-        const updatedRefIds = tlog.RefuelLogs.map((ref) => ref.id).filter(
-          Boolean
-        );
-        for (const old of existingRef) {
-          if (!updatedRefIds.includes(old.id)) {
-            await tx.refuelLog.delete({ where: { id: old.id } });
-          }
-        }
-        for (const ref of tlog.RefuelLogs) {
-          const refData: any = {
-            tascoLogId,
-            gallonsRefueled: ref.gallonsRefueled ?? null,
-          };
-          if (ref.id && existingRef.find((r) => r.id === ref.id)) {
-            await tx.refuelLog.update({ where: { id: ref.id }, data: refData });
-          } else {
-            await tx.refuelLog.create({ data: refData });
-          }
-        }
-      }
-    } else if (data.workType === "LABOR") {
-      // --- Employee Equipment Logs ---
-      const existingEmpEq = await tx.employeeEquipmentLog.findMany({
-        where: { timeSheetId: id },
+          LoadQuantity: tlog.LoadQuantity
+            ? Number(tlog.LoadQuantity)
+            : undefined,
+          equipmentId: tlog.Equipment?.id ?? undefined,
+        },
       });
-      const updatedEmpEqIds = data.EmployeeEquipmentLogs.map(
-        (log) => log.id
-      ).filter(Boolean);
-      for (const old of existingEmpEq) {
-        if (!updatedEmpEqIds.includes(old.id)) {
-          await tx.employeeEquipmentLog.delete({ where: { id: old.id } });
-        }
+      // Refuel Logs for Tasco
+      for (const ref of tlog.RefuelLogs || []) {
+        await tx.refuelLog.create({
+          data: {
+            tascoLogId: tascoLog.id,
+            gallonsRefueled: ref.gallonsRefueled
+              ? Number(ref.gallonsRefueled)
+              : undefined,
+          },
+        });
       }
-      for (const log of data.EmployeeEquipmentLogs) {
-        const empEqData: any = {
+    }
+
+    // Employee Equipment Logs
+    for (const log of data.EmployeeEquipmentLogs || []) {
+      if (!log.equipmentId) continue;
+      await tx.employeeEquipmentLog.create({
+        data: {
           equipmentId: log.equipmentId,
-          startTime: log.startTime ? new Date(log.startTime) : undefined,
-          endTime: log.endTime ? new Date(log.endTime) : undefined,
+          startTime: log.startTime ?? undefined,
+          endTime: log.endTime ?? undefined,
           timeSheetId: id,
-        };
-        if (log.id && existingEmpEq.find((l) => l.id === log.id)) {
-          await tx.employeeEquipmentLog.update({
-            where: { id: log.id },
-            data: empEqData,
-          });
-        } else {
-          await tx.employeeEquipmentLog.create({ data: empEqData });
-        }
-      }
-    } else {
-      throw new Error(`Unsupported work type: ${data.workType}`);
+        },
+      });
     }
   });
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
+  return true;
 }

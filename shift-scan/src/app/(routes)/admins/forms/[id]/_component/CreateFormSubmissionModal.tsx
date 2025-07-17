@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { createFormSubmission } from "@/actions/records-forms";
 import RenderFields from "../../_components/RenderFields"; // Import the RenderFields component
 import Spinner from "@/components/(animations)/spinner";
+import { FormIndividualTemplate } from "./hooks/types";
 
 export interface Submission {
   id: string;
@@ -12,7 +13,7 @@ export interface Submission {
   formTemplateId: string;
   userId: string;
   formType: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean | null>;
   createdAt: string;
   updatedAt: string;
   submittedAt: string;
@@ -22,23 +23,6 @@ export interface Submission {
     firstName: string;
     lastName: string;
   };
-}
-
-export interface FormIndividualTemplate {
-  id: string;
-  name: string;
-  formType: string;
-  createdAt: string;
-  updatedAt: string;
-  isActive: string;
-  description: string | null;
-  isSignatureRequired: boolean;
-  FormGrouping: Grouping[];
-  Submissions: Submission[];
-  total?: number;
-  page?: number;
-  pageSize?: number;
-  totalPages?: number;
 }
 
 export interface Grouping {
@@ -83,7 +67,9 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 }) => {
   console.log("Form Template:", formTemplate);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<
+    Record<string, string | number | boolean | null>
+  >({});
   const [submittedBy, setSubmittedBy] = useState<{
     id: string;
     firstName: string;
@@ -198,7 +184,24 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     fieldId: string,
     value: string | Date | string[] | object | boolean | number | null
   ) => {
-    setFormData((prev) => ({ ...prev, [fieldId]: value }));
+    // Convert value to a format compatible with our formData state
+    let compatibleValue: string | number | boolean | null = null;
+
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      compatibleValue = value;
+    } else if (value instanceof Date) {
+      compatibleValue = value.toISOString();
+    } else if (Array.isArray(value)) {
+      compatibleValue = value.join(",");
+    } else if (value !== null && typeof value === "object") {
+      compatibleValue = JSON.stringify(value);
+    }
+
+    setFormData((prev) => ({ ...prev, [fieldId]: compatibleValue }));
   };
 
   // Signature state
@@ -217,7 +220,10 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     setLoading(true);
     try {
       // Process formData to ensure asset data is properly formatted
-      const processedFormData = { ...formData };
+      const processedFormData: Record<
+        string,
+        string | number | boolean | null
+      > = { ...formData };
       if (formTemplate.isSignatureRequired) {
         processedFormData.signature = true;
       }

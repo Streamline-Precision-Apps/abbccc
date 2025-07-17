@@ -58,8 +58,8 @@ export function isMaterialComplete(mat: Material): boolean {
     mat.LocationOfMaterial &&
     mat.name &&
     mat.materialWeight &&
-    mat.lightWeight &&
-    mat.grossWeight &&
+    mat.quantity &&
+    mat.unit &&
     mat.loadType
   );
 }

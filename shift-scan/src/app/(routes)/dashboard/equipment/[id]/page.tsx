@@ -448,7 +448,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               onClick={() => router.push("/dashboard/equipment")}
               background="lightBlue"
             >
-              <Titles size="h5">Back to Equipment</Titles>
+              <Titles size="h5">{t("BacktoEquipment")}</Titles>
             </Buttons>
           </Holds>
         </Contents>
@@ -494,7 +494,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   isComplete={true}
                   isLoading={state.isLoading}
                 >
-                  Usage Data
+                  {t("UsageData")}
                 </NewTab>
                 <NewTab
                   isActive={state.tab === 2}
@@ -504,7 +504,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   isComplete={true}
                   isLoading={state.isLoading}
                 >
-                  Maintenance Log
+                  {t("MaintenanceLog")}
                 </NewTab>
               </Holds>
               <Holds
@@ -557,7 +557,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                           background="red"
                           className="w-full "
                         >
-                          <Titles size="h5">Delete Log</Titles>
+                          <Titles size="h5">{t("DeleteLog")}</Titles>
                         </Buttons>
 
                         {state.hasChanged && (
@@ -578,7 +578,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                             className="w-full "
                             disabled={!isFormValid()}
                           >
-                            <Titles size="h5">Finish Logs</Titles>
+                            <Titles size="h5">{t("FinishLogs")}</Titles>
                           </Buttons>
                         )}
                       </Holds>

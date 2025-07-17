@@ -85,7 +85,10 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     const val = submission.data[field.id];
 
                     // If the field is a date or time, format it
-                    let display = val;
+                    let display: string | number | undefined = val as
+                      | string
+                      | number
+                      | undefined;
                     let isObject = false;
                     let isArrayOfObjects = false;
 
@@ -94,9 +97,22 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                       (field.type === "DATE" || field.type === "TIME")
                     ) {
                       try {
-                        display = format(new Date(val), "P");
+                        if (
+                          typeof val === "string" ||
+                          typeof val === "number" ||
+                          val instanceof Date
+                        ) {
+                          const dateObj = new Date(val);
+                          if (!isNaN(dateObj.getTime())) {
+                            display = format(dateObj, "P");
+                          } else {
+                            display = String(val);
+                          }
+                        } else {
+                          display = String(val);
+                        }
                       } catch {
-                        display = val;
+                        display = String(val);
                       }
                     } else if (val && field.type === "CHECKBOX") {
                       display = val ? "Yes" : "No";
@@ -104,17 +120,23 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                       if (
                         val.length > 0 &&
                         typeof val[0] === "object" &&
-                        val[0] !== null
+                        val[0] !== null &&
+                        "name" in val[0]
                       ) {
-                        // Array of objects
+                        // Array of objects with name property
                         isArrayOfObjects = true;
                       } else {
-                        display = val.join(", ");
+                        display = (val as (string | number)[]).join(", ");
                       }
-                    } else if (val && typeof val === "object" && val !== null) {
-                      // Single object
+                    } else if (
+                      val &&
+                      typeof val === "object" &&
+                      val !== null &&
+                      "name" in val
+                    ) {
+                      // Single object with name property
                       isObject = true;
-                      display = val.name || "";
+                      display = (val as { name?: string }).name || "";
                     }
 
                     return (
@@ -122,40 +144,44 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                         key={field.id}
                         className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80"
                       >
-                        {isArrayOfObjects ? (
+                        {isArrayOfObjects && Array.isArray(val) ? (
                           val.length > 3 ? (
                             <Popover>
                               <PopoverTrigger asChild>
                                 <button
                                   type="button"
-                                  className="bg-blue-50 rounded px-2 py-1 border border-blue-200 text-xs text-blue-700 cursor-pointer min-w-[48px]"
+                                  className="bg-blue-50 rounded-lg px-2 py-1 border border-blue-200 text-xs text-blue-700 cursor-pointer min-w-[48px]"
                                 >
                                   {val.length} submissions
                                 </button>
                               </PopoverTrigger>
                               <PopoverContent className="w-64 max-h-64 overflow-y-auto">
                                 <div className="flex flex-wrap gap-1 ">
-                                  {val.map((item: any, idx: number) => (
-                                    <div
-                                      key={item.id || idx}
-                                      className="bg-blue-50 rounded px-2 py-1 inline-block border border-blue-200 mb-1"
-                                    >
-                                      {item.name || ""}
-                                    </div>
-                                  ))}
+                                  {(val as { id: string; name: string }[]).map(
+                                    (item, idx) => (
+                                      <div
+                                        key={item.id || idx}
+                                        className="bg-blue-50 rounded-lg px-2 py-1 inline-block border border-blue-200 mb-1"
+                                      >
+                                        {item.name || ""}
+                                      </div>
+                                    )
+                                  )}
                                 </div>
                               </PopoverContent>
                             </Popover>
                           ) : (
                             <div className="flex flex-wrap gap-1">
-                              {val.map((item: any, idx: number) => (
-                                <div
-                                  key={item.id || idx}
-                                  className="bg-blue-50 rounded px-2 py-1 inline-block border border-blue-200"
-                                >
-                                  {item.name || ""}
-                                </div>
-                              ))}
+                              {(val as { id: string; name: string }[]).map(
+                                (item, idx) => (
+                                  <div
+                                    key={item.id || idx}
+                                    className="bg-sky-200 rounded-lg px-2 py-1 inline-block border border-blue-200"
+                                  >
+                                    {item.name || ""}
+                                  </div>
+                                )
+                              )}
                             </div>
                           )
                         ) : (
@@ -174,7 +200,9 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
                       {/* Render signature info here, e.g. a checkmark or signature image if available */}
                       {submission.data.signature ? (
-                        <span className="text-green-600 font-bold">Signed</span>
+                        <span className="text-emerald-600 font-bold">
+                          Signed
+                        </span>
                       ) : (
                         <span className="text-red-500 font-bold">
                           Not Signed

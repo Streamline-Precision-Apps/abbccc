@@ -8,18 +8,13 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { FormItem } from "./hooks/types";
 
 export interface ListProps {
-  forms: any[];
+  forms: FormItem[];
   loading: boolean;
   page: number;
   pageSize: number;
@@ -47,7 +42,7 @@ const List: React.FC<ListProps> = ({
   openHandleDelete,
 }) => {
   return (
-    <div className="bg-white bg-opacity-80 h-[85vh] pb-[2.5em] w-full flex flex-col gap-4 rounded-lg relative">
+    <>
       {loading ? (
         <Table className="w-full h-full bg-white rounded-lg">
           <TableHeader className="bg-gray-100 rounded-lg ">
@@ -75,8 +70,8 @@ const List: React.FC<ListProps> = ({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-white pt-2">
-            {[...Array(pageSize)].map((_, i) => (
+          <TableBody className="divide-y divide-gray-200 bg-white">
+            {[...Array(20)].map((_, i) => (
               <TableRow key={i}>
                 <TableCell className="text-xs">
                   <Skeleton className="h-4 w-3/4 mb-1" />
@@ -130,9 +125,9 @@ const List: React.FC<ListProps> = ({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-white pt-2">
+          <TableBody className="divide-y divide-gray-200 bg-white">
             {forms.map((form) => (
-              <TableRow key={form.id}>
+              <TableRow key={form.id} className="odd:bg-white even:bg-gray-100">
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-semibold">{form.name}</span>
@@ -179,13 +174,7 @@ const List: React.FC<ListProps> = ({
                 <TableCell className="w-[160px]">
                   <div className="flex flex-row justify-center">
                     <Link href={`/admins/forms/${form.id}`}>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          form.id;
-                        }}
-                      >
+                      <Button variant="ghost" size={"icon"}>
                         <img
                           src="/eye.svg"
                           alt="View Form"
@@ -236,64 +225,7 @@ const List: React.FC<ListProps> = ({
           </TableBody>
         </Table>
       )}
-      {/* Pagination Controls */}
-      <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-        <div className="text-xs text-gray-600">
-          Showing page {page} of {totalPages} ({total} total)
-        </div>
-        <div className="flex flex-row gap-2 items-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(Math.max(1, page - 1));
-                  }}
-                  aria-disabled={page === 1}
-                  tabIndex={page === 1 ? -1 : 0}
-                  style={{
-                    pointerEvents: page === 1 ? "none" : undefined,
-                    opacity: page === 1 ? 0.5 : 1,
-                  }}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <span className="text-xs border rounded py-1 px-2">{page}</span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(Math.min(totalPages, page + 1));
-                  }}
-                  aria-disabled={page === totalPages}
-                  tabIndex={page === totalPages ? -1 : 0}
-                  style={{
-                    pointerEvents: page === totalPages ? "none" : undefined,
-                    opacity: page === totalPages ? 0.5 : 1,
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-          <select
-            className="ml-2 px-1 py-1 rounded text-xs border"
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            {[5, 10, 20, 50].map((size) => (
-              <option key={size} value={size}>
-                {size} Rows
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 

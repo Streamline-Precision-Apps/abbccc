@@ -1,4 +1,5 @@
 "use server";
+import { materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -204,7 +205,7 @@ export async function updateHaulingLogs(formData: FormData) {
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
   const LocationOfMaterial = formData.get("LocationOfMaterial") as string;
-  const quantity = parseInt(formData.get("quantity") as string);
+  const quantity = Number(formData.get("quantity") as string);
   const truckingLogId = formData.get("truckingLogId") as string;
 
   const materialWeight = parseFloat(formData.get("materialWeight") as string);
@@ -212,6 +213,7 @@ export async function updateHaulingLogs(formData: FormData) {
   // const lightWeight = parseFloat(formData.get("lightWeight") as string);
   // const grossWeight = parseFloat(formData.get("grossWeight") as string);
   const loadTypeString = formData.get("loadType") as string;
+  const unit = formData.get("unit") as materialUnit;
 
   let loadType = null;
   if (!loadTypeString) {
@@ -234,6 +236,7 @@ export async function updateHaulingLogs(formData: FormData) {
         // TODO: These fields don't exist in current database schema - temporarily commented out
         // lightWeight,
         // grossWeight,
+        unit,
         loadType,
       },
     });

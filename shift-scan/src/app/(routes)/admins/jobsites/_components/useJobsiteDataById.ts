@@ -1,46 +1,48 @@
 "use client";
+import { ApprovalStatus } from "@/lib/enums";
 import { useState, useEffect, useCallback } from "react";
 
-/**
- * EquipmentVehicleInfo type for vehicle-specific info
- */
-export interface EquipmentVehicleInfo {
-  make: string;
-  model: string;
-  year: string;
-}
-
-/**
- * EquipmentSummary type for equipment/vehicle/truck/trailer asset
- */
-export type Equipment = {
+export type Jobsite = {
   id: string;
-  qrId: string;
   name: string;
   description?: string;
-  equipmentTag: string;
-  approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
-  state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
-  isDisabledByAdmin: boolean;
-  overWeight: boolean;
-  currentWeight: number | null;
-  createdById: string;
-  createdVia: string;
-  updatedAt: Date;
   creationReason?: string;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
+  approvalStatus: ApprovalStatus;
+  isActive: boolean;
+  archivedDate: boolean;
+  createdById: string;
+  updatedAt: Date;
+  createdVia: "ADMIN" | "API";
+  Address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
   };
+  Client: {
+    id: string;
+    name: string;
+  };
+  CCTags: Array<{
+    id: string;
+    name: string;
+  }>;
 };
+
 export const useJobsiteDataById = (id: string) => {
-  const [equipmentDetails, setEquipmentDetails] = useState<Equipment | null>(
-    null
-  );
+  const [jobSiteDetails, setJobSiteDetails] = useState<Jobsite | null>(null);
+  const [tagSummaries, setTagSummaries] = useState<
+    Array<{
+      id: string;
+      name: string;
+    }>
+  >([]);
+  const [clients, setClients] = useState<
+    Array<{
+      id: string;
+      name: string;
+    }>
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -50,14 +52,23 @@ export const useJobsiteDataById = (id: string) => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/getEquipmentByEquipmentId/" + id);
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}`);
-        }
-        const data = await response.json();
-        setEquipmentDetails(data);
+        const [jobsiteDetails, tag, client] = await Promise.all([
+          fetch("/api/getJobsiteById/" + id),
+          fetch("/api/getTagSummary"),
+          fetch("/api/getClientsSummary"),
+        ]).then((res) => Promise.all(res.map((r) => r.json())));
+
+        setJobSiteDetails(jobsiteDetails);
+        const filteredTags = tag.tags.map(
+          (tag: { id: string; name: string }) => ({
+            id: tag.id,
+            name: tag.name,
+          })
+        );
+        setTagSummaries(filteredTags);
+        setClients(client);
       } catch (error) {
-        console.error("Failed to fetch equipment details:", error);
+        console.error("Failed to fetch job site details:", error);
       } finally {
         setLoading(false);
       }
@@ -66,8 +77,10 @@ export const useJobsiteDataById = (id: string) => {
   }, [refreshKey]);
 
   return {
-    equipmentDetails,
-    setEquipmentDetails,
+    jobSiteDetails,
+    setJobSiteDetails,
+    tagSummaries,
+    clients,
     loading,
     setLoading,
     rerender,
