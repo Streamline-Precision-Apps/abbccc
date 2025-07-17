@@ -4,6 +4,7 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import MechanicPriority from "./MechanicPriorityList";
+import { useState } from "react";
 import MechanicSelectList from "./mangerFunctions/MechanicSelectList";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
@@ -60,6 +61,8 @@ export function ManagerView({
   timeSheetId,
   onProjectSelect,
   handleRefresh,
+  isOpenProjectPreview,
+  setIsOpenProjectPreview,
 }: {
   activeTab: number;
   setActiveTab: Dispatch<SetStateAction<number>>;
@@ -69,19 +72,23 @@ export function ManagerView({
   timeSheetId: string | null;
   onProjectSelect: (projectId: string, selected: boolean) => Promise<void>;
   handleRefresh: () => Promise<void>;
+  isOpenProjectPreview: boolean;
+  setIsOpenProjectPreview: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const t = useTranslations("MechanicWidget");
   const router = useRouter();
   return (
     <Grids rows="7" gap="5">
       {/* Header */}
-      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-        <TitleBoxes onClick={() => router.push("/dashboard")}>
-          <Titles size="h2">
-            {activeTab === 1 ? t("PriorityList") : t("Projects")}{" "}
-          </Titles>
-        </TitleBoxes>
-      </Holds>
+      {!isOpenProjectPreview && (
+        <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+          <TitleBoxes onClick={() => router.push("/dashboard")}>
+            <Titles size="h2">
+              {activeTab === 1 ? t("PriorityList") : t("Projects")}{" "}
+            </Titles>
+          </TitleBoxes>
+        </Holds>
+      )}
 
       {/* Tab Content */}
       <Holds className="row-start-2 row-end-8 h-full">
@@ -118,12 +125,15 @@ export function ManagerView({
                 loading={loading}
                 timeSheetId={timeSheetId}
                 handleRefresh={handleRefresh}
+                isOpenProjectPreview={isOpenProjectPreview}
+                setIsOpenProjectPreview={setIsOpenProjectPreview}
               />
             ) : (
               <MechanicSelectList
                 projects={selectableProjects}
                 loading={loading}
                 onProjectSelect={onProjectSelect}
+                handleRefresh={handleRefresh}
               />
             )}
           </Holds>

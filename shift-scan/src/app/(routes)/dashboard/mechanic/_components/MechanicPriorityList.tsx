@@ -70,11 +70,15 @@ export default function MechanicPriority({
   projects,
   timeSheetId,
   handleRefresh,
+  isOpenProjectPreview,
+  setIsOpenProjectPreview,
 }: {
   loading: boolean;
   projects: Project[];
   timeSheetId: string | null;
   handleRefresh: () => Promise<void>;
+  isOpenProjectPreview: boolean;
+  setIsOpenProjectPreview: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const router = useRouter();
   const [activeUsers, setActiveUsers] = useState<
@@ -96,7 +100,6 @@ export default function MechanicPriority({
   const t = useTranslations("MechanicWidget");
   const { data: session } = useSession();
   const userId = session?.user.id;
-  const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const workersPerPage = 1;
   const [endTime] = useState<string>(new Date().toISOString());
@@ -291,7 +294,7 @@ export default function MechanicPriority({
           <Holds background="white" className="h-full pb-5">
             <Grids rows="7" gap="5">
               {/* Modal Header */}
-              <Holds className="row-span-1 h-full w-full justify-center">
+              <Holds className="row-span-1 h-full w-full justify-center ">
                 <TitleBoxes
                   onClick={() => {
                     setIsOpenProjectPreview(false);
