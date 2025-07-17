@@ -285,19 +285,21 @@ export default function CostCodePage() {
           )}
           {pageState === "CostCode" ? (
             <CostCodeTable
+              loading={loading}
               costCodeDetails={paginatedCostCodes}
               openHandleDelete={openHandleDelete}
               openHandleEdit={openHandleEdit}
             />
           ) : (
             <TagTable
+              loading={tagLoading}
               tagDetails={paginatedTags}
               openHandleDelete={openHandleTagDelete}
               openHandleEdit={openHandleTagEdit}
             />
           )}
           <ScrollBar orientation="vertical" />
-          <div className="h-1  absolute bottom-0 right-0 left-0">
+          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
             <ScrollBar
               orientation="horizontal"
               className="w-full h-3 ml-2 mr-2 rounded-full"
