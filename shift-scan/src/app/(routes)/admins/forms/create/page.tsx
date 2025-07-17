@@ -4,7 +4,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import FormBuilder from "./_component/FormBuilder/FormBuilder";
 import { useRouter } from "next/navigation";
 
-export default function CreateFormPage({ params }: { params: { id: string } }) {
+export default function CreateFormPage() {
   const { setOpen, open } = useSidebar();
   const router = useRouter();
 

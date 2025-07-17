@@ -41,6 +41,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Spinner from "@/components/(animations)/spinner";
 
 // Form field definition
 interface FormField {
@@ -82,8 +83,6 @@ export interface FormItem {
   createdAt: string | Date;
   updatedAt: string | Date;
 }
-
-
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
@@ -354,6 +353,12 @@ export default function Forms() {
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
         <ScrollArea
           alwaysVisible
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"

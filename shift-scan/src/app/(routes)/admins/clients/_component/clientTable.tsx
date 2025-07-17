@@ -54,8 +54,8 @@ export default function ClientTable({
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-white pt-2">
-            {[...Array(12)].map((_, i) => (
+          <TableBody className="divide-y divide-gray-200 bg-white">
+            {[...Array(20)].map((_, i) => (
               <TableRow
                 key={i}
                 className={i % 2 === 0 ? "bg-white" : "bg-gray-100"}
@@ -131,7 +131,7 @@ export default function ClientTable({
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="divide-y divide-gray-200 bg-white">
             {clientDetails.map((client) => (
               <TableRow
                 className="odd:bg-white even:bg-gray-100 "
