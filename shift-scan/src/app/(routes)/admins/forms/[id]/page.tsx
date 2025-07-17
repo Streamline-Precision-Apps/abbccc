@@ -90,6 +90,7 @@ import {
 } from "@/components/ui/pagination";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FormTemplate } from "../_components/List/hooks/types";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function FormPage({ params }: { params: { id: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -851,6 +852,12 @@ export default function FormPage({ params }: { params: { id: string } }) {
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
         <ScrollArea
           alwaysVisible
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"

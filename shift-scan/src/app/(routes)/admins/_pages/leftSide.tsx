@@ -18,7 +18,13 @@ export default function LeftSidebar() {
   const { open: isOpen } = useSidebar();
 
   const Page = [
-    // { id: 1, title: "Dashboard", img: "home", white: "", link: "/admins" },
+    {
+      id: 1,
+      title: "Dashboard",
+      img: "home",
+      white: "home-white",
+      link: "/admins",
+    },
     {
       id: 2,
       title: "Personnel",
