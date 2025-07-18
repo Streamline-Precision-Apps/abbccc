@@ -41,11 +41,12 @@ export default function ReviewYourDay({
   setReviewYourTeam: Dispatch<SetStateAction<boolean>>;
 }) {
   const t = useTranslations("ClockOut");
+  const t2 = useTranslations("MyTeam");
 
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="row-span-1 h-full">
+        <Holds background={"white"} className="row-span-1 h-full border-[3px] border-red-500">
           <Holds className="h-full w-full">
             <Grids rows={"8"} gap={"5"}>
               <Holds className="row-start-1 row-end-2 h-full w-full justify-center">
@@ -97,7 +98,7 @@ export default function ReviewYourDay({
                           <Holds className="w-[30px]"></Holds>
                           <Grids cols={"3"} gap={"2"} className="w-full">
                             <Titles position={"left"} size={"h6"}>
-                              {t("StartEnd")}
+                              {t2("StartEnd")}
                             </Titles>
                             <Titles position={"center"} size={"h6"}>
                               {t("Jobsite")}
