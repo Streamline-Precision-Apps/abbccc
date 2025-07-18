@@ -2,12 +2,14 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "dev",
+			"label": "Type Check - Trucking Components",
 			"type": "shell",
-			"command": "npm run dev",
+			"command": "npx tsc --noEmit --skipLibCheck",
 			"group": "build",
-			"isBackground": true,
-			"problemMatcher": []
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
 		}
 	]
 }

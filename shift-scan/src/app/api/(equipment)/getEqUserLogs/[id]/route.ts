@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 type Params = { id: string };
 
 /**
- * Get equipment usage log details for a specific user within the last 24 hours
+ * Get equipment usage log details for a specific user and log ID
  * @param request - The incoming request
  * @param params - Route parameters containing the log ID
  * @returns Equipment log details or error response
@@ -78,9 +78,11 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
     return NextResponse.json(usersLog);
   } catch (error) {
-    console.error("Error fetching user's log:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to fetch user's log";
+    console.error("Error fetching log:", error);
+    let errorMessage = "Failed to fetch log";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

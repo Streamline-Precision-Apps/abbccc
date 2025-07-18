@@ -260,6 +260,12 @@ export default function TimeCardTruckingHaulLogs({
               {truckingEquipmentHaulLogs.map((item, itemIdx) =>
                 (item.TruckingLogs || []).map((log, logIdx) => {
                   if (!log) return null;
+                  
+                  // Only show logs that have actual equipment hauls
+                  if (!log.EquipmentHauled || log.EquipmentHauled.length === 0) {
+                    return null;
+                  }
+
                   const isFocused = focusIds.includes(log.id);
                   const handleToggleFocus = () => {
                     if (isFocused) {

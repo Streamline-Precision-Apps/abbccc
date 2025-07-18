@@ -113,7 +113,7 @@ export default function BannerRotating() {
           `/api/getBannerData?id=${timeSheetData.id}`
         );
         const bannerData = await bannerResponse.json();
-        console.log(bannerData);
+        // console.log(bannerData); // Uncomment for debugging
 
         if (!bannerResponse.ok) {
           throw new Error(bannerData.error || "Failed to fetch job site data.");

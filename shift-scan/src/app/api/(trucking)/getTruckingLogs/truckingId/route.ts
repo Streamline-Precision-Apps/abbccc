@@ -27,20 +27,31 @@ export async function GET(request: Request) {
   const userId = session.user.id;
 
   try {
-    // Query the timeSheet for the current user with an active trucking log (endTime is null)
+    // Query the most recent active timeSheet for the current user with an active trucking log
     const truckingId = await prisma.timeSheet.findFirst({
       where: {
         userId,
         endTime: null, // Looking for active timesheets
       },
+      orderBy: {
+        startTime: 'desc', // Get the most recent one
+      },
       select: {
+        id: true,
+        startTime: true,
         TruckingLogs: {
+          orderBy: {
+            id: 'desc', // Get the most recent trucking log
+          },
+          take: 1, // Only get the first (most recent) one
           select: {
-            id: true, // Select the truckingLog ID
+            id: true,
           },
         },
       },
     });
+
+    console.log("Found timesheet:", truckingId); // Debug log
 
     // If no trucking log is found, return a 404 response
     if (
@@ -54,9 +65,11 @@ export async function GET(request: Request) {
       );
     }
 
-    const truckingLogs = truckingId.TruckingLogs[0].id;
+    const truckingLogId = truckingId.TruckingLogs[0].id;
+    console.log("Returning trucking log ID:", truckingLogId); // Debug log
+    
     // Return the trucking log ID
-    return NextResponse.json(truckingLogs);
+    return NextResponse.json(truckingLogId);
   } catch (error) {
     Sentry.captureException(error);
     console.error("Error fetching trucking log:", error);
