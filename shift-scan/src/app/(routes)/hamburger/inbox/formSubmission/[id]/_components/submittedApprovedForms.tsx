@@ -1,5 +1,6 @@
 "use client";
 import { FormInput } from "./formInput";
+import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
@@ -154,24 +155,12 @@ export default function SubmittedFormsApproval({
       >
         <Contents width={"section"}>
           <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 ">
-            {formData?.groupings?.map((group) => (
-              <Holds key={group.id} className="">
-                {group.title && <h3>{group.title || ""}</h3>}
-                {group.fields.map((field) => {
-                  return (
-                    <Holds key={field.id} className="pb-3">
-                      <FormInput
-                        key={field.name}
-                        field={field}
-                        formValues={formValues}
-                        setFormValues={() => {}}
-                        readOnly={true}
-                      />
-                    </Holds>
-                  );
-                })}
-              </Holds>
-            ))}
+            <FormFieldRenderer
+              formData={formData}
+              formValues={formValues}
+              setFormValues={() => {}}
+              readOnly={true}
+            />
             <Holds
               position={"row"}
               className="pb-3 w-full justify-between border-black border-opacity-5 border-b-2"
