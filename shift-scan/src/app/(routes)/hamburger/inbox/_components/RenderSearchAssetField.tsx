@@ -156,16 +156,16 @@ export default function RenderSearchAssetField({
         />
         {/* Display selected assets as tags */}
         {selectedAssets.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2 mb-1">
+          <div className="max-w-md flex flex-wrap gap-2 mt-3 mb-2">
             {selectedAssets.map((asset: Asset, idx: number) => (
               <div
                 key={idx}
-                className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                className="bg-green-100 text-green-800 text-xl px-3 py-2 rounded-lg flex items-center gap-2"
               >
-                <span>{asset.name}</span>
+                <span className="text-lg font-medium">{asset.name}</span>
                 <button
                   type="button"
-                  className="text-green-800 hover:text-green-900"
+                  className="text-green-800 hover:text-green-900 text-2xl font-bold leading-none"
                   onClick={() => {
                     const updatedAssets = selectedAssets.filter(
                       (_: Asset, i: number) => i !== idx
@@ -175,6 +175,7 @@ export default function RenderSearchAssetField({
                       updatedAssets.length ? updatedAssets : null
                     );
                   }}
+                  aria-label={`Remove ${asset.name}`}
                 >
                   ×
                 </button>
@@ -223,6 +224,24 @@ export default function RenderSearchAssetField({
           placeholder={`Select ${assetType}...`}
           filterKeys={["value", "label"]}
         />
+        {/* Display selected asset as tag */}
+        {currentValue && (
+          <div className="flex flex-wrap gap-2 mt-3 mb-2">
+            <div className="bg-green-100 text-green-800 text-lg px-3 py-2 rounded-lg flex items-center gap-2">
+              <span className="text-lg font-medium">{currentValue.name}</span>
+              <button
+                type="button"
+                className="text-green-800 hover:text-green-900 text-2xl font-bold leading-none"
+                onClick={() => {
+                  handleFieldChange(field.id, null);
+                }}
+                aria-label={`Remove ${currentValue.name}`}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
         {/* Show error message if required and no asset selected */}
         {((field.required && !currentValue) || error) &&
           touchedFields[field.id] && (

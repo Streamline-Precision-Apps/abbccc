@@ -201,12 +201,20 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
     console.log("convertToFormFieldValues input values:", values);
     Object.entries(values).forEach(([key, value]) => {
       // Find the field to understand its type
-      // First try to find by field ID, then by field label/name
-      const field = formData.groupings
+      // First try to find by field ID, then by field label/name, then by order
+      let field = formData.groupings
         ?.flatMap((group: FormGrouping) => group.fields || [])
         .find(
           (f: FormField) => f.id === key || f.label === key || f.name === key
         );
+
+      // If no field found and key is numeric, try to find by order
+      if (!field && /^\d+$/.test(key)) {
+        const order = parseInt(key);
+        field = formData.groupings
+          ?.flatMap((group: FormGrouping) => group.fields || [])
+          .find((f: FormField) => f.order === order);
+      }
 
       if (field) {
         console.log("Found field for key:", {
@@ -286,26 +294,89 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   };
 
   const handleFieldChange = (fieldId: string, value: FormFieldValue) => {
+    console.log("handleFieldChange called with:", { fieldId, value });
+    console.log("readOnly:", readOnly);
+    console.log("setFormValues:", setFormValues);
+    console.log("setFormValues type:", typeof setFormValues);
+
     if (!readOnly && setFormValues) {
-      const convertedValue = convertFromFormFieldValue(value);
+      // Find the field to understand its type
+      const field = formData.groupings
+        ?.flatMap((group: FormGrouping) => group.fields || [])
+        .find((f: FormField) => f.id === fieldId);
+
+      console.log("Found field:", field);
+
+      let convertedValue = "";
+
+      if (field) {
+        switch (field.type) {
+          case "SEARCH_PERSON":
+          case "SEARCH_ASSET":
+            // For search fields, store as JSON string
+            if (Array.isArray(value)) {
+              convertedValue = JSON.stringify(value);
+            } else if (value && typeof value === "object") {
+              convertedValue = JSON.stringify(value);
+            } else {
+              convertedValue = value ? String(value) : "";
+            }
+            break;
+          case "MULTISELECT":
+            // For multiselect, store as JSON array
+            if (Array.isArray(value)) {
+              convertedValue = JSON.stringify(value);
+            } else {
+              convertedValue = value ? String(value) : "";
+            }
+            break;
+          case "CHECKBOX":
+            convertedValue = value ? "true" : "false";
+            break;
+          case "NUMBER":
+            convertedValue = value ? String(value) : "0";
+            break;
+          case "DATE":
+          case "DATE_TIME":
+            if (value instanceof Date) {
+              convertedValue = value.toISOString();
+            } else {
+              convertedValue = value ? String(value) : "";
+            }
+            break;
+          default:
+            convertedValue = value ? String(value) : "";
+        }
+      } else {
+        // Fallback conversion
+        convertedValue = convertFromFormFieldValue(value);
+      }
+
+      console.log("Converted value:", convertedValue);
+      console.log("Current formValues keys:", Object.keys(formValues));
 
       // Find the original key in formValues that corresponds to this field
+      // The formValues might be using field labels as keys instead of field IDs
       const originalKey = Object.keys(formValues).find((key) => {
-        const field = formData.groupings
+        const foundField = formData.groupings
           ?.flatMap((group: FormGrouping) => group.fields || [])
           .find((f: FormField) => f.id === fieldId);
         return (
-          field &&
-          (field.id === key || field.label === key || field.name === key)
+          foundField &&
+          (foundField.id === key ||
+            foundField.label === key ||
+            foundField.name === key)
         );
       });
 
       const keyToUpdate = originalKey || fieldId;
+      console.log("Key to update:", keyToUpdate, "Original key:", originalKey);
 
       const newFormValues = {
         ...formValues,
         [keyToUpdate]: convertedValue,
       };
+      console.log("New form values:", newFormValues);
       setFormValues(newFormValues);
     }
   };

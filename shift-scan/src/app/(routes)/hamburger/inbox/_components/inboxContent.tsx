@@ -7,7 +7,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import FormSelection from "./formSelection";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
-import CompanyDocuments from "./companyDocuments";
+// import CompanyDocuments from "./companyDocuments";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Images } from "@/components/(reusable)/images";
 import RTab from "./recieved";
@@ -70,7 +70,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   </NewTab>
                 )}
 
-                <NewTab
+                {/* <NewTab
                   onClick={() => setActiveTab(4)}
                   isActive={false}
                   isComplete={true}
@@ -79,7 +79,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   animatePulse={loading}
                 >
                   <Titles size={"h5"}>{t("Documents")}</Titles>
-                </NewTab>
+                </NewTab> */}
               </Holds>
               <Holds className="row-start-2 row-end-13 h-full">
                 <FormSelection
@@ -135,7 +135,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
               >
                 {activeTab === 3 && <RTab isManager={isManager} />}
 
-                {activeTab === 4 && <CompanyDocuments />}
+                {/* {activeTab === 4 && <CompanyDocuments />} */}
               </Holds>
             </Grids>
           </Holds>

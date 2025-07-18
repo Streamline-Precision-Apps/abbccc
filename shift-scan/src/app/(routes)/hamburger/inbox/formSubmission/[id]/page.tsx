@@ -194,10 +194,13 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         if (submissionData) {
           // Convert form template for mapping
           const legacyTemplate = convertToLegacyFormTemplate(apiData);
-          
+
           // Convert form values from label-based to ID-based keys
-          const convertedValues = convertFormValuesToIdBased(submissionData.data, legacyTemplate);
-          
+          const convertedValues = convertFormValuesToIdBased(
+            submissionData.data,
+            legacyTemplate
+          );
+
           setFormValues(convertedValues);
           setFormTitle(
             submissionData.title ||
@@ -266,11 +269,11 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     setFormValues((prevValues) => {
       // Convert new values from potentially label-based keys to ID-based keys
       const convertedValues: Record<string, FormFieldValue> = {};
-      
+
       Object.entries(newValues).forEach(([key, value]) => {
         convertedValues[key] = value;
       });
-      
+
       return {
         ...prevValues,
         ...convertedValues,
@@ -283,10 +286,10 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     values: Record<string, FormFieldValue>
   ): Record<string, string> => {
     const stringValues: Record<string, string> = {};
-    
+
     // Get the form template for mapping
     const template = formData ? convertToLegacyFormTemplate(formData) : null;
-    
+
     // Create a mapping from field IDs to field labels for saving
     const idToLabelMap: Record<string, string> = {};
     if (template) {
@@ -296,42 +299,87 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         });
       });
     }
-    
+
     Object.entries(values).forEach(([key, value]) => {
-      // Convert the value to string
+      // Find the field to understand its type
+      const field = template?.groupings
+        ?.flatMap((group) => group.fields || [])
+        .find((f) => f.id === key);
+
+      // Convert the value to string based on field type
       let stringValue = "";
-      if (typeof value === "string") {
-        stringValue = value;
-      } else if (typeof value === "number" || typeof value === "boolean") {
-        stringValue = String(value);
-      } else if (value instanceof Date) {
-        stringValue = value.toISOString();
-      } else if (Array.isArray(value)) {
-        stringValue = value.join(",");
-      } else if (value && typeof value === "object") {
-        stringValue = JSON.stringify(value);
+
+      if (field) {
+        switch (field.type) {
+          case "SEARCH_PERSON":
+          case "SEARCH_ASSET":
+            // For search fields, store as JSON string
+            if (Array.isArray(value)) {
+              stringValue = JSON.stringify(value);
+            } else if (value && typeof value === "object") {
+              stringValue = JSON.stringify(value);
+            } else {
+              stringValue = value ? String(value) : "";
+            }
+            break;
+          case "MULTISELECT":
+            // For multiselect, store as JSON array
+            if (Array.isArray(value)) {
+              stringValue = JSON.stringify(value);
+            } else {
+              stringValue = value ? String(value) : "";
+            }
+            break;
+          case "CHECKBOX":
+            stringValue = value ? "true" : "false";
+            break;
+          case "NUMBER":
+            stringValue = value ? String(value) : "0";
+            break;
+          case "DATE":
+          case "DATE_TIME":
+            if (value instanceof Date) {
+              stringValue = value.toISOString();
+            } else {
+              stringValue = value ? String(value) : "";
+            }
+            break;
+          default:
+            stringValue = value ? String(value) : "";
+        }
       } else {
-        stringValue = "";
+        // Fallback conversion
+        if (typeof value === "string") {
+          stringValue = value;
+        } else if (typeof value === "number" || typeof value === "boolean") {
+          stringValue = String(value);
+        } else if (value instanceof Date) {
+          stringValue = value.toISOString();
+        } else if (Array.isArray(value)) {
+          stringValue = JSON.stringify(value);
+        } else if (value && typeof value === "object") {
+          stringValue = JSON.stringify(value);
+        } else {
+          stringValue = "";
+        }
       }
-      
+
       // Use field label as key if available, otherwise use original key
       const fieldLabel = idToLabelMap[key];
       const finalKey = fieldLabel || key;
       stringValues[finalKey] = stringValue;
     });
-    
+
     return stringValues;
   };
 
   // Convert API response to FormTemplate for legacy components
-  const convertToLegacyFormTemplate = (
-    template: any
-  ): FormTemplate => {
+  const convertToLegacyFormTemplate = (template: any): FormTemplate => {
     // Check if the template is already in the correct format from the API
     if (template.groupings) {
       return template as FormTemplate;
     }
-    
+
     // Otherwise, convert from FormIndividualTemplate format
     return {
       id: template.id,
@@ -366,7 +414,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     template: FormTemplate
   ): Record<string, FormFieldValue> => {
     const result: Record<string, FormFieldValue> = {};
-    
+
     // Create a mapping from field labels to field IDs
     const labelToIdMap: Record<string, string> = {};
     template.groupings.forEach((group) => {
@@ -374,7 +422,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         labelToIdMap[field.label] = field.id;
       });
     });
-    
+
     // Convert values using the mapping
     Object.entries(values).forEach(([key, value]) => {
       const fieldId = labelToIdMap[key];
@@ -385,7 +433,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         result[key] = value;
       }
     });
-    
+
     return result;
   };
 
@@ -400,45 +448,14 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
     try {
       if (!userId || !submissionId) {
-        console.error("User ID is null");
+        console.error("User ID or submission ID is null");
         return;
       }
 
-      // Convert formValues to Record<string, string> for saveDraftToPending
-      // Use field labels as keys for saving
-      const dataToSave: Record<string, string> = {};
-      const template = convertToLegacyFormTemplate(formData);
-      
-      // Create a mapping from field IDs to field labels for saving
-      const idToLabelMap: Record<string, string> = {};
-      template.groupings.forEach((group) => {
-        group.fields.forEach((field) => {
-          idToLabelMap[field.id] = field.label;
-        });
-      });
-      
-      Object.entries(formValues).forEach(([key, value]) => {
-        // Convert value to string
-        let stringValue = "";
-        if (typeof value === "string") {
-          stringValue = value;
-        } else if (typeof value === "number" || typeof value === "boolean") {
-          stringValue = String(value);
-        } else if (value instanceof Date) {
-          stringValue = value.toISOString();
-        } else if (Array.isArray(value)) {
-          stringValue = value.join(",");
-        } else if (value && typeof value === "object") {
-          stringValue = JSON.stringify(value);
-        } else {
-          stringValue = "";
-        }
-        
-        // Use field label as key if available, otherwise use original key
-        const fieldLabel = idToLabelMap[key];
-        const finalKey = fieldLabel || key;
-        dataToSave[finalKey] = stringValue;
-      });
+      // Use the current formValues directly (they're already in the correct format)
+      const dataToSave = convertFormValuesToString(formValues);
+
+      console.log("Submitting form with data:", dataToSave);
 
       const result = await saveDraftToPending(
         dataToSave,
@@ -449,8 +466,13 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         formTitle
       );
 
+      console.log("Form submission result:", result);
+
       if (result) {
+        console.log("Form submitted successfully, redirecting...");
         router.back(); // Redirect to a success page
+      } else {
+        console.error("Form submission failed: No result returned");
       }
     } catch (error) {
       console.error("Error submitting form:", error);

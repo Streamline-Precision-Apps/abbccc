@@ -125,8 +125,46 @@ export default function FormDraft({
   ): boolean => {
     for (const group of formData.groupings) {
       for (const field of group.fields) {
-        if (field.required && !formValues[field.id]) {
-          return false;
+        if (field.required) {
+          // Check both field ID and field label as keys
+          const fieldValue = formValues[field.id] || formValues[field.label];
+          if (!fieldValue || fieldValue.trim() === "") {
+            console.log(
+              `Validation failed for field: ${field.label} (${field.id})`
+            );
+            return false;
+          }
+
+          // For JSON fields, check if they contain meaningful data
+          if (
+            field.type === "SEARCH_PERSON" ||
+            field.type === "SEARCH_ASSET" ||
+            field.type === "MULTISELECT"
+          ) {
+            try {
+              const parsed = JSON.parse(fieldValue);
+              if (Array.isArray(parsed) && parsed.length === 0) {
+                console.log(
+                  `Validation failed for empty array field: ${field.label} (${field.id})`
+                );
+                return false;
+              }
+              if (parsed === null || parsed === undefined) {
+                console.log(
+                  `Validation failed for null/undefined field: ${field.label} (${field.id})`
+                );
+                return false;
+              }
+            } catch (e) {
+              // If it's not valid JSON, treat as string validation
+              if (!fieldValue || fieldValue.trim() === "") {
+                console.log(
+                  `Validation failed for non-JSON field: ${field.label} (${field.id})`
+                );
+                return false;
+              }
+            }
+          }
         }
       }
     }
@@ -237,13 +275,14 @@ export default function FormDraft({
                   <Buttons
                     type="submit"
                     background={
-                      !validateForm(formValues, formData) || !showSignature
+                      !validateForm(formValues, formData) || 
+                      (formData.isSignatureRequired && !showSignature)
                         ? "darkGray"
                         : "green"
                     }
                     disabled={
                       !validateForm(formValues, formData) ||
-                      !showSignature ||
+                      (formData.isSignatureRequired && !showSignature) ||
                       isSubmitting
                     }
                     className="w-full"
