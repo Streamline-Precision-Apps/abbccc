@@ -10,9 +10,7 @@ import RenderInputField from "@/app/(routes)/admins/forms/_components/RenderInpu
 import RenderMultiselectField from "@/app/(routes)/admins/forms/_components/RenderMultiselectField";
 import RenderNumberField from "@/app/(routes)/admins/forms/_components/RenderNumberField";
 import RenderRadioField from "@/app/(routes)/admins/forms/_components/RenderRadioField";
-import RenderSearchPersonField, {
-  Fields,
-} from "@/app/(routes)/admins/forms/_components/RenderSearchPersonField";
+import RenderSearchPersonField, { Fields } from "./RenderSearchPersonField";
 import RenderTextArea from "@/app/(routes)/admins/forms/_components/RenderTextAreaField";
 import RenderSearchAssetField from "./RenderSearchAssetField";
 import RenderTimeField from "./RenderTimeField";
@@ -58,6 +56,7 @@ export default function RenderFields({
   readOnly?: boolean;
   hideSubmittedBy?: boolean;
 }) {
+  console.log("RenderFields readOnly prop:", readOnly);
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
     {}
   );
@@ -346,7 +345,11 @@ export default function RenderFields({
                       userOptions={userOptions} // Use the userOptions array
                       handleFieldChange={
                         readOnly
-                          ? () => {}
+                          ? () => {
+                              console.log(
+                                "ReadOnly mode - SEARCH_PERSON handleFieldChange blocked"
+                              );
+                            }
                           : (
                               id: string,
                               val:
@@ -358,6 +361,10 @@ export default function RenderFields({
                                 | number
                                 | null
                             ) => {
+                              console.log(
+                                "RenderFields SEARCH_PERSON handleFieldChange wrapper called with:",
+                                { id, val }
+                              );
                               handleFieldChange(id, val);
                             }
                       }
