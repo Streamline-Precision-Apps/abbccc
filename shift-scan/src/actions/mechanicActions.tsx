@@ -6,6 +6,9 @@ import { revalidatePath, revalidateTag } from "next/cache";
 // This Updates the selected staus of the project in the database
 export async function setProjectSelected(id: string, selected: boolean) {
   try {
+    console.log("Updating project status...");
+    console.log("Project ID:", id);
+    console.log("Selected:", selected);
     await prisma.maintenance.update({
       where: { id },
       data: { selected },
@@ -299,6 +302,22 @@ export async function SubmitEngineerProject(formData: FormData) {
       formData.get("totalHoursLaboured") as string
     );
 
+    // Check for open MaintenanceLogs (endTime is null) for this Maintenance
+    const openLogs = await prisma.maintenanceLog.findMany({
+      where: {
+        maintenanceId: id,
+        endTime: null,
+      },
+      select: { id: true },
+    });
+
+    if (openLogs.length > 0) {
+      return {
+        success: false,
+        error: "Cannot finish project while someone is still working on it.",
+      };
+    }
+
     await prisma.maintenance.update({
       where: {
         id,
@@ -315,8 +334,13 @@ export async function SubmitEngineerProject(formData: FormData) {
     revalidateTag("projects");
     revalidateTag("maintenance-projects");
 
-    return true;
-  } catch (error) {}
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: "An error occurred while finishing the project.",
+    };
+  }
 }
 export async function setEngineerComment(comment: string, id: string) {
   try {
