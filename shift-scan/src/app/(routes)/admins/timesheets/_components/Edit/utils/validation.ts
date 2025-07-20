@@ -23,7 +23,7 @@ export function isMaintenanceLogComplete(log: MaintenanceLog): boolean {
 /** Checks if a trucking log is complete. */
 export function isTruckingLogComplete(log: TruckingLog): boolean {
   return !!(
-    log.equipmentId &&
+    log.truckNumber &&
     typeof log.startingMileage === "number" &&
     typeof log.endingMileage === "number"
   );
@@ -57,7 +57,6 @@ export function isMaterialComplete(mat: Material): boolean {
   return !!(
     mat.LocationOfMaterial &&
     mat.name &&
-    mat.materialWeight &&
     mat.quantity &&
     mat.unit &&
     mat.loadType

@@ -374,37 +374,46 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
   };
 
   // Convert API response to FormTemplate for legacy components
-  const convertToLegacyFormTemplate = (template: any): FormTemplate => {
+  const convertToLegacyFormTemplate = (
+    template: FormIndividualTemplate | FormTemplate
+  ): FormTemplate => {
     // Check if the template is already in the correct format from the API
-    if (template.groupings) {
+    if ((template as FormTemplate).groupings) {
       return template as FormTemplate;
     }
 
     // Otherwise, convert from FormIndividualTemplate format
+    const typedTemplate = template as FormIndividualTemplate;
     return {
-      id: template.id,
-      name: template.name,
-      formType: template.formType,
-      isActive: template.isActive === "ACTIVE",
-      isSignatureRequired: template.isSignatureRequired,
+      id: typedTemplate.id,
+      name: typedTemplate.name,
+      formType: typedTemplate.formType,
+      isActive: typedTemplate.isActive === "ACTIVE",
+      isSignatureRequired: typedTemplate.isSignatureRequired,
       groupings:
-        template.FormGrouping?.map((group: any) => ({
-          id: group.id,
-          title: group.title || "",
-          order: group.order,
-          fields:
-            group.Fields?.map((field: any) => ({
-              id: field.id,
-              label: field.label,
-              name: field.label, // Use label as name for backward compatibility
-              type: field.type,
-              required: field.required,
-              order: field.order,
-              placeholder: field.placeholder || undefined,
-              maxLength: field.maxLength || undefined,
-              options: field.Options?.map((opt: any) => opt.value) || undefined,
-            })) || [],
-        })) || [],
+        typedTemplate.FormGrouping?.map(
+          (group): FormGrouping => ({
+            id: group.id,
+            title: group.title || "",
+            order: group.order,
+            fields:
+              group.Fields?.map(
+                (field): FormField => ({
+                  id: field.id,
+                  label: field.label,
+                  name: field.label, // Use label as name for backward compatibility
+                  type: field.type,
+                  required: field.required,
+                  order: field.order,
+                  placeholder: field.placeholder || undefined,
+                  maxLength: field.maxLength || undefined,
+                  options:
+                    field.Options?.map((opt: { value: string }) => opt.value) ||
+                    undefined,
+                })
+              ) || [],
+          })
+        ) || [],
     };
   };
 
