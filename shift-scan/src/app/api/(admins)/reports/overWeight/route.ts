@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { LoadType } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -24,29 +23,84 @@ export async function GET(req: Request) {
   }
 
   try {
-    const overWeightReport = await prisma.equipment.findMany({
+    const overWeightReport = await prisma.truckingLog.findMany({
       where: {
-        overWeight: true,
+        endingMileage: { not: null },
       },
       select: {
-        id: true,
-        name: true,
-        overWeight: true,
-        currentWeight: true,
-        equipmentVehicleInfo: {
+        startingMileage: true,
+        endingMileage: true,
+        truckNumber: true,
+        trailerNumber: true,
+        TimeSheet: {
           select: {
-            mileage: true,
+            date: true,
+            comment: true,
+            Jobsite: {
+              select: { name: true },
+            },
+          },
+        },
+        EquipmentHauled: {
+          select: {
+            Equipment: { select: { name: true, id: true } },
+            startMileage: true,
+            endMileage: true,
+          },
+        },
+        Materials: {
+          select: {
+            id: true,
+            name: true,
+            LocationOfMaterial: true,
+            quantity: true,
+            unit: true,
+          },
+        },
+        RefuelLogs: {
+          select: {
+            milesAtFueling: true,
+            gallonsRefueled: true,
+          },
+        },
+        StateMileages: {
+          select: {
+            state: true,
+            stateLineMileage: true,
           },
         },
       },
     });
 
-    const formattedReport = overWeightReport.map((equipment) => ({
-      date: new Date().toISOString().split("T")[0], // Assuming today's date for the report
-      equipmentId: equipment.id,
-      name: equipment.name,
-      overWeightAmount: equipment.currentWeight,
-      totalMileage: equipment.equipmentVehicleInfo?.mileage || 0,
+    const formattedReport = overWeightReport.map((log) => ({
+      truckId: log.truckNumber,
+      trailerId: log.trailerNumber,
+      date: log.TimeSheet?.date ?? null,
+      jobId: log.TimeSheet?.Jobsite?.name ?? null,
+      Equipment: log.EquipmentHauled.map((equipment) => ({
+        name: equipment.Equipment?.name || "",
+        id: equipment.Equipment?.id || null,
+        startMileage: equipment.startMileage,
+        endMileage: equipment.endMileage,
+      })),
+      Materials: log.Materials.map((material) => ({
+        id: material.id,
+        name: material.name,
+        location: material.LocationOfMaterial,
+        quantity: material.quantity,
+        unit: material.unit,
+      })),
+      StartingMileage: log.startingMileage,
+      Fuel: log.RefuelLogs.map((fuel) => ({
+        milesAtFueling: fuel.milesAtFueling,
+        gallonsRefueled: fuel.gallonsRefueled,
+      })),
+      StateMileages: log.StateMileages.map((state) => ({
+        state: state.state,
+        stateLineMileage: state.stateLineMileage,
+      })),
+      EndingMileage: log.endingMileage,
+      notes: log.TimeSheet?.comment ?? null,
     }));
 
     if (!formattedReport.length) {
