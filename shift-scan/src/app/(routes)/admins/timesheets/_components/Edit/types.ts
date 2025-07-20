@@ -18,8 +18,8 @@ export interface EquipmentHauled {
   id: string;
   equipmentId: string;
   jobSiteId: string;
-  startMileage: number;
-  endMileage: number;
+  startMileage: string;
+  endMileage: string;
 }
 export interface Material {
   id: string;
@@ -27,7 +27,6 @@ export interface Material {
   name: string;
   quantity: string;
   unit: string;
-  materialWeight: number;
   loadType: string;
 }
 
@@ -43,7 +42,8 @@ export interface StateMileage {
 }
 export interface TruckingLog {
   id: string;
-  equipmentId: string;
+  truckNumber: string; // Added truckId for clarity
+  trailerNumber?: string; // Optional trailerId
   startingMileage: number;
   endingMileage: number;
   EquipmentHauled: EquipmentHauled[];

@@ -145,6 +145,8 @@ export function useTimesheetLogs(
                           id: Date.now().toString(),
                           equipmentId: "",
                           jobSiteId: "",
+                          startMileage: "",
+                          endMileage: "",
                         },
                       ],
                     }
@@ -194,7 +196,6 @@ export function useTimesheetLogs(
                           id: Date.now().toString(),
                           LocationOfMaterial: "",
                           name: "",
-                          materialWeight: 0,
                           quantity: "",
                           unit: "",
                           loadType: "",
