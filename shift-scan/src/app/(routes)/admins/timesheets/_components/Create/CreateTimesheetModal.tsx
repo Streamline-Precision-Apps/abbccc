@@ -38,6 +38,9 @@ export function CreateTimesheetModal({
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
     []
   );
+  const [trucks, setTrucks] = useState<{ id: string; name: string }[]>([]);
+  const [trailers, setTrailers] = useState<{ id: string; name: string }[]>([]);
+
   const [materialTypes, setMaterialTypes] = useState<
     { id: string; name: string }[]
   >([]);
@@ -61,16 +64,20 @@ export function CreateTimesheetModal({
     name: string;
     quantity: string;
     unit: string;
-    materialWeight: string;
+    // materialWeight: string;
     loadType: "screened" | "unscreened" | "";
   };
   type TruckingLogDraft = {
     equipmentId: string;
+    trailerNumber: string | null;
+    truckNumber: string;
     startingMileage: string;
     endingMileage: string;
     equipmentHauled: {
       equipment: { id: string; name: string };
       jobsite: { id: string; name: string };
+      startMileage: string;
+      endMileage: string;
     }[];
     materials: TruckingMaterialDraft[];
     refuelLogs: { gallonsRefueled: string; milesAtFueling: string }[];
@@ -79,12 +86,28 @@ export function CreateTimesheetModal({
   const [truckingLogs, setTruckingLogs] = useState<TruckingLogDraft[]>([
     {
       equipmentId: "",
+      truckNumber: "",
+      trailerNumber: null,
       startingMileage: "",
       endingMileage: "",
       equipmentHauled: [
-        { equipment: { id: "", name: "" }, jobsite: { id: "", name: "" } },
+        {
+          equipment: { id: "", name: "" },
+          jobsite: { id: "", name: "" },
+          startMileage: "",
+          endMileage: "",
+        },
       ],
-      materials: [],
+      materials: [
+        {
+          location: "",
+          name: "",
+          quantity: "",
+          unit: "",
+          // materialWeight: "",
+          loadType: "",
+        },
+      ],
       refuelLogs: [{ gallonsRefueled: "", milesAtFueling: "" }],
       stateMileages: [{ state: "", stateLineMileage: "" }],
     },
@@ -159,6 +182,16 @@ export function CreateTimesheetModal({
     label: e.name,
   }));
 
+  const truckOptions = trucks.map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+
+  const trailerOptions = trailers.map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+
   // Remove costCodeOptions dynamic logic (no costCodes on jobsites)
   const workTypeOptions = [
     { value: "MECHANIC", label: "Mechanic" },
@@ -175,6 +208,9 @@ export function CreateTimesheetModal({
       const equipmentRes = await fetch("/api/getAllEquipment");
 
       const jobsite = await jobsitesRes.json();
+      const equipment = await equipmentRes.json();
+      const users = await usersRes.json();
+
       const filteredJobsite = jobsite.filter(
         (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED"
       );
@@ -184,10 +220,19 @@ export function CreateTimesheetModal({
           name: j.name,
         })
       );
-      setEquipment(
-        (await equipmentRes.json()) as { id: string; name: string }[]
+
+      const filteredTrucks = equipment.filter(
+        (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK"
       );
-      setUsers(await usersRes.json());
+      const filteredTrailers = equipment.filter(
+        (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
+      );
+
+      setTrucks(filteredTrucks);
+      setTrailers(filteredTrailers);
+
+      setEquipment(equipment);
+      setUsers(users);
       setJobsites(filteredJobsites);
     }
     fetchDropdowns();
@@ -342,6 +387,8 @@ export function CreateTimesheetModal({
               setTruckingLogs={setTruckingLogs}
               equipmentOptions={equipmentOptions}
               jobsiteOptions={jobsiteOptions}
+              truckOptions={truckOptions}
+              trailerOptions={trailerOptions}
             />
           )}
           {form.workType === "TASCO" && (
