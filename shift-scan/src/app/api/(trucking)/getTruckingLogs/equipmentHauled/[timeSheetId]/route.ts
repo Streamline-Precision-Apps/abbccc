@@ -19,18 +19,11 @@ export async function GET(
   }
 
   try {
-    const truckingLog = await prisma.truckingLog.findFirst({
+    // Query the database for equipment hauled directly using the truckingLogId
+    // Note: timeSheetId parameter is actually a truckingLogId from the frontend
+    const equipmentHauled = await prisma.equipmentHauled.findMany({
       where: {
-        timeSheetId: timeSheetId,
-      },
-      select: {
-        id: true,
-      },
-    });
-    // Fetch state mileage based on truckingLogId (timeSheetId)
-    const stateMileage = await prisma.equipmentHauled.findMany({
-      where: {
-        truckingLogId: truckingLog?.id,
+        truckingLogId: timeSheetId, // timeSheetId is actually truckingLogId
       },
       include: {
         Equipment: {
@@ -48,8 +41,8 @@ export async function GET(
       },
     });
 
-    // Return the state mileage data
-    return NextResponse.json(stateMileage);
+    // Return the equipment hauled data
+    return NextResponse.json(equipmentHauled);
   } catch (error) {
     Sentry.captureException(error);
     console.error("Error fetching state mileage:", error);

@@ -63,6 +63,8 @@ export async function GET(
         defaultValue: undefined, // FormField doesn't have defaultValue
         placeholder: field.placeholder,
         helperText: field.content, // Use content as helperText
+        filter: field.filter, // Include the filter property for SEARCH_ASSET fields
+        multiple: field.multiple, // Include multiple property for multi-select fields
         options: field.Options.map((option) => option.value), // Extract dropdown options
       })),
     })),

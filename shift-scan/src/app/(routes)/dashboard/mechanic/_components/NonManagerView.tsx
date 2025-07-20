@@ -55,22 +55,28 @@ export function NonManagerView({
   loading,
   timeSheetId,
   handleRefresh,
+  isOpenProjectPreview,
+  setIsOpenProjectPreview,
 }: {
   projects: Project[];
   loading: boolean;
   timeSheetId: string | null;
   handleRefresh: () => Promise<void>;
+  isOpenProjectPreview: boolean;
+  setIsOpenProjectPreview: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const t = useTranslations("MechanicWidget");
   const router = useRouter();
   return (
     <Grids rows="7" gap="5">
       {/* Header */}
-      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-        <TitleBoxes onClick={() => router.push("/dashboard")}>
-          <Titles size="h2">{t("Projects")}</Titles>
-        </TitleBoxes>
-      </Holds>
+      {!isOpenProjectPreview && (
+        <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+          <TitleBoxes onClick={() => router.push("/dashboard")}>
+            <Titles size="h2">{t("Projects")}</Titles>
+          </TitleBoxes>
+        </Holds>
+      )}
 
       {/* Priority List */}
 
@@ -79,6 +85,8 @@ export function NonManagerView({
         projects={projects}
         timeSheetId={timeSheetId}
         handleRefresh={handleRefresh}
+        isOpenProjectPreview={isOpenProjectPreview}
+        setIsOpenProjectPreview={setIsOpenProjectPreview}
       />
     </Grids>
   );

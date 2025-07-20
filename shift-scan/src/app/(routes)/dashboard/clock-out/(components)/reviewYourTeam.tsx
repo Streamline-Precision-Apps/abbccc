@@ -7,7 +7,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { crewUsers, TimesheetFilter, TimesheetHighlights } from "@/lib/types";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import TimeSheetRenderer from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/timeSheetRenderer";
 import { approvePendingTimesheets } from "@/actions/timeSheetActions";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -17,7 +17,7 @@ import TinderSwipe, {
 } from "@/components/(animations)/tinderSwipe";
 import ReviewTabOptions from "./ReviewTabOptions";
 import { useAllEquipment } from "@/hooks/useAllEquipment";
-import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
+// import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 
 const FILTER_OPTIONS: {
   value: TimesheetFilter | "trucking" | "tasco";
@@ -77,6 +77,33 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   setEmployeeId,
   crewMembers = [],
 }) => {
+  // Ensure manager is always first in the review list, and not duplicated
+  const [managerUser, setManagerUser] = useState<crewUsers | null>(null);
+  useEffect(() => {
+    // Try to find the manager in the crewMembers list by matching id or name
+    let found: crewUsers | undefined = undefined;
+    if (crewMembers && crewMembers.length > 0) {
+      found = crewMembers.find(
+        (u) => u.id === manager || `${u.firstName} ${u.lastName}` === manager
+      );
+    }
+    if (found) {
+      setManagerUser(found);
+    } else {
+      // If not found, create a minimal manager user object (must match crewUsers type)
+      setManagerUser({
+        id: manager,
+        firstName: "Manager",
+        lastName: "",
+        clockedIn: false,
+      } as crewUsers);
+    }
+  }, [crewMembers, manager]);
+
+  // Remove manager from crewMembers if present, to avoid duplicate
+  const filteredTeam = crewMembers.filter(
+    (u) => u.id !== manager && `${u.firstName} ${u.lastName}` !== manager
+  );
   const t = useTranslations("Clock");
   const tinderSwipeRef = useRef<TinderSwipeRef>(null);
   const [pendingTimesheets, setPendingTimesheets] = useState<
@@ -110,28 +137,37 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     tascoRefuelLogs: true,
   });
 
-  // Filter out crew members with no unapproved timesheets (but allow incomplete)
-  const filteredCrewMembers = crewMembers.filter((member) => {
-    const timesheets = pendingTimesheets[member.id] || [];
-    return timesheets.length > 0;
-  });
+  // Compose the review list: manager first, then team. Always include manager, even if no pending timesheets.
+  const reviewList = [
+    ...(managerUser ? [managerUser] : []),
+    ...filteredTeam
+  ].filter((member, idx, arr) => arr.findIndex(u => u.id === member.id) === idx);
+
+  // Memoize the userIds array for stable dependency (as a string key)
+  const userIds = useMemo(() => {
+    return [
+      ...(managerUser ? [managerUser.id] : []),
+      ...filteredTeam.map(u => u.id)
+    ];
+  }, [managerUser?.id, filteredTeam.map(u => u.id).join(",")]);
+  // Create a stable string key for dependency
+  const userIdsKey = userIds.join(",");
+
   // Adjust focusIndex if needed
   useEffect(() => {
-    if (focusIndex >= filteredCrewMembers.length) {
+    if (focusIndex >= reviewList.length) {
       setFocusIndex(0);
     }
-  }, [filteredCrewMembers.length]);
-  const focusUser = filteredCrewMembers[focusIndex];
-  // Fetch all pending timesheets for all users on mount
+  }, [reviewList.length]);
+  const focusUser = reviewList[focusIndex];
+  // Fetch all pending timesheets for all users (manager + team) only when userIds change
   useEffect(() => {
     const fetchPending = async () => {
-      if (!crewMembers.length) {
+      if (!userIds.length) {
         setHasNoMembers(true);
         return;
       }
-
       try {
-        const userIds = crewMembers.map((u) => u.id);
         const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -148,7 +184,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
       }
     };
     fetchPending();
-  }, [crewMembers]);
+  }, [userIdsKey]);
 
   // Approve all pending timesheets for the focus user
   const handleApprove = async () => {
@@ -156,9 +192,9 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     const userTimesheets = pendingTimesheets[focusUser.id] || [];
     if (userTimesheets.length === 0) {
       // Move to next user
-      if (focusIndex < filteredCrewMembers.length - 1) {
+      if (focusIndex < reviewList.length - 1) {
         setFocusIndex(focusIndex + 1);
-        setEmployeeId(filteredCrewMembers[focusIndex + 1].id);
+        setEmployeeId(reviewList[focusIndex + 1].id);
       } else {
         setEditFilter(null);
         handleClick();
@@ -166,12 +202,23 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
       return;
     }
     await approvePendingTimesheets(focusUser.id, manager);
-    // Remove user from list and move to next
-    const newCrew = filteredCrewMembers.filter((u, i) => i !== focusIndex);
-    setFocusIds(newCrew.map((u) => u.id));
-    if (focusIndex < newCrew.length) {
-      setFocusIndex(focusIndex);
-      setEmployeeId(newCrew[focusIndex]?.id || "");
+    // Re-fetch pending timesheets after approval
+    try {
+      const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds }),
+      });
+      const data = await res.json();
+      setPendingTimesheets(data);
+      setDataLoaded(true);
+    } catch (error) {
+      console.error("Error re-fetching pending timesheets after approve:", error);
+    }
+    // Move to next user (if any)
+    if (focusIndex < reviewList.length - 1) {
+      setFocusIndex(focusIndex + 1);
+      setEmployeeId(reviewList[focusIndex + 1].id);
     } else {
       setEditFilter(null);
       handleClick();
@@ -241,18 +288,12 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     return filter as TimesheetFilter;
   };
 
-  // Use the hook for the currently focused user
-  const focusUserId = focusUser?.id;
-  const {
-    data: timesheetData,
-    setData: setTimesheetData,
-    loading: timesheetLoading,
-    error: timesheetError,
-    updateDate: fetchTimesheetsForDate,
-    updateFilter: fetchTimesheetsForFilter,
-  } = useTimesheetData(focusUserId, date, getCurrentTimesheetFilter(), true);
+  // For review, use the bulk-fetched pendingTimesheets for the focus user
+  const timesheetData = pendingTimesheets[focusUser?.id] || [];
+  const timesheetLoading = loading; // Use parent loading state
 
-  // Debug effect for timesheetData changes
+
+  // Debug effect for timesheetData changes (optional, can be removed)
   useEffect(() => {
     if (timesheetData) {
       console.log('ReviewYourTeam - timesheetData updated:', {
@@ -264,26 +305,14 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     }
   }, [timesheetData, getCurrentTimesheetFilter]);
 
-  // When filter/tab changes, update the hook's filter
-  useEffect(() => {
-    if (focusUserId) {
-      fetchTimesheetsForFilter(getCurrentTimesheetFilter());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, truckingTab, tascoTab, focusUserId]);
-
   // Ensure API is called on tab click (immediate fetch)
   const handleTruckingTabChange = (tab: TimesheetFilter) => {
     setTruckingTab(tab);
-    if (focusUserId) {
-      fetchTimesheetsForFilter(tab);
-    }
+    // No per-user fetch needed in review step
   };
   const handleTascoTabChange = (tab: TimesheetFilter) => {
     setTascoTab(tab);
-    if (focusUserId) {
-      fetchTimesheetsForFilter(tab);
-    }
+    // No per-user fetch needed in review step
   };
 
   // Check completion status for tabs
@@ -314,17 +343,17 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     // Only run this check after we've loaded data
     if (dataLoaded && !loading) {
       console.log(
-        `Data loaded. Filtered crew members: ${filteredCrewMembers.length}`
+        `Data loaded. Review list length: ${reviewList.length}`
       );
-      if (filteredCrewMembers.length === 0) {
+      if (reviewList.length === 0) {
         // Set flag that we've determined there are no members
         console.log(
-          "No crew members with pending timesheets, will navigate away"
+          "No users with pending timesheets, will navigate away"
         );
         setHasNoMembers(true);
       }
     }
-  }, [filteredCrewMembers.length, loading, dataLoaded]);
+  }, [reviewList.length, loading, dataLoaded]);
 
   // Separate effect for navigation to avoid render-during-render issues
   useEffect(() => {
@@ -361,17 +390,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     );
   }
 
-  if (!focusUser && !hasNoMembers) {
-    return (
-      <Bases>
-        <Contents>
-          <Holds className="h-full flex items-center justify-center">
-            <Titles size="h2">{t("NoTeamMembers")}</Titles>
-          </Holds>
-        </Contents>
-      </Bases>
-    );
-  }
+  // Removed 'NoTeamMembers' loading view for managers. Always proceed to their own review card if no team members are found.
 
   // If hasNoMembers is true, we're about to navigate away,
   // so render a temporary loading state

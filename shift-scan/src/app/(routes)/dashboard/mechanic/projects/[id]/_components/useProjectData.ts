@@ -52,67 +52,72 @@ export default function useProjectData(projectId: string) {
   const [diagnosedProblem, setDiagnosedProblem] = useState("");
   const [solution, setSolution] = useState("");
 
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      if (!userId) return;
-      setLoading(true);
+  // Extracted fetch logic for reuse
+  const fetchProjectData = async () => {
+    if (!userId) return;
+    setLoading(true);
 
-      try {
-        const response = await fetch(`/api/getReceivedInfo/${projectId}`);
-        const data: ApiResponse = await response.json();
-        
-        // Process and set project data
-        const processedData: ProjectData = {
-          title: data.Equipment.name,
-          problemReceived: data.equipmentIssue,
-          additionalNotes: data.additionalInfo,
-          hasBeenDelayed: data.hasBeenDelayed,
-          MaintenanceLogs: data.MaintenanceLogs,
-        };
-        setProjectData(processedData);
+    try {
+      const response = await fetch(`/api/getReceivedInfo/${projectId}`);
+      const data: ApiResponse = await response.json();
+      // Process and set project data
+      const processedData: ProjectData = {
+        title: data.Equipment.name,
+        problemReceived: data.equipmentIssue,
+        additionalNotes: data.additionalInfo,
+        hasBeenDelayed: data.hasBeenDelayed,
+        MaintenanceLogs: data.MaintenanceLogs,
+      };
+      setProjectData(processedData);
 
-        // Find and set user's maintenance log
-        const userMaintenanceLog = data.MaintenanceLogs.find(
-          (log) => log.userId === userId && log.endTime === null
-        );
+      // Find and set user's maintenance log
+      const userMaintenanceLog = data.MaintenanceLogs.find(
+        (log) => log.userId === userId && log.endTime === null
+      );
 
-        if (userMaintenanceLog) {
-          setMyMaintenanceLogs(userMaintenanceLog);
-          setMyComment(userMaintenanceLog.comment || "");
-        }
-
-        // Calculate total labor hours
-        const totalMilliseconds = data.MaintenanceLogs.filter(
-          (log) => log.startTime
-        ).reduce((sum, log) => {
-          const start = new Date(log.startTime!).getTime();
-          const end = log.endTime
-            ? new Date(log.endTime).getTime()
-            : new Date().getTime();
-          return sum + (end - start);
-        }, 0);
-
-        const totalHours = parseFloat(
-          (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
-        );
-        const hours = Math.floor(totalHours);
-        const minutes = Math.round((totalHours - hours) * 60);
-        setLaborHours(`${hours} hrs ${minutes} min`);
-
-        // Count active users
-        const uniqueUserCount = data.MaintenanceLogs.filter(
-          (log) => log.userId && log.endTime === null
-        ).length;
-        setActiveUsers(uniqueUserCount || 0);
-      } catch (error) {
-        console.error("Error fetching project data:", error);
-      } finally {
-        setLoading(false);
+      if (userMaintenanceLog) {
+        setMyMaintenanceLogs(userMaintenanceLog);
+        setMyComment(userMaintenanceLog.comment || "");
       }
-    };
 
+      // Calculate total labor hours
+      const totalMilliseconds = data.MaintenanceLogs.filter(
+        (log) => log.startTime
+      ).reduce((sum, log) => {
+        const start = new Date(log.startTime!).getTime();
+        const end = log.endTime
+          ? new Date(log.endTime).getTime()
+          : new Date().getTime();
+        return sum + (end - start);
+      }, 0);
+
+      const totalHours = parseFloat(
+        (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
+      );
+      const hours = Math.floor(totalHours);
+      const minutes = Math.round((totalHours - hours) * 60);
+      setLaborHours(`${hours} hrs ${minutes} min`);
+
+      // Count active users
+      const uniqueUserCount = data.MaintenanceLogs.filter(
+        (log) => log.userId && log.endTime === null
+      ).length;
+      setActiveUsers(uniqueUserCount || 0);
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProjectData();
   }, [projectId, userId]);
+
+  // Expose a refresh handler for PullToRefresh
+  const handleRefresh = async () => {
+    await fetchProjectData();
+  };
 
   const handleLeaveProject = async () => {
     if (!session.data || !myMaintenanceLogs) return;
@@ -214,5 +219,6 @@ export default function useProjectData(projectId: string) {
     setDiagnosedProblem,
     solution,
     setSolution,
+    handleRefresh,
   };
 }

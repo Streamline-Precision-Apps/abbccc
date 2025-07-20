@@ -8,7 +8,6 @@ export default async function ClockOutPage() {
   if (!session) {
     redirect("/signin");
   }
-  const manager = session.user.permission !== "USER";
-
-  return <ClockOutContent manager={manager} />;
+  // Pass user id and permission so downstream logic can determine manager/team status
+  return <ClockOutContent userId={session.user.id} permission={session.user.permission} />;
 }

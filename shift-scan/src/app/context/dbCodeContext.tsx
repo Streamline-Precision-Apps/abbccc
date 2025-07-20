@@ -72,6 +72,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/truckingAssistant" ||
           url === "/dashboard/clock-out" ||
           url === "/dashboard/qr-generator/add-equipment" ||
+          url.startsWith("/hamburger/inbox/formSubmission") ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getJobsites");
@@ -126,6 +127,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
           url === "/dashboard/clock-out" ||
+          url.startsWith("/hamburger/inbox/formSubmission") ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getCostCodes");
@@ -179,6 +181,7 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           url === "/dashboard/truckingAssistant" ||
           url === "/hamburger/inbox" ||
           url === "/dashboard/clock-out" ||
+          url.startsWith("/hamburger/inbox/formSubmission") ||
           url.startsWith("/dashboard/myTeam/")
         ) {
           const response = await fetch("/api/getEquipment");

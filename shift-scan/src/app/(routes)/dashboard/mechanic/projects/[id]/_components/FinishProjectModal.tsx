@@ -14,6 +14,19 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useState } from "react";
 
+/**
+ * FinishProjectModal displays a modal for submitting the finished project details.
+ * When open, the parent view should hide its TitleBox/header to ensure the modal fully overlays the UI.
+ * @param isOpen Whether the modal is open
+ * @param onClose Function to close the modal
+ * @param title Project title
+ * @param laborHours Total labor hours
+ * @param onSubmit Function to submit the project
+ * @param setSolution State setter for solution
+ * @param solution Solution text
+ * @param diagnosedProblem Diagnosed problem text
+ * @param setDiagnosedProblem State setter for diagnosed problem
+ */
 export default function FinishProjectModal({
   isOpen,
   onClose,
