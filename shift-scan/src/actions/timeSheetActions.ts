@@ -702,6 +702,19 @@ export async function handleTruckTimeSheet(formData: FormData) {
     const laborType = formData.get('laborType') as string;
     const truck = formData.get('truck') as string;
     const equipmentId = formData.get('equipment') as string;
+    // Get trailer value, treat empty string or 'no trailer' as null
+    const trailer = formData.get('trailer');
+    let trailerNumber: string | null = null;
+    if (
+      typeof trailer === 'string' &&
+      trailer.trim() !== '' &&
+      trailer.trim().toLowerCase() !== 'no trailer' &&
+      trailer.trim().toLowerCase() !== 'none'
+    ) {
+      trailerNumber = trailer;
+    } else {
+      trailerNumber = null;
+    }
     if (type === 'switchJobs') {
       previousTimeSheetId = formData.get('id') as string;
       endTime = formData.get('endTime') as string;
@@ -727,6 +740,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
                     ? equipmentId
                     : null,
                 startingMileage,
+                trailerNumber: trailerNumber,
               },
             },
           },
@@ -766,6 +780,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
                   ? equipmentId
                   : null,
               startingMileage,
+              trailerNumber: trailerNumber,
             },
           },
         },
