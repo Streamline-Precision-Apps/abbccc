@@ -12,8 +12,8 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import TascoReport from "./_reports/tascoReport";
 import { useState } from "react";
-import OverWeightReport from "./_reports/overWeightReport";
-import TruckHaulingReport from "./_reports/truckHaulingReport";
+import OverWeightReport from "./_reports/truckingReport";
+import TruckingReport from "./_reports/truckingReport";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
@@ -41,20 +41,7 @@ export default function AdminReports() {
       description:
         "An exportable table of Trucking #, Trailer #, Date, Job #, Equipment Number if MOB, and start and end odometer for overweight loads",
       render: () => (
-        <OverWeightReport
-          showExportModal={showExportModal}
-          setShowExportModal={setShowExportModal}
-        />
-      ),
-    },
-
-    {
-      id: "truck-hauling-mileage-report",
-      label: "Truck Hauling Reports",
-      description:
-        "An exportable table of Trucking #, Trailer #, Date, Job #, Equipment Number if MOB, and start and end odometer for overweight loads",
-      render: () => (
-        <TruckHaulingReport
+        <TruckingReport
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
         />
