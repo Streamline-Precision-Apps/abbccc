@@ -137,15 +137,11 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     tascoRefuelLogs: true,
   });
 
-  // Compose the review list: manager first, then team (with pending timesheets only)
+  // Compose the review list: manager first, then team. Always include manager, even if no pending timesheets.
   const reviewList = [
     ...(managerUser ? [managerUser] : []),
     ...filteredTeam
-  ].filter((member, idx, arr) => {
-    // Only show if they have pending timesheets
-    const timesheets = pendingTimesheets[member.id] || [];
-    return timesheets.length > 0 && arr.findIndex(u => u.id === member.id) === idx;
-  });
+  ].filter((member, idx, arr) => arr.findIndex(u => u.id === member.id) === idx);
 
   // Memoize the userIds array for stable dependency (as a string key)
   const userIds = useMemo(() => {
