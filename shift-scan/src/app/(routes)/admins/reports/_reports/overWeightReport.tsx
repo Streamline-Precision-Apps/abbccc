@@ -23,18 +23,17 @@ const TABLE_HEADERS = [
   "Trailer#",
   "Date",
   "Job#",
-  "Equipment",
+  "Equipment Hauled",
   "Starting Mileage",
   "Ending Mileage",
   "Material Hauled",
-  "Fuel Gallons",
   "Refuel Details",
-  "Stateline Mileage",
+  "State Line Details",
   "Notes",
 ];
 interface EquipmentItem {
-  name: string;
   id: string;
+  name: string;
   startMileage: number;
   endMileage: number;
 }
@@ -46,14 +45,17 @@ interface MaterialItem {
   unit: string;
 }
 interface FuelItem {
+  id: string;
   milesAtFueling: number;
   gallonsRefueled: number;
 }
 interface StateMileageItem {
+  id: string;
   state: string;
   stateLineMileage: number;
 }
 interface OverWeightReportRow {
+  id: string;
   truckId: string | null;
   trailerId: string | null;
   trailerType?: string | null;
@@ -123,70 +125,233 @@ export default function OverWeightReport({
       });
     }
     if (exportFormat === "csv") {
-      const csvRows = [
-        TABLE_HEADERS.join(","),
-        ...exportData.map((row) =>
+      // Prepare all rows for each CSV
+      const mainRows = exportData.map((row) => [
+        row.id || "",
+        row.truckId || "",
+        row.trailerId || "",
+        row.date ? format(new Date(row.date), "MM/dd/yy") : "",
+        row.jobId || "",
+        row.StartingMileage ?? "",
+        row.EndingMileage ?? "",
+        Array.isArray(row.Materials) ? row.Materials.length : 0,
+        row.notes ?? "",
+      ]);
+
+      const equipmentRows = exportData.flatMap((row) =>
+        Array.isArray(row.Equipment)
+          ? row.Equipment.map((eq) => [
+              row.id || "",
+              eq.name,
+              eq.startMileage,
+              eq.endMileage,
+            ])
+          : []
+      );
+
+      const materialRows = exportData.flatMap((row) =>
+        Array.isArray(row.Materials)
+          ? row.Materials.map((mat) => [
+              row.id || "",
+              mat.name,
+              mat.location,
+              mat.quantity,
+              mat.unit,
+            ])
+          : []
+      );
+
+      const refuelRows = exportData.flatMap((row) =>
+        Array.isArray(row.Fuel)
+          ? row.Fuel.map((f) => [
+              row.id || "",
+              f.milesAtFueling,
+              f.gallonsRefueled,
+            ])
+          : []
+      );
+
+      const statelineRows = exportData.flatMap((row) =>
+        Array.isArray(row.StateMileages)
+          ? row.StateMileages.map((s) => [
+              row.id || "",
+              s.state,
+              s.stateLineMileage,
+            ])
+          : []
+      );
+
+      // Helper to convert array of arrays to CSV string
+      const toCsv = (header: string[], rows: (string | number)[][]): string =>
+        [
+          header.join(","),
+          ...rows.map((r: (string | number)[]) =>
+            r
+              .map(
+                (cell: string | number) =>
+                  '"' + String(cell ?? "").replace(/"/g, '""') + '"'
+              )
+              .join(",")
+          ),
+        ].join("\n");
+
+      // Download helper
+      const downloadCsv = (csvString: string, filename: string): void => {
+        const blob = new Blob([csvString], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      // Helper to format date range for filenames
+      const getDateRangeSuffix = (): string => {
+        if (dateRange.from && dateRange.to) {
+          const fromStr = format(dateRange.from, "MMddyy");
+          const toStr = format(dateRange.to, "MMddyy");
+          return `_${fromStr}-${toStr}`;
+        } else if (dateRange.from) {
+          return `_${format(dateRange.from, "MMddyy")}`;
+        } else if (dateRange.to) {
+          return `_${format(dateRange.to, "MMddyy")}`;
+        }
+        return "";
+      };
+      const dateSuffix = getDateRangeSuffix();
+
+      // Prepare and download all CSVs
+      downloadCsv(
+        toCsv(
           [
-            row.truckId,
-            row.trailerId,
-            row.date,
-            row.jobId,
-            Array.isArray(row.Equipment)
-              ? row.Equipment.map((eq: EquipmentItem) => eq.name).join(", ")
-              : "",
-            row.StartingMileage ?? "",
-            Array.isArray(row.Equipment)
-              ? row.Equipment.map((eq: EquipmentItem) => eq.endMileage).join(
-                  ", "
-                )
-              : "",
-            Array.isArray(row.Materials)
-              ? row.Materials.map((mat: MaterialItem) => mat.name).join(", ")
-              : "-",
-          ]
-            .map((cell) => {
-              if (cell === null || cell === undefined) return "";
-              const str = String(cell);
-              // Always quote, and escape quotes inside
-              return '"' + str.replace(/"/g, '""') + '"';
-            })
-            .join(",")
+            "ReportId",
+            "Truck#",
+            "Trailer#",
+            "Date",
+            "Job#",
+            "Starting Mileage",
+            "Ending Mileage",
+            "# of Loads",
+            "Notes",
+          ],
+          mainRows
         ),
-      ];
-      const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "tasco-report.csv";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+        `tasco-report-summary${dateSuffix}.csv`
+      );
+      downloadCsv(
+        toCsv(
+          [
+            "ReportId",
+            "Name",
+            "Start Mileage Overweight",
+            "End Mileage Overweight",
+          ],
+          equipmentRows
+        ),
+        `tasco-report-equipment${dateSuffix}.csv`
+      );
+      downloadCsv(
+        toCsv(
+          ["ReportId", "Name", "Location", "Quantity", "Unit"],
+          materialRows
+        ),
+        `tasco-report-materials${dateSuffix}.csv`
+      );
+      downloadCsv(
+        toCsv(["ReportId", "Miles At Fueling", "Gallons Refueled"], refuelRows),
+        `tasco-report-refuel${dateSuffix}.csv`
+      );
+      downloadCsv(
+        toCsv(["ReportId", "State", "State Line Mileage"], statelineRows),
+        `tasco-report-stateline${dateSuffix}.csv`
+      );
     } else if (exportFormat === "xlsx") {
       import("xlsx").then((XLSX) => {
-        const ws = XLSX.utils.json_to_sheet(
-          exportData.map((row) => ({
-            "Truck Id": row.truckId || "",
-            "Trailer Id": row.trailerId || "",
-            Date: row.date ? format(row.date, "yyyy-MM-dd") : "",
-            "Job Id": row.jobId || "",
-            Equipment: Array.isArray(row.Equipment)
-              ? row.Equipment.map((eq: EquipmentItem) => eq.name).join(", ")
-              : "",
-            "OverWeight Start Odometer": row.StartingMileage ?? "",
-            "OverWeight End Odometer": Array.isArray(row.Equipment)
-              ? row.Equipment.map((eq: EquipmentItem) => eq.endMileage).join(
-                  ", "
-                )
-              : "",
-            "Material Hauled": Array.isArray(row.Materials)
-              ? row.Materials.map((mat: MaterialItem) => mat.name).join(", ")
-              : 0,
-          }))
+        // Use the OverWeightReportRow.id as the reference key
+        const getDateRangeSuffix = (): string => {
+          if (dateRange.from && dateRange.to) {
+            const fromStr = format(dateRange.from, "MMddyy");
+            const toStr = format(dateRange.to, "MMddyy");
+            return `_${fromStr}-${toStr}`;
+          } else if (dateRange.from) {
+            return `_${format(dateRange.from, "MMddyy")}`;
+          } else if (dateRange.to) {
+            return `_${format(dateRange.to, "MMddyy")}`;
+          }
+          return "";
+        };
+        const dateSuffix = getDateRangeSuffix();
+
+        const mainRows = exportData.map((row) => ({
+          ReportId: row.id || "",
+          "Truck#": row.truckId || "",
+          "Trailer#": row.trailerId || "",
+          Date: row.date ? format(new Date(row.date), "MM/dd/yy") : "",
+          "Job#": row.jobId || "",
+          "Starting Mileage": row.StartingMileage ?? "",
+          "Ending Mileage": row.EndingMileage ?? "",
+          "# of Loads": Array.isArray(row.Materials) ? row.Materials.length : 0,
+          Notes: row.notes ?? "",
+        }));
+
+        const equipmentRows = exportData.flatMap((row) =>
+          Array.isArray(row.Equipment)
+            ? row.Equipment.map((eq) => ({
+                ReportId: row.id || "",
+                Name: eq.name,
+                "Start Mileage Overweight": eq.startMileage,
+                "End Mileage Overweight": eq.endMileage,
+              }))
+            : []
         );
+
+        const materialRows = exportData.flatMap((row) =>
+          Array.isArray(row.Materials)
+            ? row.Materials.map((mat) => ({
+                ReportId: row.id || "",
+                Name: mat.name,
+                Location: mat.location,
+                Quantity: mat.quantity,
+                Unit: mat.unit,
+              }))
+            : []
+        );
+
+        const refuelRows = exportData.flatMap((row) =>
+          Array.isArray(row.Fuel)
+            ? row.Fuel.map((f) => ({
+                ReportId: row.id || "",
+                "Miles At Fueling": f.milesAtFueling,
+                "Gallons Refueled": f.gallonsRefueled,
+              }))
+            : []
+        );
+
+        const statelineRows = exportData.flatMap((row) =>
+          Array.isArray(row.StateMileages)
+            ? row.StateMileages.map((s) => ({
+                ReportId: row.id || "",
+                State: s.state,
+                "State Line Mileage": s.stateLineMileage,
+              }))
+            : []
+        );
+
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Tasco Report");
-        XLSX.writeFile(wb, "tasco-report.xlsx");
+        const wsMain = XLSX.utils.json_to_sheet(mainRows);
+        const wsEquipment = XLSX.utils.json_to_sheet(equipmentRows);
+        const wsMaterials = XLSX.utils.json_to_sheet(materialRows);
+        const wsRefuel = XLSX.utils.json_to_sheet(refuelRows);
+        const wsStateline = XLSX.utils.json_to_sheet(statelineRows);
+        XLSX.utils.book_append_sheet(wb, wsMain, "Summary");
+        XLSX.utils.book_append_sheet(wb, wsEquipment, "Equipment Hauled");
+        XLSX.utils.book_append_sheet(wb, wsMaterials, "Material Hauled");
+        XLSX.utils.book_append_sheet(wb, wsRefuel, "Refuel Details");
+        XLSX.utils.book_append_sheet(wb, wsStateline, "State Line Details");
+        XLSX.writeFile(wb, `tasco-report-${dateSuffix}.xlsx`);
       });
     }
   };
@@ -239,12 +404,61 @@ export default function OverWeightReport({
                   {row.jobId || ""}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Equipment: join all names if array exists */}
-                  {Array.isArray(row.Equipment)
-                    ? row.Equipment.map((eq: EquipmentItem) => eq.name).join(
-                        ", "
-                      )
-                    : ""}
+                  {/* Equipment: show count, hover for details */}
+                  {Array.isArray(row.Equipment) && row.Equipment.length > 0 ? (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <span className="cursor-pointer underline text-blue-600">
+                          {row.Equipment.length}
+                        </span>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="p-2 w-[500px]">
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
+                                  Name
+                                </TableHead>
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                  Start Mileage Overweight
+                                </TableHead>
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                  End Mileage Overweight
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {row.Equipment.map(
+                                (eq: EquipmentItem, rowIdx: number) => (
+                                  <TableRow
+                                    key={eq.id}
+                                    className={
+                                      rowIdx % 2 === 0
+                                        ? "bg-white"
+                                        : "bg-gray-100"
+                                    }
+                                  >
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {eq.name}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {eq.startMileage}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {eq.endMileage}
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    ""
+                  )}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {/* Starting Mileage: use StartingMileage */}
@@ -264,42 +478,51 @@ export default function OverWeightReport({
                           {row.Materials.length}
                         </span>
                       </HoverCardTrigger>
-                      <HoverCardContent className="p-2">
+                      <HoverCardContent className="p-2 w-[300px]">
                         <div className="overflow-x-auto">
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Name
                                 </TableHead>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Location
                                 </TableHead>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Qty
                                 </TableHead>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Unit
                                 </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {row.Materials.map((mat: MaterialItem) => (
-                                <TableRow key={mat.id}>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {mat.name}
-                                  </TableCell>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {mat.location}
-                                  </TableCell>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {mat.quantity}
-                                  </TableCell>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {mat.unit}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
+                              {row.Materials.map(
+                                (mat: MaterialItem, rowIdx: number) => (
+                                  <TableRow
+                                    key={mat.id}
+                                    className={
+                                      rowIdx % 2 === 0
+                                        ? "bg-white"
+                                        : "bg-gray-100"
+                                    }
+                                  >
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {mat.name}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {mat.location}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {mat.quantity}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {mat.unit}
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              )}
                             </TableBody>
                           </Table>
                         </div>
@@ -310,48 +533,6 @@ export default function OverWeightReport({
                   )}
                 </TableCell>
 
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Fuel Gallons: show count, hover for details */}
-                  {Array.isArray(row.Fuel) && row.Fuel.length > 0 ? (
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <span className="cursor-pointer underline text-blue-600">
-                          {row.Fuel.length}
-                        </span>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="p-2">
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="px-2 py-1 border-b">
-                                  Miles At Fueling
-                                </TableHead>
-                                <TableHead className="px-2 py-1 border-b">
-                                  Gallons Refueled
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {row.Fuel.map((f: FuelItem, idx: number) => (
-                                <TableRow key={idx}>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {f.milesAtFueling}
-                                  </TableCell>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {f.gallonsRefueled}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ) : (
-                    ""
-                  )}
-                </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {/* Refuel Details: show count, hover for details */}
                   {Array.isArray(row.Fuel) && row.Fuel.length > 0 ? (
@@ -366,17 +547,22 @@ export default function OverWeightReport({
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Miles At Fueling
                                 </TableHead>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Gallons Refueled
                                 </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {row.Fuel.map((f: FuelItem, idx: number) => (
-                                <TableRow key={idx}>
+                                <TableRow
+                                  key={idx}
+                                  className={
+                                    idx % 2 === 0 ? "bg-white" : "bg-gray-100"
+                                  }
+                                >
                                   <TableCell className="px-2 py-1 border-b">
                                     {f.milesAtFueling}
                                   </TableCell>
@@ -409,10 +595,10 @@ export default function OverWeightReport({
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   State
                                 </TableHead>
-                                <TableHead className="px-2 py-1 border-b">
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   State Line Mileage
                                 </TableHead>
                               </TableRow>
@@ -420,7 +606,12 @@ export default function OverWeightReport({
                             <TableBody>
                               {row.StateMileages.map(
                                 (s: StateMileageItem, idx: number) => (
-                                  <TableRow key={idx}>
+                                  <TableRow
+                                    key={idx}
+                                    className={
+                                      idx % 2 === 0 ? "bg-white" : "bg-gray-100"
+                                    }
+                                  >
                                     <TableCell className="px-2 py-1 border-b">
                                       {s.state}
                                     </TableCell>
