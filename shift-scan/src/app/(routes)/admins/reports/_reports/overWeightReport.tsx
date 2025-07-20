@@ -8,27 +8,66 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { ExportReportModal } from "../ExportModal";
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card";
 
 const TABLE_HEADERS = [
+  "Truck#",
+  "Trailer#",
   "Date",
-  "Truck Id",
-  "Operator",
+  "Job#",
   "Equipment",
-  "OverWeight Amount",
-  "Total Mileage",
+  "Starting Mileage",
+  "Ending Mileage",
+  "Material Hauled",
+  "Fuel Gallons",
+  "Refuel Details",
+  "Stateline Mileage",
+  "Notes",
 ];
-interface OverWeightReportRow {
-  date: string;
-  truckId: string;
-  operator: string;
-  equipment: string;
-  overWeightAmount: number;
-  totalMileage: number;
+interface EquipmentItem {
+  name: string;
+  id: string;
+  startMileage: number;
+  endMileage: number;
 }
-// [Date, Truck Id, Operator, Equipment, OverWeight Amount, Total Mileage]
+interface MaterialItem {
+  id: string;
+  name: string;
+  location: string;
+  quantity: number;
+  unit: string;
+}
+interface FuelItem {
+  milesAtFueling: number;
+  gallonsRefueled: number;
+}
+interface StateMileageItem {
+  state: string;
+  stateLineMileage: number;
+}
+interface OverWeightReportRow {
+  truckId: string | null;
+  trailerId: string | null;
+  trailerType?: string | null;
+  date: string;
+  jobId: string | null;
+  Equipment: EquipmentItem[];
+  Materials: MaterialItem[];
+  StartingMileage: number;
+  Fuel: FuelItem[];
+  StateMileages: StateMileageItem[];
+  EndingMileage: number;
+  notes?: string;
+}
+// [Date, Truck Id, Job#, Equipment, OverWeight Start Odometer, OverWeight End Odometer]
 
 interface OverWeightReportProps {
   showExportModal: boolean;
@@ -88,12 +127,22 @@ export default function OverWeightReport({
         TABLE_HEADERS.join(","),
         ...exportData.map((row) =>
           [
-            row.date,
             row.truckId,
-            row.operator,
-            row.equipment,
-            row.overWeightAmount,
-            row.totalMileage,
+            row.trailerId,
+            row.date,
+            row.jobId,
+            Array.isArray(row.Equipment)
+              ? row.Equipment.map((eq: EquipmentItem) => eq.name).join(", ")
+              : "",
+            row.StartingMileage ?? "",
+            Array.isArray(row.Equipment)
+              ? row.Equipment.map((eq: EquipmentItem) => eq.endMileage).join(
+                  ", "
+                )
+              : "",
+            Array.isArray(row.Materials)
+              ? row.Materials.map((mat: MaterialItem) => mat.name).join(", ")
+              : "-",
           ]
             .map((cell) => {
               if (cell === null || cell === undefined) return "";
@@ -117,12 +166,22 @@ export default function OverWeightReport({
       import("xlsx").then((XLSX) => {
         const ws = XLSX.utils.json_to_sheet(
           exportData.map((row) => ({
-            Date: row.date ? format(row.date, "yyyy-MM-dd") : "",
             "Truck Id": row.truckId || "",
-            Operator: row.operator || "",
-            Equipment: row.equipment || "",
-            "OverWeight Amount": row.overWeightAmount || "",
-            "Total Mileage": row.totalMileage || "",
+            "Trailer Id": row.trailerId || "",
+            Date: row.date ? format(row.date, "yyyy-MM-dd") : "",
+            "Job Id": row.jobId || "",
+            Equipment: Array.isArray(row.Equipment)
+              ? row.Equipment.map((eq: EquipmentItem) => eq.name).join(", ")
+              : "",
+            "OverWeight Start Odometer": row.StartingMileage ?? "",
+            "OverWeight End Odometer": Array.isArray(row.Equipment)
+              ? row.Equipment.map((eq: EquipmentItem) => eq.endMileage).join(
+                  ", "
+                )
+              : "",
+            "Material Hauled": Array.isArray(row.Materials)
+              ? row.Materials.map((mat: MaterialItem) => mat.name).join(", ")
+              : 0,
           }))
         );
         const wb = XLSX.utils.book_new();
@@ -138,13 +197,16 @@ export default function OverWeightReport({
         <TableHeader>
           <TableRow>
             {TABLE_HEADERS.map((header) => (
-              <TableHead key={header} className="text-center min-w-[100px]">
+              <TableHead
+                key={header}
+                className="text-sm text-center border-r border-gray-200 bg-gray-100"
+              >
                 {header}
               </TableHead>
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="divide-y divide-gray-200 bg-white">
           {loading ? (
             <TableRow>
               <TableCell colSpan={TABLE_HEADERS.length} className="text-center">
@@ -158,25 +220,228 @@ export default function OverWeightReport({
               </TableCell>
             </TableRow>
           ) : (
-            data.map((row) => (
-              <TableRow key={row.truckId}>
-                <TableCell className="text-center">
-                  {row.date ? format(row.date, "yyyy-MM-dd") : ""}
-                </TableCell>
-                <TableCell className="text-center">
+            data.map((row, rowIdx) => (
+              <TableRow
+                key={`${row.truckId}-${row.date}-${row.StartingMileage}-${row.EndingMileage}-${row.jobId}`}
+                className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
+              >
+                <TableCell className="border-r border-gray-200 text-xs text-center">
                   {row.truckId || ""}
                 </TableCell>
-                <TableCell className="text-center">
-                  {row.operator || ""}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {row.trailerId || ""}
                 </TableCell>
-                <TableCell className="text-center">
-                  {row.equipment || ""}
+
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {row.date ? format(new Date(row.date), "MM/dd/yy") : ""}
                 </TableCell>
-                <TableCell className="text-center">
-                  {row.overWeightAmount || ""}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {row.jobId || ""}
                 </TableCell>
-                <TableCell className="text-center">
-                  {row.totalMileage || ""}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Equipment: join all names if array exists */}
+                  {Array.isArray(row.Equipment)
+                    ? row.Equipment.map((eq: EquipmentItem) => eq.name).join(
+                        ", "
+                      )
+                    : ""}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Starting Mileage: use StartingMileage */}
+                  {row.StartingMileage ?? ""}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Ending Mileage: use EndingMileage */}
+                  {row.EndingMileage ?? ""}
+                </TableCell>
+
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Material Hauled: show count, hover for details */}
+                  {Array.isArray(row.Materials) && row.Materials.length > 0 ? (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <span className="cursor-pointer underline text-blue-600">
+                          {row.Materials.length}
+                        </span>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="p-2">
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Name
+                                </TableHead>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Location
+                                </TableHead>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Qty
+                                </TableHead>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Unit
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {row.Materials.map((mat: MaterialItem) => (
+                                <TableRow key={mat.id}>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {mat.name}
+                                  </TableCell>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {mat.location}
+                                  </TableCell>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {mat.quantity}
+                                  </TableCell>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {mat.unit}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    "-"
+                  )}
+                </TableCell>
+
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Fuel Gallons: show count, hover for details */}
+                  {Array.isArray(row.Fuel) && row.Fuel.length > 0 ? (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <span className="cursor-pointer underline text-blue-600">
+                          {row.Fuel.length}
+                        </span>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="p-2">
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Miles At Fueling
+                                </TableHead>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Gallons Refueled
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {row.Fuel.map((f: FuelItem, idx: number) => (
+                                <TableRow key={idx}>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {f.milesAtFueling}
+                                  </TableCell>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {f.gallonsRefueled}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Refuel Details: show count, hover for details */}
+                  {Array.isArray(row.Fuel) && row.Fuel.length > 0 ? (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <span className="cursor-pointer underline text-blue-600">
+                          {row.Fuel.length}
+                        </span>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="p-2">
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Miles At Fueling
+                                </TableHead>
+                                <TableHead className="px-2 py-1 border-b">
+                                  Gallons Refueled
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {row.Fuel.map((f: FuelItem, idx: number) => (
+                                <TableRow key={idx}>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {f.milesAtFueling}
+                                  </TableCell>
+                                  <TableCell className="px-2 py-1 border-b">
+                                    {f.gallonsRefueled}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Stateline Mileage: show count, hover for details */}
+                  {Array.isArray(row.StateMileages) &&
+                  row.StateMileages.length > 0 ? (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <span className="cursor-pointer underline text-blue-600">
+                          {row.StateMileages.length}
+                        </span>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="p-2">
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="px-2 py-1 border-b">
+                                  State
+                                </TableHead>
+                                <TableHead className="px-2 py-1 border-b">
+                                  State Line Mileage
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {row.StateMileages.map(
+                                (s: StateMileageItem, idx: number) => (
+                                  <TableRow key={idx}>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {s.state}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {s.stateLineMileage}
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
+
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {row.notes}
                 </TableCell>
               </TableRow>
             ))
