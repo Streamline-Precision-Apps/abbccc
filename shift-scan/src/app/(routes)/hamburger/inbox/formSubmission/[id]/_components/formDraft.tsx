@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FormInput } from "./formInput";
+import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { FormEvent } from "react";
 import { deleteFormSubmission, saveDraft } from "@/actions/hamburgerActions";
 import { debounce } from "lodash";
@@ -124,8 +125,46 @@ export default function FormDraft({
   ): boolean => {
     for (const group of formData.groupings) {
       for (const field of group.fields) {
-        if (field.required && !formValues[field.name]) {
-          return false;
+        if (field.required) {
+          // Check both field ID and field label as keys
+          const fieldValue = formValues[field.id] || formValues[field.label];
+          if (!fieldValue || fieldValue.trim() === "") {
+            console.log(
+              `Validation failed for field: ${field.label} (${field.id})`
+            );
+            return false;
+          }
+
+          // For JSON fields, check if they contain meaningful data
+          if (
+            field.type === "SEARCH_PERSON" ||
+            field.type === "SEARCH_ASSET" ||
+            field.type === "MULTISELECT"
+          ) {
+            try {
+              const parsed = JSON.parse(fieldValue);
+              if (Array.isArray(parsed) && parsed.length === 0) {
+                console.log(
+                  `Validation failed for empty array field: ${field.label} (${field.id})`
+                );
+                return false;
+              }
+              if (parsed === null || parsed === undefined) {
+                console.log(
+                  `Validation failed for null/undefined field: ${field.label} (${field.id})`
+                );
+                return false;
+              }
+            } catch (e) {
+              // If it's not valid JSON, treat as string validation
+              if (!fieldValue || fieldValue.trim() === "") {
+                console.log(
+                  `Validation failed for non-JSON field: ${field.label} (${field.id})`
+                );
+                return false;
+              }
+            }
+          }
         }
       }
     }
@@ -185,23 +224,12 @@ export default function FormDraft({
                       onChange={(e) => setFormTitle(e.target.value)}
                     />
                   </Holds>
-                  {formData?.groupings?.map((group) => (
-                    <Holds key={group.id} className="">
-                      {group.title && <h3>{group.title || ""}</h3>}
-                      {group.fields.map((field) => {
-                        return (
-                          <Holds key={field.id}>
-                            <FormInput
-                              key={field.name} // Use field.name as the key
-                              field={field}
-                              formValues={formValues}
-                              setFormValues={updateFormValues}
-                            />
-                          </Holds>
-                        );
-                      })}
-                    </Holds>
-                  ))}
+                  <FormFieldRenderer
+                    formData={formData}
+                    formValues={formValues}
+                    setFormValues={updateFormValues}
+                    readOnly={false}
+                  />
                   <Holds>
                     {formData.isSignatureRequired && (
                       <Holds className="h-full w-full">
@@ -247,13 +275,14 @@ export default function FormDraft({
                   <Buttons
                     type="submit"
                     background={
-                      !validateForm(formValues, formData) || !showSignature
+                      !validateForm(formValues, formData) || 
+                      (formData.isSignatureRequired && !showSignature)
                         ? "darkGray"
                         : "green"
                     }
                     disabled={
                       !validateForm(formValues, formData) ||
-                      !showSignature ||
+                      (formData.isSignatureRequired && !showSignature) ||
                       isSubmitting
                     }
                     className="w-full"

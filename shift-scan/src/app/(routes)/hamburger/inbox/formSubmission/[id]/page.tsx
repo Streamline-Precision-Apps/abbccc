@@ -16,6 +16,34 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import SubmittedFormsApproval from "./_components/submittedApprovedForms";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+import type { FormIndividualTemplate } from "@/app/(routes)/admins/forms/[id]/_component/hooks/types";
+
+// Define FormFieldValue type to match RenderFields expectations
+type FormFieldValue =
+  | string
+  | Date
+  | string[]
+  | object
+  | boolean
+  | number
+  | null;
+
+// Interface for backward compatibility with existing child components
+interface FormTemplate {
+  id: string;
+  name: string;
+  formType: string;
+  isActive: boolean;
+  isSignatureRequired: boolean;
+  groupings: FormGrouping[];
+}
+
+interface FormGrouping {
+  id: string;
+  title: string;
+  order: number;
+  fields: FormField[];
+}
 
 interface FormField {
   id: string;
@@ -30,20 +58,7 @@ interface FormField {
   helperText?: string;
   options?: string[];
 }
-interface FormGrouping {
-  id: string;
-  title: string;
-  order: number;
-  fields: FormField[];
-}
-interface FormTemplate {
-  id: string;
-  name: string;
-  formType: string;
-  isActive: boolean;
-  isSignatureRequired: boolean;
-  groupings: FormGrouping[];
-}
+
 type ManagerFormApprovalSchema = {
   id: string;
   title: string;
@@ -91,9 +106,11 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
   const formApprover = formSubmissions.get("formApprover");
 
   // State variables
-  const [formData, setFormData] = useState<FormTemplate | null>(null);
+  const [formData, setFormData] = useState<FormIndividualTemplate | null>(null);
   const [formTitle, setFormTitle] = useState<string>("");
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [formValues, setFormValues] = useState<Record<string, FormFieldValue>>(
+    {}
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
@@ -116,8 +133,9 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         // Fetch the form template
         const formRes = await fetch(`/api/form/` + params.id);
         if (!formRes.ok) throw new Error("Failed to fetch form template");
-        const formData = await formRes.json();
-        setFormData(formData);
+        const apiData = await formRes.json();
+        // Map API data to FormIndividualTemplate if needed
+        setFormData(apiData);
 
         // If there's no submissionId, stop here and just show template
         if (!submissionId) {
@@ -174,7 +192,16 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
         // Set the fetched data
         if (submissionData) {
-          setFormValues(submissionData.data);
+          // Convert form template for mapping
+          const legacyTemplate = convertToLegacyFormTemplate(apiData);
+
+          // Convert form values from label-based to ID-based keys
+          const convertedValues = convertFormValuesToIdBased(
+            submissionData.data,
+            legacyTemplate
+          );
+
+          setFormValues(convertedValues);
           setFormTitle(
             submissionData.title ||
               (submissionData.user?.firstName && submissionData.user?.lastName
@@ -229,6 +256,187 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     return await managerFormApprovalRes.json();
   };
 
+  // Update form values for a single field
+  const updateFormValues = (fieldId: string, value: FormFieldValue) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [fieldId]: value,
+    }));
+  };
+
+  // Legacy method for backward compatibility with existing components
+  const updateFormValuesLegacy = (newValues: Record<string, string>) => {
+    setFormValues((prevValues) => {
+      // Convert new values from potentially label-based keys to ID-based keys
+      const convertedValues: Record<string, FormFieldValue> = {};
+
+      Object.entries(newValues).forEach(([key, value]) => {
+        convertedValues[key] = value;
+      });
+
+      return {
+        ...prevValues,
+        ...convertedValues,
+      };
+    });
+  };
+
+  // Convert FormFieldValue to string for legacy components
+  const convertFormValuesToString = (
+    values: Record<string, FormFieldValue>
+  ): Record<string, string> => {
+    const stringValues: Record<string, string> = {};
+
+    // Get the form template for mapping
+    const template = formData ? convertToLegacyFormTemplate(formData) : null;
+
+    // Create a mapping from field IDs to field labels for saving
+    const idToLabelMap: Record<string, string> = {};
+    if (template) {
+      template.groupings.forEach((group) => {
+        group.fields.forEach((field) => {
+          idToLabelMap[field.id] = field.label;
+        });
+      });
+    }
+
+    Object.entries(values).forEach(([key, value]) => {
+      // Find the field to understand its type
+      const field = template?.groupings
+        ?.flatMap((group) => group.fields || [])
+        .find((f) => f.id === key);
+
+      // Convert the value to string based on field type
+      let stringValue = "";
+
+      if (field) {
+        switch (field.type) {
+          case "SEARCH_PERSON":
+          case "SEARCH_ASSET":
+            // For search fields, store as JSON string
+            if (Array.isArray(value)) {
+              stringValue = JSON.stringify(value);
+            } else if (value && typeof value === "object") {
+              stringValue = JSON.stringify(value);
+            } else {
+              stringValue = value ? String(value) : "";
+            }
+            break;
+          case "MULTISELECT":
+            // For multiselect, store as JSON array
+            if (Array.isArray(value)) {
+              stringValue = JSON.stringify(value);
+            } else {
+              stringValue = value ? String(value) : "";
+            }
+            break;
+          case "CHECKBOX":
+            stringValue = value ? "true" : "false";
+            break;
+          case "NUMBER":
+            stringValue = value ? String(value) : "0";
+            break;
+          case "DATE":
+          case "DATE_TIME":
+            if (value instanceof Date) {
+              stringValue = value.toISOString();
+            } else {
+              stringValue = value ? String(value) : "";
+            }
+            break;
+          default:
+            stringValue = value ? String(value) : "";
+        }
+      } else {
+        // Fallback conversion
+        if (typeof value === "string") {
+          stringValue = value;
+        } else if (typeof value === "number" || typeof value === "boolean") {
+          stringValue = String(value);
+        } else if (value instanceof Date) {
+          stringValue = value.toISOString();
+        } else if (Array.isArray(value)) {
+          stringValue = JSON.stringify(value);
+        } else if (value && typeof value === "object") {
+          stringValue = JSON.stringify(value);
+        } else {
+          stringValue = "";
+        }
+      }
+
+      // Use field label as key if available, otherwise use original key
+      const fieldLabel = idToLabelMap[key];
+      const finalKey = fieldLabel || key;
+      stringValues[finalKey] = stringValue;
+    });
+
+    return stringValues;
+  };
+
+  // Convert API response to FormTemplate for legacy components
+  const convertToLegacyFormTemplate = (template: any): FormTemplate => {
+    // Check if the template is already in the correct format from the API
+    if (template.groupings) {
+      return template as FormTemplate;
+    }
+
+    // Otherwise, convert from FormIndividualTemplate format
+    return {
+      id: template.id,
+      name: template.name,
+      formType: template.formType,
+      isActive: template.isActive === "ACTIVE",
+      isSignatureRequired: template.isSignatureRequired,
+      groupings:
+        template.FormGrouping?.map((group: any) => ({
+          id: group.id,
+          title: group.title || "",
+          order: group.order,
+          fields:
+            group.Fields?.map((field: any) => ({
+              id: field.id,
+              label: field.label,
+              name: field.label, // Use label as name for backward compatibility
+              type: field.type,
+              required: field.required,
+              order: field.order,
+              placeholder: field.placeholder || undefined,
+              maxLength: field.maxLength || undefined,
+              options: field.Options?.map((opt: any) => opt.value) || undefined,
+            })) || [],
+        })) || [],
+    };
+  };
+
+  // Convert form values from label-based keys to ID-based keys
+  const convertFormValuesToIdBased = (
+    values: Record<string, FormFieldValue>,
+    template: FormTemplate
+  ): Record<string, FormFieldValue> => {
+    const result: Record<string, FormFieldValue> = {};
+
+    // Create a mapping from field labels to field IDs
+    const labelToIdMap: Record<string, string> = {};
+    template.groupings.forEach((group) => {
+      group.fields.forEach((field) => {
+        labelToIdMap[field.label] = field.id;
+      });
+    });
+
+    // Convert values using the mapping
+    Object.entries(values).forEach(([key, value]) => {
+      const fieldId = labelToIdMap[key];
+      if (fieldId) {
+        result[fieldId] = value;
+      } else {
+        // If no mapping found, use the original key (might be ID already)
+        result[key] = value;
+      }
+    });
+
+    return result;
+  };
+
   // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -240,10 +448,15 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
     try {
       if (!userId || !submissionId) {
-        console.error("User ID is null");
+        console.error("User ID or submission ID is null");
         return;
       }
-      const dataToSave = { ...formValues };
+
+      // Use the current formValues directly (they're already in the correct format)
+      const dataToSave = convertFormValuesToString(formValues);
+
+      console.log("Submitting form with data:", dataToSave);
+
       const result = await saveDraftToPending(
         dataToSave,
         formData.id,
@@ -253,20 +466,17 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         formTitle
       );
 
+      console.log("Form submission result:", result);
+
       if (result) {
+        console.log("Form submitted successfully, redirecting...");
         router.back(); // Redirect to a success page
+      } else {
+        console.error("Form submission failed: No result returned");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
-  };
-
-  // Update form values
-  const updateFormValues = (newValues: Record<string, string>) => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      ...newValues,
-    }));
   };
 
   // useEffect(() => {
@@ -318,12 +528,12 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         <Grids rows={"7"} gap={"5"} className="w-full h-full">
           {submissionStatus === "DRAFT" && (
             <FormDraft
-              formData={formData}
+              formData={convertToLegacyFormTemplate(formData)}
               handleSubmit={handleSubmit}
               formTitle={formTitle || ""}
               setFormTitle={setFormTitle}
-              formValues={formValues}
-              updateFormValues={updateFormValues}
+              formValues={convertFormValuesToString(formValues)}
+              updateFormValues={updateFormValuesLegacy}
               userId={userId || ""}
               submissionId={submissionId || ""}
             />
@@ -333,11 +543,11 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               <>
                 {submissionStatus === "PENDING" ? (
                   <SubmittedForms
-                    formData={formData}
+                    formData={convertToLegacyFormTemplate(formData)}
                     formTitle={formTitle}
                     setFormTitle={setFormTitle}
-                    formValues={formValues}
-                    updateFormValues={updateFormValues}
+                    formValues={convertFormValuesToString(formValues)}
+                    updateFormValues={updateFormValuesLegacy}
                     userId={userId || ""}
                     submissionId={submissionId || ""}
                     signature={signature}
@@ -346,16 +556,16 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                   />
                 ) : (
                   <SubmittedFormsApproval
-                    formData={formData}
+                    formData={convertToLegacyFormTemplate(formData)}
                     formTitle={formTitle}
                     setFormTitle={setFormTitle}
-                    formValues={formValues}
-                    updateFormValues={updateFormValues}
+                    formValues={convertFormValuesToString(formValues)}
+                    updateFormValues={updateFormValuesLegacy}
                     submissionId={submissionId || ""}
                     signature={signature}
                     submittedForm={submittedForm}
                     submissionStatus={submissionStatus}
-                    managerFormApproval={managerFormApproval} // Pass managerFormApproval here
+                    managerFormApproval={managerFormApproval}
                   />
                 )}
               </>
@@ -365,11 +575,11 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
             submissionStatus === "PENDING" &&
             formApprover && (
               <ManagerFormApproval
-                formData={formData}
+                formData={convertToLegacyFormTemplate(formData)}
                 formTitle={formTitle}
                 setFormTitle={setFormTitle}
-                formValues={formValues}
-                updateFormValues={updateFormValues}
+                formValues={convertFormValuesToString(formValues)}
+                updateFormValues={updateFormValuesLegacy}
                 submissionId={submissionId || ""}
                 signature={signature}
                 submittedForm={submittedForm}
@@ -383,16 +593,16 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
             submissionStatus !== "DRAFT" &&
             formApprover && (
               <ManagerFormEditApproval
-                formData={formData}
+                formData={convertToLegacyFormTemplate(formData)}
                 formTitle={formTitle}
                 setFormTitle={setFormTitle}
-                formValues={formValues}
-                updateFormValues={updateFormValues}
+                formValues={convertFormValuesToString(formValues)}
+                updateFormValues={updateFormValuesLegacy}
                 submissionId={submissionId || ""}
                 signature={signature}
                 submittedForm={submittedForm}
                 submissionStatus={submissionStatus}
-                managerFormApproval={managerFormApproval} // Pass the data here
+                managerFormApproval={managerFormApproval}
               />
             )}
         </Grids>
