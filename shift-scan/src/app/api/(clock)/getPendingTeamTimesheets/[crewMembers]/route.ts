@@ -12,13 +12,12 @@ export async function POST(request: Request) {
     const { userIds } = await request.json();
     if (!Array.isArray(userIds) || userIds.length === 0) {
       return NextResponse.json({ error: 'userIds array required' }, { status: 400 });
-    }    // Fetch all pending timesheets for all users in one query
-    // Only include timesheets with an endTime (not null)
+    }
+    // Fetch all DRAFT and PENDING timesheets for all users in one query
     const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: { in: userIds },
-        status: 'PENDING',
-        endTime: { not: null }, // Filter out timesheets without an endTime
+        status: { in: ['DRAFT', 'PENDING'] },
       },
       include: {
         Jobsite: true,
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
 
     // Group timesheets by userId
     const grouped: Record<string, typeof timesheets> = {};
-    userIds.forEach((id) => {
+    userIds.forEach((id: string) => {
       grouped[id] = [];
     });
     timesheets.forEach((ts) => {

@@ -56,6 +56,59 @@ export async function GET() {
             shiftType: true,
           },
         },
+        TruckingLogs: {
+          select: {
+            id: true,
+            startingMileage: true,
+            endingMileage: true,
+            Equipment: {
+              select: {
+                name: true,
+              },
+            },
+            Materials: {
+              select: {
+                id: true,
+                name: true,
+                quantity: true,
+                unit: true,
+                LocationOfMaterial: true,
+                materialWeight: true,
+                loadType: true,
+                createdAt: true,
+              },
+            },
+            EquipmentHauled: {
+              select: {
+                id: true,
+                Equipment: {
+                  select: {
+                    name: true,
+                  },
+                },
+                JobSite: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            RefuelLogs: {
+              select: {
+                id: true,
+                gallonsRefueled: true,
+                milesAtFueling: true,
+              },
+            },
+            StateMileages: {
+              select: {
+                id: true,
+                state: true,
+                stateLineMileage: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });

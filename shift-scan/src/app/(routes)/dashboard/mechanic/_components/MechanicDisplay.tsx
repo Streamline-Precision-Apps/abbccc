@@ -51,6 +51,7 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
+  const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
 
   // Fetch all projects
   const fetchData = useCallback(async () => {
@@ -114,6 +115,8 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
           loading={loading}
           timeSheetId={timeSheetId}
           handleRefresh={handleRefresh}
+          isOpenProjectPreview={isOpenProjectPreview}
+          setIsOpenProjectPreview={setIsOpenProjectPreview}
         />
       ) : (
         <ManagerView
@@ -125,6 +128,8 @@ export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
           timeSheetId={timeSheetId}
           onProjectSelect={handleProjectSelect}
           handleRefresh={handleRefresh}
+          isOpenProjectPreview={isOpenProjectPreview}
+          setIsOpenProjectPreview={setIsOpenProjectPreview}
         />
       )}
     </>

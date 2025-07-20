@@ -7,7 +7,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 import SelectableModal from "@/components/(reusable)/selectableModal";
@@ -61,34 +61,37 @@ export default function MaterialItem({
     }
   }, [selectedItemId, material]);
 
-  // Debounced server update function
-  const updateHaulingLog = debounce(async (updatedMaterial: Material) => {
-    const formData = new FormData();
-    formData.append("id", updatedMaterial.id);
-    formData.append("name", updatedMaterial.name || "");
-    formData.append(
-      "LocationOfMaterial",
-      updatedMaterial.LocationOfMaterial || ""
-    );
-    formData.append(
-      "materialWeight",
-      updatedMaterial.materialWeight?.toString() || "0"
-    );
-    formData.append(
-      "lightWeight",
-      updatedMaterial.lightWeight?.toString() || "0"
-    );
-    formData.append(
-      "grossWeight",
-      updatedMaterial.grossWeight?.toString() || "0"
-    );
-    formData.append("loadType", updatedMaterial.loadType?.toString() || "0");
-    formData.append("quantity", updatedMaterial.quantity?.toString() || "0");
-    formData.append("truckingLogId", updatedMaterial.truckingLogId);
-    formData.append("loadType", updatedMaterial.loadType?.toString() || "");
+  // Debounced server update function - memoized to prevent recreation on every render
+  const updateHaulingLog = useCallback(
+    debounce(async (updatedMaterial: Material) => {
+      const formData = new FormData();
+      formData.append("id", updatedMaterial.id);
+      formData.append("name", updatedMaterial.name || "");
+      formData.append(
+        "LocationOfMaterial",
+        updatedMaterial.LocationOfMaterial || ""
+      );
+      formData.append(
+        "materialWeight",
+        updatedMaterial.materialWeight?.toString() || "0"
+      );
+      // TODO: These fields don't exist in current database schema - temporarily commented out
+      // formData.append(
+      //   "lightWeight",
+      //   updatedMaterial.lightWeight?.toString() || "0"
+      // );
+      // formData.append(
+      //   "grossWeight",
+      //   updatedMaterial.grossWeight?.toString() || "0"
+      // );
+      formData.append("loadType", updatedMaterial.loadType?.toString() || "");
+      formData.append("quantity", updatedMaterial.quantity?.toString() || "0");
+      formData.append("truckingLogId", updatedMaterial.truckingLogId);
 
-    await updateHaulingLogs(formData);
-  }, 1000);
+      await updateHaulingLogs(formData);
+    }, 1000),
+    []
+  );
 
   // Handle Input Change
   const handleChange = (field: keyof Material, value: string | number) => {
@@ -190,6 +193,8 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
+          {/* TODO: These fields don't exist in current database schema - temporarily commented out */}
+          {/*
           <Holds className="mb-2">
             <label className="text-sm font-medium ">
               {t("LightWeight")} <span className="text-red-500 pl-0.5">*</span>
@@ -217,6 +222,7 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
+          */}
           <Holds className="mb-2">
             <label className="text-sm font-medium">{t("LoadType")}</label>
             <Selects

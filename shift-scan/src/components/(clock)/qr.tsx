@@ -111,6 +111,10 @@ export default function QR({
     (result: QrScanner.ScanResult) => {
       try {
         const { data } = result;
+        // Guard: Ignore empty or obviously invalid scans
+        if (!data || typeof data !== "string" || data.trim() === "") {
+          return;
+        }
         console.log("Scan result data:", data);
         console.log("Current jobsiteResults:", jobsiteResults);
 

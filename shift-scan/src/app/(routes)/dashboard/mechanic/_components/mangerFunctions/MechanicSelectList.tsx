@@ -57,10 +57,12 @@ export default function MechanicSelectList({
   projects,
   loading,
   onProjectSelect,
+  handleRefresh
 }: {
   projects: Project[];
   loading: boolean;
   onProjectSelect: (id: string, selected: boolean) => Promise<void>;
+  handleRefresh: () => Promise<void>;
 }) {
   const t = useTranslations("MechanicWidget");
   const [selectedFilter, setSelectedFilter] = useState<string>("");
@@ -130,6 +132,7 @@ export default function MechanicSelectList({
             projects={filteredProjects}
             loading={loading}
             onProjectSelect={onProjectSelect}
+            handleRefresh={handleRefresh}
           />
         </Holds>
       </Grids>

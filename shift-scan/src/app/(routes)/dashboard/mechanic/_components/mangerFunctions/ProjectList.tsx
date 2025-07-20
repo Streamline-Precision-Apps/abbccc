@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ProjectItem } from "./ProjectItem";
 import { Texts } from "@/components/(reusable)/texts";
+import { PullToRefresh } from "@/components/(animations)/pullToRefresh";
 
 type Equipment = {
   id: string;
@@ -47,17 +48,29 @@ enum Priority {
   TODAY = "TODAY",
 }
 
+interface ProjectListProps {
+  projects: Project[];
+  updatingId: string | null;
+  handleToggle: (projectId: string) => Promise<void>;
+  router: AppRouterInstance;
+  onRefresh: () => Promise<void>;
+}
+
+/**
+ * ProjectList displays a list of projects with a drag down refresh system (PullToRefresh).
+ * @param projects List of projects to display
+ * @param updatingId ID of the project currently being updated
+ * @param handleToggle Function to toggle project selection
+ * @param router Next.js router instance
+ * @param onRefresh Function to refresh the project list (triggered by pull down)
+ */
 export function ProjectList({
   projects,
   updatingId,
   handleToggle,
   router,
-}: {
-  projects: Project[];
-  updatingId: string | null;
-  handleToggle: (projectId: string) => Promise<void>;
-  router: AppRouterInstance;
-}) {
+  onRefresh,
+}: ProjectListProps) {
   const t = useTranslations("MechanicWidget");
 
   if (projects.length === 0) {
@@ -71,16 +84,18 @@ export function ProjectList({
   }
 
   return (
-    <Holds className="row-start-2 row-end-9 h-full w-full overflow-y-auto no-scrollbar rounded-none px-2 py-2">
-      {projects.map((project) => (
-        <ProjectItem
-          key={project.id}
-          project={project}
-          updatingId={updatingId}
-          handleToggle={handleToggle}
-          router={router}
-        />
-      ))}
-    </Holds>
+    <PullToRefresh onRefresh={onRefresh}>
+      <Holds className="row-start-2 row-end-9 h-full w-full overflow-y-auto no-scrollbar rounded-none px-2 py-2">
+        {projects.map((project) => (
+          <ProjectItem
+            key={project.id}
+            project={project}
+            updatingId={updatingId}
+            handleToggle={handleToggle}
+            router={router}
+          />
+        ))}
+      </Holds>
+    </PullToRefresh>
   );
 }

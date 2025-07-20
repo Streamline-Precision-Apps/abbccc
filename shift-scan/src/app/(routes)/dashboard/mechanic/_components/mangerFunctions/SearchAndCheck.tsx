@@ -53,10 +53,12 @@ export const SearchAndCheck = ({
   projects,
   loading,
   onProjectSelect,
+  handleRefresh,
 }: {
   projects: Project[];
   loading: boolean;
   onProjectSelect: (id: string, selected: boolean) => Promise<void>;
+  handleRefresh: () => Promise<void>;
 }) => {
   const router = useRouter();
   const t = useTranslations("MechanicWidget");
@@ -123,6 +125,7 @@ export const SearchAndCheck = ({
         updatingId={updatingId}
         handleToggle={handleToggle}
         router={router}
+        onRefresh={handleRefresh}
       />
     </Grids>
   );

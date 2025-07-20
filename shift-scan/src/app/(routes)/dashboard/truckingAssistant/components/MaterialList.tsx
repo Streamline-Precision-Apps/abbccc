@@ -8,7 +8,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import debounce from "lodash.debounce";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 import SelectableModal from "@/components/(reusable)/selectableModal";
@@ -54,9 +53,10 @@ export default function MaterialList({
     return (
       !!mat.name &&
       !!mat.LocationOfMaterial &&
-      mat.materialWeight !== null &&
-      mat.lightWeight !== null &&
-      mat.grossWeight !== null
+      mat.materialWeight !== null
+      // TODO: These fields don't exist in current database schema - temporarily commented out
+      // && mat.lightWeight !== null &&
+      // mat.grossWeight !== null
     );
   };
 
