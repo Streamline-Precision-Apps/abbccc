@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { id } from "date-fns/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export async function GET(req: Request) {
         endingMileage: { not: null },
       },
       select: {
+        id: true,
         startingMileage: true,
         endingMileage: true,
         truckNumber: true,
@@ -43,6 +45,7 @@ export async function GET(req: Request) {
         },
         EquipmentHauled: {
           select: {
+            truckingLogId: true,
             Equipment: { select: { name: true, id: true } },
             startMileage: true,
             endMileage: true,
@@ -50,7 +53,7 @@ export async function GET(req: Request) {
         },
         Materials: {
           select: {
-            id: true,
+            truckingLogId: true,
             name: true,
             LocationOfMaterial: true,
             quantity: true,
@@ -59,12 +62,14 @@ export async function GET(req: Request) {
         },
         RefuelLogs: {
           select: {
+            truckingLogId: true,
             milesAtFueling: true,
             gallonsRefueled: true,
           },
         },
         StateMileages: {
           select: {
+            truckingLogId: true,
             state: true,
             stateLineMileage: true,
           },
@@ -73,6 +78,7 @@ export async function GET(req: Request) {
     });
 
     const formattedReport = overWeightReport.map((log) => ({
+      id: log.id,
       truckId: log.truckNumber,
       trailerId: log.trailerNumber,
       date: log.TimeSheet?.date ?? null,
@@ -84,7 +90,7 @@ export async function GET(req: Request) {
         endMileage: equipment.endMileage,
       })),
       Materials: log.Materials.map((material) => ({
-        id: material.id,
+        id: material.truckingLogId,
         name: material.name,
         location: material.LocationOfMaterial,
         quantity: material.quantity,
@@ -92,10 +98,12 @@ export async function GET(req: Request) {
       })),
       StartingMileage: log.startingMileage,
       Fuel: log.RefuelLogs.map((fuel) => ({
+        id: fuel.truckingLogId,
         milesAtFueling: fuel.milesAtFueling,
         gallonsRefueled: fuel.gallonsRefueled,
       })),
       StateMileages: log.StateMileages.map((state) => ({
+        id: state.truckingLogId,
         state: state.state,
         stateLineMileage: state.stateLineMileage,
       })),
