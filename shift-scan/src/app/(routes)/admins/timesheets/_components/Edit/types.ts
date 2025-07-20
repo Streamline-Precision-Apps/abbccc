@@ -18,6 +18,8 @@ export interface EquipmentHauled {
   id: string;
   equipmentId: string;
   jobSiteId: string;
+  startMileage: number;
+  endMileage: number;
 }
 export interface Material {
   id: string;
