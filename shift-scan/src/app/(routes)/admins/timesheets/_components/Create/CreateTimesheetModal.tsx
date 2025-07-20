@@ -228,10 +228,15 @@ export function CreateTimesheetModal({
         (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
       );
 
+      const filteredEquipment = equipment.filter(
+        (e: { equipmentTag: string }) =>
+          e.equipmentTag !== "TRUCK" && e.equipmentTag !== "TRAILER"
+      );
+
       setTrucks(filteredTrucks);
       setTrailers(filteredTrailers);
 
-      setEquipment(equipment);
+      setEquipment(filteredEquipment);
       setUsers(users);
       setJobsites(filteredJobsites);
     }
