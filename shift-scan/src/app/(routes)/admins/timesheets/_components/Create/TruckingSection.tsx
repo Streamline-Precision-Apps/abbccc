@@ -267,18 +267,7 @@ export function TruckingSection({
                     }}
                     className="w-[350px]"
                   />
-                  {/* <Input
-                    type="number"
-                    placeholder="Material Weight"
-                    value={mat.materialWeight}
-                    onChange={(e) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].materialWeight =
-                        e.target.value;
-                      setTruckingLogs(updated);
-                    }}
-                    className="w-[350px]"
-                  /> */}
+
                   <div className="flex gap-2 items-center">
                     <Input
                       type="number"
@@ -290,7 +279,7 @@ export function TruckingSection({
                           e.target.value;
                         setTruckingLogs(updated);
                       }}
-                      className="w-[300px]"
+                      className="w-[120px]"
                     />
                     <Select
                       value={mat.unit}

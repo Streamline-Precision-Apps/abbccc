@@ -179,7 +179,6 @@ export function useTimesheetData(form: TimesheetData | null) {
         .map((j: { id: string; name: string }) => ({ id: j.id, name: j.name }));
       setUsers(users);
       setJobsites(filteredJobsites);
-      setEquipment(equipment as EquipmentOption[]);
 
       const filteredTrucks = equipment.filter(
         (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK"
@@ -187,8 +186,13 @@ export function useTimesheetData(form: TimesheetData | null) {
       const filteredTrailers = equipment.filter(
         (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
       );
+      const filteredEquipment = equipment.filter(
+        (e: { equipmentTag: string }) =>
+          e.equipmentTag !== "TRUCK" && e.equipmentTag !== "TRAILER"
+      );
       setTrucks(filteredTrucks as TruckOption[]);
       setTrailers(filteredTrailers as TrailerOption[]);
+      setEquipment(filteredEquipment as EquipmentOption[]);
     }
     fetchDropdowns();
   }, []);

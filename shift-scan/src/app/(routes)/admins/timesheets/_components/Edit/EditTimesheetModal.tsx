@@ -7,17 +7,7 @@ import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
 import { adminUpdateTimesheet } from "@/actions/records-timesheets";
 import EditGeneralSection from "./EditGeneralSection";
 import { SquareCheck, SquareXIcon } from "lucide-react";
-
-import {
-  isMaintenanceLogComplete,
-  isTruckingLogComplete,
-  isTascoLogComplete,
-  isEmployeeEquipmentLogComplete,
-  isEquipmentHauledComplete,
-  isMaterialComplete,
-  isRefuelLogComplete,
-  isStateMileageComplete,
-} from "./utils/validation";
+import { isMaintenanceLogComplete } from "./utils/validation";
 import {
   EditTimesheetModalProps,
   TimesheetData,
@@ -25,7 +15,6 @@ import {
 } from "./hooks/useTimesheetData";
 import { useTimesheetLogs } from "./hooks/useTimesheetLogs";
 import { toast } from "sonner";
-import { tr } from "date-fns/locale";
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   timesheetId,

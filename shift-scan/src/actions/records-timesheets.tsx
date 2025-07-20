@@ -304,11 +304,11 @@ export async function adminUpdateTimesheet(formData: FormData) {
 
     // Trucking Logs
     for (const tlog of data.TruckingLogs || []) {
-      if (!tlog.equipmentId) continue;
       const truckingLog = await tx.truckingLog.create({
         data: {
           timeSheetId: id,
-          equipmentId: tlog.equipmentId,
+          truckNumber: tlog.truckNumber,
+          trailerNumber: tlog.trailerNumber ?? undefined,
           startingMileage: tlog.startingMileage
             ? Number(tlog.startingMileage)
             : null,
@@ -336,9 +336,6 @@ export async function adminUpdateTimesheet(formData: FormData) {
             truckingLogId: truckingLog.id,
             LocationOfMaterial: mat.LocationOfMaterial ?? "",
             name: mat.name,
-            materialWeight: mat.materialWeight
-              ? Number(mat.materialWeight)
-              : null,
             quantity: mat.quantity ? Number(mat.quantity) : null,
             unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType
