@@ -11,21 +11,24 @@ import {
 
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { ExportReportModal } from "../ExportModal";
+import { ExportTruckingReportModal } from "../ExportModalTrucking";
 import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
 } from "@/components/ui/hover-card";
+import Spinner from "@/components/(animations)/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TABLE_HEADERS = [
+  "Id",
   "Truck#",
   "Trailer#",
   "Date",
   "Job#",
-  "Equipment Hauled",
   "Starting Mileage",
   "Ending Mileage",
+  "Equipment Hauled",
   "Material Hauled",
   "Refuel Details",
   "State Line Details",
@@ -54,7 +57,7 @@ interface StateMileageItem {
   state: string;
   stateLineMileage: number;
 }
-interface OverWeightReportRow {
+interface TruckingReportReportRow {
   id: string;
   truckId: string | null;
   trailerId: string | null;
@@ -69,20 +72,20 @@ interface OverWeightReportRow {
   EndingMileage: number;
   notes?: string;
 }
-// [Date, Truck Id, Job#, Equipment, OverWeight Start Odometer, OverWeight End Odometer]
+// [Date, Truck Id, Job#, Equipment, TruckingReport Start Odometer, TruckingReport End Odometer]
 
-interface OverWeightReportProps {
+interface TruckingReportReportProps {
   showExportModal: boolean;
   setShowExportModal: (show: boolean) => void;
 }
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
-export default function OverWeightReport({
+export default function TruckingReport({
   showExportModal,
   setShowExportModal,
-}: OverWeightReportProps) {
-  const [data, setData] = useState<OverWeightReportRow[]>([]);
+}: TruckingReportReportProps) {
+  const [data, setData] = useState<TruckingReportReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
@@ -93,16 +96,16 @@ export default function OverWeightReport({
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/reports/overWeight");
+        const response = await fetch("/api/reports/truckingReport");
         const json = await response.json();
         if (!response.ok) {
           throw new Error(
-            json.message || "Failed to fetch OverWeight report data"
+            json.message || "Failed to fetch TruckingReport report data"
           );
         }
         setData(json);
       } catch (error) {
-        console.error("Error fetching OverWeight report data:", error);
+        console.error("Error fetching TruckingReport report data:", error);
       } finally {
         setLoading(false);
       }
@@ -223,51 +226,64 @@ export default function OverWeightReport({
       };
       const dateSuffix = getDateRangeSuffix();
 
-      // Prepare and download all CSVs
-      downloadCsv(
-        toCsv(
-          [
-            "ReportId",
-            "Truck#",
-            "Trailer#",
-            "Date",
-            "Job#",
-            "Starting Mileage",
-            "Ending Mileage",
-            "# of Loads",
-            "Notes",
-          ],
-          mainRows
-        ),
-        `tasco-report-summary${dateSuffix}.csv`
-      );
-      downloadCsv(
-        toCsv(
-          [
-            "ReportId",
-            "Name",
-            "Start Mileage Overweight",
-            "End Mileage Overweight",
-          ],
-          equipmentRows
-        ),
-        `tasco-report-equipment${dateSuffix}.csv`
-      );
-      downloadCsv(
-        toCsv(
-          ["ReportId", "Name", "Location", "Quantity", "Unit"],
-          materialRows
-        ),
-        `tasco-report-materials${dateSuffix}.csv`
-      );
-      downloadCsv(
-        toCsv(["ReportId", "Miles At Fueling", "Gallons Refueled"], refuelRows),
-        `tasco-report-refuel${dateSuffix}.csv`
-      );
-      downloadCsv(
-        toCsv(["ReportId", "State", "State Line Mileage"], statelineRows),
-        `tasco-report-stateline${dateSuffix}.csv`
-      );
+      // Only export selected categories
+      if (!selectedFields || selectedFields.includes("general")) {
+        downloadCsv(
+          toCsv(
+            [
+              "ReportId",
+              "Truck#",
+              "Trailer#",
+              "Date",
+              "Job#",
+              "Starting Mileage",
+              "Ending Mileage",
+              "# of Loads",
+              "Notes",
+            ],
+            mainRows
+          ),
+          `tasco-report-summary${dateSuffix}.csv`
+        );
+      }
+      if (!selectedFields || selectedFields.includes("equipment")) {
+        downloadCsv(
+          toCsv(
+            [
+              "ReportId",
+              "Name",
+              "Start Mileage Overweight",
+              "End Mileage Overweight",
+            ],
+            equipmentRows
+          ),
+          `tasco-report-equipment${dateSuffix}.csv`
+        );
+      }
+      if (!selectedFields || selectedFields.includes("materials")) {
+        downloadCsv(
+          toCsv(
+            ["ReportId", "Name", "Location", "Quantity", "Unit"],
+            materialRows
+          ),
+          `tasco-report-materials${dateSuffix}.csv`
+        );
+      }
+      if (!selectedFields || selectedFields.includes("fuel")) {
+        downloadCsv(
+          toCsv(
+            ["ReportId", "Miles At Fueling", "Gallons Refueled"],
+            refuelRows
+          ),
+          `tasco-report-refuel${dateSuffix}.csv`
+        );
+      }
+      if (!selectedFields || selectedFields.includes("stateline")) {
+        downloadCsv(
+          toCsv(["ReportId", "State", "State Line Mileage"], statelineRows),
+          `tasco-report-stateline${dateSuffix}.csv`
+        );
+      }
     } else if (exportFormat === "xlsx") {
       import("xlsx").then((XLSX) => {
         // Use the OverWeightReportRow.id as the reference key
@@ -285,6 +301,7 @@ export default function OverWeightReport({
         };
         const dateSuffix = getDateRangeSuffix();
 
+        // Prepare all data
         const mainRows = exportData.map((row) => ({
           ReportId: row.id || "",
           "Truck#": row.truckId || "",
@@ -341,16 +358,27 @@ export default function OverWeightReport({
         );
 
         const wb = XLSX.utils.book_new();
-        const wsMain = XLSX.utils.json_to_sheet(mainRows);
-        const wsEquipment = XLSX.utils.json_to_sheet(equipmentRows);
-        const wsMaterials = XLSX.utils.json_to_sheet(materialRows);
-        const wsRefuel = XLSX.utils.json_to_sheet(refuelRows);
-        const wsStateline = XLSX.utils.json_to_sheet(statelineRows);
-        XLSX.utils.book_append_sheet(wb, wsMain, "Summary");
-        XLSX.utils.book_append_sheet(wb, wsEquipment, "Equipment Hauled");
-        XLSX.utils.book_append_sheet(wb, wsMaterials, "Material Hauled");
-        XLSX.utils.book_append_sheet(wb, wsRefuel, "Refuel Details");
-        XLSX.utils.book_append_sheet(wb, wsStateline, "State Line Details");
+        // Only add selected sheets
+        if (!selectedFields || selectedFields.includes("general")) {
+          const wsMain = XLSX.utils.json_to_sheet(mainRows);
+          XLSX.utils.book_append_sheet(wb, wsMain, "Summary");
+        }
+        if (!selectedFields || selectedFields.includes("equipment")) {
+          const wsEquipment = XLSX.utils.json_to_sheet(equipmentRows);
+          XLSX.utils.book_append_sheet(wb, wsEquipment, "Equipment Hauled");
+        }
+        if (!selectedFields || selectedFields.includes("materials")) {
+          const wsMaterials = XLSX.utils.json_to_sheet(materialRows);
+          XLSX.utils.book_append_sheet(wb, wsMaterials, "Material Hauled");
+        }
+        if (!selectedFields || selectedFields.includes("fuel")) {
+          const wsRefuel = XLSX.utils.json_to_sheet(refuelRows);
+          XLSX.utils.book_append_sheet(wb, wsRefuel, "Refuel Details");
+        }
+        if (!selectedFields || selectedFields.includes("stateline")) {
+          const wsStateline = XLSX.utils.json_to_sheet(statelineRows);
+          XLSX.utils.book_append_sheet(wb, wsStateline, "State Line Details");
+        }
         XLSX.writeFile(wb, `tasco-report-${dateSuffix}.xlsx`);
       });
     }
@@ -358,6 +386,12 @@ export default function OverWeightReport({
 
   return (
     <>
+      {loading && (
+        <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+          <Spinner size={20} />
+          <span className="text-lg text-gray-500">Loading...</span>
+        </div>
+      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -373,11 +407,21 @@ export default function OverWeightReport({
         </TableHeader>
         <TableBody className="divide-y divide-gray-200 bg-white">
           {loading ? (
-            <TableRow>
-              <TableCell colSpan={TABLE_HEADERS.length} className="text-center">
-                Loading...
-              </TableCell>
-            </TableRow>
+            Array.from({ length: 20 }).map((_, rowIdx) => (
+              <TableRow
+                key={rowIdx}
+                className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
+              >
+                {TABLE_HEADERS.map((header, colIdx) => (
+                  <TableCell
+                    key={colIdx}
+                    className="border-r border-gray-200 text-xs text-center"
+                  >
+                    <Skeleton className="h-4 w-3/4 mx-auto" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
           ) : data.length === 0 ? (
             <TableRow>
               <TableCell colSpan={TABLE_HEADERS.length} className="text-center">
@@ -391,18 +435,31 @@ export default function OverWeightReport({
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
               >
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.truckId || ""}
+                  {row.id || "_"}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.trailerId || ""}
+                  {row.truckId || "-"}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {row.trailerId || "-"}
                 </TableCell>
 
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.date ? format(new Date(row.date), "MM/dd/yy") : ""}
+                  {row.date ? format(new Date(row.date), "MM/dd/yy") : "-"}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.jobId || ""}
+                  {row.jobId || "-"}
                 </TableCell>
+
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Starting Mileage: use StartingMileage */}
+                  {row.StartingMileage ?? "-"}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {/* Ending Mileage: use EndingMileage */}
+                  {row.EndingMileage ?? "-"}
+                </TableCell>
+
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {/* Equipment: show count, hover for details */}
                   {Array.isArray(row.Equipment) && row.Equipment.length > 0 ? (
@@ -457,16 +514,8 @@ export default function OverWeightReport({
                       </HoverCardContent>
                     </HoverCard>
                   ) : (
-                    ""
+                    "-"
                   )}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Starting Mileage: use StartingMileage */}
-                  {row.StartingMileage ?? ""}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Ending Mileage: use EndingMileage */}
-                  {row.EndingMileage ?? ""}
                 </TableCell>
 
                 <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -577,7 +626,7 @@ export default function OverWeightReport({
                       </HoverCardContent>
                     </HoverCard>
                   ) : (
-                    ""
+                    "-"
                   )}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -627,7 +676,7 @@ export default function OverWeightReport({
                       </HoverCardContent>
                     </HoverCard>
                   ) : (
-                    ""
+                    "-"
                   )}
                 </TableCell>
 
@@ -640,7 +689,7 @@ export default function OverWeightReport({
         </TableBody>
       </Table>
       {showExportModal && (
-        <ExportReportModal
+        <ExportTruckingReportModal
           onClose={() => setShowExportModal(false)}
           onExport={onExport}
           dateRange={{ from: dateRange.from, to: dateRange.to }}
