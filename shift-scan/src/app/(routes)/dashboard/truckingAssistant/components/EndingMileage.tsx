@@ -43,34 +43,34 @@ export const EndingMileage = ({
   // Calculate minimum required end mileage
   const getMinimumEndMileage = (): number | null => {
     if (!startingMileage) return null;
-    
+
     let maxMileage = startingMileage;
-    
+
     // Check state mileage logs
     if (stateMileage && stateMileage.length > 0) {
-      stateMileage.forEach(log => {
+      stateMileage.forEach((log) => {
         if (log.stateLineMileage && log.stateLineMileage > maxMileage) {
           maxMileage = log.stateLineMileage;
         }
       });
     }
-    
+
     // Check refuel logs
     if (refuelLogs && refuelLogs.length > 0) {
-      refuelLogs.forEach(log => {
+      refuelLogs.forEach((log) => {
         if (log.milesAtFueling && log.milesAtFueling > maxMileage) {
           maxMileage = log.milesAtFueling;
         }
       });
     }
-    
+
     return maxMileage;
   };
 
   // Validation function
   const validateEndMileage = (value: number | null) => {
     const minRequired = getMinimumEndMileage();
-    
+
     if (minRequired === null) {
       setValidationMessage("");
       setIsValid(true);
@@ -79,13 +79,17 @@ export const EndingMileage = ({
 
     // Show validation message for empty/null values
     if (value === null || value === 0) {
-      setValidationMessage(`End mileage required, must be ${minRequired.toLocaleString()} or greater`);
+      setValidationMessage(
+        `End mileage required, must be ${minRequired.toLocaleString()} or greater`
+      );
       setIsValid(false);
       return false;
     }
 
     if (value < minRequired) {
-      setValidationMessage(`End mileage must be ${minRequired.toLocaleString()} or greater`);
+      setValidationMessage(
+        `End mileage must be ${minRequired.toLocaleString()} or greater`
+      );
       setIsValid(false);
       return false;
     }
@@ -102,7 +106,7 @@ export const EndingMileage = ({
 
   const updateEndingMileage = async () => {
     if (!validateEndMileage(endMileage)) return;
-    
+
     const formData = new FormData();
     formData.append("endingMileage", endMileage?.toString() || "");
     formData.append("id", truckingLog ?? "");
@@ -114,7 +118,7 @@ export const EndingMileage = ({
     // Strip non-numeric characters
     const numericValue = value.replace(/[^0-9]/g, "");
     const number = numericValue ? parseInt(numericValue) : null;
-    
+
     setEndMileage(number);
     validateEndMileage(number);
   };
@@ -129,11 +133,13 @@ export const EndingMileage = ({
         onBlur={updateEndingMileage}
         placeholder={t("EnterEndingMileageHere")}
         className={`w-full ${
-          endMileage === null || !isValid ? "placeholder:text-app-red border-red-500" : "border-black"
+          endMileage === null || !isValid
+            ? "placeholder:text-app-red border-red-500"
+            : "border-black"
         } border-[3px] rounded-[10px] pl-3 text-base py-2 focus:outline-hidden focus:ring-transparent focus:border-current`}
       />
       {validationMessage && (
-        <div className="text-xs text-app-red text-center px-1 leading-tight mt-1">
+        <div className="text-xs  text-app-red text-center leading-tight">
           {validationMessage}
         </div>
       )}

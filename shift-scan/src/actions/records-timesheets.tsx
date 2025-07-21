@@ -21,17 +21,20 @@ export type TimesheetSubmission = {
     maintenanceId: string;
   }>;
   truckingLogs: Array<{
-    equipmentId: string;
+    truckNumber: string;
+    trailerNumber: string | null;
     startingMileage: string;
     endingMileage: string;
     equipmentHauled: Array<{
       equipment: { id: string; name: string };
       jobsite: { id: string; name: string };
+      startMileage: string | null;
+      endMileage: string | null;
     }>;
     materials: Array<{
       location: string;
       name: string;
-      materialWeight: string;
+      // materialWeight: string;
       quantity: string;
       unit: string;
       loadType: "screened" | "unscreened" | "";
@@ -102,12 +105,13 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
 
     // Trucking Logs
     for (const tlog of data.truckingLogs) {
-      if (!tlog.equipmentId) continue;
+      if (!tlog.truckNumber) continue;
       const truckingLog = await tx.truckingLog.create({
         data: {
           timeSheetId: timesheet.id,
           laborType: "truckDriver",
-          equipmentId: tlog.equipmentId,
+          truckNumber: tlog.truckNumber, // Assuming equipmentId is the truck number
+          trailerNumber: tlog.trailerNumber,
           startingMileage: tlog.startingMileage
             ? parseInt(tlog.startingMileage)
             : null,
@@ -124,6 +128,8 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             truckingLogId: truckingLog.id,
             equipmentId: eq.equipment.id,
             jobSiteId: eq.jobsite.id,
+            startMileage: eq.startMileage ? parseInt(eq.startMileage) : null,
+            endMileage: eq.endMileage ? parseInt(eq.endMileage) : null,
           },
         });
       }
@@ -134,9 +140,9 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             truckingLogId: truckingLog.id,
             LocationOfMaterial: mat.location,
             name: mat.name,
-            materialWeight: mat.materialWeight
-              ? parseFloat(mat.materialWeight)
-              : null,
+            // materialWeight: mat.materialWeight
+            //   ? parseFloat(mat.materialWeight)
+            //   : null,
             quantity: mat.quantity ? parseFloat(mat.quantity) : null,
             unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType
@@ -298,11 +304,11 @@ export async function adminUpdateTimesheet(formData: FormData) {
 
     // Trucking Logs
     for (const tlog of data.TruckingLogs || []) {
-      if (!tlog.equipmentId) continue;
       const truckingLog = await tx.truckingLog.create({
         data: {
           timeSheetId: id,
-          equipmentId: tlog.equipmentId,
+          truckNumber: tlog.truckNumber,
+          trailerNumber: tlog.trailerNumber ?? undefined,
           startingMileage: tlog.startingMileage
             ? Number(tlog.startingMileage)
             : null,
@@ -318,6 +324,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
             truckingLogId: truckingLog.id,
             equipmentId: eq.equipmentId,
             jobSiteId: eq.jobSiteId,
+            startMileage: eq.startMileage ? Number(eq.startMileage) : null,
+            endMileage: eq.endMileage ? Number(eq.endMileage) : null,
           },
         });
       }
@@ -328,9 +336,6 @@ export async function adminUpdateTimesheet(formData: FormData) {
             truckingLogId: truckingLog.id,
             LocationOfMaterial: mat.LocationOfMaterial ?? "",
             name: mat.name,
-            materialWeight: mat.materialWeight
-              ? Number(mat.materialWeight)
-              : null,
             quantity: mat.quantity ? Number(mat.quantity) : null,
             unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType

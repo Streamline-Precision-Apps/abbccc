@@ -37,6 +37,14 @@ interface EditTruckingLogsProps {
     value: string;
     label: string;
   }[];
+  truckOptions: {
+    value: string;
+    label: string;
+  }[];
+  trailerOptions: {
+    value: string;
+    label: string;
+  }[];
   jobsiteOptions: {
     value: string;
     label: string;
@@ -62,6 +70,8 @@ interface EditTruckingLogsProps {
 
 export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
   logs,
+  truckOptions,
+  trailerOptions,
   onLogChange,
   handleNestedLogChange,
   originalLogs = [],
@@ -86,7 +96,6 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
     !!(
       mat.LocationOfMaterial &&
       mat.name &&
-      mat.materialWeight &&
       mat.quantity &&
       mat.unit &&
       mat.loadType
@@ -104,26 +113,54 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
           <div className="flex flex-col gap-3 mb-2 border-b pb-3">
             <div className="flex flex-row items-end gap-x-2">
               <div className="min-w-[350px]">
-                <label className="block text-xs">Equipment ID</label>
+                <label className="block text-xs">Truck</label>
                 <SingleCombobox
                   font={"font-normal"}
-                  options={equipmentOptions}
-                  value={log.equipmentId}
-                  onChange={(val) => onLogChange(idx, "equipmentId", val)}
-                  placeholder="Select equipment"
+                  options={truckOptions}
+                  value={log.truckNumber}
+                  onChange={(val) => onLogChange(idx, "truckNumber", val)}
+                  placeholder="Select Truck*"
                   filterKeys={["label", "value"]}
                 />
               </div>
 
               {originalLogs[idx] &&
-                log.equipmentId !== originalLogs[idx].equipmentId &&
+                log.truckNumber !== originalLogs[idx].truckNumber &&
                 onUndoLogField && (
                   <div className="w-fit mr-4">
                     <Button
                       type="button"
                       size="default"
                       className="w-fit "
-                      onClick={() => onUndoLogField(idx, "equipmentId")}
+                      onClick={() => onUndoLogField(idx, "truckNumber")}
+                    >
+                      <p className="text-xs">Undo</p>
+                    </Button>
+                  </div>
+                )}
+            </div>
+            <div className="flex flex-row items-end gap-x-2">
+              <div className="min-w-[350px]">
+                <label className="block text-xs">Trailer</label>
+                <SingleCombobox
+                  font={"font-normal"}
+                  options={trailerOptions}
+                  value={log.trailerNumber || ""}
+                  onChange={(val) => onLogChange(idx, "trailerNumber", val)}
+                  placeholder="Select Trailer"
+                  filterKeys={["label", "value"]}
+                />
+              </div>
+
+              {originalLogs[idx] &&
+                log.trailerNumber !== originalLogs[idx].trailerNumber &&
+                onUndoLogField && (
+                  <div className="w-fit mr-4">
+                    <Button
+                      type="button"
+                      size="default"
+                      className="w-fit "
+                      onClick={() => onUndoLogField(idx, "trailerNumber")}
                     >
                       <p className="text-xs">Undo</p>
                     </Button>
@@ -356,6 +393,135 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       </div>
                     )}
                 </div>
+
+                <div className="flex flex-row items-end gap-x-2 ">
+                  <div className="flex-1">
+                    <label className="block text-xs">
+                      Starting Mileage Overweight
+                    </label>
+                    <Input
+                      type="number"
+                      value={Number(eq.startMileage) || ""}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "EquipmentHauled",
+                          eqIdx,
+                          "startMileage",
+                          Number(e.target.value)
+                        )
+                      }
+                      className="w-[160px] text-xs"
+                      onBlur={(e) => {
+                        let value = e.target.value;
+                        if (/^0+\d+/.test(value)) {
+                          value = String(Number(value));
+                          handleNestedLogChange(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "startMileage",
+                            Number(value)
+                          );
+                          e.target.value = value;
+                        }
+                      }}
+                    />
+                  </div>
+                  {originalLogs[idx] &&
+                    originalLogs[idx].EquipmentHauled?.[eqIdx]?.startMileage !==
+                      undefined &&
+                    eq.startMileage !==
+                      originalLogs[idx].EquipmentHauled[eqIdx].startMileage &&
+                    onUndoNestedLogField && (
+                      <div className="w-fit mr-4">
+                        <Button
+                          type="button"
+                          size="default"
+                          className="w-fit"
+                          onClick={() =>
+                            onUndoNestedLogField(
+                              idx,
+                              "EquipmentHauled",
+                              eqIdx,
+                              "equipmentId"
+                            )
+                          }
+                        >
+                          <p className="text-xs">Undo</p>
+                        </Button>
+                      </div>
+                    )}
+                </div>
+
+                <div className="flex flex-row items-end gap-x-2">
+                  <div className="flex-1">
+                    <label className="block text-xs">
+                      Ending Mileage Overweight
+                    </label>
+                    <Input
+                      type="number"
+                      value={eq.endMileage ? Number(eq.endMileage) : ""}
+                      onChange={(e) =>
+                        handleNestedLogChange(
+                          idx,
+                          "EquipmentHauled",
+                          eqIdx,
+                          "endMileage",
+                          Number(e.target.value)
+                        )
+                      }
+                      className="w-[160px]"
+                      onBlur={(e) => {
+                        let value = e.target.value;
+                        if (/^0+\d+/.test(value)) {
+                          value = String(Number(value));
+                          handleNestedLogChange(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "endMileage",
+                            Number(value)
+                          );
+                          e.target.value = value;
+                        }
+                        if (Number(value) < log.startingMileage) {
+                          e.target.setCustomValidity(
+                            "Ending mileage cannot be less than starting mileage"
+                          );
+                        } else {
+                          e.target.setCustomValidity("");
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {originalLogs[idx] &&
+                    originalLogs[idx].EquipmentHauled?.[eqIdx]?.startMileage !==
+                      undefined &&
+                    eq.startMileage !==
+                      originalLogs[idx].EquipmentHauled[eqIdx].endMileage &&
+                    onUndoNestedLogField && (
+                      <div className="w-fit mr-4">
+                        <Button
+                          type="button"
+                          size="default"
+                          className="w-fit"
+                          onClick={() =>
+                            onUndoNestedLogField(
+                              idx,
+                              "EquipmentHauled",
+                              eqIdx,
+                              "endMileage"
+                            )
+                          }
+                        >
+                          <p className="text-xs">Undo</p>
+                        </Button>
+                      </div>
+                    )}
+                </div>
+
                 <div className="flex items-end absolute right-2 top-2">
                   <Button
                     type="button"
@@ -414,54 +580,6 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 <div className="flex flex-col gap-4 mb-2">
                   <div className="flex flex-row gap-1 items-end">
                     <div>
-                      <label htmlFor="LocationOfMaterial" className="text-xs ">
-                        Location of Material
-                      </label>
-                      <Input
-                        name="LocationOfMaterial"
-                        type="text"
-                        placeholder="Enter name of location"
-                        value={mat.LocationOfMaterial}
-                        onChange={(e) =>
-                          handleNestedLogChange(
-                            idx,
-                            "Materials",
-                            matIdx,
-                            "LocationOfMaterial",
-                            e.target.value
-                          )
-                        }
-                        className="w-[350px] text-xs"
-                      />
-                    </div>
-                    {originalLogs[idx] &&
-                      originalLogs[idx].Materials?.[matIdx]
-                        ?.LocationOfMaterial !== undefined &&
-                      mat.LocationOfMaterial !==
-                        originalLogs[idx].Materials[matIdx]
-                          .LocationOfMaterial &&
-                      onUndoNestedLogField && (
-                        <div className="w-fit ">
-                          <Button
-                            type="button"
-                            size="default"
-                            className="w-fit "
-                            onClick={() =>
-                              onUndoNestedLogField(
-                                idx,
-                                "Materials",
-                                matIdx,
-                                "LocationOfMaterial"
-                              )
-                            }
-                          >
-                            <p className="text-xs">Undo</p>
-                          </Button>
-                        </div>
-                      )}
-                  </div>
-                  <div className="flex flex-row gap-1 items-end">
-                    <div>
                       <label htmlFor="lightWeight" className="text-xs ">
                         Material Name
                       </label>
@@ -507,20 +625,20 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                   </div>
                   <div className="flex flex-row gap-1 items-end">
                     <div>
-                      <label htmlFor="materialWeight" className="text-xs ">
-                        Material Weight
+                      <label htmlFor="LocationOfMaterial" className="text-xs ">
+                        Source of Material
                       </label>
                       <Input
-                        name="materialWeight"
-                        type="number"
-                        placeholder="Enter Weight"
-                        value={mat.materialWeight > 0 ? mat.materialWeight : ""}
+                        name="LocationOfMaterial"
+                        type="text"
+                        placeholder="Enter name of location"
+                        value={mat.LocationOfMaterial}
                         onChange={(e) =>
                           handleNestedLogChange(
                             idx,
                             "Materials",
                             matIdx,
-                            "materialWeight",
+                            "LocationOfMaterial",
                             e.target.value
                           )
                         }
@@ -528,10 +646,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       />
                     </div>
                     {originalLogs[idx] &&
-                      originalLogs[idx].Materials?.[matIdx]?.materialWeight !==
-                        undefined &&
-                      mat.materialWeight !==
-                        originalLogs[idx].Materials[matIdx].materialWeight &&
+                      originalLogs[idx].Materials?.[matIdx]
+                        ?.LocationOfMaterial !== undefined &&
+                      mat.LocationOfMaterial !==
+                        originalLogs[idx].Materials[matIdx]
+                          .LocationOfMaterial &&
                       onUndoNestedLogField && (
                         <div className="w-fit ">
                           <Button
@@ -543,7 +662,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                                 idx,
                                 "Materials",
                                 matIdx,
-                                "materialWeight"
+                                "LocationOfMaterial"
                               )
                             }
                           >
@@ -552,6 +671,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         </div>
                       )}
                   </div>
+
                   <div className="flex items-end right-2 top-2 absolute">
                     <Button
                       type="button"
@@ -563,103 +683,106 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     </Button>
                   </div>
                 </div>
+
                 <div className="flex flex-col gap-4 mb-2">
-                  <div className="flex flex-row gap-1 items-end">
-                    <div>
-                      <Label htmlFor="Quantity" className="text-xs ">
-                        Quantity
-                      </Label>
-                      <Input
-                        name="quantity"
-                        type="number"
-                        placeholder="Enter Quantity"
-                        value={mat.quantity ? mat.quantity : ""}
-                        onChange={(e) =>
-                          handleNestedLogChange(
-                            idx,
-                            "Materials",
-                            matIdx,
-                            "quantity",
-                            e.target.value
-                          )
-                        }
-                        className="w-[350px] text-xs"
-                      />
+                  <div className="flex flex-row gap-2 items-end">
+                    <div className="flex flex-row gap-2 items-end">
+                      <div>
+                        <Label htmlFor="Quantity" className="text-xs ">
+                          Quantity
+                        </Label>
+                        <Input
+                          name="quantity"
+                          type="number"
+                          placeholder="Enter Quantity"
+                          value={mat.quantity ? mat.quantity : ""}
+                          onChange={(e) =>
+                            handleNestedLogChange(
+                              idx,
+                              "Materials",
+                              matIdx,
+                              "quantity",
+                              e.target.value
+                            )
+                          }
+                          className="w-[120px] text-xs"
+                        />
+                      </div>
+                      {originalLogs[idx] &&
+                        originalLogs[idx].Materials?.[matIdx]?.quantity !==
+                          undefined &&
+                        mat.quantity !==
+                          originalLogs[idx].Materials[matIdx].quantity &&
+                        onUndoNestedLogField && (
+                          <div className="w-fit ">
+                            <Button
+                              type="button"
+                              size="default"
+                              className="w-fit "
+                              onClick={() =>
+                                onUndoNestedLogField(
+                                  idx,
+                                  "Materials",
+                                  matIdx,
+                                  "quantity"
+                                )
+                              }
+                            >
+                              <p className="text-xs">Undo</p>
+                            </Button>
+                          </div>
+                        )}
                     </div>
-                    {originalLogs[idx] &&
-                      originalLogs[idx].Materials?.[matIdx]?.quantity !==
-                        undefined &&
-                      mat.quantity !==
-                        originalLogs[idx].Materials[matIdx].quantity &&
-                      onUndoNestedLogField && (
-                        <div className="w-fit ">
-                          <Button
-                            type="button"
-                            size="default"
-                            className="w-fit "
-                            onClick={() =>
-                              onUndoNestedLogField(
-                                idx,
-                                "Materials",
-                                matIdx,
-                                "quantity"
-                              )
-                            }
-                          >
-                            <p className="text-xs">Undo</p>
-                          </Button>
-                        </div>
-                      )}
-                  </div>
-                  <div className="flex flex-row gap-1 items-end">
-                    <div>
-                      <Label htmlFor="unit" className="text-xs ">
-                        Unit
-                      </Label>
-                      <Select
-                        value={mat.unit}
-                        onValueChange={(val) =>
-                          handleNestedLogChange(
-                            idx,
-                            "Materials",
-                            matIdx,
-                            "unit",
-                            val
-                          )
-                        }
-                      >
-                        <SelectTrigger className="w-[350px] text-xs">
-                          <SelectValue placeholder="Enter Unit Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="TONS">TONS</SelectItem>
-                          <SelectItem value="YARDS">YARDS</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex flex-row gap-1 items-end">
+                      <div>
+                        <Label htmlFor="unit" className="text-xs ">
+                          Unit
+                        </Label>
+                        <Select
+                          value={mat.unit}
+                          onValueChange={(val) =>
+                            handleNestedLogChange(
+                              idx,
+                              "Materials",
+                              matIdx,
+                              "unit",
+                              val
+                            )
+                          }
+                        >
+                          <SelectTrigger className="w-[120px] text-xs">
+                            <SelectValue placeholder="Enter Unit Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="TONS">TONS</SelectItem>
+                            <SelectItem value="YARDS">YARDS</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {originalLogs[idx] &&
+                        originalLogs[idx].Materials?.[matIdx]?.unit !==
+                          undefined &&
+                        mat.unit !== originalLogs[idx].Materials[matIdx].unit &&
+                        onUndoNestedLogField && (
+                          <div className="w-fit ">
+                            <Button
+                              type="button"
+                              size="default"
+                              className="w-fit "
+                              onClick={() =>
+                                onUndoNestedLogField(
+                                  idx,
+                                  "Materials",
+                                  matIdx,
+                                  "unit"
+                                )
+                              }
+                            >
+                              <p className="text-xs">Undo</p>
+                            </Button>
+                          </div>
+                        )}
                     </div>
-                    {originalLogs[idx] &&
-                      originalLogs[idx].Materials?.[matIdx]?.unit !==
-                        undefined &&
-                      mat.unit !== originalLogs[idx].Materials[matIdx].unit &&
-                      onUndoNestedLogField && (
-                        <div className="w-fit ">
-                          <Button
-                            type="button"
-                            size="default"
-                            className="w-fit "
-                            onClick={() =>
-                              onUndoNestedLogField(
-                                idx,
-                                "Materials",
-                                matIdx,
-                                "unit"
-                              )
-                            }
-                          >
-                            <p className="text-xs">Undo</p>
-                          </Button>
-                        </div>
-                      )}
                   </div>
                   <div className="flex flex-row gap-1 items-end">
                     <div>

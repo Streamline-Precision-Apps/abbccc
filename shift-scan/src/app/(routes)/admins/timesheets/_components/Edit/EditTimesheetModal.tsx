@@ -7,17 +7,7 @@ import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
 import { adminUpdateTimesheet } from "@/actions/records-timesheets";
 import EditGeneralSection from "./EditGeneralSection";
 import { SquareCheck, SquareXIcon } from "lucide-react";
-
-import {
-  isMaintenanceLogComplete,
-  isTruckingLogComplete,
-  isTascoLogComplete,
-  isEmployeeEquipmentLogComplete,
-  isEquipmentHauledComplete,
-  isMaterialComplete,
-  isRefuelLogComplete,
-  isStateMileageComplete,
-} from "./utils/validation";
+import { isMaintenanceLogComplete } from "./utils/validation";
 import {
   EditTimesheetModalProps,
   TimesheetData,
@@ -38,8 +28,15 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [originalForm, setOriginalForm] = useState<TimesheetData | null>(null);
 
   // Fetch dropdown and related data
-  const { users, jobsites, costCodes, equipment, materialTypes } =
-    useTimesheetData(form);
+  const {
+    users,
+    jobsites,
+    costCodes,
+    equipment,
+    trucks,
+    trailers,
+    materialTypes,
+  } = useTimesheetData(form);
 
   // Log handlers
   const logs = useTimesheetLogs(form, setForm, originalForm);
@@ -109,7 +106,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             TruckingLogs: [
               {
                 id: Date.now().toString(),
-                equipmentId: "",
+                truckNumber: "",
+                trailerNumber: "",
                 startingMileage: 0,
                 endingMileage: 0,
                 EquipmentHauled: [],
@@ -168,6 +166,16 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     label: c.label,
   }));
   const equipmentOptions = equipment.map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+
+  const truckOptions = trucks.map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+
+  const trailerOptions = trailers.map((e) => ({
     value: e.id,
     label: e.name,
   }));
@@ -250,6 +258,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       value
                     )
                   }
+                  truckOptions={truckOptions}
+                  trailerOptions={trailerOptions}
                   equipmentOptions={equipmentOptions}
                   jobsiteOptions={jobsiteOptions}
                   addEquipmentHauled={logs.addEquipmentHauled}

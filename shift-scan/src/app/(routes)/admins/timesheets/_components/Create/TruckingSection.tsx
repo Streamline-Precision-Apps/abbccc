@@ -16,16 +16,20 @@ export type TruckingMaterialDraft = {
   name: string;
   quantity: string;
   unit: string;
-  materialWeight: string;
+  // materialWeight: string;
   loadType: "screened" | "unscreened" | "";
 };
 export type TruckingLogDraft = {
   equipmentId: string;
+  truckNumber: string;
+  trailerNumber: string | null;
   startingMileage: string;
   endingMileage: string;
   equipmentHauled: {
     equipment: { id: string; name: string };
     jobsite: { id: string; name: string };
+    startMileage: string;
+    endMileage: string;
   }[];
   materials: TruckingMaterialDraft[];
   refuelLogs: { gallonsRefueled: string; milesAtFueling: string }[];
@@ -36,10 +40,14 @@ type Props = {
   truckingLogs: TruckingLogDraft[];
   setTruckingLogs: React.Dispatch<React.SetStateAction<TruckingLogDraft[]>>;
   equipmentOptions: { value: string; label: string }[];
+  truckOptions: { value: string; label: string }[];
+  trailerOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
 };
 
 export function TruckingSection({
+  truckOptions,
+  trailerOptions,
   truckingLogs,
   setTruckingLogs,
   equipmentOptions,
@@ -63,14 +71,27 @@ export function TruckingSection({
           <div className="flex flex-col gap-4 py-2">
             <div className="w-[350px]">
               <SingleCombobox
-                options={equipmentOptions}
-                value={log.equipmentId}
+                options={truckOptions}
+                value={log.truckNumber}
                 onChange={(val, option) => {
                   const updated = [...truckingLogs];
-                  updated[idx].equipmentId = val;
+                  updated[idx].truckNumber = val;
                   setTruckingLogs(updated);
                 }}
-                placeholder={`Select Vehicle*`}
+                placeholder={`Select Truck*`}
+                filterKeys={["label", "value"]}
+              />
+            </div>
+            <div className="w-[350px]">
+              <SingleCombobox
+                options={trailerOptions}
+                value={log.trailerNumber || ""}
+                onChange={(val, option) => {
+                  const updated = [...truckingLogs];
+                  updated[idx].trailerNumber = val;
+                  setTruckingLogs(updated);
+                }}
+                placeholder={`Select Trailer`}
                 filterKeys={["label", "value"]}
               />
             </div>
@@ -83,7 +104,7 @@ export function TruckingSection({
                 updated[idx].startingMileage = e.target.value;
                 setTruckingLogs(updated);
               }}
-              className="w-[200px]"
+              className="w-[300px]"
             />
             <Input
               type="number"
@@ -94,7 +115,7 @@ export function TruckingSection({
                 updated[idx].endingMileage = e.target.value;
                 setTruckingLogs(updated);
               }}
-              className="w-[200px]"
+              className="w-[300px]"
             />
           </div>
           {/* Equipment Hauled */}
@@ -112,6 +133,8 @@ export function TruckingSection({
                     updated[idx].equipmentHauled.push({
                       equipment: { id: "", name: "" },
                       jobsite: { id: "", name: "" },
+                      startMileage: "",
+                      endMileage: "",
                     });
                     setTruckingLogs(updated);
                   }}
@@ -155,6 +178,30 @@ export function TruckingSection({
                     filterKeys={["label", "value"]}
                   />
                 </div>
+                <Input
+                  type="number"
+                  placeholder="Starting Overweight Mileage*"
+                  value={eq.startMileage}
+                  onChange={(e) => {
+                    const updated = [...truckingLogs];
+                    updated[idx].equipmentHauled[eqIdx].startMileage =
+                      e.target.value;
+                    setTruckingLogs(updated);
+                  }}
+                  className="w-[350px]"
+                />
+                <Input
+                  type="number"
+                  placeholder="Ending Overweight Mileage*"
+                  value={eq.endMileage}
+                  onChange={(e) => {
+                    const updated = [...truckingLogs];
+                    updated[idx].equipmentHauled[eqIdx].endMileage =
+                      e.target.value;
+                    setTruckingLogs(updated);
+                  }}
+                  className="w-[350px]"
+                />
                 <Button
                   type="button"
                   variant="destructive"
@@ -185,7 +232,6 @@ export function TruckingSection({
                   updated[idx].materials.push({
                     location: "",
                     name: "",
-                    materialWeight: "",
                     quantity: "",
                     unit: "",
                     loadType: "",
@@ -201,17 +247,6 @@ export function TruckingSection({
                 <div className="flex flex-col gap-4 mb-2">
                   <Input
                     type="text"
-                    placeholder="Location"
-                    value={mat.location}
-                    onChange={(e) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].location = e.target.value;
-                      setTruckingLogs(updated);
-                    }}
-                    className="w-[350px]"
-                  />
-                  <Input
-                    type="text"
                     placeholder="Material Name"
                     value={mat.name}
                     onChange={(e) => {
@@ -222,40 +257,48 @@ export function TruckingSection({
                     className="w-[350px]"
                   />
                   <Input
-                    type="number"
-                    placeholder="Material Weight"
-                    value={mat.materialWeight}
+                    type="text"
+                    placeholder="Source of Material"
+                    value={mat.location}
                     onChange={(e) => {
                       const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].materialWeight =
-                        e.target.value;
+                      updated[idx].materials[matIdx].location = e.target.value;
                       setTruckingLogs(updated);
                     }}
                     className="w-[350px]"
                   />
 
-                  <Input
-                    type="number"
-                    placeholder="Light Weight"
-                    value={mat.quantity}
-                    onChange={(e) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].quantity = e.target.value;
-                      setTruckingLogs(updated);
-                    }}
-                    className="w-[350px]"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Gross Weight"
-                    value={mat.unit}
-                    onChange={(e) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].unit = e.target.value;
-                      setTruckingLogs(updated);
-                    }}
-                    className="w-[350px]"
-                  />
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      type="number"
+                      placeholder="Quantity"
+                      value={mat.quantity}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].materials[matIdx].quantity =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="w-[120px]"
+                    />
+                    <Select
+                      value={mat.unit}
+                      onValueChange={(val) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].materials[matIdx].unit = val;
+                        setTruckingLogs(updated);
+                      }}
+                    >
+                      <SelectTrigger className="w-[130px]">
+                        <SelectValue placeholder="Unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="TONS">Tons</SelectItem>
+                        <SelectItem value="YARDS">Yards</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <Select
                     value={mat.loadType}
                     onValueChange={(val) => {
@@ -266,7 +309,7 @@ export function TruckingSection({
                       setTruckingLogs(updated);
                     }}
                   >
-                    <SelectTrigger className="w-[350px]">
+                    <SelectTrigger className="w-[300px]">
                       <SelectValue placeholder="Load Type" />
                     </SelectTrigger>
                     <SelectContent>

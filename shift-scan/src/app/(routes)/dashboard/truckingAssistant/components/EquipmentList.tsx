@@ -14,12 +14,10 @@ import { Texts } from "@/components/(reusable)/texts";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { EquipmentSelector } from "@/components/(clock)/(General)/equipmentSelector";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { on } from "events";
 import { Grids } from "@/components/(reusable)/grids";
 import { Titles } from "@/components/(reusable)/titles";
 import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import Spinner from "@/components/(animations)/spinner";
-import { set } from "date-fns";
 
 type EquipmentHauled = {
   id: string;
@@ -35,6 +33,8 @@ type EquipmentHauled = {
     id: string;
     name: string;
   } | null;
+  startingMileage: number | null;
+  endMileage: number | null;
 };
 
 type Option = {
@@ -67,6 +67,7 @@ export default function EquipmentList({
     label: "",
     code: "",
   });
+
   const [locationLoading, setLocationLoading] = useState(false);
 
   // Equipment update
@@ -189,13 +190,12 @@ export default function EquipmentList({
             <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
               <Holds
                 key={mat.id}
-                position={"row"}
                 background={"white"}
-                className={`w-full h-full border-[3px] rounded-[10px] mb-3 border-black`}
+                className={`w-full h-full gap-4`}
               >
                 <Holds
                   background={"white"}
-                  className="w-1/2 h-full justify-center px-2 border-black rounded-r-none"
+                  className="w-full h-full justify-center"
                 >
                   {equipmentLoading && selectedIndex === mat.id ? (
                     <Spinner size={20} />
@@ -214,7 +214,7 @@ export default function EquipmentList({
                         setIsEquipmentOpen(true);
                         setSelectedIndex(mat.id);
                       }}
-                      className={`border-none text-xs focus:outline-hidden cursor-pointer ${
+                      className={`text-xs cursor-pointer py-2 ${
                         mat.equipmentId === null && "placeholder:text-app-red"
                       }`}
                       readOnly
@@ -224,7 +224,7 @@ export default function EquipmentList({
 
                 <Holds
                   background={"white"}
-                  className={`w-1/2 h-full justify-center px-2 rounded-l-none border-l-[3px] border-black`}
+                  className={`w-full h-full justify-center `}
                 >
                   {locationLoading && selectedIndex === mat.id ? (
                     <Spinner size={20} />
@@ -239,16 +239,59 @@ export default function EquipmentList({
                           label: mat.JobSite?.name || "",
                           code: mat.JobSite?.id || "",
                         });
-                        console.log(selectedLocation);
                         setIsLocationOpen(true);
                         setSelectedIndex(mat.id);
                       }}
-                      className={`border-none text-xs focus:outline-hidden cursor-pointer ${
+                      className={`text-xs  cursor-pointer py-2 ${
                         mat.jobSiteId === null && "placeholder:text-app-red"
                       }`}
                       readOnly
                     />
                   )}
+                </Holds>
+
+                {/* Starting Mileage and Ending Mileage Inputs */}
+                <Holds>
+                  <Inputs
+                    type="number"
+                    placeholder="Starting Mileage"
+                    value={mat.startingMileage ?? ""}
+                    onChange={(e) => {
+                      const value =
+                        e.target.value === "" ? null : Number(e.target.value);
+                      setEquipmentHauled((prev) =>
+                        prev
+                          ? prev.map((item) =>
+                              item.id === mat.id
+                                ? { ...item, startingMileage: value }
+                                : item
+                            )
+                          : []
+                      );
+                    }}
+                    className="text-xs py-2"
+                  />
+                </Holds>
+                <Holds>
+                  <Inputs
+                    type="number"
+                    placeholder="Ending Mileage"
+                    value={mat.endMileage ?? ""}
+                    onChange={(e) => {
+                      const value =
+                        e.target.value === "" ? null : Number(e.target.value);
+                      setEquipmentHauled((prev) =>
+                        prev
+                          ? prev.map((item) =>
+                              item.id === mat.id
+                                ? { ...item, endMileage: value }
+                                : item
+                            )
+                          : []
+                      );
+                    }}
+                    className="text-xs py-2"
+                  />
                 </Holds>
               </Holds>
             </SlidingDiv>
