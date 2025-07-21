@@ -1305,5 +1305,12 @@
     "NoDelay": "No Delay",
     "DelayStatus": "Delay Status",
     "SubmitProject": "Submit Project"
+  },
+  "information": {
+    "offer": "USE CODE\n",
+    "offerCode": "SHIFTSCAN",
+    "offerDetails": "\n ",
+    "welcome": "Welcome to the Shift Scan!",
+    "welcomeMessage": "This is a tool to help you manage your work shifts, track your time, and communicate with your team via QR technology."
   }
 }

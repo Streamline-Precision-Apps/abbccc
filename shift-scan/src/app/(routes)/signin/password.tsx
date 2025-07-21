@@ -81,8 +81,8 @@ export default function SignInForm() {
           type={viewSecret ? "text" : "password"}
           required
         />
-        <Holds position={"row"}>
-          <Holds className="mb-8">
+        <Holds position={"row"} className="justify-end mb-8">
+          <Holds className="w-fit">
             <Link href="/signin/forgot-password">
               <Texts text={"link"} size={"p5"} position={"right"}>
                 {t("Btn-forgot")}
