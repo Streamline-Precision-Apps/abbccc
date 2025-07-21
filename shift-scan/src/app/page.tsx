@@ -18,8 +18,6 @@ export default async function Home() {
   } else if (!session.user.accountSetup) {
     // Redirect to account setup if not completed
     redirect("/signin/signup");
-  } else if (session.user.permission !== "USER" && screen.width > 768) {
-    redirect("/admins");
   }
 
   // Get the current language from cookies

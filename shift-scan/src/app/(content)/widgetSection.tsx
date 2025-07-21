@@ -66,12 +66,12 @@ export default function WidgetSection({ session, locale }: Props) {
 
   // Redirect to dashboard if user is an admin
 
-  // if (
-  //   session?.user.permission === "ADMIN" ||
-  //   (session?.user.permission === "SUPERADMIN" && window.innerWidth >= 820)
-  // ) {
-  //   router.push("/admins");
-  // }
+  if (
+    session?.user.permission === "ADMIN" ||
+    (session?.user.permission === "SUPERADMIN" && window.innerWidth >= 820)
+  ) {
+    router.push("/admins");
+  }
 
   // Loading state
   if (loading) {
