@@ -471,7 +471,8 @@
     "TimeCardEquipmentRefuelLogs": {
       "EquipmentID": "Equipment ID",
       "GallonsRefueled": "Gallons Refueled",
-      "NoEquipmentRefuelLogsAvailable": "No Equipment Refuel Logs Available"    },
+      "NoEquipmentRefuelLogsAvailable": "No Equipment Refuel Logs Available"
+    },
     "Edit": "Edit",
     "Delete": "Delete",
     "NoEquipmentLogs": "No logs found for the day selected.",
@@ -1161,6 +1162,8 @@
   },
 
   "TruckingAssistant": {
+    "unit": "Unit",
+    "quantity": "Quantity",
     "WorkDetails": "Work Details",
     "EnterMaterialType": "Enter Material Type",
     "WriteYourNotesHere": "Write your Notes here...",
