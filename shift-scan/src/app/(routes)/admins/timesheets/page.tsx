@@ -261,7 +261,7 @@ export default function AdminTimesheets() {
       Start: (ts) => formatTimeVal(ts.startTime),
       End: (ts) => formatTimeVal(ts.endTime),
       WorkType: (ts) => String(ts.workType),
-      Comment: (ts) => ts.comment.slice(0, 40),
+      Comment: (ts) => ts.comment,
       EquipmentId: (ts) => {
         return ts.EmployeeEquipmentLogs.map((log) => log.equipmentId).join(
           ", "
