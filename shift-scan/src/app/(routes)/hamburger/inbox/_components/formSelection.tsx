@@ -260,7 +260,7 @@ export default function FormSelection({
                       if (typeof form === "string") return null; // Defensive: skip invalid entries
 
                       // Defensive: fallback to FormTemplate name if title is missing or empty
-                      let title =
+                      const title =
                         form.title && form.title.length > 0
                           ? form.title.charAt(0).toUpperCase() +
                             form.title.slice(1)
