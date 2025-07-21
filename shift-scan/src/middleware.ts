@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
-import { auth } from "@/auth";
 
 /**
  * Array of paths that don't require authentication
@@ -13,6 +12,7 @@ const PUBLIC_PATHS = [
   "/_next",
   "/favicon.ico",
   "/manifest.json",
+  "/tic-tac-toe",
 ];
 
 /**
@@ -30,6 +30,9 @@ export async function middleware(request: NextRequest) {
     if (isPublicPath) {
       return NextResponse.next();
     }
+
+    // Dynamically import auth only when needed to avoid Prisma initialization issues
+    const { auth } = await import("@/auth");
 
     // Get the session
     const session = await auth();
