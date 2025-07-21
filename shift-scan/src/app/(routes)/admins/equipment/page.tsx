@@ -83,6 +83,7 @@ export default function EquipmentPage() {
   }, [searchTerm, showPendingOnly]);
 
   const openHandleQr = (id: string) => {
+    console.log("openHandleQr called with id:", id);
     setPendingQrId(id);
     const equipment = equipmentDetails.find((j) => j.id === id);
     if (equipment) {
@@ -293,7 +294,7 @@ export default function EquipmentPage() {
           className="h-[80vh] w-full  bg-slate-50 rounded-t-lg  border border-slate-200 relative pr-3 "
         >
           <EquipmentTable
-          loading={loading}
+            loading={loading}
             equipmentDetails={filteredEquipment}
             openHandleDelete={openHandleDelete}
             openHandleEdit={openHandleEdit}
