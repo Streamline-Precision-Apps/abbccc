@@ -119,7 +119,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   </NewTab>
                 )}
 
-                <NewTab
+                {/* <NewTab
                   onClick={() => setActiveTab(4)}
                   isActive={activeTab === 4}
                   isComplete={true}
@@ -127,7 +127,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   titleImageAlt={""}
                 >
                   <Titles size={"h5"}>{t("Documents")}</Titles>
-                </NewTab>
+                </NewTab> */}
               </Holds>
               <Holds
                 background={"white"}
