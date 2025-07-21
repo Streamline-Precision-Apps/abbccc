@@ -18,7 +18,7 @@ type Employee = {
   lastName: string;
   image: string;
   email: string;
-  DOB?: string;
+  DOB?: Date;
   clockedIn?: boolean;
 };
 
