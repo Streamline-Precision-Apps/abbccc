@@ -15,9 +15,7 @@ type Material = {
   LocationOfMaterial: string | null;
   name: string;
   quantity: number | null;
-  materialWeight: number | null;
-  lightWeight: number | null;
-  grossWeight: number | null;
+  unit: string;
   loadType: LoadType | null;
   createdAt: Date;
 };
@@ -57,9 +55,7 @@ export default function OperatorHaulingLogs({
           LocationOfMaterial: "",
           truckingLogId: tempMaterial.truckingLogId,
           quantity: tempMaterial.quantity,
-          materialWeight: null,
-          lightWeight: null,
-          grossWeight: null,
+          unit: tempMaterial.unit ?? "",
           loadType: null,
           createdAt: tempMaterial.createdAt ?? new Date(),
         },

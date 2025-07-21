@@ -6,7 +6,7 @@ type Employee = {
   lastName: string;
   image: string;
   email: string;
-  DOB?: string;
+  DOB?: Date;
   clockedIn?: boolean;
 };
 
@@ -22,6 +22,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 
 export default function EmployeeInfo({
@@ -107,7 +108,11 @@ export default function EmployeeInfo({
                 name={"dob"}
                 className={"text-center text-base"}
                 readOnly
-                value={employee?.DOB}
+                value={
+                  employee?.DOB
+                    ? format(new Date(employee?.DOB), "MM/dd/yyyy")
+                    : ""
+                }
               />
             </Labels>
           </Holds>

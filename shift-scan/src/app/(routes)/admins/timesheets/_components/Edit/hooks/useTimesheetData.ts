@@ -25,6 +25,8 @@ export interface EquipmentHauled {
   id: string;
   equipmentId: string;
   jobSiteId: string;
+  startMileage: string;
+  endMileage: string;
 }
 export interface Material {
   id: string;
@@ -32,7 +34,7 @@ export interface Material {
   name: string;
   quantity: string;
   unit: string;
-  materialWeight: number;
+  // materialWeight: number;
   loadType: string;
 }
 
@@ -48,7 +50,8 @@ export interface StateMileage {
 }
 export interface TruckingLog {
   id: string;
-  equipmentId: string;
+  truckNumber: string; // Added truckId for clarity
+  trailerNumber?: string; // Optional trailerId
   startingMileage: number;
   endingMileage: number;
   EquipmentHauled: EquipmentHauled[];
@@ -137,6 +140,14 @@ interface EquipmentOption {
   id: string;
   name: string;
 }
+interface TruckOption {
+  id: string;
+  name: string;
+}
+interface TrailerOption {
+  id: string;
+  name: string;
+}
 interface MaterialType {
   id: string;
   name: string;
@@ -147,6 +158,9 @@ export function useTimesheetData(form: TimesheetData | null) {
   const [jobsites, setJobsites] = useState<JobsiteOption[]>([]);
   const [costCodes, setCostCodes] = useState<CostCodeOption[]>([]);
   const [equipment, setEquipment] = useState<EquipmentOption[]>([]);
+  const [trucks, setTrucks] = useState<TruckOption[]>([]);
+  const [trailers, setTrailers] = useState<TrailerOption[]>([]);
+  // Material types can be an array of objects with id and name
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
 
   // Fetch users, jobsites, equipment
@@ -165,7 +179,20 @@ export function useTimesheetData(form: TimesheetData | null) {
         .map((j: { id: string; name: string }) => ({ id: j.id, name: j.name }));
       setUsers(users);
       setJobsites(filteredJobsites);
-      setEquipment(equipment as EquipmentOption[]);
+
+      const filteredTrucks = equipment.filter(
+        (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK"
+      );
+      const filteredTrailers = equipment.filter(
+        (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
+      );
+      const filteredEquipment = equipment.filter(
+        (e: { equipmentTag: string }) =>
+          e.equipmentTag !== "TRUCK" && e.equipmentTag !== "TRAILER"
+      );
+      setTrucks(filteredTrucks as TruckOption[]);
+      setTrailers(filteredTrailers as TrailerOption[]);
+      setEquipment(filteredEquipment as EquipmentOption[]);
     }
     fetchDropdowns();
   }, []);
@@ -219,5 +246,7 @@ export function useTimesheetData(form: TimesheetData | null) {
     costCodes,
     equipment,
     materialTypes,
+    trucks,
+    trailers,
   };
 }

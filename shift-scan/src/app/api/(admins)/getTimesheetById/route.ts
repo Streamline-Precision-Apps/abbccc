@@ -72,6 +72,8 @@ export async function GET(req: Request) {
           select: {
             id: true,
             equipmentId: true,
+            truckNumber: true,
+            trailerNumber: true,
             startingMileage: true,
             endingMileage: true,
             // Equipment Hauled
@@ -80,6 +82,8 @@ export async function GET(req: Request) {
                 id: true,
                 equipmentId: true,
                 jobSiteId: true,
+                startMileage: true,
+                endMileage: true,
                 // Add more fields as needed
               },
             },
@@ -91,7 +95,6 @@ export async function GET(req: Request) {
                 name: true,
                 quantity: true,
                 unit: true,
-                materialWeight: true,
                 loadType: true,
               },
             },

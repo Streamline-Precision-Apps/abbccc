@@ -207,11 +207,6 @@ export async function updateHaulingLogs(formData: FormData) {
   const LocationOfMaterial = formData.get("LocationOfMaterial") as string;
   const quantity = Number(formData.get("quantity") as string);
   const truckingLogId = formData.get("truckingLogId") as string;
-
-  const materialWeight = parseFloat(formData.get("materialWeight") as string);
-  // TODO: These fields don't exist in current database schema - temporarily commented out
-  // const lightWeight = parseFloat(formData.get("lightWeight") as string);
-  // const grossWeight = parseFloat(formData.get("grossWeight") as string);
   const loadTypeString = formData.get("loadType") as string;
   const unit = formData.get("unit") as materialUnit;
 
@@ -232,11 +227,7 @@ export async function updateHaulingLogs(formData: FormData) {
         name,
         LocationOfMaterial,
         quantity,
-        materialWeight,
-        // TODO: These fields don't exist in current database schema - temporarily commented out
-        // lightWeight,
-        // grossWeight,
-        unit,
+        ...(unit && { unit }),
         loadType,
       },
     });

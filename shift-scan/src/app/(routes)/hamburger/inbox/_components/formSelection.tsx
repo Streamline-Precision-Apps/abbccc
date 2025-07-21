@@ -1,15 +1,10 @@
-import {
-  createFormSubmission,
-  deleteFormSubmission,
-} from "@/actions/hamburgerActions";
-import SlidingDiv from "@/components/(animations)/slideDelete";
+import { createFormSubmission } from "@/actions/hamburgerActions";
 import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { NewTab } from "@/components/(reusable)/newTabs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
@@ -263,9 +258,13 @@ export default function FormSelection({
                   {Array.isArray(sentContent) &&
                     sentContent.map((form, index) => {
                       if (typeof form === "string") return null; // Defensive: skip invalid entries
+
+                      // Defensive: fallback to FormTemplate name if title is missing or empty
                       const title =
-                        form.title.charAt(0).toUpperCase() +
-                          form.title.slice(1) || form.FormTemplate?.name;
+                        form.title && form.title.length > 0
+                          ? form.title.charAt(0).toUpperCase() +
+                            form.title.slice(1)
+                          : form.FormTemplate?.name || "";
 
                       const isLastItem = index === sentContent.length - 1;
 
