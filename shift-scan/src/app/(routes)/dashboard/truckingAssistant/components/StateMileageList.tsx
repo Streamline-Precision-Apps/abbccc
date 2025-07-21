@@ -42,17 +42,26 @@ export default function StateMileageList({
   const [editedStateMileage, setEditedStateMileage] = useState<StateMileage[]>(
     StateMileage || []
   );
-  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Helper function to get validation message for mileage input
-  const getValidationMessage = (stateLineMileage: number | null | undefined, itemId: string): string => {
+  const getValidationMessage = (
+    stateLineMileage: number | null | undefined,
+    itemId: string
+  ): string => {
     if (!startingMileage) return "";
-    
+
     // Show message for empty or null values
-    if (stateLineMileage === null || stateLineMileage === undefined || stateLineMileage <= 0) {
+    if (
+      stateLineMileage === null ||
+      stateLineMileage === undefined ||
+      stateLineMileage <= 0
+    ) {
       return `Mileage required, must be ${startingMileage.toLocaleString()} or greater`;
     }
-    
+
     if (stateLineMileage < startingMileage) {
       return `Mileage must be ${startingMileage.toLocaleString()} or greater`;
     }
@@ -65,8 +74,11 @@ export default function StateMileageList({
       const formData = new FormData();
       formData.append("id", stateMileage.id);
       formData.append("state", stateMileage.state || "");
-      formData.append("stateLineMileage", stateMileage.stateLineMileage?.toString() || "0");
-      
+      formData.append(
+        "stateLineMileage",
+        stateMileage.stateLineMileage?.toString() || "0"
+      );
+
       try {
         await updateStateMileage(formData);
       } catch (error) {
@@ -117,11 +129,11 @@ export default function StateMileageList({
     // Validate mileage
     const itemId = newStateMileage[index].id;
     const validationMessage = getValidationMessage(numericValue, itemId);
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
-      [itemId]: validationMessage
+      [itemId]: validationMessage,
     }));
-    
+
     // Trigger debounced server update
     updateStateMileageServer(newStateMileage[index]);
   };
@@ -133,9 +145,12 @@ export default function StateMileageList({
   // Validate all existing entries when startingMileage or StateMileage changes
   useEffect(() => {
     if (startingMileage) {
-      const newValidationErrors: {[key: string]: string} = {};
+      const newValidationErrors: { [key: string]: string } = {};
       editedStateMileage.forEach((item) => {
-        const validationMessage = getValidationMessage(item.stateLineMileage, item.id);
+        const validationMessage = getValidationMessage(
+          item.stateLineMileage,
+          item.id
+        );
         if (validationMessage) {
           newValidationErrors[item.id] = validationMessage;
         }
@@ -176,7 +191,7 @@ export default function StateMileageList({
                     value={sm.state || ""}
                     onChange={(e) => handleStateChange(index, e.target.value)}
                     className={`
-                        border-none h-full text-xs text-center  focus:outline-hidden ${
+                        border-none h-full text-xs text-center py-2  focus:outline-hidden ${
                           sm.state ? "text-app-black" : "text-app-red"
                         }
                     `}
@@ -212,14 +227,14 @@ export default function StateMileageList({
                       updateStateMileage(formData);
                     }}
                     className={
-                      "h-full border-none text-xs text-center focus:outline-hidden focus:ring-0 empty: placeholder:text-app-red"
+                      "h-full py-2 border-none text-xs text-center focus:outline-hidden focus:ring-0 empty: placeholder:text-app-red"
                     }
                   />
                 </Holds>
               </Holds>
             </SlidingDiv>
             {validationErrors[sm.id] && (
-              <div className="text-xs text-app-red text-center px-1 leading-tight mt-1">
+              <div className="text-xs text-app-red text-center px-1 leading-tight">
                 {validationErrors[sm.id]}
               </div>
             )}

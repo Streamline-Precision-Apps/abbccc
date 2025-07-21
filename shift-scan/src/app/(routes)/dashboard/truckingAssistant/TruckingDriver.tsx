@@ -40,6 +40,8 @@ type EquipmentHauled = {
     id: string;
     name: string;
   } | null;
+  startingMileage: number | null;
+  endMileage: number | null;
 };
 
 type Material = {
@@ -48,9 +50,7 @@ type Material = {
   LocationOfMaterial: string | null;
   name: string;
   quantity: number | null;
-  materialWeight: number | null;
-  lightWeight: number | null;
-  grossWeight: number | null;
+  unit: string;
   loadType: LoadType | null;
   createdAt: Date;
 };
@@ -137,8 +137,8 @@ export default function TruckDriver() {
               // TODO: These fields don't exist in current database schema - temporarily commented out
               // item.grossWeight &&
               item.name &&
-              item.materialWeight
-              // && item.lightWeight
+              item.unit
+            // && item.lightWeight
           )
       ),
       notesTab: isEndMileageValid(),
@@ -172,7 +172,15 @@ export default function TruckDriver() {
 
   useEffect(() => {
     validateCompletion();
-  }, [equipmentHauled, material, endMileage, notes, StateMileage, refuelLogs, startingMileage]);
+  }, [
+    equipmentHauled,
+    material,
+    endMileage,
+    notes,
+    StateMileage,
+    refuelLogs,
+    startingMileage,
+  ]);
 
   useEffect(() => {
     const fetchTruckingLog = async () => {
@@ -210,14 +218,14 @@ export default function TruckDriver() {
         console.log("Fetching data for timeSheetId:", timeSheetId); // Debug log
 
         const endpoints = [
-          `/api/getTruckingLogs/endingMileage/${timeSheetId}`,         // 0
-          `/api/getTruckingLogs/notes/${timeSheetId}`,                 // 1
-          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,          // 2
-          `/api/getTruckingLogs/stateMileage/${timeSheetId}`,          // 3
-          `/api/getTruckingLogs/material/${timeSheetId}`,              // 4
-          `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,       // 5
-          `/api/getTruckingLogs/laborType/${timeSheetId}`,             // 6
-          `/api/getTruckingLogs/startingMileage/${timeSheetId}`,       // 7
+          `/api/getTruckingLogs/endingMileage/${timeSheetId}`, // 0
+          `/api/getTruckingLogs/notes/${timeSheetId}`, // 1
+          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`, // 2
+          `/api/getTruckingLogs/stateMileage/${timeSheetId}`, // 3
+          `/api/getTruckingLogs/material/${timeSheetId}`, // 4
+          `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`, // 5
+          `/api/getTruckingLogs/laborType/${timeSheetId}`, // 6
+          `/api/getTruckingLogs/startingMileage/${timeSheetId}`, // 7
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));

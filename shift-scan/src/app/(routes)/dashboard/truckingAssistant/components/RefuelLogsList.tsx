@@ -31,17 +31,26 @@ export default function RefuelLogsList({
   const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(
     refuelLogs || []
   );
-  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Helper function to get validation message for mileage input
-  const getValidationMessage = (milesAtFueling: number | null | undefined, itemId: string): string => {
+  const getValidationMessage = (
+    milesAtFueling: number | null | undefined,
+    itemId: string
+  ): string => {
     if (!startingMileage) return "";
-    
+
     // Show validation message for empty/null values
-    if (milesAtFueling === null || milesAtFueling === undefined || milesAtFueling === 0) {
+    if (
+      milesAtFueling === null ||
+      milesAtFueling === undefined ||
+      milesAtFueling === 0
+    ) {
       return `Mileage required, must be ${startingMileage} or greater`;
     }
-    
+
     if (milesAtFueling < startingMileage) {
       return `Mileage must be ${startingMileage} or greater`;
     }
@@ -53,9 +62,15 @@ export default function RefuelLogsList({
     debounce(async (refuelLog: Refueled) => {
       const formData = new FormData();
       formData.append("id", refuelLog.id);
-      formData.append("gallonsRefueled", refuelLog.gallonsRefueled?.toString() || "0");
-      formData.append("milesAtfueling", refuelLog.milesAtFueling?.toString() || "0");
-      
+      formData.append(
+        "gallonsRefueled",
+        refuelLog.gallonsRefueled?.toString() || "0"
+      );
+      formData.append(
+        "milesAtfueling",
+        refuelLog.milesAtFueling?.toString() || "0"
+      );
+
       try {
         await updateRefuelLog(formData);
       } catch (error) {
@@ -81,7 +96,7 @@ export default function RefuelLogsList({
     newRefuel[index].gallonsRefueled = Number(value);
     setEditedRefuel(newRefuel);
     setRefuelLogs(newRefuel);
-    
+
     // Trigger server update
     updateRefuelLogServer(newRefuel[index]);
   };
@@ -96,11 +111,11 @@ export default function RefuelLogsList({
     // Validate mileage
     const itemId = newRefuel[index].id;
     const validationMessage = getValidationMessage(numericValue, itemId);
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
-      [itemId]: validationMessage
+      [itemId]: validationMessage,
     }));
-    
+
     // Trigger server update
     updateRefuelLogServer(newRefuel[index]);
   };
@@ -112,9 +127,12 @@ export default function RefuelLogsList({
   // Validate all existing entries when startingMileage or refuelLogs changes
   useEffect(() => {
     if (startingMileage) {
-      const newValidationErrors: {[key: string]: string} = {};
+      const newValidationErrors: { [key: string]: string } = {};
       editedRefuel.forEach((item) => {
-        const validationMessage = getValidationMessage(item.milesAtFueling, item.id);
+        const validationMessage = getValidationMessage(
+          item.milesAtFueling,
+          item.id
+        );
         if (validationMessage) {
           newValidationErrors[item.id] = validationMessage;
         }
@@ -168,7 +186,7 @@ export default function RefuelLogsList({
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`border-none text-xs py-2 focus:outline-hidden focus:ring-0 ${
+                    className={`border-none text-xs py-3 focus:outline-hidden focus:ring-0 ${
                       rL.gallonsRefueled
                         ? "text-black"
                         : "text-app-red placeholder:text-app-red"
@@ -198,7 +216,7 @@ export default function RefuelLogsList({
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`border-none text-xs py-2 focus:outline-hidden focus:ring-0 ${
+                    className={`border-none text-xs py-3 focus:outline-hidden focus:ring-0 ${
                       rL.milesAtFueling
                         ? "text-black"
                         : "text-app-red placeholder:text-app-red"
@@ -208,7 +226,7 @@ export default function RefuelLogsList({
               </Holds>
             </SlidingDiv>
             {validationErrors[rL.id] && (
-              <div className="text-xs text-app-red text-center px-1 leading-tight mt-1">
+              <div className="text-xs text-app-red text-center px-1 leading-tight">
                 {validationErrors[rL.id]}
               </div>
             )}

@@ -21,9 +21,7 @@ type Material = {
   LocationOfMaterial: string | null;
   name: string;
   quantity: number | null;
-  materialWeight: number | null;
-  lightWeight: number | null;
-  grossWeight: number | null;
+  unit: string;
   loadType: LoadType | null;
   createdAt: Date;
 };
@@ -50,14 +48,7 @@ export default function MaterialList({
   );
 
   const isMaterialComplete = (mat: Material): boolean => {
-    return (
-      !!mat.name &&
-      !!mat.LocationOfMaterial &&
-      mat.materialWeight !== null
-      // TODO: These fields don't exist in current database schema - temporarily commented out
-      // && mat.lightWeight !== null &&
-      // mat.grossWeight !== null
-    );
+    return !!mat.name && !!mat.LocationOfMaterial && mat.unit !== null;
   };
 
   // Update local state when prop changes

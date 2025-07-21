@@ -27,6 +27,8 @@ type EquipmentHauled = {
     id: string;
     name: string;
   } | null;
+  startingMileage: number | null;
+  endMileage: number | null;
 };
 
 type Material = {
@@ -35,9 +37,7 @@ type Material = {
   LocationOfMaterial: string | null;
   name: string;
   quantity: number | null;
-  materialWeight: number | null;
-  lightWeight: number | null;
-  grossWeight: number | null;
+  unit: string;
   loadType: LoadType | null;
   createdAt: Date;
 };
@@ -96,6 +96,8 @@ export default function HaulingLogs({
             id: "",
             name: "",
           },
+          startingMileage: null,
+          endMileage: null,
         },
         ...(prev ?? []),
       ]);
@@ -120,9 +122,7 @@ export default function HaulingLogs({
           LocationOfMaterial: "",
           truckingLogId: tempMaterial.truckingLogId,
           quantity: tempMaterial.quantity,
-          materialWeight: null,
-          lightWeight: null,
-          grossWeight: null,
+          unit: "",
           loadType: null,
           createdAt: tempMaterial.createdAt ?? new Date(),
         },
