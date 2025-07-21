@@ -7,7 +7,13 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import debounce from "lodash.debounce";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 import SelectableModal from "@/components/(reusable)/selectableModal";
@@ -22,9 +28,7 @@ type Material = {
   LocationOfMaterial: string | null;
   name: string;
   quantity: number | null;
-  materialWeight: number | null;
-  lightWeight: number | null;
-  grossWeight: number | null;
+  unit: string;
   loadType: LoadType | null;
   createdAt: Date;
 };
@@ -71,19 +75,7 @@ export default function MaterialItem({
         "LocationOfMaterial",
         updatedMaterial.LocationOfMaterial || ""
       );
-      formData.append(
-        "materialWeight",
-        updatedMaterial.materialWeight?.toString() || "0"
-      );
-      // TODO: These fields don't exist in current database schema - temporarily commented out
-      // formData.append(
-      //   "lightWeight",
-      //   updatedMaterial.lightWeight?.toString() || "0"
-      // );
-      // formData.append(
-      //   "grossWeight",
-      //   updatedMaterial.grossWeight?.toString() || "0"
-      // );
+      formData.append("unit", updatedMaterial.unit || "");
       formData.append("loadType", updatedMaterial.loadType?.toString() || "");
       formData.append("quantity", updatedMaterial.quantity?.toString() || "0");
       formData.append("truckingLogId", updatedMaterial.truckingLogId);
@@ -179,20 +171,37 @@ export default function MaterialItem({
               className="w-full text-base pl-2"
             />
           </Holds>
-          <Holds className="mb-2">
-            <label className="text-sm font-medium mb-1">
-              {t("MaterialWeight")}
-              <span className="text-red-500 pl-0.5">*</span>
-            </label>
-            <Inputs
-              type="number"
-              value={currentMaterial.materialWeight?.toString() || ""}
-              onChange={(e) =>
-                handleChange("materialWeight", parseFloat(e.target.value) || 0)
-              }
-              className="w-full text-base pl-2"
-            />
-          </Holds>
+          <div className="flex flex-row gap-2 ">
+            <Holds className="mb-2">
+              <label className="text-sm font-medium">
+                {t("quantity")}
+                <span className="text-red-500 pl-0.5">*</span>
+              </label>
+              <Inputs
+                type="number"
+                value={currentMaterial.quantity?.toString() || ""}
+                onChange={(e) =>
+                  handleChange("quantity", parseFloat(e.target.value) || 0)
+                }
+                className="w-full text-base pl-2"
+              />
+            </Holds>
+            <Holds className="mb-2">
+              <label className="text-sm font-medium">
+                {t("unit")}
+                <span className="text-red-500 pl-0.5">*</span>
+              </label>
+              <Selects
+                value={currentMaterial.unit || ""}
+                onChange={(e) => handleChange("unit", e.target.value)}
+                className="w-full pl-2 h-10 text-base"
+              >
+                <option value="">Select a unit</option>
+                <option value="YARDS">Yards</option>
+                <option value="TONS">Tons</option>
+              </Selects>
+            </Holds>
+          </div>
           {/* TODO: These fields don't exist in current database schema - temporarily commented out */}
           {/*
           <Holds className="mb-2">

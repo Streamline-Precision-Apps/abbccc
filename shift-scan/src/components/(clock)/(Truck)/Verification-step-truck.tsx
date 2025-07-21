@@ -66,8 +66,6 @@ export default function TruckVerificationStep({
   cc,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { scanResult } = useScanData();
-  const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
@@ -287,7 +285,10 @@ export default function TruckVerificationStep({
                               state="disabled"
                               name="trailerId"
                               variant={"white"}
-                              data={trailer?.label || t("NoTrailerOption", { default: "No Trailer" })}
+                              data={
+                                trailer?.label ||
+                                t("NoTrailerOption", { default: "No Trailer" })
+                              }
                               className={"pl-2 text-base text-center"}
                             />
                           </Holds>
