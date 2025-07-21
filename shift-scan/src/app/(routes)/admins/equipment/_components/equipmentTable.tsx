@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function EquipmentTable({
   loading,
   equipmentDetails,
+  openHandleQr,
   openHandleDelete,
   openHandleEdit,
 }: {
@@ -37,10 +38,6 @@ export default function EquipmentTable({
     "Updated At",
     "Actions",
   ];
-
-  function openHandleQr(id: string): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <Table className="w-full">
