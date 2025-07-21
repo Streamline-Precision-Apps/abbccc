@@ -107,14 +107,23 @@ export default function SubmittedFormsApproval({
 }) {
   const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
-  const managerName =
-    managerFormApproval?.Approvals[0].Approver.firstName +
-    " " +
-    managerFormApproval?.Approvals[0].Approver.lastName;
+
+  let managerName = "";
+  if (
+    managerFormApproval &&
+    Array.isArray(managerFormApproval.Approvals) &&
+    managerFormApproval.Approvals.length > 0 &&
+    managerFormApproval.Approvals[0].Approver
+  ) {
+    managerName =
+      (managerFormApproval.Approvals[0].Approver.firstName || "") +
+      " " +
+      (managerFormApproval.Approvals[0].Approver.lastName || "");
+  }
 
   const status = managerFormApproval?.status;
 
-  const comment = managerFormApproval?.Approvals[0].comment;
+  const comment = managerFormApproval?.Approvals[0]?.comment || "";
   return (
     <>
       <Holds
