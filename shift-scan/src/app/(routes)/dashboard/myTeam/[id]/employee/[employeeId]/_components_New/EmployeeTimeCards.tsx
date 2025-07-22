@@ -8,8 +8,11 @@ import { useTimesheetDataSimple } from "@/hooks/(ManagerHooks)/useTimesheetDataS
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
+import AppManagerEditTimesheetModal from "./TimesheetEditModal";
 
 export default function EmployeeTimeCards() {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const t = useTranslations("MyTeam");
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [date, setDate] = useState<string>(today);
@@ -63,8 +66,12 @@ export default function EmployeeTimeCards() {
             <>
               {timesheets.map((ts, idx) => (
                 <div
-                  className="border-black border-[3px] rounded-[10px] mb-2"
+                  className="border-black border-[3px] rounded-[10px] mb-2 cursor-pointer hover:bg-gray-50 transition"
                   key={ts.id}
+                  onClick={() => {
+                    setEditingId(ts.id);
+                    setShowEditModal(true);
+                  }}
                 >
                   <Grids cols={"8"} className="w-full h-full">
                     <Holds className="col-start-1 col-end-2 p-2">
@@ -129,6 +136,13 @@ export default function EmployeeTimeCards() {
                   </Grids>
                 </div>
               ))}
+              {showEditModal && editingId && (
+                <AppManagerEditTimesheetModal
+                  timesheetId={editingId}
+                  isOpen={showEditModal}
+                  onClose={() => setShowEditModal(false)}
+                />
+              )}
             </>
           )}
         </div>
