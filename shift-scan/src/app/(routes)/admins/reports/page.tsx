@@ -12,7 +12,6 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import TascoReport from "./_reports/tascoReport";
 import { useState } from "react";
-import OverWeightReport from "./_reports/truckingReport";
 import TruckingReport from "./_reports/truckingReport";
 
 export default function AdminReports() {
