@@ -27,7 +27,7 @@ import {
   EmployeeEquipmentLogWithRefuel,
   EquipmentHauledItem,
 } from "@/lib/types";
-import { MaintenanceLogData } from "../../myTeam/[id]/employee/[employeeId]/TimeCardMechanicLogs";
+import { MaintenanceLogData } from "../../myTeam/[id]/employee/[employeeId]/_components/TimeCardMechanicLogs";
 import {
   updateTruckingHaulLogs,
   updateTimesheetHighlights,
@@ -42,7 +42,7 @@ import {
 } from "@/actions/myTeamsActions";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { EmployeeTimeSheets } from "../../myTeam/[id]/employee/[employeeId]/employee-timesheet";
-import { flattenMaterialLogs } from "../../myTeam/[id]/employee/[employeeId]/TimeCardTruckingMaterialLogs";
+import { flattenMaterialLogs } from "../../myTeam/[id]/employee/[employeeId]/_components/TimeCardTruckingMaterialLogs";
 import { z } from "zod";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
