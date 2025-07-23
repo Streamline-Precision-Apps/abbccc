@@ -40,7 +40,7 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                  size={2}
+                  size={3}
                   id={"1"}
                   label={" "}
                   disabled={true}
@@ -56,7 +56,7 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                  size={2}
+                  size={3}
                   id={"1"}
                   label={" "}
                   disabled={true}
@@ -72,7 +72,7 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                  size={2}
+                  size={3}
                   id={"1"}
                   label={" "}
                   disabled={true}
@@ -88,7 +88,7 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                  size={2}
+                  size={3}
                   id={"1"}
                   label={" "}
                   disabled={true}
@@ -104,7 +104,7 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                  size={2}
+                  size={3}
                   id={"1"}
                   label={""}
                   disabled={true}
