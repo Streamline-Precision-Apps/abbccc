@@ -11,13 +11,22 @@ import { UserSettings } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Banners } from "../(reusable)/banners";
 import { setUserPermissions } from "@/actions/userActions";
+import { ProgressBar } from "./progressBar";
+import { Button } from "../ui/button";
 
 type prop = {
   userId: string;
   handleNextStep: () => void;
+  totalSteps: number;
+  currentStep: number;
 };
 
-export default function NotificationSettings({ userId, handleNextStep }: prop) {
+export default function NotificationSettings({
+  userId,
+  handleNextStep,
+  totalSteps,
+  currentStep,
+}: prop) {
   console.log(userId);
   const t = useTranslations("SignUpPermissions");
   const [showBanner, setShowBanner] = useState(false);
@@ -187,125 +196,68 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
   };
 
   return (
-    <>
-      {/* Show the system-level permission banner at the top of the page */}
-      {showBanner && (
-        <Holds
-          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
-        >
-          <Banners background={"red"}>
-            <Texts size={"p6"}>{bannerMessage}</Texts>
-          </Banners>
-        </Holds>
-      )}
-      <Grids rows={"10"} gap={"5"} className="mb-5">
-        <Holds
-          background={"white"}
-          className="row-span-1 h-full justify-center"
-        >
-          <Titles size={"h1"}>{t("GiveUsAccess")}</Titles>
-        </Holds>
-        <Holds
-          background={"white"}
-          className="row-span-1 h-full justify-center"
-        >
-          {/* When "Yes to Everything" is clicked, request system permissions then update the state */}
-          <Buttons onClick={requestSystemPermissions}>
-            <Texts size={"p3"}>{t("YesToEverything")}</Texts>
-          </Buttons>
-        </Holds>
-        <Holds background={"white"} className="row-span-7 h-full">
-          <Contents width={"section"}>
-            <Grids rows={"4"} gap={"0"}>
-              <Holds className="row-span-1">
-                <Titles size={"h2"}>{t("RequiredForAppUse")}</Titles>
-              </Holds>
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("CameraAccess")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.cameraAccess || false}
-                    onChange={(value: boolean) => {
-                      handleChange("cameraAccess", value);
-                    }}
-                  />
-                </Holds>
-              </Holds>
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("LocationAccess")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.locationAccess || false}
-                    onChange={(value: boolean) => {
-                      handleChange("locationAccess", value);
-                    }}
-                  />
-                </Holds>
-              </Holds>
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Cookies")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.cookiesAccess || false}
-                    onChange={handleAcceptCookies}
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-          {/* ------------------------------------------------------------- */}
-          <Contents width={"section"} className="mb-2">
-            <Grids rows={"4"} gap={"0"}>
-              <Holds className="row-start-1 row-end-2">
-                <Titles size={"h2"}>{t("OptionalButVeryHelpful")}</Titles>
-              </Holds>
-              <Holds position={"row"} className="row-start-2 row-end-3">
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("GeneralReminders")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.generalReminders || false}
-                    onChange={(value: boolean) => {
-                      handleChange("generalReminders", value);
-                    }}
-                  />
-                </Holds>
-              </Holds>
-              <Holds position={"row"} className="row-start-3 row-end-4">
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("PersonalReminders")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.personalReminders || false}
-                    onChange={(value: boolean) => {
-                      handleChange("personalReminders", value);
-                    }}
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-        <Holds className="row-span-1 h-full">
-          <Buttons
-            background={isRequiredAcessed ? "orange" : "darkGray"}
+    <div className="w-screen h-screen grid grid-rows-10 gap-1">
+      <div className="h-full flex flex-col justify-end row-span-2 gap-1 pb-4">
+        <Texts text={"white"} className="justify-end" size={"sm"}>
+          {t("AcceptAllPermissions")}
+        </Texts>
+      </div>
+      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 gap-4">
+        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+
+        <div className=" h-full flex flex-col items-center gap-8">
+          <Holds className="row-span-1">
+            <Titles size={"h2"}>{t("RequiredForAppUse")}</Titles>
+          </Holds>
+          <Holds position={"row"}>
+            <Holds size={"70"}>
+              <Texts position={"left"}>{t("CameraAccess")}</Texts>
+            </Holds>
+            <Holds size={"30"}>
+              <LocaleToggleSwitch
+                data={updatedData?.cameraAccess || false}
+                onChange={(value: boolean) => {
+                  handleChange("cameraAccess", value);
+                }}
+              />
+            </Holds>
+          </Holds>
+          <Holds position={"row"}>
+            <Holds size={"70"}>
+              <Texts position={"left"}>{t("LocationAccess")}</Texts>
+            </Holds>
+            <Holds size={"30"}>
+              <LocaleToggleSwitch
+                data={updatedData?.locationAccess || false}
+                onChange={(value: boolean) => {
+                  handleChange("locationAccess", value);
+                }}
+              />
+            </Holds>
+          </Holds>
+          <Holds position={"row"}>
+            <Holds size={"70"}>
+              <Texts position={"left"}>{t("Cookies")}</Texts>
+            </Holds>
+            <Holds size={"30"}>
+              <LocaleToggleSwitch
+                data={updatedData?.cookiesAccess || false}
+                onChange={handleAcceptCookies}
+              />
+            </Holds>
+          </Holds>
+        </div>
+        <div>
+          <Button
+            size={"lg"}
             onClick={handleSubmitSettings}
-            disabled={isSubmitting}
+            className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
+            disabled={isSubmitting} // Disable the button while submitting
           >
-            <Titles size={"h2"}>
-              {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-            </Titles>
-          </Buttons>
-        </Holds>
-      </Grids>
-    </>
+            <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

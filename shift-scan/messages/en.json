@@ -21,6 +21,7 @@
   "SignUpIntro": {
     "Welcome": "Welcome to shift scan! Time to set up your account!",
     "ThingsWeNeedToDo": "Things we need to do...",
+    "EnterYourInformation": "Enter Your Information",
     "ChooseNewPassword": "Choose New Password",
     "GivePermissions": "Give Permissions",
     "ChooseProfilePicture": "Choose Profile Picture",
@@ -29,13 +30,34 @@
     "LogoAlt": "Shift Scan Logo"
   },
 
+  "SignUpAccountInfo": {
+    "ItsTimeToSetUpYourAccount": "It's time to set up your account!",
+    "Email": "Email",
+    "EnterYourEmail": "Enter your email",
+    "PhoneNumber": "Phone Number",
+    "InvalidPhone": "Please enter a valid phone number",
+    "EnterYourPhoneNumber": "Enter your phone number",
+    "DateOfBirth": "Date of Birth",
+    "SelectDate": "Select Date",
+    "LanguagePreference": "Language Preference",
+    "SelectLanguage": "Select Language",
+    "AccountInformation": "Account Information",
+    "Next": "Next",
+    "EmergencyContactName": "Emergency Contact Name",
+    "EnterEmergencyContactName": "Enter first and last name",
+    "EmergencyContactPhoneNumber": "Emergency Contact Phone Number",
+    "EnterEmergencyContactPhoneNumber": "Enter phone number",
+    "English": "English",
+    "Spanish": "Spanish"
+  },
+
   "SignUpPassword": {
-    "ChoosePasswordTitle": "Choose A Password",
+    "ChoosePasswordTitle": "Choose a new password",
     "ChooseNewPassword": "Choose a new password! Make sure to follow the strength requirements!",
-    "PasswordRequirements": "Password Requirements:",
-    "NumberRequirement": "Number",
-    "SymbolRequirement": "Symbol",
-    "LengthRequirement": "Length (8+)",
+    "PasswordRequirements": "Password must include:",
+    "NumberRequirement": "1 Number",
+    "SymbolRequirement": "1 Symbol",
+    "LengthRequirement": "Has a Length 8+ characters",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password",
     "Next": "Next",
@@ -48,6 +70,7 @@
   },
 
   "SignUpPermissions": {
+    "AcceptAllPermissions": "Accept All Permissions",
     "GeneralReminders": "General Reminders",
     "PersonalReminders": "Personal Reminders",
     "GiveUsAccess": "Give Us Access",
@@ -79,6 +102,7 @@
 
   "SignUpVirtualSignature": {
     "AddASignature": "Add A Signature",
+    "AddYourBestSignature": "Add your best signature here — we’ll reuse it wherever you need to e-sign documents in the app.",
     "LetsAddASignature": "Let's add an e-signature! make sure you like it, it will be imprinted on every form.",
     "SignHere": "Sign Here",
     "Clear": "Clear",
@@ -89,6 +113,7 @@
   },
 
   "SignUpOutro": {
+    "EnterYourInformation": "Enter Your Information",
     "LooksLikeYoureAllSetUp": "Looks like you're all set up! Time to experience working made easier!",
     "HeresWhatWeDid": "Here's what we did...",
     "ChooseNewPassword": "Choose New Password",
