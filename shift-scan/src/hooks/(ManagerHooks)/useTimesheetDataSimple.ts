@@ -44,8 +44,8 @@ export const useTimesheetDataSimple = (
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const result: TimesheetDataResponse = await res.json();
       setData(result);
-    } catch (err: any) {
-      setError(`Failed to fetch timesheets: ${err.message}`);
+    } catch (err) {
+      setError(`Failed to fetch timesheets`);
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,7 @@ import { revalidateTag } from "next/cache";
  */
 export async function updateTimesheetServerAction(
   id: string,
-  changes: Record<string, any>
+  changes: Record<string, unknown>
 ) {
   if (!id || !changes || Object.keys(changes).length === 0) {
     return { error: "Missing timesheet id or no changes provided." };
@@ -23,7 +23,11 @@ export async function updateTimesheetServerAction(
     console.log("Timesheet updated successfully:", updated);
     revalidateTag("timesheets");
     return { success: true, timesheet: updated };
-  } catch (error: any) {
-    return { error: error.message || "Failed to update timesheet." };
+  } catch (error) {
+    let message = "Failed to update timesheet.";
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { error: message };
   }
 }

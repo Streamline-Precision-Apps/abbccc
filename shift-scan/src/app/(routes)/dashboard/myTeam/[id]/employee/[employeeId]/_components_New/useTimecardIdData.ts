@@ -20,90 +20,6 @@ export interface Timesheet {
     name: string;
   } | null;
 }
-
-export interface TruckingLog {
-  id: string;
-  truckNumber: string | null;
-  trailerNumber: string | null;
-  startingMileage: number | null;
-  endingMileage: number | null;
-  EquipmentHauled: EquipmentHauled[];
-  RefuelLogs: RefuelLog[];
-  Materials: Material[];
-  StateMileages: StateMileage[];
-}
-
-export interface EquipmentHauled {
-  id: string;
-  startMileage: number | null;
-  endMileage: number | null;
-  Equipment: {
-    id: string;
-    name: string;
-  } | null;
-}
-
-export interface RefuelLog {
-  id: string;
-  gallonsRefueled: number | null;
-  milesAtFueling?: number | null; // present in TruckingLog, not in TascoLog/EmployeeEquipmentLog
-}
-
-export interface Material {
-  id: string;
-  name: string | null;
-  LocationOfMaterial: string | null;
-  quantity: number | null;
-  unit: string | null;
-  loadType: string | null;
-}
-
-export interface StateMileage {
-  id: string;
-  state: string | null;
-  stateLineMileage: number | null;
-}
-
-export interface TascoLog {
-  id: string;
-  shiftType: string | null;
-  laborType: string | null;
-  LoadQuantity: number | null;
-  Equipment: {
-    id: string;
-    name: string;
-  } | null;
-  RefuelLogs: {
-    id: string;
-    gallonsRefueled: number | null;
-  }[];
-}
-
-export interface MaintenanceLog {
-  id: string;
-  startTime: string;
-  endTime: string | null;
-  comment: string | null;
-  Maintenance: {
-    id: string;
-    equipmentIssue: string | null;
-  } | null;
-}
-
-export interface EmployeeEquipmentLog {
-  id: string;
-  startTime: string;
-  endTime: string | null;
-  comment: string | null;
-  RefuelLog: {
-    id: string;
-    gallonsRefueled: number | null;
-  } | null;
-  Equipment: {
-    id: string;
-    name: string;
-  } | null;
-}
 /**
  * Hook to fetch timesheet data by ID, track changes, and prepare changed fields for submission.
  * @param id Timesheet ID
@@ -147,8 +63,12 @@ export function useTimecardIdData(id: string) {
         } else {
           setJobSites([]);
         }
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch timesheet");
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Failed to fetch timesheet");
+        }
       } finally {
         setLoading(false);
       }
@@ -196,12 +116,16 @@ export function useTimecardIdData(id: string) {
     value: unknown
   ): void {
     const keys = path.replace(/\[(\d+)\]/g, ".$1").split(".");
-    let curr: any = obj;
+    let curr: unknown = obj;
     for (let i = 0; i < keys.length - 1; i++) {
-      if (!(keys[i] in curr)) curr[keys[i]] = {};
-      curr = curr[keys[i]];
+      if (typeof curr === "object" && curr !== null) {
+        if (!(keys[i] in curr)) (curr as Record<string, unknown>)[keys[i]] = {};
+        curr = (curr as Record<string, unknown>)[keys[i]];
+      }
     }
-    curr[keys[keys.length - 1]] = value;
+    if (typeof curr === "object" && curr !== null) {
+      (curr as Record<string, unknown>)[keys[keys.length - 1]] = value;
+    }
   }
 
   /**
@@ -237,10 +161,9 @@ export function useTimecardIdData(id: string) {
         // value is 'HH:mm'
         const [hours, minutes] = value.split(":").map(Number);
         if (!isNaN(hours) && !isNaN(minutes)) {
-          dateObj.setHours(hours, minutes, 0, 0);
-          (copy as any)[field] = dateObj;
+          (copy as unknown as Record<string, unknown>)[field] = dateObj;
         } else {
-          (copy as any)[field] = value;
+          (copy as unknown as Record<string, unknown>)[field] = value;
         }
       } else {
         setByPath(copy, field, value);
@@ -256,7 +179,7 @@ export function useTimecardIdData(id: string) {
    * @param path The current path (for recursion)
    */
   function deepDiff<T>(orig: T, edit: T, path = ""): Record<string, unknown> {
-    let changes: Record<string, unknown> = {};
+    const changes: Record<string, unknown> = {};
     if (typeof orig !== typeof edit) {
       changes[path] = edit;
       return changes;
@@ -283,22 +206,33 @@ export function useTimecardIdData(id: string) {
         const origIsObj = typeof orig === "object" && orig !== null;
         const editIsObj = typeof edit === "object" && edit !== null;
         if (!(key in orig)) {
-          changes[subPath] = editIsObj ? (edit as any)[key] : undefined;
+          changes[subPath] = editIsObj
+            ? (edit as Record<string, unknown>)[key as string]
+            : undefined;
         } else if (!editIsObj || !(key in (edit as object))) {
           changes[subPath] = undefined;
-        } else if ((orig as any)[key] !== (edit as any)[key]) {
+        } else if (
+          (orig as Record<string, unknown>)[key as string] !==
+          (edit as Record<string, unknown>)[key as string]
+        ) {
           if (
-            typeof (orig as any)[key] === "object" &&
-            (orig as any)[key] &&
-            typeof (edit as any)[key] === "object" &&
-            (edit as any)[key]
+            typeof (orig as Record<string, unknown>)[key as string] ===
+              "object" &&
+            (orig as Record<string, unknown>)[key as string] &&
+            typeof (edit as Record<string, unknown>)[key as string] ===
+              "object" &&
+            (edit as Record<string, unknown>)[key as string]
           ) {
             Object.assign(
               changes,
-              deepDiff((orig as any)[key], (edit as any)[key], subPath)
+              deepDiff(
+                (orig as Record<string, unknown>)[key as string],
+                (edit as Record<string, unknown>)[key as string],
+                subPath
+              )
             );
           } else {
-            changes[subPath] = (edit as any)[key];
+            changes[subPath] = (edit as Record<string, unknown>)[key as string];
           }
         }
       }
