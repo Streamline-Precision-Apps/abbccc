@@ -595,6 +595,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     // DocumentTags: { connect: [{ id: "dt1" }] },
     equipmentVehicleInfo: {
       create: {
@@ -615,6 +616,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -634,6 +636,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "International",
@@ -653,6 +656,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Gray",
@@ -672,6 +676,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -691,6 +696,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "International",
@@ -710,6 +716,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -729,6 +736,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -748,6 +756,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -767,6 +776,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -786,6 +796,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -805,6 +816,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Generic",
@@ -824,6 +836,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Kenworth",
@@ -843,6 +856,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -862,6 +876,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -881,6 +896,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -900,6 +916,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -919,6 +936,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -938,6 +956,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -957,6 +976,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -976,6 +996,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -995,6 +1016,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Caterpillar",
@@ -1014,6 +1036,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "PTI",
@@ -1033,6 +1056,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Army",
@@ -1052,6 +1076,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Army",
@@ -1071,6 +1096,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRUCK",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     equipmentVehicleInfo: {
       create: {
         make: "Army",
@@ -1090,6 +1116,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     // No vehicle info needed for non-truck equipment.
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1101,6 +1128,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1111,6 +1139,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1121,6 +1150,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1130,6 +1160,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     description: "CEMENT FORMS",
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
+    approvalStatus: "APPROVED",
     currentWeight: 0,
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1141,6 +1172,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1151,6 +1183,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1161,6 +1194,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1171,6 +1205,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1181,6 +1216,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   // Trailers
@@ -1192,6 +1228,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "TRAILER",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     // No vehicle info for trailers
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
@@ -1204,6 +1241,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "VEHICLE",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
   {
@@ -1214,6 +1252,7 @@ export const updatedEquipment: Prisma.EquipmentCreateInput[] = [
     equipmentTag: "EQUIPMENT",
     state: "AVAILABLE",
     currentWeight: 0,
+    approvalStatus: "APPROVED",
     DocumentTags: { connect: [{ id: "dt1" }] },
   },
 ];

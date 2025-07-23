@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -36,7 +36,6 @@ export async function GET(
       where: { id: equipmentId },
       include: {
         equipmentVehicleInfo: true,
-        TruckingLogs: true,
         DocumentTags: true,
       },
     });

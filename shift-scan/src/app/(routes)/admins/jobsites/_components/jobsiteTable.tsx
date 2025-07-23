@@ -133,7 +133,7 @@ export default function JobsiteTable({
                 {`${jobsite.Address.street} ${jobsite.Address.city}, ${jobsite.Address.state} ${jobsite.Address.zipCode}`}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {jobsite.Client.name || "-"}
+                {jobsite.Client ? jobsite.Client.name : "-"}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
                 {jobsite.approvalStatus
