@@ -38,129 +38,13 @@ export async function GET(
       },
     });
 
-    const truckingLogs = await prisma.truckingLog.findMany({
-      where: { timeSheetId: timesheetId },
-      select: {
-        id: true,
-        truckNumber: true,
-        trailerNumber: true,
-        startingMileage: true,
-        endingMileage: true,
-        EquipmentHauled: {
-          select: {
-            id: true,
-            startMileage: true,
-            endMileage: true,
-            Equipment: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        RefuelLogs: {
-          select: {
-            id: true,
-            gallonsRefueled: true,
-            milesAtFueling: true,
-          },
-        },
-        Materials: {
-          select: {
-            id: true,
-            name: true,
-            LocationOfMaterial: true,
-            quantity: true,
-            unit: true,
-            loadType: true,
-          },
-        },
-        StateMileages: {
-          select: {
-            id: true,
-            state: true,
-            stateLineMileage: true,
-          },
-        },
-      },
-    });
-
-    const tascoLogs = await prisma.tascoLog.findMany({
-      where: { timeSheetId: timesheetId },
-      select: {
-        id: true,
-        shiftType: true,
-        laborType: true,
-        LoadQuantity: true,
-        Equipment: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        RefuelLogs: {
-          select: {
-            id: true,
-            gallonsRefueled: true,
-          },
-        },
-      },
-    });
-
-    const MaintenanceLogs = await prisma.maintenanceLog.findMany({
-      where: { timeSheetId: timesheetId },
-      select: {
-        id: true,
-        startTime: true,
-        endTime: true,
-        comment: true,
-        Maintenance: {
-          select: {
-            id: true,
-            equipmentIssue: true,
-          },
-        },
-      },
-    });
-
-    const employeeEquipmentLogs = await prisma.employeeEquipmentLog.findMany({
-      where: { timeSheetId: timesheetId },
-      select: {
-        id: true,
-        startTime: true,
-        endTime: true,
-        comment: true,
-        RefuelLog: {
-          select: {
-            id: true,
-            gallonsRefueled: true,
-          },
-        },
-        Equipment: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-
-    const timesheetDetails = {
-      timesheet,
-      truckingLogs,
-      tascoLogs,
-      MaintenanceLogs,
-      employeeEquipmentLogs,
-    };
-
-    if (!timesheetDetails) {
+    if (!timesheet) {
       return new Response(JSON.stringify({ error: "Timesheet not found." }), {
         status: 404,
       });
     }
 
-    return new Response(JSON.stringify({ timesheetDetails }), { status: 200 });
+    return new Response(JSON.stringify({ timesheet }), { status: 200 });
   } catch (error) {
     Sentry.captureException(error);
     return new Response(
