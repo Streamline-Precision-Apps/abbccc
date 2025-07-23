@@ -349,7 +349,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     username: "zanegillette",
     email: "zane@streamlineprecision.com",
     password: "securepassword",
-    DOB: "",
+    DOB: null,
     truckView: true,
     tascoView: true,
     laborView: true,
