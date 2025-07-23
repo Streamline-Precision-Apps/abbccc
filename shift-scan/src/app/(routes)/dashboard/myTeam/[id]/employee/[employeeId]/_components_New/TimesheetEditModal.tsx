@@ -10,41 +10,29 @@ import {
 import { useTimecardIdData } from "./useTimecardIdData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
-// Collapsible imports removed
 import { Textarea } from "@/components/ui/textarea";
-import { useTimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/hooks/useTimesheetData";
 import { format } from "date-fns";
-import { on } from "events";
 type AppManagerEditTimesheetModalProps = {
   timesheetId: string;
   isOpen: boolean;
   onClose: () => void;
-  resetMainList: () => void;
 };
 
 export default function AppManagerEditTimesheetModal(
   props: AppManagerEditTimesheetModalProps
 ) {
-  const { timesheetId, isOpen, onClose, resetMainList } = props;
-  const {
-    data,
-    loading,
-    error,
-    updateField,
-    save,
-    hasChanges,
-    costCodes,
-    jobSites,
-    reset,
-  } = useTimecardIdData(timesheetId);
+  const { timesheetId, isOpen, onClose } = props;
+  const { data, setEdited, loading, error, save, costCodes, jobSites, reset } =
+    useTimecardIdData(timesheetId);
   const [editGeneral, setEditGeneral] = useState(false);
-  const [showGeneral, setShowGeneral] = useState(true);
   if (!isOpen) return null;
 
   const onSave = async () => {
     await save();
-    setEditGeneral(false);
-    resetMainList();
+    // Add a short delay for a smoother transition
+    setTimeout(() => {
+      setEditGeneral(false);
+    }, 1000); // 1s delay for smoothness
   };
 
   return (
@@ -129,7 +117,22 @@ export default function AppManagerEditTimesheetModal(
                 <Input
                   type="time"
                   value={format(data.startTime, "HH:mm")}
-                  onChange={(e) => updateField("startTime", e.target.value)}
+                  onChange={(e) =>
+                    setEdited((prev) => {
+                      if (!prev) return prev;
+                      if (!e.target.value) return { ...prev, startTime: "" };
+                      // Use the original date, update hours/minutes
+                      const base = prev.startTime
+                        ? new Date(prev.startTime)
+                        : new Date();
+                      const [h, m] = e.target.value.split(":").map(Number);
+                      if (!isNaN(h) && !isNaN(m)) {
+                        base.setHours(h, m, 0, 0);
+                        return { ...prev, startTime: base.toISOString() };
+                      }
+                      return prev;
+                    })
+                  }
                   disabled={!editGeneral}
                   className={editGeneral ? "ring-2 ring-app-orange" : ""}
                 />
@@ -145,7 +148,22 @@ export default function AppManagerEditTimesheetModal(
                 <Input
                   type="time"
                   value={data.endTime ? format(data.endTime, "HH:mm") : ""}
-                  onChange={(e) => updateField("endTime", e.target.value)}
+                  onChange={(e) =>
+                    setEdited((prev) => {
+                      if (!prev) return prev;
+                      if (!e.target.value) return { ...prev, endTime: null };
+                      // Use the original date, update hours/minutes
+                      const base = prev.endTime
+                        ? new Date(prev.endTime)
+                        : new Date();
+                      const [h, m] = e.target.value.split(":").map(Number);
+                      if (!isNaN(h) && !isNaN(m)) {
+                        base.setHours(h, m, 0, 0);
+                        return { ...prev, endTime: base.toISOString() };
+                      }
+                      return prev;
+                    })
+                  }
                   disabled={!editGeneral}
                   className={editGeneral ? "ring-2 ring-app-orange" : ""}
                 />
@@ -161,8 +179,14 @@ export default function AppManagerEditTimesheetModal(
                 <Select
                   value={data.Jobsite?.id ?? ""}
                   onValueChange={(val) => {
-                    const selected = jobSites.find((j) => j.id === val);
-                    updateField("Jobsite", selected ?? null);
+                    setEdited((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            Jobsite: jobSites.find((j) => j.id === val) ?? null,
+                          }
+                        : prev
+                    );
                   }}
                   disabled={!editGeneral}
                 >
@@ -191,8 +215,15 @@ export default function AppManagerEditTimesheetModal(
                 <Select
                   value={data.CostCode?.id ?? ""}
                   onValueChange={(val) => {
-                    const selected = costCodes.find((c) => c.id === val);
-                    updateField("CostCode", selected ?? null);
+                    setEdited((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            CostCode:
+                              costCodes.find((c) => c.id === val) ?? null,
+                          }
+                        : prev
+                    );
                   }}
                   disabled={!editGeneral}
                 >
@@ -226,7 +257,9 @@ export default function AppManagerEditTimesheetModal(
                   onChange={(e) => {
                     if (!editGeneral) return;
                     const val = e.target.value.slice(0, 40);
-                    updateField("comment", val);
+                    setEdited((prev) =>
+                      prev ? { ...prev, comment: val } : prev
+                    );
                   }}
                   disabled={true}
                   className={editGeneral ? "ring-2 ring-app-orange" : ""}
@@ -276,7 +309,6 @@ export default function AppManagerEditTimesheetModal(
             <Button
               className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-semibold bg-app-green text-white shadow-md transition-colors"
               onClick={onSave}
-              disabled={!hasChanges}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

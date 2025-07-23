@@ -39,7 +39,10 @@ export const useTimesheetDataSimple = (
 
     try {
       const res = await fetch(
-        `/api/getTimesheetsByDateNew?employeeId=${employeeId}&date=${currentDate}`
+        `/api/getTimesheetsByDateNew?employeeId=${employeeId}&date=${currentDate}`,
+        {
+          next: { tags: ["timesheet"] },
+        }
       );
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const result: TimesheetDataResponse = await res.json();

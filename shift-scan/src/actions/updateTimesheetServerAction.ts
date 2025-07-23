@@ -2,26 +2,30 @@
 import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
 
-/**
- * Server action to update a timesheet by ID with only the changed fields.
- * @param id Timesheet ID
- * @param changes Object with changed fields and their new values
- */
-export async function updateTimesheetServerAction(
-  id: string,
-  changes: Record<string, unknown>
-) {
-  if (!id || !changes || Object.keys(changes).length === 0) {
-    return { error: "Missing timesheet id or no changes provided." };
-  }
-  console.log("Updating timesheet with changes:", changes);
+export async function updateTimesheetServerAction(formData: FormData) {
+  console.log(formData);
+  const id = formData.get("id") as string;
+  const startTime = new Date(formData.get("startTime") as string).toISOString();
+  const endTime =
+    new Date(formData.get("endTime") as string).toISOString() || null;
+  const jobsite = formData.get("Jobsite") as string;
+  const costCode = formData.get("CostCode") as string;
+
   try {
     const updated = await prisma.timeSheet.update({
       where: { id },
-      data: changes,
+      data: {
+        startTime,
+        endTime: endTime || null,
+        jobsiteId: jobsite,
+        costcode: costCode,
+      },
     });
-    console.log("Timesheet updated successfully:", updated);
-    revalidateTag("timesheets");
+    if (!updated) {
+      return { error: "Failed to update timesheet." };
+    }
+    console.log("Updated timesheet:", updated);
+    revalidateTag("timesheet");
     return { success: true, timesheet: updated };
   } catch (error) {
     let message = "Failed to update timesheet.";
