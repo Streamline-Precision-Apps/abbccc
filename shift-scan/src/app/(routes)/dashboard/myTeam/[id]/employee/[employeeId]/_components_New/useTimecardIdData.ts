@@ -2,22 +2,14 @@ import { updateTimesheetServerAction } from "@/actions/updateTimesheetServerActi
 import { useEffect, useState, useCallback } from "react";
 
 // --- Types for Timesheet and related logs ---
-export interface TimesheetDetailsResponse {
-  timesheetDetails: TimesheetDetails;
-}
-
-export interface TimesheetDetails {
+export interface TimesheetResponse {
   timesheet: Timesheet | null;
-  truckingLogs: TruckingLog[];
-  tascoLogs: TascoLog[];
-  MaintenanceLogs: MaintenanceLog[];
-  employeeEquipmentLogs: EmployeeEquipmentLog[];
 }
 
 export interface Timesheet {
   id: string;
   comment: string | null;
-  startTime: Date | null;
+  startTime: Date;
   endTime: Date | null;
   Jobsite: {
     id: string;
@@ -117,33 +109,80 @@ export interface EmployeeEquipmentLog {
  * @param id Timesheet ID
  */
 export function useTimecardIdData(id: string) {
-  const [original, setOriginal] = useState<TimesheetDetails | null>(null);
-  const [edited, setEdited] = useState<TimesheetDetails | null>(null);
+  const [original, setOriginal] = useState<Timesheet | null>(null);
+  const [edited, setEdited] = useState<Timesheet | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [jobSites, setJobSites] = useState<{ id: string; name: string }[]>([]);
 
   // Deep clone utility
   function deepClone<T>(obj: T): T {
     return JSON.parse(JSON.stringify(obj));
   }
 
-  // Fetch timesheet data by ID
+  // Fetch timesheet data and jobsites by timesheetId
   useEffect(() => {
     if (!id) return;
-    setLoading(true);
-    setError(null);
-    fetch(`/api/getTimesheetDetailsManager/${id}`)
-      .then(async (res) => {
+    let isMounted = true;
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch timesheet
+        const res = await fetch(`/api/getTimesheetDetailsManager/${id}`);
         if (!res.ok) throw new Error(await res.text());
-        return res.json();
-      })
-      .then((data) => {
-        setOriginal(data.timesheetDetails);
-        setEdited(deepClone(data.timesheetDetails));
-      })
-      .catch((err) => setError(err.message || "Failed to fetch timesheet"))
-      .finally(() => setLoading(false));
+        const data: TimesheetResponse = await res.json();
+        if (!isMounted) return;
+        setOriginal(data.timesheet ?? null);
+        setEdited(deepClone(data.timesheet ?? null));
+
+        // Fetch jobsites for this timesheetId
+        const jobsitesRes = await fetch(`/api/getJobsiteSummary`);
+        if (jobsitesRes.ok) {
+          const jobsites = await jobsitesRes.json();
+          setJobSites(jobsites);
+        } else {
+          setJobSites([]);
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch timesheet");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
+
+  // Fetch cost codes when Jobsite changes
+  useEffect(() => {
+    async function fetchCostCodes() {
+      const jobsiteId = edited?.Jobsite?.id;
+      if (!jobsiteId) {
+        setCostCodes([]);
+        return;
+      }
+      try {
+        const res = await fetch(
+          `/api/getAllCostCodesByJobSites?jobsiteId=${jobsiteId}`
+        );
+        if (!res.ok) {
+          setCostCodes([]);
+          return;
+        }
+        const codes = await res.json();
+        setCostCodes(codes);
+      } catch {
+        setCostCodes([]);
+      }
+    }
+    fetchCostCodes();
+  }, [edited?.Jobsite?.id]);
 
   /**
    * Utility to set a value by path (e.g., 'timesheet.comment')
@@ -176,14 +215,11 @@ export function useTimecardIdData(id: string) {
       const copy = deepClone(prev);
       // Special handling for time fields to preserve date
       if (
-        (field === "timesheet.startTime" || field === "timesheet.endTime") &&
+        (field === "startTime" || field === "endTime") &&
         typeof value === "string"
       ) {
         // Get the current Date or fallback to today
-        const current =
-          field === "timesheet.startTime"
-            ? prev.timesheet?.startTime
-            : prev.timesheet?.endTime;
+        const current = field === "startTime" ? prev.startTime : prev.endTime;
         let dateObj: Date;
         if (current instanceof Date) {
           dateObj = new Date(current);
@@ -202,9 +238,9 @@ export function useTimecardIdData(id: string) {
         const [hours, minutes] = value.split(":").map(Number);
         if (!isNaN(hours) && !isNaN(minutes)) {
           dateObj.setHours(hours, minutes, 0, 0);
-          setByPath(copy, field, dateObj);
+          (copy as any)[field] = dateObj;
         } else {
-          setByPath(copy, field, value);
+          (copy as any)[field] = value;
         }
       } else {
         setByPath(copy, field, value);
@@ -286,7 +322,14 @@ export function useTimecardIdData(id: string) {
 
   // Has changes
   const hasChanges =
-    original && edited && Object.keys(deepDiff(original, edited)).length > 1;
+    original && edited && Object.keys(deepDiff(original, edited)).length > 0;
+
+  /**
+   * Reset the edited state to the original state, discarding unsaved changes.
+   */
+  const reset = useCallback(() => {
+    setEdited(original ? deepClone(original) : null);
+  }, [original]);
 
   return {
     data: edited,
@@ -296,5 +339,8 @@ export function useTimecardIdData(id: string) {
     updateField: updateEditedField,
     save,
     hasChanges,
+    costCodes,
+    jobSites,
+    reset,
   };
 }
