@@ -9,14 +9,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-export function CalendarDropDown({ label }: { label: string }) {
+export function CalendarDropDown({
+  label,
+  required = true,
+}: {
+  label: string;
+  required?: boolean;
+}) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   return (
     <div className="flex flex-col gap-3">
       <Label htmlFor="date" className="px-1">
         {label}
-        <span className="text-red-500">*</span>
+        {required && <span className="text-red-500">*</span>}
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

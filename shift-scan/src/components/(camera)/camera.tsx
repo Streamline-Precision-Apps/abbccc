@@ -112,7 +112,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
             {!imageSrc && !cameraActive && (
               <Images
                 className="w-[250px] h-[250px]"
-                titleImg="/person.svg"
+                titleImg="/profileEmpty.svg"
                 titleImgAlt="person"
               />
             )}
@@ -166,7 +166,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
                   ? takePicture
                   : toggleCamera
               }
-              className="p-2"
+              className="p-1"
             >
               <Titles>
                 {imageSrc
@@ -179,7 +179,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
           </Holds>
           <Holds>
             {/* When the camera is not active, allow selection from camera roll */}
-            {!cameraActive && (
+            {/* {!cameraActive && (
               <>
                 <Buttons
                   background={"lightBlue"}
@@ -197,7 +197,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
                   onChange={handleFileChange}
                 />
               </>
-            )}
+            )} */}
             {cameraActive && (
               <Buttons
                 background={"red"}
@@ -205,7 +205,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
                   clearPicture();
                   hideCamera();
                 }}
-                className="p-2"
+                className="p-1"
                 disabled={!cameraActive}
               >
                 <Titles>Cancel</Titles>

@@ -27,6 +27,28 @@
     "LetsGetStarted": "¡Comencemos!",
     "LogoAlt": "Logotipo de SHIFT SCAN"
   },
+
+  "SignUpAccountInfo": {
+    "ItsTimeToSetUpYourAccount": "¡Es hora de configurar su cuenta!",
+    "Email": "Correo electrónico",
+    "EnterYourEmail": "Ingrese su correo electrónico",
+    "PhoneNumber": "Número de teléfono",
+    "InvalidPhone": "Ingrese un número de teléfono válido",
+    "EnterYourPhoneNumber": "Ingrese su número de teléfono",
+    "DateOfBirth": "Fecha de nacimiento",
+    "SelectDate": "Fecha de selección",
+    "LanguagePreference": "Preferencia del idioma",
+    "SelectLanguage": "Lenguaje seleccionado",
+    "AccountInformation": "Información de la cuenta",
+    "Next": "Próximo",
+    "EmergencyContactName": "Nombre de contacto de emergencia",
+    "EnterEmergencyContactName": "Ingrese el primer y apellido",
+    "EmergencyContactPhoneNumber": "Número de teléfono de contacto de emergencia",
+    "EnterEmergencyContactPhoneNumber": "Ingrese el número de teléfono",
+    "English": "Inglés",
+    "Spanish": "Español"
+  },
+
   "SignUpPassword": {
     "ChoosePasswordTitle": "Elije una contraseña",
     "ChooseNewPassword": "¡Elija una nueva contraseña! ",
