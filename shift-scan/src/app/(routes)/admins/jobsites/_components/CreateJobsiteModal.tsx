@@ -155,17 +155,20 @@ export default function CreateJobsiteModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col gap-4 w-full">
-          <div>
+          <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold">Create Jobsite</h2>
             <p className="text-xs text-gray-600">
               Fill in the details to create a new jobsite.
+            </p>
+            <p className="text-xs text-red-500">
+              All fields marked with * are required
             </p>
           </div>
           <div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col">
                 <Label htmlFor="client-id" className={`text-sm `}>
-                  Client ID <span className="text-red-500">*</span>
+                  Client ID{" "}
                 </Label>
                 <Select
                   name="client-id"

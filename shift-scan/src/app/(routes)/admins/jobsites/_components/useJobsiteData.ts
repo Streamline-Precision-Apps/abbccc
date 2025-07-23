@@ -17,10 +17,10 @@ export type JobsiteSummary = {
     state: string;
     zipCode: string;
   };
-  Client: {
+  Client?: {
     id: string;
     name: string;
-  };
+  } | null;
 };
 
 export const useJobsiteData = () => {
