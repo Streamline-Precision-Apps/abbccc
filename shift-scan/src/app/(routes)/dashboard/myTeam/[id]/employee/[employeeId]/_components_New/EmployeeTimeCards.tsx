@@ -144,8 +144,10 @@ export default function EmployeeTimeCards() {
                 <AppManagerEditTimesheetModal
                   timesheetId={editingId}
                   isOpen={showEditModal}
-                  onClose={() => setShowEditModal(false)}
-                  resetMainList={reset}
+                  onClose={() => {
+                    setShowEditModal(false);
+                    reset();
+                  }}
                 />
               )}
             </>
