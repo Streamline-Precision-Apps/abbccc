@@ -3,6 +3,7 @@ import {
   initialCompany,
   initialFormTemplates,
   initialUsers,
+  initialAddresses,
   // initialClients,
   // initialJobsites,
   initialCostCodes,
@@ -36,22 +37,22 @@ async function main() {
 
   try {
     // 1. Upsert Addresses
-    // for (const address of initialAddresses) {
-    //   try {
-    //     await prisma.address.upsert({
-    //       where: { id: address.id },
-    //       update: address,
-    //       create: address,
-    //     });
-    //   } catch (error) {
-    //     console.error(
-    //       "Error upserting address:",
-    //       error instanceof Error ? error.stack || error : error
-    //     );
-    //     continue;
-    //   }
-    // }
-    // console.log("Address upsert operation completed.");
+    for (const address of initialAddresses) {
+      try {
+        await prisma.address.upsert({
+          where: { id: address.id },
+          update: address,
+          create: address,
+        });
+      } catch (error) {
+        console.error(
+          "Error upserting address:",
+          error instanceof Error ? error.stack || error : error
+        );
+        continue;
+      }
+    }
+    console.log("Address upsert operation completed.");
 
     // 1. Upsert Companies
 

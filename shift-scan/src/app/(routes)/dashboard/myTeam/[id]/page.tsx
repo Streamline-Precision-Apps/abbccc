@@ -133,7 +133,9 @@ export default function Content() {
                               <Holds size={"20"} className="relative">
                                 <Images
                                   titleImg={
-                                    member.image || "/profileFilled.svg"
+                                    member.image
+                                      ? member.image
+                                      : "/profileEmpty.svg"
                                   }
                                   titleImgAlt="profileFilled"
                                   loading="lazy"
