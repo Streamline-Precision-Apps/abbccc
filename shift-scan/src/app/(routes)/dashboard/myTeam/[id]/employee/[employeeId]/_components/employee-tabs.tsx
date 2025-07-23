@@ -531,17 +531,19 @@ export default function EmployeeTabs() {
               console.warn("Invalid maintenance log changes");
               return;
             }
-            
+
             // Transform the MaintenanceLog data to match the server action format
-            const maintenanceUpdates = (changes as MaintenanceLog[]).map((log) => ({
-              id: log.id,
-              startTime: log.startTime ? new Date(log.startTime) : undefined,
-              endTime: log.endTime ? new Date(log.endTime) : undefined,
-            }));
+            const maintenanceUpdates = (changes as MaintenanceLog[]).map(
+              (log) => ({
+                id: log.id,
+                startTime: log.startTime ? new Date(log.startTime) : undefined,
+                endTime: log.endTime ? new Date(log.endTime) : undefined,
+              })
+            );
 
             console.log("Saving maintenance logs updates:", maintenanceUpdates);
             const result = await updateMaintenanceLogs(maintenanceUpdates);
-            
+
             if (result?.success) {
               await Promise.all([
                 fetchTimesheetsForDate(date),
@@ -549,7 +551,10 @@ export default function EmployeeTabs() {
               ]);
               setEdit(false);
             } else {
-              console.error("Failed to update maintenance logs:", result?.error);
+              console.error(
+                "Failed to update maintenance logs:",
+                result?.error
+              );
             }
             break;
           }

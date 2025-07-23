@@ -12,6 +12,13 @@ import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function EditJobsiteModal({
   cancel,
@@ -58,11 +65,15 @@ export default function EditJobsiteModal({
       const fd = new FormData();
       fd.append("id", formData.id);
       fd.append("name", formData.name);
+      fd.append("client", formData.Client?.id || "");
       fd.append("description", formData.description || "");
       fd.append("creationReason", formData.creationReason || "");
       fd.append("approvalStatus", formData.approvalStatus);
       fd.append("isActive", String(formData.isActive));
-      fd.append("CCTags", JSON.stringify(formData.CCTags.map((tag) => tag.id)));
+      fd.append(
+        "CCTags",
+        JSON.stringify(formData.CCTags.map((tag) => ({ id: tag.id })))
+      );
 
       const result = await updateJobsiteAdmin(fd);
 
@@ -142,19 +153,35 @@ export default function EditJobsiteModal({
               </div>
             </div>
           </div>
-          <div className="flex flex-col mb-2">
-            <Label htmlFor="name" className="text-sm">
-              Client
+          <div className="flex flex-col">
+            <Label htmlFor="client-id" className={`text-sm `}>
+              Client ID <span className="text-red-500">*</span>
             </Label>
-            <Input
-              type="text"
-              name="name"
-              value={formData.Client?.name || ""}
-              onChange={handleInputChange}
-              className="w-full text-xs"
-              disabled
-            />
+            <Select
+              name="client-id"
+              value={formData.Client?.id || ""}
+              onValueChange={(selectedId) => {
+                const selectedClient = clients.find((c) => c.id === selectedId);
+                setFormData((prev) =>
+                  prev
+                    ? { ...prev, Client: selectedClient ?? prev.Client }
+                    : prev
+                );
+              }}
+            >
+              <SelectTrigger id="jobsite-cctags" className="text-xs">
+                <SelectValue placeholder="Select a cost code group" />
+              </SelectTrigger>
+              <SelectContent>
+                {clients.map((client) => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
           <div className="flex flex-col gap-4 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
               <div className="flex flex-col">

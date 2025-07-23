@@ -811,9 +811,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
               create: {
                 laborType,
                 truckNumber: truck,
-                ...(equipmentId && {
-                  Equipment: { connect: { id: equipmentId } },
-                }),
+                equipmentId: equipmentId,
                 startingMileage,
                 trailerNumber: trailerNumber,
               },
@@ -855,9 +853,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
             create: {
               laborType,
               truckNumber: truck,
-              ...(equipmentId && {
-                Equipment: { connect: { id: equipmentId } },
-              }),
+              equipmentId: equipmentId,
               startingMileage,
               trailerNumber: trailerNumber,
             },
