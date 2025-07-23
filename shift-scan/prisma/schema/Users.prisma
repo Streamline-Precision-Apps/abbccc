@@ -6,7 +6,7 @@ model User {
   email                String               @unique
   password             String
   signature            String?
-  DOB                  DateTime
+  DOB                  DateTime?
   truckView            Boolean
   tascoView            Boolean
   laborView            Boolean

@@ -141,7 +141,7 @@ export default function TruckingReport({
         Array.isArray(row.Equipment) && row.Equipment.length > 0
           ? row.Equipment.map(
               (eq) =>
-                `[Eq: ${eq.name}, OW Mileage: ${eq.startMileage} - ${eq.endMileage}]`
+                `[Eq: ${eq.name}, OW: ${eq.startMileage} - ${eq.endMileage}]`
             ).join("; ")
           : "",
         // Material Hauled: join as "name (location, qty unit)"
