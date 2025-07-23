@@ -128,7 +128,7 @@ export default function TruckingReport({
       });
     }
     if (exportFormat === "csv") {
-      // Prepare all rows for each CSV
+      // Each report is a single row, with all sub-table data joined as comma-separated strings
       const mainRows = exportData.map((row) => [
         row.id || "",
         row.truckId || "",
@@ -137,52 +137,34 @@ export default function TruckingReport({
         row.jobId || "",
         row.StartingMileage ?? "",
         row.EndingMileage ?? "",
-        Array.isArray(row.Materials) ? row.Materials.length : 0,
+        // Equipment Hauled: join as "name (start-end)"
+        Array.isArray(row.Equipment) && row.Equipment.length > 0
+          ? row.Equipment.map(
+              (eq) =>
+                `[Eq: ${eq.name}, OW: ${eq.startMileage} - ${eq.endMileage}]`
+            ).join("; ")
+          : "",
+        // Material Hauled: join as "name (location, qty unit)"
+        Array.isArray(row.Materials) && row.Materials.length > 0
+          ? row.Materials.map(
+              (mat) =>
+                `[Mat: ${mat.name}, Source: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
+            ).join("; ")
+          : "",
+        // Refuel Details: join as "milesAtFueling gal: gallonsRefueled"
+        Array.isArray(row.Fuel) && row.Fuel.length > 0
+          ? row.Fuel.map(
+              (f) => `[Gal: ${f.gallonsRefueled}, Mi: ${f.milesAtFueling}]`
+            ).join("; ")
+          : "",
+        // State Line Details: join as "state (mileage)"
+        Array.isArray(row.StateMileages) && row.StateMileages.length > 0
+          ? row.StateMileages.map(
+              (s) => `[State: ${s.state}, Mi: ${s.stateLineMileage}]`
+            ).join("; ")
+          : "",
         row.notes ?? "",
       ]);
-
-      const equipmentRows = exportData.flatMap((row) =>
-        Array.isArray(row.Equipment)
-          ? row.Equipment.map((eq) => [
-              row.id || "",
-              eq.name,
-              eq.startMileage,
-              eq.endMileage,
-            ])
-          : []
-      );
-
-      const materialRows = exportData.flatMap((row) =>
-        Array.isArray(row.Materials)
-          ? row.Materials.map((mat) => [
-              row.id || "",
-              mat.name,
-              mat.location,
-              mat.quantity,
-              mat.unit,
-            ])
-          : []
-      );
-
-      const refuelRows = exportData.flatMap((row) =>
-        Array.isArray(row.Fuel)
-          ? row.Fuel.map((f) => [
-              row.id || "",
-              f.milesAtFueling,
-              f.gallonsRefueled,
-            ])
-          : []
-      );
-
-      const statelineRows = exportData.flatMap((row) =>
-        Array.isArray(row.StateMileages)
-          ? row.StateMileages.map((s) => [
-              row.id || "",
-              s.state,
-              s.stateLineMileage,
-            ])
-          : []
-      );
 
       // Helper to convert array of arrays to CSV string
       const toCsv = (header: string[], rows: (string | number)[][]): string =>
@@ -226,64 +208,26 @@ export default function TruckingReport({
       };
       const dateSuffix = getDateRangeSuffix();
 
-      // Only export selected categories
-      if (!selectedFields || selectedFields.includes("general")) {
-        downloadCsv(
-          toCsv(
-            [
-              "ReportId",
-              "Truck#",
-              "Trailer#",
-              "Date",
-              "Job#",
-              "Starting Mileage",
-              "Ending Mileage",
-              "# of Loads",
-              "Notes",
-            ],
-            mainRows
-          ),
-          `tasco-report-summary${dateSuffix}.csv`
-        );
-      }
-      if (!selectedFields || selectedFields.includes("equipment")) {
-        downloadCsv(
-          toCsv(
-            [
-              "ReportId",
-              "Name",
-              "Start Mileage Overweight",
-              "End Mileage Overweight",
-            ],
-            equipmentRows
-          ),
-          `tasco-report-equipment${dateSuffix}.csv`
-        );
-      }
-      if (!selectedFields || selectedFields.includes("materials")) {
-        downloadCsv(
-          toCsv(
-            ["ReportId", "Name", "Location", "Quantity", "Unit"],
-            materialRows
-          ),
-          `tasco-report-materials${dateSuffix}.csv`
-        );
-      }
-      if (!selectedFields || selectedFields.includes("fuel")) {
-        downloadCsv(
-          toCsv(
-            ["ReportId", "Miles At Fueling", "Gallons Refueled"],
-            refuelRows
-          ),
-          `tasco-report-refuel${dateSuffix}.csv`
-        );
-      }
-      if (!selectedFields || selectedFields.includes("stateline")) {
-        downloadCsv(
-          toCsv(["ReportId", "State", "State Line Mileage"], statelineRows),
-          `tasco-report-stateline${dateSuffix}.csv`
-        );
-      }
+      downloadCsv(
+        toCsv(
+          [
+            "ReportId",
+            "Truck#",
+            "Trailer#",
+            "Date",
+            "Job#",
+            "Starting Mileage",
+            "Ending Mileage",
+            "Equipment Hauled",
+            "Material Hauled",
+            "Refuel Details",
+            "State Line Details",
+            "Notes",
+          ],
+          mainRows
+        ),
+        `tasco-report-summary${dateSuffix}.csv`
+      );
     } else if (exportFormat === "xlsx") {
       import("xlsx").then((XLSX) => {
         // Use the OverWeightReportRow.id as the reference key
@@ -301,7 +245,7 @@ export default function TruckingReport({
         };
         const dateSuffix = getDateRangeSuffix();
 
-        // Prepare all data
+        // Prepare all data as a single summary sheet, matching the CSV format
         const mainRows = exportData.map((row) => ({
           ReportId: row.id || "",
           "Truck#": row.truckId || "",
@@ -310,75 +254,38 @@ export default function TruckingReport({
           "Job#": row.jobId || "",
           "Starting Mileage": row.StartingMileage ?? "",
           "Ending Mileage": row.EndingMileage ?? "",
-          "# of Loads": Array.isArray(row.Materials) ? row.Materials.length : 0,
+          "Equipment Hauled":
+            Array.isArray(row.Equipment) && row.Equipment.length > 0
+              ? row.Equipment.map(
+                  (eq) =>
+                    `[Eq: ${eq.name}, OW Mileage: ${eq.startMileage} - ${eq.endMileage} ]`
+                ).join("; ")
+              : "",
+          "Material Hauled":
+            Array.isArray(row.Materials) && row.Materials.length > 0
+              ? row.Materials.map(
+                  (mat) =>
+                    `[Mat: ${mat.name}, Source: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
+                ).join("; ")
+              : "",
+          "Refuel Details":
+            Array.isArray(row.Fuel) && row.Fuel.length > 0
+              ? row.Fuel.map(
+                  (f) => `[Gal: ${f.gallonsRefueled}, Mi: ${f.milesAtFueling}]`
+                ).join("; ")
+              : "",
+          "State Line Details":
+            Array.isArray(row.StateMileages) && row.StateMileages.length > 0
+              ? row.StateMileages.map(
+                  (s) => `[State: ${s.state}, Mi: ${s.stateLineMileage}]`
+                ).join("; ")
+              : "",
           Notes: row.notes ?? "",
         }));
 
-        const equipmentRows = exportData.flatMap((row) =>
-          Array.isArray(row.Equipment)
-            ? row.Equipment.map((eq) => ({
-                ReportId: row.id || "",
-                Name: eq.name,
-                "Start Mileage Overweight": eq.startMileage,
-                "End Mileage Overweight": eq.endMileage,
-              }))
-            : []
-        );
-
-        const materialRows = exportData.flatMap((row) =>
-          Array.isArray(row.Materials)
-            ? row.Materials.map((mat) => ({
-                ReportId: row.id || "",
-                Name: mat.name,
-                Location: mat.location,
-                Quantity: mat.quantity,
-                Unit: mat.unit,
-              }))
-            : []
-        );
-
-        const refuelRows = exportData.flatMap((row) =>
-          Array.isArray(row.Fuel)
-            ? row.Fuel.map((f) => ({
-                ReportId: row.id || "",
-                "Miles At Fueling": f.milesAtFueling,
-                "Gallons Refueled": f.gallonsRefueled,
-              }))
-            : []
-        );
-
-        const statelineRows = exportData.flatMap((row) =>
-          Array.isArray(row.StateMileages)
-            ? row.StateMileages.map((s) => ({
-                ReportId: row.id || "",
-                State: s.state,
-                "State Line Mileage": s.stateLineMileage,
-              }))
-            : []
-        );
-
         const wb = XLSX.utils.book_new();
-        // Only add selected sheets
-        if (!selectedFields || selectedFields.includes("general")) {
-          const wsMain = XLSX.utils.json_to_sheet(mainRows);
-          XLSX.utils.book_append_sheet(wb, wsMain, "Summary");
-        }
-        if (!selectedFields || selectedFields.includes("equipment")) {
-          const wsEquipment = XLSX.utils.json_to_sheet(equipmentRows);
-          XLSX.utils.book_append_sheet(wb, wsEquipment, "Equipment Hauled");
-        }
-        if (!selectedFields || selectedFields.includes("materials")) {
-          const wsMaterials = XLSX.utils.json_to_sheet(materialRows);
-          XLSX.utils.book_append_sheet(wb, wsMaterials, "Material Hauled");
-        }
-        if (!selectedFields || selectedFields.includes("fuel")) {
-          const wsRefuel = XLSX.utils.json_to_sheet(refuelRows);
-          XLSX.utils.book_append_sheet(wb, wsRefuel, "Refuel Details");
-        }
-        if (!selectedFields || selectedFields.includes("stateline")) {
-          const wsStateline = XLSX.utils.json_to_sheet(statelineRows);
-          XLSX.utils.book_append_sheet(wb, wsStateline, "State Line Details");
-        }
+        const wsMain = XLSX.utils.json_to_sheet(mainRows);
+        XLSX.utils.book_append_sheet(wb, wsMain, "Summary");
         XLSX.writeFile(wb, `tasco-report-${dateSuffix}.xlsx`);
       });
     }
@@ -453,11 +360,11 @@ export default function TruckingReport({
 
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {/* Starting Mileage: use StartingMileage */}
-                  {row.StartingMileage ?? "-"}
+                  {row.StartingMileage ? `${row.StartingMileage} Mi` : "-"}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {/* Ending Mileage: use EndingMileage */}
-                  {row.EndingMileage ?? "-"}
+                  {row.EndingMileage ? `${row.EndingMileage} Mi` : "-"}
                 </TableCell>
 
                 <TableCell className="border-r border-gray-200 text-xs text-center">

@@ -20,7 +20,9 @@ model Equipment {
   equipmentVehicleInfo  EquipmentVehicleInfo?
   Maintenances          Maintenance[]
   TascoLogs             TascoLog[]
-  TruckingLogs          TruckingLog[]
+  HauledInLogs          TruckingLog[]          @relation("HauledEquipment")
+  UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
+  UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
 
   @@index([qrId])

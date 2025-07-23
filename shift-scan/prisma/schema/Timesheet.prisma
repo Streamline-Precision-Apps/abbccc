@@ -100,7 +100,11 @@ model TruckingLog {
   RefuelLogs        RefuelLog[]
   StateMileages     StateMileage[]
   TruckingLaborLogs TruckLaborLogs[]
-  Equipment         Equipment?        @relation(fields: [equipmentId], references: [id])
+  Equipment         Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
+  // Truck as Equipment
+  Truck             Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+  // Trailer as Equipment
+  Trailer           Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
   TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 

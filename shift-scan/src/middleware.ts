@@ -8,6 +8,7 @@ import { auth } from "@/auth";
  * Users can access these paths without being logged in
  */
 const PUBLIC_PATHS = [
+  "/information",
   "/signin",
   "/api/auth",
   "/_next",

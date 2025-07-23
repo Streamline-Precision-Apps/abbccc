@@ -391,6 +391,11 @@ export async function updateJobsiteAdmin(formData: FormData) {
     }
 
     const updateData: Prisma.JobsiteUpdateInput = {};
+    if (formData.has("client")) {
+      updateData.Client = {
+        connect: { id: formData.get("client") as string },
+      };
+    }
     if (formData.has("name")) {
       updateData.name = (formData.get("name") as string)?.trim();
     }
@@ -418,8 +423,8 @@ export async function updateJobsiteAdmin(formData: FormData) {
     } else {
       updateData.updatedAt = new Date();
     }
-    if (formData.has("cCTags")) {
-      const cCTagsString = formData.get("cCTags") as string;
+    if (formData.has("CCTags")) {
+      const cCTagsString = formData.get("CCTags") as string;
       const cCTagsArray = JSON.parse(cCTagsString || "[]");
       updateData.CCTags = {
         set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
@@ -469,9 +474,9 @@ export async function createJobsiteAdmin({
       state: string;
       zipCode: string;
     };
-    Client: {
+    Client?: {
       id: string;
-    };
+    } | null;
     CreatedVia: string;
     createdById: string;
   };
@@ -500,9 +505,11 @@ export async function createJobsiteAdmin({
             Address: {
               connect: { id: existingAddress.id },
             },
-            Client: {
-              connect: { id: payload.Client.id },
-            },
+            ...(payload.Client?.id && {
+              Client: {
+                connect: { id: payload.Client.id },
+              },
+            }),
             createdBy: {
               connect: { id: payload.createdById.trim() },
             },
@@ -524,9 +531,11 @@ export async function createJobsiteAdmin({
                 zipCode: payload.Address.zipCode.trim(),
               },
             },
-            Client: {
-              connect: { id: payload.Client.id },
-            },
+            ...(payload.Client?.id && {
+              Client: {
+                connect: { id: payload.Client.id },
+              },
+            }),
             createdBy: {
               connect: { id: payload.createdById.trim() },
             },

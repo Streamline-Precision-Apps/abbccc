@@ -12,7 +12,7 @@ import {
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
 } from "@/lib/types";
-import { MaintenanceLogData } from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/TimeCardMechanicLogs";
+import { MaintenanceLogData } from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/_components/TimeCardMechanicLogs";
 
 // Union type for all possible timesheet data
 export type TimesheetDataUnion =
@@ -48,7 +48,8 @@ export const useTimesheetData = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
-  const [currentFilter, setCurrentFilter] = useState<TimesheetFilter>(initialFilter);
+  const [currentFilter, setCurrentFilter] =
+    useState<TimesheetFilter>(initialFilter);
 
   const fetchTimesheets = async () => {
     if (!employeeId) return;
@@ -57,7 +58,7 @@ export const useTimesheetData = (
     setError(null);
 
     try {
-      let url = '';
+      let url = "";
       if (pendingOnly) {
         url = `/api/getTimesheetsByDate?employeeId=${employeeId}&type=${currentFilter}&pendingOnly=true`;
       } else {
