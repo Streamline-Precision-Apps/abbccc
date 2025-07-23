@@ -22,7 +22,7 @@ export default function EmployeeTimeCards() {
     ? params.employeeId[0]
     : params.employeeId;
 
-  const { data, loading, error, updateDate } = useTimesheetDataSimple(
+  const { data, loading, error, updateDate, reset } = useTimesheetDataSimple(
     employeeId,
     date
   );
@@ -145,6 +145,7 @@ export default function EmployeeTimeCards() {
                   timesheetId={editingId}
                   isOpen={showEditModal}
                   onClose={() => setShowEditModal(false)}
+                  resetMainList={reset}
                 />
               )}
             </>
