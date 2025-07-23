@@ -51,11 +51,13 @@ export const ProgressBar = ({
         {/* Green progress line overlays gray line up to last completed node */}
         {safeStep > 1 && (
           <div
-            className="absolute top-1/2 h-1 bg-green-500 z-10 transition-all duration-500"
+            className="absolute top-1/2 h-1 bg-[#1E7D2C] z-10 transition-all duration-500"
             style={{
               left: 0,
               width:
-                totalSteps > 1
+                safeStep === totalSteps
+                  ? "100%"
+                  : totalSteps > 1
                   ? `calc(${(progress / (totalSteps - 1)) * 100}% )`
                   : "0%",
               transform: "translateY(-50%)",
@@ -68,6 +70,8 @@ export const ProgressBar = ({
           const stepNum = idx + 1;
           const isActive = stepNum === safeStep;
           const isCompleted = stepNum < safeStep;
+          const isLast = stepNum === totalSteps;
+          const isFinalChecked = isLast && safeStep === totalSteps;
           return (
             <div
               key={stepNum}
@@ -76,21 +80,30 @@ export const ProgressBar = ({
             >
               <div
                 className={`flex items-center justify-center w-5 h-5 rounded-full border-2 transition-colors duration-200 ${
-                  isActive
+                  isFinalChecked
+                    ? "bg-[#1E7D2C] border-green-600 text-white"
+                    : isActive
                     ? "bg-white border-green-600 text-green-600"
                     : isCompleted
-                    ? "bg-green-500 border-green-600 text-white"
+                    ? "bg-[#1E7D2C] border-green-600 text-white"
                     : "bg-white border-gray-300 text-gray-400"
                 }`}
                 aria-current={isActive ? "step" : undefined}
               >
-                {isActive ? (
+                {isFinalChecked ? (
+                  <img
+                    src="/tinyCheckMark-white.svg"
+                    alt="Approved"
+                    className="w-2 h-2"
+                    style={{ display: "block" }}
+                  />
+                ) : isActive ? (
                   <p className="text-xs font-semibold text-green-600">
                     {stepNum}
                   </p>
                 ) : isCompleted ? (
                   <img
-                    src="/statusApproved.svg"
+                    src="/tinyCheckMark-white.svg"
                     alt="Approved"
                     className="w-2 h-2"
                     style={{ display: "block" }}
