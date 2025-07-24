@@ -182,7 +182,6 @@ export async function updateTruckingHaulLogs(
               where: { id: update.id },
               data: {
                 equipmentId: update.equipmentId || null,
-                jobSiteId: jobsite?.id || null,
               },
             });
           } catch (error) {

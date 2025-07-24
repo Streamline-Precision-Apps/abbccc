@@ -249,6 +249,17 @@
     "SaveCropImage": "Salvar el imagen"
   },
   "Equipment": {
+    "CurrentLogs": "Registros de equipos actuales",
+    "FinishedLogs": "Registros finalizados",
+    "ScanQR": "Escanear código QR",
+    "SelectManually": "Seleccionar manualmente",
+    "ScanEquipment": "Escanear equipo",
+    "SelectEquipment": "Seleccionar equipo",
+    "SubmitSelection": "Utilizar",
+    "UsageData": "Datos de uso",
+    "UpdateFields": "Para hacer una solicitud, actualice los siguientes campos:",
+    "FinishLogs": "Finalizar registros",
+
     "LogNew": "Registrar nuevo",
     "NoCurrent": "¡No se encontraron registros de equipos!",
     "Current": "Equipo de hoy",
@@ -707,6 +718,7 @@
     "ReviewYourTeam": "Revisa tu equipo"
   },
   "ClockOut": {
+    "incidentDescription": "Descripción del incidente",
     "ReviewYourDay": "Revisa tu día",
     "ReviewYourDayDirections": "Revise su día a continuación. ",
     "StartEnd": "Inicio y finalización",
@@ -1198,6 +1210,12 @@
     "LabelCostCode": "Código de costo"
   },
   "TruckingAssistant": {
+    "Source": "Fuente",
+    "Destination": "Destino",
+    "Equipment": "Equipo que se transporta",
+    "Location": "Fuente",
+    "StartingMileage": "Ow comenzando",
+    "EndingMileage": " Ow final",
     "unit": "Unidad",
     "quantity": "Cantidad",
     "WorkDetails": "Detalles laborales",

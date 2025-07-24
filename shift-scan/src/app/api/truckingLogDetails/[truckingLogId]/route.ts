@@ -1,10 +1,9 @@
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
-
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/truckingLogDetails/[truckingLogId]
@@ -19,14 +18,14 @@ export async function GET(
   // Authenticate user
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { truckingLogId } = params;
 
-  if (!truckingLogId || typeof truckingLogId !== 'string') {
+  if (!truckingLogId || typeof truckingLogId !== "string") {
     return NextResponse.json(
-      { error: 'Invalid or missing truckingLogId' },
+      { error: "Invalid or missing truckingLogId" },
       { status: 400 }
     );
   }
@@ -42,7 +41,6 @@ export async function GET(
         EquipmentHauled: {
           include: {
             Equipment: { select: { id: true, name: true } },
-            JobSite: { select: { id: true, name: true } },
           },
         },
         Materials: true,
@@ -60,15 +58,18 @@ export async function GET(
     });
 
     if (!truckingLogDetails) {
-      return NextResponse.json({ error: 'No trucking log found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "No trucking log found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(truckingLogDetails);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching trucking log details:', error);
+    console.error("Error fetching trucking log details:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch trucking log details' },
+      { error: "Failed to fetch trucking log details" },
       { status: 500 }
     );
   }

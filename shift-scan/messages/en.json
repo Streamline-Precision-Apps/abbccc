@@ -254,6 +254,16 @@
     "SaveCropImage": "Save Image"
   },
   "Equipment": {
+    "CurrentLogs": "Current Logs",
+    "FinishedLogs": "Finished Logs",
+    "ScanQR": "Scan QR Code",
+    "SelectManually": "Select Manually",
+    "ScanEquipment": "Scan Equipment",
+    "SelectEquipment": "Select Equipment",
+    "SubmitSelection": "Checkout",
+    "UsageData": "Usage Data",
+    "UpdateFields": "To make a request please update the following fields:",
+    "FinishLogs": "Finish Logs",
     "LogNew": "Log New",
     "NoCurrent": "No Equipment logs found!",
     "Current": "Today's Equipment",
@@ -714,17 +724,14 @@
   },
 
   "ClockOut": {
-    "ReviewYourDay": "Review Your Day",
+    "incidentDescription": "Incident Description",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "StartEnd": "Start & End",
-    "Jobsite": "Jobsite #",
-    "CostCode": "Cost Code",
     "Now": "Now",
     "Current": "Current",
     "StartTime": "Start Time",
     "EndTime": "End Time",
     "ReviewYourDay": "Review Your Day",
-    "NoSignature": "No signature on file.",
     "SignBelow": "By checking the box below, I certify that I was not injured today.",
     "Jobsite": "Jobsite # ",
     "CostCode": "Cost Code ",
@@ -1214,6 +1221,12 @@
   },
 
   "TruckingAssistant": {
+    "Source": "Source",
+    "Destination": "Destination",
+    "Equipment": "Equipment being Hauled",
+    "Location": "Source",
+    "StartingMileage": "OW Starting",
+    "EndingMileage": " OW Ending",
     "unit": "Unit",
     "quantity": "Quantity",
     "WorkDetails": "Work Details",

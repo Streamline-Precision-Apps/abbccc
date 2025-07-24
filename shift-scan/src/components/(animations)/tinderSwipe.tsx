@@ -30,8 +30,8 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
       children,
       onSwipeLeft,
       onSwipeRight,
-      swipeThreshold = 200,
-      minHoldTime = 150,
+      swipeThreshold = 80, // Lower threshold for easier swipe
+      minHoldTime = 50, // Lower hold time for quicker drag enable
     },
     ref
   ) {
@@ -222,7 +222,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         <motion.div
           drag="x"
           dragConstraints={{ left: -350, right: 350 }}
-          dragElastic={0.2}
+          dragElastic={0.35} // More elastic for easier swipe
           animate={controls}
           onDragStart={handleDragStart}
           onDrag={handleDrag}

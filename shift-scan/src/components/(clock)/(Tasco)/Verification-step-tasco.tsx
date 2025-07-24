@@ -1,12 +1,9 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated import
-
 import { useSession } from "next-auth/react";
-
 import { useCommentData } from "@/app/context/CommentContext";
 import {
   setCurrentPageView,
@@ -102,18 +99,20 @@ export default function TascoVerificationStep({
       formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
-      formData.append("laborType", clockInRoleTypes || "");
 
       if (clockInRoleTypes === "tascoAbcdEquipment") {
         formData.append("materialType", materialType || "");
         formData.append("shiftType", "ABCD Shift");
+        formData.append("laborType", "Operator");
       }
       if (clockInRoleTypes === "tascoAbcdLabor") {
         formData.append("materialType", materialType || "");
         formData.append("shiftType", "ABCD Shift");
+        formData.append("laborType", "Manual Labor");
       }
       if (clockInRoleTypes === "tascoEEquipment") {
         formData.append("shiftType", "E shift");
+        formData.append("laborType", "");
       }
       formData.append("workType", role);
       formData.append("equipment", equipment?.id || "");

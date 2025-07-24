@@ -46,8 +46,6 @@ export function CreateTimesheetModal({
   >([]);
   const [submitting, setSubmitting] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [startTimePickerOpen, setStartTimePickerOpen] = useState(false);
-  const [endTimePickerOpen, setEndTimePickerOpen] = useState(false);
 
   // New states for logs
   type MaintenanceLogDraft = {
@@ -75,7 +73,8 @@ export function CreateTimesheetModal({
     endingMileage: string;
     equipmentHauled: {
       equipment: { id: string; name: string };
-      jobsite: { id: string; name: string };
+      source: string | null;
+      destination: string | null;
       startMileage: string;
       endMileage: string;
     }[];
@@ -93,7 +92,8 @@ export function CreateTimesheetModal({
       equipmentHauled: [
         {
           equipment: { id: "", name: "" },
-          jobsite: { id: "", name: "" },
+          source: "",
+          destination: "",
           startMileage: "",
           endMileage: "",
         },
@@ -228,15 +228,10 @@ export function CreateTimesheetModal({
         (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
       );
 
-      const filteredEquipment = equipment.filter(
-        (e: { equipmentTag: string }) =>
-          e.equipmentTag !== "TRUCK" && e.equipmentTag !== "TRAILER"
-      );
-
       setTrucks(filteredTrucks);
       setTrailers(filteredTrailers);
 
-      setEquipment(filteredEquipment);
+      setEquipment(equipment);
       setUsers(users);
       setJobsites(filteredJobsites);
     }
