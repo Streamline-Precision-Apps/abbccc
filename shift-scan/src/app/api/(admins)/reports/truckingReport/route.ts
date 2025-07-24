@@ -62,6 +62,8 @@ export async function GET(req: Request) {
           select: {
             truckingLogId: true,
             Equipment: { select: { name: true, id: true } },
+            source: true,
+            destination: true,
             startMileage: true,
             endMileage: true,
           },
@@ -104,6 +106,8 @@ export async function GET(req: Request) {
       Equipment: log.EquipmentHauled.map((equipment) => ({
         name: equipment.Equipment?.name || "",
         id: equipment.Equipment?.id || null,
+        source: equipment.source,
+        destination: equipment.destination,
         startMileage: equipment.startMileage,
         endMileage: equipment.endMileage,
       })),
