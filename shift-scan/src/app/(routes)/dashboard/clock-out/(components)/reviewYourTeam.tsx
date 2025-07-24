@@ -4,7 +4,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { NewTab } from "@/components/(reusable)/newTabs";
 import { crewUsers, TimesheetFilter, TimesheetHighlights } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef, useMemo } from "react";
@@ -162,31 +161,22 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     }
   }, [reviewList.length]);
   const focusUser = reviewList[focusIndex];
-  // Fetch all pending timesheets for all users (manager + team) only when userIds change
+  // Fetch only the current user's pending timesheets when focusUser changes
   useEffect(() => {
-    const fetchPending = async () => {
-      if (!userIds.length) {
-        setHasNoMembers(true);
-        return;
-      }
+    if (!focusUser) return;
+    const fetchUserTimesheets = async () => {
       try {
-        const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userIds }),
-        });
+        const res = await fetch(`/api/getPendingTeamTimesheets`);
         const data = await res.json();
-        setPendingTimesheets(data);
-        setDataLoaded(true); // Mark data as loaded after successful fetch
-      } catch (error) {
-        console.error("Error fetching pending timesheets:", error);
-        // Mark as loaded even on error to avoid infinite loading
+        setPendingTimesheets({ [focusUser.id]: data });
         setDataLoaded(true);
-        setHasNoMembers(true);
+      } catch (error) {
+        console.error("Error fetching timesheets:", error);
+        setDataLoaded(true);
       }
     };
-    fetchPending();
-  }, [userIdsKey]);
+    fetchUserTimesheets();
+  }, [focusUser?.id]);
 
   // Approve all pending timesheets for the focus user
   const handleApprove = async () => {
@@ -206,11 +196,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     await approvePendingTimesheets(focusUser.id, manager);
     // Re-fetch pending timesheets after approval
     try {
-      const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userIds }),
-      });
+      const res = await fetch(`/api/getPendingTeamTimesheets`);
       const data = await res.json();
       setPendingTimesheets(data);
       setDataLoaded(true);

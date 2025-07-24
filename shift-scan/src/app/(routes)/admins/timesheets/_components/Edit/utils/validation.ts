@@ -49,7 +49,7 @@ export function isEmployeeEquipmentLogComplete(
 
 /** Checks if an Equipment Hauled entry is complete. */
 export function isEquipmentHauledComplete(eq: EquipmentHauled): boolean {
-  return !!(eq.equipmentId && eq.jobSiteId);
+  return !!eq.equipmentId;
 }
 
 /** Checks if a Material entry is complete. */

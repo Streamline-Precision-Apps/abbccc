@@ -8,6 +8,7 @@ import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
   createHaulingLogs,
+  deleteEquipmentHauled,
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
 import { useTranslations } from "next-intl";
@@ -18,7 +19,8 @@ type EquipmentHauled = {
   truckingLogId: string;
   equipmentId: string | null;
   createdAt: Date;
-  jobSiteId: string | null;
+  source: string | null;
+  destination: string | null;
   Equipment: {
     id: string;
     name: string;
@@ -27,7 +29,7 @@ type EquipmentHauled = {
     id: string;
     name: string;
   } | null;
-  startingMileage: number | null;
+  startMileage: number | null;
   endMileage: number | null;
 };
 
@@ -86,7 +88,8 @@ export default function HaulingLogs({
           id: tempEquipment.id,
           truckingLogId: tempEquipment.truckingLogId ?? null,
           equipmentId: tempEquipment.equipmentId ?? null,
-          jobSiteId: tempEquipment.jobSiteId ?? null,
+          source: "",
+          destination: "",
           createdAt: new Date(),
           Equipment: {
             id: "",
@@ -96,7 +99,7 @@ export default function HaulingLogs({
             id: "",
             name: "",
           },
-          startingMileage: null,
+          startMileage: null,
           endMileage: null,
         },
         ...(prev ?? []),
@@ -133,6 +136,17 @@ export default function HaulingLogs({
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEquipmentHauled(id);
+      setEquipmentHauled(
+        (prevLogs) => prevLogs?.filter((log) => log.id !== id) ?? []
+      );
+    } catch (error) {
+      console.error("Error deleting equipment log:", error);
+    }
+  };
+
   return (
     <Grids rows={"7"} gap={"5"} className="h-full">
       <Holds
@@ -158,13 +172,25 @@ export default function HaulingLogs({
                 >
                   +
                 </Buttons>
-              ) : (
+              ) : equipmentHauled?.length === 0 ? (
                 <Buttons
                   background={"green"}
                   className="py-1.5"
                   onClick={() => addTempEquipmentList()}
                 >
                   +
+                </Buttons>
+              ) : (
+                <Buttons
+                  background={"red"}
+                  className="py-1.5"
+                  onClick={() => {
+                    if (equipmentHauled && equipmentHauled.length > 0) {
+                      handleDelete(equipmentHauled[0].id);
+                    }
+                  }}
+                >
+                  -
                 </Buttons>
               )}
             </Holds>
