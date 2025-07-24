@@ -118,11 +118,6 @@ export async function GET(request: Request) {
                         name: true,
                       },
                     },
-                    JobSite: {
-                      select: {
-                        name: true,
-                      },
-                    },
                   },
                 },
                 RefuelLogs: {
