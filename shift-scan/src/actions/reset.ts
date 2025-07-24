@@ -44,6 +44,8 @@ export async function resetUserPassword(formData: FormData) {
 
   // Ensure the token has not expired
   if (verify.expiration < new Date()) {
+    console.log("Token expired:", verify.expiration);
+    console.log("Current time:", new Date());
     throw new Error("Token expired");
   }
 
@@ -68,4 +70,11 @@ export async function resetUserPassword(formData: FormData) {
       password: newPassword,
     },
   });
+}
+
+export default async function removeToken(token: string) {
+  await prisma.passwordResetToken.delete({
+    where: { token },
+  });
+  return { success: "Token removed" };
 }

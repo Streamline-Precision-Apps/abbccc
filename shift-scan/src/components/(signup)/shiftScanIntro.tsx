@@ -35,6 +35,22 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
             <Holds position={"row"}>
               <Holds size={"80"}>
                 <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("EnterYourInformation")}
+                </Texts>
+              </Holds>
+              <Holds size={"20"}>
+                <CheckBox
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  name="locale"
+                />
+              </Holds>
+            </Holds>
+            <Holds position={"row"}>
+              <Holds size={"80"}>
+                <Texts size={"p4"} position={"left"} className="my-5">
                   {t("ChooseNewPassword")}
                 </Texts>
               </Holds>
