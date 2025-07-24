@@ -27,7 +27,8 @@ export type TruckingLogDraft = {
   endingMileage: string;
   equipmentHauled: {
     equipment: { id: string; name: string };
-    jobsite: { id: string; name: string };
+    source: string | null;
+    destination: string | null;
     startMileage: string;
     endMileage: string;
   }[];
@@ -132,7 +133,8 @@ export function TruckingSection({
                     const updated = [...truckingLogs];
                     updated[idx].equipmentHauled.push({
                       equipment: { id: "", name: "" },
-                      jobsite: { id: "", name: "" },
+                      source: "",
+                      destination: "",
                       startMileage: "",
                       endMileage: "",
                     });
@@ -163,21 +165,31 @@ export function TruckingSection({
                     filterKeys={["label", "value"]}
                   />
                 </div>
-                <div className="w-[350px]">
-                  <SingleCombobox
-                    options={jobsiteOptions}
-                    value={eq.jobsite.id}
-                    onChange={(val, option) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].equipmentHauled[eqIdx].jobsite = option
-                        ? { id: option.value, name: option.label }
-                        : { id: "", name: "" };
-                      setTruckingLogs(updated);
-                    }}
-                    placeholder="Select jobsite"
-                    filterKeys={["label", "value"]}
-                  />
-                </div>
+                <Input
+                  type="text"
+                  placeholder="Source Location"
+                  value={eq.source || ""}
+                  onChange={(e) => {
+                    const updated = [...truckingLogs];
+                    updated[idx].equipmentHauled[eqIdx].source = e.target.value;
+                    setTruckingLogs(updated);
+                  }}
+                  className="w-[350px]"
+                />
+
+                <Input
+                  type="text"
+                  placeholder="Destination Location"
+                  value={eq.destination || ""}
+                  onChange={(e) => {
+                    const updated = [...truckingLogs];
+                    updated[idx].equipmentHauled[eqIdx].destination =
+                      e.target.value;
+                    setTruckingLogs(updated);
+                  }}
+                  className="w-[350px]"
+                />
+
                 <Input
                   type="number"
                   placeholder="Starting Overweight Mileage*"
