@@ -1,8 +1,7 @@
-
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 // TypeScript Types for Safety and Consistency
 type EquipmentLog = {
@@ -114,16 +113,15 @@ export async function GET() {
               select: {
                 id: true,
                 LocationOfMaterial: true,
-                quantity: true,
                 name: true,
-                materialWeight: true,
+                quantity: true,
+                unit: true,
               },
             },
             EquipmentHauled: {
               select: {
                 id: true,
                 equipmentId: true,
-                jobSiteId: true,
               },
             },
           },
@@ -157,19 +155,19 @@ export async function GET() {
       required: (value: unknown): boolean => {
         return value !== null && value !== undefined && value !== "";
       },
-      
+
       // Mileage validation - must exist and be >= starting mileage
       mileage: (value: unknown, startingMileage: number | null): boolean => {
         if (!validateField.required(value)) return false;
         if (startingMileage === null) return true; // Can't validate without starting mileage
-        return typeof value === 'number' && value >= startingMileage;
+        return typeof value === "number" && value >= startingMileage;
       },
-      
+
       // Numeric validation - must be a positive number
       positiveNumber: (value: unknown): boolean => {
         if (!validateField.required(value)) return false;
-        return typeof value === 'number' && value > 0;
-      }
+        return typeof value === "number" && value > 0;
+      },
     };
 
     // Validation rules for each log type
@@ -177,61 +175,80 @@ export async function GET() {
       laborType: string;
       startingMileage: number | null;
       endingMileage: number | null;
-      StateMileages: Array<{state: string | null; stateLineMileage: number | null}>;
-      RefuelLogs: Array<{gallonsRefueled: number | null; milesAtFueling: number | null}>;
-      Materials: Array<{LocationOfMaterial: string | null; name: string | null; quantity: number | null; materialWeight: number | null}>;
-      EquipmentHauled: Array<{equipmentId: string | null; jobSiteId: string | null}>;
+      StateMileages: Array<{
+        state: string | null;
+        stateLineMileage: number | null;
+      }>;
+      RefuelLogs: Array<{
+        gallonsRefueled: number | null;
+        milesAtFueling: number | null;
+      }>;
+      Materials: Array<{
+        LocationOfMaterial: string | null;
+        name: string | null;
+        quantity: number | null;
+        unit: string | null;
+      }>;
+      EquipmentHauled: Array<{
+        equipmentId: string | null;
+      }>;
     }) => {
       const startingMileage = log.startingMileage;
-      
+
       // Calculate minimum end mileage (highest mileage from all logs)
       let maxMileage = startingMileage || 0;
-      
+
       // Check state mileage logs
       log.StateMileages.forEach((stateLog) => {
-        if (stateLog.stateLineMileage && stateLog.stateLineMileage > maxMileage) {
+        if (
+          stateLog.stateLineMileage &&
+          stateLog.stateLineMileage > maxMileage
+        ) {
           maxMileage = stateLog.stateLineMileage;
         }
       });
-      
+
       // Check refuel logs
       log.RefuelLogs.forEach((refuelLog) => {
         if (refuelLog.milesAtFueling && refuelLog.milesAtFueling > maxMileage) {
           maxMileage = refuelLog.milesAtFueling;
         }
       });
-      
+
       return {
         // State mileage validation
-        stateMileage: log.StateMileages.some((item) => 
-          !validateField.required(item.state) || 
-          !validateField.mileage(item.stateLineMileage, startingMileage)
+        stateMileage: log.StateMileages.some(
+          (item) =>
+            !validateField.required(item.state) ||
+            !validateField.mileage(item.stateLineMileage, startingMileage)
         ),
-        
-        // Refuel logs validation  
-        refueled: log.RefuelLogs.some((item) =>
-          !validateField.positiveNumber(item.gallonsRefueled) ||
-          !validateField.mileage(item.milesAtFueling, startingMileage)
+
+        // Refuel logs validation
+        refueled: log.RefuelLogs.some(
+          (item) =>
+            !validateField.positiveNumber(item.gallonsRefueled) ||
+            !validateField.mileage(item.milesAtFueling, startingMileage)
         ),
-        
+
         // Material validation
-        material: log.Materials.some((item) =>
-          !validateField.required(item.LocationOfMaterial) ||
-          !validateField.required(item.name) ||
-          !validateField.positiveNumber(item.materialWeight)
+        material: log.Materials.some(
+          (item) =>
+            !validateField.required(item.LocationOfMaterial) ||
+            !validateField.required(item.name) ||
+            !validateField.positiveNumber(item.quantity) ||
+            !validateField.required(item.unit)
         ),
-        
+
         // Equipment hauled validation
-        equipmentHauled: log.EquipmentHauled.some((item) =>
-          !validateField.required(item.equipmentId) ||
-          !validateField.required(item.jobSiteId)
+        equipmentHauled: log.EquipmentHauled.some(
+          (item) => !validateField.required(item.equipmentId)
         ),
-        
+
         // Enhanced ending mileage validation for truck drivers
-        endingMileage: log.laborType === "truckDriver" && (
-          !validateField.required(log.endingMileage) ||
-          (log.endingMileage !== null && log.endingMileage < maxMileage)
-        )
+        endingMileage:
+          log.laborType === "truckDriver" &&
+          (!validateField.required(log.endingMileage) ||
+            (log.endingMileage !== null && log.endingMileage < maxMileage)),
       };
     };
 
@@ -264,7 +281,7 @@ export async function GET() {
     const mappedTruckingLogs: TruckingLog[] = truckingLogs
       .map((log) => {
         const validation = validateTruckingLog(log);
-        
+
         return {
           id: log.id,
           type: "Trucking Assistant",
@@ -296,8 +313,8 @@ export async function GET() {
           shiftType: log.shiftType,
           laborType: log.laborType,
           loadQuantity: log.LoadQuantity,
-          refueled: log.RefuelLogs.some((item) =>
-            !validateField.positiveNumber(item.gallonsRefueled)
+          refueled: log.RefuelLogs.some(
+            (item) => !validateField.positiveNumber(item.gallonsRefueled)
           ),
         };
       })
@@ -317,9 +334,9 @@ export async function GET() {
     return NextResponse.json(combinedLogs);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching logs:', error);
+    console.error("Error fetching logs:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch logs' },
+      { error: "Failed to fetch logs" },
       { status: 500 }
     );
   }

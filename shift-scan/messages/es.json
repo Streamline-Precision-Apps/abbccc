@@ -1198,6 +1198,12 @@
     "LabelCostCode": "Código de costo"
   },
   "TruckingAssistant": {
+    "Source": "Fuente",
+    "Destination": "Destino",
+    "Equipment": "Equipo que se transporta",
+    "Location": "Fuente",
+    "StartingMileage": "Ow comenzando",
+    "EndingMileage": " Ow final",
     "unit": "Unidad",
     "quantity": "Cantidad",
     "WorkDetails": "Detalles laborales",

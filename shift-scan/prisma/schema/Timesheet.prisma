@@ -156,14 +156,15 @@ model RefuelLog {
 }
 
 model EquipmentHauled {
-  id            String      @id @default(uuid())
+  id            String   @id @default(uuid())
   truckingLogId String
   equipmentId   String?
+  source        String? // where the equipment was hauled from
+  destination   String? // where the equipment was hauled to
   startMileage  Int?
   endMileage    Int?
-  createdAt     DateTime    @default(now())
-  jobSiteId     String?
-  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
-  JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
-  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  Equipment   Equipment?  @relation(fields: [equipmentId], references: [id])
+  TruckingLog TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }

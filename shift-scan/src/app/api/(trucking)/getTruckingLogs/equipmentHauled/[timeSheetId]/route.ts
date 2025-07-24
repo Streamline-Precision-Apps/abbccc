@@ -32,12 +32,6 @@ export async function GET(
             name: true,
           },
         },
-        JobSite: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
       },
     });
 
