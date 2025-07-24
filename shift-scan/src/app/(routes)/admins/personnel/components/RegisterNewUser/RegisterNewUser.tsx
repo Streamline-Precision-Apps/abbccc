@@ -62,19 +62,19 @@ const fields = [
   { label: "Password", name: "password" as const, type: "password" },
   { label: "First Name", name: "firstName" as const, type: "text" },
   { label: "Last Name", name: "lastName" as const, type: "text" },
-  { label: "Phone Number", name: "phoneNumber" as const, type: "tel" },
-  { label: "Email", name: "email" as const, type: "email" },
-  {
-    label: "Emergency Contact",
-    name: "emergencyContact" as const,
-    type: "text",
-  },
-  {
-    label: "Emergency Contact Number",
-    name: "emergencyContactNumber" as const,
-    type: "tel",
-  },
-  { label: "Date of Birth", name: "dateOfBirth" as const, type: "date" },
+  // { label: "Phone Number", name: "phoneNumber" as const, type: "tel" },
+  // { label: "Email", name: "email" as const, type: "email" },
+  // {
+  //   label: "Emergency Contact",
+  //   name: "emergencyContact" as const,
+  //   type: "text",
+  // },
+  // {
+  //   label: "Emergency Contact Number",
+  //   name: "emergencyContactNumber" as const,
+  //   type: "tel",
+  // },
+  // { label: "Date of Birth", name: "dateOfBirth" as const, type: "date" },
 ] as const;
 
 export default function RegisterNewUser({
@@ -165,21 +165,21 @@ export default function RegisterNewUser({
     e.preventDefault();
     const errors: ValidationErrors = {};
 
-    if (!form.email || !isValidEmail(form.email)) {
-      errors.email = "Please enter a valid email address";
-    }
+    // if (!form.email || !isValidEmail(form.email)) {
+    //   errors.email = "Please enter a valid email address";
+    // }
 
-    if (!form.phoneNumber || !isValidPhoneNumber(form.phoneNumber)) {
-      errors.phoneNumber = "Please enter a valid phone number";
-    }
+    // if (!form.phoneNumber || !isValidPhoneNumber(form.phoneNumber)) {
+    //   errors.phoneNumber = "Please enter a valid phone number";
+    // }
 
-    if (
-      !form.emergencyContactNumber ||
-      !isValidPhoneNumber(form.emergencyContactNumber)
-    ) {
-      errors.emergencyContactNumber =
-        "Please enter a valid emergency contact number";
-    }
+    // if (
+    //   !form.emergencyContactNumber ||
+    //   !isValidPhoneNumber(form.emergencyContactNumber)
+    // ) {
+    //   errors.emergencyContactNumber =
+    //     "Please enter a valid emergency contact number";
+    // }
 
     setValidationErrors(errors);
 
@@ -197,11 +197,11 @@ export default function RegisterNewUser({
     const isValid = () => {
       if (!value) return false;
       switch (field.name) {
-        case "email":
-          return isValidEmail(String(value));
-        case "phoneNumber":
-        case "emergencyContactNumber":
-          return isValidPhoneNumber(String(value));
+        // case "email":
+        //   return isValidEmail(String(value));
+        // case "phoneNumber":
+        // case "emergencyContactNumber":
+        //   return isValidPhoneNumber(String(value));
         default:
           return String(value).trim() !== "";
       }

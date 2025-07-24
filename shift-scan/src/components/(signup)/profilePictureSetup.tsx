@@ -78,27 +78,29 @@ export default function ProfilePictureSetup({
           {t("AddProfilePicture")}
         </Texts>
       </div>
-      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 gap-4">
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 ">
+        <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
-        <div className=" h-full flex flex-col items-center gap-8">
-          <Contents width={"section"}>
-            <Holds className="h-full">
-              {/* Integrating CameraComponent */}
-              <CameraComponent setBase64String={setBase64String} />
-            </Holds>
-          </Contents>
-        </div>
+          <div className=" h-full flex flex-col items-center gap-8">
+            <Contents width={"section"}>
+              <Holds className="h-full">
+                {/* Integrating CameraComponent */}
+                <CameraComponent setBase64String={setBase64String} />
+              </Holds>
+            </Contents>
+          </div>
 
-        <div>
-          <Button
-            size={"lg"}
-            onClick={handleSubmitImage}
-            className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-            disabled={isSubmitting} // Disable the button while submitting
-          >
-            <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
-          </Button>
+          <div>
+            <Button
+              size={"lg"}
+              onClick={handleSubmitImage}
+              className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
+              disabled={isSubmitting} // Disable the button while submitting
+            >
+              <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

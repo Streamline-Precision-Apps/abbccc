@@ -17,6 +17,32 @@
     "ChangePassword": "Change Password",
     "LogoAlt": "Streamline Precision Logo"
   },
+  "ForgotPassword": {
+    "RecoveryPageTitle": "Enter your email and we will send you a link to reset your password.",
+    "SendEmail": "Send Email",
+    "Email": "Email",
+    "EnterYourEmail": "Enter your email",
+    "Back": "Back"
+  },
+  "PasswordReset": {
+    "ChangePasswordTitle": "Enter in your new password",
+    "ChooseNewPassword": "Choose a new password! Make sure to follow the strength requirements!",
+    "PasswordRequirements": "Password must include:",
+    "NumberRequirement": "1 Number",
+    "SymbolRequirement": "1 Symbol",
+    "LengthRequirement": "Has a Length 8+ characters",
+    "NewPassword": "New Password",
+    "ConfirmPassword": "Confirm Password",
+    "Next": "Next",
+    "Submitting": "Submitting...",
+    "NewPasswordEmptyError": "Invalid Attempt. New Password cannot be empty!",
+    "ConfirmPasswordEmptyError": "Invalid Attempt. Confirm Password cannot be empty!",
+    "PasswordMismatchError": "Invalid Attempt. Passwords do not match!",
+    "PasswordLengthError": "Invalid Attempt. Password must be at least 8 characters long, contain 1 number, and 1 symbol.",
+    "EyeImageAlt": "Eyeball Image",
+    "ChangePassword": "Change Password",
+    "Cancel": "Cancel"
+  },
 
   "SignUpIntro": {
     "Welcome": "Welcome to shift scan! Time to set up your account!",

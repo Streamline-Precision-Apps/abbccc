@@ -81,63 +81,66 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
           {t("AddASignature")}
         </Texts>
       </div>
-      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 gap-4">
-        <ProgressBar
-          currentStep={
-            base64String ? Math.min(currentStep + 1, totalSteps) : currentStep
-          }
-          totalSteps={totalSteps}
-        />
-        <div className=" h-full flex flex-col items-center gap-8">
-          <p className="text-xs text-gray-400">{t("AddYourBestSignature")}</p>
-          <div>
-            <Holds className="w-[300px] h-[200px] rounded-[10px] border-[3px] border-black justify-center items-center relative ">
-              {base64String && (
-                <Images
-                  titleImg={base64String}
-                  titleImgAlt={t("Signature")}
-                  className="justify-center items-center "
-                  size={"50"}
-                />
-              )}
-              <Holds
-                background={"orange"}
-                className="absolute top-1 right-1 w-fit h-fit rounded-full border-[3px] border-black p-2"
-                onClick={() => setEditSignatureModalOpen(true)}
-              >
-                <Images
-                  titleImg="/formEdit.svg"
-                  titleImgAlt={"Edit"}
-                  className="max-w-5 h-auto object-contain"
-                />
+      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 ">
+        <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
+          <ProgressBar
+            currentStep={
+              base64String ? Math.min(currentStep + 1, totalSteps) : currentStep
+            }
+            totalSteps={totalSteps}
+          />
+          <div className=" h-full flex flex-col items-center gap-8">
+            <p className="text-xs text-gray-400">{t("AddYourBestSignature")}</p>
+            <div>
+              <Holds className="w-[300px] h-[200px] rounded-[10px] border-[3px] border-black justify-center items-center relative ">
+                {base64String && (
+                  <Images
+                    titleImg={base64String}
+                    titleImgAlt={t("Signature")}
+                    className="justify-center items-center "
+                    size={"50"}
+                  />
+                )}
+                <Holds
+                  background={"orange"}
+                  className="absolute top-1 right-1 w-fit h-fit rounded-full border-[3px] border-black p-2"
+                  onClick={() => setEditSignatureModalOpen(true)}
+                >
+                  <Images
+                    titleImg="/formEdit.svg"
+                    titleImgAlt={"Edit"}
+                    className="max-w-5 h-auto object-contain"
+                  />
+                </Holds>
               </Holds>
-            </Holds>
+            </div>
+          </div>
+
+          <div>
+            <Button
+              size={"lg"}
+              onClick={handleSubmitImage}
+              className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
+              disabled={isSubmitting} // Disable the button while submitting
+            >
+              <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+            </Button>
           </div>
         </div>
-
-        <div>
-          <Button
-            size={"lg"}
-            onClick={handleSubmitImage}
-            className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-            disabled={isSubmitting} // Disable the button while submitting
-          >
-            <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
-          </Button>
-        </div>
+        <NModals
+          handleClose={() => setEditSignatureModalOpen(false)}
+          size={"xlWS"}
+          isOpen={editSignatureModalOpen}
+        >
+          <Holds className="w-full h-full justify-center items-center">
+            <Signature
+              setBase64String={setBase64String}
+              closeModal={() => setEditSignatureModalOpen(false)}
+            />
+          </Holds>
+        </NModals>
+        ]
       </div>
-      <NModals
-        handleClose={() => setEditSignatureModalOpen(false)}
-        size={"xlWS"}
-        isOpen={editSignatureModalOpen}
-      >
-        <Holds className="w-full h-full justify-center items-center">
-          <Signature
-            setBase64String={setBase64String}
-            closeModal={() => setEditSignatureModalOpen(false)}
-          />
-        </Holds>
-      </NModals>
     </div>
   );
 };

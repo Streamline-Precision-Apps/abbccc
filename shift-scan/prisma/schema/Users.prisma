@@ -3,7 +3,7 @@ model User {
   firstName            String
   lastName             String
   username             String               @unique
-  email                String               @unique
+  email                String?              @unique
   password             String
   signature            String?
   DOB                  DateTime?
@@ -34,7 +34,7 @@ model User {
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
 
-  @@unique([firstName, lastName, DOB])
+  @@unique([firstName, lastName, username])
   @@index([email])
 }
 
@@ -53,7 +53,7 @@ model UserSettings {
 model Contacts {
   id                     String   @id @default(uuid())
   userId                 String   @unique @map("employeeId")
-  phoneNumber            String
+  phoneNumber            String?
   emergencyContact       String?
   emergencyContactNumber String?
   createdAt              DateTime @default(now())
