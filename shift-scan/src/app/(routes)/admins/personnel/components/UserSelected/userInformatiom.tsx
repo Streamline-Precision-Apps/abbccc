@@ -41,6 +41,14 @@ export default function UserInformation({
 
   originalUser: UserData | null;
 }) {
+  const disabledFields = [
+    "username",
+    "phoneNumber",
+    "emergencyContact",
+    "emergencyContactNumber",
+    "DOB",
+    "email",
+  ];
   return (
     <Holds size={"50"} className="h-full">
       {fields.map((field) => (
@@ -118,7 +126,7 @@ export default function UserInformation({
                   ? user.lastName || ""
                   : ""
               }
-              disable={field.name === "username"}
+              disable={disabledFields.includes(field.name)}
               onChange={handleInputChange}
               isChanged={edited[field.name] || false}
               onRevert={() => {

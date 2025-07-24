@@ -17,9 +17,39 @@
     "ChangePassword": "Cambiar la contraseña",
     "LogoAlt": "Logotipo de PRECISICIÓN ALLEGRÁFICO"
   },
+
+  "ForgotPassword": {
+    "RecoveryPageTitle": "Ingrese su correo electrónico y le enviaremos un enlace para restablecer su contraseña.",
+    "SendEmail": "Enviar correo electrónico",
+    "Email": "Correo electrónico",
+    "EnterYourEmail": "Ingrese su correo electrónico",
+    "Back": "Regreso"
+  },
+
+  "PasswordReset": {
+    "ChangePasswordTitle": "Ingrese en su nueva contraseña",
+    "ChooseNewPassword": "¡Elija una nueva contraseña! ",
+    "PasswordRequirements": "La contraseña debe incluir:",
+    "NumberRequirement": "1 número",
+    "SymbolRequirement": "1 símbolo",
+    "LengthRequirement": "Tiene una longitud de más de 8 caracteres",
+    "NewPassword": "Nueva contraseña",
+    "ConfirmPassword": "confirmar Contraseña",
+    "Next": "Próximo",
+    "Submitting": "Sumisión...",
+    "NewPasswordEmptyError": "Intento inválido. ",
+    "ConfirmPasswordEmptyError": "Intento inválido. ",
+    "PasswordMismatchError": "Intento inválido. ",
+    "PasswordLengthError": "Intento inválido. ",
+    "EyeImageAlt": "Imagen del globo ocular",
+    "ChangePassword": "Cambiar la contraseña",
+    "Cancel": "Cancelar"
+  },
+
   "SignUpIntro": {
     "Welcome": "¡Bienvenido a Shift Scan! ",
     "ThingsWeNeedToDo": "Cosas que necesitamos hacer ...",
+    "EnterYourInformation": "Ingrese su información",
     "ChooseNewPassword": "Elija una nueva contraseña",
     "GivePermissions": "Dar permisos",
     "ChooseProfilePicture": "Elija una foto de perfil",
@@ -27,13 +57,33 @@
     "LetsGetStarted": "¡Comencemos!",
     "LogoAlt": "Logotipo de SHIFT SCAN"
   },
+  "SignUpAccountInfo": {
+    "ItsTimeToSetUpYourAccount": "¡Es hora de configurar su cuenta!",
+    "Email": "Correo electrónico",
+    "EnterYourEmail": "Ingrese su correo electrónico",
+    "PhoneNumber": "Número de teléfono",
+    "InvalidPhone": "Ingrese un número de teléfono válido",
+    "EnterYourPhoneNumber": "Ingrese su número de teléfono",
+    "DateOfBirth": "Fecha de nacimiento",
+    "SelectDate": "Fecha de selección",
+    "LanguagePreference": "Preferencia del idioma",
+    "SelectLanguage": "Lenguaje seleccionado",
+    "AccountInformation": "Información de la cuenta",
+    "Next": "Próximo",
+    "EmergencyContactName": "Nombre de contacto de emergencia",
+    "EnterEmergencyContactName": "Ingrese el primer y apellido",
+    "EmergencyContactPhoneNumber": "Número de teléfono de contacto de emergencia",
+    "EnterEmergencyContactPhoneNumber": "Ingrese el número de teléfono",
+    "English": "Inglés",
+    "Spanish": "Español"
+  },
   "SignUpPassword": {
-    "ChoosePasswordTitle": "Elije una contraseña",
+    "ChoosePasswordTitle": "Elija una nueva contraseña",
     "ChooseNewPassword": "¡Elija una nueva contraseña! ",
-    "PasswordRequirements": "Requisitos de contraseña:",
-    "NumberRequirement": "Número",
-    "SymbolRequirement": "Símbolo",
-    "LengthRequirement": "Longitud (8+)",
+    "PasswordRequirements": "La contraseña debe incluir:",
+    "NumberRequirement": "1 número",
+    "SymbolRequirement": "1 símbolo",
+    "LengthRequirement": "Tiene una longitud de más de 8 caracteres",
     "NewPassword": "Nueva contraseña",
     "ConfirmPassword": "confirmar Contraseña",
     "Next": "Próximo",
@@ -45,6 +95,7 @@
     "EyeImageAlt": "Imagen del globo ocular"
   },
   "SignUpPermissions": {
+    "AcceptAllPermissions": "Aceptar todos los permisos",
     "GeneralReminders": "Recordatorios generales",
     "PersonalReminders": "Recordatorios personales",
     "GiveUsAccess": "Danos acceso",
@@ -74,6 +125,7 @@
   },
   "SignUpVirtualSignature": {
     "AddASignature": "Agregar una firma",
+    "AddYourBestSignature": "Agregue su mejor firma aquí: la reutilizaremos donde necesite documentos electrónicos en la aplicación.",
     "LetsAddASignature": "¡Agreguemos una firma electrónica! ",
     "SignHere": "Firmar aquí",
     "Clear": "Claro",
@@ -83,6 +135,7 @@
     "SignatureMissingError": "Intento inválido. "
   },
   "SignUpOutro": {
+    "EnterYourInformation": "Ingrese su información",
     "LooksLikeYoureAllSetUp": "¡Parece que estás configurado! ",
     "HeresWhatWeDid": "Esto es lo que hicimos ...",
     "ChooseNewPassword": "Elija una nueva contraseña",

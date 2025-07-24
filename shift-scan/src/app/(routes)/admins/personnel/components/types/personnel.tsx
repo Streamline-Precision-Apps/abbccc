@@ -90,11 +90,11 @@ export interface RegistrationState {
     password?: string;
     firstName: string;
     lastName: string;
-    phoneNumber: string;
-    email: string;
-    emergencyContact: string;
-    emergencyContactNumber: string;
-    dateOfBirth: string;
+    // phoneNumber: string;
+    // email: string;
+    // emergencyContact: string;
+    // emergencyContactNumber: string;
+    // dateOfBirth: string;
     permissionLevel: "USER" | "MANAGER" | "ADMIN" | "SUPERADMIN"; // Use a union type for specific values
     employmentStatus: "Active" | "Inactive"; // Use a union type
     truckingView: boolean;

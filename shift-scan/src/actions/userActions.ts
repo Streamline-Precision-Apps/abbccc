@@ -329,3 +329,41 @@ export async function updateContactInfo(formData: FormData) {
   revalidatePath("/admins");
   return true;
 }
+
+// email: "",
+//   phoneNumber: "",
+//   date: undefined as Date | undefined,
+//   language: "",
+//   emergencyContactName: "",
+//   emergencyContactPhone: "",
+export default async function updateUserAccountInfo(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    console.log("Updating user account info for ID:", id);
+    await prisma.user.update({
+      where: { id },
+      data: {
+        email: formData.get("email") as string,
+        DOB: formData.get("DOB") as string,
+        Contact: {
+          update: {
+            phoneNumber: formData.get("phoneNumber") as string,
+            emergencyContact: formData.get("emergencyContact") as string,
+            emergencyContactNumber: formData.get(
+              "emergencyContactNumber"
+            ) as string,
+          },
+        },
+        UserSettings: {
+          update: { language: formData.get("language") as string },
+        },
+      },
+    });
+
+    // Implement the update logic here
+    return true;
+  } catch (error) {
+    console.error("Error updating user account info:", error);
+    return false;
+  }
+}

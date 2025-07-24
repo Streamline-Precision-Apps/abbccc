@@ -10,14 +10,14 @@ interface NewEmployeeFormData {
   password: string;
   firstName: string;
   lastName: string;
-  email: string;
-  dateOfBirth: Date | string;
+  // email: string;
+  // dateOfBirth: Date | string;
+  // phoneNumber: string;
+  // emergencyContact: string;
+  // emergencyContactNumber: string;
   permissionLevel: string; // or more specific type like 'admin' | 'manager' | 'employee'
   employmentStatus: string;
   crews: string[];
-  phoneNumber: string;
-  emergencyContact: string;
-  emergencyContactNumber: string;
   truckingView?: boolean;
   tascoView?: boolean;
   engineerView?: boolean;
@@ -29,11 +29,11 @@ const newUserSchema = z.object({
   password: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  phoneNumber: z.string(),
-  email: z.string().email(),
-  emergencyContact: z.string(),
-  emergencyContactNumber: z.string(),
-  dateOfBirth: z.string(),
+  // phoneNumber: z.string(),
+  // email: z.string().email(),
+  // emergencyContact: z.string(),
+  // emergencyContactNumber: z.string(),
+  // dateOfBirth: z.string(),
   permissionLevel: z.string(),
   employmentStatus: z.string(),
   crews: z.array(z.string()),
@@ -54,14 +54,14 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
     password,
     firstName,
     lastName,
-    email,
-    dateOfBirth,
     permissionLevel,
     employmentStatus,
     crews,
-    phoneNumber,
-    emergencyContact,
-    emergencyContactNumber,
+    // email,
+    // dateOfBirth,
+    // phoneNumber,
+    // emergencyContact,
+    // emergencyContactNumber,
     truckingView = false,
     tascoView = false,
     engineerView = false,
@@ -77,8 +77,8 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
         password,
         firstName,
         lastName,
-        email,
-        DOB: dateOfBirth,
+        // email,
+        // DOB: dateOfBirth,
         permission: permissionLevel as Permission,
         truckView: truckingView,
         tascoView: tascoView,
@@ -92,9 +92,9 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
         },
         Contact: {
           create: {
-            phoneNumber,
-            emergencyContact,
-            emergencyContactNumber,
+            // phoneNumber,
+            // emergencyContact,
+            // emergencyContactNumber,
           },
         },
         Company: { connect: { id: "1" } },

@@ -118,7 +118,7 @@ export default function SignInForm() {
             </Buttons>
           </Holds>
         </Holds>
-        <Holds position="row" className="mb-6">
+        {/* <Holds position="row" className="mb-6">
           <Holds size={"80"}>
             <Texts size="p3" position={"left"}>
               {t("Spanish")}
@@ -133,7 +133,7 @@ export default function SignInForm() {
               name="locale"
             />
           </Holds>
-        </Holds>
+        </Holds> */}
       </Forms>
     </Contents>
   );
