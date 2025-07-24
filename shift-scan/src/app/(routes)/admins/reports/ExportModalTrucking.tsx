@@ -56,6 +56,36 @@ const ExportTruckingReportModal = ({
     );
   };
 
+  // When selecting a date range, if only one day is selected, set from to start of day and to to end of day
+  const handleDateRangeSelect = (value: any) => {
+    if (
+      value?.from &&
+      value?.to &&
+      value.from.getTime() === value.to.getTime()
+    ) {
+      // Single day selected
+      const from = new Date(value.from);
+      from.setHours(0, 0, 0, 0);
+      const to = new Date(value.to);
+      to.setHours(23, 59, 59, 999);
+      setDateRange({ from, to });
+    } else if (value?.from && !value?.to) {
+      // Only start selected
+      const from = new Date(value.from);
+      from.setHours(0, 0, 0, 0);
+      setDateRange({ from, to: undefined });
+    } else if (value?.from && value?.to) {
+      // Range selected
+      const from = new Date(value.from);
+      from.setHours(0, 0, 0, 0);
+      const to = new Date(value.to);
+      to.setHours(23, 59, 59, 999);
+      setDateRange({ from, to });
+    } else {
+      setDateRange({ from: undefined, to: undefined });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
@@ -99,9 +129,7 @@ const ExportTruckingReportModal = ({
                     <Calendar
                       mode="range"
                       selected={dateRange}
-                      onSelect={(value) =>
-                        setDateRange({ from: value?.from, to: value?.to })
-                      }
+                      onSelect={handleDateRangeSelect}
                       autoFocus
                     />
                     {(dateRange.from || dateRange.to) && (

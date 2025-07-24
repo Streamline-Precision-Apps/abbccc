@@ -144,7 +144,8 @@ export function useTimesheetLogs(
                         {
                           id: Date.now().toString(),
                           equipmentId: "",
-                          jobSiteId: "",
+                          source: "",
+                          destination: "",
                           startMileage: "",
                           endMileage: "",
                         },

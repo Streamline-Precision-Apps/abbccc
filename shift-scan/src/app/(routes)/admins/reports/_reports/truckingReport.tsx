@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const TABLE_HEADERS = [
   "Id",
+  "Driver",
   "Truck#",
   "Trailer#",
   "Date",
@@ -37,6 +38,8 @@ const TABLE_HEADERS = [
 interface EquipmentItem {
   id: string;
   name: string;
+  source: string;
+  destination: string;
   startMileage: number;
   endMileage: number;
 }
@@ -59,8 +62,11 @@ interface StateMileageItem {
 }
 interface TruckingReportReportRow {
   id: string;
+  driver: string;
   truckId: string | null;
+  truckName: string | null; // Added truckName for clarity
   trailerId: string | null;
+  trailerName: string | null;
   trailerType?: string | null;
   date: string;
   jobId: string | null;
@@ -131,8 +137,9 @@ export default function TruckingReport({
       // Each report is a single row, with all sub-table data joined as comma-separated strings
       const mainRows = exportData.map((row) => [
         row.id || "",
-        row.truckId || "",
-        row.trailerId || "",
+        row.driver || "",
+        row.truckName || "",
+        row.trailerName || "",
         row.date ? format(new Date(row.date), "MM/dd/yy") : "",
         row.jobId || "",
         row.StartingMileage ?? "",
@@ -141,14 +148,14 @@ export default function TruckingReport({
         Array.isArray(row.Equipment) && row.Equipment.length > 0
           ? row.Equipment.map(
               (eq) =>
-                `[Eq: ${eq.name}, OW: ${eq.startMileage} - ${eq.endMileage}]`
+                `[Eq: ${eq.name}, Src: ${eq.source}, Dest: ${eq.destination}, OW: ${eq.startMileage} - ${eq.endMileage}]`
             ).join("; ")
           : "",
         // Material Hauled: join as "name (location, qty unit)"
         Array.isArray(row.Materials) && row.Materials.length > 0
           ? row.Materials.map(
               (mat) =>
-                `[Mat: ${mat.name}, Source: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
+                `[Mat: ${mat.name}, Src: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
             ).join("; ")
           : "",
         // Refuel Details: join as "milesAtFueling gal: gallonsRefueled"
@@ -160,7 +167,7 @@ export default function TruckingReport({
         // State Line Details: join as "state (mileage)"
         Array.isArray(row.StateMileages) && row.StateMileages.length > 0
           ? row.StateMileages.map(
-              (s) => `[State: ${s.state}, Mi: ${s.stateLineMileage}]`
+              (s) => `[${s.state}, Mi: ${s.stateLineMileage}]`
             ).join("; ")
           : "",
         row.notes ?? "",
@@ -212,6 +219,7 @@ export default function TruckingReport({
         toCsv(
           [
             "ReportId",
+            "Driver",
             "Truck#",
             "Trailer#",
             "Date",
@@ -248,8 +256,9 @@ export default function TruckingReport({
         // Prepare all data as a single summary sheet, matching the CSV format
         const mainRows = exportData.map((row) => ({
           ReportId: row.id || "",
-          "Truck#": row.truckId || "",
-          "Trailer#": row.trailerId || "",
+          Driver: row.driver || "",
+          "Truck#": row.truckName || "",
+          "Trailer#": row.trailerName || "",
           Date: row.date ? format(new Date(row.date), "MM/dd/yy") : "",
           "Job#": row.jobId || "",
           "Starting Mileage": row.StartingMileage ?? "",
@@ -258,14 +267,14 @@ export default function TruckingReport({
             Array.isArray(row.Equipment) && row.Equipment.length > 0
               ? row.Equipment.map(
                   (eq) =>
-                    `[Eq: ${eq.name}, OW Mileage: ${eq.startMileage} - ${eq.endMileage} ]`
+                    `[Eq: ${eq.name}, Src: ${eq.source}, Dest: ${eq.destination}, OW: ${eq.startMileage} - ${eq.endMileage} ]`
                 ).join("; ")
               : "",
           "Material Hauled":
             Array.isArray(row.Materials) && row.Materials.length > 0
               ? row.Materials.map(
                   (mat) =>
-                    `[Mat: ${mat.name}, Source: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
+                    `[Mat: ${mat.name}, Src: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
                 ).join("; ")
               : "",
           "Refuel Details":
@@ -277,7 +286,7 @@ export default function TruckingReport({
           "State Line Details":
             Array.isArray(row.StateMileages) && row.StateMileages.length > 0
               ? row.StateMileages.map(
-                  (s) => `[State: ${s.state}, Mi: ${s.stateLineMileage}]`
+                  (s) => `[${s.state}, Mi: ${s.stateLineMileage}]`
                 ).join("; ")
               : "",
           Notes: row.notes ?? "",
@@ -345,10 +354,13 @@ export default function TruckingReport({
                   {row.id || "_"}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.truckId || "-"}
+                  {row.driver || "-"}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.trailerId || "-"}
+                  {row.truckName || "-"}
+                </TableCell>
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  {row.trailerName || "-"}
                 </TableCell>
 
                 <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -384,6 +396,12 @@ export default function TruckingReport({
                                 <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
                                   Name
                                 </TableHead>
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
+                                  Source
+                                </TableHead>
+                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
+                                  Destination
+                                </TableHead>
                                 <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
                                   Start Mileage Overweight
                                 </TableHead>
@@ -405,6 +423,12 @@ export default function TruckingReport({
                                   >
                                     <TableCell className="px-2 py-1 border-b">
                                       {eq.name}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {eq.source}
+                                    </TableCell>
+                                    <TableCell className="px-2 py-1 border-b">
+                                      {eq.destination}
                                     </TableCell>
                                     <TableCell className="px-2 py-1 border-b">
                                       {eq.startMileage}

@@ -27,7 +27,8 @@ export type TimesheetSubmission = {
     endingMileage: string;
     equipmentHauled: Array<{
       equipment: { id: string; name: string };
-      jobsite: { id: string; name: string };
+      source: string | null;
+      destination: string | null;
       startMileage: string | null;
       endMileage: string | null;
     }>;
@@ -127,7 +128,8 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
           data: {
             truckingLogId: truckingLog.id,
             equipmentId: eq.equipment.id,
-            jobSiteId: eq.jobsite.id,
+            source: eq.source ?? "",
+            destination: eq.destination ?? "",
             startMileage: eq.startMileage ? parseInt(eq.startMileage) : null,
             endMileage: eq.endMileage ? parseInt(eq.endMileage) : null,
           },
@@ -323,7 +325,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
           data: {
             truckingLogId: truckingLog.id,
             equipmentId: eq.equipmentId,
-            jobSiteId: eq.jobSiteId,
+            source: eq.source ?? "",
+            destination: eq.destination ?? "",
             startMileage: eq.startMileage ? Number(eq.startMileage) : null,
             endMileage: eq.endMileage ? Number(eq.endMileage) : null,
           },

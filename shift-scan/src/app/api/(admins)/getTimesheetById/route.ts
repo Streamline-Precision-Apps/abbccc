@@ -81,7 +81,8 @@ export async function GET(req: Request) {
               select: {
                 id: true,
                 equipmentId: true,
-                jobSiteId: true,
+                source: true,
+                destination: true,
                 startMileage: true,
                 endMileage: true,
                 // Add more fields as needed
