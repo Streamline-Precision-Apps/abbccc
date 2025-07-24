@@ -1,8 +1,7 @@
-
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -14,9 +13,9 @@ export async function GET() {
     session = await auth();
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error during authentication:', error);
+    console.error("Error during authentication:", error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: "Authentication failed" },
       { status: 500 }
     );
   }
@@ -86,11 +85,6 @@ export async function GET() {
                     name: true,
                   },
                 },
-                JobSite: {
-                  select: {
-                    name: true,
-                  },
-                },
               },
             },
             RefuelLogs: {
@@ -110,7 +104,7 @@ export async function GET() {
           },
         },
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: "asc" },
     });
 
     // Check if timesheets were found and return appropriate response
@@ -118,9 +112,9 @@ export async function GET() {
     return NextResponse.json(timesheets);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching Time Sheets:', error);
+    console.error("Error fetching Time Sheets:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch pay period sheets' },
+      { error: "Failed to fetch pay period sheets" },
       { status: 500 }
     );
   }

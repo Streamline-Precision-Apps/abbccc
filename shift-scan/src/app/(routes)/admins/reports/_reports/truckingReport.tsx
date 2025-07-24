@@ -128,10 +128,24 @@ export default function TruckingReport({
     // Filter by dateRange if set
     let exportData = data;
     if (dateRange.from && dateRange.to) {
-      exportData = data.filter((row) => {
-        const date = new Date(row.date);
-        return date >= dateRange.from! && date <= dateRange.to!;
-      });
+      // If from and to are the same day, filter by the full day
+      const isSameDay =
+        dateRange.from.toDateString() === dateRange.to.toDateString();
+      if (isSameDay) {
+        const startOfDay = new Date(dateRange.from);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(dateRange.from);
+        endOfDay.setHours(23, 59, 59, 999);
+        exportData = data.filter((row) => {
+          const date = new Date(row.date);
+          return date >= startOfDay && date <= endOfDay;
+        });
+      } else {
+        exportData = data.filter((row) => {
+          const date = new Date(row.date);
+          return date >= dateRange.from! && date <= dateRange.to!;
+        });
+      }
     }
     if (exportFormat === "csv") {
       // Each report is a single row, with all sub-table data joined as comma-separated strings
