@@ -22,20 +22,20 @@ export default function Sliders({
         {/* Slide Background */}
         <div
           className={`
-            absolute top-0 h-full w-1/2 transition-transform duration-300 bg-app-blue rounded-[6px]
+            absolute z-0 top-0 h-full w-1/2 transition-transform duration-300 bg-app-blue rounded-[6px]
             ${activeTab === 1 ? "translate-x-0" : "translate-x-full"}
           `}
         />
 
         <Holds
-          className={`h-full w-full col-span-1 py-2 z-10  flex justify-center items-center cursor-pointer`}
+          className={`h-full w-full col-span-1 py-2 z-0  flex justify-center items-center cursor-pointer`}
           onClick={() => setActiveTab(1)}
         >
           <Texts size={"p6"}>{leftTitle}</Texts>
         </Holds>
 
         <Holds
-          className={`h-full w-full col-span-1 py-2 z-10 flex justify-center items-center cursor-pointer`}
+          className={`h-full w-full col-span-1 py-2 z-0 flex justify-center items-center cursor-pointer`}
           onClick={() => setActiveTab(2)}
         >
           <Texts size={"p6"}>{rightTitle}</Texts>

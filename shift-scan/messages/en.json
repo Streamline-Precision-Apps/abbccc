@@ -1214,6 +1214,12 @@
   },
 
   "TruckingAssistant": {
+    "Source": "Source",
+    "Destination": "Destination",
+    "Equipment": "Equipment being Hauled",
+    "Location": "Source",
+    "StartingMileage": "OW Starting",
+    "EndingMileage": " OW Ending",
     "unit": "Unit",
     "quantity": "Quantity",
     "WorkDetails": "Work Details",

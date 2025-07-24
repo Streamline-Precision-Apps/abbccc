@@ -167,15 +167,14 @@ export default function QR({
         calculateScanRegion: (video) => {
           const videoWidth = video.videoWidth;
           const videoHeight = video.videoHeight;
-          const regionWidth = videoWidth * 0.3;
-          const regionHeight = videoHeight * 0.5;
-          const x = (videoWidth - regionWidth) / 2;
-          const y = (videoHeight - regionHeight) / 2;
+          const squareSize = Math.min(videoWidth, videoHeight) * 0.5;
+          const x = (videoWidth - squareSize) / 2;
+          const y = (videoHeight - squareSize) / 2;
           return {
             x,
             y,
-            width: regionWidth,
-            height: regionHeight,
+            width: squareSize,
+            height: squareSize,
             downScaledWidth: 400,
             downScaledHeight: 400,
           };
