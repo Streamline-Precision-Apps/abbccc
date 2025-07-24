@@ -17,6 +17,35 @@
     "ChangePassword": "Cambiar la contraseña",
     "LogoAlt": "Logotipo de PRECISICIÓN ALLEGRÁFICO"
   },
+
+  "ForgotPassword": {
+    "RecoveryPageTitle": "Ingrese su correo electrónico y le enviaremos un enlace para restablecer su contraseña.",
+    "SendEmail": "Enviar correo electrónico",
+    "Email": "Correo electrónico",
+    "EnterYourEmail": "Ingrese su correo electrónico",
+    "Back": "Regreso"
+  },
+
+  "PasswordReset": {
+    "ChangePasswordTitle": "Ingrese en su nueva contraseña",
+    "ChooseNewPassword": "¡Elija una nueva contraseña! ",
+    "PasswordRequirements": "La contraseña debe incluir:",
+    "NumberRequirement": "1 número",
+    "SymbolRequirement": "1 símbolo",
+    "LengthRequirement": "Tiene una longitud de más de 8 caracteres",
+    "NewPassword": "Nueva contraseña",
+    "ConfirmPassword": "confirmar Contraseña",
+    "Next": "Próximo",
+    "Submitting": "Sumisión...",
+    "NewPasswordEmptyError": "Intento inválido. ",
+    "ConfirmPasswordEmptyError": "Intento inválido. ",
+    "PasswordMismatchError": "Intento inválido. ",
+    "PasswordLengthError": "Intento inválido. ",
+    "EyeImageAlt": "Imagen del globo ocular",
+    "ChangePassword": "Cambiar la contraseña",
+    "Cancel": "Cancelar"
+  },
+
   "SignUpIntro": {
     "Welcome": "¡Bienvenido a Shift Scan! ",
     "ThingsWeNeedToDo": "Cosas que necesitamos hacer ...",

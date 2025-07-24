@@ -1,10 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Buttons } from "../(reusable)/buttons";
-import { Contents } from "../(reusable)/contents";
-import { Grids } from "../(reusable)/grids";
-import { Holds } from "../(reusable)/holds";
 import { Texts } from "../(reusable)/texts";
-import { Titles } from "../(reusable)/titles";
 import { use, useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -141,161 +136,163 @@ export const EnterAccountInfo = ({
           {userName}
         </Texts>
       </div>
-      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 gap-4">
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-        <div>
-          <Label>{t("LanguagePreference")}</Label>
-          <Select value={form.language} onValueChange={handleLanguageChange}>
-            <SelectTrigger>
-              <SelectValue placeholder={t("SelectLanguage")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="en">{t("English")}</SelectItem>
-                <SelectItem value="es">{t("Spanish")}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label>{t("Email")}</Label>
-          <Input
-            placeholder={t("EnterYourEmail")}
-            className={`border p-2 rounded-md transition-colors duration-150 ${
-              touched.email && !emailValid && form.email
-                ? "border-red-500 bg-red-50"
-                : touched.email && emailValid
-                ? "border-green-500 bg-green-50"
-                : "border-zinc-300"
-            }`}
-            value={form.email}
-            onChange={handleChange("email")}
-            name="email"
-            type="email"
-            autoComplete="email"
-            onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-            aria-invalid={
-              touched.email && !emailValid && form.email ? "true" : "false"
-            }
-          />
-          {touched.email && form.email && !emailValid && (
-            <span className="text-xs text-red-600 mt-1">
-              {t("InvalidEmail")}
-            </span>
-          )}
-        </div>
-        <div>
-          <Label>{t("PhoneNumber")}</Label>
-          <Input
-            placeholder={t("EnterYourPhoneNumber")}
-            className={`border p-2 rounded-md transition-colors duration-150 ${
-              touched.phoneNumber && !phoneValid && form.phoneNumber
-                ? "border-red-500 bg-red-50"
-                : touched.phoneNumber && phoneValid
-                ? "border-green-500 bg-green-50"
-                : "border-zinc-300"
-            }`}
-            value={formatPhone(form.phoneNumber)}
-            onChange={handleChange("phoneNumber")}
-            name="phoneNumber"
-            type="tel"
-            autoComplete="tel"
-            onBlur={() =>
-              setTouched((prev) => ({ ...prev, phoneNumber: true }))
-            }
-            aria-invalid={
-              touched.phoneNumber && !phoneValid && form.phoneNumber
-                ? "true"
-                : "false"
-            }
-            maxLength={12}
-          />
-          {touched.phoneNumber && form.phoneNumber && !phoneValid && (
-            <span className="text-xs text-red-600 mt-1">
-              {t("InvalidPhone")}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col">
-          <Label>{t("DateOfBirth")}</Label>
-          <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                id="date"
-                className="justify-between font-normal"
-              >
-                {form.date ? form.date.toLocaleDateString() : "Select date"}
-                <ChevronDownIcon />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-auto overflow-hidden p-0"
-              align="start"
-            >
-              <Calendar
-                mode="single"
-                selected={form.date}
-                captionLayout="dropdown"
-                onSelect={(date) => {
-                  handleDateChange(date);
-                  setDatePopoverOpen(false);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div>
-          <Label>{t("EmergencyContactName")}</Label>
-          <Input
-            placeholder={t("EnterEmergencyContactName")}
-            className="border border-zinc-300 p-2 rounded-md"
-            value={form.emergencyContactName}
-            onChange={handleChange("emergencyContactName")}
-            name="emergencyContactName"
-          />
-        </div>
-        <div>
-          <Label>{t("EmergencyContactPhoneNumber")}</Label>
-          <Input
-            placeholder={t("EnterEmergencyContactPhoneNumber")}
-            className={`border p-2 rounded-md transition-colors duration-150 ${
-              touched.emergencyContactPhone &&
-              !emergencyPhoneValid &&
-              form.emergencyContactPhone
-                ? "border-red-500 bg-red-50"
-                : touched.emergencyContactPhone && emergencyPhoneValid
-                ? "border-green-500 bg-green-50"
-                : "border-zinc-300"
-            }`}
-            value={formatPhone(form.emergencyContactPhone)}
-            onChange={handleChange("emergencyContactPhone")}
-            name="emergencyContactPhone"
-            type="tel"
-            onBlur={() =>
-              setTouched((prev) => ({ ...prev, emergencyContactPhone: true }))
-            }
-            aria-invalid={
-              touched.emergencyContactPhone &&
-              !emergencyPhoneValid &&
-              form.emergencyContactPhone
-                ? "true"
-                : "false"
-            }
-            maxLength={12}
-          />
-          {touched.emergencyContactPhone &&
-            form.emergencyContactPhone &&
-            !emergencyPhoneValid && (
+      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 ">
+        <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+          <div>
+            <Label>{t("LanguagePreference")}</Label>
+            <Select value={form.language} onValueChange={handleLanguageChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("SelectLanguage")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="en">{t("English")}</SelectItem>
+                  <SelectItem value="es">{t("Spanish")}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>{t("Email")}</Label>
+            <Input
+              placeholder={t("EnterYourEmail")}
+              className={`border p-2 rounded-md transition-colors duration-150 ${
+                touched.email && !emailValid && form.email
+                  ? "border-red-500 bg-red-50"
+                  : touched.email && emailValid
+                  ? "border-green-500 bg-green-50"
+                  : "border-zinc-300"
+              }`}
+              value={form.email}
+              onChange={handleChange("email")}
+              name="email"
+              type="email"
+              autoComplete="email"
+              onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
+              aria-invalid={
+                touched.email && !emailValid && form.email ? "true" : "false"
+              }
+            />
+            {touched.email && form.email && !emailValid && (
+              <span className="text-xs text-red-600 mt-1">
+                {t("InvalidEmail")}
+              </span>
+            )}
+          </div>
+          <div>
+            <Label>{t("PhoneNumber")}</Label>
+            <Input
+              placeholder={t("EnterYourPhoneNumber")}
+              className={`border p-2 rounded-md transition-colors duration-150 ${
+                touched.phoneNumber && !phoneValid && form.phoneNumber
+                  ? "border-red-500 bg-red-50"
+                  : touched.phoneNumber && phoneValid
+                  ? "border-green-500 bg-green-50"
+                  : "border-zinc-300"
+              }`}
+              value={formatPhone(form.phoneNumber)}
+              onChange={handleChange("phoneNumber")}
+              name="phoneNumber"
+              type="tel"
+              autoComplete="tel"
+              onBlur={() =>
+                setTouched((prev) => ({ ...prev, phoneNumber: true }))
+              }
+              aria-invalid={
+                touched.phoneNumber && !phoneValid && form.phoneNumber
+                  ? "true"
+                  : "false"
+              }
+              maxLength={12}
+            />
+            {touched.phoneNumber && form.phoneNumber && !phoneValid && (
               <span className="text-xs text-red-600 mt-1">
                 {t("InvalidPhone")}
               </span>
             )}
-        </div>
-        <div className="flex flex-col justify-end mt-4">
-          <Button className="bg-app-dark-blue" onClick={handleSubmit}>
-            <p className="text-white font-semibold text-base">{t("Next")}</p>
-          </Button>
+          </div>
+          <div className="flex flex-col">
+            <Label>{t("DateOfBirth")}</Label>
+            <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  id="date"
+                  className="justify-between font-normal"
+                >
+                  {form.date ? form.date.toLocaleDateString() : "Select date"}
+                  <ChevronDownIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto overflow-hidden p-0"
+                align="start"
+              >
+                <Calendar
+                  mode="single"
+                  selected={form.date}
+                  captionLayout="dropdown"
+                  onSelect={(date) => {
+                    handleDateChange(date);
+                    setDatePopoverOpen(false);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            <Label>{t("EmergencyContactName")}</Label>
+            <Input
+              placeholder={t("EnterEmergencyContactName")}
+              className="border border-zinc-300 p-2 rounded-md"
+              value={form.emergencyContactName}
+              onChange={handleChange("emergencyContactName")}
+              name="emergencyContactName"
+            />
+          </div>
+          <div>
+            <Label>{t("EmergencyContactPhoneNumber")}</Label>
+            <Input
+              placeholder={t("EnterEmergencyContactPhoneNumber")}
+              className={`border p-2 rounded-md transition-colors duration-150 ${
+                touched.emergencyContactPhone &&
+                !emergencyPhoneValid &&
+                form.emergencyContactPhone
+                  ? "border-red-500 bg-red-50"
+                  : touched.emergencyContactPhone && emergencyPhoneValid
+                  ? "border-green-500 bg-green-50"
+                  : "border-zinc-300"
+              }`}
+              value={formatPhone(form.emergencyContactPhone)}
+              onChange={handleChange("emergencyContactPhone")}
+              name="emergencyContactPhone"
+              type="tel"
+              onBlur={() =>
+                setTouched((prev) => ({ ...prev, emergencyContactPhone: true }))
+              }
+              aria-invalid={
+                touched.emergencyContactPhone &&
+                !emergencyPhoneValid &&
+                form.emergencyContactPhone
+                  ? "true"
+                  : "false"
+              }
+              maxLength={12}
+            />
+            {touched.emergencyContactPhone &&
+              form.emergencyContactPhone &&
+              !emergencyPhoneValid && (
+                <span className="text-xs text-red-600 mt-1">
+                  {t("InvalidPhone")}
+                </span>
+              )}
+          </div>
+          <div className="flex flex-col justify-end mt-4">
+            <Button className="bg-app-dark-blue" onClick={handleSubmit}>
+              <p className="text-white font-semibold text-base">{t("Next")}</p>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

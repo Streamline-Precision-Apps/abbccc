@@ -98,7 +98,6 @@ export default function Signature({
 
   const handleMouseUp = () => {
     setIsDrawing(false);
-    handleSave();
   };
 
   // 🔹 Touch Handlers

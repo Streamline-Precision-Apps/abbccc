@@ -202,60 +202,62 @@ export default function NotificationSettings({
           {t("AcceptAllPermissions")}
         </Texts>
       </div>
-      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 gap-4">
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 ">
+        <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
-        <div className=" h-full flex flex-col items-center gap-8">
-          <Holds className="row-span-1">
-            <Titles size={"h2"}>{t("RequiredForAppUse")}</Titles>
-          </Holds>
-          <Holds position={"row"}>
-            <Holds size={"70"}>
-              <Texts position={"left"}>{t("CameraAccess")}</Texts>
+          <div className=" h-full flex flex-col items-center gap-8">
+            <Holds className="row-span-1">
+              <Titles size={"h4"}>{t("RequiredForAppUse")}</Titles>
             </Holds>
-            <Holds size={"30"}>
-              <LocaleToggleSwitch
-                data={updatedData?.cameraAccess || false}
-                onChange={(value: boolean) => {
-                  handleChange("cameraAccess", value);
-                }}
-              />
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("CameraAccess")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData?.cameraAccess || false}
+                  onChange={(value: boolean) => {
+                    handleChange("cameraAccess", value);
+                  }}
+                />
+              </Holds>
             </Holds>
-          </Holds>
-          <Holds position={"row"}>
-            <Holds size={"70"}>
-              <Texts position={"left"}>{t("LocationAccess")}</Texts>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("LocationAccess")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData?.locationAccess || false}
+                  onChange={(value: boolean) => {
+                    handleChange("locationAccess", value);
+                  }}
+                />
+              </Holds>
             </Holds>
-            <Holds size={"30"}>
-              <LocaleToggleSwitch
-                data={updatedData?.locationAccess || false}
-                onChange={(value: boolean) => {
-                  handleChange("locationAccess", value);
-                }}
-              />
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("Cookies")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData?.cookiesAccess || false}
+                  onChange={handleAcceptCookies}
+                />
+              </Holds>
             </Holds>
-          </Holds>
-          <Holds position={"row"}>
-            <Holds size={"70"}>
-              <Texts position={"left"}>{t("Cookies")}</Texts>
-            </Holds>
-            <Holds size={"30"}>
-              <LocaleToggleSwitch
-                data={updatedData?.cookiesAccess || false}
-                onChange={handleAcceptCookies}
-              />
-            </Holds>
-          </Holds>
-        </div>
-        <div>
-          <Button
-            size={"lg"}
-            onClick={handleSubmitSettings}
-            className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-            disabled={isSubmitting} // Disable the button while submitting
-          >
-            <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
-          </Button>
+          </div>
+          <div>
+            <Button
+              size={"lg"}
+              onClick={handleSubmitSettings}
+              className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
+              disabled={isSubmitting} // Disable the button while submitting
+            >
+              <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
