@@ -3,7 +3,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
-import { SearchCrew } from "@/lib/types";
 import EditedCrew from "./UserSelected/editedCrew";
 import UserInformation from "./UserSelected/userInformatiom";
 import ProfileAndRoles from "./UserSelected/ProfileAndRoles";
@@ -13,7 +12,6 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
 
 const fields = [
   { label: "Username", name: "username", type: "text" },
