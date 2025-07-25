@@ -31,6 +31,7 @@ export const InjuryReportContent = ({
   prevStep,
 }: FormProps) => {
   const [supervisorChecked, setSupervisorChecked] = useState<boolean>(false);
+  const [completedForm, setCompletedForm] = useState<boolean>(false);
   const [signatureChecked, setSignatureChecked] = useState<boolean>(false);
   const [textarea, setTextarea] = useState<string>("");
   const [error, setError] = useState<string | undefined>(undefined);
@@ -46,6 +47,12 @@ export const InjuryReportContent = ({
   ) => {
     setSupervisorChecked(event.currentTarget.checked);
   };
+
+  const handleCompleteFormCheckboxChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setCompletedForm(event.currentTarget.checked);
+  };
   const handleSignatureCheckboxChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
@@ -53,8 +60,8 @@ export const InjuryReportContent = ({
   };
 
   const handleSubmit = async () => {
-    if (!textarea) {
-      setError("Please describe what happened.");
+    if (!completedForm) {
+      setError("Please complete the form.");
       return;
     }
     if (!signatureChecked) {
@@ -87,7 +94,10 @@ export const InjuryReportContent = ({
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="h-full w-full border-red-500 border-[3px]">
+        <Holds
+          background={"white"}
+          className="h-full w-full border-red-500 border-[3px]"
+        >
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 ">
               <TitleBoxes onClick={prevStep}>
@@ -112,7 +122,7 @@ export const InjuryReportContent = ({
 
             <Holds className="row-start-2 row-end-8 h-full pt-5 ">
               <Grids rows={"7"} gap={"5"} className="h-full w-full">
-                <Holds className="h-full row-start-1 row-end-3">
+                {/* <Holds className="h-full row-start-1 row-end-3">
                   <Contents width={"section"}>
                     <TextAreas
                       id="incidentDescription"
@@ -125,9 +135,30 @@ export const InjuryReportContent = ({
                       className="border-[3px] border-black"
                     />
                   </Contents>
+                </Holds> */}
+
+                <Holds position={"row"} className="row-start-1 row-end-2">
+                  <Contents width={"section"}>
+                    <Holds position={"row"} className="w-full">
+                      <Holds className="w-fit pr-5">
+                        <CheckBox
+                          checked={completedForm}
+                          onChange={handleCompleteFormCheckboxChange}
+                          id={"1"}
+                          name={""}
+                          size={2.5}
+                        />
+                      </Holds>
+                      <Holds size={"80"}>
+                        <Texts position={"left"} size="p4">
+                          {t("IFilledOutAnInjuryReport")}
+                        </Texts>
+                      </Holds>
+                    </Holds>
+                  </Contents>
                 </Holds>
 
-                <Holds position={"row"} className="row-start-3 row-end-4">
+                <Holds position={"row"} className="row-start-2 row-end-3">
                   <Contents width={"section"}>
                     <Holds position={"row"} className="w-full">
                       <Holds className="w-fit pr-5">
@@ -148,7 +179,7 @@ export const InjuryReportContent = ({
                   </Contents>
                 </Holds>
 
-                <Holds className="h-full row-start-4 row-end-6">
+                <Holds className="h-full row-start-3 row-end-5">
                   <Contents width={"section"}>
                     <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
                       {base64String ? (
@@ -167,7 +198,7 @@ export const InjuryReportContent = ({
 
                 <Holds
                   position={"row"}
-                  className="h-full row-start-6 row-end-7 "
+                  className="h-full row-start-5 row-end-6 "
                 >
                   <Contents width={"section"}>
                     <Holds position={"row"}>
@@ -194,12 +225,12 @@ export const InjuryReportContent = ({
               <Contents width={"section"}>
                 <Buttons
                   background={
-                    textarea && signatureChecked ? "lightBlue" : "darkGray"
+                    completedForm && signatureChecked ? "orange" : "darkGray"
                   }
-                  disabled={textarea && signatureChecked ? false : true}
+                  disabled={completedForm && signatureChecked ? false : true}
                   onClick={handleSubmit}
                 >
-                  <Titles>{t("SubmitButton")}</Titles>
+                  <Titles>{t("Continue")}</Titles>
                 </Buttons>
               </Contents>
             </Holds>

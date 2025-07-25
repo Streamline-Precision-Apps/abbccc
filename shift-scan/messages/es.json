@@ -424,6 +424,7 @@
     "Form3Submit": "Formulario de envío"
   },
   "MyTeam": {
+    "StartEnd": "Mis Tiempos",
     "Loading": "Cargando...",
     "ContactInfo": "Información de contacto",
     "PhoneNumber": "Número de teléfono",
@@ -718,6 +719,7 @@
     "ReviewYourTeam": "Revisa tu equipo"
   },
   "ClockOut": {
+    "IFilledOutAnInjuryReport": "Llene un informe de lesiones si usted ha sufrido lesiones.",
     "incidentDescription": "Descripción del incidente",
     "ReviewYourDay": "Revisa tu día",
     "ReviewYourDayDirections": "Revise su día a continuación. ",
