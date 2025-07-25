@@ -20,7 +20,6 @@ export default function MobileCheck({
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (isMobile === undefined) return; // Wait for isMobile to resolve
     if (!isMobile) {
       router.replace("/admins");
     } else {
