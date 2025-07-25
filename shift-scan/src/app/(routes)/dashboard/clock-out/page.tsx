@@ -1,7 +1,8 @@
 "use server";
 import { auth } from "@/auth";
-import ClockOutContent from "@/app/(routes)/dashboard/clock-out/clockOutContent";
+// import ClockOutContent from "@/app/(routes)/dashboard/clock-out/clockOutContent";
 import { redirect } from "next/navigation";
+import TempClockOutContent from "./tempClockOutContent";
 
 export default async function ClockOutPage() {
   const session = await auth();
@@ -9,5 +10,10 @@ export default async function ClockOutPage() {
     redirect("/signin");
   }
   // Pass user id and permission so downstream logic can determine manager/team status
-  return <ClockOutContent userId={session.user.id} permission={session.user.permission} />;
+  return (
+    <TempClockOutContent
+      userId={session.user.id}
+      permission={session.user.permission}
+    />
+  );
 }

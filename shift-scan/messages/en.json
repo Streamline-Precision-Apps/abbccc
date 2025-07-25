@@ -428,6 +428,7 @@
     "Form3Submit": "Submit form"
   },
   "MyTeam": {
+    "StartEnd": "My Times",
     "Loading": "Loading...",
     "ContactInfo": "Contact Info",
     "PhoneNumber": "Phone Number",
@@ -724,6 +725,7 @@
   },
 
   "ClockOut": {
+    "IFilledOutAnInjuryReport": "I filled out an injury report",
     "incidentDescription": "Incident Description",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "StartEnd": "Start & End",
