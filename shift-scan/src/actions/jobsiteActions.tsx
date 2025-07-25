@@ -39,7 +39,7 @@ export async function createJobsite(formData: FormData) {
   const qrId = formData.get("qrCode") as string;
   const creationComment = formData.get("creationComment") as string;
   const creationReasoning = formData.get("creationReasoning") as string;
-  const clientId = formData.get("clientId") as string | null;
+
   const newAddress = formData.get("newAddress") === "true";
   const address = formData.get("address") as string;
   const city = formData.get("city") as string;
@@ -97,8 +97,8 @@ export async function createJobsite(formData: FormData) {
       const data: Prisma.JobsiteCreateInput = {
         name,
         qrId,
-        description: creationReasoning,
-        comment: creationComment,
+        description: creationComment,
+        creationReason: creationReasoning,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
