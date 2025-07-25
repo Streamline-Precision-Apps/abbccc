@@ -5,6 +5,9 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { redirect } from "next/navigation";
 import MobileCheck from "./(content)/mobileCheck";
+import { Grids } from "@/components/(reusable)/grids";
+import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
+import WidgetSection from "./(content)/widgetSection";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -25,7 +28,10 @@ export default async function Home() {
   return (
     <Bases>
       <Contents>
-        <MobileCheck locale={locale} session={session} />
+        <Grids rows={"8"} gap={"5"}>
+          <HamburgerMenuNew />
+          <WidgetSection locale={locale} session={session} />
+        </Grids>
       </Contents>
     </Bases>
   );
