@@ -255,7 +255,7 @@ export default function AccountInformation({
         isOpen={isOpen2}
         handleClose={() => setIsOpen2(false)}
       >
-        <SignOutModal setIsOpenSignOut={() => setIsOpen2(false)} />
+        <SignOutModal open={isOpen2} setOpen={setIsOpen2} />
       </NModals>
     </Grids>
   );
