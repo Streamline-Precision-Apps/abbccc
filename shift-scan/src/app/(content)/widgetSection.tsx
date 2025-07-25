@@ -15,6 +15,7 @@ import { usePayPeriodData } from "@/hooks/(home)/usePayPeriod";
 import WidgetContainer from "./widgetContainer";
 import DisplayBanner from "./displayBanner";
 import DisplayBreakBanner from "./displayBreakBanner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Props = {
   session: Session;
@@ -29,6 +30,11 @@ export default function WidgetSection({ session, locale }: Props) {
   const { payPeriodSheets, pageView, setPageView, loading } = usePayPeriodData(
     setPayPeriodTimeSheets
   );
+  const isMobile = useIsMobile();
+
+  if (!isMobile) {
+    router.push("/admins");
+  }
 
   // Derived values
   const date = new Date().toLocaleDateString(locale, {
@@ -61,20 +67,6 @@ export default function WidgetSection({ session, locale }: Props) {
     //   router.push("/signin/signup");
     // }
   }, [pageView, router, accountSetup, setPageView]);
-
-  //-----------------------------------------------------------------------
-
-  // Redirect to /admins for ADMIN or SUPERADMIN (wide screen) users on client only
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (
-        session?.user.permission === "ADMIN" ||
-        (session?.user.permission === "SUPERADMIN" && window.innerWidth >= 820)
-      ) {
-        router.push("/admins");
-      }
-    }
-  }, [router, session?.user.permission]);
 
   // Loading state
   if (loading) {

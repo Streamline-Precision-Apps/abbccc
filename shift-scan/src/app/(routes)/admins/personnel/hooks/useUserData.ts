@@ -172,22 +172,11 @@ export const useUserData = ({
     formData.set("id", editState.user.id);
     formData.set("firstName", editState.user.firstName);
     formData.set("lastName", editState.user.lastName);
-    formData.set("email", editState.user.email);
-    formData.set("DOB", editState.user.DOB);
     formData.set("permission", editState.user.permission);
     formData.set("truckView", String(editState.user.truckView));
     formData.set("tascoView", String(editState.user.tascoView));
     formData.set("laborView", String(editState.user.laborView));
     formData.set("mechanicView", String(editState.user.mechanicView));
-    formData.set("phoneNumber", editState.user.Contact?.phoneNumber || "");
-    formData.set(
-      "emergencyContact",
-      editState.user.Contact?.emergencyContact || ""
-    );
-    formData.set(
-      "emergencyContactNumber",
-      editState.user.Contact?.emergencyContactNumber || ""
-    );
     formData.set("terminationDate", editState.user.terminationDate || "");
     formData.set("crewLeads", JSON.stringify(editState.crewLeads));
     formData.set("selectedCrews", JSON.stringify(editState.selectedCrews));
