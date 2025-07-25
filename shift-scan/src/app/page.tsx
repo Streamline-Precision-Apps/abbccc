@@ -3,10 +3,8 @@ import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
-import WidgetSection from "@/app/(content)/widgetSection";
 import { redirect } from "next/navigation";
-import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
+import MobileCheck from "./(content)/mobileCheck";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -27,10 +25,7 @@ export default async function Home() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"5"}>
-          <HamburgerMenuNew />
-          <WidgetSection locale={locale} session={session} />
-        </Grids>
+        <MobileCheck locale={locale} session={session} />
       </Contents>
     </Bases>
   );

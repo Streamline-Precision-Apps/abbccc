@@ -113,7 +113,7 @@ const LeftSideBar = () => {
             isOpen={isOpenSignOut}
             handleClose={() => setIsOpenSignOut(false)}
           >
-            <SignOutModal setIsOpenSignOut={() => setIsOpenSignOut(false)} />
+            <SignOutModal setOpen={setIsOpenSignOut} open={isOpenSignOut} />
           </NModals>
         </Holds>
       </Grids>
