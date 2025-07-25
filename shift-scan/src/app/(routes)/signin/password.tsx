@@ -63,7 +63,13 @@ export default function SignInForm() {
       )}
       <Forms onSubmit={handleSubmit}>
         <Labels htmlFor="username">{t("EmployeeID")}</Labels>
-        <Inputs variant="default" name="username" type="text" required />
+        <Inputs
+          variant="default"
+          name="username"
+          type="text"
+          required
+          autoCapitalize="off"
+        />
         <Holds position={"row"}>
           <Labels htmlFor="password">{t("Password")}</Labels>
           <Images
@@ -79,6 +85,7 @@ export default function SignInForm() {
           variant="default"
           name="password"
           type={viewSecret ? "text" : "password"}
+          autoCapitalize="off"
           required
         />
         <Holds position={"row"} className="justify-end mb-8">
