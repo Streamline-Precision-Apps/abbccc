@@ -10,6 +10,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
+import { useEffect } from "react";
 import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
@@ -28,11 +29,6 @@ export default function SignInForm() {
     setViewSecret(!viewSecret);
   };
 
-  const LocaleHandler = async (event: ChangeEvent<HTMLInputElement>) => {
-    await setLocale(event.target.checked);
-    router.refresh();
-  };
-
   const handleSubmit = async (event: React.FormEvent) => {
     setAnimation(true);
     event.preventDefault();
@@ -49,7 +45,19 @@ export default function SignInForm() {
       setAnimation(false);
       setTimeout(() => setError(""), 5000);
     } else {
-      router.push("/");
+      // Fetch session info after sign in
+      const res = await fetch("/api/auth/session");
+      const session = await res.json();
+      const permission = session?.user?.permission;
+      if (
+        (permission === "ADMIN" || permission === "SUPERADMIN") &&
+        typeof window !== "undefined" &&
+        window.innerWidth >= 768
+      ) {
+        router.push("/admins");
+      } else {
+        router.push("/");
+      }
       setAnimation(false);
     }
   };
