@@ -5,7 +5,7 @@ export interface UserData {
   lastName: string;
   image?: string;
   email: string;
-  DOB: string;
+  DOB?: string;
   permission: string;
   truckView: boolean;
   tascoView: boolean;

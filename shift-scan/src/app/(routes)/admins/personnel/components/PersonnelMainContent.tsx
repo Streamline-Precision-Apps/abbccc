@@ -1,5 +1,4 @@
 "use client";
-import { SearchCrew } from "@/lib/types";
 import {
   BaseUser,
   CrewCreationState,
