@@ -196,69 +196,71 @@ export default function NotificationSettings({
   };
 
   return (
-    <div className="w-screen h-screen grid grid-rows-10 gap-1">
-      <div className="h-full flex flex-col justify-end row-span-2 gap-1 pb-4">
+    <div className="w-full h-[100vh] flex flex-col gap-1">
+      <div className="w-full h-full max-h-52 flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AcceptAllPermissions")}
         </Texts>
       </div>
-      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 ">
-        <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
-          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 ">
+        <Contents>
+          <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
-          <div className=" h-full flex flex-col items-center gap-8">
-            <Holds className="row-span-1">
-              <Titles size={"h4"}>{t("RequiredForAppUse")}</Titles>
-            </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("CameraAccess")}</Texts>
+            <div className=" h-full flex flex-col items-center gap-8">
+              <Holds className="row-span-1">
+                <Titles size={"h4"}>{t("RequiredForAppUse")}</Titles>
               </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData?.cameraAccess || false}
-                  onChange={(value: boolean) => {
-                    handleChange("cameraAccess", value);
-                  }}
-                />
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("CameraAccess")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData?.cameraAccess || false}
+                    onChange={(value: boolean) => {
+                      handleChange("cameraAccess", value);
+                    }}
+                  />
+                </Holds>
               </Holds>
-            </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("LocationAccess")}</Texts>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("LocationAccess")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData?.locationAccess || false}
+                    onChange={(value: boolean) => {
+                      handleChange("locationAccess", value);
+                    }}
+                  />
+                </Holds>
               </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData?.locationAccess || false}
-                  onChange={(value: boolean) => {
-                    handleChange("locationAccess", value);
-                  }}
-                />
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("Cookies")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData?.cookiesAccess || false}
+                    onChange={handleAcceptCookies}
+                  />
+                </Holds>
               </Holds>
-            </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("Cookies")}</Texts>
-              </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData?.cookiesAccess || false}
-                  onChange={handleAcceptCookies}
-                />
-              </Holds>
-            </Holds>
+            </div>
+            <div>
+              <Button
+                size={"lg"}
+                onClick={handleSubmitSettings}
+                className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
+                disabled={isSubmitting} // Disable the button while submitting
+              >
+                <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+              </Button>
+            </div>
           </div>
-          <div>
-            <Button
-              size={"lg"}
-              onClick={handleSubmitSettings}
-              className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-              disabled={isSubmitting} // Disable the button while submitting
-            >
-              <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
-            </Button>
-          </div>
-        </div>
+        </Contents>
       </div>
     </div>
   );
