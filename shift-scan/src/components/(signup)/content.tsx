@@ -75,65 +75,65 @@ export default function Content({
 
   return (
     <Holds className="h-full" position={"row"}>
-      {step === 1 && (
+      {/* {step === 1 && (
         <Bases>
           <Contents>
             <ShiftScanIntro handleNextStep={handleNextStep} />
           </Contents>
         </Bases>
-      )}
-      {step === 2 && (
+      )} */}
+      {step === 1 && (
         <EnterAccountInfo
           userId={userId}
           handleNextStep={handleNextStep}
           userName={userName}
           totalSteps={totalSteps}
-          currentStep={step - 1}
+          currentStep={step}
         />
       )}
 
-      {step === 3 && (
+      {step === 2 && (
         <ResetPassword
           userId={userId}
           handleNextStep={handleNextStep}
           totalSteps={totalSteps}
-          currentStep={step - 1}
+          currentStep={step}
         />
       )}
-      {step === 4 && (
+      {step === 3 && (
         <NotificationSettings
           userId={userId}
           handleNextStep={handleNextStep}
           totalSteps={totalSteps}
-          currentStep={step - 1}
+          currentStep={step}
         />
       )}
-      {step === 5 && (
+      {step === 4 && (
         <ProfilePictureSetup
           userId={userId}
           handleNextStep={handleNextStep}
           totalSteps={totalSteps}
-          currentStep={step - 1}
+          currentStep={step}
         />
       )}
       {/* {step === 5 && (
           <Permissions id={userId} handleAccept={handleComplete}/>
         )} */}
-      {step === 6 && (
+      {step === 5 && (
         <SignatureSetup
           id={userId}
-          handleNextStep={handleNextStep}
+          handleNextStep={handleComplete}
           totalSteps={totalSteps}
-          currentStep={step - 1}
+          currentStep={step}
         />
       )}
-      {step === 7 && (
+      {/* {step === 7 && (
         <Bases>
           <Contents>
             <SignUpOutro handleComplete={handleComplete} />
           </Contents>
         </Bases>
-      )}
+      )} */}
     </Holds>
   );
 }
