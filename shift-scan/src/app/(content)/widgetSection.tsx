@@ -30,11 +30,6 @@ export default function WidgetSection({ session, locale }: Props) {
   const { payPeriodSheets, pageView, setPageView, loading } = usePayPeriodData(
     setPayPeriodTimeSheets
   );
-  const isMobile = useIsMobile();
-
-  if (!isMobile) {
-    router.push("/admins");
-  }
 
   // Derived values
   const date = new Date().toLocaleDateString(locale, {
