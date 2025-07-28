@@ -75,7 +75,7 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
   };
 
   return (
-    <div className="w-full h-[100vh] flex flex-col gap-1">
+    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
       <div className="w-full h-full max-h-28 flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AddASignature")}
@@ -120,15 +120,15 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
                 </Holds>
               </div>
             </div>
-
-            <div>
+            <div className="flex flex-col  mt-4">
               <Button
-                size={"lg"}
+                className="bg-app-dark-blue"
                 onClick={handleSubmitImage}
-                className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-                disabled={isSubmitting} // Disable the button while submitting
+                disabled={isSubmitting}
               >
-                <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+                <p className="text-white font-semibold text-base">
+                  {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+                </p>
               </Button>
             </div>
           </div>
