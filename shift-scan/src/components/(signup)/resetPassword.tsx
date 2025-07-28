@@ -162,12 +162,12 @@ const ResetPassword = ({
 
   return (
     <div className="w-full h-[100vh] flex flex-col gap-1">
-      <div className="w-full h-full max-h-52 flex flex-col justify-end gap-1 pb-4">
+      <div className="w-full h-full max-h-28 flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("ChoosePasswordTitle")}
         </Texts>
       </div>
-      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 ">
+      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
         <Contents>
           <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
             <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />

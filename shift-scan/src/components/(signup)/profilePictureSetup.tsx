@@ -72,36 +72,38 @@ export default function ProfilePictureSetup({
   };
 
   return (
-    <div className="w-screen h-screen grid grid-rows-10 gap-1">
-      <div className="h-full flex flex-col justify-end row-span-2 gap-1 pb-4">
+    <div className="w-full h-[100vh] flex flex-col gap-1">
+      <div className="w-full h-full max-h-28 flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AddProfilePicture")}
         </Texts>
       </div>
-      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 ">
-        <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
-          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
+        <Contents>
+          <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
-          <div className=" h-full flex flex-col items-center gap-8">
-            <Contents width={"section"}>
-              <Holds className="h-full">
-                {/* Integrating CameraComponent */}
-                <CameraComponent setBase64String={setBase64String} />
-              </Holds>
-            </Contents>
-          </div>
+            <div className=" h-full flex flex-col items-center gap-8">
+              <Contents width={"section"}>
+                <Holds className="h-full">
+                  {/* Integrating CameraComponent */}
+                  <CameraComponent setBase64String={setBase64String} />
+                </Holds>
+              </Contents>
+            </div>
 
-          <div>
-            <Button
-              size={"lg"}
-              onClick={handleSubmitImage}
-              className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-              disabled={isSubmitting} // Disable the button while submitting
-            >
-              <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
-            </Button>
+            <div>
+              <Button
+                size={"lg"}
+                onClick={handleSubmitImage}
+                className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
+                disabled={isSubmitting} // Disable the button while submitting
+              >
+                <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+              </Button>
+            </div>
           </div>
-        </div>
+        </Contents>
       </div>
     </div>
   );
