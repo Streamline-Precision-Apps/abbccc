@@ -73,37 +73,30 @@ export default function ProfilePictureSetup({
 
   return (
     <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-full max-h-28 flex flex-col justify-end gap-1 pb-4">
+      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AddProfilePicture")}
         </Texts>
       </div>
       <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
-        <Contents>
-          <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
-            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full overflow-auto no-scrollbar gap-4">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
-            <div className=" h-full flex flex-col items-center gap-8">
-              <Contents width={"section"}>
-                <Holds className="h-full">
-                  {/* Integrating CameraComponent */}
-                  <CameraComponent setBase64String={setBase64String} />
-                </Holds>
-              </Contents>
-            </div>
-            <div className="flex flex-col  mt-4">
-              <Button
-                className="bg-app-dark-blue"
-                onClick={handleSubmitImage}
-                disabled={isSubmitting}
-              >
-                <p className="text-white font-semibold text-base">
-                  {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-                </p>
-              </Button>
-            </div>
+          <div className=" h-full h-max-[60vh] flex flex-col items-center gap-8">
+            <CameraComponent setBase64String={setBase64String} />
           </div>
-        </Contents>
+          <div className="flex flex-col mb-4">
+            <Button
+              className="bg-app-dark-blue"
+              onClick={handleSubmitImage}
+              disabled={isSubmitting}
+            >
+              <p className="text-white font-semibold text-base">
+                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+              </p>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
