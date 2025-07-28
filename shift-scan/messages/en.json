@@ -57,6 +57,7 @@
   },
 
   "SignUpAccountInfo": {
+    "InvalidEmail": "Please enter a valid email",
     "ItsTimeToSetUpYourAccount": "It's time to set up your account!",
     "Email": "Email",
     "EnterYourEmail": "Enter your email",

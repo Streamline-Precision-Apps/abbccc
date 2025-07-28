@@ -31,21 +31,6 @@ export default function EditCostCodeModal({
     }
   }, [costCodeDetails]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) =>
-      prev
-        ? {
-            ...prev,
-            [name]:
-              type === "number" ? (value === "" ? null : Number(value)) : value,
-          }
-        : prev
-    );
-  };
-
   const handleSaveChanges = async () => {
     if (!formData) {
       toast.error("No form data to save.");
@@ -54,6 +39,7 @@ export default function EditCostCodeModal({
     try {
       const fd = new FormData();
       fd.append("id", formData.id);
+      fd.append("code", formData.code);
       fd.append("name", formData.name);
       fd.append("isActive", String(formData.isActive));
       fd.append("CCTags", JSON.stringify(formData.CCTags.map((tag) => tag.id)));
@@ -96,6 +82,13 @@ export default function EditCostCodeModal({
         name: `${newCode} ${currentName}`.trim(),
       };
     });
+    setFormData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        code: newCode.split("#")[1] || "",
+      };
+    });
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +104,7 @@ export default function EditCostCodeModal({
   };
 
   const safeTagSummaries = Array.isArray(tagSummaries) ? tagSummaries : [];
+  // Merge all tags, ensuring no duplicates
   const allTags = [
     ...safeTagSummaries,
     ...formData.CCTags.filter(
@@ -185,12 +179,10 @@ export default function EditCostCodeModal({
                   label={`Tags (Optional)`}
                   options={
                     allTags
-                      ? allTags
-                          .filter((tag) => tag.name.toLowerCase() !== "all")
-                          .map((tag) => ({
-                            label: tag.name,
-                            value: tag.id,
-                          }))
+                      ? allTags.map((tag) => ({
+                          label: tag.name,
+                          value: tag.id,
+                        }))
                       : []
                   }
                   // name prop removed, not supported by ComboboxProps
@@ -200,7 +192,7 @@ export default function EditCostCodeModal({
                       prev
                         ? {
                             ...prev,
-                            CCTags: tagSummaries.filter((tag) =>
+                            CCTags: safeTagSummaries.filter((tag) =>
                               selectedIds.includes(tag.id)
                             ),
                           }

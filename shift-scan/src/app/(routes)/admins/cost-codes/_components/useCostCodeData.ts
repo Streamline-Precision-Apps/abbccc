@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 export type CostCodeSummary = {
   id: string;
+  code: string;
   name: string;
   isActive: boolean;
   createdAt: string;

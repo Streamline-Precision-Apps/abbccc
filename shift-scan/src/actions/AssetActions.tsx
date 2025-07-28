@@ -392,9 +392,19 @@ export async function updateJobsiteAdmin(formData: FormData) {
 
     const updateData: Prisma.JobsiteUpdateInput = {};
     if (formData.has("client")) {
-      updateData.Client = {
-        connect: { id: formData.get("client") as string },
-      };
+      const clientId = formData.get("client") as string;
+      if (clientId) {
+        updateData.Client = {
+          connect: { id: clientId },
+        };
+      } else {
+        updateData.Client = {
+          disconnect: true,
+        };
+      }
+    }
+    if (formData.has("code")) {
+      updateData.code = (formData.get("code") as string)?.trim();
     }
     if (formData.has("name")) {
       updateData.name = (formData.get("name") as string)?.trim();
@@ -464,6 +474,7 @@ export async function createJobsiteAdmin({
   payload,
 }: {
   payload: {
+    code: string;
     name: string;
     description: string;
     ApprovalStatus: string;
@@ -497,6 +508,7 @@ export async function createJobsiteAdmin({
       if (existingAddress) {
         await prisma.jobsite.create({
           data: {
+            code: payload.code.trim(),
             name: payload.name.trim(),
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
@@ -518,6 +530,7 @@ export async function createJobsiteAdmin({
       } else {
         await prisma.jobsite.create({
           data: {
+            code: payload.code.trim(),
             name: payload.name.trim(),
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
@@ -725,6 +738,9 @@ export async function updateCostCodeAdmin(formData: FormData) {
     }
 
     const updateData: Prisma.CostCodeUpdateInput = {};
+    if (formData.has("code")) {
+      updateData.code = (formData.get("code") as string)?.trim();
+    }
     if (formData.has("name")) {
       updateData.name = (formData.get("name") as string)?.trim();
     }
@@ -734,7 +750,18 @@ export async function updateCostCodeAdmin(formData: FormData) {
 
     if (formData.has("cCTags")) {
       const cCTagsString = formData.get("cCTags") as string;
-      const cCTagsArray = JSON.parse(cCTagsString || "[]");
+      let cCTagsArray = JSON.parse(cCTagsString || "[]");
+      // If no tags provided, add the 'All' tag automatically
+      if (!Array.isArray(cCTagsArray) || cCTagsArray.length === 0) {
+        // Find the 'All' tag in the database
+        const allTag = await prisma.cCTag.findFirst({
+          where: { name: { equals: "All", mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (allTag) {
+          cCTagsArray = [{ id: allTag.id }];
+        }
+      }
       updateData.CCTags = {
         set: cCTagsArray.map((tag: { id: string }) => ({ id: tag.id })),
       };
@@ -788,6 +815,7 @@ export async function createCostCode(payload: {
     // Check if cost code with the same name already exists
     const existingCostCode = await prisma.costCode.findUnique({
       where: {
+        code: payload.code.trim(),
         name: `${payload.code.trim()} ${payload.name.trim()}`,
       },
     });
@@ -799,6 +827,7 @@ export async function createCostCode(payload: {
     // Create the new cost code
     const newCostCode = await prisma.costCode.create({
       data: {
+        code: payload.code.split("#")[1] || "",
         name: `${payload.code.trim()} ${payload.name.trim()}`,
         isActive: payload.isActive,
         CCTags: {
