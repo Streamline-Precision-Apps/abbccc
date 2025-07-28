@@ -50,11 +50,13 @@ export type Timesheet = {
   };
   Jobsite: {
     id: string;
+    code: string;
     name: string;
   };
   CostCode: {
     id: string;
     name: string;
+    code: string;
   };
   nu: string;
   Fp: string;
@@ -68,13 +70,27 @@ export type Timesheet = {
   EmployeeEquipmentLogs: {
     id: string;
     equipmentId: string;
+    Equipment: {
+      id: string;
+      name: string;
+    };
     startTime: Date | string;
     endTime: Date | string;
   }[];
+  TruckingLogs: {
+    truckNumber: string;
+    startingMileage: number | null;
+    endingMileage: number | null;
+    RefuelLogs: {
+      milesAtFueling: number | null;
+    }[];
+  }[];
 };
+
 type timesheetPending = {
   length: number;
 };
+
 // Updated CreateTimesheetModal with user/jobsite dropdowns and removed nu, Fp, location, status
 
 export default function AdminTimesheets() {
@@ -228,10 +244,17 @@ export default function AdminTimesheets() {
   ) => {
     let exportRows = sortedTimesheets.filter((ts) => ts.status === "APPROVED");
     if (dateRange?.from || dateRange?.to) {
+      // Set from to 12:00am and to to 11:59:59pm
+      const fromDate = dateRange.from
+        ? new Date(dateRange.from.setHours(0, 0, 0, 0))
+        : undefined;
+      const toDate = dateRange.to
+        ? new Date(dateRange.to.setHours(23, 59, 59, 999))
+        : undefined;
       exportRows = exportRows.filter((ts) => {
         const tsDate = new Date(ts.date);
-        if (dateRange.from && tsDate < dateRange.from) return false;
-        if (dateRange.to && tsDate > dateRange.to) return false;
+        if (fromDate && tsDate < fromDate) return false;
+        if (toDate && tsDate > toDate) return false;
         return true;
       });
     }
@@ -252,23 +275,32 @@ export default function AdminTimesheets() {
      * Field mapping for export. Includes EquipmentId and EquipmentUsage aggregation.
      */
     const allFields: Record<string, (ts: Timesheet) => string> = {
-      ID: (ts) => ts.id,
+      Id: (ts) => ts.id,
+      WorkType: (ts) => String(ts.workType),
       Date: (ts) => formatDateVal(ts.date),
       Employee: (ts) =>
         ts.User ? `${ts.User.firstName} ${ts.User.lastName}` : "",
-      Jobsite: (ts) => ts.Jobsite?.name || "",
-      CostCode: (ts) => ts.CostCode?.name || "",
+      Jobsite: (ts) => ts.Jobsite?.code || "",
+      CostCode: (ts) => ts.CostCode?.code || "",
+      NU: () => "NU",
+      FP: () => "FP",
       Start: (ts) => formatTimeVal(ts.startTime),
       End: (ts) => formatTimeVal(ts.endTime),
-      WorkType: (ts) => String(ts.workType),
-      Comment: (ts) => ts.comment,
-      EquipmentId: (ts) => {
-        return ts.EmployeeEquipmentLogs.map((log) => log.equipmentId).join(
-          ", "
+      Duration: (ts) => {
+        if (!ts.startTime || !ts.endTime) return "";
+        const start = new Date(ts.startTime);
+        const end = new Date(ts.endTime);
+        const durationMs = end.getTime() - start.getTime();
+        const hours = Math.floor(durationMs / (1000 * 60 * 60));
+        const minutes = Math.floor(
+          (durationMs % (1000 * 60 * 60)) / (1000 * 60)
         );
+        return `${hours} hr ${minutes} min`;
       },
+      Comment: (ts) => ts.comment,
+      EquipmentId: (ts) =>
+        ts.EmployeeEquipmentLogs.map((log) => log.Equipment.name).join(", "),
       EquipmentUsage: (ts) => {
-        // Sum total duration for all equipment logs, output as "X hr Y min"
         if (
           !Array.isArray(ts.EmployeeEquipmentLogs) ||
           ts.EmployeeEquipmentLogs.length === 0
@@ -292,6 +324,22 @@ export default function AdminTimesheets() {
         if (hours > 0) return `${hours} hr`;
         return `${mins} min`;
       },
+      TruckNumber: (ts) =>
+        ts.TruckingLogs?.[0]?.truckNumber
+          ? String(ts.TruckingLogs[0].truckNumber)
+          : "",
+      TruckStartingMileage: (ts) =>
+        ts.TruckingLogs?.[0]?.startingMileage != null
+          ? String(ts.TruckingLogs[0].startingMileage)
+          : "",
+      TruckEndingMileage: (ts) =>
+        ts.TruckingLogs?.[0]?.endingMileage != null
+          ? String(ts.TruckingLogs[0].endingMileage)
+          : "",
+      MilesAtFueling: (ts) =>
+        ts.TruckingLogs?.[0]?.RefuelLogs?.[0]?.milesAtFueling != null
+          ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
+          : "",
     };
     // Remove 'Status' from selectedFields if present
     const filteredFields =

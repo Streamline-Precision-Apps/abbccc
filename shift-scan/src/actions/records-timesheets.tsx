@@ -212,14 +212,33 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       }
     }
 
+    // Helper to combine date and hh:mm string into a Date object
+    const combineDateAndTime = (date: Date, time: string) => {
+      if (!date || !time) return undefined;
+      const [hours, minutes] = time.split(":").map(Number);
+      const result = new Date(date);
+      result.setHours(hours, minutes, 0, 0);
+      return result;
+    };
+
     // Labor Logs (EmployeeEquipmentLog)
     for (const log of data.laborLogs) {
+      const date = data.form.date;
+      console.log(
+        "Creating labor log for equipment:",
+        log.startTime,
+        log.endTime
+      );
       if (!log.equipment.id) continue;
       await tx.employeeEquipmentLog.create({
         data: {
           equipmentId: log.equipment.id,
-          ...(log.startTime ? { startTime: new Date(log.startTime) } : {}),
-          ...(log.endTime ? { endTime: new Date(log.endTime) } : {}),
+          ...(log.startTime
+            ? { startTime: combineDateAndTime(date, log.startTime) }
+            : {}),
+          ...(log.endTime
+            ? { endTime: combineDateAndTime(date, log.endTime) }
+            : {}),
           timeSheetId: timesheet.id,
         },
       });
