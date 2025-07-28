@@ -55,12 +55,14 @@ export async function GET(req: Request) {
         Jobsite: {
           select: {
             name: true,
+            code: true,
           },
         },
         CostCode: {
           select: {
             id: true,
             name: true,
+            code: true,
           },
         },
         nu: true,
@@ -76,8 +78,26 @@ export async function GET(req: Request) {
           select: {
             id: true,
             equipmentId: true,
+            Equipment: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
             startTime: true,
             endTime: true,
+          },
+        },
+        TruckingLogs: {
+          select: {
+            truckNumber: true,
+            startingMileage: true,
+            endingMileage: true,
+            RefuelLogs: {
+              select: {
+                milesAtFueling: true,
+              },
+            },
           },
         },
       },

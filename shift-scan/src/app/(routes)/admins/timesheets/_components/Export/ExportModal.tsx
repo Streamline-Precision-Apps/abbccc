@@ -33,18 +33,24 @@ import {
 import { Button } from "@/components/ui/button";
 
 const EXPORT_FIELDS = [
+  { key: "Id", label: "Id" },
   { key: "WorkType", label: "Work Type" },
-  { key: "Employee", label: "Employee" },
   { key: "Date", label: "Date" },
-  { key: "Jobsite", label: "Profit Id" },
-  { key: "CostCode", label: "Cost Code" },
+  { key: "Employee", label: "Employee" },
+  { key: "Jobsite", label: "Jobsite" },
+  { key: "CostCode", label: "Costcode" },
   { key: "NU", label: "NU" },
   { key: "FP", label: "FP" },
-  { key: "Start", label: "Start Time" },
-  { key: "End", label: "End Time" },
-  { key: "Comment", label: "Job Description" },
-  { key: "EquipmentId", label: "EQ ID" },
-  { key: "EquipmentUsage", label: "EQ Usage" },
+  { key: "Start", label: "Start" },
+  { key: "End", label: "End" },
+  { key: "Duration", label: "Duration" },
+  { key: "Comment", label: "Comment" },
+  { key: "EquipmentId", label: "Equipment" },
+  { key: "EquipmentUsage", label: "Equipment Usage" },
+  { key: "TruckNumber", label: "Trucking Number" },
+  { key: "TruckStartingMileage", label: "Truck Starting Mileage" },
+  { key: "TruckEndingMileage", label: "Truck Ending Mileage" },
+  { key: "MilesAtFueling", label: "Miles at Fueling" },
 ];
 
 const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
@@ -80,7 +86,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg w-[600px]  max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col gap-4 w-full items-center">
           <div className="w-full flex flex-col  mb-2">
             <div className="flex flex-col  mb-6">
@@ -88,9 +94,12 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                 <Download className="h-5 w-5" />
                 <h2 className="text-base font-bold">Export Timesheet Data</h2>
               </div>
-              <p className="text-xs text-muted-foreground mb-2">
+              <p className="text-sm text-muted-foreground">
                 Select a date range, apply filters, and choose your preferred
                 export format
+              </p>
+              <p className="text-xs text-muted-foreground italic mb-2">
+                Exporting only includes timesheets APPROVED!
               </p>
             </div>
             <div className="flex flex-col gap-3">
