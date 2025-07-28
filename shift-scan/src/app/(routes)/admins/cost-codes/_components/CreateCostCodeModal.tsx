@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { createCostCode } from "@/actions/AssetActions";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { Combobox } from "@/components/ui/combobox";
 import { TagSummary } from "./useTagData";
 
@@ -69,7 +68,7 @@ export default function CreateCostCodeModal({
             id: tag.id,
             name: tag.name,
           })),
-          { id: "c6d1c13a-5c60-4abb-8afb-b89c5e4426b3", name: "All" },
+          { id: "All", name: "All" },
         ],
       };
 

@@ -58,6 +58,7 @@
     "LogoAlt": "Logotipo de SHIFT SCAN"
   },
   "SignUpAccountInfo": {
+    "InvalidEmail": "Por favor ingrese un correo electrónico válido",
     "ItsTimeToSetUpYourAccount": "¡Es hora de configurar su cuenta!",
     "Email": "Correo electrónico",
     "EnterYourEmail": "Ingrese su correo electrónico",

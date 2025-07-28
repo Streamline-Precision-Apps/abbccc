@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 
 export type Jobsite = {
   id: string;
+  code?: string;
   name: string;
   description?: string;
   creationReason?: string;

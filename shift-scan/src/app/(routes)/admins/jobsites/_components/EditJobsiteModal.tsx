@@ -64,6 +64,7 @@ export default function EditJobsiteModal({
     try {
       const fd = new FormData();
       fd.append("id", formData.id);
+      fd.append("code", formData.code || ""); // Ensure code is included
       fd.append("name", formData.name);
       fd.append("client", formData.Client?.id || "");
       fd.append("description", formData.description || "");
@@ -153,20 +154,25 @@ export default function EditJobsiteModal({
               </div>
             </div>
           </div>
-          <div className="flex flex-col">
-            <Label htmlFor="client-id" className={`text-sm `}>
-              Client ID <span className="text-red-500">*</span>
+          {/* <div className="flex flex-col">
+            <Label htmlFor="client-id" className={`text-sm`}>
+              Client ID
             </Label>
             <Select
               name="client-id"
               value={formData.Client?.id || ""}
               onValueChange={(selectedId) => {
                 const selectedClient = clients.find((c) => c.id === selectedId);
-                setFormData((prev) =>
-                  prev
-                    ? { ...prev, Client: selectedClient ?? prev.Client }
-                    : prev
-                );
+                setFormData((prev) => {
+                  if (!prev) return prev;
+                  if (selectedClient) {
+                    return { ...prev, Client: selectedClient };
+                  } else {
+                    // Remove Client property if none selected
+                    const { Client, ...rest } = prev;
+                    return { ...rest } as Jobsite;
+                  }
+                });
               }}
             >
               <SelectTrigger id="jobsite-cctags" className="text-xs">
@@ -180,7 +186,7 @@ export default function EditJobsiteModal({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
           <div className="flex flex-col gap-4 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
@@ -196,9 +202,27 @@ export default function EditJobsiteModal({
                 />
               </div>
             )}
+
+            <div>
+              <Label htmlFor="jobsite-code" className={`text-sm `}>
+                Code Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="jobsite-code"
+                type="text"
+                name="code"
+                value={formData.code}
+                onChange={handleInputChange}
+                className="w-full text-xs"
+                required
+              />
+              <p className="pl-1 text-xs italic text-gray-600">
+                Enter the code only
+              </p>
+            </div>
             <div>
               <Label htmlFor="name" className="text-sm">
-                Name
+                Full Name
               </Label>
               <Input
                 type="text"
@@ -208,6 +232,9 @@ export default function EditJobsiteModal({
                 className="w-full text-xs"
                 required
               />
+              <p className="pl-1 text-xs italic text-gray-600">
+                Include jobsite code in full name
+              </p>
             </div>
             <div>
               <Label htmlFor="description" className="text-sm font-medium">

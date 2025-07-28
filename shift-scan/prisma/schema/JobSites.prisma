@@ -1,6 +1,7 @@
 model Jobsite {
   id             String         @id @default(uuid())
   qrId           String         @unique @default(uuid())
+  code           String?
   name           String
   description    String
   creationReason String?

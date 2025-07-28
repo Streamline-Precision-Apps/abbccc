@@ -31,7 +31,7 @@ export default function JobsiteTable({
     "Created At",
     "Active",
     "Site Address",
-    "Client Name",
+    // "Client Name",
     "Approval Status",
     "Updated At",
     "Actions",
@@ -132,9 +132,9 @@ export default function JobsiteTable({
               <TableCell className=" border-r border-gray-200 text-xs text-center">
                 {`${jobsite.Address.street} ${jobsite.Address.city}, ${jobsite.Address.state} ${jobsite.Address.zipCode}`}
               </TableCell>
-              <TableCell className=" border-r border-gray-200 text-xs text-center">
+              {/* <TableCell className=" border-r border-gray-200 text-xs text-center">
                 {jobsite.Client ? jobsite.Client.name : "-"}
-              </TableCell>
+              </TableCell> */}
               <TableCell className=" border-r border-gray-200 text-xs text-center">
                 {jobsite.approvalStatus
                   .toLowerCase()
