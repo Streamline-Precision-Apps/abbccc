@@ -76,63 +76,58 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
 
   return (
     <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-full max-h-28 flex flex-col justify-end gap-1 pb-4">
+      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AddASignature")}
         </Texts>
       </div>
       <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
-        <Contents>
-          <div className="max-w-[600px] w-full flex flex-col mx-auto h-full gap-4">
-            <ProgressBar
-              currentStep={
-                base64String
-                  ? Math.min(currentStep + 1, totalSteps)
-                  : currentStep
-              }
-              totalSteps={totalSteps}
-            />
-            <div className=" h-full flex flex-col items-center gap-8">
-              <p className="text-xs text-gray-400">
-                {t("AddYourBestSignature")}
-              </p>
-              <div>
-                <Holds className="w-[300px] h-[200px] rounded-[10px] border-[3px] border-black justify-center items-center relative ">
-                  {base64String && (
-                    <Images
-                      titleImg={base64String}
-                      titleImgAlt={t("Signature")}
-                      className="justify-center items-center "
-                      size={"50"}
-                    />
-                  )}
-                  <Holds
-                    background={"orange"}
-                    className="absolute top-1 right-1 w-fit h-fit rounded-full border-[3px] border-black p-2"
-                    onClick={() => setEditSignatureModalOpen(true)}
-                  >
-                    <Images
-                      titleImg="/formEdit.svg"
-                      titleImgAlt={"Edit"}
-                      className="max-w-5 h-auto object-contain"
-                    />
-                  </Holds>
+        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full overflow-auto no-scrollbar gap-4">
+          <ProgressBar
+            currentStep={
+              base64String ? Math.min(currentStep + 1, totalSteps) : currentStep
+            }
+            totalSteps={totalSteps}
+          />
+          <div className=" h-full max-h-[60vh] flex flex-col items-center gap-8">
+            <p className="text-xs text-gray-400">{t("AddYourBestSignature")}</p>
+            <div>
+              <Holds className="w-[300px] h-[200px] rounded-[10px] border-[3px] border-black justify-center items-center relative ">
+                {base64String && (
+                  <Images
+                    titleImg={base64String}
+                    titleImgAlt={t("Signature")}
+                    className="justify-center items-center "
+                    size={"50"}
+                  />
+                )}
+                <Holds
+                  background={"orange"}
+                  className="absolute top-1 right-1 w-fit h-fit rounded-full border-[3px] border-black p-2"
+                  onClick={() => setEditSignatureModalOpen(true)}
+                >
+                  <Images
+                    titleImg="/formEdit.svg"
+                    titleImgAlt={"Edit"}
+                    className="max-w-5 h-auto object-contain"
+                  />
                 </Holds>
-              </div>
-            </div>
-            <div className="flex flex-col  mt-4">
-              <Button
-                className="bg-app-dark-blue"
-                onClick={handleSubmitImage}
-                disabled={isSubmitting}
-              >
-                <p className="text-white font-semibold text-base">
-                  {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-                </p>
-              </Button>
+              </Holds>
             </div>
           </div>
-        </Contents>
+          <div className="flex flex-col  mb-4">
+            <Button
+              className="bg-app-dark-blue"
+              onClick={handleSubmitImage}
+              disabled={isSubmitting}
+            >
+              <p className="text-white font-semibold text-base">
+                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+              </p>
+            </Button>
+          </div>
+        </div>
+
         <NModals
           handleClose={() => setEditSignatureModalOpen(false)}
           size={"xlWS"}
