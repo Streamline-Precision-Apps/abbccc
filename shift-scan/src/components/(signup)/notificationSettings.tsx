@@ -249,7 +249,7 @@ export default function NotificationSettings({
                 </Holds>
               </Holds>
             </div>
-            <div>
+            <div className="flex flex-col  mt-4">
               <Button
                 size={"lg"}
                 onClick={handleSubmitSettings}

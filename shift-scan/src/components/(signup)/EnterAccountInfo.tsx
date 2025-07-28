@@ -128,7 +128,7 @@ export const EnterAccountInfo = ({
     handleNextStep();
   };
   return (
-    <div className="w-full h-[100vh] flex flex-col gap-1">
+    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
       <div className="w-full h-full max-h-28 flex flex-col justify-end gap-1 pb-4">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("ItsTimeToSetUpYourAccount")}
@@ -297,7 +297,7 @@ export const EnterAccountInfo = ({
                   </span>
                 )}
             </div>
-            <div className="flex flex-col justify-end mt-4">
+            <div className="flex flex-col  mt-4">
               <Button className="bg-app-dark-blue" onClick={handleSubmit}>
                 <p className="text-white font-semibold text-base">
                   {t("Next")}
