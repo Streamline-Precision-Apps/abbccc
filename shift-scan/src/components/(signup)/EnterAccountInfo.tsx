@@ -137,8 +137,8 @@ export const EnterAccountInfo = ({
           {userName}
         </Texts>
       </div>
-      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
-        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full overflow-auto no-scrollbar gap-4">
+      <div className="h-[90vh] flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto no-scrollbar">
+        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full gap-4">
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
           <div>
             <Label>{t("LanguagePreference")}</Label>
