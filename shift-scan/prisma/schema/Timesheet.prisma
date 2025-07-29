@@ -1,23 +1,31 @@
 model TimeSheet {
-  id                    String                 @id @default(uuid())
-  date                  DateTime
-  userId                String
-  jobsiteId             String
-  costcode              String
-  nu                    String                 @default("nu")
-  Fp                    String                 @default("fp")
-  startTime             DateTime
-  endTime               DateTime?
-  comment               String?
-  statusComment         String?
-  location              String?
-  status                ApprovalStatus         @default(DRAFT)
-  workType              WorkType
-  editedByUserId        String?
-  newTimeSheetId        String?
-  createdByAdmin        Boolean                @default(false)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  id             String         @id @default(uuid())
+  date           DateTime
+  userId         String
+  jobsiteId      String
+  costcode       String
+  nu             String         @default("nu")
+  Fp             String         @default("fp")
+  startTime      DateTime
+  endTime        DateTime?
+  comment        String?
+  statusComment  String?
+  location       String?
+  status         ApprovalStatus @default(DRAFT)
+  workType       WorkType
+  editedByUserId String?
+  newTimeSheetId String?
+  createdByAdmin Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  // Optional Geo-location for clock-in
+  clockInLat     Float?
+  clockInLng     Float?
+  clockOutLat    Float?
+  clockOutLng    Float?
+  withinFenceIn  Boolean?
+  withinFenceOut Boolean?
+
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
   TascoLogs             TascoLog[]
