@@ -77,7 +77,7 @@ export default function Panel({
           className="text-xs font-medium text-center text-white mb-1"
           style={{ willChange: "transform" }}
         >
-          {format(data.date || "", "MMM d, yyyy")}
+          {format(data.date || "", "EEE MMM d")}
         </motion.p>
         <motion.div
           layout
