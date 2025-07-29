@@ -138,7 +138,7 @@ export function EmployeeTimeSheets({
   fetchTimesheetsForDate,
   fetchTimesheetsForFilter,
   allEquipment,
-}: EmployeeTimeSheetsProps): JSX.Element {
+}: EmployeeTimeSheetsProps) {
   // --- State ---
   const t = useTranslations("MyTeam");
   const equipmentLogsRef = useRef<TimeCardEquipmentLogsRef>(null);

@@ -1,11 +1,9 @@
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
-
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
-
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * GET handler for fetching a cost code and its tags by ID (admin access).
@@ -15,20 +13,22 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<ReturnType<typeof NextResponse.json>> {
   try {
     // Authenticate user
     const session = await auth();
     const userId: string | null = session?.user?.id ?? null;
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const id = (await params).id;
+
     // Validate the ID parameter
-    if (!params.id) {
+    if (!id) {
       return NextResponse.json(
-        { error: 'Missing cost code ID' },
+        { error: "Missing cost code ID" },
         { status: 400 }
       );
     }
@@ -36,7 +36,7 @@ export async function GET(
     // Fetch complete cost code data with all relationships
     const costcodeData = await prisma.costCode.findUnique({
       where: {
-        id: params.id,
+        id,
       },
       include: {
         CCTags: {
@@ -50,7 +50,7 @@ export async function GET(
 
     if (!costcodeData) {
       return NextResponse.json(
-        { error: 'Cost code not found' },
+        { error: "Cost code not found" },
         { status: 404 }
       );
     }
@@ -59,8 +59,8 @@ export async function GET(
   } catch (error) {
     Sentry.captureException(error);
     // eslint-disable-next-line no-console
-    console.error('Error fetching cost code data:', error);
-    let errorMessage = 'Failed to fetch cost code data';
+    console.error("Error fetching cost code data:", error);
+    let errorMessage = "Failed to fetch cost code data";
     if (error instanceof Error) {
       errorMessage = error.message;
     }

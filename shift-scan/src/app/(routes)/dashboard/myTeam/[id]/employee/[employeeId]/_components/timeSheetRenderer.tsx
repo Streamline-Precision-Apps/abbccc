@@ -131,7 +131,7 @@ interface TimeSheetRendererProps {
   handleSelectEntity: (id: string) => void;
   isReviewYourTeam?: boolean; // NEW: optional, defaults to false
   allEquipment: { id: string; qrId: string; name: string }[];
-  equipmentLogsRef?: RefObject<TimeCardEquipmentLogsRef>;
+  equipmentLogsRef?: RefObject<TimeCardEquipmentLogsRef | null>;
 }
 
 const getTypedOnDataChange = <T,>(

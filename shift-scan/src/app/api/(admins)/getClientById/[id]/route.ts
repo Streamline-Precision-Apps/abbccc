@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate the user
@@ -19,7 +19,7 @@ export async function GET(
     }
 
     // Validate the ID parameter
-    const clientId = params.id;
+    const clientId = (await params).id;
     if (!clientId) {
       return NextResponse.json(
         { error: "Invalid or missing client ID" },

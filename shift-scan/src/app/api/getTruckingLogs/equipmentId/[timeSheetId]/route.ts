@@ -3,10 +3,10 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { timeSheetId: string } }
+  { params }: { params: Promise<{ timeSheetId: string }> }
 ) {
   try {
-    const { timeSheetId } = params;
+    const { timeSheetId } = await params;
 
     if (!timeSheetId) {
       return NextResponse.json(
@@ -17,8 +17,8 @@ export async function GET(
 
     // Find the trucking log and get the equipment ID
     const truckingLog = await prisma.truckingLog.findFirst({
-      where: { 
-        timeSheetId: timeSheetId 
+      where: {
+        timeSheetId: timeSheetId,
       },
       select: {
         equipmentId: true,
@@ -26,10 +26,10 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            qrId: true
-          }
-        }
-      }
+            qrId: true,
+          },
+        },
+      },
     });
 
     if (!truckingLog) {
@@ -41,7 +41,7 @@ export async function GET(
 
     return NextResponse.json({
       equipmentId: truckingLog.equipmentId,
-      equipment: truckingLog.Equipment
+      equipment: truckingLog.Equipment,
     });
   } catch (error) {
     console.error("Error fetching equipment ID from trucking log:", error);

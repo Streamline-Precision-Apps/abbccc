@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import SearchBar from "../../personnel/components/SearchBar";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, use } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -92,11 +92,16 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FormTemplate } from "../_components/List/hooks/types";
 import Spinner from "@/components/(animations)/spinner";
 
-export default function FormPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+const FormPage = ({ params, searchParams }: PageProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const { setOpen, open } = useSidebar();
-  const { id } = params;
+  const { id } = use(params);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   // Status filter state
@@ -1009,4 +1014,6 @@ export default function FormPage({ params }: { params: { id: string } }) {
       )}
     </div>
   );
-}
+};
+
+export default FormPage;

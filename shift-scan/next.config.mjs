@@ -33,9 +33,9 @@ const pwaConfig = {
 };
 
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
-  },
+  // experimental: {
+  //   //   serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
+  // },
 };
 
 // Apply plugins in the correct order:

@@ -6,9 +6,9 @@ export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and n
 
 export async function GET(
   request: Request,
-  { params }: { params: { timeSheetId: string } }
+  { params }: { params: Promise<{ timeSheetId: string }> }
 ) {
-  const { timeSheetId } = params;
+  const { timeSheetId } = await params;
 
   // Validate the timeSheetId parameter
   if (!timeSheetId || typeof timeSheetId !== "string") {
@@ -50,4 +50,3 @@ export async function GET(
     );
   }
 }
-

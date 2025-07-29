@@ -31,7 +31,7 @@ export default async function Home() {
   const isTerminate = terminationDate?.terminationDate !== null ? true : false;
 
   // Get the current language from cookies
-  const lang = cookies().get("locale");
+  const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en";
 
   return (

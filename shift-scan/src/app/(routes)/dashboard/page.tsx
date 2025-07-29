@@ -20,16 +20,17 @@ export default async function Dashboard() {
   }
 
   // kicks user out if they are not clocked in
-  const currentPageView = cookies().get("currentPageView")?.value;
+  const currentPageView = (await cookies()).get("currentPageView")?.value;
   if (currentPageView !== "dashboard") {
     redirect("/");
   }
 
-  const mechanicProjectID = cookies().get("mechanicProjectID")?.value || "";
+  const mechanicProjectID =
+    (await cookies()).get("mechanicProjectID")?.value || "";
 
   // const user = session.user;
-  const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
-  const laborType = cookies().get("laborType")?.value || "";
+  const view = (await cookies()).get("workRole")?.value || "general"; // Default to general view if not set
+  const laborType = (await cookies()).get("laborType")?.value || "";
 
   return (
     <Bases>
