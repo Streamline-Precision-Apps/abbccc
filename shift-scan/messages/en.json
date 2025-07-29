@@ -832,7 +832,7 @@
     "PasswordUpdated": "Password was successfully updated.",
     "PasswordNotUpdated": "System failed to update password.",
     "PasswordStrength": "Password needs the following:",
-    "SignOutQuestion": " Are you sure you want to sign out?",
+    "SignOutQuestion": " Are you sure you want to logout?",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password",
     "ChangePassword": "Change Password",
@@ -1128,7 +1128,9 @@
     "CaptureImage": "Capture Image",
     "Save": "Save",
     "Retake": "Retake",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "SignOutQuestion": "Are you sure you want to log out?",
+    "Logout": "Logout"
   },
   "Hamburger-ChangePassword": {
     "ChangePassword": "Change Password",

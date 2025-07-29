@@ -41,13 +41,14 @@ export default function EditedCrew({
         Crews
       </Texts>
       <Holds
-        className={`w-full h-full border-2 ${
+        className={`w-full h-[70vh] border-2 ${
           edited.crews || edited.crewLeads
             ? "border-orange-400"
             : "border-black"
         } rounded-[10px] p-2`}
       >
-        <div className="h-full overflow-y-auto no-scrollbar">
+        {/* <Holds className="w-full h-[70vh] border-2 border-black rounded-[10px] py-2 px-1"> */}
+        <div className="bg-white w-full h-full p-3 overflow-y-auto no-scrollbar rounded-[10px]">
           {crewsToShow.map((c) => (
             <Holds
               position={"row"}
@@ -94,7 +95,7 @@ export default function EditedCrew({
                     />
                   </Holds>
                 )}
-              <Holds className="w-fit h-full">
+              <Holds className="w-fit h-full relative">
                 <CheckBox
                   shadow={false}
                   id={`crew-${c.id}`}

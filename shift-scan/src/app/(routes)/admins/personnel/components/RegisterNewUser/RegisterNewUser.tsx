@@ -58,10 +58,10 @@ interface RegisterNewUserProps {
 }
 
 const fields = [
-  { label: "Username", name: "username" as const, type: "text" },
-  { label: "Password", name: "password" as const, type: "password" },
   { label: "First Name", name: "firstName" as const, type: "text" },
   { label: "Last Name", name: "lastName" as const, type: "text" },
+  { label: "Username", name: "username" as const, type: "text" },
+  { label: "Password", name: "password" as const, type: "password" },
   // { label: "Phone Number", name: "phoneNumber" as const, type: "tel" },
   // { label: "Email", name: "email" as const, type: "email" },
   // {
@@ -94,6 +94,8 @@ export default function RegisterNewUser({
     {}
   );
   const { form, selectedCrews, isPending, isSuccess } = registrationState;
+
+  const [showPassword, setShowPassword] = useState(false);
 
   // Check if form is empty (no information has been entered)
   const isFormEmpty = () => {
@@ -193,6 +195,8 @@ export default function RegisterNewUser({
     const error = validationErrors[field.name as keyof ValidationErrors];
     const value = form[field.name];
 
+    // Local state for password reveal
+
     // Check if field is valid
     const isValid = () => {
       if (!value) return false;
@@ -206,6 +210,55 @@ export default function RegisterNewUser({
           return String(value).trim() !== "";
       }
     };
+
+    if (field.name === "password") {
+      return (
+        <Holds className="flex flex-col py-1" key={field.name}>
+          <Texts
+            position={"left"}
+            size={"p7"}
+            text={isValid() ? "black" : "red"}
+          >
+            {field.label}
+          </Texts>
+          <div className="relative w-full flex flex-row items-center">
+            <Inputs
+              variant={"empty"}
+              name={randomFieldName}
+              data-name={field.name}
+              type={showPassword ? "text" : "password"}
+              value={String(form[field.name] || "")}
+              onChange={handleInputChange}
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+              className={`w-full text-base border-[3px] px-1.5 ${
+                error ? "border-red-500" : "border-black"
+              }`}
+              required
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-gray-600 px-2 py-0.5 focus:outline-none rounded-lg"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              <img
+                src={showPassword ? "/eye-blue.svg" : "/eye.svg"}
+                alt={showPassword ? "Hide password" : "Show password"}
+                className="w-5 h-5"
+              />
+            </button>
+          </div>
+          {error && (
+            <Texts size={"p8"} position={"left"} className="text-red-500 ">
+              {error}
+            </Texts>
+          )}
+        </Holds>
+      );
+    }
 
     return (
       <Holds className="flex flex-col py-1" key={field.name}>

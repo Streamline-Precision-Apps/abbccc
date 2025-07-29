@@ -4,10 +4,10 @@ import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { redirect } from "next/navigation";
-import MobileCheck from "./(content)/mobileCheck";
 import { Grids } from "@/components/(reusable)/grids";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import WidgetSection from "./(content)/widgetSection";
+import prisma from "@/lib/prisma";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -21,6 +21,15 @@ export default async function Home() {
     redirect("/signin/signup");
   }
 
+  const terminationDate = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      terminationDate: true,
+    },
+  });
+
+  const isTerminate = terminationDate?.terminationDate !== null ? true : false;
+
   // Get the current language from cookies
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en";
@@ -30,7 +39,11 @@ export default async function Home() {
       <Contents>
         <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
-          <WidgetSection locale={locale} session={session} />
+          <WidgetSection
+            locale={locale}
+            session={session}
+            isTerminate={isTerminate}
+          />
         </Grids>
       </Contents>
     </Bases>

@@ -4,7 +4,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
-import { Texts } from "@/components/(reusable)/texts";
 import {
   UserData,
   CrewCreationState,
@@ -13,7 +12,6 @@ import {
   UserEditState,
   CrewData,
 } from "./types/personnel";
-import { SearchCrew } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/(animations)/spinner";

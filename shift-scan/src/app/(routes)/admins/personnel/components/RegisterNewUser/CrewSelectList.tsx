@@ -32,8 +32,8 @@ export default function CrewSelectList({
         <Texts position={"left"} size={"p7"}>
           Crews
         </Texts>
-        <Holds className="w-full h-full border-2 border-black rounded-[10px] py-2 px-1">
-          <div className="h-full overflow-y-auto no-scrollbar">
+        <Holds className="w-full h-[70vh] border-2 border-black rounded-[10px] py-2 px-1">
+          <div className="bg-white w-full h-full p-3 overflow-y-auto no-scrollbar rounded-[10px]">
             {crew.map((c) => (
               <Holds
                 position={"row"}
@@ -67,7 +67,7 @@ export default function CrewSelectList({
                   <Titles size={"h6"}>{c.name}</Titles>
                 </Holds>
 
-                <Holds className="w-fit h-full ">
+                <Holds className="w-fit h-full relative">
                   <CheckBox
                     shadow={false}
                     id={`crew-${c.id}`}

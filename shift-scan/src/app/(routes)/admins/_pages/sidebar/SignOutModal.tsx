@@ -20,21 +20,26 @@ export default function SignOutModal({ open, setOpen }: Props) {
   const t = useTranslations("Admins");
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("SignOutQuestion")}</DialogTitle>
+      <DialogContent className="w-[90%] h-[200px] rounded-lg">
+        <DialogHeader className="mt-5">
+          <DialogTitle className="text-center">
+            {t("SignOutQuestion")}
+          </DialogTitle>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="flex flex-row  gap-3">
           <Button
-            variant="destructive"
+            className="w-1/2 bg-app-gray text-gray-600 hover:bg-gray-200"
+            size={"lg"}
             type="button"
             onClick={() => setOpen(false)}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
-            className="bg-emerald-400"
+            className="w-1/2"
             type="button"
+            variant="destructive"
+            size={"lg"}
             onClick={async () => {
               setOpen(false);
               await signOut({
@@ -43,7 +48,7 @@ export default function SignOutModal({ open, setOpen }: Props) {
               });
             }}
           >
-            Yes
+            {t("Logout")}
           </Button>
         </DialogFooter>
       </DialogContent>
