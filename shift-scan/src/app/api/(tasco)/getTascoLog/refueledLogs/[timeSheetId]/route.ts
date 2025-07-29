@@ -5,13 +5,16 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { timeSheetId: string } }
+  { params }: { params: Promise<{ timeSheetId: string }> }
 ) {
-  const { timeSheetId } = params;
+  const { timeSheetId } = await params;
 
   // Ensure timeSheetId is provided and is a valid string
   if (!timeSheetId || typeof timeSheetId !== "string") {
-    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid or missing timeSheetId" },
+      { status: 400 }
+    );
   }
 
   try {

@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { employee: string } }
+  { params }: { params: Promise<{ employee: string }> }
 ) {
   try {
     // Authenticate user
@@ -16,7 +16,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { employee } = params;
+    const { employee } = await params;
 
     if (!employee) {
       return NextResponse.json(

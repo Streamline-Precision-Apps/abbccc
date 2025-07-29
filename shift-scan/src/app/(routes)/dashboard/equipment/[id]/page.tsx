@@ -7,7 +7,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { differenceInSeconds, parseISO } from "date-fns";
 import {
@@ -91,9 +91,13 @@ function createInitialState(): UnifiedEquipmentState {
   };
 }
 
-export default function CombinedForm({ params }: { params: { id: string } }) {
+export default function CombinedForm({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
-  const id = params.id;
+  const id = use(params).id;
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [state, setState] = useState<UnifiedEquipmentState>(

@@ -42,7 +42,9 @@ export default function ControlComponent({
     null
   ); // caching calculated hours
   const calculateDailyHours = useCalculateDailyHours(); // hook to calculate work hours per day
-  const containerRef = useRef<ScrollTimeoutDiv>(null); // ref to the scrolling container
+  const containerRef = useRef<ScrollTimeoutDiv>(
+    null!
+  ) as React.MutableRefObject<ScrollTimeoutDiv>; // ref to the scrolling container
   const wasProgrammaticScroll = useRef(false); // flag to distinguish between user and programmatic scroll
 
   // ----------------------------------------

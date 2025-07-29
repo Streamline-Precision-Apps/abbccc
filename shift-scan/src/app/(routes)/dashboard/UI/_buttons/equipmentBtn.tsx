@@ -9,7 +9,7 @@ export default function EquipmentBtn({ permission }: { permission: string }) {
     <WidgetContainer
       titleImg="/equipment.svg"
       titleImgAlt="Equipment Icon"
-      text={t("Equipment")}
+      text={"Equipment"}
       background={"green"}
       translation={"Widgets"}
       href="/dashboard/equipment"

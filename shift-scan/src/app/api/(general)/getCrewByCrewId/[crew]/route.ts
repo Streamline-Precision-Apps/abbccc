@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { crew: string } }
+  { params }: { params: Promise<{ crew: string }> }
 ) {
   try {
     // Authenticate the user
@@ -17,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const crewId = params.crew;
+    const { crew: crewId } = await params;
 
     // Validate crew ID
     if (!crewId) {
@@ -50,13 +50,16 @@ export async function GET(
       crewId: crew.id,
       crewName: crew.name || "Unnamed Crew",
       leadId: crew.leadId,
-      users: crew.Users.length > 0 ? crew.Users.map((user) => ({
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        image: user.image || null,
-        permission: user.permission,
-      })) : [],
+      users:
+        crew.Users.length > 0
+          ? crew.Users.map((user) => ({
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              image: user.image || null,
+              permission: user.permission,
+            }))
+          : [],
     };
 
     return NextResponse.json(responseData);
@@ -68,9 +71,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

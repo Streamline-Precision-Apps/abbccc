@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-type Params = { id: string };
+type Params = Promise<{ id: string }>;
 
 /**
  * Get equipment usage log details for a specific user and log ID
@@ -20,7 +20,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const formId = params.id;
+    const formId = (await params).id;
 
     if (!formId) {
       return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });

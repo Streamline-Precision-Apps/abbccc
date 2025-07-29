@@ -7,7 +7,7 @@ import { revalidateTag } from "next/cache";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -22,7 +22,7 @@ export async function GET(
       { status: 401 }
     );
   }
-  const { id } = params;
+  const { id } = await params;
   try {
     const formSubmission = await prisma.formSubmission.findUnique({
       where: {
