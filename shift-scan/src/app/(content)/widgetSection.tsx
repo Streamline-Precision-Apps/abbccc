@@ -15,7 +15,6 @@ import { usePayPeriodData } from "@/hooks/(home)/usePayPeriod";
 import WidgetContainer from "./widgetContainer";
 import DisplayBanner from "./displayBanner";
 import DisplayBreakBanner from "./displayBreakBanner";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 type Props = {
   session: Session;
@@ -57,10 +56,6 @@ export default function WidgetSection({ session, locale }: Props) {
     if (pageView === "removeLocalStorage") {
       setPageView("");
     }
-    // Uncomment if necessary
-    // if (!accountSetup) {
-    //   router.push("/signin/signup");
-    // }
   }, [pageView, router, accountSetup, setPageView]);
 
   // Loading state
@@ -220,7 +215,7 @@ function WidgetButtonsSection({
         className={
           isManager
             ? "col-span-2 row-span-4 gap-5 h-full"
-            : "col-span-2 row-span-8 gap-5 h-full"
+            : "col-span-2 row-span-8 gap-5 h-full py-3"
         }
       >
         <WidgetContainer

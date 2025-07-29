@@ -8,14 +8,16 @@ import TopControlPanel from "./_hoursComponents/topControlPanel";
 import { useCalculateDailyHours } from "./_hoursComponents/calculateDailyHours";
 import { motion, LayoutGroup } from "framer-motion";
 import Panel, { PanelData } from "./hourViewPanels";
-import HorizontalScrollbar from '@/components/HorizontalScrollbar';
+import HorizontalScrollbar from "@/components/HorizontalScrollbar";
 
 // ----------------------------------------
 // Type guard: checks if a data entry is a placeholder (i.e. label like "Start of Pay Period")
 // ----------------------------------------
-function isPlaceholderData(
-  data: { date: string; hours?: number; isPlaceholder?: boolean }
-): data is { date: string; isPlaceholder: boolean } {
+function isPlaceholderData(data: {
+  date: string;
+  hours?: number;
+  isPlaceholder?: boolean;
+}): data is { date: string; isPlaceholder: boolean } {
   return data.isPlaceholder === true;
 }
 
@@ -29,10 +31,16 @@ interface ScrollTimeoutDiv extends HTMLDivElement {
 // ----------------------------------------
 // Main Component: Controls the hourly scrollable view with navigation and center focus behavior
 // ----------------------------------------
-export default function ControlComponent({ toggle }: { toggle: (toggle: boolean) => void }) {
+export default function ControlComponent({
+  toggle,
+}: {
+  toggle: (toggle: boolean) => void;
+}) {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [initialIndexSet, setInitialIndexSet] = useState(false); // Track if initial index is set
-  const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(null); // caching calculated hours
+  const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(
+    null
+  ); // caching calculated hours
   const calculateDailyHours = useCalculateDailyHours(); // hook to calculate work hours per day
   const containerRef = useRef<ScrollTimeoutDiv>(null); // ref to the scrolling container
   const wasProgrammaticScroll = useRef(false); // flag to distinguish between user and programmatic scroll
@@ -70,7 +78,10 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
     let scrollLeft = (index - 1) * panelWidth;
 
     // Clamp scrolling within container bounds
-    scrollLeft = Math.max(0, Math.min(scrollLeft, container.scrollWidth - container.clientWidth));
+    scrollLeft = Math.max(
+      0,
+      Math.min(scrollLeft, container.scrollWidth - container.clientWidth)
+    );
 
     wasProgrammaticScroll.current = true;
     container.style.scrollSnapType = "none"; // disable snapping temporarily
@@ -96,18 +107,29 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString().slice(0, 10);
     // Normalize all dailyHours dates to YYYY-MM-DD
-    const normalizedDailyHours = dailyHours.map(d => ({
+    const normalizedDailyHours = dailyHours.map((d) => ({
       ...d,
-      date: new Date(d.date).toISOString().slice(0, 10)
+      date: new Date(d.date).toISOString().slice(0, 10),
     }));
     // Debug: log the normalized dates and todayStr
     // eslint-disable-next-line no-console
-    console.log('todayStr', todayStr, 'normalizedDailyHours', normalizedDailyHours.map(d => d.date));
+    console.log(
+      "todayStr",
+      todayStr,
+      "normalizedDailyHours",
+      normalizedDailyHours.map((d) => d.date)
+    );
     // Find the index of today in the normalizedDailyHours
-    const todayIndex = normalizedDailyHours.findIndex((d) => d.date === todayStr);
+    const todayIndex = normalizedDailyHours.findIndex(
+      (d) => d.date === todayStr
+    );
     if (todayIndex === -1) {
       // eslint-disable-next-line no-console
-      console.warn('Today\'s date not found in dailyHours:', todayStr, normalizedDailyHours.map(d => d.date));
+      console.warn(
+        "Today's date not found in dailyHours:",
+        todayStr,
+        normalizedDailyHours.map((d) => d.date)
+      );
     }
     // Account for placeholder at the start
     const initialIndex = todayIndex !== -1 ? todayIndex + 1 : 1;
@@ -121,14 +143,17 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
     const container = containerRef.current;
     const panelWidth = container.clientWidth / 3;
     let scrollLeft = (currentIndex - 1) * panelWidth;
-    scrollLeft = Math.max(0, Math.min(scrollLeft, container.scrollWidth - container.clientWidth));
-    container.style.scrollBehavior = 'auto';
-    container.style.scrollSnapType = 'none';
+    scrollLeft = Math.max(
+      0,
+      Math.min(scrollLeft, container.scrollWidth - container.clientWidth)
+    );
+    container.style.scrollBehavior = "auto";
+    container.style.scrollSnapType = "none";
     container.scrollLeft = scrollLeft;
     setTimeout(() => {
       if (container) {
-        container.style.scrollBehavior = '';
-        container.style.scrollSnapType = 'x mandatory';
+        container.style.scrollBehavior = "";
+        container.style.scrollSnapType = "x mandatory";
       }
     }, 0);
   }, [initialIndexSet, currentIndex]);
@@ -138,11 +163,11 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
   // ----------------------------------------
   const [scrollingIndex, setScrollingIndex] = useState<number | null>(null);
   // Track last user action to prevent race conditions
-  const lastActionRef = useRef<'scroll' | 'button' | null>(null);
+  const lastActionRef = useRef<"scroll" | "button" | null>(null);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
-    lastActionRef.current = 'scroll';
+    lastActionRef.current = "scroll";
     const container = containerRef.current;
     const panelWidth = container.clientWidth / 3;
     const scrollLeft = container.scrollLeft;
@@ -159,7 +184,10 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
     }
     // Otherwise, determine which panel is closest to center (outside deadzone)
     let closestIndex = Math.round(scrollLeft / panelWidth) + 1;
-    closestIndex = Math.min(Math.max(closestIndex, 1), extendedDailyHours.length - 2);
+    closestIndex = Math.min(
+      Math.max(closestIndex, 1),
+      extendedDailyHours.length - 2
+    );
     setScrollingIndex(closestIndex); // Only visually highlight, don't setCurrentIndex
   };
 
@@ -169,7 +197,7 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
   const onScrollEnd = () => {
     if (wasProgrammaticScroll.current || !containerRef.current) return;
     // Only allow scroll-based update if last action was scroll
-    if (lastActionRef.current !== 'scroll') {
+    if (lastActionRef.current !== "scroll") {
       setScrollingIndex(null);
       return;
     }
@@ -177,7 +205,10 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
     const panelWidth = container.clientWidth / 3;
     const scrollLeft = container.scrollLeft;
     let closestIndex = Math.round(scrollLeft / panelWidth) + 1;
-    closestIndex = Math.min(Math.max(closestIndex, 1), extendedDailyHours.length - 2);
+    closestIndex = Math.min(
+      Math.max(closestIndex, 1),
+      extendedDailyHours.length - 2
+    );
     if (closestIndex !== currentIndex) {
       setCurrentIndex(closestIndex);
       scrollToIndexCentered(closestIndex, true);
@@ -199,7 +230,7 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
   // Navigate to previous panel (infinite loop, always use latest state)
   // ----------------------------------------
   const scrollLeft = () => {
-    setCurrentIndex(prev => {
+    setCurrentIndex((prev) => {
       const baseIndex = scrollingIndex !== null ? scrollingIndex : prev;
       const minIndex = 1;
       const maxIndex = extendedDailyHours.length - 2;
@@ -207,7 +238,7 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
       if (newIndex < minIndex) {
         newIndex = maxIndex; // Loop to end
       }
-      lastActionRef.current = 'button';
+      lastActionRef.current = "button";
       setScrollingIndex(null);
       scrollToIndexCentered(newIndex);
       return newIndex;
@@ -218,7 +249,7 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
   // Navigate to next panel (infinite loop, always use latest state)
   // ----------------------------------------
   const scrollRight = () => {
-    setCurrentIndex(prev => {
+    setCurrentIndex((prev) => {
       const baseIndex = scrollingIndex !== null ? scrollingIndex : prev;
       const minIndex = 1;
       const maxIndex = extendedDailyHours.length - 2;
@@ -226,7 +257,7 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
       if (newIndex > maxIndex) {
         newIndex = minIndex; // Loop to start
       }
-      lastActionRef.current = 'button';
+      lastActionRef.current = "button";
       setScrollingIndex(null);
       scrollToIndexCentered(newIndex);
       return newIndex;
@@ -248,31 +279,45 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
         <TopControlPanel returnToMain={returnToMain} />
       </Holds>
       {/* Center panel with horizontally scrollable day panels */}
-      <Holds className="row-span-4 h-full w-full rounded-[10px] overflow-hidden">
+      <Holds className="row-span-5 h-full w-full rounded-[10px] overflow-hidden">
         {/* Custom horizontal scrollbar above the panels */}
-        <div className="mb-2">{/* Add margin below scrollbar to move it farther from panels */}
+        <div className="mb-2">
+          {/* Add margin below scrollbar to move it farther from panels */}
           <HorizontalScrollbar containerRef={containerRef} />
         </div>
         <motion.div
           ref={containerRef}
           className="flex h-full overflow-x-auto overflow-y-hidden snap-x snap-proximity no-scrollbar"
-          style={{ overscrollBehaviorX: "contain", WebkitOverflowScrolling: "touch", padding: '0 8px' }}
+          style={{
+            overscrollBehaviorX: "contain",
+            WebkitOverflowScrolling: "touch",
+            padding: "0 8px",
+          }}
           onScroll={handleScroll}
         >
           <LayoutGroup id="hour-panels-group">
-            {initialIndexSet && extendedDailyHours.map((data, idx) => (
-              <Panel
-                key={`${data.date}-${idx}`}
-                data={data}
-                isCenter={scrollingIndex !== null ? idx === scrollingIndex : idx === currentIndex}
-                distanceFromCenter={(scrollingIndex !== null ? idx - scrollingIndex : idx - currentIndex)}
-              />
-            ))}
+            {initialIndexSet &&
+              extendedDailyHours.map((data, idx) => (
+                <Panel
+                  key={`${data.date}-${idx}`}
+                  data={data}
+                  isCenter={
+                    scrollingIndex !== null
+                      ? idx === scrollingIndex
+                      : idx === currentIndex
+                  }
+                  distanceFromCenter={
+                    scrollingIndex !== null
+                      ? idx - scrollingIndex
+                      : idx - currentIndex
+                  }
+                />
+              ))}
           </LayoutGroup>
         </motion.div>
       </Holds>
       {/* Bottom view for navigation and date display */}
-      <Holds className="row-span-1 h-full w-full">
+      {/* <Holds className="row-span-1 h-full w-full">
         {initialIndexSet && (
           <ViewComponent
             scrollLeft={scrollLeft}
@@ -283,7 +328,7 @@ export default function ControlComponent({ toggle }: { toggle: (toggle: boolean)
             disableInitialAnimation={true}
           />
         )}
-      </Holds>
+      </Holds> */}
     </Grids>
   );
 }
