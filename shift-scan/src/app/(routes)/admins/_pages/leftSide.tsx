@@ -5,7 +5,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
   useSidebar,
@@ -58,13 +57,13 @@ export default function LeftSidebar() {
       white: "qrCode-white",
       link: "/admins/cost-codes",
     },
-    {
-      id: 10,
-      title: "Clients",
-      img: "admin",
-      white: "admin-white",
-      link: "/admins/clients",
-    },
+    // {
+    //   id: 10,
+    //   title: "Clients",
+    //   img: "admin",
+    //   white: "admin-white",
+    //   link: "/admins/clients",
+    // },
     {
       id: 4,
       title: "Reports",

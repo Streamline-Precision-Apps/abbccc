@@ -12,6 +12,15 @@ import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
 import { updateSettings } from "@/actions/hamburgerActions";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { signOut } from "next-auth/react";
 
 type Employee = {
   id: string;
@@ -250,13 +259,39 @@ export default function AccountInformation({
         </Holds>
       </NModals>
 
-      <NModals
-        size={"xlWS"}
-        isOpen={isOpen2}
-        handleClose={() => setIsOpen2(false)}
-      >
-        <SignOutModal open={isOpen2} setOpen={setIsOpen2} />
-      </NModals>
+      <Dialog open={isOpen2} onOpenChange={setIsOpen2}>
+        <DialogContent className="w-[90%] h-[200px] rounded-lg">
+          <DialogHeader className="mt-5">
+            <DialogTitle>{t("SignOutQuestion")}</DialogTitle>
+          </DialogHeader>
+          <DialogFooter className="flex flex-row  gap-3">
+            <Button
+              className="w-1/2 bg-app-gray text-gray-600"
+              size={"lg"}
+              variant="destructive"
+              type="button"
+              onClick={() => setIsOpen2(false)}
+            >
+              {t("Cancel")}
+            </Button>
+            <Button
+              className="w-1/2"
+              type="button"
+              variant="destructive"
+              size={"lg"}
+              onClick={async () => {
+                setIsOpen2(false);
+                await signOut({
+                  redirect: true,
+                  callbackUrl: "/signin",
+                });
+              }}
+            >
+              {t("Logout")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Grids>
   );
 }

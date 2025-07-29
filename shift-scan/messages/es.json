@@ -1119,7 +1119,9 @@
     "CaptureImage": "Imagen de captura",
     "Save": "Ahorrar",
     "Retake": "Volver a tomar",
-    "Cancel": "Cancelar"
+    "Cancel": "Cancelar",
+    "SignOutQuestion": "¿Estás seguro de que quieres cerrar sesión?",
+    "Logout": "Cerrar sesión"
   },
   "Hamburger-ChangePassword": {
     "ChangePassword": "Cambiar la contraseña",

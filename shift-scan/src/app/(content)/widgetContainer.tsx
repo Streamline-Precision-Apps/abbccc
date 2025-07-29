@@ -24,6 +24,7 @@ type Props = {
   textSize?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   translation: string;
   href?: string;
+  disabled?: boolean;
 };
 
 export default function WidgetContainer({
@@ -33,15 +34,16 @@ export default function WidgetContainer({
   textSize = "h3",
   background,
   translation,
-
+  disabled = false,
   href,
 }: Props) {
   const t = useTranslations(translation);
   return (
     <Buttons
-      background={background}
+      background={disabled ? "darkGray" : background}
       href={href}
       className="h-full w-full flex flex-col justify-center items-center gap-2"
+      disabled={disabled}
     >
       <img
         src={titleImg}

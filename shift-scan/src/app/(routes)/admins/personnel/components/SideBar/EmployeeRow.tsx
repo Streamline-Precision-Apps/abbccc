@@ -3,9 +3,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { PersonnelView, UserData } from "../types/personnel";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
 import DiscardChangesModal from "./DiscardChangesModal";
 
 interface EmployeeRowProps {
@@ -111,7 +108,7 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
           </Holds>
         )}
         {isCrew && (
-          <Holds className="w-fit min-w-[35px] h-full flex justify-center">
+          <Holds className="w-fit min-w-[35px] h-full flex justify-center relative">
             <CheckBox
               shadow={false}
               checked={isCrewMember}
