@@ -130,7 +130,8 @@ export default function JobsiteTable({
                 {jobsite.isActive ? "Active" : "Inactive"}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {`${jobsite.Address.street} ${jobsite.Address.city}, ${jobsite.Address.state} ${jobsite.Address.zipCode}`}
+                {jobsite.Address &&
+                  `${jobsite.Address.street} ${jobsite.Address.city}, ${jobsite.Address.state} ${jobsite.Address.zipCode}`}
               </TableCell>
               {/* <TableCell className=" border-r border-gray-200 text-xs text-center">
                 {jobsite.Client ? jobsite.Client.name : "-"}

@@ -400,7 +400,8 @@
     "QrGenerator": "Generador QR",
     "EquipmentDatatype": "Buscar un equipo",
     "Submitting": "Sumisión...",
-    "TypeHere": "Escriba aquí ..."
+    "TypeHere": "Escriba aquí ...",
+    "TemporaryJobsiteCode": "Ingrese el código temporal del sitio de trabajo aquí..."
   },
   "Forms": {
     "Search": "Buscar",

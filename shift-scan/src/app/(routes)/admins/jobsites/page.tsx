@@ -93,8 +93,7 @@ export default function JobsitePage() {
     const term = searchTerm.trim().toLowerCase();
     if (!term || term.length < 3) return true;
     const jobsiteName = item.name?.toLowerCase() || "";
-    const clientName = item.Client?.name?.toLowerCase() || "";
-    return jobsiteName.includes(term) || clientName.includes(term);
+    return jobsiteName.includes(term);
   });
 
   // Pagination logic

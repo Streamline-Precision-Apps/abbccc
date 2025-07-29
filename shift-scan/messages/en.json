@@ -404,7 +404,8 @@
     "QrGenerator": "QR Generator",
     "EquipmentDatatype": "Search for an Equipment",
     "Submitting": "Submitting...",
-    "TypeHere": "Type here..."
+    "TypeHere": "Type here...",
+    "TemporaryJobsiteCode": "Enter Temporary Jobsite Code here..."
   },
   "Forms": {
     "Search": "Search for",
