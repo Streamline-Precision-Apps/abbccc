@@ -25,6 +25,8 @@ import MechanicVerificationStep from "./(Mechanic)/Verification-step-mechanic";
 import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
 import TascoClockInForm from "./(Tasco)/tascoClockInForm";
 import TruckVerificationStep from "./(Truck)/Verification-step-truck";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useServerAction } from "@/utils/serverActionWrapper";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -140,7 +142,7 @@ export default function NewClockProcess({
       // console.log("Auto-selecting role:", selectedRole); // Debugging line to check selected role
       const autoSelectRole = async () => {
         setClockInRole(selectedRole);
-        await setWorkRole(selectedRole); // Ensure setWorkRole returns a promise
+        await execute("setWorkRole", setWorkRole, selectedRole); // Use wrapped server action
         if (type === "switchJobs" || option === "break") {
           setStep(1);
           return;
@@ -167,17 +169,24 @@ export default function NewClockProcess({
   const handleAlternativePathEQ = () => {
     setStep(2);
   };
+  const { execute } = useServerAction();
+
   // Lets the user return to the previous work after break
   const handleReturn = async () => {
     try {
       // setting the cookies below to fetch the prev TimeSheet
-      const fetchRecentTimeSheetId = await fetch(
-        "/api/getRecentTimecardReturn"
-      ).then((res) => res.json());
+      const fetchRecentTimeSheetId = await fetchWithOfflineCache(
+        "recentTimecardReturn",
+        () => fetch("/api/getRecentTimecardReturn").then((res) => res.json())
+      );
       const tId = fetchRecentTimeSheetId.id;
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
-      const response = await returnToPrevWork(formData);
+      const response = await execute(
+        "returnToPrevWork",
+        returnToPrevWork,
+        formData
+      );
       console.log("response:", response);
 
       if (response) {
@@ -506,7 +515,9 @@ export default function NewClockProcess({
                 <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
                   <Holds className={"row-start-1 row-end-7 h-full w-full "}>
                     <TrailerSelector
-                      onTrailerSelect={(trailer) => setTrailer(trailer || { id: "", code: "", label: "" })}
+                      onTrailerSelect={(trailer) =>
+                        setTrailer(trailer || { id: "", code: "", label: "" })
+                      }
                       initialValue={trailer}
                     />
                   </Holds>

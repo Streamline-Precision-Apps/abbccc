@@ -666,13 +666,10 @@
     "ReviewYourDay": "Review Your Day",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "StartEnd": "Start & End",
-    "Jobsite": "Jobsite #",
-    "CostCode": "Cost Code",
     "Now": "Now",
     "Current": "Current",
     "StartTime": "Start Time",
     "EndTime": "End Time",
-    "ReviewYourDay": "Review Your Day",
     "NoSignature": "No signature on file.",
     "SignBelow": "By checking the box below, I certify that I was not injured today.",
     "Jobsite": "Jobsite # ",
@@ -697,7 +694,6 @@
     "SignatureAcknowledgement": "By Checking the box below I certify I suffered no injuries this day.",
     "ThisIsMySignature": "This is my signature",
     "ReportInjury": "Report an Injury",
-    "NoSignature": "No Signature Registered",
     "ClockOut": "Clock Out",
     "LaborType": "Labor Type",
     "ShiftType": "Shift Type",
@@ -1218,6 +1214,13 @@
     "CommentPlaceholder": "Write your Comments here...",
     "DidYouRefuel?": "Did you Refuel?",
     "TotalGallons": "Total Gallons"
+  },
+
+  "Offline": {
+    "Offline": "You're Offline",
+    "Unavailable": "Some features may be unavailable.",
+    "TryAgain": "Try Again",
+    "Reconnect": "Please reconnect to continue using Shift Scan."
   },
 
   "MechanicWidget": {

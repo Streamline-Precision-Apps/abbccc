@@ -230,7 +230,6 @@ export type UserSettings = {
 // --------------------------------------
 // this are used to get only the qr data, name, and description
 export type JobCodes = {
-  toLowerCase(): unknown;
   id: string;
   qrId: string;
   name: string;

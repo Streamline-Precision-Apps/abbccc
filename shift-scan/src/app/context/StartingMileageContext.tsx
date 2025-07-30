@@ -7,6 +7,9 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useServerAction } from "@/utils/serverActionWrapper";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 type StartingMileageProps = {
   startingMileage: number | null;
@@ -20,17 +23,17 @@ const StartingMileage = createContext<StartingMileageProps | undefined>(
 export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [startingMileage, setStartingMileageState] = useState<number | null>(
-    null
-  );
+  const [startingMileage, setStartingMileageState] = useState<number | null>(null);
+  const online = useOnlineStatus();
+  const { execute: executeServerAction, syncQueued } = useServerAction();
+
   useEffect(() => {
     const initializeMileage = async () => {
       try {
-        // Fetch cookie data once during initialization
-        const previousStartingMileage = await fetch(
-          "/api/cookies?method=get&name=truck"
-        ).then((res) => res.json());
-
+        const previousStartingMileage = await fetchWithOfflineCache(
+          "startingMileage",
+          () => fetch("/api/cookies?method=get&name=truck").then((res) => res.json())
+        );
         if (previousStartingMileage && previousStartingMileage !== "") {
           setStartingMileageState(previousStartingMileage);
         }
@@ -38,22 +41,27 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error fetching job site cookie:", error);
       }
     };
-
     initializeMileage();
-  }, []); // Run only on mount
+  }, []);
 
   useEffect(() => {
-    const setStartingMileageState = async () => {
+    const setStartingMileageStateAsync = async () => {
       try {
         if (startingMileage !== null) {
-          await setStartingMileage(startingMileage?.toString() || ""); // Set the cookie if scanResult changes
+          await executeServerAction("setStartingMileage", setStartingMileage, startingMileage?.toString() || "");
         }
       } catch (error) {
         console.error("Error saving job site cookie:", error);
       }
     };
-    setStartingMileageState();
-  }, [startingMileage]);
+    setStartingMileageStateAsync();
+  }, [startingMileage, executeServerAction]);
+
+  useEffect(() => {
+    if (online) {
+      syncQueued();
+    }
+  }, [online, syncQueued]);
   return (
     <StartingMileage.Provider
       value={{ startingMileage, setStartingMileage: setStartingMileageState }}

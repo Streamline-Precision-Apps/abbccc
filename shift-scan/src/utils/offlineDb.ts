@@ -1,0 +1,36 @@
+import Dexie, { Table } from 'dexie';
+
+export interface CachedApiResponse {
+  key: string;
+  data: any;
+  timestamp: number;
+  ttl?: number; // Time to live in milliseconds
+}
+
+export interface QueuedAction {
+  id?: number;
+  endpoint: string;
+  method: string;
+  payload: any;
+  timestamp: number;
+  retryCount?: number;
+  maxRetries?: number;
+}
+
+/**
+ * Dexie.js database for offline caching and action queue
+ */
+class OfflineDb extends Dexie {
+  cachedApiResponses!: Table<CachedApiResponse, string>;
+  queuedActions!: Table<QueuedAction, number>;
+
+  constructor() {
+    super('OfflineDb');
+    this.version(1).stores({
+      cachedApiResponses: 'key',
+      queuedActions: '++id,endpoint,method,timestamp',
+    });
+  }
+}
+
+export const offlineDb = new OfflineDb();

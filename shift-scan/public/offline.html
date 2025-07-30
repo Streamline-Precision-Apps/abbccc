@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline | Shift Scan</title>
+    <style>
+      body {
+        background: linear-gradient(to bottom, #1e3a8a, #57bde9);
+        font-family: 'Inter', Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .offline-container {
+        background: #fff;
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        box-shadow: 0 4px 24px rgba(30, 58, 138, 0.2);
+        text-align: center;
+        color: #222;
+        position: relative;
+      }
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #222;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: #222;
+      }
+      button {
+        background: #57bde9;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin: 0 0.5rem;
+      }
+      button:hover {
+        background: #1e3a8a;
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+      }
+      .back-btn {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .back-arrow {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <button class="back-btn" onclick="window.history.back()" aria-label="Go Back">
+        <img src="/arrowBack.svg" alt="Back" class="back-arrow" />
+      </button>
+      <img src="/logo.svg" alt="Shift Scan Logo" class="logo" />
+      <h1>You’re Offline</h1>
+      <p>Some features may be unavailable.<br />Please reconnect to continue using Shift Scan.</p>
+      <button onclick="window.location.reload()">Try Again</button>
+    </div>
+  </body>
+</html>

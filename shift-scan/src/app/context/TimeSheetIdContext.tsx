@@ -8,6 +8,9 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useServerAction } from "@/utils/serverActionWrapper";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 type TimeSheetData = {
   id: string;
@@ -29,6 +32,8 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
     null
   );
   const url = usePathname();
+  const online = useOnlineStatus();
+  const { execute: executeServerAction, syncQueued } = useServerAction();
 
   useEffect(() => {
     const savedTimeSheet = async () => {
@@ -39,34 +44,34 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {
-          const prevTimeSheet = await fetch("/api/getRecentTimecard");
-
-          // Check if the response is OK (status code 200-299)
-          if (!prevTimeSheet.ok) {
-            throw new Error(
-              `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`
-            );
-          }
-
-          // Parse the response as JSON
-          const data = await prevTimeSheet.json();
-
-          // Check if the data is valid
+          const data = await fetchWithOfflineCache("recentTimecard", () =>
+            fetch("/api/getRecentTimecard").then((res) => res.json())
+          );
           if (data && data.id) {
             setTimeSheetData(data);
-            setPrevTimeSheet(data.id as string);
+            await executeServerAction(
+              "setPrevTimeSheet",
+              setPrevTimeSheet,
+              data.id as string
+            );
           } else {
             console.warn("No TimeSheet data received from the API.");
-            setTimeSheetData(null); // Clear any previous data
+            setTimeSheetData(null);
           }
         }
       } catch (error) {
         console.error("Error fetching recent timecard:", error);
-        setTimeSheetData(null); // Clear any previous data
+        setTimeSheetData(null);
       }
     };
     savedTimeSheet();
-  }, [url]);
+  }, [url, online, executeServerAction]);
+
+  useEffect(() => {
+    if (online) {
+      syncQueued();
+    }
+  }, [online, syncQueued]);
 
   return (
     <TimeSheetDataContext.Provider

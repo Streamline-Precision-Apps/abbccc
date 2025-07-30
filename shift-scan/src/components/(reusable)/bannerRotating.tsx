@@ -4,6 +4,8 @@ import Slider from "react-slick";
 import React, { useEffect, useState } from "react";
 import { Titles } from "./titles";
 import { Holds } from "./holds";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -69,6 +71,7 @@ export default function BannerRotating() {
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true); // Track loading state
   const [newDate, setNewDate] = useState(new Date());
+  const online = useOnlineStatus();
 
   const settings = {
     dots: true,
@@ -101,22 +104,27 @@ export default function BannerRotating() {
     const fetchData = async () => {
       try {
         // Step 1: Fetch the most recent timeSheetId
-        const timeSheetResponse = await fetch("/api/getRecentTimecard");
-        const timeSheetData = await timeSheetResponse.json();
+        const timeSheetData = await fetchWithOfflineCache(
+          "recentTimecard",
+          () => fetch("/api/getRecentTimecard").then((res) => res.json())
+        );
 
         if (!timeSheetData?.id) {
           throw new Error("No valid timesheet ID found.");
         }
 
         // Step 2: Fetch banner data using the obtained timeSheetId
-        const bannerResponse = await fetch(
-          `/api/getBannerData?id=${timeSheetData.id}`
+        const bannerData = await fetchWithOfflineCache(
+          `bannerData-${timeSheetData.id}`,
+          () =>
+            fetch(`/api/getBannerData?id=${timeSheetData.id}`).then((res) =>
+              res.json()
+            )
         );
-        const bannerData = await bannerResponse.json();
         // console.log(bannerData); // Uncomment for debugging
 
-        if (!bannerResponse.ok) {
-          throw new Error(bannerData.error || "Failed to fetch job site data.");
+        if (!bannerData) {
+          throw new Error("Failed to fetch banner data.");
         }
 
         setBannerData(bannerData);
@@ -128,7 +136,7 @@ export default function BannerRotating() {
     };
 
     fetchData();
-  }, []);
+  }, [online]); // Re-fetch when online status changes
 
   // Show loading message
   if (loading) {

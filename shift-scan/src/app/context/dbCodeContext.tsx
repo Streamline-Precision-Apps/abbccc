@@ -7,6 +7,8 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { CostCodes, JobCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
@@ -50,42 +52,33 @@ type JobSiteContextType = {
   setJobsiteResults: React.Dispatch<React.SetStateAction<JobCodes[]>>;
 };
 
-const JobSiteContext = createContext<JobSiteContextType>({
-  jobsiteResults: [],
-  setJobsiteResults: () => {},
-});
+const JobSiteContext = createContext<JobSiteContextType | undefined>(undefined);
 
 export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
   const [jobsiteResults, setJobsiteResults] = useState<JobCodes[]>([]);
-  const url = usePathname();
-  const { id, employeeId } = useParams();
-  const queryParams = useSearchParams();
-
+  const jobsiteUrl = usePathname();
+  const jobsiteOnline = useOnlineStatus();
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (
-          url === "/clock" ||
-          url === "/dashboard/equipment/log-new" ||
-          url === "/dashboard/switch-jobs" ||
-          url === "/break" ||
-          url === "/dashboard/truckingAssistant" ||
-          url === "/dashboard/clock-out" ||
-          url === "/dashboard/qr-generator/add-equipment" ||
-          url.startsWith("/hamburger/inbox/formSubmission") ||
-          url.startsWith("/dashboard/myTeam/")
+          jobsiteUrl === "/clock" ||
+          jobsiteUrl === "/dashboard/equipment/log-new" ||
+          jobsiteUrl === "/dashboard/switch-jobs" ||
+          jobsiteUrl === "/break" ||
+          jobsiteUrl === "/dashboard/truckingAssistant" ||
+          jobsiteUrl === "/dashboard/clock-out" ||
+          jobsiteUrl === "/dashboard/qr-generator/add-equipment" ||
+          jobsiteUrl.startsWith("/hamburger/inbox/formSubmission") ||
+          jobsiteUrl.startsWith("/dashboard/myTeam/")
         ) {
-          const response = await fetch("/api/getJobsites");
-          const jobSites = await response.json();
+          const jobSites = await fetchWithOfflineCache("getJobsites", () =>
+            fetch("/api/getJobsites").then((res) => res.json())
+          );
           const validatedJobSites = JobsitesSchema.parse(
             jobSites as JobCodes[]
           );
-          setJobsiteResults(
-            validatedJobSites.map((jobSite) => ({
-              ...jobSite,
-              toLowerCase: () => jobSite.name.toLowerCase(),
-            }))
-          );
+          setJobsiteResults(validatedJobSites);
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -94,8 +87,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchData();
-  }, [url]);
-
+  }, [jobsiteUrl, jobsiteOnline]);
   return (
     <JobSiteContext.Provider value={{ jobsiteResults, setJobsiteResults }}>
       {children}
@@ -103,35 +95,38 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useDBJobsite = () => useContext(JobSiteContext);
+export const useDBJobsite = () => {
+  const context = useContext(JobSiteContext);
+  if (!context)
+    throw new Error("useDBJobsite must be used within a JobSiteProvider");
+  return context;
+};
 
 type CostCodeContextType = {
   costcodeResults: CostCodes[];
   setCostcodeResults: React.Dispatch<React.SetStateAction<CostCodes[]>>;
 };
 
-const CostCodeContext = createContext<CostCodeContextType>({
-  costcodeResults: [],
-  setCostcodeResults: () => {},
-});
+const CostCodeContext = createContext<CostCodeContextType | undefined>(
+  undefined
+);
 
 export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
   const [costcodeResults, setCostcodeResults] = useState<CostCodes[]>([]);
-  const url = usePathname();
+  const costCodeUrl = usePathname();
+  const costCodeOnline = useOnlineStatus();
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (
-          url === "/clock" ||
-          url === "/dashboard/equipment/log-new" ||
-          url === "/dashboard/switch-jobs" ||
-          url === "/break" ||
-          url === "/dashboard/clock-out" ||
-          url.startsWith("/hamburger/inbox/formSubmission") ||
-          url.startsWith("/dashboard/myTeam/")
+          costCodeUrl === "/clock" ||
+          costCodeUrl === "/dashboard/equipment/log-new" ||
+          costCodeUrl === "/dashboard/switch-jobs" ||
+          costCodeUrl === "/break"
         ) {
-          const response = await fetch("/api/getCostCodes");
-          const costCodes = await response.json();
+          const costCodes = await fetchWithOfflineCache("getCostCodes", () =>
+            fetch("/api/getCostCodes").then((res) => res.json())
+          );
           const validatedCostCodes = CostCodesSchema.parse(
             costCodes as CostCodes[]
           );
@@ -144,8 +139,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchData();
-  }, [url]);
-
+  }, [costCodeUrl, costCodeOnline]);
   return (
     <CostCodeContext.Provider value={{ costcodeResults, setCostcodeResults }}>
       {children}
@@ -153,41 +147,35 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useDBCostcode = () => useContext(CostCodeContext);
-
 type EquipmentContextType = {
   equipmentResults: EquipmentCode[];
   setEquipmentResults: React.Dispatch<React.SetStateAction<EquipmentCode[]>>;
 };
 
-const EquipmentContext = createContext<EquipmentContextType>({
-  equipmentResults: [],
-  setEquipmentResults: () => {},
-});
+const EquipmentContext = createContext<EquipmentContextType | undefined>(
+  undefined
+);
 
 export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
   const [equipmentResults, setEquipmentResults] = useState<EquipmentCode[]>([]);
-  const url = usePathname();
-
+  const equipmentUrl = usePathname();
+  const equipmentOnline = useOnlineStatus();
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (
-          url === "/clock" ||
-          url === "/dashboard/equipment/log-new" ||
-          url === "/dashboard/switch-jobs" ||
-          url === "/break" ||
-          url === "/dashboard/mechanic/new-repair" ||
-          url === "/dashboard/truckingAssistant" ||
-          url === "/hamburger/inbox" ||
-          url === "/dashboard/clock-out" ||
-          url.startsWith("/hamburger/inbox/formSubmission") ||
-          url.startsWith("/dashboard/myTeam/")
+          equipmentUrl === "/clock" ||
+          equipmentUrl === "/dashboard/log-new" ||
+          equipmentUrl === "/dashboard/switch-jobs" ||
+          equipmentUrl === "/break"
         ) {
-          const response = await fetch("/api/getEquipment");
-          const equipment = await response.json();
-          const validatedEquipment = EquipmentSchema.parse(equipment);
-          setEquipmentResults(validatedEquipment as EquipmentCode[]);
+          const equipment = await fetchWithOfflineCache("getEquipment", () =>
+            fetch("/api/getEquipment").then((res) => res.json())
+          );
+          const validatedEquipment = EquipmentSchema.parse(
+            equipment as EquipmentCode[]
+          );
+          setEquipmentResults(validatedEquipment);
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -196,8 +184,7 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchData();
-  }, [url]);
-
+  }, [equipmentUrl, equipmentOnline]);
   return (
     <EquipmentContext.Provider
       value={{ equipmentResults, setEquipmentResults }}
@@ -207,4 +194,4 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useDBEquipment = () => useContext(EquipmentContext);
+// ...existing code...

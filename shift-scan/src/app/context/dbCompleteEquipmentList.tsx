@@ -5,6 +5,8 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
@@ -46,21 +48,22 @@ export const EquipmentListProvider = ({
     EquipmentItem[]
   >([]);
 
-  const url = usePathname();
+  const equipmentListUrl = usePathname();
+  const equipmentListOnline = useOnlineStatus();
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (
-          url === "/clock" ||
-          url === "/dashboard/equipment/log-new" ||
-          url === "/dashboard/switch-jobs" ||
-          url === "/break"
+          equipmentListUrl === "/clock" ||
+          equipmentListUrl === "/dashboard/equipment/log-new" ||
+          equipmentListUrl === "/dashboard/switch-jobs" ||
+          equipmentListUrl === "/break"
         ) {
-          const response = await fetch("/api/getEquipmentList");
-          const recentEquipmentList = await response.json();
-          const validatedEquipmentList =
-            EquipmentSchema.parse(recentEquipmentList);
-          // added filter to only include available equipment
+          const recentEquipmentList = await fetchWithOfflineCache(
+            "getEquipmentList",
+            () => fetch("/api/getEquipmentList").then((res) => res.json())
+          );
+          const validatedEquipmentList = EquipmentSchema.parse(recentEquipmentList);
           const isAvailableEquipment = validatedEquipmentList.filter(
             (item) => item.state === "AVAILABLE"
           );
@@ -76,7 +79,7 @@ export const EquipmentListProvider = ({
       }
     };
     fetchData();
-  }, [url]);
+  }, [equipmentListUrl, equipmentListOnline]);
 
   return (
     <EquipmentContext.Provider

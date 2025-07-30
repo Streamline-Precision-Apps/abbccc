@@ -7,6 +7,9 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useServerAction } from "@/utils/serverActionWrapper";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 type TruckScanDataProps = {
   truckScanData: string | null;
@@ -19,15 +22,18 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [truckScanData, setTruckScanDataState] = useState<string | null>(null);
-  // Load initial state from localStorage if available
+  const online = useOnlineStatus();
+  const { execute: executeServerAction, syncQueued } = useServerAction();
+
   useEffect(() => {
     const initializeTruck = async () => {
       try {
-        // Fetch cookie data once during initialization
-        const previousTruck = await fetch(
-          "/api/cookies?method=get&name=truckId"
-        ).then((res) => res.json());
-
+        // Use offline cache for API data
+        const previousTruck = await fetchWithOfflineCache("truckId", () =>
+          fetch("/api/cookies?method=get&name=truckId").then((res) =>
+            res.json()
+          )
+        );
         if (previousTruck && previousTruck !== "") {
           setTruckScanDataState(previousTruck);
         }
@@ -35,22 +41,28 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error fetching job site cookie:", error);
       }
     };
-
     initializeTruck();
-  }, []); // Run only on mount
+  }, []);
 
   useEffect(() => {
     const setTruckScanData = async () => {
       try {
         if (truckScanData !== "") {
-          await setTruck(truckScanData || ""); // Set the cookie if scanResult changes
+          await executeServerAction("setTruck", setTruck, truckScanData || ""); // Use wrapped server action
         }
       } catch (error) {
         console.error("Error saving job site cookie:", error);
       }
     };
     setTruckScanData();
-  }, [truckScanData]);
+  }, [truckScanData, executeServerAction]);
+
+  // Sync queued actions when back online
+  useEffect(() => {
+    if (online) {
+      syncQueued();
+    }
+  }, [online, syncQueued]);
   return (
     <TruckScanData.Provider
       value={{ truckScanData, setTruckScanData: setTruckScanDataState }}

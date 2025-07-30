@@ -6,6 +6,10 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dynamic from "next/dynamic";
+import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
+import OfflineCSSFallback from "../components/OfflineCSSFallback";
+import CSSDebugger from "../components/CSSDebugger";
+import "@/app/globals.css";
 
 const AutoPermissionsManager = dynamic(
   () => import("@/components/(settings)/AutoPermissionsManager"),
@@ -65,6 +69,12 @@ export default async function RootLayout({
               <ErrorBoundary>{children}</ErrorBoundary>
               <SpeedInsights />
               <AutoPermissionsManager />
+              {/* Register service worker for offline support */}
+              <ServiceWorkerRegister />
+              {/* Ensure CSS fallback is available when offline */}
+              <OfflineCSSFallback />
+              {/* CSS debugger for development (Ctrl+Shift+D to toggle) */}
+              <CSSDebugger />
             </Providers>
           </NextIntlClientProvider>
         </main>

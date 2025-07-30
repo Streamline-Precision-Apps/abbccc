@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { fetchWithOfflineCache } from '@/utils/offlineApi';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 
 export interface EquipmentSummary {
   id: string;
@@ -12,14 +14,17 @@ export interface EquipmentSummary {
  */
 export const useAllEquipment = (): EquipmentSummary[] => {
   const [allEquipment, setAllEquipment] = useState<EquipmentSummary[]>([]);
+  const online = useOnlineStatus();
 
   useEffect(() => {
     // Replace with your actual API endpoint
-    fetch('/api/getAllEquipmentIdAndQrId')
-      .then((res) => res.json())
+    fetchWithOfflineCache(
+      'allEquipmentIdAndQrId',
+      () => fetch('/api/getAllEquipmentIdAndQrId').then(res => res.json())
+    )
       .then((data) => setAllEquipment(data))
       .catch(() => setAllEquipment([]));
-  }, []);
+  }, [online]);
 
   return allEquipment;
 };

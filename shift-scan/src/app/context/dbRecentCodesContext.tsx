@@ -2,53 +2,54 @@
 
 // // This stores the previous 5 cost codes, jobsites, and equipment that the user has selected. This will make it easier to change cost codes.
 
-// import React, {
-//   createContext,
-//   useContext,
-//   useState,
-//   ReactNode,
-//   use,
-//   useEffect,
-// } from "react";
-// import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
-// import { z } from "zod";
-// import { usePathname } from "next/navigation";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
+import { z } from "zod";
+import { usePathname } from "next/navigation";
 
-// const CostCodesRecentSchema = z
-//   .array(
-//     z.object({
-//       id: z.string(),
-//       name: z.string(),
-//     })
-//   )
-//   .nullable();
+const CostCodesRecentSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+    })
+  )
+  .nullable();
 
-// const EquipmentSchema = z.array(
-//   z.object({
-//     id: z.string(),
-//     qrId: z.string(),
-//     name: z.string(),
-//   })
-// );
+const EquipmentSchema = z.array(
+  z.object({
+    id: z.string(),
+    qrId: z.string(),
+    name: z.string(),
+  })
+);
 
-// const JobsitesRecentSchema = z
-//   .array(
-//     z.object({
-//       id: z.string(),
-//       qrId: z.string(),
-//       isActive: z.boolean().optional(),
-//       status: z.string().optional(),
-//       name: z.string(),
-//       streetNumber: z.string().nullable().optional(),
-//       streetName: z.string().optional(),
-//       city: z.string().optional(),
-//       state: z.string().nullable().optional(),
-//       country: z.string().optional(),
-//       description: z.string().nullable().optional(),
-//       comment: z.string().nullable().optional(),
-//     })
-//   )
-//   .nullable();
+const JobsitesRecentSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      qrId: z.string(),
+      isActive: z.boolean().optional(),
+      status: z.string().optional(),
+      name: z.string(),
+      streetNumber: z.string().nullable().optional(),
+      streetName: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().nullable().optional(),
+      country: z.string().optional(),
+      description: z.string().nullable().optional(),
+      comment: z.string().nullable().optional(),
+    })
+  )
+  .nullable();
 
 // type RecentJobSiteContextType = {
 //   recentlyUsedJobCodes: JobCodes[];
@@ -70,43 +71,44 @@
 //   const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>(
 //     []
 //   );
-//   const url = usePathname();
+const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>(
+  []
+);
+const recentJobsiteUrl = usePathname();
+const recentJobsiteOnline = useOnlineStatus();
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         if (
-//           url === "/clock" ||
-//           url === "/dashboard/equipment/log-new" ||
-//           url === "/dashboard/switch-jobs" ||
-//           url === "/break"
-//         ) {
-//           const response = await fetch("/api/getRecentJobsites");
-//           const recentJobSites = await response.json();
-//           const validatedRecentJobSites =
-//             JobsitesRecentSchema.parse(recentJobSites);
-//           if (validatedRecentJobSites === null) {
-//             setRecentlyUsedJobCodes([]);
-//           } else {
-//             setRecentlyUsedJobCodes(
-//               validatedRecentJobSites.map((jobSite) => ({
-//                 ...jobSite,
-//                 toLowerCase: () => jobSite.name.toLowerCase(),
-//               }))
-//             );
-//           }
-//         }
-//       } catch (error) {
-//         if (error instanceof z.ZodError) {
-//           console.error(
-//             "Validation error in Recent JobSites schema:",
-//             error.errors
-//           );
-//         }
-//       }
-//     };
-//     fetchData();
-//   }, [url]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      if (
+        recentJobsiteUrl === "/clock" ||
+        recentJobsiteUrl === "/dashboard/equipment/log-new" ||
+        recentJobsiteUrl === "/dashboard/switch-jobs" ||
+        recentJobsiteUrl === "/break"
+      ) {
+        const recentJobSites = await fetchWithOfflineCache(
+          "getRecentJobsites",
+          () => fetch("/api/getRecentJobsites").then((res) => res.json())
+        );
+        const validatedRecentJobSites =
+          JobsitesRecentSchema.parse(recentJobSites);
+        if (validatedRecentJobSites === null) {
+          setRecentlyUsedJobCodes([]);
+        } else {
+          setRecentlyUsedJobCodes(validatedRecentJobSites);
+        }
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(
+          "Validation error in Recent JobSites schema:",
+          error.errors
+        );
+      }
+    }
+  };
+  fetchData();
+}, [recentJobsiteUrl, recentJobsiteOnline]);
 
 //   const addRecentlyUsedJobCode = (code: JobCodes) => {
 //     setRecentlyUsedJobCodes((prev) => {
@@ -150,37 +152,43 @@
 //   const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<
 //     CostCodes[]
 //   >([]);
-//   const url = usePathname();
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         if (
-//           url === "/clock" ||
-//           url === "/dashboard/equipment/log-new" ||
-//           url === "/dashboard/switch-jobs" ||
-//           url === "/break"
-//         ) {
-//           const response = await fetch("/api/getRecentCostCodes");
-//           const recentCostCodes = await response.json();
-//           const validatedRecentCostCodes =
-//             CostCodesRecentSchema.parse(recentCostCodes);
-//           if (validatedRecentCostCodes === null) {
-//             setRecentlyUsedCostCodes([]);
-//           } else {
-//             setRecentlyUsedCostCodes(validatedRecentCostCodes);
-//           }
-//         }
-//       } catch (error) {
-//         if (error instanceof z.ZodError) {
-//           console.error(
-//             "Validation error in Recent CostCodes schema:",
-//             error.errors
-//           );
-//         }
-//       }
-//     };
-//     fetchData();
-//   }, [url]);
+const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<CostCodes[]>(
+  []
+);
+const recentCostCodeUrl = usePathname();
+const recentCostCodeOnline = useOnlineStatus();
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      if (
+        recentCostCodeUrl === "/clock" ||
+        recentCostCodeUrl === "/dashboard/equipment/log-new" ||
+        recentCostCodeUrl === "/dashboard/switch-jobs" ||
+        recentCostCodeUrl === "/break"
+      ) {
+        const recentCostCodes = await fetchWithOfflineCache(
+          "getRecentCostCodes",
+          () => fetch("/api/getRecentCostCodes").then((res) => res.json())
+        );
+        const validatedRecentCostCodes =
+          CostCodesRecentSchema.parse(recentCostCodes);
+        if (validatedRecentCostCodes === null) {
+          setRecentlyUsedCostCodes([]);
+        } else {
+          setRecentlyUsedCostCodes(validatedRecentCostCodes);
+        }
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(
+          "Validation error in Recent CostCodes schema:",
+          error.errors
+        );
+      }
+    }
+  };
+  fetchData();
+}, [recentCostCodeUrl, recentCostCodeOnline]);
 
 //   const addRecentlyUsedCostCode = (code: CostCodes) => {
 //     setRecentlyUsedCostCodes((prev) => {
@@ -229,33 +237,38 @@
 //   const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
 //     EquipmentCode[]
 //   >([]);
-//   const url = usePathname();
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         if (
-//           url === "/clock" ||
-//           url === "/dashboard/log-new" ||
-//           url === "/dashboard/switch-jobs" ||
-//           url === "/break"
-//         ) {
-//           const response = await fetch("/api/getRecentEquipment");
-//           const recentEquipment = await response.json();
-//           const validatedRecentEquipment =
-//             EquipmentSchema.parse(recentEquipment);
-//           setRecentlyUsedEquipment(validatedRecentEquipment as EquipmentCode[]);
-//         }
-//       } catch (error) {
-//         if (error instanceof z.ZodError) {
-//           console.error(
-//             "Validation error in Recent Equipment schema:",
-//             error.errors
-//           );
-//         }
-//       }
-//     };
-//     fetchData();
-//   }, [url]);
+const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
+  EquipmentCode[]
+>([]);
+const recentEquipmentUrl = usePathname();
+const recentEquipmentOnline = useOnlineStatus();
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      if (
+        recentEquipmentUrl === "/clock" ||
+        recentEquipmentUrl === "/dashboard/log-new" ||
+        recentEquipmentUrl === "/dashboard/switch-jobs" ||
+        recentEquipmentUrl === "/break"
+      ) {
+        const recentEquipment = await fetchWithOfflineCache(
+          "getRecentEquipment",
+          () => fetch("/api/getRecentEquipment").then((res) => res.json())
+        );
+        const validatedRecentEquipment = EquipmentSchema.parse(recentEquipment);
+        setRecentlyUsedEquipment(validatedRecentEquipment as EquipmentCode[]);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(
+          "Validation error in Recent Equipment schema:",
+          error.errors
+        );
+      }
+    }
+  };
+  fetchData();
+}, [recentEquipmentUrl, recentEquipmentOnline]);
 
 //   const addRecentlyUsedEquipment = (equipment: EquipmentCode) => {
 //     setRecentlyUsedEquipment((prev) => {

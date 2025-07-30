@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { PayPeriodTimesheets } from "@/lib/types";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
@@ -23,6 +25,7 @@ export const usePayPeriodData = (
   );
   const [pageView, setPageView] = useState("");
   const [loading, setLoading] = useState(true);
+  const online = useOnlineStatus();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,8 +33,10 @@ export const usePayPeriodData = (
         setLoading(true);
 
         // Fetch pay period timesheets
-        const payPeriodResponse = await fetch("/api/getPayPeriodTimeSheets");
-        const data = await payPeriodResponse.json();
+        const data = await fetchWithOfflineCache(
+          "payPeriodTimeSheets",
+          () => fetch("/api/getPayPeriodTimeSheets").then(res => res.json())
+        );
         const validatedData = PayPeriodSheetsArraySchema.parse(data);
 
         const transformedData = validatedData.map((item) => ({
@@ -44,10 +49,10 @@ export const usePayPeriodData = (
         setPayPeriodTimeSheets(transformedData);
 
         // Fetch page view cookie value
-        const pageViewResponse = await fetch(
-          "/api/cookies?method=get&name=currentPageView"
+        const pageViewData = await fetchWithOfflineCache(
+          "currentPageView",
+          () => fetch("/api/cookies?method=get&name=currentPageView").then(res => res.json())
         );
-        const pageViewData = await pageViewResponse.json();
         setPageView(pageViewData || "");
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -57,7 +62,7 @@ export const usePayPeriodData = (
     };
 
     fetchData();
-  }, [setPayPeriodTimeSheets]);
+  }, [online, setPayPeriodTimeSheets]); // Re-fetch when online status changes
 
   // Calculate total pay period hours
   UseTotalPayPeriodHours(payPeriodSheets);

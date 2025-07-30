@@ -1,6 +1,9 @@
 // this is a context to hold an equipment used in the app the operator labor type.
 "use client";
 import { setEquipment } from "@/actions/cookieActions";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useServerAction } from "@/utils/serverActionWrapper";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import React, {
   createContext,
   useState,
@@ -20,15 +23,18 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [equipmentId, setEquipmentId] = useState<string | null>(null);
+  const online = useOnlineStatus();
+  const { execute: executeServerAction } = useServerAction();
 
   // Load initial state from localStorage if available
   useEffect(() => {
     const initializeEquipment = async () => {
       try {
         // Fetch cookie data once during initialization
-        const previousTruck = await fetch(
-          "/api/cookies?method=get&name=equipment"
-        ).then((res) => res.json());
+        const previousTruck = await fetchWithOfflineCache(
+          "equipment-cookie",
+          () => fetch("/api/cookies?method=get&name=equipment").then((res) => res.json())
+        );
 
         if (previousTruck && previousTruck !== "") {
           setEquipmentId(previousTruck);
@@ -39,21 +45,21 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     initializeEquipment();
-  }, []); // Run only on mount
+  }, [online]); // Run when online status changes
 
   useEffect(() => {
     const saveEquipmentId = async () => {
       // Renamed function
       try {
         if (equipmentId !== "") {
-          await setEquipment(equipmentId || ""); // Set the cookie if equipmentId changes
+          await executeServerAction("setEquipment", setEquipment, equipmentId || ""); // Use wrapped server action
         }
       } catch (error) {
         console.error("Error saving equipment cookie:", error);
       }
     };
     saveEquipmentId();
-  }, [equipmentId]);
+  }, [equipmentId, executeServerAction]);
 
   return (
     <EquipmentData.Provider value={{ equipmentId, setEquipmentId }}>

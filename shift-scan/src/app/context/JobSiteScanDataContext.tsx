@@ -7,6 +7,9 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
+import { useServerAction } from "@/utils/serverActionWrapper";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 // Define the shape of your scan result
 type ScanResult = {
@@ -28,26 +31,24 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const online = useOnlineStatus();
+  const { execute: executeServerAction, syncQueued } = useServerAction();
 
-  // Initialize with cookie data
   useEffect(() => {
     const initializeJobSite = async () => {
       try {
-        // Fetch the QR code from your API
-        const cookieData = await fetch(
-          "/api/cookies?method=get&name=jobSite"
-        ).then((res) => res.json());
-
+        const cookieData = await fetchWithOfflineCache(
+          "jobSite",
+          () => fetch("/api/cookies?method=get&name=jobSite").then((res) => res.json())
+        );
         let jobSiteName = "";
         if (cookieData && cookieData !== "") {
-          // Try to fetch the job site details for the name
           try {
-            const jobSiteDetails = await fetch(
-              `/api/jobsites/${cookieData}`
-            ).then((res) => res.json());
-            jobSiteName = jobSiteDetails?.name || "";
+            jobSiteName = await fetchWithOfflineCache(
+              `jobSiteDetails_${cookieData}`,
+              () => fetch(`/api/jobsites/${cookieData}`).then((res) => res.json()).then((details) => details?.name || "")
+            );
           } catch (err) {
-            // If fetching details fails, fallback to empty string
             jobSiteName = "";
           }
           setScanResult({
@@ -59,16 +60,14 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error initializing job site:", error);
       }
     };
-
     initializeJobSite();
   }, []);
 
-  // Save to cookies when scanResult changes
   useEffect(() => {
     const saveJobSite = async () => {
       try {
         if (scanResult?.qrCode) {
-          await setJobSite({
+          await executeServerAction("setJobSite", setJobSite, {
             code: scanResult.qrCode,
             label: scanResult.name,
           });
@@ -77,9 +76,14 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error saving job site:", error);
       }
     };
-
     saveJobSite();
-  }, [scanResult]);
+  }, [scanResult, executeServerAction]);
+
+  useEffect(() => {
+    if (online) {
+      syncQueued();
+    }
+  }, [online, syncQueued]);
 
   return (
     <ScanDataContext.Provider value={{ scanResult, setScanResult }}>
