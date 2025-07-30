@@ -15,10 +15,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { useNotification } from "@/app/context/NotificationContext";
-import { EquipmentLog, MaintenanceFormData, Priority } from "../types";
-import { Title } from "../../../mechanic/_components/Title";
-// Removed duplicate import of EquipmentState
-import { form } from "@nextui-org/theme";
+import { EquipmentLog } from "../types";
 
 interface MaintenanceLogEquipmentProps {
   formState: EquipmentLog;
@@ -91,7 +88,9 @@ export default function MaintenanceLogEquipment({
                   className="w-full text-base text-center"
                 >
                   <option value="AVAILABLE">{t("SelectAStatus")}</option>
-                  <option value="MAINTENANCE">{t("MaintenanceRequired")}</option>
+                  <option value="MAINTENANCE">
+                    {t("MaintenanceRequired")}
+                  </option>
                   <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
                 </Selects>
               </Holds>

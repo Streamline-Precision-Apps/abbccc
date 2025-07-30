@@ -9,7 +9,7 @@ import TruckingContexts from "./components/contents";
 export default async function Inbox() {
   const session = await auth();
   if (!session) return null;
-  const laborType = cookies().get("laborType")?.value;
+  const laborType = (await cookies()).get("laborType")?.value;
 
   return (
     <Bases>

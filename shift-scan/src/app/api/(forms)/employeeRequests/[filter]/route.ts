@@ -7,7 +7,7 @@ import { revalidateTag } from "next/cache";
 
 export async function GET(
   req: Request,
-  { params }: { params: { filter: string } }
+  { params }: { params: Promise<{ filter: string }> }
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -23,7 +23,7 @@ export async function GET(
     );
   }
 
-  const { filter } = params;
+  const { filter } = await params;
   const { searchParams } = new URL(req.url);
   const skip = parseInt(searchParams.get("skip") || "0");
   const take = parseInt(searchParams.get("take") || "10");

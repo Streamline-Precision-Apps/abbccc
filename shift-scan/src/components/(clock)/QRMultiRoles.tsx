@@ -108,7 +108,7 @@ export default function QRMultiRoles({
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes onClick={handleReturnPath}>
-              <Titles size={"h1"}>
+              <Titles size={"h4"}>
                 {startCamera ? t("ScanJobsite") : t("SelectLaborType")}
               </Titles>
             </TitleBoxes>

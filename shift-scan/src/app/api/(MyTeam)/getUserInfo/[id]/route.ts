@@ -1,20 +1,22 @@
-import { NextResponse, NextRequest } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse, NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
-type Params = { id: string };
+type Params = Promise<{ id: string }>;
 
 export async function GET(req: NextRequest, { params }: { params: Params }) {
   try {
-    if (!params?.id) {
+    const { id } = await params;
+
+    if (!id) {
       return NextResponse.json(
         { error: "Missing or invalid user ID" },
         { status: 400 }
       );
     }
 
-    const userId = params.id;
+    const userId = id;
     console.log("userId:", userId);
 
     // Authenticate the user
@@ -72,9 +74,9 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     });
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching employee data:', error);
+    console.error("Error fetching employee data:", error);
 
-    let errorMessage = 'Failed to fetch employee data';
+    let errorMessage = "Failed to fetch employee data";
     if (error instanceof Error) {
       errorMessage = error.message;
     }

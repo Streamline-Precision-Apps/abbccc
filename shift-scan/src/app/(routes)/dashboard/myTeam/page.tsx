@@ -58,7 +58,7 @@ export default function Content() {
             setMyTeams(myTeamsData);
           } catch (error) {
             if (error instanceof z.ZodError) {
-              console.error("Validation error in team data:", error.errors);
+              console.error("Validation error in team data:", error);
               return;
             }
           }

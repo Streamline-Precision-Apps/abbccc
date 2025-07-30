@@ -7,16 +7,19 @@ import { ApprovalStatus } from "@/lib/enums";
 
 export async function GET(
   request: Request,
-  { params }: { params: { employee: string } }
+  { params }: { params: Promise<{ employee: string }> }
 ) {
   let session;
-  
+
   // Handle authentication
   try {
     session = await auth();
   } catch (error) {
     console.error("Error during authentication:", error);
-    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 }
+    );
   }
 
   const userId = session?.user.id;
@@ -25,12 +28,11 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { employee } = params;
+  const { employee } = await params;
   const url = new URL(request.url);
   const filter = url.searchParams.get("filter");
 
   try {
-
     // Map filter to ApprovalStatus
     const statusMap: Record<string, ApprovalStatus> = {
       PENDING: ApprovalStatus.PENDING,
@@ -38,7 +40,8 @@ export async function GET(
       REJECTED: ApprovalStatus.REJECTED,
     };
 
-    const status = filter !== null ? statusMap[filter as keyof typeof statusMap] : undefined;
+    const status =
+      filter !== null ? statusMap[filter as keyof typeof statusMap] : undefined;
 
     // Query the database with the filter applied (if any)
     const timeSheet = await prisma.timeSheet.findMany({
@@ -51,7 +54,10 @@ export async function GET(
 
     // Handle case when no timeSheet is found
     if (timeSheet.length === 0) {
-      return NextResponse.json({ message: "No timesheets found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "No timesheets found" },
+        { status: 404 }
+      );
     }
 
     // Group the timesheets by day
@@ -69,6 +75,9 @@ export async function GET(
     return NextResponse.json({ timeSheet: uniquetimeSheet });
   } catch (error) {
     console.error("Error fetching Time Sheets:", error);
-    return NextResponse.json({ error: "Failed to fetch timeSheet" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch timeSheet" },
+      { status: 500 }
+    );
   }
 }

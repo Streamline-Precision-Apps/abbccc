@@ -1,7 +1,6 @@
+import "@/app/globals.css";
 import React, { FC, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import classNames from "classnames";
-import "@/app/globals.css";
 
 // Define CVA-based styles for the Tab component
 const tabStyles = cva(
@@ -51,13 +50,13 @@ const tabStyles = cva(
       isActive: false,
       animatePulse: false,
     },
-  }
+  },
 );
 
 // Extend VariantProps to manage variant options and add children support
 interface TabProps extends VariantProps<typeof tabStyles> {
   onClick?: () => void;
-  children: ReactNode; // Accepts any child elements
+  children?: ReactNode; // Accepts any child elements
   titleImage: string;
   titleImageAlt: string;
   isComplete?: boolean;
@@ -89,6 +88,7 @@ interface TabProps extends VariantProps<typeof tabStyles> {
     | undefined;
   activeBorder?: "default" | "transparent" | "border" | null | undefined;
   inActiveBorder?: "default" | "transparent" | "border" | null | undefined;
+  className?: string | undefined;
 }
 
 // Functional Tab component with children rendering
@@ -105,18 +105,22 @@ export const NewTab: FC<TabProps> = ({
   inActiveColor = "lightGray",
   activeBorder = "transparent",
   inActiveBorder = "transparent",
+  className = undefined,
 }) => {
   return (
     <button
       onClick={onClick}
-      className={classNames(
+      className={[
         tabStyles({
           isActive,
           animatePulse,
           color: isActive ? activeColor : inActiveColor,
           border: isActive ? activeBorder : inActiveBorder,
-        })
-      )}
+        }),
+        className ? className : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div
         className={`${

@@ -10,11 +10,11 @@ import { redirect } from "next/navigation";
 // Helper function to fetch cookie data
 const getCookieData = async () => {
   const cookieStore = cookies();
-  const timeSheetId = cookieStore.get("timeSheetId")?.value;
-  const jobSiteId = cookieStore.get("jobSiteId")?.value;
-  const costCode = cookieStore.get("costCode")?.value;
-  const workRole = cookieStore.get("workRole")?.value;
-  const switchLaborType = cookieStore.get("laborType")?.value;
+  const timeSheetId = (await cookieStore).get("timeSheetId")?.value;
+  const jobSiteId = (await cookieStore).get("jobSiteId")?.value;
+  const costCode = (await cookieStore).get("costCode")?.value;
+  const workRole = (await cookieStore).get("workRole")?.value;
+  const switchLaborType = (await cookieStore).get("laborType")?.value;
 
   return { timeSheetId, jobSiteId, costCode, workRole, switchLaborType };
 };
@@ -30,8 +30,8 @@ export default async function SwitchJobs() {
   // Fetch all records
   const user = session.user;
 
-  // Get the current language from cookies
-  const lang = cookies().get("locale");
+  // Get the current language from cookies```
+  const lang = (await cookies()).get("locale");
   const locale = lang?.value || "en";
   // Fetch cookie data
   const { timeSheetId, jobSiteId, costCode, workRole, switchLaborType } =

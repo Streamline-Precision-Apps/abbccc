@@ -59,7 +59,7 @@ export default function DisplayBreakTime({
         if (error instanceof z.ZodError) {
           console.error(
             "Validation error in fetched pay period sheets:",
-            error.errors
+            error
           );
         } else {
           console.error(e("PayPeriod-Fetch"), error);

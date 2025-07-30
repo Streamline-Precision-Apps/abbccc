@@ -2,7 +2,8 @@
 import { LoadType, WorkType, materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ApprovalStatus, Prisma } from "@prisma/client";
+import { Prisma } from "../../prisma/generated/prisma/client";
+import { ApprovalStatus } from "@/lib/enums";
 import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 
 export type TimesheetSubmission = {
@@ -227,7 +228,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       console.log(
         "Creating labor log for equipment:",
         log.startTime,
-        log.endTime
+        log.endTime,
       );
       if (!log.equipment.id) continue;
       await tx.employeeEquipmentLog.create({

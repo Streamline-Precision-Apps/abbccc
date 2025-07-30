@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
           );
         }
 
-        const requestedCookie = cookies().get(name)?.value;
+        const requestedCookie = (await cookies()).get(name)?.value;
         if (!requestedCookie) {
           return NextResponse.json("");
         }
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
         ];
 
         try {
-          cookieNames.forEach((cookieName) => {
-            cookies().delete({
+          cookieNames.forEach(async (cookieName) => {
+            (await cookies()).delete({
               name: cookieName,
               path: "/",
               httpOnly: true,
@@ -57,7 +57,10 @@ export async function GET(request: NextRequest) {
           });
 
           // Reset `workRole` cookie
-          cookies().set({
+          (
+            await // Reset `workRole` cookie
+            cookies()
+          ).set({
             name: "workRole",
             value: "",
             path: "/",

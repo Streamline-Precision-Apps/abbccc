@@ -1,20 +1,24 @@
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const id = (await params).id;
     // Validate the ID parameter
-    if (!params.id) {
-      return NextResponse.json({ error: "Missing cost code ID" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json(
+        { error: "Missing cost code ID" },
+        { status: 400 }
+      );
     }
 
     // Fetch cost code tags
     const tags = await prisma.costCode.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         CCTags: {
           select: {
@@ -35,16 +39,13 @@ export async function GET(
     return NextResponse.json(tags.CCTags);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching tags:', error);
+    console.error("Error fetching tags:", error);
 
-    let errorMessage = 'Failed to fetch tags';
+    let errorMessage = "Failed to fetch tags";
     if (error instanceof Error) {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

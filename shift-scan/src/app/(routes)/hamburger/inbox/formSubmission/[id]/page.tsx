@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import FormDraft from "./_components/formDraft";
@@ -96,7 +96,12 @@ enum FormStatus {
   DRAFT = "DRAFT",
 }
 
-export default function DynamicForm({ params }: { params: { id: string } }) {
+export default function DynamicForm({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const id = use(params).id;
   // Search params from URL
   const t = useTranslations("Hamburger-Inbox");
   const formSubmissions = useSearchParams();
@@ -131,7 +136,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
       try {
         // Fetch the form template
-        const formRes = await fetch(`/api/form/` + params.id);
+        const formRes = await fetch(`/api/form/` + id);
         if (!formRes.ok) throw new Error("Failed to fetch form template");
         const apiData = await formRes.json();
         // Map API data to FormIndividualTemplate if needed
@@ -225,7 +230,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     };
 
     fetchForm();
-  }, [params.id, submissionId, submissionStatus, submissionApprovingStatus]);
+  }, [id, submissionId, submissionStatus, submissionApprovingStatus]);
 
   // Helper functions for fetching data
   const fetchDraftData = async (submissionId: string) => {

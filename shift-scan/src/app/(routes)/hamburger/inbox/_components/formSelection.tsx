@@ -116,7 +116,9 @@ export default function FormSelection({
     // create a form that isn't submitted
     const formData = new FormData();
     formData.append("formTemplateId", selectedForm);
-    userId && formData.append("userId", userId);
+    if (userId) {
+      formData.append("userId", userId);
+    }
 
     const submissionId = await createFormSubmission(formData);
 

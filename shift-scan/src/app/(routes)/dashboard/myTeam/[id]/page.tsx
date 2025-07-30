@@ -58,7 +58,7 @@ export default function Content() {
           setCrewType(type);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in crew data:", error.errors);
+            console.error("Validation error in crew data:", error);
             return;
           }
         }

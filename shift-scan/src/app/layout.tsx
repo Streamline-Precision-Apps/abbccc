@@ -6,11 +6,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dynamic from "next/dynamic";
-
-const AutoPermissionsManager = dynamic(
-  () => import("@/components/(settings)/AutoPermissionsManager"),
-  { ssr: false }
-);
+import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
 
 export const viewport: Viewport = {
   themeColor: "#57BDE9",

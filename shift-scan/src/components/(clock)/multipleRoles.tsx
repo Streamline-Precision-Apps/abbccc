@@ -98,7 +98,7 @@ export default function MultipleRoles({
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes onClick={handleReturnPath}>
-              <Titles size={"h1"}>{t("SelectLaborType")}</Titles>
+              <Titles size={"h3"}>{t("SelectLaborType")}</Titles>
             </TitleBoxes>
           </Holds>
           <Holds className="row-start-2 row-end-8 h-full w-full">
@@ -178,8 +178,8 @@ export default function MultipleRoles({
                 )}
                 {option === "break" ? (
                   <Holds className="row-start-7 row-end-8 w-full justify-center">
-                    <Buttons 
-                      onClick={handleReturn} 
+                    <Buttons
+                      onClick={handleReturn}
                       background={"orange"}
                       className="py-2"
                     >

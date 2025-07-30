@@ -1,17 +1,16 @@
-
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import { PrismaClient } from '@prisma/client';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate form ID
-    const formId = params.id;
+    const formId = (await params).id;
     if (!formId) {
       return NextResponse.json(
         { error: "Invalid or missing form ID" },
@@ -50,9 +49,9 @@ export async function GET(
     return NextResponse.json(formTemplate);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching form:', error);
+    console.error("Error fetching form:", error);
 
-    let errorMessage = 'Failed to fetch form data';
+    let errorMessage = "Failed to fetch form data";
     if (error instanceof Error) {
       errorMessage = error.message;
     }

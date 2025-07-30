@@ -6,7 +6,7 @@ import { ApprovalStatus } from "@/lib/enums";
 
 export async function GET(
   request: Request,
-  { params }: { params: { employee: string } }
+  { params }: { params: Promise<{ employee: string }> }
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -14,7 +14,7 @@ export async function GET(
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { employee } = params;
+  const { employee } = await params;
   const url = new URL(request.url);
   const filter = url.searchParams.get("filter");
 

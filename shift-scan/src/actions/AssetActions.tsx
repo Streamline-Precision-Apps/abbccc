@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { EquipmentTags, ApprovalStatus, CreatedVia } from "@/lib/enums";
 import * as Sentry from "@sentry/nextjs";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../prisma/generated/prisma/client";
 
 /**
  * Server action to update equipment asset data
@@ -44,7 +44,7 @@ export async function updateEquipmentAsset(formData: FormData) {
       updateData.overWeight = formData.get("overWeight") === "true";
     if (formData.has("approvalStatus"))
       updateData.approvalStatus = formData.get(
-        "approvalStatus"
+        "approvalStatus",
       ) as ApprovalStatus;
     if (formData.has("isDisabledByAdmin"))
       updateData.isDisabledByAdmin = Boolean(formData.get("isDisabledByAdmin"));
@@ -82,7 +82,7 @@ export async function updateEquipmentAsset(formData: FormData) {
       }
       if (formData.has("registrationExpiration")) {
         const regExp = new Date(
-          formData.get("registrationExpiration") as string
+          formData.get("registrationExpiration") as string,
         );
         vehicleCreateData.registrationExpiration = regExp;
         vehicleUpdateData.registrationExpiration = regExp;
@@ -124,7 +124,7 @@ export async function updateEquipmentAsset(formData: FormData) {
     throw new Error(
       `Failed to update equipment: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }
@@ -145,7 +145,7 @@ export async function registerEquipment(
       mileage: number | null;
     };
   },
-  createdById: string
+  createdById: string,
 ) {
   console.log("Registering equipment...");
   console.log(equipmentData);
@@ -178,7 +178,7 @@ export async function registerEquipment(
           !equipmentData.equipmentVehicleInfo?.licensePlate
         ) {
           throw new Error(
-            "All vehicle fields are required for trucks and vehicles"
+            "All vehicle fields are required for trucks and vehicles",
           );
         }
 
@@ -294,7 +294,7 @@ export async function updateJobsite(formData: FormData) {
 
       if (duplicateJobsite) {
         throw new Error(
-          "A jobsite with the same name and location already exists"
+          "A jobsite with the same name and location already exists",
         );
       }
 
@@ -415,7 +415,7 @@ export async function updateJobsiteAdmin(formData: FormData) {
     }
     if (formData.has("approvalStatus")) {
       updateData.approvalStatus = formData.get(
-        "approvalStatus"
+        "approvalStatus",
       ) as ApprovalStatus;
     }
     if (formData.has("isActive")) {
@@ -461,7 +461,7 @@ export async function updateJobsiteAdmin(formData: FormData) {
     throw new Error(
       `Failed to update jobsite: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }
@@ -607,7 +607,7 @@ export async function createJobsiteFromObject(jobsiteData: {
 
       if (existingJobsite) {
         throw new Error(
-          "A jobsite with the same name and location already exists"
+          "A jobsite with the same name and location already exists",
         );
       }
 
@@ -789,7 +789,7 @@ export async function updateCostCodeAdmin(formData: FormData) {
     throw new Error(
       `Failed to update jobsite: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }
@@ -864,7 +864,7 @@ export async function updateCostCode(
     name: string;
     isActive: boolean;
     CCTags?: { id: string; name: string }[];
-  }>
+  }>,
 ) {
   console.log("Updating cost code...", id, costCodeData);
 
@@ -918,7 +918,7 @@ export async function updateCostCode(
     if (costCodeData.CCTags !== undefined) {
       // Get the current tag IDs from the database
       const currentTagIds = new Set(
-        existingCostCode.CCTags.map((tag) => tag.id)
+        existingCostCode.CCTags.map((tag) => tag.id),
       );
 
       // Get the new tag IDs from the form data
@@ -926,11 +926,11 @@ export async function updateCostCode(
 
       // Determine which tags to connect (add) and disconnect (remove)
       const tagsToConnect = costCodeData.CCTags.filter(
-        (tag) => !currentTagIds.has(tag.id)
+        (tag) => !currentTagIds.has(tag.id),
       ).map((tag) => ({ id: tag.id }));
 
       const tagsToDisconnect = existingCostCode.CCTags.filter(
-        (tag) => !newTagIds.has(tag.id)
+        (tag) => !newTagIds.has(tag.id),
       ).map((tag) => ({ id: tag.id }));
 
       // Add tag connection/disconnection operations to update data
@@ -1104,7 +1104,7 @@ export async function updateTagAdmin(formData: FormData) {
     throw new Error(
       `Failed to update tag: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }
@@ -1115,7 +1115,7 @@ export async function updateTags(
     name: string;
     description: string;
     CostCodes?: { id: string; name: string }[];
-  }>
+  }>,
 ) {
   console.log("Updating tag...", id, tagData);
 
@@ -1156,21 +1156,21 @@ export async function updateTags(
     if (tagData.CostCodes !== undefined) {
       // Get current cost code IDs
       const currentCostCodeIds = new Set(
-        existingTag.CostCodes.map((costCode) => costCode.id)
+        existingTag.CostCodes.map((costCode) => costCode.id),
       );
 
       // Get new cost code IDs
       const newCostCodeIds = new Set(
-        tagData.CostCodes.map((costCode) => costCode.id)
+        tagData.CostCodes.map((costCode) => costCode.id),
       );
 
       // Determine which cost codes to connect (add) and disconnect (remove)
       const costCodesToConnect = tagData.CostCodes.filter(
-        (costCode) => !currentCostCodeIds.has(costCode.id)
+        (costCode) => !currentCostCodeIds.has(costCode.id),
       ).map((costCode) => ({ id: costCode.id }));
 
       const costCodesToDisconnect = existingTag.CostCodes.filter(
-        (costCode) => !newCostCodeIds.has(costCode.id)
+        (costCode) => !newCostCodeIds.has(costCode.id),
       ).map((costCode) => ({ id: costCode.id }));
 
       // Add cost code connection/disconnection operations to update data
@@ -1552,7 +1552,7 @@ export async function updateClientAdmin(formData: FormData) {
     }
     if (formData.has("approvalStatus")) {
       updateData.approvalStatus = formData.get(
-        "approvalStatus"
+        "approvalStatus",
       ) as ApprovalStatus;
     }
     if (formData.has("contactPerson")) {
@@ -1607,7 +1607,7 @@ export async function updateClientAdmin(formData: FormData) {
     throw new Error(
       `Failed to update client: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }
