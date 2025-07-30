@@ -50,7 +50,7 @@ const tabStyles = cva(
       isActive: false,
       animatePulse: false,
     },
-  }
+  },
 );
 
 // Extend VariantProps to manage variant options and add children support
@@ -88,7 +88,7 @@ interface TabProps extends VariantProps<typeof tabStyles> {
     | undefined;
   activeBorder?: "default" | "transparent" | "border" | null | undefined;
   inActiveBorder?: "default" | "transparent" | "border" | null | undefined;
-  className?: string;
+  className?: string | undefined;
 }
 
 // Functional Tab component with children rendering
@@ -105,20 +105,22 @@ export const NewTab: FC<TabProps> = ({
   inActiveColor = "lightGray",
   activeBorder = "transparent",
   inActiveBorder = "transparent",
-  className,
+  className = undefined,
 }) => {
   return (
     <button
       onClick={onClick}
-      className={`${
-        (tabStyles({
+      className={[
+        tabStyles({
           isActive,
           animatePulse,
           color: isActive ? activeColor : inActiveColor,
           border: isActive ? activeBorder : inActiveBorder,
         }),
-        className)
-      }`}
+        className ? className : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div
         className={`${
