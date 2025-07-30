@@ -1,7 +1,6 @@
 import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-// import Resend from "next-auth/providers/resend";
-import bcrypt from "bcryptjs";
+import { compare } from "bcrypt-ts";
 import prisma from "@/lib/prisma";
 import type { Provider } from "next-auth/providers";
 
@@ -65,7 +64,7 @@ const providers: Provider[] = [
       // Use bcrypt to compare the input password with the stored hash
       // Import bcryptjs at the top if not already
 
-      const isValidPassword = await bcrypt.compare(passwords, userId.password);
+      const isValidPassword = await compare(passwords, userId.password);
 
       if (!isValidPassword) {
         console.log("Invalid password");

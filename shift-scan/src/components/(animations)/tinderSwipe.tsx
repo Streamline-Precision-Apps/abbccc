@@ -64,7 +64,11 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         });
 
         // Execute the swipe callback
-        direction === "left" ? onSwipeLeft?.() : onSwipeRight?.();
+        if (direction === "left") {
+          if (onSwipeLeft) onSwipeLeft();
+        } else {
+          if (onSwipeRight) onSwipeRight();
+        }
 
         // Reset to initial state
         await controls.start({

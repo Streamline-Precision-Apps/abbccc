@@ -68,10 +68,7 @@ export const EquipmentListProvider = ({
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error(
-            "Validation error in Equipment List schema:",
-            error.errors
-          );
+          console.error("Validation error in Equipment List schema:", error);
         }
       }
     };

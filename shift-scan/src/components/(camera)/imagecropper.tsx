@@ -1,6 +1,4 @@
 import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react";
-import { Inputs } from "../(reusable)/inputs";
-import { Labels } from "../(reusable)/labels";
 import { Contents } from "../(reusable)/contents";
 import "react-image-crop/dist/ReactCrop.css";
 import ReactCrop, {
@@ -126,7 +124,6 @@ export default function ImageCropper({
                 );
                 const dataUrl = canvasRef.current.toDataURL();
                 setBase64String(dataUrl);
-                handleFileChange;
               }
             }}
           >

@@ -104,7 +104,7 @@ export default function TruckClockOutForm({
       setErrorMessages([]);
       handleNextStep();
     } else {
-      const errors = result.error.errors.map((err) => err.message);
+      const errors = result.error.issues.map((issue) => issue.message);
       setErrorMessages(errors);
     }
   };

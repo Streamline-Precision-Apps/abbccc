@@ -22,13 +22,17 @@ export default function SlidingDiv({
     // Swipe Left Event
     if (info.offset.x < -300) {
       console.log("Swiped Left");
-      onSwipeLeft && onSwipeLeft(); // Trigger custom event if provided
+      if (onSwipeLeft) {
+        onSwipeLeft();
+      }
     }
 
     // Swipe Right Event (Optional)
     if (info.offset.x > 50) {
       console.log("Swiped Right");
-      onSwipeRight && onSwipeRight(); // Trigger custom event if provided
+      if (onSwipeRight) {
+        onSwipeRight();
+      }
     }
 
     // Snap back to original position

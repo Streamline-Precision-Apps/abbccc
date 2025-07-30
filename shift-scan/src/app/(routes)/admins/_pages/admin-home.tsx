@@ -12,17 +12,15 @@ import { Images } from "@/components/(reusable)/images";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 
-// Zod schema for PayPeriodTimesheets type
 const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-    message: "Invalid date format",
+    error: "Invalid date format",
   }),
   endTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-    message: "Invalid date format",
+    error: "Invalid date format",
   }),
 });
 
-// Zod schema for an array of timesheets
 const PayPeriodSheetsArraySchema = z.array(PayPeriodTimesheetsSchema);
 
 export default function AdminHome() {
@@ -64,10 +62,7 @@ export default function AdminHome() {
       setPayPeriodTimeSheets(transformedData);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error(
-          "Validation error in fetched pay period sheets:",
-          error.errors
-        );
+        console.error("Validation error in fetched pay period sheets:", error);
       } else {
         console.error("Error fetching pay period timesheets:", error);
       }

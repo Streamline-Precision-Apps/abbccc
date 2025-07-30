@@ -1,14 +1,9 @@
 import { CheckBox } from "@/components/(inputs)/checkBox";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { PersonnelView } from "../types/personnel";
-import { view } from "framer-motion";
 
 export default function CrewSelectList({
   crew,

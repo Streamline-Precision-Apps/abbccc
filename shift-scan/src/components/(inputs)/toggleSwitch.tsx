@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import classNames from "classnames";
 
 const LocaleToggleSwitch = ({
   data,
@@ -27,15 +26,10 @@ const LocaleToggleSwitch = ({
       className="flex w-20 h-10 cursor-pointer bg-blue-900 border-black border-[3px] justify-center items-center rounded-[10px] self-end"
     >
       <span
-        className={classNames(
-          "w-8 h-8 rounded-[10px] border-black border-[3px] transition-all duration-500 ",
-          {
-            "ml-10": isSelected,
-            "bg-app-green": isSelected,
-            "mr-10": !isSelected,
-            "bg-app-red": !isSelected,
-          }
-        )}
+        className={
+          `w-8 h-8 rounded-[10px] border-black border-[3px] transition-all duration-500 ` +
+          (isSelected ? "ml-10 bg-app-green" : "mr-10 bg-app-red")
+        }
       />
     </div>
   );
