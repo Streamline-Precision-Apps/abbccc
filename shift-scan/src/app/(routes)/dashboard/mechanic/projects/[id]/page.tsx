@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { use, useState } from "react";
 import useProjectData from "./_components/useProjectData";
 
 import ProjectTabs from "./_components/ProjectTabs";
@@ -13,11 +13,16 @@ import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Texts } from "@/components/(reusable)/texts";
 import { useRouter } from "next/navigation";
-import { PullToRefresh } from '@/components/(animations)/pullToRefresh';
+import { PullToRefresh } from "@/components/(animations)/pullToRefresh";
 
-export default function ProjectPage({ params }: { params: { id: string } }) {
+export default function ProjectPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const [activeTab, setActiveTab] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
+  const id = use(params).id; // Use the id from the params promise
 
   const {
     loading,
@@ -34,7 +39,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     diagnosedProblem,
     setDiagnosedProblem,
     handleRefresh,
-  } = useProjectData(params.id);
+  } = useProjectData(id);
 
   const router = useRouter();
   return (
@@ -43,7 +48,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         <Grids rows="7" gap="5" className="h-full">
           {!modalOpen && (
             <Holds background="white" className="row-span-1 h-full">
-              <TitleBoxes onClick={() => router.push("/dashboard")}> 
+              <TitleBoxes onClick={() => router.push("/dashboard")}>
                 <Texts>{projectData?.title || ""}</Texts>
               </TitleBoxes>
             </Holds>

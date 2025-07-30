@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 
 export type Jobsite = {
   id: string;
+  code?: string;
   name: string;
   description?: string;
   creationReason?: string;
@@ -29,6 +30,11 @@ export type Jobsite = {
   }>;
 };
 
+type ClientsSummary = {
+  id: string;
+  name: string;
+};
+
 export const useJobsiteDataById = (id: string) => {
   const [jobSiteDetails, setJobSiteDetails] = useState<Jobsite | null>(null);
   const [tagSummaries, setTagSummaries] = useState<
@@ -37,12 +43,7 @@ export const useJobsiteDataById = (id: string) => {
       name: string;
     }>
   >([]);
-  const [clients, setClients] = useState<
-    Array<{
-      id: string;
-      name: string;
-    }>
-  >([]);
+  const [clients, setClients] = useState<ClientsSummary[]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
 

@@ -60,22 +60,14 @@ export default function QRStep({
   return (
     <Holds background={"white"} className="h-full w-full">
       <Contents width={"section"} className="h-full pb-5">
-        {type !== "equipment" ? (
-          <>
-            <Holds className="h-full row-start-1 row-end-2">
-              <TitleBoxes onClick={handleReturnPath}>
-                <Titles size={"h1"}>{t("SelectLaborType")}</Titles>
-              </TitleBoxes>
-            </Holds>
-          </>
-        ) : (
-          <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
+        <Grids rows={"8"} gap={"5"} className="h-full w-full ">
+          <Holds className="h-full">
             <TitleBoxes onClick={handleReturnPath}>
-              <Titles size={"h1"}> {t("SelectEquipment")}</Titles>
+              <Titles size={"h3"} className="flex flex-col justify-end">
+                {t("SelectLaborType")}
+              </Titles>
             </TitleBoxes>
           </Holds>
-        )}
-        <Grids rows={"7"} gap={"5"} className="h-full w-full ">
           {!startCamera ? (
             <Holds className={"h-full w-full row-start-2 row-end-7 "}>
               <Grids rows={"6"} gap={"2"} className="h-full w-full">
@@ -99,8 +91,8 @@ export default function QRStep({
             </Holds>
           ) : (
             <Holds className={"h-full w-full row-start-2 row-end-7"}>
-              <Grids rows={"6"} gap={"2"}>
-                <Holds className="h-full w-full row-start-2 row-end-6 justify-center ">
+              <Grids rows={"7"} gap={"2"}>
+                <Holds className="h-full w-full row-start-2 row-end-7 justify-center ">
                   <QR
                     handleScanJobsite={handleScanJobsite}
                     url={url}
@@ -115,8 +107,13 @@ export default function QRStep({
                   />
                 </Holds>
 
-                <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
-                  <Buttons background={"none"} onClick={handleAlternativePath}>
+                <Holds className="h-full w-full row-start-7 row-end-8 justify-center">
+                  <Buttons
+                    background={"none"}
+                    shadow={"none"}
+                    onClick={handleAlternativePath}
+                    className="underline text-app-dark-blue"
+                  >
                     <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
                   </Buttons>
                 </Holds>
@@ -124,7 +121,7 @@ export default function QRStep({
             </Holds>
           )}
           {!startCamera ? (
-            <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+            <Holds className="row-start-8 row-end-9 h-full w-full justify-center py-2">
               <Buttons
                 onClick={() => setStartCamera(!startCamera)}
                 background={"green"}

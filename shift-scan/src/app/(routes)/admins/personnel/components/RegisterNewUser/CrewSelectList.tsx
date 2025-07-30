@@ -1,14 +1,9 @@
 import { CheckBox } from "@/components/(inputs)/checkBox";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { PersonnelView } from "../types/personnel";
-import { view } from "framer-motion";
 
 export default function CrewSelectList({
   crew,
@@ -32,8 +27,8 @@ export default function CrewSelectList({
         <Texts position={"left"} size={"p7"}>
           Crews
         </Texts>
-        <Holds className="w-full h-full border-2 border-black rounded-[10px] py-2 px-1">
-          <div className="h-full overflow-y-auto no-scrollbar">
+        <Holds className="w-full h-[70vh] border-2 border-black rounded-[10px] py-2 px-1">
+          <div className="bg-white w-full h-full p-3 overflow-y-auto no-scrollbar rounded-[10px]">
             {crew.map((c) => (
               <Holds
                 position={"row"}
@@ -67,7 +62,7 @@ export default function CrewSelectList({
                   <Titles size={"h6"}>{c.name}</Titles>
                 </Holds>
 
-                <Holds className="w-fit h-full ">
+                <Holds className="w-fit h-full relative">
                   <CheckBox
                     shadow={false}
                     id={`crew-${c.id}`}

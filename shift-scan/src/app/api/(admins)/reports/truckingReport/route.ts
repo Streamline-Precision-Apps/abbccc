@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { id } from "date-fns/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +31,26 @@ export async function GET(req: Request) {
         id: true,
         startingMileage: true,
         endingMileage: true,
-        truckNumber: true,
-        trailerNumber: true,
+        Truck: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Trailer: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         TimeSheet: {
           select: {
+            User: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
             date: true,
             comment: true,
             Jobsite: {
@@ -47,6 +62,8 @@ export async function GET(req: Request) {
           select: {
             truckingLogId: true,
             Equipment: { select: { name: true, id: true } },
+            source: true,
+            destination: true,
             startMileage: true,
             endMileage: true,
           },
@@ -79,13 +96,18 @@ export async function GET(req: Request) {
 
     const formattedReport = overWeightReport.map((log) => ({
       id: log.id,
-      truckId: log.truckNumber,
-      trailerId: log.trailerNumber,
+      driver: `${log.TimeSheet?.User?.firstName} ${log.TimeSheet?.User?.lastName}`,
+      truckId: log.Truck?.id ?? null,
+      truckName: log.Truck?.name ?? null,
+      trailerId: log.Trailer?.id ?? null,
+      trailerName: log.Trailer?.name ?? null,
       date: log.TimeSheet?.date ?? null,
       jobId: log.TimeSheet?.Jobsite?.name ?? null,
       Equipment: log.EquipmentHauled.map((equipment) => ({
         name: equipment.Equipment?.name || "",
         id: equipment.Equipment?.id || null,
+        source: equipment.source,
+        destination: equipment.destination,
         startMileage: equipment.startMileage,
         endMileage: equipment.endMileage,
       })),

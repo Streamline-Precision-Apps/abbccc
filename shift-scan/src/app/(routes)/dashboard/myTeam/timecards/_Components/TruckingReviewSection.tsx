@@ -84,7 +84,7 @@ type TimeSheet = {
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Tab } from "@/components/(reusable)/tab";
+import { NewTab } from "@/components/(reusable)/newTabs";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
@@ -143,7 +143,7 @@ export default function TruckingReviewSection({
         >
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black z-0" />
           {hasMileageData && (
-            <Tab
+            <NewTab
               isActive={tabs === 1}
               onClick={() => setTabs(1)}
               titleImage={"/mileage.svg"}
@@ -161,7 +161,7 @@ export default function TruckingReviewSection({
             />
           )}
           {hasMaterials && (
-            <Tab
+            <NewTab
               isActive={tabs === 2}
               onClick={() => setTabs(2)}
               titleImage={"/haulingFilled.svg"}
@@ -180,7 +180,7 @@ export default function TruckingReviewSection({
           )}
 
           {hasRefuelData && (
-            <Tab
+            <NewTab
               isActive={tabs === 3}
               onClick={() => setTabs(3)}
               titleImage={"/refuelFilled.svg"}
@@ -198,7 +198,7 @@ export default function TruckingReviewSection({
             />
           )}
           {hasStateMileage && (
-            <Tab
+            <NewTab
               isActive={tabs === 4}
               onClick={() => setTabs(4)}
               titleImage={"/stateFilled.svg"}
@@ -216,7 +216,7 @@ export default function TruckingReviewSection({
             />
           )}
           {hasEquipmentHauled && (
-            <Tab
+            <NewTab
               isActive={tabs === 5}
               onClick={() => setTabs(5)}
               titleImage={"/trucking.svg"}

@@ -6,7 +6,7 @@ import { TimesheetHighlights, TimesheetUpdate } from "@/lib/types";
 import { WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
-const { formatISO } = require("date-fns");
+import { formatISO } from "date-fns";
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
   const timesheets = prisma.timeSheet.findMany();
@@ -767,7 +767,6 @@ export async function handleTruckTimeSheet(formData: FormData) {
     let newTimeSheet: string | null = null;
     let previousTimeSheetId: string | null = null;
     let previoustimeSheetComments: string | null = null;
-    let endTime: string | null = null;
     let type: string | null = null;
     // Extract all needed values before transaction
     const jobsiteId = formData.get("jobsiteId") as string;
@@ -794,7 +793,6 @@ export async function handleTruckTimeSheet(formData: FormData) {
     }
     if (type === "switchJobs") {
       previousTimeSheetId = formData.get("id") as string;
-      endTime = formData.get("endTime") as string;
       // Only use transaction if updating two timesheets
       await prisma.$transaction(async (prisma) => {
         // Step 1: Create a new TimeSheet
@@ -811,9 +809,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
               create: {
                 laborType,
                 truckNumber: truck,
-                ...(equipmentId && {
-                  Equipment: { connect: { id: equipmentId } },
-                }),
+                equipmentId: equipmentId || null,
                 startingMileage,
                 trailerNumber: trailerNumber,
               },
@@ -829,7 +825,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
           const updatedPrev = await prisma.timeSheet.update({
             where: { id: previousTimeSheetId },
             data: {
-              endTime: formatISO(endTime),
+              endTime: formatISO(formData.get("endTime") as string),
               comment: previoustimeSheetComments,
               status: "PENDING",
             },
@@ -855,11 +851,9 @@ export async function handleTruckTimeSheet(formData: FormData) {
             create: {
               laborType,
               truckNumber: truck,
-              ...(equipmentId && {
-                Equipment: { connect: { id: equipmentId } },
-              }),
+              equipmentId: equipmentId || null,
               startingMileage,
-              trailerNumber: trailerNumber,
+              trailerNumber: trailerNumber || null,
             },
           },
         },

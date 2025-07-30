@@ -1,8 +1,8 @@
 "use server";
-import { v4 as uuidv4 } from 'uuid';
-import prisma from '@/lib/prisma';
-import { reportError } from './sentryErrorHandler';
-import { PasswordResetTokenByEmail } from '@/data/password-reset-token';
+import { v4 as uuidv4 } from "uuid";
+import prisma from "@/lib/prisma";
+import { reportError } from "./sentryErrorHandler";
+import { PasswordResetTokenByEmail } from "@/data/password-reset-token";
 
 const parseUTC = (timestamp: string): Date => {
   try {
@@ -12,10 +12,10 @@ const parseUTC = (timestamp: string): Date => {
     }
     date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     // eslint-disable-next-line no-console
-    console.log('Parse UTC date:', date);
+    console.log("Parse UTC date:", date);
     return date;
   } catch (error) {
-    reportError(error, { location: 'tokens/parseUTC', timestamp });
+    reportError(error, { location: "tokens/parseUTC", timestamp });
     throw error;
   }
 };
@@ -25,7 +25,7 @@ export const generatePasswordResetToken = async (email: string) => {
     // expiration 24 hour from timezone 1
     const expiration = new Date(new Date().getTime() + 3600 * 1000);
     // update expiration date to your timezone
-    const expires = new Date(parseUTC(expiration.toString())).toISOString();
+    const expires = new Date(expiration).toISOString();
 
     const existingToken = await PasswordResetTokenByEmail(email);
 
@@ -46,7 +46,10 @@ export const generatePasswordResetToken = async (email: string) => {
     });
     return passwordResetToken;
   } catch (error) {
-    reportError(error, { location: 'tokens/generatePasswordResetToken', email });
+    reportError(error, {
+      location: "tokens/generatePasswordResetToken",
+      email,
+    });
     throw error;
   }
 };

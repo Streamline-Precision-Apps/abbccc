@@ -32,7 +32,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
             position={"row"}
             className="w-full justify-center items-center gap-x-2 "
           >
-            <Titles size={"h3"}>{t("FormsDocuments")}</Titles>
+            <Titles size={"h5"}>{t("FormsDocuments")}</Titles>
             <Images
               titleImg="/form.svg"
               titleImgAlt="Inbox"
@@ -54,7 +54,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   titleImageAlt={""}
                   animatePulse={loading}
                 >
-                  <Titles size={"h5"}>{t("Forms")}</Titles>
+                  <Titles size={"h6"}>{t("Forms")}</Titles>
                 </NewTab>
 
                 {isManager && (
@@ -66,7 +66,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                     titleImageAlt={""}
                     animatePulse={loading}
                   >
-                    <Titles size={"h5"}>{t("TeamSubmissions")}</Titles>
+                    <Titles size={"h6"}>{t("TeamSubmissions")}</Titles>
                   </NewTab>
                 )}
 

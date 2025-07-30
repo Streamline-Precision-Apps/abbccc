@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -13,9 +13,10 @@ export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not
  */
 export async function GET(
   request: Request,
-  { params }: { params: { equipment: string } }
+  { params }: { params: Promise<{ equipment: string }> }
 ) {
   try {
+    const { equipment: equipmentId } = await params;
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -23,7 +24,6 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const equipmentId = params.equipment;
     if (!equipmentId) {
       return NextResponse.json(
         { error: "Invalid or missing equipment ID" },
@@ -36,7 +36,6 @@ export async function GET(
       where: { id: equipmentId },
       include: {
         equipmentVehicleInfo: true,
-        TruckingLogs: true,
         DocumentTags: true,
       },
     });

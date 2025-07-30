@@ -14,6 +14,8 @@ import { signOut } from "next-auth/react";
 import { z } from "zod";
 import { SignUpOutro } from "./signUpOutro";
 import { finishUserSetup } from "@/actions/userActions";
+import { EnterAccountInfo } from "./EnterAccountInfo";
+import { Bases } from "../(reusable)/bases";
 
 // Define Zod schema for validating props
 const propsSchema = z.object({
@@ -35,12 +37,15 @@ function validateProps(userId: string, accountSetup: boolean) {
 export default function Content({
   userId,
   accountSetup,
+  userName,
 }: {
   userId: string;
   accountSetup: boolean;
+  userName: string;
 }) {
   const isValid = validateProps(userId, accountSetup); // Ensure this is at the top
   const [step, setStep] = useState(1); // Always call useState
+  const totalSteps = 6; // Total number of steps in the signup process
   const handleComplete = async () => {
     try {
       // mark accountSetup as true
@@ -70,31 +75,65 @@ export default function Content({
 
   return (
     <Holds className="h-full" position={"row"}>
-      <Contents width={"section"}>
-        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
-        {step === 2 && (
-          <ResetPassword userId={userId} handleNextStep={handleNextStep} />
-        )}
-        {step === 3 && (
-          <NotificationSettings
-            userId={userId}
-            handleNextStep={handleNextStep}
-          />
-        )}
-        {step === 4 && (
-          <ProfilePictureSetup
-            userId={userId}
-            handleNextStep={handleNextStep}
-          />
-        )}
-        {/* {step === 5 && (
+      {/* {step === 1 && (
+        <Bases>
+          <Contents>
+            <ShiftScanIntro handleNextStep={handleNextStep} />
+          </Contents>
+        </Bases>
+      )} */}
+      {step === 1 && (
+        <EnterAccountInfo
+          userId={userId}
+          handleNextStep={handleNextStep}
+          userName={userName}
+          totalSteps={totalSteps}
+          currentStep={step}
+        />
+      )}
+
+      {step === 2 && (
+        <ResetPassword
+          userId={userId}
+          handleNextStep={handleNextStep}
+          totalSteps={totalSteps}
+          currentStep={step}
+        />
+      )}
+      {step === 3 && (
+        <NotificationSettings
+          userId={userId}
+          handleNextStep={handleNextStep}
+          totalSteps={totalSteps}
+          currentStep={step}
+        />
+      )}
+      {step === 4 && (
+        <ProfilePictureSetup
+          userId={userId}
+          handleNextStep={handleNextStep}
+          totalSteps={totalSteps}
+          currentStep={step}
+        />
+      )}
+      {/* {step === 5 && (
           <Permissions id={userId} handleAccept={handleComplete}/>
         )} */}
-        {step === 5 && (
-          <SignatureSetup id={userId} handleNextStep={handleNextStep} />
-        )}
-        {step === 6 && <SignUpOutro handleComplete={handleComplete} />}
-      </Contents>
+      {step === 5 && (
+        <SignatureSetup
+          id={userId}
+          handleNextStep={handleComplete}
+          totalSteps={totalSteps}
+          currentStep={step}
+        />
+      )}
+      {/* {step === 7 && (
+        <Bases>
+          <Contents>
+            <SignUpOutro handleComplete={handleComplete} />
+          </Contents>
+        </Bases>
+      )} */}
     </Holds>
   );
 }

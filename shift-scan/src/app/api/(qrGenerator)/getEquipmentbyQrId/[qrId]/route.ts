@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 /**
  * Get equipment details by QR code ID
@@ -13,9 +13,10 @@ import { auth } from '@/auth';
  */
 export async function GET(
   request: Request,
-  { params }: { params: { qrId: string } }
+  { params }: { params: Promise<{ qrId: string }> }
 ) {
   try {
+    const { qrId } = await params;
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -23,7 +24,6 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const qrId = params.qrId;
     if (!qrId) {
       return NextResponse.json(
         { error: "Invalid or missing QR ID" },
@@ -67,9 +67,9 @@ export async function GET(
     return NextResponse.json(equipment);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching equipment data:', error);
+    console.error("Error fetching equipment data:", error);
     const errorMessage =
-      error instanceof Error ? error.message : 'Failed to fetch equipment data';
+      error instanceof Error ? error.message : "Failed to fetch equipment data";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

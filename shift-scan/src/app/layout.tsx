@@ -15,6 +15,7 @@ const AutoPermissionsManager = dynamic(
   () => import("@/components/(settings)/AutoPermissionsManager"),
   { ssr: false }
 );
+import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
 
 export const viewport: Viewport = {
   themeColor: "#57BDE9",

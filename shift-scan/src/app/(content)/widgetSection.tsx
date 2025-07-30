@@ -19,9 +19,10 @@ import DisplayBreakBanner from "./displayBreakBanner";
 type Props = {
   session: Session;
   locale: string;
+  isTerminate: boolean;
 };
 
-export default function WidgetSection({ session, locale }: Props) {
+export default function WidgetSection({ session, locale, isTerminate }: Props) {
   // Hooks and state initialization
   const router = useRouter();
   const [toggle, setToggle] = useState(true);
@@ -56,10 +57,6 @@ export default function WidgetSection({ session, locale }: Props) {
     if (pageView === "removeLocalStorage") {
       setPageView("");
     }
-    // Uncomment if necessary
-    // if (!accountSetup) {
-    //   router.push("/signin/signup");
-    // }
   }, [pageView, router, accountSetup, setPageView]);
 
   //-----------------------------------------------------------------------
@@ -93,6 +90,7 @@ export default function WidgetSection({ session, locale }: Props) {
         isManager={isManager}
         handleToggle={handleToggle}
         loading={loading}
+        isTerminate={isTerminate}
       />
     </>
   );
@@ -136,12 +134,14 @@ function MainContentSection({
   isManager,
   handleToggle,
   loading,
+  isTerminate,
 }: {
   toggle: boolean;
   pageView: string;
   isManager: boolean;
   handleToggle: () => void;
   loading: boolean;
+  isTerminate: boolean;
 }) {
   return (
     <Holds
@@ -158,7 +158,11 @@ function MainContentSection({
           />
 
           {toggle && (
-            <WidgetButtonsSection pageView={pageView} isManager={isManager} />
+            <WidgetButtonsSection
+              pageView={pageView}
+              isManager={isManager}
+              isTerminate={isTerminate}
+            />
           )}
         </Grids>
       </Contents>
@@ -203,9 +207,11 @@ function TimeDisplaySection({
 function WidgetButtonsSection({
   pageView,
   isManager,
+  isTerminate,
 }: {
   pageView: string;
   isManager: boolean;
+  isTerminate: boolean;
 }) {
   const t = useTranslations("Home");
   return (
@@ -235,7 +241,7 @@ function WidgetButtonsSection({
         className={
           isManager
             ? "col-span-2 row-span-4 gap-5 h-full"
-            : "col-span-2 row-span-8 gap-5 h-full"
+            : "col-span-2 row-span-8 gap-5 h-full py-3"
         }
       >
         <WidgetContainer
@@ -246,6 +252,7 @@ function WidgetButtonsSection({
           background={"green"}
           translation={"Home"}
           href={pageView === "break" ? "/break" : "/clock"}
+          disabled={isTerminate}
         />
       </Holds>
     </>

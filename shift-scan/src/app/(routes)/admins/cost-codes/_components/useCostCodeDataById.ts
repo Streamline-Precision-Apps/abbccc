@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 
 export type CostCode = {
   id: string;
+  code: string;
   name: string;
   isActive: boolean;
   createdAt: Date;

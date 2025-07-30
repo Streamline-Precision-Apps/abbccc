@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { uploadFirstSignature } from "@/actions/userActions";
-import Signature from "./signature";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
@@ -12,17 +11,26 @@ import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { Images } from "../(reusable)/images";
+import { ProgressBar } from "./progressBar";
+import { Button } from "../ui/button";
+import { NModals } from "../(reusable)/newmodals";
+import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 
 interface SignatureSetupProps {
   id: string;
   handleNextStep: () => void;
+  totalSteps: number;
+  currentStep: number;
 }
 
 const SignatureSetup: React.FC<SignatureSetupProps> = ({
   id,
   handleNextStep,
+  totalSteps,
+  currentStep,
 }) => {
   const [base64String, setBase64String] = useState<string>("");
+  const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showBanner, setShowBanner] = useState<boolean>(false);
   const [bannerMessage, setBannerMessage] = useState<string>("");
@@ -67,50 +75,73 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
   };
 
   return (
-    <>
-      {/* Banner for error or feedback */}
-      {showBanner && (
-        <Holds
-          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
+    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
+      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+        <Texts text={"white"} className="justify-end" size={"sm"}>
+          {t("AddASignature")}
+        </Texts>
+      </div>
+      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
+        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full overflow-auto no-scrollbar gap-4">
+          <ProgressBar
+            currentStep={
+              base64String ? Math.min(currentStep + 1, totalSteps) : currentStep
+            }
+            totalSteps={totalSteps}
+          />
+          <div className=" h-full max-h-[60vh] flex flex-col items-center gap-8">
+            <p className="text-xs text-gray-400">{t("AddYourBestSignature")}</p>
+            <div>
+              <Holds className="w-[300px] h-[200px] rounded-[10px] border-[3px] border-black justify-center items-center relative ">
+                {base64String && (
+                  <Images
+                    titleImg={base64String}
+                    titleImgAlt={t("Signature")}
+                    className="justify-center items-center "
+                    size={"50"}
+                  />
+                )}
+                <Holds
+                  background={"orange"}
+                  className="absolute top-1 right-1 w-fit h-fit rounded-full border-[3px] border-black p-2"
+                  onClick={() => setEditSignatureModalOpen(true)}
+                >
+                  <Images
+                    titleImg="/formEdit.svg"
+                    titleImgAlt={"Edit"}
+                    className="max-w-5 h-auto object-contain"
+                  />
+                </Holds>
+              </Holds>
+            </div>
+          </div>
+          <div className="flex flex-col  mb-4">
+            <Button
+              className="bg-app-dark-blue"
+              onClick={handleSubmitImage}
+              disabled={isSubmitting}
+            >
+              <p className="text-white font-semibold text-base">
+                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+              </p>
+            </Button>
+          </div>
+        </div>
+
+        <NModals
+          handleClose={() => setEditSignatureModalOpen(false)}
+          size={"xlWS"}
+          isOpen={editSignatureModalOpen}
         >
-          <Banners background="red">
-            <Texts size="p6">{bannerMessage}</Texts>
-          </Banners>
-        </Holds>
-      )}
-      <Grids rows="10" gap="5" className="mb-5">
-        <Holds background="white" className="row-span-1 h-full justify-center">
-          <TitleBoxes onClick={() => {}}>
-            <Holds position={"row"}>
-              <Titles size={"h1"}>{t("AddASignature")}</Titles>
-              <Images
-                titleImg="/signature.svg"
-                titleImgAlt="Signature Setup"
-                className="w-8 h-8"
-              />
-            </Holds>
-          </TitleBoxes>
-        </Holds>
-        <Holds background="white" className="row-span-8 h-full py-5">
-          <Contents width="section">
-            <Texts size="p4">{t("LetsAddASignature")}</Texts>
-            <Holds className="h-full">
-              {/* Signature component where the signature is captured */}
-              <Signature setBase64String={setBase64String} />
-            </Holds>
-          </Contents>
-        </Holds>
-        <Holds className="row-span-1 h-full">
-          <Buttons
-            onClick={handleSubmitImage}
-            background={base64String ? "orange" : "darkGray"}
-            disabled={isSubmitting}
-          >
-            <Titles>{isSubmitting ? "Submitting..." : "Next"}</Titles>
-          </Buttons>
-        </Holds>
-      </Grids>
-    </>
+          <Holds className="w-full h-full justify-center items-center">
+            <Signature
+              setBase64String={setBase64String}
+              closeModal={() => setEditSignatureModalOpen(false)}
+            />
+          </Holds>
+        </NModals>
+      </div>
+    </div>
   );
 };
 

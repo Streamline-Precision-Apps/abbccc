@@ -13,7 +13,7 @@ enum FormStatus {
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -21,7 +21,7 @@ export async function GET(
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { id } = params;
+  const { id } = await params;
   const forms = await prisma.formSubmission.findUnique({
     where: {
       id,

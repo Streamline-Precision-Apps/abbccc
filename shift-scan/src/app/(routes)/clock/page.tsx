@@ -16,7 +16,7 @@ export default async function Clock() {
 
   const user = session.user;
   // Get the current language from cookies
-  const lang = cookies().get("locale");
+  const lang = (await cookies()).get("locale");
   const locale = lang?.value || "en";
   return (
     <Bases>

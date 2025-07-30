@@ -17,7 +17,7 @@ export async function getCookie(cookieName: string) {
     redirect("/signin");
   }
   try {
-    const cookie = cookies().get(cookieName);
+    const cookie = (await cookies()).get(cookieName);
     if (!cookie || cookie?.value) {
       throw new Error(`Cookie ${cookieName} not found or has no value`);
     }
@@ -36,7 +36,7 @@ LOCALE COOKIES
 */
 export async function setLocale(isSpanish: boolean) {
   try {
-    cookies().set("locale", isSpanish ? "es" : "en", {
+    (await cookies()).set("locale", isSpanish ? "es" : "en", {
       path: "/",
       maxAge: 60 * 60 * 24 * 365, // 1 year
     });
@@ -72,7 +72,7 @@ export async function setWorkRole(workRole: string) {
   }
 
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "workRole",
       value: workRole,
       httpOnly: true,
@@ -105,7 +105,7 @@ export async function setLaborType(laborType: string) {
   console.log(laborType);
   try {
     if (laborType === "tascoEEquipment") {
-      cookies().set({
+      (await cookies()).set({
         name: "laborType",
         value: "",
         httpOnly: true,
@@ -114,7 +114,7 @@ export async function setLaborType(laborType: string) {
         expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
       });
     } else {
-      cookies().set({
+      (await cookies()).set({
         name: "laborType",
         value: laborType,
         httpOnly: true,
@@ -138,7 +138,7 @@ export async function RemoveWorkRole() {
     redirect("/signin");
   }
   try {
-    cookies().delete("workRole");
+    (await cookies()).delete("workRole");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);
   }
@@ -147,7 +147,7 @@ export async function RemoveWorkRole() {
 // idea of this cookie is to set it to true if the user has access to the dashboard and false if not
 export async function setCurrentPageView(currentPageView: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "currentPageView",
       value: currentPageView,
       httpOnly: true,
@@ -163,7 +163,7 @@ export async function setCurrentPageView(currentPageView: string) {
 // cookie for setting job site access
 export async function setProfilePicture(profilePicture: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "profilePicture",
       value: profilePicture,
       httpOnly: true,
@@ -179,7 +179,7 @@ export async function setProfilePicture(profilePicture: string) {
 // cookie for setting job site access
 export async function setJobSite(jobSite: Options | null) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "jobSite",
       value: `${jobSite?.code}|${jobSite?.label}`,
       httpOnly: true,
@@ -194,7 +194,7 @@ export async function setJobSite(jobSite: Options | null) {
 
 export async function setCostCode(costCode: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "costCode",
       value: costCode,
       httpOnly: true,
@@ -209,7 +209,7 @@ export async function setCostCode(costCode: string) {
 
 export async function setEquipment(equipment: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "equipment",
       value: equipment,
       httpOnly: true,
@@ -223,7 +223,7 @@ export async function setEquipment(equipment: string) {
 }
 export async function setTruck(truck: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "truckId",
       value: truck,
       httpOnly: true,
@@ -238,7 +238,7 @@ export async function setTruck(truck: string) {
 
 export async function setMechanicProjectID(mechanicProjectID: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "mechanicProjectID",
       value: mechanicProjectID,
       httpOnly: true,
@@ -253,7 +253,7 @@ export async function setMechanicProjectID(mechanicProjectID: string) {
 
 export async function setStartingMileage(startingMileage: string) {
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "startingMileage",
       value: startingMileage,
       httpOnly: true,
@@ -273,7 +273,7 @@ export async function setPrevTimeSheet(timeSheetId: string) {
     throw new Error("Not Authorized - setPrevTimeSheet");
   }
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "timeSheetId",
       value: timeSheetId,
       httpOnly: true,
@@ -312,7 +312,7 @@ export async function setAdminAccess() {
   }
   // give the user access to the dashboard
   try {
-    cookies().set({
+    (await cookies()).set({
       name: "adminAccess",
       value: "true",
       httpOnly: true,
@@ -328,7 +328,7 @@ export async function setAdminAccess() {
 // a function to remove the cookie for admin access
 export async function RemoveAdminAccess() {
   try {
-    cookies().delete("adminAccess");
+    (await cookies()).delete("adminAccess");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);
   }

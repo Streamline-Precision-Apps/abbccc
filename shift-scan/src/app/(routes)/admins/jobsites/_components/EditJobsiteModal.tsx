@@ -12,6 +12,13 @@ import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function EditJobsiteModal({
   cancel,
@@ -57,12 +64,17 @@ export default function EditJobsiteModal({
     try {
       const fd = new FormData();
       fd.append("id", formData.id);
+      fd.append("code", formData.code || ""); // Ensure code is included
       fd.append("name", formData.name);
+      fd.append("client", formData.Client?.id || "");
       fd.append("description", formData.description || "");
       fd.append("creationReason", formData.creationReason || "");
       fd.append("approvalStatus", formData.approvalStatus);
       fd.append("isActive", String(formData.isActive));
-      fd.append("CCTags", JSON.stringify(formData.CCTags.map((tag) => tag.id)));
+      fd.append(
+        "CCTags",
+        JSON.stringify(formData.CCTags.map((tag) => ({ id: tag.id })))
+      );
 
       const result = await updateJobsiteAdmin(fd);
 
@@ -142,19 +154,40 @@ export default function EditJobsiteModal({
               </div>
             </div>
           </div>
-          <div className="flex flex-col mb-2">
-            <Label htmlFor="name" className="text-sm">
-              Client
+          {/* <div className="flex flex-col">
+            <Label htmlFor="client-id" className={`text-sm`}>
+              Client ID
             </Label>
-            <Input
-              type="text"
-              name="name"
-              value={formData.Client?.name || ""}
-              onChange={handleInputChange}
-              className="w-full text-xs"
-              disabled
-            />
-          </div>
+            <Select
+              name="client-id"
+              value={formData.Client?.id || ""}
+              onValueChange={(selectedId) => {
+                const selectedClient = clients.find((c) => c.id === selectedId);
+                setFormData((prev) => {
+                  if (!prev) return prev;
+                  if (selectedClient) {
+                    return { ...prev, Client: selectedClient };
+                  } else {
+                    // Remove Client property if none selected
+                    const { Client, ...rest } = prev;
+                    return { ...rest } as Jobsite;
+                  }
+                });
+              }}
+            >
+              <SelectTrigger id="jobsite-cctags" className="text-xs">
+                <SelectValue placeholder="Select a cost code group" />
+              </SelectTrigger>
+              <SelectContent>
+                {clients.map((client) => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div> */}
+
           <div className="flex flex-col gap-4 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
               <div className="flex flex-col">
@@ -169,9 +202,27 @@ export default function EditJobsiteModal({
                 />
               </div>
             )}
+
+            <div>
+              <Label htmlFor="jobsite-code" className={`text-sm `}>
+                Code Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="jobsite-code"
+                type="text"
+                name="code"
+                value={formData.code}
+                onChange={handleInputChange}
+                className="w-full text-xs"
+                required
+              />
+              <p className="pl-1 text-xs italic text-gray-600">
+                Enter the code only
+              </p>
+            </div>
             <div>
               <Label htmlFor="name" className="text-sm">
-                Name
+                Full Name
               </Label>
               <Input
                 type="text"
@@ -181,6 +232,9 @@ export default function EditJobsiteModal({
                 className="w-full text-xs"
                 required
               />
+              <p className="pl-1 text-xs italic text-gray-600">
+                Include jobsite code in full name
+              </p>
             </div>
             <div>
               <Label htmlFor="description" className="text-sm font-medium">

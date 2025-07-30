@@ -3,7 +3,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import MechanicEditPage from "./_components/MechanicEditPage";
 import MechanicEmployeeLogs from "./_components/MechanicEmployeeLogs";
 import { useTranslations } from "next-intl";
@@ -53,7 +53,7 @@ type LogItem = {
 export default function EditRepairDetails({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const [activeTab, setActiveTab] = useState(1);
   const [repairDetails, setRepairDetails] = useState<RepairDetails>();
@@ -63,14 +63,15 @@ export default function EditRepairDetails({
   const [totalHours, setTotalHours] = useState<number>(0);
   const t = useTranslations("MechanicWidget");
   const router = useRouter();
+  const id = use(params).id;
 
   const fetchRepairDetails = async () => {
     setLoading(true);
 
     try {
       const [repairDetailsRes, logsRes] = await Promise.all([
-        fetch(`/api/getRepairDetails/${params.id}`).then((res) => res.json()),
-        fetch(`/api/getMaintenanceLogs/${params.id}`).then((res) => res.json()),
+        fetch(`/api/getRepairDetails/${id}`).then((res) => res.json()),
+        fetch(`/api/getMaintenanceLogs/${id}`).then((res) => res.json()),
       ]);
 
       // ✅ Check if logs have changed
@@ -119,7 +120,7 @@ export default function EditRepairDetails({
 
   useEffect(() => {
     fetchRepairDetails(); // Initial fetch
-  }, [params.id, activeTab === 2]);
+  }, [id, activeTab === 2]);
 
   return (
     <Bases>

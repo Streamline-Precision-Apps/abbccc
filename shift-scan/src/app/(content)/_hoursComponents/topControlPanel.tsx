@@ -25,7 +25,7 @@ export default function TopControlPanel({ returnToMain }: Props) {
       </Holds>
       <Holds size={"80"} className="h-full">
         <Buttons href={"/timesheets"} background={"green"}>
-          <Titles size={"h3"}>{t("TimeSheet-Label")}</Titles>
+          <Titles size={"h5"}>{t("TimeSheet-Label")}</Titles>
         </Buttons>
       </Holds>
     </>

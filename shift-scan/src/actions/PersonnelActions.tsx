@@ -29,18 +29,12 @@ export async function editPersonnelInfo(formData: FormData) {
     const id = formData.get("id") as string;
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
-    const email = formData.get("email") as string;
-    const DOB = formData.get("DOB") as string;
     const permission = formData.get("permission") as string;
     const truckView = formData.get("truckView") === "true";
     const tascoView = formData.get("tascoView") === "true";
     const laborView = formData.get("laborView") === "true";
     const mechanicView = formData.get("mechanicView") === "true";
-    const phoneNumber = formData.get("phoneNumber") as string;
-    const emergencyContact = formData.get("emergencyContact") as string;
-    const emergencyContactNumber = formData.get(
-      "emergencyContactNumber"
-    ) as string;
+
     const crewLeads = JSON.parse(formData.get("crewLeads") as string) as Record<
       string,
       boolean
@@ -58,8 +52,6 @@ export async function editPersonnelInfo(formData: FormData) {
         data: {
           firstName,
           lastName,
-          email,
-          DOB,
           permission: permission as Permission,
           truckView,
           tascoView,
@@ -69,16 +61,6 @@ export async function editPersonnelInfo(formData: FormData) {
             terminationDate && terminationDate !== ""
               ? new Date(terminationDate)
               : null, // Handle empty string case
-        },
-      });
-
-      // 2. Update contact info
-      await prisma.contacts.update({
-        where: { userId: id },
-        data: {
-          phoneNumber,
-          emergencyContact,
-          emergencyContactNumber,
         },
       });
 

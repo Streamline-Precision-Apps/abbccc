@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate the user
@@ -19,7 +19,7 @@ export async function GET(
     }
 
     // Validate the ID parameter
-    const jobsiteId = params.id;
+    const jobsiteId = (await params).id;
     if (!jobsiteId) {
       return NextResponse.json(
         { error: "Invalid or missing jobsite ID" },

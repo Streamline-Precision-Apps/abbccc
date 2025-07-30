@@ -125,7 +125,9 @@ export default function MechanicEditPage({
   const RemoveDelay = async () => {
     try {
       const formData = new FormData();
-      id && formData.append("id", id.toString());
+      if (id) {
+        formData.append("id", id.toString());
+      }
 
       // Optimistically update local state first
       if (repairDetails) {

@@ -41,6 +41,14 @@ export default function UserInformation({
 
   originalUser: UserData | null;
 }) {
+  const disabledFields = [
+    "username",
+    "phoneNumber",
+    "emergencyContact",
+    "emergencyContactNumber",
+    "DOB",
+    "email",
+  ];
   return (
     <Holds size={"50"} className="h-full">
       {fields.map((field) => (
@@ -101,24 +109,36 @@ export default function UserInformation({
               name={field.name}
               value={
                 field.name === "phoneNumber"
-                  ? user.Contact?.phoneNumber || ""
+                  ? user.Contact?.phoneNumber
+                    ? user.Contact.phoneNumber.replace(
+                        /^(\d{3})(\d{3})(\d{4})$/,
+                        "$1-$2-$3"
+                      )
+                    : "N/A"
                   : field.name === "emergencyContact"
-                  ? user.Contact?.emergencyContact || ""
+                  ? user.Contact?.emergencyContact || "N/A"
                   : field.name === "emergencyContactNumber"
-                  ? user.Contact?.emergencyContactNumber || ""
+                  ? user.Contact?.emergencyContactNumber
+                    ? user.Contact.emergencyContactNumber.replace(
+                        /^(\d{3})(\d{3})(\d{4})$/,
+                        "$1-$2-$3"
+                      )
+                    : "N/A"
                   : field.name === "DOB"
-                  ? user.DOB || ""
+                  ? user.DOB
+                    ? new Date(user.DOB).toISOString().slice(0, 10)
+                    : "N/A"
                   : field.name === "email"
-                  ? user.email || ""
+                  ? user.email || "N/A"
                   : field.name === "username"
-                  ? user.username || ""
+                  ? user.username || "N/A"
                   : field.name === "firstName"
-                  ? user.firstName || ""
+                  ? user.firstName || "N/A"
                   : field.name === "lastName"
-                  ? user.lastName || ""
-                  : ""
+                  ? user.lastName || "N/A"
+                  : "N/A"
               }
-              disable={field.name === "username"}
+              disable={disabledFields.includes(field.name)}
               onChange={handleInputChange}
               isChanged={edited[field.name] || false}
               onRevert={() => {

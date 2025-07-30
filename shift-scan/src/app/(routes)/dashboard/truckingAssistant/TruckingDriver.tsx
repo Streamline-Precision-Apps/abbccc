@@ -31,7 +31,8 @@ type EquipmentHauled = {
   truckingLogId: string;
   equipmentId: string | null;
   createdAt: Date;
-  jobSiteId: string | null;
+  source: string | null;
+  destination: string | null;
   Equipment: {
     id: string;
     name: string;
@@ -40,7 +41,7 @@ type EquipmentHauled = {
     id: string;
     name: string;
   } | null;
-  startingMileage: number | null;
+  startMileage: number | null;
   endMileage: number | null;
 };
 
@@ -128,7 +129,9 @@ export default function TruckDriver() {
       haulingLogsTab: Boolean(
         equipmentHauled &&
           equipmentHauled.length >= 0 &&
-          equipmentHauled.every((item) => item.equipmentId && item.jobSiteId) &&
+          equipmentHauled.every(
+            (item) => item.equipmentId && item.source && item.destination
+          ) &&
           material &&
           material.length >= 0 &&
           material.every(

@@ -10,6 +10,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
+import { useEffect } from "react";
 import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
@@ -28,11 +29,6 @@ export default function SignInForm() {
     setViewSecret(!viewSecret);
   };
 
-  const LocaleHandler = async (event: ChangeEvent<HTMLInputElement>) => {
-    await setLocale(event.target.checked);
-    router.refresh();
-  };
-
   const handleSubmit = async (event: React.FormEvent) => {
     setAnimation(true);
     event.preventDefault();
@@ -49,7 +45,19 @@ export default function SignInForm() {
       setAnimation(false);
       setTimeout(() => setError(""), 5000);
     } else {
-      router.push("/");
+      // Fetch session info after sign in
+      const res = await fetch("/api/auth/session");
+      const session = await res.json();
+      const permission = session?.user?.permission;
+      if (
+        (permission === "ADMIN" || permission === "SUPERADMIN") &&
+        typeof window !== "undefined" &&
+        window.innerWidth >= 768
+      ) {
+        router.push("/admins");
+      } else {
+        router.push("/");
+      }
       setAnimation(false);
     }
   };
@@ -63,7 +71,13 @@ export default function SignInForm() {
       )}
       <Forms onSubmit={handleSubmit}>
         <Labels htmlFor="username">{t("EmployeeID")}</Labels>
-        <Inputs variant="default" name="username" type="text" required />
+        <Inputs
+          variant="default"
+          name="username"
+          type="text"
+          required
+          autoCapitalize="off"
+        />
         <Holds position={"row"}>
           <Labels htmlFor="password">{t("Password")}</Labels>
           <Images
@@ -79,10 +93,11 @@ export default function SignInForm() {
           variant="default"
           name="password"
           type={viewSecret ? "text" : "password"}
+          autoCapitalize="off"
           required
         />
-        <Holds position={"row"}>
-          <Holds className="mb-8">
+        <Holds position={"row"} className="justify-end mb-8">
+          <Holds className="w-fit">
             <Link href="/signin/forgot-password">
               <Texts text={"link"} size={"p5"} position={"right"}>
                 {t("Btn-forgot")}
@@ -118,7 +133,7 @@ export default function SignInForm() {
             </Buttons>
           </Holds>
         </Holds>
-        <Holds position="row" className="mb-6">
+        {/* <Holds position="row" className="mb-6">
           <Holds size={"80"}>
             <Texts size="p3" position={"left"}>
               {t("Spanish")}
@@ -133,7 +148,7 @@ export default function SignInForm() {
               name="locale"
             />
           </Holds>
-        </Holds>
+        </Holds> */}
       </Forms>
     </Contents>
   );

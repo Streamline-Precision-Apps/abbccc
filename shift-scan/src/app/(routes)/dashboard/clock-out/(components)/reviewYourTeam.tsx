@@ -4,11 +4,10 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { NewTab } from "@/components/(reusable)/newTabs";
 import { crewUsers, TimesheetFilter, TimesheetHighlights } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef, useMemo } from "react";
-import TimeSheetRenderer from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/timeSheetRenderer";
+import TimeSheetRenderer from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/_components/timeSheetRenderer";
 import { approvePendingTimesheets } from "@/actions/timeSheetActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
@@ -140,16 +139,18 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   // Compose the review list: manager first, then team. Always include manager, even if no pending timesheets.
   const reviewList = [
     ...(managerUser ? [managerUser] : []),
-    ...filteredTeam
-  ].filter((member, idx, arr) => arr.findIndex(u => u.id === member.id) === idx);
+    ...filteredTeam,
+  ].filter(
+    (member, idx, arr) => arr.findIndex((u) => u.id === member.id) === idx
+  );
 
   // Memoize the userIds array for stable dependency (as a string key)
   const userIds = useMemo(() => {
     return [
       ...(managerUser ? [managerUser.id] : []),
-      ...filteredTeam.map(u => u.id)
+      ...filteredTeam.map((u) => u.id),
     ];
-  }, [managerUser?.id, filteredTeam.map(u => u.id).join(",")]);
+  }, [managerUser?.id, filteredTeam.map((u) => u.id).join(",")]);
   // Create a stable string key for dependency
   const userIdsKey = userIds.join(",");
 
@@ -160,31 +161,22 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     }
   }, [reviewList.length]);
   const focusUser = reviewList[focusIndex];
-  // Fetch all pending timesheets for all users (manager + team) only when userIds change
+  // Fetch only the current user's pending timesheets when focusUser changes
   useEffect(() => {
-    const fetchPending = async () => {
-      if (!userIds.length) {
-        setHasNoMembers(true);
-        return;
-      }
+    if (!focusUser) return;
+    const fetchUserTimesheets = async () => {
       try {
-        const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userIds }),
-        });
+        const res = await fetch(`/api/getPendingTeamTimesheets`);
         const data = await res.json();
-        setPendingTimesheets(data);
-        setDataLoaded(true); // Mark data as loaded after successful fetch
-      } catch (error) {
-        console.error("Error fetching pending timesheets:", error);
-        // Mark as loaded even on error to avoid infinite loading
+        setPendingTimesheets({ [focusUser.id]: data });
         setDataLoaded(true);
-        setHasNoMembers(true);
+      } catch (error) {
+        console.error("Error fetching timesheets:", error);
+        setDataLoaded(true);
       }
     };
-    fetchPending();
-  }, [userIdsKey]);
+    fetchUserTimesheets();
+  }, [focusUser?.id]);
 
   // Approve all pending timesheets for the focus user
   const handleApprove = async () => {
@@ -204,16 +196,15 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     await approvePendingTimesheets(focusUser.id, manager);
     // Re-fetch pending timesheets after approval
     try {
-      const res = await fetch("/api/getPendingTeamTimesheets/[crewMembers]", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userIds }),
-      });
+      const res = await fetch(`/api/getPendingTeamTimesheets`);
       const data = await res.json();
       setPendingTimesheets(data);
       setDataLoaded(true);
     } catch (error) {
-      console.error("Error re-fetching pending timesheets after approve:", error);
+      console.error(
+        "Error re-fetching pending timesheets after approve:",
+        error
+      );
     }
     // Move to next user (if any)
     if (focusIndex < reviewList.length - 1) {
@@ -292,14 +283,15 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   const timesheetData = pendingTimesheets[focusUser?.id] || [];
   const timesheetLoading = loading; // Use parent loading state
 
-
   // Debug effect for timesheetData changes (optional, can be removed)
   useEffect(() => {
     if (timesheetData) {
-      console.log('ReviewYourTeam - timesheetData updated:', {
+      console.log("ReviewYourTeam - timesheetData updated:", {
         filter: getCurrentTimesheetFilter(),
         isArray: Array.isArray(timesheetData),
-        length: Array.isArray(timesheetData) ? timesheetData.length : 'not array',
+        length: Array.isArray(timesheetData)
+          ? timesheetData.length
+          : "not array",
         data: timesheetData,
       });
     }
@@ -342,14 +334,10 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   useEffect(() => {
     // Only run this check after we've loaded data
     if (dataLoaded && !loading) {
-      console.log(
-        `Data loaded. Review list length: ${reviewList.length}`
-      );
+      console.log(`Data loaded. Review list length: ${reviewList.length}`);
       if (reviewList.length === 0) {
         // Set flag that we've determined there are no members
-        console.log(
-          "No users with pending timesheets, will navigate away"
-        );
+        console.log("No users with pending timesheets, will navigate away");
         setHasNoMembers(true);
       }
     }
@@ -465,7 +453,9 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
                           <select
                             className="w-full border-2 border-black rounded-md px-3 py-2 text-sm bg-white text-gray-800 font-medium"
                             value={filter}
-                            onChange={(e) => setFilter(e.target.value as typeof filter)}
+                            onChange={(e) =>
+                              setFilter(e.target.value as typeof filter)
+                            }
                           >
                             {FILTER_OPTIONS.map((opt) => (
                               <option key={opt.value} value={opt.value}>

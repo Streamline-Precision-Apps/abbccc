@@ -17,10 +17,37 @@
     "ChangePassword": "Change Password",
     "LogoAlt": "Streamline Precision Logo"
   },
+  "ForgotPassword": {
+    "RecoveryPageTitle": "Enter your email and we will send you a link to reset your password.",
+    "SendEmail": "Send Email",
+    "Email": "Email",
+    "EnterYourEmail": "Enter your email",
+    "Back": "Back"
+  },
+  "PasswordReset": {
+    "ChangePasswordTitle": "Enter in your new password",
+    "ChooseNewPassword": "Choose a new password! Make sure to follow the strength requirements!",
+    "PasswordRequirements": "Password must include:",
+    "NumberRequirement": "1 Number",
+    "SymbolRequirement": "1 Symbol",
+    "LengthRequirement": "Has a Length 8+ characters",
+    "NewPassword": "New Password",
+    "ConfirmPassword": "Confirm Password",
+    "Next": "Next",
+    "Submitting": "Submitting...",
+    "NewPasswordEmptyError": "Invalid Attempt. New Password cannot be empty!",
+    "ConfirmPasswordEmptyError": "Invalid Attempt. Confirm Password cannot be empty!",
+    "PasswordMismatchError": "Invalid Attempt. Passwords do not match!",
+    "PasswordLengthError": "Invalid Attempt. Password must be at least 8 characters long, contain 1 number, and 1 symbol.",
+    "EyeImageAlt": "Eyeball Image",
+    "ChangePassword": "Change Password",
+    "Cancel": "Cancel"
+  },
 
   "SignUpIntro": {
     "Welcome": "Welcome to shift scan! Time to set up your account!",
     "ThingsWeNeedToDo": "Things we need to do...",
+    "EnterYourInformation": "Enter Your Information",
     "ChooseNewPassword": "Choose New Password",
     "GivePermissions": "Give Permissions",
     "ChooseProfilePicture": "Choose Profile Picture",
@@ -29,13 +56,35 @@
     "LogoAlt": "Shift Scan Logo"
   },
 
+  "SignUpAccountInfo": {
+    "InvalidEmail": "Please enter a valid email",
+    "ItsTimeToSetUpYourAccount": "It's time to set up your account!",
+    "Email": "Email",
+    "EnterYourEmail": "Enter your email",
+    "PhoneNumber": "Phone Number",
+    "InvalidPhone": "Please enter a valid phone number",
+    "EnterYourPhoneNumber": "Enter your phone number",
+    "DateOfBirth": "Date of Birth",
+    "SelectDate": "Select Date",
+    "LanguagePreference": "Language Preference",
+    "SelectLanguage": "Select Language",
+    "AccountInformation": "Account Information",
+    "Next": "Next",
+    "EmergencyContactName": "Emergency Contact Name",
+    "EnterEmergencyContactName": "Enter first and last name",
+    "EmergencyContactPhoneNumber": "Emergency Contact Phone Number",
+    "EnterEmergencyContactPhoneNumber": "Enter phone number",
+    "English": "English",
+    "Spanish": "Spanish"
+  },
+
   "SignUpPassword": {
-    "ChoosePasswordTitle": "Choose A Password",
+    "ChoosePasswordTitle": "Choose a new password",
     "ChooseNewPassword": "Choose a new password! Make sure to follow the strength requirements!",
-    "PasswordRequirements": "Password Requirements:",
-    "NumberRequirement": "Number",
-    "SymbolRequirement": "Symbol",
-    "LengthRequirement": "Length (8+)",
+    "PasswordRequirements": "Password must include:",
+    "NumberRequirement": "1 Number",
+    "SymbolRequirement": "1 Symbol",
+    "LengthRequirement": "Has a Length 8+ characters",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password",
     "Next": "Next",
@@ -48,6 +97,7 @@
   },
 
   "SignUpPermissions": {
+    "AcceptAllPermissions": "Accept All Permissions",
     "GeneralReminders": "General Reminders",
     "PersonalReminders": "Personal Reminders",
     "GiveUsAccess": "Give Us Access",
@@ -79,6 +129,7 @@
 
   "SignUpVirtualSignature": {
     "AddASignature": "Add A Signature",
+    "AddYourBestSignature": "Add your best signature here — we’ll reuse it wherever you need to e-sign documents in the app.",
     "LetsAddASignature": "Let's add an e-signature! make sure you like it, it will be imprinted on every form.",
     "SignHere": "Sign Here",
     "Clear": "Clear",
@@ -89,6 +140,7 @@
   },
 
   "SignUpOutro": {
+    "EnterYourInformation": "Enter Your Information",
     "LooksLikeYoureAllSetUp": "Looks like you're all set up! Time to experience working made easier!",
     "HeresWhatWeDid": "Here's what we did...",
     "ChooseNewPassword": "Choose New Password",
@@ -203,6 +255,16 @@
     "SaveCropImage": "Save Image"
   },
   "Equipment": {
+    "CurrentLogs": "Current Logs",
+    "FinishedLogs": "Finished Logs",
+    "ScanQR": "Scan QR Code",
+    "SelectManually": "Select Manually",
+    "ScanEquipment": "Scan Equipment",
+    "SelectEquipment": "Select Equipment",
+    "SubmitSelection": "Checkout",
+    "UsageData": "Usage Data",
+    "UpdateFields": "To make a request please update the following fields:",
+    "FinishLogs": "Finish Logs",
     "LogNew": "Log New",
     "NoCurrent": "No Equipment logs found!",
     "Current": "Today's Equipment",
@@ -342,7 +404,8 @@
     "QrGenerator": "QR Generator",
     "EquipmentDatatype": "Search for an Equipment",
     "Submitting": "Submitting...",
-    "TypeHere": "Type here..."
+    "TypeHere": "Type here...",
+    "TemporaryJobsiteCode": "Enter Temporary Jobsite Code here..."
   },
   "Forms": {
     "Search": "Search for",
@@ -367,6 +430,7 @@
     "Form3Submit": "Submit form"
   },
   "MyTeam": {
+    "StartEnd": "My Times",
     "Loading": "Loading...",
     "ContactInfo": "Contact Info",
     "PhoneNumber": "Phone Number",
@@ -663,14 +727,14 @@
   },
 
   "ClockOut": {
-    "ReviewYourDay": "Review Your Day",
+    "IFilledOutAnInjuryReport": "I filled out an injury report",
+    "incidentDescription": "Incident Description",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "StartEnd": "Start & End",
     "Now": "Now",
     "Current": "Current",
     "StartTime": "Start Time",
     "EndTime": "End Time",
-    "NoSignature": "No signature on file.",
     "SignBelow": "By checking the box below, I certify that I was not injured today.",
     "Jobsite": "Jobsite # ",
     "CostCode": "Cost Code ",
@@ -767,7 +831,7 @@
     "PasswordUpdated": "Password was successfully updated.",
     "PasswordNotUpdated": "System failed to update password.",
     "PasswordStrength": "Password needs the following:",
-    "SignOutQuestion": " Are you sure you want to sign out?",
+    "SignOutQuestion": " Are you sure you want to logout?",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password",
     "ChangePassword": "Change Password",
@@ -1044,6 +1108,7 @@
     "TagUpdatedSuccessfully": "Tag updated successfully."
   },
   "Hamburger-Profile": {
+    "Signature": "Signature",
     "Discard": "Discard",
     "AccountInformation": "Account Information",
     "PhoneNumber": "Phone Number",
@@ -1063,7 +1128,9 @@
     "CaptureImage": "Capture Image",
     "Save": "Save",
     "Retake": "Retake",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "SignOutQuestion": "Are you sure you want to log out?",
+    "Logout": "Logout"
   },
   "Hamburger-ChangePassword": {
     "ChangePassword": "Change Password",
@@ -1159,6 +1226,12 @@
   },
 
   "TruckingAssistant": {
+    "Source": "Source",
+    "Destination": "Destination",
+    "Equipment": "Equipment being Hauled",
+    "Location": "Source",
+    "StartingMileage": "OW Starting",
+    "EndingMileage": " OW Ending",
     "unit": "Unit",
     "quantity": "Quantity",
     "WorkDetails": "Work Details",
@@ -1308,5 +1381,12 @@
     "NoDelay": "No Delay",
     "DelayStatus": "Delay Status",
     "SubmitProject": "Submit Project"
+  },
+  "information": {
+    "offer": "USE CODE\n",
+    "offerCode": "SHIFTSCAN",
+    "offerDetails": "\n ",
+    "welcome": "Welcome to the Shift Scan!",
+    "welcomeMessage": "This is a tool to help you manage your work shifts, track your time, and communicate with your team via QR technology."
   }
 }

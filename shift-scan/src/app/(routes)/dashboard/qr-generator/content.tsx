@@ -79,7 +79,7 @@ export default function QRGeneratorContent() {
           JobsiteListSchema.parse(jobsiteData);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in jobsite data:", error.errors);
+            console.error("Validation error in jobsite data:", error);
             return;
           }
         }
@@ -87,7 +87,7 @@ export default function QRGeneratorContent() {
           EquipmentListSchema.parse(equipmentData);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in equipment data:", error.errors);
+            console.error("Validation error in equipment data:", error);
             return;
           }
         }

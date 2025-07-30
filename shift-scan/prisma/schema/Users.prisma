@@ -3,10 +3,10 @@ model User {
   firstName            String
   lastName             String
   username             String               @unique
-  email                String               @unique
+  email                String?              @unique
   password             String
   signature            String?
-  DOB                  DateTime
+  DOB                  DateTime?
   truckView            Boolean
   tascoView            Boolean
   laborView            Boolean
@@ -19,6 +19,7 @@ model User {
   clockedIn            Boolean              @default(false)
   companyId            String
   passwordResetTokenId String?
+  accountSetupToken    AccountSetupToken?
   workTypeId           String?
   Client               Client[]
   Contact              Contacts?
@@ -33,7 +34,7 @@ model User {
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
 
-  @@unique([firstName, lastName, DOB])
+  @@unique([firstName, lastName, username])
   @@index([email])
 }
 
@@ -52,7 +53,7 @@ model UserSettings {
 model Contacts {
   id                     String   @id @default(uuid())
   userId                 String   @unique @map("employeeId")
-  phoneNumber            String
+  phoneNumber            String?
   emergencyContact       String?
   emergencyContactNumber String?
   createdAt              DateTime @default(now())
@@ -68,4 +69,14 @@ model PasswordResetToken {
   User       User     @relation(fields: [email], references: [email])
 
   @@unique([email, token])
+}
+
+model AccountSetupToken {
+  id        String   @id @default(uuid())
+  code      String // 6-digit code
+  userId    String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id])
 }

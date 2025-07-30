@@ -115,12 +115,41 @@ export async function updateEquipmentLogsLocation(formData: FormData) {
     where: { id },
     data: {
       truckingLogId,
-      jobSiteId: jobSiteExists.id,
     },
   });
   // Create EquipmentLocationLog for the updated jobSiteId
 
   console.log(updatedLog);
+  revalidateTag("equipmentHauled");
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
+}
+
+export async function updateEquipmentLogs(formData: FormData) {
+  console.log("Updating hauling logs...");
+  console.log(formData);
+  const id = formData.get("id") as string;
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  // Then proceed with update, using the actual equipment's id for the relationship
+  const updatedLog = await prisma.equipmentHauled.update({
+    where: { id },
+    data: {
+      truckingLogId,
+      source: formData.get("source") as string,
+      destination: formData.get("destination") as string,
+      startMileage:
+        formData.get("startMileage") !== null &&
+        formData.get("startMileage") !== ""
+          ? Number(formData.get("startMileage"))
+          : null,
+      endMileage:
+        formData.get("endMileage") !== null && formData.get("endMileage") !== ""
+          ? Number(formData.get("endMileage"))
+          : null,
+    },
+  });
+
   revalidateTag("equipmentHauled");
   revalidatePath("/dashboard/truckingAssistant");
   return updatedLog;
@@ -135,7 +164,7 @@ export async function updateEquipmentLogsEquipment(formData: FormData) {
 
   // First check if equipment exists, using qrId to find it
   const equipmentExists = await prisma.equipment.findUnique({
-    where: { qrId: equipmentQrId },
+    where: { id: equipmentQrId },
   });
 
   if (!equipmentExists) {

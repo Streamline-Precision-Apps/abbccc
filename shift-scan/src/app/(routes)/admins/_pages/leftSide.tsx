@@ -5,17 +5,21 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Sign } from "crypto";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import SignOutModal from "./sidebar/SignOutModal";
+import { Button } from "@/components/ui/button";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
   const { open: isOpen } = useSidebar();
+  const [showModal, setShowModal] = useState(false);
 
   const Page = [
     {
@@ -53,13 +57,13 @@ export default function LeftSidebar() {
       white: "qrCode-white",
       link: "/admins/cost-codes",
     },
-    {
-      id: 10,
-      title: "Clients",
-      img: "admin",
-      white: "admin-white",
-      link: "/admins/clients",
-    },
+    // {
+    //   id: 10,
+    //   title: "Clients",
+    //   img: "admin",
+    //   white: "admin-white",
+    //   link: "/admins/clients",
+    // },
     {
       id: 4,
       title: "Reports",
@@ -85,13 +89,14 @@ export default function LeftSidebar() {
 
   return (
     <Sidebar className="w-[--sidebar-width] h-full">
-      <SidebarContent className="h-full bg-white bg-opacity-25 ">
-        <SidebarGroup>
-          <SidebarGroupContent>
+      <SidebarContent className="h-full bg-white bg-opacity-25 flex flex-col">
+        <SidebarGroupContent className="flex-1 flex flex-col">
+          <SidebarGroup>
             <div className="w-full h-16 flex items-center justify-center bg-white rounded-lg ">
               <img src="/logo.svg" alt="logo" className="w-24 h-10" />
             </div>
-            <SidebarMenu className="w-full mt-4">
+
+            <SidebarMenu className="w-full h-full mt-4">
               {Page.map((item) => {
                 // Check if the first segment of the current path matches the item's link
                 // e.g. /admins/forms/1234 should match /admins/forms
@@ -131,9 +136,21 @@ export default function LeftSidebar() {
                   </Link>
                 );
               })}
+              {/* Button at the bottom, separated from menu */}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+          </SidebarGroup>
+          <div className="mt-auto w-full flex justify-center pb-4">
+            <Button
+              className="bg-white rounded-lg text-red-400 hover:bg-white hover:text-red-500 flex flex-col justify-end w-11/12 "
+              onClick={() => setShowModal(true)}
+            >
+              Sign Out
+            </Button>
+          </div>
+        </SidebarGroupContent>
+
+        {/* Modal */}
+        {showModal && <SignOutModal open={showModal} setOpen={setShowModal} />}
       </SidebarContent>
     </Sidebar>
   );

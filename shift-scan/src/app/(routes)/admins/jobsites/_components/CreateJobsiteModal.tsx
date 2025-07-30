@@ -61,6 +61,7 @@ export default function CreateJobsiteModal({
   }, []);
 
   const [formData, setFormData] = useState({
+    code: "",
     name: "",
     description: "",
     ApprovalStatus: "APPROVED",
@@ -74,7 +75,7 @@ export default function CreateJobsiteModal({
     Client: {
       id: "",
     },
-    CCTags: [{ id: "", name: "" }],
+    CCTags: [{ id: "All", name: "ALL" }],
     CreatedVia: "ADMIN",
     createdById: "",
   });
@@ -118,6 +119,7 @@ export default function CreateJobsiteModal({
 
       // Prepare payload
       const payload = {
+        code: formData.code.trim(),
         name: formData.name.trim(),
         description: formData.description?.trim() || "",
         ApprovalStatus: formData.ApprovalStatus,
@@ -155,17 +157,20 @@ export default function CreateJobsiteModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col gap-4 w-full">
-          <div>
+          <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold">Create Jobsite</h2>
             <p className="text-xs text-gray-600">
               Fill in the details to create a new jobsite.
             </p>
+            <p className="text-xs text-red-500">
+              All fields marked with * are required
+            </p>
           </div>
           <div>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <Label htmlFor="client-id" className={`text-sm `}>
-                  Client ID <span className="text-red-500">*</span>
+                  Client ID{" "}
                 </Label>
                 <Select
                   name="client-id"
@@ -184,17 +189,38 @@ export default function CreateJobsiteModal({
                     <SelectValue placeholder="Select a cost code group" />
                   </SelectTrigger>
                   <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
+                    {clients
+                      ? clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.name}
+                          </SelectItem>
+                        ))
+                      : null}
                   </SelectContent>
                 </Select>
+              </div> */}
+              <div>
+                <Label htmlFor="jobsite-code" className={`text-sm `}>
+                  Code Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="jobsite-code"
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, code: e.target.value }))
+                  }
+                  className="w-full text-xs"
+                  required
+                />
+                <p className="pl-1 text-xs italic text-gray-600">
+                  Enter the code only
+                </p>
               </div>
               <div>
                 <Label htmlFor="jobsite-name" className={`text-sm `}>
-                  Name <span className="text-red-500">*</span>
+                  Full Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="jobsite-name"
@@ -207,6 +233,9 @@ export default function CreateJobsiteModal({
                   className="w-full text-xs"
                   required
                 />
+                <p className="pl-1 text-xs italic text-gray-600">
+                  Include jobsite code in full name
+                </p>
               </div>
               <div>
                 <Label

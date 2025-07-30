@@ -17,7 +17,8 @@ export interface MaintenanceLog {
 export interface EquipmentHauled {
   id: string;
   equipmentId: string;
-  jobSiteId: string;
+  source: string;
+  destination: string;
   startMileage: string;
   endMileage: string;
 }

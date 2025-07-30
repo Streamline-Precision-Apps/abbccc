@@ -83,7 +83,8 @@ type TimeSheet = {
 
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Tab } from "@/components/(reusable)/tab";
+import { NewTab } from "@/components/(reusable)/newTabs";
+
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
@@ -131,7 +132,7 @@ export default function TascoReviewSection({
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black z-0" />
 
           {hasHaulingData && (
-            <Tab
+            <NewTab
               isActive={tabs === 1}
               onClick={() => setTabs(1)}
               titleImage={"/haulingFilled.svg"}
@@ -150,11 +151,11 @@ export default function TascoReviewSection({
               <Titles position={"right"} size="h5">
                 {t("HaulingLogs")}
               </Titles>
-            </Tab>
+            </NewTab>
           )}
 
           {hasRefuelData && (
-            <Tab
+            <NewTab
               isActive={tabs === 2}
               onClick={() => setTabs(2)}
               titleImage={"/refuelFilled.svg"}
@@ -173,7 +174,7 @@ export default function TascoReviewSection({
               <Titles position={"right"} size="h5">
                 {t("RefuelLogs")}
               </Titles>
-            </Tab>
+            </NewTab>
           )}
         </Holds>
 

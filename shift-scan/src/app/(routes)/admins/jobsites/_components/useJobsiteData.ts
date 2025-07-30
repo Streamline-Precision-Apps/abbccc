@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 export type JobsiteSummary = {
   id: string;
+  code: string;
   name: string;
   qrId: string;
   description: string;
@@ -16,10 +17,6 @@ export type JobsiteSummary = {
     city: string;
     state: string;
     zipCode: string;
-  };
-  Client: {
-    id: string;
-    name: string;
   };
 };
 

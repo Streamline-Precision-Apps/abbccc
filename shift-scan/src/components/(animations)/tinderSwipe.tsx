@@ -30,8 +30,8 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
       children,
       onSwipeLeft,
       onSwipeRight,
-      swipeThreshold = 200,
-      minHoldTime = 150,
+      swipeThreshold = 80, // Lower threshold for easier swipe
+      minHoldTime = 50, // Lower hold time for quicker drag enable
     },
     ref
   ) {
@@ -40,7 +40,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
     const [message, setMessage] = useState("");
     const [isScrolling, setIsScrolling] = useState(false);
     const [isHolding, setIsHolding] = useState(false);
-    const holdTimerRef = useRef<NodeJS.Timeout>();
+    const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
     const [dragEnabled, setDragEnabled] = useState(false);
     const scrollableRef = useRef<HTMLDivElement>(null);
     const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -64,7 +64,11 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         });
 
         // Execute the swipe callback
-        direction === "left" ? onSwipeLeft?.() : onSwipeRight?.();
+        if (direction === "left") {
+          if (onSwipeLeft) onSwipeLeft();
+        } else {
+          if (onSwipeRight) onSwipeRight();
+        }
 
         // Reset to initial state
         await controls.start({
@@ -222,7 +226,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         <motion.div
           drag="x"
           dragConstraints={{ left: -350, right: 350 }}
-          dragElastic={0.2}
+          dragElastic={0.35} // More elastic for easier swipe
           animate={controls}
           onDragStart={handleDragStart}
           onDrag={handleDrag}

@@ -35,30 +35,26 @@ export default function HamburgerMenuNew() {
       background={"white"}
       className="row-start-1 row-end-2 h-full p-2"
     >
-      <Holds className="w-16 h-full justify-center">
+      <Holds className="w-24 h-full flex flex-col items-center justify-center relative">
         <Buttons
           href="/hamburger/profile?returnUrl=/"
           background={"none"}
           shadow={"none"}
-          className="relative w-16 h-full justify-center"
-        >
+          className="absolute inset-0 w-full h-full z-10"
+          style={{ pointerEvents: "auto" }}
+        />
+        <div className="relative">
           <img
             src={image ? image : "/profileEmpty.svg"}
             alt="profile"
-            className={
-              image
-                ? "mx-auto w-16 h-auto border-2 border-black rounded-full justify-center"
-                : "mx-auto w-16 h-auto"
-            }
+            className="max-w-12  h-auto object-contain border-2 border-black rounded-full  z-0"
           />
-          <div className="relative">
-            <img
-              src={"/settingsFilled.svg"}
-              alt={"settings"}
-              className="w-7 h-7 absolute right-[-10px] bottom-0"
-            />
-          </div>
-        </Buttons>
+          <img
+            src={"/settingsFilled.svg"}
+            alt={"settings"}
+            className="w-5 h-5 absolute -right-1  -bottom-1 z-20 rounded-full "
+          />
+        </div>
       </Holds>
 
       <Holds className="w-full h-full justify-center">
@@ -70,7 +66,7 @@ export default function HamburgerMenuNew() {
         />
       </Holds>
 
-      <Holds className="w-16 h-full justify-center">
+      <Holds className="w-24 h-full justify-center">
         <Buttons
           href="/hamburger/inbox?returnUrl=/"
           background={"none"}
@@ -80,7 +76,7 @@ export default function HamburgerMenuNew() {
           <img
             src={"/form.svg"}
             alt={"inbox"}
-            className="relative max-w-10 h-auto object-contain  mx-auto"
+            className="relative max-w-9 h-auto object-contain  mx-auto"
           />
         </Buttons>
       </Holds>

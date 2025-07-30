@@ -8,6 +8,7 @@ import { auth } from "@/auth";
  * Users can access these paths without being logged in
  */
 const PUBLIC_PATHS = [
+  "/information",
   "/signin",
   "/api/auth",
   "/_next",
@@ -53,6 +54,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  // runtime: "nodejs",
   matcher: [
     // Match all paths except Next.js internal paths and static files
     "/((?!_next|.*\\..*).*)",

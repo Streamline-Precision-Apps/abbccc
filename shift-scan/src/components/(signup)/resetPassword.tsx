@@ -13,13 +13,20 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
+import { ProgressBar } from "./progressBar";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 const ResetPassword = ({
   userId,
   handleNextStep,
+  totalSteps,
+  currentStep,
 }: {
   userId: string;
   handleNextStep: () => void;
+  totalSteps: number;
+  currentStep: number;
 }) => {
   const t = useTranslations("SignUpPassword");
   const [showBanner, setShowBanner] = useState(false);
@@ -154,46 +161,20 @@ const ResetPassword = ({
   };
 
   return (
-    <Grids rows={"10"} gap={"5"} className="mb-5">
-      <Holds background={"white"} className="row-span-1 h-full justify-center">
-        <Titles size={"h2"}>{t("ChoosePasswordTitle")}</Titles>
-      </Holds>
-      <Holds background={"white"} className="row-span-8 h-full p-3">
-        <form
-          ref={useFormRef}
-          onSubmit={handleSubmit}
-          className="h-full flex flex-col items-center"
-        >
-          <Contents width={"section"} className="">
-            <Holds background={"white"}>
-              <Texts size="p2">{t("ChooseNewPassword")}</Texts>
-            </Holds>
-            {/* <Texts position="left" size="p4">{t("PasswordRequirements")}</Texts> */}
-            <Holds position="row" background={"white"} className="my-3">
-              <PasswordCriteria
-                passed={oneNumber}
-                label={t("NumberRequirement")}
-              />
-              <PasswordCriteria
-                passed={oneSymbol}
-                label={t("SymbolRequirement")}
-              />
-              <PasswordCriteria
-                passed={eightChar}
-                label={t("LengthRequirement")}
-              />
-            </Holds>
-            {showBanner && (
-              <Holds
-                className="mb-2 p-1 border-black border-[3px] rounded-[10px] justify-center"
-                background="red"
-                size="full"
-              >
-                <Texts size="p5">{bannerMessage}</Texts>
-              </Holds>
-            )}
-          </Contents>
-          <Contents width={"section"}>
+    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
+      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+        <Texts text={"white"} className="justify-end" size={"sm"}>
+          {t("ChoosePasswordTitle")}
+        </Texts>
+      </div>
+      <div className="h-[90vh] flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto no-scrollbar">
+        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full gap-4">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+          <form
+            ref={useFormRef}
+            onSubmit={handleSubmit}
+            className="h-full max-h-[50vh] flex flex-col items-center"
+          >
             <Holds background={"white"} className="h-full">
               <Holds position="row">
                 <Labels size={"p3"} htmlFor="new-password">
@@ -207,7 +188,7 @@ const ResetPassword = ({
                   onClick={viewPasscode1}
                 />
               </Holds>
-              <Inputs
+              <Input
                 type={viewSecret1 ? "text" : "password"}
                 id="new-password"
                 value={newPassword}
@@ -216,7 +197,20 @@ const ResetPassword = ({
                   setNewPassword(e.target.value);
                   handlePasswordValid();
                 }}
+                autoCapitalize={"off"}
               />
+              {/* Password requirements message */}
+              {newPassword && (!eightChar || !oneNumber || !oneSymbol) && (
+                <div className="text-xs text-red-600 mt-1">
+                  {t("PasswordRequirements")}
+                  <ul className="list-disc ml-5">
+                    {!eightChar && <li>{t("LengthRequirement")}</li>}
+                    {!oneNumber && <li>{t("NumberRequirement")}</li>}
+                    {!oneSymbol && <li>{t("SymbolRequirement")}</li>}
+                  </ul>
+                </div>
+              )}
+              <div className="my-4" />
               <Holds position="row" className="">
                 <Labels size={"p3"} htmlFor="confirm-password">
                   {t("ConfirmPassword")}
@@ -229,7 +223,7 @@ const ResetPassword = ({
                   onClick={viewPasscode2}
                 />
               </Holds>
-              <Inputs
+              <Input
                 type={viewSecret2 ? "text" : "password"}
                 id="confirm-password"
                 value={confirmPassword}
@@ -237,23 +231,31 @@ const ResetPassword = ({
                   setConfirmPassword(e.target.value);
                   handlePasswordValid();
                 }}
+                autoCapitalize={"off"}
               />
+              {/* Confirm password match message */}
+              {confirmPassword && newPassword !== confirmPassword && (
+                <div className="text-xs text-red-600 mt-1">
+                  {t("PasswordMismatchError")}
+                </div>
+              )}
             </Holds>
-          </Contents>
-        </form>
-      </Holds>
-      <Holds className="row-span-1 h-full">
-        <Buttons
-          onClick={() => handleSubmitPassword()}
-          background={isPasswordValid ? "orange" : "darkGray"}
-          disabled={isSubmitting} // Disable the button while submitting
-        >
-          <Titles size={"h2"}>
-            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-          </Titles>
-        </Buttons>
-      </Holds>
-    </Grids>
+          </form>
+
+          <div className="flex flex-col mb-4">
+            <Button
+              className="bg-app-dark-blue"
+              onClick={handleSubmitPassword}
+              disabled={isSubmitting}
+            >
+              <p className="text-white font-semibold text-base">
+                <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+              </p>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

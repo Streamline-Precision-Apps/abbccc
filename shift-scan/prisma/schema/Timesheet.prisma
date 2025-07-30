@@ -1,23 +1,31 @@
 model TimeSheet {
-  id                    String                 @id @default(uuid())
-  date                  DateTime
-  userId                String
-  jobsiteId             String
-  costcode              String
-  nu                    String                 @default("nu")
-  Fp                    String                 @default("fp")
-  startTime             DateTime
-  endTime               DateTime?
-  comment               String?
-  statusComment         String?
-  location              String?
-  status                ApprovalStatus         @default(DRAFT)
-  workType              WorkType
-  editedByUserId        String?
-  newTimeSheetId        String?
-  createdByAdmin        Boolean                @default(false)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  id             String         @id @default(uuid())
+  date           DateTime
+  userId         String
+  jobsiteId      String
+  costcode       String
+  nu             String         @default("nu")
+  Fp             String         @default("fp")
+  startTime      DateTime
+  endTime        DateTime?
+  comment        String?
+  statusComment  String?
+  location       String?
+  status         ApprovalStatus @default(DRAFT)
+  workType       WorkType
+  editedByUserId String?
+  newTimeSheetId String?
+  createdByAdmin Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  // Optional Geo-location for clock-in
+  clockInLat     Float?
+  clockInLng     Float?
+  clockOutLat    Float?
+  clockOutLng    Float?
+  withinFenceIn  Boolean?
+  withinFenceOut Boolean?
+
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
   TascoLogs             TascoLog[]
@@ -100,7 +108,11 @@ model TruckingLog {
   RefuelLogs        RefuelLog[]
   StateMileages     StateMileage[]
   TruckingLaborLogs TruckLaborLogs[]
-  Equipment         Equipment?        @relation(fields: [equipmentId], references: [id])
+  Equipment         Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
+  // Truck as Equipment
+  Truck             Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+  // Trailer as Equipment
+  Trailer           Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
   TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
@@ -152,14 +164,15 @@ model RefuelLog {
 }
 
 model EquipmentHauled {
-  id            String      @id @default(uuid())
+  id            String   @id @default(uuid())
   truckingLogId String
   equipmentId   String?
+  source        String? // where the equipment was hauled from
+  destination   String? // where the equipment was hauled to
   startMileage  Int?
   endMileage    Int?
-  createdAt     DateTime    @default(now())
-  jobSiteId     String?
-  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
-  JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
-  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  Equipment   Equipment?  @relation(fields: [equipmentId], references: [id])
+  TruckingLog TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }

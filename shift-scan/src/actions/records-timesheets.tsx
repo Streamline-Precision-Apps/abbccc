@@ -2,7 +2,8 @@
 import { LoadType, WorkType, materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ApprovalStatus, Prisma } from "@prisma/client";
+import { Prisma } from "../../prisma/generated/prisma/client";
+import { ApprovalStatus } from "@/lib/enums";
 import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 
 export type TimesheetSubmission = {
@@ -27,7 +28,8 @@ export type TimesheetSubmission = {
     endingMileage: string;
     equipmentHauled: Array<{
       equipment: { id: string; name: string };
-      jobsite: { id: string; name: string };
+      source: string | null;
+      destination: string | null;
       startMileage: string | null;
       endMileage: string | null;
     }>;
@@ -127,7 +129,8 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
           data: {
             truckingLogId: truckingLog.id,
             equipmentId: eq.equipment.id,
-            jobSiteId: eq.jobsite.id,
+            source: eq.source ?? "",
+            destination: eq.destination ?? "",
             startMileage: eq.startMileage ? parseInt(eq.startMileage) : null,
             endMileage: eq.endMileage ? parseInt(eq.endMileage) : null,
           },
@@ -210,14 +213,33 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       }
     }
 
+    // Helper to combine date and hh:mm string into a Date object
+    const combineDateAndTime = (date: Date, time: string) => {
+      if (!date || !time) return undefined;
+      const [hours, minutes] = time.split(":").map(Number);
+      const result = new Date(date);
+      result.setHours(hours, minutes, 0, 0);
+      return result;
+    };
+
     // Labor Logs (EmployeeEquipmentLog)
     for (const log of data.laborLogs) {
+      const date = data.form.date;
+      console.log(
+        "Creating labor log for equipment:",
+        log.startTime,
+        log.endTime,
+      );
       if (!log.equipment.id) continue;
       await tx.employeeEquipmentLog.create({
         data: {
           equipmentId: log.equipment.id,
-          ...(log.startTime ? { startTime: new Date(log.startTime) } : {}),
-          ...(log.endTime ? { endTime: new Date(log.endTime) } : {}),
+          ...(log.startTime
+            ? { startTime: combineDateAndTime(date, log.startTime) }
+            : {}),
+          ...(log.endTime
+            ? { endTime: combineDateAndTime(date, log.endTime) }
+            : {}),
           timeSheetId: timesheet.id,
         },
       });
@@ -323,7 +345,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
           data: {
             truckingLogId: truckingLog.id,
             equipmentId: eq.equipmentId,
-            jobSiteId: eq.jobSiteId,
+            source: eq.source ?? "",
+            destination: eq.destination ?? "",
             startMileage: eq.startMileage ? Number(eq.startMileage) : null,
             endMileage: eq.endMileage ? Number(eq.endMileage) : null,
           },

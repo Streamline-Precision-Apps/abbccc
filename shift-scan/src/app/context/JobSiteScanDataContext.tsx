@@ -18,13 +18,19 @@ type ScanResult = {
 };
 
 // Context type
+
+/**
+ * Context type for job site scan data, including error state.
+ */
 type ScanDataContextProps = {
   scanResult: ScanResult | null;
   setScanResult: (result: ScanResult | null) => void;
+  error: string | null;
+  setError: (error: string | null) => void;
 };
 
 const ScanDataContext = createContext<ScanDataContextProps | undefined>(
-  undefined
+  undefined,
 );
 
 export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
@@ -33,30 +39,46 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const online = useOnlineStatus();
   const { execute: executeServerAction, syncQueued } = useServerAction();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const initializeJobSite = async () => {
       try {
-        const cookieData = await fetchWithOfflineCache(
-          "jobSite",
-          () => fetch("/api/cookies?method=get&name=jobSite").then((res) => res.json())
-        );
-        let jobSiteName = "";
-        if (cookieData && cookieData !== "") {
-          try {
-            jobSiteName = await fetchWithOfflineCache(
-              `jobSiteDetails_${cookieData}`,
-              () => fetch(`/api/jobsites/${cookieData}`).then((res) => res.json()).then((details) => details?.name || "")
-            );
-          } catch (err) {
-            jobSiteName = "";
-          }
-          setScanResult({
-            qrCode: cookieData,
-            name: jobSiteName,
-          });
+        const cookieRes = await fetch("/api/cookies?method=get&name=jobSite");
+        if (!cookieRes.ok) {
+          setError("Failed to fetch job site cookie.");
+          setScanResult(null);
+          return;
         }
+        const cookieData = await cookieRes.json();
+        if (!cookieData || cookieData === "") {
+          setError("No job site cookie found.");
+          setScanResult(null);
+          return;
+        }
+        let jobSiteName = "";
+        try {
+          const jobSiteRes = await fetch(`/api/jobsites/${cookieData}`);
+          if (!jobSiteRes.ok) {
+            setError("Failed to fetch job site details.");
+            setScanResult(null);
+            return;
+          }
+          const jobSiteDetails = await jobSiteRes.json();
+          jobSiteName = jobSiteDetails?.name || "";
+        } catch (err) {
+          setError("Error fetching job site details.");
+          setScanResult(null);
+          return;
+        }
+        setScanResult({
+          qrCode: cookieData,
+          name: jobSiteName,
+        });
+        setError(null);
       } catch (error) {
+        setError("Error initializing job site.");
+        setScanResult(null);
         console.error("Error initializing job site:", error);
       }
     };
@@ -73,6 +95,7 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
           });
         }
       } catch (error) {
+        setError("Error saving job site.");
         console.error("Error saving job site:", error);
       }
     };
@@ -86,7 +109,9 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   }, [online, syncQueued]);
 
   return (
-    <ScanDataContext.Provider value={{ scanResult, setScanResult }}>
+    <ScanDataContext.Provider
+      value={{ scanResult, setScanResult, error, setError }}
+    >
       {children}
     </ScanDataContext.Provider>
   );

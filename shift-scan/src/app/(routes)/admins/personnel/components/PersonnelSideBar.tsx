@@ -4,7 +4,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
-import { Texts } from "@/components/(reusable)/texts";
 import {
   UserData,
   CrewCreationState,
@@ -13,7 +12,6 @@ import {
   UserEditState,
   CrewData,
 } from "./types/personnel";
-import { SearchCrew } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/(animations)/spinner";
@@ -168,8 +166,8 @@ export default function PersonnelSideBar({
 
   return (
     <>
-      <Holds className="w-full h-full col-start-1 col-end-3">
-        <Grids className="w-full h-full grid-rows-[50px_40px_1fr] gap-4">
+      <Holds className="w-full h-full col-start-1 col-end-3 flex flex-col">
+        <Grids className="w-full h-full grid-rows-[50px_40px_1fr] gap-4 flex-1 min-h-0 overflow-y-auto">
           <Holds className="w-full h-full">
             <Selects
               onChange={(e) => {
@@ -302,56 +300,49 @@ export default function PersonnelSideBar({
             />
           </Holds>
 
-          <Holds
-            background="white"
-            className="w-full h-full overflow-y-auto no-scrollbar"
-          >
-            {loading ? (
-              <Holds className="flex justify-center items-center w-full h-full">
-                <Spinner />
-              </Holds>
-            ) : (
-              <div className="w-full h-full overflow-y-auto no-scrollbar p-3">
-                {filteredList.map((employee) => (
-                  <EmployeeRow
-                    key={employee.id}
-                    employee={employee}
-                    isSelected={
-                      (view.mode === "user" && view.userId === employee.id) ||
-                      (view.mode === "user+crew" &&
-                        view.userId === employee.id) ||
-                      (view.mode === "registerCrew+user" &&
-                        view.userId === employee.id)
-                    }
-                    isCrew={
-                      view.mode === "registerUser+crew" ||
-                      view.mode === "crew" ||
-                      view.mode === "user+crew" ||
-                      view.mode === "registerCrew" ||
-                      view.mode === "registerCrew+user" ||
-                      view.mode === "registerBoth"
-                    }
-                    view={view}
-                    isManager={employee.permission !== "USER"}
-                    isCrewMember={selectedUsers.some(
-                      (u) => u.id === employee.id
-                    )}
-                    isCurrentLead={teamLead === employee.id}
-                    onEmployeeClick={handleEmployeeClick}
-                    onCrewLeadToggle={handleCrewLeadToggle}
-                    onEmployeeCheck={handleEmployeeCheck}
-                    hasUnsavedChanges={
-                      // Only show confirmation when in user mode and editing that specific user
-                      // We're handling crew changes in the useEmployeeHandlers hook
-                      view.mode === "user" &&
-                      view.userId === employee.id &&
-                      isUserEditStateDirty(view.userId)
-                    }
-                  />
-                ))}
-              </div>
-            )}
-          </Holds>
+          {loading ? (
+            <Holds className="flex justify-center items-center w-full h-full">
+              <Spinner />
+            </Holds>
+          ) : (
+            <div className="bg-white w-full h-[75vh] p-3 overflow-y-auto no-scrollbar rounded-[10px]">
+              {filteredList.map((employee) => (
+                <EmployeeRow
+                  key={employee.id}
+                  employee={employee}
+                  isSelected={
+                    (view.mode === "user" && view.userId === employee.id) ||
+                    (view.mode === "user+crew" &&
+                      view.userId === employee.id) ||
+                    (view.mode === "registerCrew+user" &&
+                      view.userId === employee.id)
+                  }
+                  isCrew={
+                    view.mode === "registerUser+crew" ||
+                    view.mode === "crew" ||
+                    view.mode === "user+crew" ||
+                    view.mode === "registerCrew" ||
+                    view.mode === "registerCrew+user" ||
+                    view.mode === "registerBoth"
+                  }
+                  view={view}
+                  isManager={employee.permission !== "USER"}
+                  isCrewMember={selectedUsers.some((u) => u.id === employee.id)}
+                  isCurrentLead={teamLead === employee.id}
+                  onEmployeeClick={handleEmployeeClick}
+                  onCrewLeadToggle={handleCrewLeadToggle}
+                  onEmployeeCheck={handleEmployeeCheck}
+                  hasUnsavedChanges={
+                    // Only show confirmation when in user mode and editing that specific user
+                    // We're handling crew changes in the useEmployeeHandlers hook
+                    view.mode === "user" &&
+                    view.userId === employee.id &&
+                    isUserEditStateDirty(view.userId)
+                  }
+                />
+              ))}
+            </div>
+          )}
         </Grids>
       </Holds>
 

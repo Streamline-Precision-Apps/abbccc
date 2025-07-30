@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate the user
@@ -17,9 +17,12 @@ export async function GET(
     }
 
     // Validate the ID parameter
-    const { id } = params;
+    const { id } = await params;
     if (!id) {
-      return NextResponse.json({ error: "Invalid or missing maintenance ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or missing maintenance ID" },
+        { status: 400 }
+      );
     }
 
     // Fetch maintenance details
@@ -60,16 +63,13 @@ export async function GET(
     return NextResponse.json(receivedInfo);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching maintenance details:', error);
+    console.error("Error fetching maintenance details:", error);
 
-    let errorMessage = 'Failed to fetch maintenance details';
+    let errorMessage = "Failed to fetch maintenance details";
     if (error instanceof Error) {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

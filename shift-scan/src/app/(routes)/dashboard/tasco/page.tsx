@@ -18,7 +18,7 @@ export default async function TascoPage() {
     redirect("/signin");
   }
 
-  const laborType = cookies().get("laborType")?.value || "";
+  const laborType = (await cookies()).get("laborType")?.value || "";
 
   if (laborType === "equipmentOperator") {
     return (

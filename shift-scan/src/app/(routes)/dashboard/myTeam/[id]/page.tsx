@@ -58,7 +58,7 @@ export default function Content() {
           setCrewType(type);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in crew data:", error.errors);
+            console.error("Validation error in crew data:", error);
             return;
           }
         }
@@ -133,7 +133,9 @@ export default function Content() {
                               <Holds size={"20"} className="relative">
                                 <Images
                                   titleImg={
-                                    member.image || "/profileFilled.svg"
+                                    member.image
+                                      ? member.image
+                                      : "/profileEmpty.svg"
                                   }
                                   titleImgAlt="profileFilled"
                                   loading="lazy"

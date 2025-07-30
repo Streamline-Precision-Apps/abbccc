@@ -24,7 +24,8 @@ export interface MaintenanceLog {
 export interface EquipmentHauled {
   id: string;
   equipmentId: string;
-  jobSiteId: string;
+  source: string;
+  destination: string;
   startMileage: string;
   endMileage: string;
 }
@@ -186,13 +187,10 @@ export function useTimesheetData(form: TimesheetData | null) {
       const filteredTrailers = equipment.filter(
         (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
       );
-      const filteredEquipment = equipment.filter(
-        (e: { equipmentTag: string }) =>
-          e.equipmentTag !== "TRUCK" && e.equipmentTag !== "TRAILER"
-      );
+
       setTrucks(filteredTrucks as TruckOption[]);
       setTrailers(filteredTrailers as TrailerOption[]);
-      setEquipment(filteredEquipment as EquipmentOption[]);
+      setEquipment(equipment as EquipmentOption[]);
     }
     fetchDropdowns();
   }, []);

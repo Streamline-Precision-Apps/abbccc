@@ -30,6 +30,7 @@ export async function GET(req: Request) {
       take,
       select: {
         id: true,
+        code: true,
         name: true,
         qrId: true,
         description: true,

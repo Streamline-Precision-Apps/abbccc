@@ -4,20 +4,20 @@ import { FormStatus, Permission, WorkType } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
-
+import { hash } from "bcrypt-ts";
 interface NewEmployeeFormData {
   username: string;
   password: string;
   firstName: string;
   lastName: string;
-  email: string;
-  dateOfBirth: Date | string;
+  // email: string;
+  // dateOfBirth: Date | string;
+  // phoneNumber: string;
+  // emergencyContact: string;
+  // emergencyContactNumber: string;
   permissionLevel: string; // or more specific type like 'admin' | 'manager' | 'employee'
   employmentStatus: string;
   crews: string[];
-  phoneNumber: string;
-  emergencyContact: string;
-  emergencyContactNumber: string;
   truckingView?: boolean;
   tascoView?: boolean;
   engineerView?: boolean;
@@ -29,11 +29,11 @@ const newUserSchema = z.object({
   password: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  phoneNumber: z.string(),
-  email: z.string().email(),
-  emergencyContact: z.string(),
-  emergencyContactNumber: z.string(),
-  dateOfBirth: z.string(),
+  // phoneNumber: z.string(),
+  // email: z.string().email(),
+  // emergencyContact: z.string(),
+  // emergencyContactNumber: z.string(),
+  // dateOfBirth: z.string(),
   permissionLevel: z.string(),
   employmentStatus: z.string(),
   crews: z.array(z.string()),
@@ -54,19 +54,16 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
     password,
     firstName,
     lastName,
-    email,
-    dateOfBirth,
     permissionLevel,
     employmentStatus,
     crews,
-    phoneNumber,
-    emergencyContact,
-    emergencyContactNumber,
     truckingView = false,
     tascoView = false,
     engineerView = false,
     generalView = false,
   } = parsed.data;
+
+  const hashedPassword = await hash(password, 10);
 
   // Use a transaction to ensure both operations succeed or fail together
   const result = await prisma.$transaction(async (prisma) => {
@@ -74,11 +71,11 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
     const user = await prisma.user.create({
       data: {
         username,
-        password,
+        password: hashedPassword,
         firstName,
         lastName,
-        email,
-        DOB: dateOfBirth,
+        // email,
+        // DOB: dateOfBirth,
         permission: permissionLevel as Permission,
         truckView: truckingView,
         tascoView: tascoView,
@@ -92,9 +89,9 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
         },
         Contact: {
           create: {
-            phoneNumber,
-            emergencyContact,
-            emergencyContactNumber,
+            // phoneNumber,
+            // emergencyContact,
+            // emergencyContactNumber,
           },
         },
         Company: { connect: { id: "1" } },
@@ -141,7 +138,7 @@ export async function updateEmployeeAndContact(formData: FormData) {
     const phoneNumber = formData.get("phoneNumber") as string;
     const emergencyContact = formData.get("emergencyContact") as string;
     const emergencyContactNumber = formData.get(
-      "emergencyContactNumber"
+      "emergencyContactNumber",
     ) as string;
 
     // Update user
@@ -238,7 +235,7 @@ export async function createCrew(formData: FormData) {
     throw new Error(
       `Failed to create crew: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }

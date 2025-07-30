@@ -24,6 +24,7 @@ type Props = {
   textSize?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   translation: string;
   href?: string;
+  disabled?: boolean;
 };
 
 export default function WidgetContainer({
@@ -33,24 +34,23 @@ export default function WidgetContainer({
   textSize = "h3",
   background,
   translation,
-
+  disabled = false,
   href,
 }: Props) {
   const t = useTranslations(translation);
   return (
-    <Buttons background={background} href={href} className="h-full w-full">
-      <Grids rows={"2"} gap={"0"} className="h-full w-full p-5">
-        <Holds className="row-span-2 h-full pb-0.5 ">
-          <Images
-            titleImg={titleImg}
-            titleImgAlt={titleImgAlt}
-            className="m-auto h-full w-full"
-          />
-        </Holds>
-        <Holds className="row-span-1 h-full justify-center">
-          <Titles size={textSize}>{t(text)}</Titles>
-        </Holds>
-      </Grids>
+    <Buttons
+      background={disabled ? "darkGray" : background}
+      href={href}
+      className="h-full w-full flex flex-col justify-center items-center gap-2"
+      disabled={disabled}
+    >
+      <img
+        src={titleImg}
+        alt={titleImgAlt}
+        className="h-full w-full max-h-[50px] max-w-[50px] object-contain"
+      />
+      <Titles size={textSize}>{t(text)}</Titles>
     </Buttons>
   );
 }

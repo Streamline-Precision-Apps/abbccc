@@ -1,5 +1,6 @@
 // components/Panel.tsx
 "use client";
+import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type PanelData = {
@@ -8,7 +9,9 @@ export type PanelData = {
   isPlaceholder?: boolean;
 };
 
-function isPlaceholderData(data: PanelData): data is { date: string; isPlaceholder: true } {
+function isPlaceholderData(
+  data: PanelData
+): data is { date: string; isPlaceholder: true } {
   return data.isPlaceholder === true;
 }
 
@@ -36,14 +39,17 @@ export default function Panel({
 
   // Opacity based on distance from the focused (center) panel
   const maxDistance = 4; // fade out after 4 panels away
-  const normalizedDistance = Math.min(Math.abs(distanceFromCenter), maxDistance);
+  const normalizedDistance = Math.min(
+    Math.abs(distanceFromCenter),
+    maxDistance
+  );
   // No opacity change for center and adjacent panels
-  const contentOpacity = normalizedDistance <= 1 ? 1 : 1 - 0.18 * normalizedDistance;
+  const contentOpacity =
+    normalizedDistance <= 1 ? 1 : 1 - 0.18 * normalizedDistance;
   const scale = isCenter ? 1 : 1 - 0.04 * normalizedDistance;
 
   // Bar color logic: orange for current date, green for others
-  const isToday = data.date === new Date().toLocaleDateString('en-CA');
-  const barColor = isToday ? '#FF8800' : '#1E7D2C'; // orange for today, green for others
+  const isToday = data.date === new Date().toLocaleDateString("en-CA");
 
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -52,40 +58,82 @@ export default function Panel({
         initial={{ x: 40, opacity: 0, scale: 1 }}
         animate={{ x: 0, opacity: 1, scale }}
         exit={{ x: -40, opacity: 0, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
+        transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.9 }}
         className="flex flex-col items-center justify-end h-full min-w-[36%] snap-center"
-        style={{ willChange: 'transform, opacity' }}
+        style={{ willChange: "transform, opacity" }}
       >
+        <motion.p
+          layout
+          initial={false}
+          animate={{
+            scale: isCenter ? 1.08 : 0.92,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 320,
+            damping: 28,
+            mass: 0.9,
+          }}
+          className="text-xs font-medium text-center text-white mb-1"
+          style={{ willChange: "transform" }}
+        >
+          {format(data.date || "", "EEE MMM d")}
+        </motion.p>
         <motion.div
           layout
           animate={{
-            backgroundColor: isCenter ? '#1E7D2C' : '#e5e7eb',
-            borderRadius: isCenter ? '12px' : '8px',
+            backgroundColor: isCenter ? "#1E7D2C" : "#e5e7eb",
+            borderRadius: isCenter ? "12px" : "8px",
             scale: isCenter ? 1 : 0.95,
-            opacity: contentOpacity
+            opacity: contentOpacity,
           }}
-          transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
+          transition={{
+            type: "spring",
+            stiffness: 320,
+            damping: 28,
+            mass: 0.9,
+          }}
           className="relative w-11/12 h-full p-4 flex items-end justify-center"
         >
           <motion.div
             initial={false}
             animate={{
               height: `${(Math.min(data.hours ?? 0, 12) / 12) * 100}%`,
-              opacity: contentOpacity
+              opacity: contentOpacity,
             }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
-            className={`w-44 rounded-[10px] ${data.hours ? 'border-[3px] border-black' : ''} ${isToday ? 'bg-[#FF8800]' : isCenter ? 'bg-green-500' : distanceFromCenter === 1 || distanceFromCenter === -1 ? 'bg-blue-500' : 'bg-blue-500'}`}
+            transition={{
+              type: "spring",
+              stiffness: 320,
+              damping: 28,
+              mass: 0.9,
+            }}
+            className={`w-44 rounded-[10px] ${
+              data.hours ? "border-[3px] border-black" : ""
+            } ${
+              isToday
+                ? "bg-[#FF8800]"
+                : isCenter
+                ? "bg-green-500"
+                : distanceFromCenter === 1 || distanceFromCenter === -1
+                ? "bg-blue-500"
+                : "bg-blue-500"
+            }`}
           />
         </motion.div>
         <motion.p
           layout
           initial={false}
           animate={{
-            scale: isCenter ? 1.15 : 0.85
+            scale: isCenter ? 1.15 : 0.85,
           }}
-          transition={{ type: 'spring', stiffness: 320, damping: 28, mass: 0.9 }}
+          transition={{
+            type: "spring",
+            stiffness: 320,
+            damping: 28,
+            mass: 0.9,
+          }}
           className="text-lg font-bold text-center text-white"
-          style={{ willChange: 'transform' }}
+          style={{ willChange: "transform" }}
         >
           {Math.floor((data.hours ?? 0) * 10) / 10} hrs
         </motion.p>
@@ -93,6 +141,3 @@ export default function Panel({
     </AnimatePresence>
   );
 }
-
-// Helper to get today's date in local time as YYYY-MM-DD
-const getTodayString = () => new Date().toLocaleDateString('en-CA');

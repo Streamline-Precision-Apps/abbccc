@@ -1,25 +1,29 @@
 model Jobsite {
-  id              String            @id @default(uuid())
-  qrId            String            @unique @default(uuid())
-  name            String
-  description     String
-  creationReason  String?
-  approvalStatus  ApprovalStatus    @default(PENDING)
-  isActive        Boolean           @default(true)
-  addressId       String?
-  comment         String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  archiveDate     DateTime?
-  clientId        String?
-  createdById     String?
-  createdVia      CreatedVia        @default(ADMIN)
-  EquipmentHauled EquipmentHauled[]
-  Address         Address?          @relation(fields: [addressId], references: [id])
-  Client          Client?           @relation(fields: [clientId], references: [id])
-  createdBy       User?             @relation(fields: [createdById], references: [id])
-  TimeSheets      TimeSheet[]
-  CCTags          CCTag[]           @relation("CCTagToJobsite")
+  id             String         @id @default(uuid())
+  qrId           String         @unique @default(uuid())
+  code           String?
+  name           String
+  description    String
+  creationReason String?
+  approvalStatus ApprovalStatus @default(PENDING)
+  isActive       Boolean        @default(true)
+  addressId      String?
+  comment        String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  archiveDate    DateTime?
+  clientId       String?
+  createdById    String?
+  // Optional Geo-location for the jobsite
+  latitude       Float?
+  longitude      Float?
+  radiusMeters   Float?
+  createdVia     CreatedVia     @default(ADMIN)
+  Address        Address?       @relation(fields: [addressId], references: [id])
+  Client         Client?        @relation(fields: [clientId], references: [id])
+  createdBy      User?          @relation(fields: [createdById], references: [id])
+  TimeSheets     TimeSheet[]
+  CCTags         CCTag[]        @relation("CCTagToJobsite")
 
   @@index([qrId])
   @@index([clientId])

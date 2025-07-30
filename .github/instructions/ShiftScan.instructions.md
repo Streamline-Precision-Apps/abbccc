@@ -51,45 +51,6 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 - Write modular, reusable, and testable code.
 - Use environment variables for secrets and configuration.
 
-# React Js
-
-- Prefer function components with React Hooks over class components.
-- Use custom hooks to abstract logic (useFetch, useForm, etc.).
-- Break UI into pure components and container components.
-- Use controlled components for form inputs.
-- Always define key props on lists.
-- Prefer composition over inheritance using children and render props.
-- Use React.memo and useCallback for performance optimizations.
-
-# Next.js
-
-- Use App Router and Server Components by default.
-- Co-locate components, styles, and tests inside /app and /components.
-- Use generateStaticParams, generateMetadata, and revalidate for ISR/SSG.
-- Use next/font for performant custom fonts.
-- Use next/image and next/link everywhere.
-- API routes only for edge logic – offload business logic to backend services.
-- Server Action functions for form submissions and data mutations.
-- Organize logic-heavy code into lib/, hooks/, or services/ folders.
-
-# Prisma
-
-- Define relations explicitly; avoid implicit many-to-many unless trivial.
-- Use @relation and @map annotations to control DB naming.
-- Wrap PrismaClient in a singleton to avoid hot-reload issues in dev.
-- Separate data access into repositories or services layer.
-- Handle error codes like P2002 (unique constraint) and P2025 (record not found) explicitly.
-- Use zod or yup for input validation before DB operations.
-
-# TypeScript
-
-- Never use any; use unknown with guards when needed.
-- Prefer type over interface unless extending external libs.
-- Use Record<string, Type>, Partial<T>, Pick<T, K>, and Omit<T, K> effectively.
-- Model domain entities as types and API payloads with interfaces.
-- Use enum or const as const for value constraints.
-- Leverage utility types to avoid duplication.
-
 # Project Structure Suggestions
 
 ```
@@ -107,10 +68,3 @@ prisma/
   schema.prisma
   migrations/
 ```
-
-# Reference documentation:
-
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [React Documentation](https://reactjs.org/docs/getting-started.html)
-- [Next.js Documentation](https://https://nextjs.org/docs/14/getting-started)
-- [Prisma Documentation](https://www.prisma.io/docs/)

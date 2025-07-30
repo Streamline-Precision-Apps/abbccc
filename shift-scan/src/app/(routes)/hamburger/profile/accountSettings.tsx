@@ -191,7 +191,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
           loading ? "animate-pulse" : ""
         }`}
       >
-        <TitleBoxes onClick={() => router.push(`/${url}`)}>
+        <TitleBoxes onClick={() => router.push(url)}>
           {/* Profile Image Editor (Pass fetchEmployee as Prop) */}
 
           <ProfileImageEditor
@@ -218,7 +218,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
             isActive={activeTab === 1}
             isComplete={true}
           >
-            <Titles size={"h4"}>{t("AccountInformation")}</Titles>
+            <Titles size={"sm"}>{t("AccountInformation")}</Titles>
           </NewTab>
           <NewTab
             titleImage={"/Settings.svg"}
@@ -227,7 +227,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
             isActive={activeTab === 2}
             isComplete={true}
           >
-            <Titles size={"h4"}>{t("AccountSettings")}</Titles>
+            <Titles size={"sm"}>{t("AccountSettings")}</Titles>
           </NewTab>
         </Holds>
 

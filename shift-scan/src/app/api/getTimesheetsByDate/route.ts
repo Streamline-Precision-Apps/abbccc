@@ -1,7 +1,7 @@
-import prisma from '@/lib/prisma';
-import * as Sentry from '@sentry/nextjs';
-import { TimesheetFilter } from '@/lib/types';
-import { NextRequest } from 'next/server';
+import prisma from "@/lib/prisma";
+import * as Sentry from "@sentry/nextjs";
+import { TimesheetFilter } from "@/lib/types";
+import { NextRequest } from "next/server";
 
 /**
  * GET /api/getTimesheetsByDate?employeeId=...&date=...&type=...&pendingOnly=...
@@ -10,14 +10,14 @@ import { NextRequest } from 'next/server';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const employeeId = searchParams.get('employeeId');
-    const dateParam = searchParams.get('date');
-    const type = searchParams.get('type') as TimesheetFilter | null;
-    const pendingOnly = searchParams.get('pendingOnly') === 'true';
+    const employeeId = searchParams.get("employeeId");
+    const dateParam = searchParams.get("date");
+    const type = searchParams.get("type") as TimesheetFilter | null;
+    const pendingOnly = searchParams.get("pendingOnly") === "true";
 
     if (!employeeId || !type) {
       return new Response(
-        JSON.stringify({ error: 'Missing required query parameters.' }),
+        JSON.stringify({ error: "Missing required query parameters." }),
         { status: 400 }
       );
     }
@@ -26,18 +26,18 @@ export async function GET(req: NextRequest) {
     let start: Date | undefined = undefined;
     let end: Date | undefined = undefined;
     if (dateParam) {
-      start = new Date(dateParam + 'T00:00:00.000Z');
-      end = new Date(dateParam + 'T23:59:59.999Z');
+      start = new Date(dateParam + "T00:00:00.000Z");
+      end = new Date(dateParam + "T23:59:59.999Z");
     }
 
     let data: unknown = null;
     switch (type) {
-      case 'timesheetHighlights':
+      case "timesheetHighlights":
         data = await prisma.timeSheet.findMany({
           where: {
             userId: employeeId,
             ...(pendingOnly
-              ? { status: 'PENDING' }
+              ? { status: "PENDING" }
               : dateParam
               ? { date: { gte: start, lte: end } }
               : {}),
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
           },
         });
         break;
-      case 'truckingEquipmentHaulLogs':
+      case "truckingEquipmentHaulLogs":
         data = [
           {
             TruckingLogs: await prisma.truckingLog.findMany({
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -65,7 +65,6 @@ export async function GET(req: NextRequest) {
                 EquipmentHauled: {
                   include: {
                     Equipment: true,
-                    JobSite: true,
                   },
                 },
                 Equipment: true,
@@ -74,7 +73,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'truckingMaterialHaulLogs':
+      case "truckingMaterialHaulLogs":
         data = [
           {
             TruckingLogs: await prisma.truckingLog.findMany({
@@ -82,7 +81,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -96,7 +95,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'truckingRefuelLogs':
+      case "truckingRefuelLogs":
         data = [
           {
             TruckingLogs: await prisma.truckingLog.findMany({
@@ -104,7 +103,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -118,7 +117,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'truckingStateLogs':
+      case "truckingStateLogs":
         data = [
           {
             TruckingLogs: await prisma.truckingLog.findMany({
@@ -126,7 +125,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -140,7 +139,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'tascoHaulLogs':
+      case "tascoHaulLogs":
         data = [
           {
             TascoLogs: await prisma.tascoLog.findMany({
@@ -148,7 +147,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -162,7 +161,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'tascoRefuelLogs':
+      case "tascoRefuelLogs":
         data = [
           {
             TascoLogs: await prisma.tascoLog.findMany({
@@ -170,7 +169,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -184,7 +183,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'equipmentLogs':
+      case "equipmentLogs":
         data = [
           {
             EmployeeEquipmentLogs: await prisma.employeeEquipmentLog.findMany({
@@ -192,7 +191,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -206,7 +205,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'equipmentRefuelLogs':
+      case "equipmentRefuelLogs":
         data = [
           {
             EmployeeEquipmentLogs: await prisma.employeeEquipmentLog.findMany({
@@ -214,7 +213,7 @@ export async function GET(req: NextRequest) {
                 TimeSheet: {
                   userId: employeeId,
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -229,7 +228,7 @@ export async function GET(req: NextRequest) {
           },
         ];
         break;
-      case 'mechanicLogs':
+      case "mechanicLogs":
         data = [
           {
             MaintenanceLogs: await prisma.maintenanceLog.findMany({
@@ -237,7 +236,7 @@ export async function GET(req: NextRequest) {
                 userId: employeeId,
                 TimeSheet: {
                   ...(pendingOnly
-                    ? { status: 'PENDING' }
+                    ? { status: "PENDING" }
                     : dateParam
                     ? { date: { gte: start, lte: end } }
                     : {}),
@@ -253,17 +252,19 @@ export async function GET(req: NextRequest) {
         ];
         break;
       default:
-        return new Response(
-          JSON.stringify({ error: 'Invalid filter type.' }),
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ error: "Invalid filter type." }), {
+          status: 400,
+        });
     }
 
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (error) {
     Sentry.captureException(error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: String(error) }),
+      JSON.stringify({
+        error: "Internal server error",
+        details: String(error),
+      }),
       { status: 500 }
     );
   }

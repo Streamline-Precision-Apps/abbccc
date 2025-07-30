@@ -26,6 +26,7 @@ export default function AddJobsiteForm() {
 
   // Form state
   const [formData, setFormData] = useState({
+    code: "",
     address: "",
     city: "",
     state: "",
@@ -33,11 +34,7 @@ export default function AddJobsiteForm() {
     temporaryJobsiteName: "",
     creationComment: "",
     creationReasoning: "",
-    clientName: "",
   });
-
-  // Checkbox state
-  const [newAddress, setNewAddress] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -48,16 +45,11 @@ export default function AddJobsiteForm() {
     formData.creationReasoning.trim() !== "" &&
     qrCode.trim() !== "" &&
     userId &&
-    (!newAddress ||
-      (formData.address.trim() !== "" &&
-        formData.city.trim() !== "" &&
-        formData.state.trim() !== "" &&
-        formData.zipCode.trim() !== "" &&
-        formData.clientName.trim() !== ""));
-  // Checkbox handler
-  const handleCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewAddress(e.target.checked);
-  };
+    formData.address.trim() !== "" &&
+    formData.code.trim() !== "" &&
+    formData.city.trim() !== "" &&
+    formData.state.trim() !== "" &&
+    formData.zipCode.trim() !== "";
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -95,8 +87,6 @@ export default function AddJobsiteForm() {
     setIsSubmitting(true);
     try {
       const formDataToSend = new FormData();
-      // Always send newAddress state
-      formDataToSend.append("newAddress", newAddress ? "true" : "false");
       // Append all form data
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
@@ -124,106 +114,96 @@ export default function AddJobsiteForm() {
       <Holds background={"white"} className="row-start-2 row-end-8 h-full">
         <form onSubmit={handleSubmit} className="h-full w-full">
           <Contents width={"section"}>
-            <Grids rows={"10"} gap={"5"} className="h-full w-full pb-5">
+            <Grids rows={"8"} gap={"5"} className="h-full w-full pb-5">
               {/* New Address Title and Checkbox */}
-              <Holds className="row-start-1 row-end-2 h-full pt-5">
-                <Titles position={"left"} size={"h3"}>
-                  {t("Address")}
-                </Titles>
-                <div className="mt-3">
-                  <CheckBox
-                    id="newAddress"
-                    name="newAddress"
-                    label={t("NewAddress")}
-                    checked={newAddress}
-                    onChange={handleCheckBoxChange}
-                    size={2}
-                  />
-                </div>
-              </Holds>
 
               {/* Address Section (conditionally rendered) */}
-              {newAddress && (
-                <Holds className="row-start-3 row-end-6 h-full mb-8">
-                  {/* Client Name Input */}
-                  <Holds className="pb-3">
-                    <Inputs
-                      type="text"
-                      name="clientName"
-                      value={formData.clientName}
-                      placeholder={t("ClientName")}
-                      className="text-xs pl-3 py-2"
+
+              <Holds className="row-start-1 row-end-3 h-full mt-4">
+                {/* Client Name Input */}
+                <Holds className="pb-3">
+                  <Titles position={"left"} size={"h3"}>
+                    {t("AddressInformation")}
+                  </Titles>
+                </Holds>
+
+                <Holds className="pb-3">
+                  <Inputs
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    placeholder={t("AddressInformation")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+
+                <Holds className="pb-3">
+                  <Inputs
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    placeholder={t("City")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Holds>
+
+                <Holds position={"row"} className="w-full pb-3 gap-x-3">
+                  <Holds className="w-1/2">
+                    <Selects
+                      name="state"
+                      value={formData.state}
+                      className="text-xs py-2 text-center"
                       onChange={handleInputChange}
-                      required={newAddress}
-                    />
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {StateOptions.map((state) => (
+                        <option key={state.value} value={state.value}>
+                          {state.label}
+                        </option>
+                      ))}
+                    </Selects>
                   </Holds>
 
-                  <Holds className="pb-3">
+                  <Holds className="w-1/2">
                     <Inputs
                       type="text"
-                      name="address"
-                      value={formData.address}
-                      placeholder={t("AddressInformation")}
-                      className="text-xs pl-3 py-2"
+                      name="zipCode"
+                      value={formData.zipCode}
+                      placeholder={t("ZipCode")}
+                      className="text-xs py-2 text-center"
                       onChange={handleInputChange}
-                      required={newAddress}
+                      required
                     />
-                  </Holds>
-
-                  <Holds className="pb-3">
-                    <Inputs
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      placeholder={t("City")}
-                      className="text-xs pl-3 py-2"
-                      onChange={handleInputChange}
-                      required={newAddress}
-                    />
-                  </Holds>
-
-                  <Holds position={"row"} className="w-full pb-3 gap-x-3">
-                    <Holds className="w-1/2">
-                      <Selects
-                        name="state"
-                        value={formData.state}
-                        className="text-xs py-2 text-center"
-                        onChange={handleInputChange}
-                        required={newAddress}
-                      >
-                        <option value="">Select State</option>
-                        {StateOptions.map((state) => (
-                          <option key={state.value} value={state.value}>
-                            {state.label}
-                          </option>
-                        ))}
-                      </Selects>
-                    </Holds>
-
-                    <Holds className="w-1/2">
-                      <Inputs
-                        type="text"
-                        name="zipCode"
-                        value={formData.zipCode}
-                        placeholder={t("ZipCode")}
-                        className="text-xs py-2 text-center"
-                        onChange={handleInputChange}
-                        required={newAddress}
-                      />
-                    </Holds>
                   </Holds>
                 </Holds>
-              )}
+              </Holds>
 
               {/* Creation Details Section */}
               <Holds
                 background={"white"}
-                className="row-start-6 row-end-10 h-full"
+                className="row-start-4 row-end-6 h-full"
               >
                 <Holds className="pb-3">
                   <Titles position={"left"} size={"h3"}>
                     {t("CreationDetails")}
                   </Titles>
+                </Holds>
+
+                <Holds className="pb-3">
+                  <Inputs
+                    type="text"
+                    name="code"
+                    value={formData.code}
+                    placeholder={t("TemporaryJobsiteCode")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
+                    required
+                  />
                 </Holds>
 
                 <Holds className="pb-3">

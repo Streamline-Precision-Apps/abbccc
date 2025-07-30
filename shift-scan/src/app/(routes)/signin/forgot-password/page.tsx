@@ -1,22 +1,19 @@
 "use client";
-
-import { Bases } from "@/components/(reusable)/bases";
-import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
-import { Labels } from "@/components/(reusable)/labels";
+import "@/app/globals.css";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Titles } from "@/components/(reusable)/titles";
 import { Texts } from "@/components/(reusable)/texts";
-import { Grids } from "@/components/(reusable)/grids";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Forms } from "@/components/(reusable)/forms";
 import { Reset } from "@/actions/reset";
 import { useState } from "react";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
-import { Images } from "@/components/(reusable)/images";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/input";
 
 export default function ForgotPassword() {
+  const t = useTranslations("ForgotPassword");
   const [message, setMessage] = useState<string>("");
   const [color, SetColor] = useState<string>("");
   const router = useRouter();
@@ -41,66 +38,58 @@ export default function ForgotPassword() {
     }, 3000);
   };
   return (
-    <Bases>
-      <Contents>
-        <Grids rows={"5"} gap={"5"}>
-          <Holds background={"white"} className="row-span-1 ">
-            <Contents width={"section"}>
-              <TitleBoxes href="/signin">
-                <Titles size={"h2"}>Return to sign in</Titles>
-                <Images
-                  titleImg="/key.svg"
-                  titleImgAlt={"key"}
-                  className="max-w-8 h-auto object-contain"
-                />
-              </TitleBoxes>
-            </Contents>
-          </Holds>
+    <div className="w-screen h-screen grid grid-rows-10 gap-1">
+      <div className="h-full flex flex-col justify-end row-span-2 gap-1 p-4">
+        <Texts text={"white"} className="justify-end" size={"md"}>
+          {t("RecoveryPageTitle")}
+        </Texts>
+      </div>
+      <div className="h-full row-span-8 flex flex-col bg-white border border-zinc-300 p-4 gap-4">
+        <Forms
+          onSubmit={handlePasswordReset}
+          className="max-w-[600px] w-full mx-auto h-full flex flex-col gap-4"
+        >
+          <div className="flex flex-col gap-1 h-full">
+            <Label> {t("Email")}</Label>
+            <Input
+              className={`border p-2 rounded-md transition-colors duration-150 border-zinc-300`}
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+            />
 
-          <Holds background={"white"} className="h-full row-span-4">
-            <Contents width={"section"}>
-              <Grids rows={"4"} gap={"5"}>
-                <Holds className="row-span-1">
-                  <Texts size={"p3"}>
-                    Enter your email and we will send you a link to reset your
-                    password.
-                  </Texts>
-                </Holds>
-                <Holds className="row-span-3 h-full my-auto">
-                  <Forms onSubmit={handlePasswordReset} className="h-full">
-                    <Labels>
-                      Email
-                      <Inputs
-                        type="email"
-                        name="email"
-                        id="email"
-                        placeholder="Email"
-                      />
-                    </Labels>
-                    <Holds>
-                      <Texts
-                        size={"p3"}
-                        className={
-                          color === "green"
-                            ? "text-emerald-600/80"
-                            : " text-red-600"
-                        }
-                      >
-                        {message}
-                      </Texts>
-                    </Holds>
-                    <Holds className="mt-5">
-                      <Buttons type="submit" className="py-5">
-                        <Titles size={"h2"}> Send email</Titles>
-                      </Buttons>
-                    </Holds>
-                  </Forms>
-                </Holds>
-              </Grids>
-            </Contents>
-          </Holds>
-        </Grids>
-      </Contents>
-    </Bases>
+            <Texts
+              size={"p3"}
+              className={
+                color === "green" ? "text-emerald-600/80" : " text-red-600"
+              }
+            >
+              {message}
+            </Texts>
+          </div>
+          <div className="w-full flex flex-row gap-4 mt-4">
+            <div className="w-full">
+              <Button
+                className="bg-white border-app-dark-blue border-2 w-full"
+                type="button"
+                onClick={() => router.back()}
+              >
+                <p className="text-app-dark-blue font-semibold text-base">
+                  {t("Back")}
+                </p>
+              </Button>
+            </div>
+            <div className="w-full">
+              <Button className="bg-app-dark-blue w-full" type="submit">
+                <p className="text-white font-semibold text-base">
+                  {t("SendEmail")}
+                </p>
+              </Button>
+            </div>
+          </div>
+        </Forms>
+      </div>
+    </div>
   );
 }
