@@ -100,7 +100,7 @@
 //         if (error instanceof z.ZodError) {
 //           console.error(
 //             "Validation error in Recent JobSites schema:",
-//             error.errors
+//             error
 //           );
 //         }
 //       }
@@ -174,7 +174,7 @@
 //         if (error instanceof z.ZodError) {
 //           console.error(
 //             "Validation error in Recent CostCodes schema:",
-//             error.errors
+//             error
 //           );
 //         }
 //       }
@@ -249,7 +249,7 @@
 //         if (error instanceof z.ZodError) {
 //           console.error(
 //             "Validation error in Recent Equipment schema:",
-//             error.errors
+//             error
 //           );
 //         }
 //       }

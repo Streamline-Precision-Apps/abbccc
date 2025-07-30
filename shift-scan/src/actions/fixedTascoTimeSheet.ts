@@ -1,7 +1,8 @@
 "use server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-const { formatISO } = require("date-fns");
+import { formatISO } from "date-fns/formatISO";
+
 import { revalidatePath } from "next/cache";
 
 /**
@@ -16,14 +17,16 @@ export async function handleTascoTimeSheet(formData: FormData) {
     }
     console.log("Handle Tasco TimeSheet:", formData);
     let newTimeSheet: string | null = null;
-    
+
     // Start a transaction
     await prisma.$transaction(async (prisma) => {
       // Step 1: Create a new TimeSheet
       const jobsiteId = formData.get("jobsiteId") as string;
       const userId = formData.get("userId") as string;
       const equipmentId = formData.get("equipment") as string;
-      const previousTimeSheetComments = formData.get("timeSheetComments") as string;
+      const previousTimeSheetComments = formData.get(
+        "timeSheetComments"
+      ) as string;
       const costCode = formData.get("costcode") as string;
       const shiftType = formData.get("shiftType") as string;
       const type = formData.get("type") as string;
@@ -46,15 +49,16 @@ export async function handleTascoTimeSheet(formData: FormData) {
         laborType: string;
         TascoMaterialTypes?: { connect: { name: string } };
         Equipment?: { connect: { id: string } };
-      };      const tascoLogCreateData: TascoLogCreateData = {
+      };
+      const tascoLogCreateData: TascoLogCreateData = {
         shiftType,
-        laborType
+        laborType,
       };
 
       // Add material type connection if available
       if (materialType) {
-        tascoLogCreateData.TascoMaterialTypes = { 
-          connect: { name: materialType } 
+        tascoLogCreateData.TascoMaterialTypes = {
+          connect: { name: materialType },
         };
       }
 
@@ -63,11 +67,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
         // Try to find equipment by either ID or QR code
         const equipment = await prisma.equipment.findFirst({
           where: {
-            OR: [
-              { id: equipmentId },
-              { qrId: equipmentId }
-            ]
-          }
+            OR: [{ id: equipmentId }, { qrId: equipmentId }],
+          },
         });
 
         if (equipment) {
@@ -89,7 +90,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
           CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TASCO",
-          TascoLogs: { create: tascoLogCreateData }
+          TascoLogs: { create: tascoLogCreateData },
         },
       });
 

@@ -89,7 +89,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation error in JobSites schema:", error.errors);
+          console.error("Validation error in JobSites schema:", error);
         }
       }
     };
@@ -139,7 +139,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation error in CostCodes schema:", error.errors);
+          console.error("Validation error in CostCodes schema:", error);
         }
       }
     };
@@ -191,7 +191,7 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation error in Equipment schema:", error.errors);
+          console.error("Validation error in Equipment schema:", error);
         }
       }
     };

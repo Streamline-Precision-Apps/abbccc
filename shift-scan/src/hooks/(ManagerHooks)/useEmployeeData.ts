@@ -66,9 +66,9 @@ export const useEmployeeData = (
           if (validationError instanceof z.ZodError) {
             console.error(
               "Validation error in employee data:",
-              validationError.errors
+              validationError
             );
-            setError(validationError.errors[0].message); // Set validation error
+            setError("Invalid employee data format");
             return; // Stop processing if validation fails
           }
         }

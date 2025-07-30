@@ -33,7 +33,7 @@ export const usePersonnelState = () => {
       setCrew(crewData);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error("Validation error:", error.errors);
+        console.error("Validation error:", error);
       } else {
         console.error("Failed to fetch data", error);
       }
