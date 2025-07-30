@@ -45,3 +45,6 @@ dev.db
 certificates
 # Sentry Config File
 .env.sentry-build-plugin
+
+
+../../prisma/generated/prisma
