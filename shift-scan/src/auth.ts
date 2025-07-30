@@ -34,7 +34,7 @@ declare module "next-auth" {
 
 class InvalidLoginError extends CredentialsSignin {
   constructor() {
-    super("Invalid credentials", { code: "credentials" });
+    super("Invalid credentials");
   }
 }
 
