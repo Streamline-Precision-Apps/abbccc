@@ -389,7 +389,7 @@ export default function NewClockProcess({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h1"}>{t("Title-jobsite")}</Titles>
+                <Titles size={"h4"}>{t("Title-jobsite")}</Titles>
               </TitleBoxes>
             </Holds>
             <Holds className="row-start-2 row-end-8 h-full w-full">
@@ -443,7 +443,7 @@ export default function NewClockProcess({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
+                <Titles size={"h4"}>{t(`Title-costcode`)}</Titles>
               </TitleBoxes>
             </Holds>
 
@@ -498,7 +498,7 @@ export default function NewClockProcess({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h1"}>{t("Trailer-label")}</Titles>
+                <Titles size={"h4"}>{t("Trailer-label")}</Titles>
               </TitleBoxes>
             </Holds>
             <Holds className="row-start-2 row-end-8 h-full w-full">
@@ -506,7 +506,9 @@ export default function NewClockProcess({
                 <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
                   <Holds className={"row-start-1 row-end-7 h-full w-full "}>
                     <TrailerSelector
-                      onTrailerSelect={(trailer) => setTrailer(trailer || { id: "", code: "", label: "" })}
+                      onTrailerSelect={(trailer) =>
+                        setTrailer(trailer || { id: "", code: "", label: "" })
+                      }
                       initialValue={trailer}
                     />
                   </Holds>
@@ -547,7 +549,7 @@ export default function NewClockProcess({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
+                <Titles size={"h4"}>{t(`Title-costcode`)}</Titles>
               </TitleBoxes>
             </Holds>
 
@@ -623,7 +625,7 @@ export default function NewClockProcess({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h1"}>{t(`Title-costcode`)}</Titles>
+                <Titles size={"h4"}>{t(`Title-costcode`)}</Titles>
               </TitleBoxes>
             </Holds>
 

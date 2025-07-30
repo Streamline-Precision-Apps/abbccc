@@ -5,10 +5,10 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const timesheetId = params.id;
+    const { id: timesheetId } = await params;
     if (!timesheetId) {
       return new Response(
         JSON.stringify({ error: "Missing timesheet id in URL params." }),

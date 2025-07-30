@@ -29,7 +29,7 @@ export function useInfiniteScroll<T>({
   const [isInitialLoading, setIsInitialLoading] = useState(true); // Initial load state
 
   // INTERSECTION OBSERVER
-  const observer = useRef<IntersectionObserver>(); // Observer instance ref
+  const observer = useRef<IntersectionObserver | null>(null); // Observer instance ref
 
   // DATA FETCHING LOGIC
   const fetchData = useCallback(

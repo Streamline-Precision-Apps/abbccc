@@ -2,7 +2,7 @@
 import prisma from "@/lib/prisma";
 import { Permission } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
-import bcrypt from "bcryptjs";
+import { compare } from "bcrypt-ts";
 
 export async function createUser(formData: FormData) {
   try {
@@ -41,7 +41,7 @@ export async function createUser(formData: FormData) {
         tascoView: Boolean(formData.get("tascoView")) as unknown as boolean,
         laborView: Boolean(formData.get("laborView")) as unknown as boolean,
         mechanicView: Boolean(
-          formData.get("mechanicView")
+          formData.get("mechanicView"),
         ) as unknown as boolean,
         permission: formData.get("permission") as Permission,
         image: formData.get("image") as string,
@@ -83,7 +83,7 @@ export async function adminCreateUser(formData: FormData) {
 
     if (user.length > 0) {
       console.log(
-        "User already exists based on first name, last name, and DOB"
+        "User already exists based on first name, last name, and DOB",
       );
       return;
     }
@@ -127,7 +127,7 @@ export async function adminCreateUser(formData: FormData) {
         phoneNumber: formData.get("phoneNumber") as string,
         emergencyContact: formData.get("emergencyContact") as string,
         emergencyContactNumber: formData.get(
-          "emergencyContactNumber"
+          "emergencyContactNumber",
         ) as string,
       },
     });
@@ -179,7 +179,7 @@ export async function updateUserProfile(formData: FormData) {
             phoneNumber: formData.get("phoneNumber") as string,
             emergencyContact: formData.get("emergencyContact") as string,
             emergencyContactNumber: formData.get(
-              "emergencyContactNumber"
+              "emergencyContactNumber",
             ) as string,
           },
         },
@@ -290,7 +290,7 @@ export async function getUserFromDb(username: string, password: string) {
     },
   });
   if (user) {
-    if (await bcrypt.compare(password, user.password)) {
+    if (await compare(password, user.password)) {
       return user;
     }
   }
@@ -350,7 +350,7 @@ export default async function updateUserAccountInfo(formData: FormData) {
             phoneNumber: formData.get("phoneNumber") as string,
             emergencyContact: formData.get("emergencyContact") as string,
             emergencyContactNumber: formData.get(
-              "emergencyContactNumber"
+              "emergencyContactNumber",
             ) as string,
           },
         },

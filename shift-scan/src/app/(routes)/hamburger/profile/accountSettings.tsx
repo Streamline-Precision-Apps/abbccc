@@ -191,7 +191,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
           loading ? "animate-pulse" : ""
         }`}
       >
-        <TitleBoxes onClick={() => router.push(`/${url}`)}>
+        <TitleBoxes onClick={() => router.push(url)}>
           {/* Profile Image Editor (Pass fetchEmployee as Prop) */}
 
           <ProfileImageEditor

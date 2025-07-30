@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   request: Request,
-  { params }: { params: { truckingLogId: string } }
+  { params }: { params: Promise<{ truckingLogId: string }> }
 ) {
   // Authenticate user
   const session = await auth();
@@ -21,7 +21,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { truckingLogId } = params;
+  const { truckingLogId } = await params;
 
   if (!truckingLogId || typeof truckingLogId !== "string") {
     return NextResponse.json(

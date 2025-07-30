@@ -1,12 +1,9 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { user } from "@nextui-org/theme";
 import { UserData } from "../types/personnel";
 import { NModals } from "@/components/(reusable)/newmodals";
-import { Contents } from "@/components/(reusable)/contents";
 import { useState } from "react";
 import { Anton } from "next/font/google";
 import { RemoveUserProfilePicture } from "@/actions/PersonnelActions";

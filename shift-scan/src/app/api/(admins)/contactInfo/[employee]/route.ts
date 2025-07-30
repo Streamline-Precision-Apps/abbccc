@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { employee: string } }
+  { params }: { params: Promise<{ employee: string }> }
 ) {
   try {
     const session = await auth();
@@ -15,7 +15,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { employee } = params;
+    const { employee } = await params;
 
     if (!employee) {
       return NextResponse.json(
@@ -48,7 +48,8 @@ export async function GET(
     // Return the fetched data as a response
     return NextResponse.json(EmployeeData, {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (error) {
@@ -59,9 +60,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

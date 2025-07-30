@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { crewId: string } }
+  { params }: { params: Promise<{ crewId: string }> }
 ) {
   try {
     const session = await auth();
@@ -15,7 +15,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { crewId } = params;
+    const { crewId } = await params;
 
     if (!crewId) {
       return NextResponse.json(

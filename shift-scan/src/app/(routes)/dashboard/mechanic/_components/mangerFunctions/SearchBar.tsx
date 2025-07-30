@@ -10,7 +10,7 @@ export function SearchBar({
 }: {
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
-  inputRef: RefObject<HTMLInputElement>;
+  inputRef: RefObject<HTMLInputElement | null>;
 }) {
   return (
     <Holds
@@ -22,11 +22,7 @@ export function SearchBar({
         className="mr-4"
         onClick={() => inputRef.current?.focus()}
       >
-        <Images
-          titleImg="/searchLeft.svg"
-          titleImgAlt="search"
-          size="50"
-        />
+        <Images titleImg="/searchLeft.svg" titleImgAlt="search" size="50" />
       </Holds>
       <Holds size="60">
         <input

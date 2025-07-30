@@ -3,10 +3,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
-export async function GET(
-  request: Request,
-  { params }: { params: { crewId: string } }
-) {
+export async function GET(request: Request) {
   try {
     const session = await auth();
     const userId = session?.user?.id;

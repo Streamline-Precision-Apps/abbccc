@@ -6,11 +6,12 @@ export const runtime = "nodejs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const document = await prisma.pdfDocument.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         fileData: true,
         fileName: true,
@@ -33,31 +34,38 @@ export async function GET(
     }
 
     // Convert to Buffer if it's not already one
-    const pdfBuffer = document.fileData instanceof Buffer
-      ? document.fileData
-      : Buffer.from(document.fileData);
+    const pdfBuffer =
+      document.fileData instanceof Buffer
+        ? document.fileData
+        : Buffer.from(document.fileData);
 
     console.log("PDF Buffer Size:", pdfBuffer.length);
     console.log("PDF Buffer Type:", typeof pdfBuffer);
-    console.log("document: ", document);  
+    console.log("document: ", document);
 
     return new Response(pdfBuffer, {
       status: 200,
       headers: new Headers({
         "Content-Type": document.contentType || "application/pdf",
         "Content-Length": pdfBuffer.length.toString(),
-        "Content-Disposition": `inline; filename="${document.fileName.replace(/[^a-zA-Z0-9-_.]/g, "_")}"`,
+        "Content-Disposition": `inline; filename="${document.fileName.replace(
+          /[^a-zA-Z0-9-_.]/g,
+          "_"
+        )}"`,
         "Cache-Control": "public, max-age=3600",
       }),
     });
   } catch (error) {
     console.error("Error fetching PDF:", error);
-    return new Response(JSON.stringify({
-      error: "Internal server error",
-      message: error instanceof Error ? error.message : "Unknown error"
-    }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }

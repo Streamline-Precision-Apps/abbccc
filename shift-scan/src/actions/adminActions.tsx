@@ -4,8 +4,7 @@ import { FormStatus, Permission, WorkType } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
-import bcrypt from "bcryptjs";
-
+import { hash } from "bcrypt-ts";
 interface NewEmployeeFormData {
   username: string;
   password: string;
@@ -64,7 +63,7 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
     generalView = false,
   } = parsed.data;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await hash(password, 10);
 
   // Use a transaction to ensure both operations succeed or fail together
   const result = await prisma.$transaction(async (prisma) => {
@@ -139,7 +138,7 @@ export async function updateEmployeeAndContact(formData: FormData) {
     const phoneNumber = formData.get("phoneNumber") as string;
     const emergencyContact = formData.get("emergencyContact") as string;
     const emergencyContactNumber = formData.get(
-      "emergencyContactNumber"
+      "emergencyContactNumber",
     ) as string;
 
     // Update user
@@ -236,7 +235,7 @@ export async function createCrew(formData: FormData) {
     throw new Error(
       `Failed to create crew: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }

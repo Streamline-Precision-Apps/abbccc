@@ -3,10 +3,15 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import FormEditor from "./_component/FormEditor";
 import { useRouter } from "next/navigation";
+import { use } from "react";
 
-export default function FormPage({ params }: { params: { id: string } }) {
+export default function FormPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { setOpen, open } = useSidebar();
-  const { id } = params;
+  const { id } = use(params);
   const router = useRouter();
 
   const handleCancel = () => {

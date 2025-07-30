@@ -159,7 +159,7 @@ export default function TruckVerificationStep({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes position={"row"} onClick={handlePrevStep}>
-                <Titles position={"right"} size={"h1"}>
+                <Titles position={"right"} size={"h4"}>
                   {t("VerifyJobSite")}
                 </Titles>
                 <Images

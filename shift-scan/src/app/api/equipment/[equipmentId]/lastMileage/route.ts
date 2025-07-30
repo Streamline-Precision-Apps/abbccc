@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: { equipmentId: string } }
+  { params }: { params: Promise<{ equipmentId: string }> }
 ) {
   // Authenticate user
   const session = await auth();
@@ -15,7 +15,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { equipmentId } = params;
+  const { equipmentId } = await params;
 
   if (!equipmentId || typeof equipmentId !== "string") {
     return NextResponse.json(
@@ -35,7 +35,7 @@ export async function GET(
       },
       orderBy: {
         TimeSheet: {
-          endTime: 'desc', // Order by timesheet end time (most recent completed)
+          endTime: "desc", // Order by timesheet end time (most recent completed)
         },
       },
       select: {

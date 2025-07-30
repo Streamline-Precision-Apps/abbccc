@@ -12,7 +12,7 @@ enum FormStatus {
 
 export async function GET(
   req: Request,
-  { params }: { params: { status: string } }
+  { params }: { params: Promise<{ status: string }> }
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -21,7 +21,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { status } = params;
+  const { status } = await params;
   const { searchParams } = new URL(req.url);
   const skip = parseInt(searchParams.get("skip") || "0"); // Number of records to skip
   const take = parseInt(searchParams.get("take") || "10"); // Number of records to fetch
