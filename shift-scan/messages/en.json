@@ -124,7 +124,10 @@
     "Next": "Next",
     "Submitting": "Submitting...",
     "ProfilePictureMissingError": "Invalid Attempt. You must select a Profile Picture!",
-    "ImageAlt": "Profile Picture Image"
+    "ImageAlt": "Profile Picture Image",
+    "Cancel": "Cancel",
+    "RetakePicture": "Retake Picture",
+    "TakePicture": "Take Picture"
   },
 
   "SignUpVirtualSignature": {

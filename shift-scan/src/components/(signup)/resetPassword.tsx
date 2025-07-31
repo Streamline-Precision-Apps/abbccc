@@ -54,7 +54,7 @@ const ResetPassword = ({
 
   const handleSubmitPassword = () => {
     useFormRef.current?.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true })
+      new Event("submit", { bubbles: true, cancelable: true }),
     );
   };
 
@@ -107,7 +107,7 @@ const ResetPassword = ({
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
-        "There was an error updating your password. Please try again."
+        "There was an error updating your password. Please try again.",
       );
       setShowBanner(true);
     } finally {
@@ -249,7 +249,7 @@ const ResetPassword = ({
               disabled={isSubmitting}
             >
               <p className="text-white font-semibold text-base">
-                <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
               </p>
             </Button>
           </div>
