@@ -122,7 +122,10 @@
     "Next": "Próximo",
     "Submitting": "Sumisión...",
     "ProfilePictureMissingError": "Intento inválido. ",
-    "ImageAlt": "Imagen de imagen de perfil"
+    "ImageAlt": "Imagen de imagen de perfil",
+    "Cancel": "Cancelar",
+    "RetakePicture": "Volver a tomar la foto",
+    "TakePicture": "Tomar la foto"
   },
   "SignUpVirtualSignature": {
     "AddASignature": "Agregar una firma",
