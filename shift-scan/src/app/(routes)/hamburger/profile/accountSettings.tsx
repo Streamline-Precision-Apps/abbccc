@@ -13,6 +13,7 @@ import { UserSettings } from "@/lib/types";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { z } from "zod";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 // Define Zod schema for UserSettings
 const userSettingsSchema = z.object({
@@ -53,6 +54,10 @@ export default function ProfilePage({ userId }: { userId: string }) {
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
   const [initialData, setInitialData] = useState<UserSettings | null>(null);
 
+  // Use the centralized permissions context
+  const { permissions, requestCameraPermission, requestLocationPermission } =
+    usePermissions();
+
   const fetchEmployee = async () => {
     setLoading(true);
     try {
@@ -72,6 +77,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
     fetchEmployee();
   }, []);
 
+  // Fetch settings and synchronize with permission state
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -80,7 +86,15 @@ export default function ProfilePage({ userId }: { userId: string }) {
           const settings = await response.json();
           const validatedSettings = userSettingsSchema.parse(settings);
 
-          const updatedSettings = { ...validatedSettings, userId };
+          // Synchronize with actual permission state
+          // This ensures the UI reflects the real permission status
+          const updatedSettings = {
+            ...validatedSettings,
+            userId,
+            // Overwrite with actual permission status from permissions context
+            cameraAccess: permissions.camera,
+            locationAccess: permissions.location,
+          };
 
           setData(updatedSettings);
           setUpdatedData(updatedSettings);
@@ -92,8 +106,12 @@ export default function ProfilePage({ userId }: { userId: string }) {
         console.error("Error occurred while fetching settings:", error);
       }
     };
-    fetchData();
-  }, [userId]);
+
+    // Only fetch when permissions are initialized
+    if (permissions) {
+      fetchData();
+    }
+  }, [userId, permissions]);
 
   // Automatically save settings when updated
   useEffect(() => {
@@ -132,54 +150,41 @@ export default function ProfilePage({ userId }: { userId: string }) {
 
   // --- Updated toggles with permission requests ---
 
-  // CameraAccess toggle: request permission when turned on
+  // CameraAccess toggle: request permission using the permissions context
   const handleCameraAccessChange = async (value: boolean) => {
     if (value) {
-      // Request camera permission when turning on
+      // Request camera permission when turning on using the centralized context
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        // Immediately stop the stream (we just wanted permission)
-        stream.getTracks().forEach((track) => track.stop());
-        handleChange("cameraAccess", true);
+        const granted = await requestCameraPermission();
+        // Update the app setting based on whether permission was granted
+        handleChange("cameraAccess", granted);
       } catch (err) {
         console.error("Camera access denied:", err);
         handleChange("cameraAccess", false);
       }
     } else {
-      // When turning off, stop all camera tracks
-      if (navigator.mediaDevices) {
-        const streams = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        streams.getTracks().forEach((track) => track.stop());
-      }
+      // When turning off, just update the app setting
+      // The actual camera permission can't be revoked programmatically
       handleChange("cameraAccess", false);
     }
   };
 
-  // LocationAccess toggle: request permission when turned on
+  // LocationAccess toggle: request permission using the permissions context
   const handleLocationAccessChange = async (value: boolean) => {
     if (value) {
-      // Request location permission when turning on
+      // Request location permission when turning on using the centralized context
       try {
-        const position = await new Promise<GeolocationPosition>(
-          (resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-          }
-        );
-        handleChange("locationAccess", true);
+        const granted = await requestLocationPermission();
+        // Update the app setting based on whether permission was granted
+        handleChange("locationAccess", granted);
       } catch (err) {
         console.error("Location access denied:", err);
         handleChange("locationAccess", false);
       }
     } else {
-      if ("geolocation" in navigator) {
-        // Note: There's no direct way to "disable" geolocation,
-        // but we can ensure our app stops using it
-        handleChange("locationAccess", false);
-      }
+      // When turning off, just update the app setting
+      // The actual location permission can't be revoked programmatically
+      handleChange("locationAccess", false);
     }
   };
 

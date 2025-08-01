@@ -4,6 +4,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
 import { useTranslations } from "next-intl";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 interface CameraComponentProps {
   setBase64String: React.Dispatch<React.SetStateAction<string>>;
@@ -18,6 +19,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { requestCameraPermission } = usePermissions();
 
   // Start the camera
   const startCamera = async () => {
@@ -31,6 +33,16 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
     };
 
     try {
+      // First request camera permission using the centralized permissions context
+      const permissionGranted = await requestCameraPermission();
+
+      if (!permissionGranted) {
+        setError(
+          "Camera permission denied. Please grant camera access in your settings.",
+        );
+        return;
+      }
+
       if (!navigator.mediaDevices?.getUserMedia) {
         setError("Camera not supported in this browser.");
         return;
