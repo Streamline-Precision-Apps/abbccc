@@ -39,10 +39,12 @@ export const LaborClockOut = ({
   prevStep,
   commentsValue,
   pendingTimeSheets,
+  wasInjured,
 }: {
   prevStep: () => void;
   commentsValue: string;
   pendingTimeSheets: TimeSheet | undefined;
+  wasInjured: boolean;
 }) => {
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
@@ -75,6 +77,7 @@ export const LaborClockOut = ({
       formData.append("id", timeSheetId);
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
+      formData.append("wasInjured", wasInjured.toString());
 
       await updateTimeSheet(formData);
     } catch (error) {
@@ -173,10 +176,10 @@ export const LaborClockOut = ({
                             pendingTimeSheets?.workType === "LABOR"
                               ? t("GeneralLabor")
                               : pendingTimeSheets?.workType === "TRUCK_DRIVER"
-                              ? t("TruckDriver")
-                              : pendingTimeSheets?.workType === "MECHANIC"
-                              ? t("Mechanic")
-                              : ""
+                                ? t("TruckDriver")
+                                : pendingTimeSheets?.workType === "MECHANIC"
+                                  ? t("Mechanic")
+                                  : ""
                           }
                         />
                       )}

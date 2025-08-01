@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -9,9 +8,19 @@ import {
 } from "@/components/ui/select";
 import { useTimecardIdData } from "./useTimecardIdData";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-label";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@radix-ui/react-popover";
+import { format, parseISO } from "date-fns";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { ChevronDownIcon, Calendar } from "lucide-react";
+import { date } from "zod";
 type AppManagerEditTimesheetModalProps = {
   timesheetId: string;
   isOpen: boolean;
@@ -19,15 +28,84 @@ type AppManagerEditTimesheetModalProps = {
 };
 
 export default function AppManagerEditTimesheetModal(
-  props: AppManagerEditTimesheetModalProps
+  props: AppManagerEditTimesheetModalProps,
 ) {
   const { timesheetId, isOpen, onClose } = props;
   const { data, setEdited, loading, error, save, costCodes, jobSites, reset } =
     useTimecardIdData(timesheetId);
   const [editGeneral, setEditGeneral] = useState(false);
+
+  // State for date and time pickers
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [startTime, setStartTime] = useState<string>("");
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<string>("");
+
+  // State for popover controls
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+
+  // Initialize date/time state when entering edit mode or when data changes
+  useEffect(() => {
+    if (data && editGeneral) {
+      // Only set these values when entering edit mode to avoid unnecessary updates
+      if (data.startTime) {
+        const startDateTime = new Date(data.startTime);
+        setStartDate(startDateTime);
+        setStartTime(format(startDateTime, "HH:mm"));
+      }
+
+      if (data.endTime) {
+        const endDateTime = new Date(data.endTime);
+        setEndDate(endDateTime);
+        setEndTime(format(endDateTime, "HH:mm"));
+      }
+    }
+  }, [data, editGeneral]); // Update timesheet only when user interacts with inputs
+  const updateStartDateTime = useCallback(() => {
+    if (startDate && startTime && editGeneral) {
+      const [hours, minutes] = startTime.split(":").map(Number);
+      const newStartDate = new Date(startDate);
+      newStartDate.setHours(hours, minutes, 0, 0);
+
+      setEdited((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          startTime: newStartDate,
+        };
+      });
+    }
+  }, [startDate, startTime, editGeneral, setEdited]);
+
+  const updateEndDateTime = useCallback(() => {
+    if (endDate && endTime && editGeneral) {
+      const [hours, minutes] = endTime.split(":").map(Number);
+      const newEndDate = new Date(endDate);
+      newEndDate.setHours(hours, minutes, 0, 0);
+
+      setEdited((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          endTime: newEndDate,
+        };
+      });
+    }
+  }, [endDate, endTime, editGeneral, setEdited]);
+
+  // Only run the updates when start/end time or date changes
+  useEffect(() => {
+    updateStartDateTime();
+  }, [updateStartDateTime]);
+
+  useEffect(() => {
+    updateEndDateTime();
+  }, [updateEndDateTime]);
   if (!isOpen) return null;
 
   const onSave = async () => {
+    // Save edited start/end time if changed
     await save();
     // Add a short delay for a smoother transition
     setTimeout(() => {
@@ -36,8 +114,8 @@ export default function AppManagerEditTimesheetModal(
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md h-full flex flex-col overflow-hidden transition-all duration-300">
+    <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-60 overflow-x-hidden">
+      <div className="bg-white shadow-2xl  w-full max-w-md h-full flex flex-col overflow-hidden transition-all duration-300 overflow-x-hidden">
         {/* Header */}
         <div className="px-4 pt-4 border-b bg-gradient-to-tr from-app-dark-blue/20 to-app-blue/20">
           <div className="flex items-center justify-between pb-1 relative">
@@ -57,24 +135,29 @@ export default function AppManagerEditTimesheetModal(
         </div>
         {/* Content */}
         <div
-          className="flex-1 overflow-y-auto px-4 pb-32 pt-4 transition-colors duration-300"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-32 pt-4 transition-colors duration-300"
           style={{
             background: editGeneral ? "rgba(255, 243, 207, 0.15)" : "white",
+            maxWidth: "100vw",
           }}
         >
           {loading ? (
             <div className="flex flex-col gap-0 mt-2 animate-pulse">
               {/* Start Time Skeleton */}
-              <div className="flex items-center gap-2 py-3 border-b">
-                <Skeleton className="w-4 h-4 rounded bg-gray-200" />
-                <Skeleton className="h-4 w-20 rounded bg-gray-200" />
-                <Skeleton className="h-10 w-24 rounded bg-gray-200 ml-auto" />
+              <div className="flex flex-col py-3 border-b">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="w-4 h-4 rounded bg-gray-200" />
+                  <Skeleton className="h-4 w-20 rounded bg-gray-200" />
+                </div>
+                <Skeleton className="h-10 w-full rounded bg-gray-200" />
               </div>
               {/* End Time Skeleton */}
-              <div className="flex items-center gap-2 py-3 border-b">
-                <Skeleton className="w-4 h-4 rounded bg-gray-200" />
-                <Skeleton className="h-4 w-20 rounded bg-gray-200" />
-                <Skeleton className="h-10 w-24 rounded bg-gray-200 ml-auto" />
+              <div className="flex flex-col py-3 border-b">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="w-4 h-4 rounded bg-gray-200" />
+                  <Skeleton className="h-4 w-20 rounded bg-gray-200" />
+                </div>
+                <Skeleton className="h-10 w-full rounded bg-gray-200" />
               </div>
               {/* Jobsite Skeleton */}
               <div className="flex items-center gap-2 py-3 border-b">
@@ -105,139 +188,242 @@ export default function AppManagerEditTimesheetModal(
           ) : data ? (
             <div className="flex flex-col gap-0 mt-2">
               {/* Start Time */}
-              <div className="flex items-center gap-2 py-3 border-b">
-                <img
-                  src="/clock.svg"
-                  alt="Start"
-                  className="w-4 h-4 opacity-70"
-                />
-                <label className="text-xs font-semibold flex-1">
-                  Start Time
-                </label>
-                <Input
-                  type="time"
-                  value={format(data.startTime, "HH:mm")}
-                  onChange={(e) =>
-                    setEdited((prev) => {
-                      if (!prev) return prev;
-                      if (!e.target.value) return { ...prev, startTime: "" };
-                      // Use the original date, update hours/minutes
-                      const base = prev.startTime
-                        ? new Date(prev.startTime)
-                        : new Date();
-                      const [h, m] = e.target.value.split(":").map(Number);
-                      if (!isNaN(h) && !isNaN(m)) {
-                        base.setHours(h, m, 0, 0);
-                        return { ...prev, startTime: base.toISOString() };
-                      }
-                      return prev;
-                    })
-                  }
-                  disabled={!editGeneral}
-                  className={editGeneral ? "ring-2 ring-app-orange" : ""}
-                />
+              <div className="flex flex-col py-3 border-b">
+                <div className="flex items-center gap-2 mb-2">
+                  <img
+                    src="/clock.svg"
+                    alt="Start"
+                    className="w-4 h-4 opacity-70"
+                  />
+                  <label className="text-xs font-semibold">Start Time</label>
+                </div>
+                <div className="w-full">
+                  {editGeneral ? (
+                    <div className="flex gap-4 justify-center">
+                      <div className="flex flex-col">
+                        <Popover
+                          open={startDateOpen}
+                          onOpenChange={setStartDateOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              id="start-date-picker"
+                              className="w-32 justify-between font-normal"
+                            >
+                              {startDate
+                                ? format(startDate, "MM/dd/yyyy")
+                                : "Select date"}
+                              <ChevronDownIcon className="ml-2 h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
+                          >
+                            <CalendarComponent
+                              mode="single"
+                              selected={startDate || undefined}
+                              onSelect={(date) => {
+                                setStartDate(date || null);
+                                setStartDateOpen(false);
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="flex flex-col">
+                        <Input
+                          type="time"
+                          id="start-time-picker"
+                          step="60"
+                          value={startTime}
+                          onChange={(e) => {
+                            setStartTime(e.target.value);
+                            // No need to call updateStartDateTime here,
+                            // the useEffect with useCallback dependency will handle it
+                          }}
+                          className="bg-background appearance-none"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center">
+                      <span className="text-sm">
+                        {data.startTime
+                          ? new Date(data.startTime).toLocaleString("en-US", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              hour12: true,
+                            })
+                          : "-"}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
               {/* End Time */}
-              <div className="flex items-center gap-2 py-3 border-b">
-                <img
-                  src="/clock.svg"
-                  alt="End"
-                  className="w-4 h-4 opacity-70"
-                />
-                <label className="text-xs font-semibold flex-1">End Time</label>
-                <Input
-                  type="time"
-                  value={data.endTime ? format(data.endTime, "HH:mm") : ""}
-                  onChange={(e) =>
-                    setEdited((prev) => {
-                      if (!prev) return prev;
-                      if (!e.target.value) return { ...prev, endTime: null };
-                      // Use the original date, update hours/minutes
-                      const base = prev.endTime
-                        ? new Date(prev.endTime)
-                        : new Date();
-                      const [h, m] = e.target.value.split(":").map(Number);
-                      if (!isNaN(h) && !isNaN(m)) {
-                        base.setHours(h, m, 0, 0);
-                        return { ...prev, endTime: base.toISOString() };
-                      }
-                      return prev;
-                    })
-                  }
-                  disabled={!editGeneral}
-                  className={editGeneral ? "ring-2 ring-app-orange" : ""}
-                />
+              <div className="flex flex-col py-3 border-b">
+                <div className="flex items-center gap-2 mb-2">
+                  <img
+                    src="/clock.svg"
+                    alt="End"
+                    className="w-4 h-4 opacity-70"
+                  />
+                  <label className="text-xs font-semibold">End Time</label>
+                </div>
+                <div className="w-full">
+                  {editGeneral ? (
+                    <div className="flex gap-4 justify-center">
+                      <div className="flex flex-col">
+                        <Popover
+                          open={endDateOpen}
+                          onOpenChange={setEndDateOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              id="end-date-picker"
+                              className="w-32 justify-between font-normal"
+                            >
+                              {endDate
+                                ? format(endDate, "MM/dd/yyyy")
+                                : "Select date"}
+                              <ChevronDownIcon className="ml-2 h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
+                          >
+                            <CalendarComponent
+                              mode="single"
+                              selected={endDate || undefined}
+                              onSelect={(date) => {
+                                setEndDate(date || null);
+                                setEndDateOpen(false);
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="flex flex-col">
+                        <Input
+                          type="time"
+                          id="end-time-picker"
+                          step="60"
+                          value={endTime}
+                          onChange={(e) => {
+                            setEndTime(e.target.value);
+                            // No need to call updateEndDateTime here,
+                            // the useEffect with useCallback dependency will handle it
+                          }}
+                          className="bg-background appearance-none"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center">
+                      <span className="text-sm">
+                        {data.endTime
+                          ? new Date(data.endTime).toLocaleString("en-US", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              hour12: true,
+                            })
+                          : "-"}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
               {/* Jobsite */}
-              <div className="flex items-center gap-2 py-3 border-b">
-                <img
-                  src="/jobsite.svg"
-                  alt="Jobsite"
-                  className="w-4 h-4 opacity-70"
-                />
-                <label className="text-xs font-semibold flex-1">Jobsite</label>
-                <Select
-                  value={data.Jobsite?.id ?? ""}
-                  onValueChange={(val) => {
-                    setEdited((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            Jobsite: jobSites.find((j) => j.id === val) ?? null,
-                          }
-                        : prev
-                    );
-                  }}
-                  disabled={!editGeneral}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select jobsite" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {jobSites.map((jobsite) => (
-                      <SelectItem key={jobsite.id} value={jobsite.id}>
-                        {jobsite.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* Jobsite */}
+              <div className="flex flex-col py-3 border-b">
+                <div className="flex items-center gap-2 mb-2">
+                  <img
+                    src="/jobsite.svg"
+                    alt="Jobsite"
+                    className="w-4 h-4 opacity-70"
+                  />
+                  <label className="text-xs font-semibold">Jobsite</label>
+                </div>
+                <div className="w-full">
+                  <Select
+                    value={data.Jobsite?.id ?? ""}
+                    onValueChange={(val) => {
+                      const newJobsite = jobSites.find((j) => j.id === val);
+                      setEdited((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              Jobsite:
+                                jobSites.find((j) => j.id === val) ?? null,
+                            }
+                          : prev,
+                      );
+                    }}
+                    disabled={!editGeneral}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select jobsite" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {jobSites.map((jobsite) => (
+                        <SelectItem key={jobsite.id} value={jobsite.id}>
+                          {jobsite.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {/* Cost Code */}
-              <div className="flex items-center gap-2 py-3 border-b">
-                <img
-                  src="/number.svg"
-                  alt="Cost Code"
-                  className="w-4 h-4 opacity-70"
-                />
-                <label className="text-xs font-semibold flex-1">
-                  Cost Code
-                </label>
-                <Select
-                  value={data.CostCode?.id ?? ""}
-                  onValueChange={(val) => {
-                    setEdited((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            CostCode:
-                              costCodes.find((c) => c.id === val) ?? null,
-                          }
-                        : prev
-                    );
-                  }}
-                  disabled={!editGeneral}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select cost code" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {costCodes.map((code) => (
-                      <SelectItem key={code.id} value={code.id}>
-                        {code.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col py-3 border-b">
+                <div className="flex items-center gap-2 mb-2">
+                  <img
+                    src="/number.svg"
+                    alt="Cost Code"
+                    className="w-4 h-4 opacity-70"
+                  />
+                  <label className="text-xs font-semibold">Cost Code</label>
+                </div>
+                <div className="w-full">
+                  <Select
+                    value={data.CostCode?.id ?? ""}
+                    onValueChange={(val) => {
+                      setEdited((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              CostCode:
+                                costCodes.find((c) => c.id === val) ?? null,
+                            }
+                          : prev,
+                      );
+                    }}
+                    disabled={!editGeneral}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select cost code" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {costCodes.map((code) => (
+                        <SelectItem key={code.id} value={code.id}>
+                          {code.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {/* Comment */}
               <div className="py-3">
@@ -247,7 +433,7 @@ export default function AppManagerEditTimesheetModal(
                     alt="Comment"
                     className="w-4 h-4 opacity-70"
                   />
-                  <label className="text-xs font-semibold flex-1">
+                  <label className="text-xs font-semibold flex-1 max-w-[100px] truncate">
                     Comment
                   </label>
                 </div>
@@ -258,11 +444,14 @@ export default function AppManagerEditTimesheetModal(
                     if (!editGeneral) return;
                     const val = e.target.value.slice(0, 40);
                     setEdited((prev) =>
-                      prev ? { ...prev, comment: val } : prev
+                      prev ? { ...prev, comment: val } : prev,
                     );
                   }}
                   disabled={true}
-                  className={editGeneral ? "ring-2 ring-app-orange" : ""}
+                  className={
+                    editGeneral ? "ring-2 ring-app-orange truncate" : "truncate"
+                  }
+                  style={{ overflowX: "auto", textOverflow: "ellipsis" }}
                 />
                 <div className="flex justify-end mt-1">
                   <span className="text-xs text-muted-foreground">
