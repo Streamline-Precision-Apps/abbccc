@@ -23,12 +23,14 @@ type FormProps = {
   handleComplete?: () => Promise<void>;
   handleSubmitImage?: () => Promise<void>;
   prevStep: () => void;
+  setWasInjured: Dispatch<SetStateAction<boolean>>;
 };
 
 export const InjuryReportContent = ({
   base64String,
   handleNextStep,
   prevStep,
+  setWasInjured,
 }: FormProps) => {
   const [supervisorChecked, setSupervisorChecked] = useState<boolean>(false);
   const [completedForm, setCompletedForm] = useState<boolean>(false);
@@ -43,18 +45,18 @@ export const InjuryReportContent = ({
   const { id } = session.user;
 
   const handleSupervisorCheckboxChange = (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     setSupervisorChecked(event.currentTarget.checked);
   };
 
   const handleCompleteFormCheckboxChange = (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     setCompletedForm(event.currentTarget.checked);
   };
   const handleSignatureCheckboxChange = (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     setSignatureChecked(event.currentTarget.checked);
   };
@@ -69,26 +71,13 @@ export const InjuryReportContent = ({
       return;
     }
 
-    const formData = new FormData();
-    formData.append("contactedSupervisor", supervisorChecked.toString());
-    formData.append("incidentDescription", textarea);
-    formData.append("signedForm", "true");
-    formData.append("signature", base64String ?? "");
-    formData.append("verifyFormSignature", signatureChecked.toString());
-    formData.append("date", new Date().toISOString());
-    formData.append("userId", id);
-
     try {
-      // add a way to report injury
-      setError(undefined);
+      // reported someone was injured on timesheet
+      setWasInjured(true);
       handleNextStep();
     } catch (error) {
       setError(t("FaildToSubmit"));
     }
-  };
-
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setTextarea(event.target.value);
   };
 
   return (
@@ -122,21 +111,6 @@ export const InjuryReportContent = ({
 
             <Holds className="row-start-2 row-end-8 h-full pt-5 ">
               <Grids rows={"7"} gap={"5"} className="h-full w-full">
-                {/* <Holds className="h-full row-start-1 row-end-3">
-                  <Contents width={"section"}>
-                    <TextAreas
-                      id="incidentDescription"
-                      placeholder={t("incidentDescription")}
-                      value={textarea}
-                      onChange={handleChange}
-                      minLength={1}
-                      maxLength={500}
-                      style={{ resize: "none", width: "100%", height: "100%" }}
-                      className="border-[3px] border-black"
-                    />
-                  </Contents>
-                </Holds> */}
-
                 <Holds position={"row"} className="row-start-1 row-end-2">
                   <Contents width={"section"}>
                     <Holds position={"row"} className="w-full">

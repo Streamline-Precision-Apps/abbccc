@@ -54,7 +54,7 @@ export default function QRGeneratorContent() {
   const url = searchParams.get("returnUrl") || "/dashboard";
   const [loading, setLoading] = useState(false);
   const [generatedJobsiteList, setGeneratedJobsiteList] = useState<Option[]>(
-    []
+    [],
   );
   const [generatedEquipmentList, setGeneratedEquipmentList] = useState<
     Option[]
@@ -93,16 +93,16 @@ export default function QRGeneratorContent() {
         }
         setGeneratedEquipmentList(
           equipmentData.map((item: EquipmentCodes) => ({
-            label: item.name.toUpperCase(),
-            code: item.qrId.toUpperCase(),
-          }))
+            label: item.name.toLowerCase(),
+            code: item.qrId.toLowerCase(),
+          })),
         );
 
         setGeneratedJobsiteList(
           jobsiteData.map((item: JobCodes) => ({
-            label: item.name.toUpperCase(),
-            code: item.qrId.toUpperCase(),
-          }))
+            label: item.name.toLowerCase(),
+            code: item.qrId.toLowerCase(),
+          })),
         );
       } catch (error) {
         console.error("Error fetching data:", error);
