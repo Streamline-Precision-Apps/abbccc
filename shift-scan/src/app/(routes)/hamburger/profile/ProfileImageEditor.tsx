@@ -15,6 +15,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import { set } from "date-fns";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/(animations)/spinner";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 export default function ProfileImageEditor({
   employee,
@@ -29,7 +30,7 @@ export default function ProfileImageEditor({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<"select" | "camera" | "preview" | "crop">(
-    "select"
+    "select",
   );
   const t = useTranslations("Hamburger-Profile");
   const [imageSrc, setImageSrc] = useState<string>("");
@@ -41,6 +42,7 @@ export default function ProfileImageEditor({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const { requestCameraPermission } = usePermissions();
 
   // Camera management
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function ProfileImageEditor({
           0,
           0,
           crop.width,
-          crop.height
+          crop.height,
         );
       }
       setCropImageSrc(canvas.toDataURL("image/png"));
@@ -88,6 +90,15 @@ export default function ProfileImageEditor({
 
   const startCamera = async () => {
     try {
+      // First request camera permission using the centralized permissions context
+      const permissionGranted = await requestCameraPermission();
+
+      if (!permissionGranted) {
+        console.error("Camera permission denied");
+        setMode("select");
+        return;
+      }
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: 300, height: 300 },
       });
@@ -211,8 +222,8 @@ export default function ProfileImageEditor({
                   {mode === "crop"
                     ? t("CropPhoto")
                     : mode === "camera"
-                    ? t("ChangeProfilePhoto")
-                    : t("MyProfilePhoto")}
+                      ? t("ChangeProfilePhoto")
+                      : t("MyProfilePhoto")}
                 </Titles>
               </Holds>
 
@@ -253,7 +264,7 @@ export default function ProfileImageEditor({
                             const img = e.currentTarget;
                             const minDimension = Math.min(
                               img.width,
-                              img.height
+                              img.height,
                             );
                             setCrop({
                               unit: "px",
