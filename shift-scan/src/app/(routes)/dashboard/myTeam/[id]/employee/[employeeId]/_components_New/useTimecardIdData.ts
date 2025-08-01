@@ -1,12 +1,11 @@
 import { updateTimesheetServerAction } from "@/actions/updateTimesheetServerAction";
-import { se } from "date-fns/locale";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 export interface Timesheet {
   id: string;
   comment: string | null;
-  startTime: string;
-  endTime: string | null;
+  startTime: Date | string;
+  endTime: Date | string | null;
   Jobsite: {
     id: string;
     name: string;
@@ -26,9 +25,28 @@ export function useTimecardIdData(id: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [jobSites, setJobSites] = useState<{ id: string; name: string }[]>([]);
+
+  // Use a ref to track if we have an ongoing update
+  const isUpdating = useRef(false);
+
+  // Custom setter that prevents excessive updates
+  const safeSetEdited = useCallback(
+    (updater: React.SetStateAction<Timesheet | null>) => {
+      if (isUpdating.current) return;
+
+      isUpdating.current = true;
+      setEdited(updater);
+
+      // Reset the flag after a small delay
+      setTimeout(() => {
+        isUpdating.current = false;
+      }, 50);
+    },
+    [],
+  );
 
   // Fetch timesheet data and jobsites by timesheetId
   useEffect(() => {
@@ -42,7 +60,27 @@ export function useTimecardIdData(id: string) {
         const res = await fetch(`/api/getTimesheetDetailsManager/${id}`);
         if (!res.ok) throw new Error(await res.text());
         const data = await res.json();
+
         if (!isMounted) return;
+
+        // Ensure that dates are properly formatted as Date objects
+        if (data.timesheet) {
+          // Convert string dates to Date objects if needed
+          if (
+            data.timesheet.startTime &&
+            typeof data.timesheet.startTime === "string"
+          ) {
+            data.timesheet.startTime = new Date(data.timesheet.startTime);
+          }
+
+          if (
+            data.timesheet.endTime &&
+            typeof data.timesheet.endTime === "string"
+          ) {
+            data.timesheet.endTime = new Date(data.timesheet.endTime);
+          }
+        }
+
         setOriginal(data.timesheet ?? null);
         setEdited(data.timesheet ?? null);
 
@@ -80,7 +118,7 @@ export function useTimecardIdData(id: string) {
       }
       try {
         const res = await fetch(
-          `/api/getAllCostCodesByJobSites?jobsiteId=${jobsiteId}`
+          `/api/getAllCostCodesByJobSites?jobsiteId=${jobsiteId}`,
         );
         if (!res.ok) {
           setCostCodes([]);
@@ -98,15 +136,53 @@ export function useTimecardIdData(id: string) {
   // Save the entire edited form to the server
   const save = useCallback(async () => {
     if (!id || !edited) return;
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("startTime", edited.startTime || "");
-    if (edited.endTime) {
-      formData.append("endTime", edited.endTime);
+    try {
+      const formData = new FormData();
+      formData.append("id", id);
+
+      // Only include fields that have values
+      if (edited.startTime) {
+        // Check if startTime is already a string or a Date object
+        const startTimeStr =
+          typeof edited.startTime === "string"
+            ? edited.startTime
+            : edited.startTime.toISOString();
+        formData.append("startTime", startTimeStr);
+      }
+
+      if (edited.endTime) {
+        // Check if endTime is already a string or a Date object
+        const endTimeStr =
+          typeof edited.endTime === "string"
+            ? edited.endTime
+            : edited.endTime.toISOString();
+        formData.append("endTime", endTimeStr);
+      }
+
+      if (edited.Jobsite) {
+        formData.append("Jobsite", edited.Jobsite.id);
+      }
+
+      if (edited.CostCode) {
+        formData.append("CostCode", edited.CostCode.name);
+      }
+
+      if (edited.comment !== null) {
+        formData.append("comment", edited.comment);
+      }
+
+      const result = await updateTimesheetServerAction(formData);
+
+      // Update the original record with the saved changes
+      if (result?.success) {
+        setOriginal(edited);
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error saving timesheet:", error);
+      return { success: false, error: String(error) };
     }
-    formData.append("Jobsite", edited.Jobsite ? edited.Jobsite.id : "");
-    formData.append("CostCode", edited.CostCode ? edited.CostCode.name : "");
-    return updateTimesheetServerAction(formData);
   }, [id, edited]);
 
   /**
@@ -118,7 +194,7 @@ export function useTimecardIdData(id: string) {
 
   return {
     data: edited,
-    setEdited,
+    setEdited: safeSetEdited, // Use our safer setter
     loading,
     error,
     save,

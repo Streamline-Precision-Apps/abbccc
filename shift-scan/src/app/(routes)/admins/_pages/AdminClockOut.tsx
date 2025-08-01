@@ -43,6 +43,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const { setTruckScanData } = useTruckScanData();
   const [comment, setComment] = useState<string>("");
   const { setNotification } = useNotification();
+  const [wasInjured, setWasInjured] = useState<boolean>(false);
 
   const prevStep = () => {
     incrementStep((prevStep) => prevStep - 1);
@@ -74,7 +75,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
           jobsite: localStorage.getItem("jobSite"),
           costCode: localStorage.getItem("costCode"),
           timesheet: JSON.parse(
-            localStorage.getItem("savedtimeSheetData") || ""
+            localStorage.getItem("savedtimeSheetData") || "",
           ),
         }
       : {};
@@ -159,7 +160,10 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   if (step === 1) {
     return (
       <Holds className="h-[500px] overflow-y-auto ">
-        <Holds background={"white"} className="row-span-3 h-full border-[3px] border-green-500">
+        <Holds
+          background={"white"}
+          className="row-span-3 h-full border-[3px] border-green-500"
+        >
           <Contents width={"section"}>
             <Grids rows={"5"} gap={"5"}>
               <Holds className="row-span-2 h-full my-auto">
@@ -224,6 +228,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
             handleSubmitImage={handleSubmit}
             handleNextStep={handleNextStep}
             prevStep={prevStep}
+            setWasInjured={setWasInjured}
           />
         </Holds>
       </Grids>

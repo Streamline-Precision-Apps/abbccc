@@ -26,14 +26,14 @@ const JobsitesSchema = z.array(
     country: z.string().optional(),
     description: z.string().nullable().optional(),
     comment: z.string().nullable().optional(),
-  })
+  }),
 );
 
 const CostCodesSchema = z.array(
   z.object({
     id: z.string(),
     name: z.string(),
-  })
+  }),
 );
 
 const EquipmentSchema = z.array(
@@ -42,7 +42,7 @@ const EquipmentSchema = z.array(
     qrId: z.string(),
     name: z.string(),
     equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
-  })
+  }),
 );
 
 type JobSiteContextType = {
@@ -58,8 +58,6 @@ const JobSiteContext = createContext<JobSiteContextType>({
 export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
   const [jobsiteResults, setJobsiteResults] = useState<JobCodes[]>([]);
   const url = usePathname();
-  const { id, employeeId } = useParams();
-  const queryParams = useSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,16 +73,18 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           url.startsWith("/hamburger/inbox/formSubmission") ||
           url.startsWith("/dashboard/myTeam/")
         ) {
-          const response = await fetch("/api/getJobsites");
+          const response = await fetch("/api/getJobsites", {
+            cache: "no-store",
+          });
           const jobSites = await response.json();
           const validatedJobSites = JobsitesSchema.parse(
-            jobSites as JobCodes[]
+            jobSites as JobCodes[],
           );
           setJobsiteResults(
             validatedJobSites.map((jobSite) => ({
               ...jobSite,
               toLowerCase: () => jobSite.name.toLowerCase(),
-            }))
+            })),
           );
         }
       } catch (error) {
@@ -130,10 +130,12 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
           url.startsWith("/hamburger/inbox/formSubmission") ||
           url.startsWith("/dashboard/myTeam/")
         ) {
-          const response = await fetch("/api/getCostCodes");
+          const response = await fetch("/api/getCostCodes", {
+            cache: "no-store",
+          });
           const costCodes = await response.json();
           const validatedCostCodes = CostCodesSchema.parse(
-            costCodes as CostCodes[]
+            costCodes as CostCodes[],
           );
           setCostcodeResults(validatedCostCodes);
         }
@@ -184,7 +186,9 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           url.startsWith("/hamburger/inbox/formSubmission") ||
           url.startsWith("/dashboard/myTeam/")
         ) {
-          const response = await fetch("/api/getEquipment");
+          const response = await fetch("/api/getEquipment", {
+            cache: "no-store",
+          });
           const equipment = await response.json();
           const validatedEquipment = EquipmentSchema.parse(equipment);
           setEquipmentResults(validatedEquipment as EquipmentCode[]);
