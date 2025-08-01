@@ -13,6 +13,7 @@ import SetCanvasPreview from "./setCanvasPreview"; // Import your canvas preview
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
 import { Titles } from "../(reusable)/titles";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
@@ -33,6 +34,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const t = useTranslations("Widgets");
+  const { requestCameraPermission } = usePermissions();
 
   const startCamera = async () => {
     const constraints = {
@@ -40,9 +42,16 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
     };
 
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia(
-        constraints
-      );
+      // First request camera permission using the centralized permissions context
+      const permissionGranted = await requestCameraPermission();
+
+      if (!permissionGranted) {
+        console.error("Camera permission denied");
+        return;
+      }
+
+      const mediaStream =
+        await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -65,7 +74,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
           0,
           0,
           canvasRef.current.width,
-          canvasRef.current.height
+          canvasRef.current.height,
         );
       }
     }
@@ -96,7 +105,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
           0,
           0,
           VIDEO_DIMENSIONS,
-          VIDEO_DIMENSIONS
+          VIDEO_DIMENSIONS,
         );
         const imageData = canvasRef.current.toDataURL("image/png");
         setImageSrc(imageData);
@@ -120,7 +129,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
       },
       ASPECT_RATIO,
       width,
-      height
+      height,
     );
     const centeredCrop = centerCrop(crop, width, height);
     setCrop(centeredCrop);
@@ -202,8 +211,8 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
                     convertToPixelCrop(
                       crop,
                       imgRef.current.width,
-                      imgRef.current.height
-                    )
+                      imgRef.current.height,
+                    ),
                   );
                   const dataUrl = canvasRef.current.toDataURL();
                   setBase64String(dataUrl);

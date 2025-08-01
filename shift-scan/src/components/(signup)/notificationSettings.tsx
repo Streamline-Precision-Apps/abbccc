@@ -13,6 +13,7 @@ import { Banners } from "../(reusable)/banners";
 import { setUserPermissions } from "@/actions/userActions";
 import { ProgressBar } from "./progressBar";
 import { Button } from "../ui/button";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type prop = {
   userId: string;
@@ -34,6 +35,8 @@ export default function NotificationSettings({
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isRequiredAcessed, setIsRequiredAcessed] = useState(false);
+  const { requestCameraPermission, requestLocationPermission } =
+    usePermissions();
 
   // Update the state for a particular setting
   const handleChange = (key: keyof UserSettings, value: boolean) => {
@@ -68,36 +71,28 @@ export default function NotificationSettings({
             locationAccess: true,
             cookiesAccess: true,
           }
-        : null
+        : null,
     );
   };
 
   // Request system-level permissions
   const requestSystemPermissions = async () => {
     try {
-      // Request Camera Access
-      const cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      console.log("Camera access granted", cameraStream);
+      // Request Camera Access using centralized permissions context
+      const cameraGranted = await requestCameraPermission();
+      if (!cameraGranted) {
+        console.warn("Camera access denied");
+      } else {
+        console.log("Camera access granted");
+      }
 
-      // Request Location Access (wrapped in a Promise to use async/await)
-      await new Promise((resolve, reject) => {
-        if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              console.log("Location access granted", position);
-              resolve(position);
-            },
-            (error) => {
-              console.error("Location access denied", error);
-              reject(error);
-            }
-          );
-        } else {
-          reject(new Error("Geolocation not available"));
-        }
-      });
+      // Request Location Access using centralized permissions context
+      const locationGranted = await requestLocationPermission();
+      if (!locationGranted) {
+        console.warn("Location access denied");
+      } else {
+        console.log("Location access granted");
+      }
 
       // Request Notification Access
       const notificationPermission = await Notification.requestPermission();
@@ -112,7 +107,7 @@ export default function NotificationSettings({
     } catch (error) {
       console.error("One or more permissions were denied", error);
       setBannerMessage(
-        "One or more permissions were denied. Please check your browser settings."
+        "One or more permissions were denied. Please check your browser settings.",
       );
       setShowBanner(true);
     }
@@ -169,19 +164,19 @@ export default function NotificationSettings({
       data.append("cameraAccess", updatedData?.cameraAccess?.toString() || "");
       data.append(
         "locationAccess",
-        updatedData?.locationAccess?.toString() || ""
+        updatedData?.locationAccess?.toString() || "",
       );
       data.append(
         "cookiesAccess",
-        updatedData?.cookiesAccess?.toString() || ""
+        updatedData?.cookiesAccess?.toString() || "",
       );
       data.append(
         "generalReminders",
-        updatedData?.generalReminders?.toString() || ""
+        updatedData?.generalReminders?.toString() || "",
       );
       data.append(
         "personalReminders",
-        updatedData?.personalReminders?.toString() || ""
+        updatedData?.personalReminders?.toString() || "",
       );
 
       await setUserPermissions(data);
