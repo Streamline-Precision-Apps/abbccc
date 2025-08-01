@@ -1,10 +1,10 @@
 model CostCode {
   id         String      @id @default(uuid())
-  code       String?
   name       String      @unique
   isActive   Boolean     @default(true)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @default(now()) @updatedAt
+  code       String?
   Timesheets TimeSheet[]
   CCTags     CCTag[]     @relation("CCTagToCostCode")
 }

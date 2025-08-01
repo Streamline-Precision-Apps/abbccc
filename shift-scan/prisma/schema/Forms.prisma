@@ -30,9 +30,9 @@ model FormField {
   order          Int
   placeholder    String?
   maxLength      Int?
-  minLength      Int?
   content        String?
   filter         String?
+  minLength      Int?
   multiple       Boolean?          @default(false)
   FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
   Options        FormFieldOption[]

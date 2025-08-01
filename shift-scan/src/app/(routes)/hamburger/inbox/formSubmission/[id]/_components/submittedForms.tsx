@@ -166,7 +166,7 @@ export default function SubmittedForms({
             className="h-full "
           >
             <Grids rows={"6"} gap={"3"} className="h-full w-full">
-              <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-hidden no-scrollbar">
+              <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-auto">
                 <FormFieldRenderer
                   formData={formData}
                   formValues={formValues}
