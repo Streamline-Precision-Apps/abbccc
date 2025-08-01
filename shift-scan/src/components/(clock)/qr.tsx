@@ -53,7 +53,7 @@ export default function QR({
     HTMLCanvasElement.prototype.getContext = function (
       this: HTMLCanvasElement,
       type: string,
-      options?: CanvasRenderingContext2DSettings
+      options?: CanvasRenderingContext2DSettings,
     ) {
       if (type === "2d") {
         options = { ...options, willReadFrequently: true };
@@ -75,7 +75,7 @@ export default function QR({
       qrScannerRef.current?.stop();
       handleNextStep();
     },
-    [setscanEQResult, handleNextStep]
+    [setscanEQResult, handleNextStep],
   );
 
   // In your QR component (qr-handler.tsx), update the processGeneralScan function:
@@ -84,8 +84,10 @@ export default function QR({
       console.log("Processing General Scan with data:", data);
       console.log("Current jobsiteResults:", jobsiteResults);
 
-      // Find the matching jobsite from the jobsiteResults
-      const matchedJobsite = jobsiteResults?.find((j) => j.qrId === data);
+      // Find the matching jobsite from the jobsiteResults (case-insensitive)
+      const matchedJobsite = jobsiteResults?.find(
+        (j) => j.qrId.toLowerCase() === data.toLowerCase(),
+      );
       if (matchedJobsite) {
         console.log("Matched jobsite:", matchedJobsite);
         setJobsite({
@@ -102,7 +104,7 @@ export default function QR({
         throw new Error("Invalid QR code Scanned!");
       }
     },
-    [jobsiteResults, setScanResult, handleScanJobsite, clockInRole]
+    [jobsiteResults, setScanResult, handleScanJobsite, clockInRole],
   );
 
   // ----------------------- End of scan processes -------------------------------
@@ -118,7 +120,11 @@ export default function QR({
         console.log("Scan result data:", data);
         console.log("Current jobsiteResults:", jobsiteResults);
 
-        if (!jobsiteResults?.some((j) => j.qrId === data)) {
+        if (
+          !jobsiteResults?.some(
+            (j) => j.qrId.toLowerCase() === data.toLowerCase(),
+          )
+        ) {
           console.error("Error: QR code not found in jobsiteResults", data);
           throw new Error("Invalid QR code Scanned!");
         }
@@ -147,7 +153,7 @@ export default function QR({
       setScanned,
       setStartCamera,
       setFailedToScan,
-    ]
+    ],
   );
 
   const handleScanFail = useCallback(() => {

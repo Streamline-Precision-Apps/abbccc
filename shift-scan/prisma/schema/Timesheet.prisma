@@ -25,6 +25,7 @@ model TimeSheet {
   clockOutLng    Float?
   withinFenceIn  Boolean?
   withinFenceOut Boolean?
+  wasInjured     Boolean?       @default(false)
 
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
