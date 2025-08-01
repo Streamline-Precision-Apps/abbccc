@@ -19,8 +19,8 @@ model User {
   clockedIn            Boolean              @default(false)
   companyId            String
   passwordResetTokenId String?
-  accountSetupToken    AccountSetupToken?
   workTypeId           String?
+  accountSetupToken    AccountSetupToken?
   Client               Client[]
   Contact              Contacts?
   Equipment            Equipment[]
@@ -73,10 +73,9 @@ model PasswordResetToken {
 
 model AccountSetupToken {
   id        String   @id @default(uuid())
-  code      String // 6-digit code
+  code      String
   userId    String   @unique
   expiresAt DateTime
   used      Boolean  @default(false)
-
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

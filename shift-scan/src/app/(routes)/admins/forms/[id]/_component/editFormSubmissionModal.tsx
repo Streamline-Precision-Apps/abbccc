@@ -45,11 +45,11 @@ export default function EditFormSubmissionModal({
 
   // State for different asset types
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
   const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
 
   const [users, setUsers] = useState<
@@ -102,6 +102,7 @@ export default function EditFormSubmissionModal({
         typeof submission.data === "object" &&
         submission.data !== null
       ) {
+        // First, add all the original data entries
         Object.entries(submission.data).forEach(([key, value]) => {
           if (
             typeof value === "string" ||
@@ -115,6 +116,26 @@ export default function EditFormSubmissionModal({
             processedData[key] = String(value);
           }
         });
+
+        // If we have form template, also create mappings for field access consistency
+        if (formTemplate?.FormGrouping) {
+          formTemplate.FormGrouping.forEach((group) => {
+            group.Fields.forEach((field) => {
+              // Ensure data is accessible by both field.id and field.label
+              const valueById = processedData[field.id];
+              const valueByLabel = processedData[field.label];
+
+              if (valueById !== undefined && valueByLabel === undefined) {
+                processedData[field.label] = valueById;
+              } else if (
+                valueByLabel !== undefined &&
+                valueById === undefined
+              ) {
+                processedData[field.id] = valueByLabel;
+              }
+            });
+          });
+        }
       }
       setEditData(processedData);
       setLoading(false);
@@ -185,7 +206,7 @@ export default function EditFormSubmissionModal({
   }, []);
 
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
   const [errors, setErrors] = useState<Record<string, string | null>>({});
 
@@ -204,7 +225,7 @@ export default function EditFormSubmissionModal({
       | string[]
       | object
       | undefined,
-    required: boolean
+    required: boolean,
   ) => {
     if (required && (value === null || value === undefined || value === "")) {
       return "This field is required.";
@@ -214,7 +235,7 @@ export default function EditFormSubmissionModal({
 
   const handleFieldChange = (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => {
     // Convert value to compatible type for our state
     let compatibleValue: string | number | boolean | null = null;
@@ -326,8 +347,9 @@ export default function EditFormSubmissionModal({
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           {group.Fields.map((field) => {
             const options = field.Options || [];
-            // Get raw value from state
-            const rawValue = editData[field.id];
+            // Get raw value from state using the same fallback pattern
+            const rawValue =
+              editData[field.id] ?? editData[field.label] ?? null;
             // Default to empty string if no value
             const defaultValue = "";
             const error = errors[field.id];
@@ -346,43 +368,43 @@ export default function EditFormSubmissionModal({
                 | "RADIO"
                 | "SEARCH_PERSON"
                 | "SEARCH_ASSET"
-                | "TEXT"
+                | "TEXT",
             ): string;
             function getFieldValue(type: string): string | boolean | string[] {
               if (rawValue === null || rawValue === undefined)
                 return type === "CHECKBOX"
                   ? false
                   : type === "MULTISELECT"
-                  ? []
-                  : defaultValue;
+                    ? []
+                    : defaultValue;
 
               switch (type) {
                 case "NUMBER":
                   return typeof rawValue === "number"
                     ? rawValue.toString()
                     : typeof rawValue === "string"
-                    ? rawValue
-                    : defaultValue;
+                      ? rawValue
+                      : defaultValue;
                 case "CHECKBOX":
                   return typeof rawValue === "boolean"
                     ? rawValue
                     : rawValue === "true"
-                    ? true
-                    : rawValue === "false"
-                    ? false
-                    : false;
+                      ? true
+                      : rawValue === "false"
+                        ? false
+                        : false;
                 case "MULTISELECT":
                   return typeof rawValue === "string"
                     ? rawValue.split(",").filter(Boolean)
                     : Array.isArray(rawValue)
-                    ? rawValue
-                    : [String(rawValue)];
+                      ? rawValue
+                      : [String(rawValue)];
                 default:
                   return typeof rawValue === "string"
                     ? rawValue
                     : rawValue !== null
-                    ? String(rawValue)
-                    : defaultValue;
+                      ? String(rawValue)
+                      : defaultValue;
               }
             }
 
