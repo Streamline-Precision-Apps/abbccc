@@ -15,7 +15,7 @@ const ContentVariants = cva(
       width: {
         //only width
         responsive:
-          "w-[90%] sm:w-[85%] md:w-[85%] lg:w-[75%] xl:w-[60%] 2xl:w-[40%]", //before 95%
+          "w-[90%] sm:w-[90%] md:w-[70%] lg:w-[50%] xl:w-[50%] 2xl:w-[40%]", //before 95%
         section: "w-[90%]",
         "95": "w-[95%]",
         "60": "w-[50%]",
@@ -32,7 +32,7 @@ const ContentVariants = cva(
       width: "responsive",
       height: "page",
     },
-  }
+  },
 );
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
