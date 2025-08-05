@@ -27,71 +27,6 @@ export async function createEquipmentHauled(formData: FormData) {
   return equipmentHauled;
 }
 
-export async function createTruckLaborLogs(formData: FormData) {
-  console.log("Creating Truck Labor Logs...");
-  console.log(formData);
-  const truckingLogId = formData.get("truckingLogId") as string;
-
-  const truckLaborLogs = await prisma.truckLaborLogs.create({
-    data: {
-      truckingLogId: truckingLogId,
-      type: "",
-      startTime: new Date(),
-      endTime: null,
-    },
-  });
-
-  console.log(truckLaborLogs);
-  revalidatePath("/dashboard/truckingAssistant");
-  revalidateTag("equipmentHauled");
-  return {
-    ...truckLaborLogs,
-    startTime: format(truckLaborLogs.startTime, "HH:mm"), // Return just time
-  };
-}
-
-export async function updateLaborType(formData: FormData) {
-  try {
-    const id = formData.get("id") as string;
-    const type = formData.get("type") as string;
-    const startTime = formData.get("startTime") as string;
-    const endTime = formData.get("endTime") as string | null;
-
-    // Validate required fields
-    if (!id) {
-      throw new Error("Missing labor log ID");
-    }
-
-    // Prepare update data
-    const updateData: {
-      type?: string;
-      startTime?: string;
-      endTime?: string | null;
-    } = {};
-
-    if (type !== null) updateData.type = type;
-    if (startTime) updateData.startTime = new Date(startTime).toISOString();
-    if (endTime !== null) {
-      updateData.endTime = endTime ? new Date(endTime).toISOString() : null;
-    }
-
-    // Perform the update
-    const updatedLog = await prisma.truckLaborLogs.update({
-      where: { id },
-      data: updateData,
-    });
-
-    // Revalidate
-    revalidatePath("/dashboard/truckingAssistant");
-    revalidateTag("truckLaborLogs");
-
-    return updatedLog;
-  } catch (error) {
-    console.error("Error updating labor type:", error);
-    throw error; // Rethrow to handle in the UI component
-  }
-}
-
 export async function updateEquipmentLogsLocation(formData: FormData) {
   console.log("Updating hauling logs...");
   console.log(formData);
@@ -290,16 +225,6 @@ export async function deleteHaulingLogs(id: string) {
   return true;
 }
 
-export async function deleteLaborTypeLogs(id: string) {
-  console.log("Deleting hauling logs...");
-  console.log(id);
-  await prisma.truckLaborLogs.delete({
-    where: { id },
-  });
-
-  revalidateTag("material");
-  return true;
-}
 /* Update */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -402,7 +327,7 @@ export async function createRefuelEquipmentLog(formData: FormData) {
   console.log(formData);
 
   const employeeEquipmentLogId = formData.get(
-    "employeeEquipmentLogId"
+    "employeeEquipmentLogId",
   ) as string;
 
   const gallonsRefueledStr = formData.get("gallonsRefueled") as string | null;
