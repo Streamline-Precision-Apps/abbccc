@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   "/_next",
   "/favicon.ico",
   "/manifest.json",
+  "/sentry-example-page",
 ];
 
 /**
@@ -24,7 +25,7 @@ export async function middleware(request: NextRequest) {
   try {
     // Check if the path is in the public paths
     const isPublicPath = PUBLIC_PATHS.some((path) =>
-      request.nextUrl.pathname.startsWith(path)
+      request.nextUrl.pathname.startsWith(path),
     );
 
     // Allow access to public paths without authentication
@@ -48,7 +49,7 @@ export async function middleware(request: NextRequest) {
     console.error("Middleware error:", error);
     return NextResponse.json(
       { error: "Internal middleware error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
