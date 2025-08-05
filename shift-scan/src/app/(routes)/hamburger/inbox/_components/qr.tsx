@@ -38,7 +38,7 @@ export default function Qr({
   const [isLoading, setIsLoading] = useState(true);
   const [hasFlash, setHasFlash] = useState(false);
   const [flashOn, setFlashOn] = useState(false);
-  const { requestCameraPermission } = usePermissions();
+  const { requestCameraPermission, permissions } = usePermissions();
 
   // Performance patch: Override getContext for better canvas performance
   useEffect(() => {
@@ -69,7 +69,12 @@ export default function Qr({
 
   const checkCameraPermissions = useCallback(async () => {
     try {
-      // Use the centralized permissions context to request camera access
+      // First check if we already have camera permissions
+      if (permissions?.camera === true) {
+        return true;
+      }
+
+      // If not, request camera access through the centralized permissions context
       const permissionGranted = await requestCameraPermission();
 
       if (!permissionGranted) {
@@ -86,7 +91,7 @@ export default function Qr({
       setScanErrorType("permission");
       return false;
     }
-  }, [setScanError, setScanErrorType, requestCameraPermission]);
+  }, [permissions, setScanError, setScanErrorType, requestCameraPermission]);
 
   const handleScanSuccess = useCallback(
     (result: QrScanner.ScanResult) => {
@@ -168,7 +173,9 @@ export default function Qr({
       if (!startCamera || !videoRef.current || !mounted) return;
 
       try {
-        const hasPermission = await checkCameraPermissions();
+        // Use the permissions state to determine if we need to check permissions
+        const hasPermission =
+          permissions.camera || (await checkCameraPermissions());
         if (!hasPermission) return;
 
         scanner = new QrScanner(videoRef.current, handleScanSuccess, {
@@ -238,6 +245,7 @@ export default function Qr({
     checkCameraPermissions,
     setScanError,
     setScanErrorType,
+    permissions,
   ]);
 
   return (
