@@ -94,36 +94,26 @@ model TascoMaterialTypes {
 }
 
 model TruckingLog {
-  id                String            @id @default(uuid())
-  timeSheetId       String
-  laborType         String
-  taskName          String?
-  equipmentId       String? // this is the truck switch to equipment hauled
-  trailerNumber     String? // make connection to trailer
-  truckNumber       String? // make connection to truck
-  startingMileage   Int?
-  endingMileage     Int?
-  truckLaborLogId   String?
-  EquipmentHauled   EquipmentHauled[]
-  Materials         Material[]
-  RefuelLogs        RefuelLog[]
-  StateMileages     StateMileage[]
-  TruckingLaborLogs TruckLaborLogs[]
-  Equipment         Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
+  id              String            @id @default(uuid())
+  timeSheetId     String
+  laborType       String
+  taskName        String?
+  equipmentId     String? // this is the truck switch to equipment hauled
+  trailerNumber   String? // make connection to trailer
+  truckNumber     String? // make connection to truck
+  startingMileage Int?
+  endingMileage   Int?
+  truckLaborLogId String?
+  EquipmentHauled EquipmentHauled[]
+  Materials       Material[]
+  RefuelLogs      RefuelLog[]
+  StateMileages   StateMileage[]
+  Equipment       Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
   // Truck as Equipment
-  Truck             Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+  Truck           Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
   // Trailer as Equipment
-  Trailer           Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
-  TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-}
-
-model TruckLaborLogs {
-  id            String       @id @default(uuid())
-  truckingLogId String?
-  type          String
-  startTime     DateTime
-  endTime       DateTime?
-  TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+  Trailer         Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
+  TimeSheet       TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 model StateMileage {
