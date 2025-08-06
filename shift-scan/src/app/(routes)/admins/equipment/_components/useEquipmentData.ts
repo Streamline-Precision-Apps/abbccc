@@ -27,7 +27,7 @@ export interface EquipmentSummary {
 }
 export const useEquipmentData = () => {
   const [equipmentDetails, setEquipmentDetails] = useState<EquipmentSummary[]>(
-    []
+    [],
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -35,6 +35,10 @@ export const useEquipmentData = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [pendingCount, setPendingCount] = useState<number>(0);
+
+  //Approval Button States
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -42,16 +46,25 @@ export const useEquipmentData = () => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`
-        );
+        let url = "";
+        if (showPendingOnly) {
+          url = `/api/getEquipmentDetails?status=pending`;
+        } else {
+          url = `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`;
+        }
+        const response = await fetch(url);
+        const data = await response.json();
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
         }
-        const data = await response.json();
         setEquipmentDetails(data.equipment);
         setTotal(data.total);
         setTotalPages(data.totalPages);
+        setPendingCount(
+          data.equipment.filter(
+            (item: EquipmentSummary) => item.approvalStatus === "PENDING",
+          ).length,
+        );
       } catch (error) {
         console.error("Failed to fetch equipment details:", error);
       } finally {
@@ -59,7 +72,7 @@ export const useEquipmentData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey, page, pageSize]);
+  }, [refreshKey, page, pageSize, showPendingOnly]);
 
   return {
     equipmentDetails,
@@ -77,5 +90,9 @@ export const useEquipmentData = () => {
     setPage,
     setPageSize,
     setTotalPages,
+    // Approval Button States
+    showPendingOnly,
+    setShowPendingOnly,
+    pendingCount,
   };
 };

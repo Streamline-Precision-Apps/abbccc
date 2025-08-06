@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/hover-card";
 import Spinner from "@/components/(animations)/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { P } from "framer-motion/dist/types.d-Cjd591yU";
 
 const TABLE_HEADERS = [
   "Id",
@@ -83,6 +84,8 @@ interface TruckingReportReportRow {
 interface TruckingReportReportProps {
   showExportModal: boolean;
   setShowExportModal: (show: boolean) => void;
+  registerReload?: (reloadFn: () => Promise<void>) => void;
+  isRefreshing?: boolean;
 }
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
@@ -90,6 +93,8 @@ type DateRange = { from: Date | undefined; to: Date | undefined };
 export default function TruckingReport({
   showExportModal,
   setShowExportModal,
+  registerReload,
+  isRefreshing,
 }: TruckingReportReportProps) {
   const [data, setData] = useState<TruckingReportReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -98,31 +103,38 @@ export default function TruckingReport({
     to: undefined,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/reports/truckingReport");
-        const json = await response.json();
-        if (!response.ok) {
-          throw new Error(
-            json.message || "Failed to fetch TruckingReport report data"
-          );
-        }
-        setData(json);
-      } catch (error) {
-        console.error("Error fetching TruckingReport report data:", error);
-      } finally {
-        setLoading(false);
+  // Fetch data function, exposed for reload
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/reports/truckingReport");
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          json.message || "Failed to fetch TruckingReport report data",
+        );
       }
-    };
+      setData(json);
+    } catch (error) {
+      console.error("Error fetching TruckingReport report data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register reload function on mount
+  useEffect(() => {
+    if (registerReload) {
+      registerReload(fetchData);
+    }
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registerReload]);
 
   const onExport = (
     exportFormat: "csv" | "xlsx",
     _dateRange?: { from?: Date; to?: Date },
-    selectedFields?: string[]
+    selectedFields?: string[],
   ) => {
     if (!data.length) return;
     // Filter by dateRange if set
@@ -162,26 +174,26 @@ export default function TruckingReport({
         Array.isArray(row.Equipment) && row.Equipment.length > 0
           ? row.Equipment.map(
               (eq) =>
-                `[Eq: ${eq.name}, Src: ${eq.source}, Dest: ${eq.destination}, OW: ${eq.startMileage} - ${eq.endMileage}]`
+                `[Eq: ${eq.name}, Src: ${eq.source}, Dest: ${eq.destination}, OW: ${eq.startMileage} - ${eq.endMileage}]`,
             ).join("; ")
           : "",
         // Material Hauled: join as "name (location, qty unit)"
         Array.isArray(row.Materials) && row.Materials.length > 0
           ? row.Materials.map(
               (mat) =>
-                `[Mat: ${mat.name}, Src: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
+                `[Mat: ${mat.name}, Src: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`,
             ).join("; ")
           : "",
         // Refuel Details: join as "milesAtFueling gal: gallonsRefueled"
         Array.isArray(row.Fuel) && row.Fuel.length > 0
           ? row.Fuel.map(
-              (f) => `[Gal: ${f.gallonsRefueled}, Mi: ${f.milesAtFueling}]`
+              (f) => `[Gal: ${f.gallonsRefueled}, Mi: ${f.milesAtFueling}]`,
             ).join("; ")
           : "",
         // State Line Details: join as "state (mileage)"
         Array.isArray(row.StateMileages) && row.StateMileages.length > 0
           ? row.StateMileages.map(
-              (s) => `[${s.state}, Mi: ${s.stateLineMileage}]`
+              (s) => `[${s.state}, Mi: ${s.stateLineMileage}]`,
             ).join("; ")
           : "",
         row.notes ?? "",
@@ -195,9 +207,9 @@ export default function TruckingReport({
             r
               .map(
                 (cell: string | number) =>
-                  '"' + String(cell ?? "").replace(/"/g, '""') + '"'
+                  '"' + String(cell ?? "").replace(/"/g, '""') + '"',
               )
-              .join(",")
+              .join(","),
           ),
         ].join("\n");
 
@@ -246,9 +258,9 @@ export default function TruckingReport({
             "State Line Details",
             "Notes",
           ],
-          mainRows
+          mainRows,
         ),
-        `tasco-report-summary${dateSuffix}.csv`
+        `tasco-report-summary${dateSuffix}.csv`,
       );
     } else if (exportFormat === "xlsx") {
       import("xlsx").then((XLSX) => {
@@ -281,26 +293,26 @@ export default function TruckingReport({
             Array.isArray(row.Equipment) && row.Equipment.length > 0
               ? row.Equipment.map(
                   (eq) =>
-                    `[Eq: ${eq.name}, Src: ${eq.source}, Dest: ${eq.destination}, OW: ${eq.startMileage} - ${eq.endMileage} ]`
+                    `[Eq: ${eq.name}, Src: ${eq.source}, Dest: ${eq.destination}, OW: ${eq.startMileage} - ${eq.endMileage} ]`,
                 ).join("; ")
               : "",
           "Material Hauled":
             Array.isArray(row.Materials) && row.Materials.length > 0
               ? row.Materials.map(
                   (mat) =>
-                    `[Mat: ${mat.name}, Src: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`
+                    `[Mat: ${mat.name}, Src: ${mat.location}, Qty: ${mat.quantity} ${mat.unit}]`,
                 ).join("; ")
               : "",
           "Refuel Details":
             Array.isArray(row.Fuel) && row.Fuel.length > 0
               ? row.Fuel.map(
-                  (f) => `[Gal: ${f.gallonsRefueled}, Mi: ${f.milesAtFueling}]`
+                  (f) => `[Gal: ${f.gallonsRefueled}, Mi: ${f.milesAtFueling}]`,
                 ).join("; ")
               : "",
           "State Line Details":
             Array.isArray(row.StateMileages) && row.StateMileages.length > 0
               ? row.StateMileages.map(
-                  (s) => `[${s.state}, Mi: ${s.stateLineMileage}]`
+                  (s) => `[${s.state}, Mi: ${s.stateLineMileage}]`,
                 ).join("; ")
               : "",
           Notes: row.notes ?? "",
@@ -336,270 +348,216 @@ export default function TruckingReport({
           </TableRow>
         </TableHeader>
         <TableBody className="divide-y divide-gray-200 bg-white">
-          {loading ? (
-            Array.from({ length: 20 }).map((_, rowIdx) => (
-              <TableRow
-                key={rowIdx}
-                className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
-              >
-                {TABLE_HEADERS.map((header, colIdx) => (
-                  <TableCell
-                    key={colIdx}
-                    className="border-r border-gray-200 text-xs text-center"
-                  >
-                    <Skeleton className="h-4 w-3/4 mx-auto" />
+          {loading
+            ? Array.from({ length: 20 }).map((_, rowIdx) => (
+                <TableRow
+                  key={rowIdx}
+                  className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
+                >
+                  {TABLE_HEADERS.map((header, colIdx) => (
+                    <TableCell
+                      key={colIdx}
+                      className="border-r border-gray-200 text-xs text-center"
+                    >
+                      <Skeleton className="h-4 w-3/4 mx-auto" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            : data.map((row, rowIdx) => (
+                <TableRow
+                  key={`${row.truckId}-${row.date}-${row.StartingMileage}-${row.EndingMileage}-${row.jobId}`}
+                  className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
+                >
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.id || "_"}
                   </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : data.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={TABLE_HEADERS.length} className="text-center">
-                No data available for the selected criteria.
-              </TableCell>
-            </TableRow>
-          ) : (
-            data.map((row, rowIdx) => (
-              <TableRow
-                key={`${row.truckId}-${row.date}-${row.StartingMileage}-${row.EndingMileage}-${row.jobId}`}
-                className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
-              >
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.id || "_"}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.driver || "-"}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.truckName || "-"}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.trailerName || "-"}
-                </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.driver || "-"}
+                  </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.truckName || "-"}
+                  </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.trailerName || "-"}
+                  </TableCell>
 
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.date ? format(new Date(row.date), "MM/dd/yy") : "-"}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.jobId || "-"}
-                </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.date ? format(new Date(row.date), "MM/dd/yy") : "-"}
+                  </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.jobId || "-"}
+                  </TableCell>
 
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Starting Mileage: use StartingMileage */}
-                  {row.StartingMileage ? `${row.StartingMileage} Mi` : "-"}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Ending Mileage: use EndingMileage */}
-                  {row.EndingMileage ? `${row.EndingMileage} Mi` : "-"}
-                </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {/* Starting Mileage: use StartingMileage */}
+                    {row.StartingMileage ? `${row.StartingMileage} Mi` : "-"}
+                  </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {/* Ending Mileage: use EndingMileage */}
+                    {row.EndingMileage ? `${row.EndingMileage} Mi` : "-"}
+                  </TableCell>
 
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Equipment: show count, hover for details */}
-                  {Array.isArray(row.Equipment) && row.Equipment.length > 0 ? (
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <span className="cursor-pointer underline text-blue-600">
-                          {row.Equipment.length}
-                        </span>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="p-2 w-[500px]">
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
-                                  Name
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
-                                  Source
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
-                                  Destination
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Start Mileage Overweight
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  End Mileage Overweight
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {row.Equipment.map(
-                                (eq: EquipmentItem, rowIdx: number) => (
-                                  <TableRow
-                                    key={eq.id}
-                                    className={
-                                      rowIdx % 2 === 0
-                                        ? "bg-white"
-                                        : "bg-gray-100"
-                                    }
-                                  >
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {eq.name}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {eq.source}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {eq.destination}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {eq.startMileage}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {eq.endMileage}
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ) : (
-                    "-"
-                  )}
-                </TableCell>
-
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Material Hauled: show count, hover for details */}
-                  {Array.isArray(row.Materials) && row.Materials.length > 0 ? (
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <span className="cursor-pointer underline text-blue-600">
-                          {row.Materials.length}
-                        </span>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="p-2 w-[300px]">
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Name
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Location
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Qty
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Unit
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {row.Materials.map(
-                                (mat: MaterialItem, rowIdx: number) => (
-                                  <TableRow
-                                    key={mat.id}
-                                    className={
-                                      rowIdx % 2 === 0
-                                        ? "bg-white"
-                                        : "bg-gray-100"
-                                    }
-                                  >
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {mat.name}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {mat.location}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {mat.quantity}
-                                    </TableCell>
-                                    <TableCell className="px-2 py-1 border-b">
-                                      {mat.unit}
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ) : (
-                    "-"
-                  )}
-                </TableCell>
-
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Refuel Details: show count, hover for details */}
-                  {Array.isArray(row.Fuel) && row.Fuel.length > 0 ? (
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <span className="cursor-pointer underline text-blue-600">
-                          {row.Fuel.length}
-                        </span>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="p-2">
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Miles At Fueling
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  Gallons Refueled
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {row.Fuel.map((f: FuelItem, idx: number) => (
-                                <TableRow
-                                  key={idx}
-                                  className={
-                                    idx % 2 === 0 ? "bg-white" : "bg-gray-100"
-                                  }
-                                >
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {f.milesAtFueling}
-                                  </TableCell>
-                                  <TableCell className="px-2 py-1 border-b">
-                                    {f.gallonsRefueled}
-                                  </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {/* Equipment: show count, hover for details */}
+                    {Array.isArray(row.Equipment) &&
+                    row.Equipment.length > 0 ? (
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <span className="cursor-pointer underline text-blue-600">
+                            {row.Equipment.length}
+                          </span>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="p-2 w-[500px]">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
+                                    Name
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
+                                    Source
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 ">
+                                    Destination
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Start Mileage Overweight
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    End Mileage Overweight
+                                  </TableHead>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ) : (
-                    "-"
-                  )}
-                </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {/* Stateline Mileage: show count, hover for details */}
-                  {Array.isArray(row.StateMileages) &&
-                  row.StateMileages.length > 0 ? (
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <span className="cursor-pointer underline text-blue-600">
-                          {row.StateMileages.length}
-                        </span>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="p-2">
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  State
-                                </TableHead>
-                                <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
-                                  State Line Mileage
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {row.StateMileages.map(
-                                (s: StateMileageItem, idx: number) => (
+                              </TableHeader>
+                              <TableBody>
+                                {row.Equipment.map(
+                                  (eq: EquipmentItem, rowIdx: number) => (
+                                    <TableRow
+                                      key={eq.id}
+                                      className={
+                                        rowIdx % 2 === 0
+                                          ? "bg-white"
+                                          : "bg-gray-100"
+                                      }
+                                    >
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {eq.name}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {eq.source}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {eq.destination}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {eq.startMileage}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {eq.endMileage}
+                                      </TableCell>
+                                    </TableRow>
+                                  ),
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {/* Material Hauled: show count, hover for details */}
+                    {Array.isArray(row.Materials) &&
+                    row.Materials.length > 0 ? (
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <span className="cursor-pointer underline text-blue-600">
+                            {row.Materials.length}
+                          </span>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="p-2 w-[300px]">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Name
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Location
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Qty
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Unit
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {row.Materials.map(
+                                  (mat: MaterialItem, rowIdx: number) => (
+                                    <TableRow
+                                      key={mat.id}
+                                      className={
+                                        rowIdx % 2 === 0
+                                          ? "bg-white"
+                                          : "bg-gray-100"
+                                      }
+                                    >
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {mat.name}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {mat.location}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {mat.quantity}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {mat.unit}
+                                      </TableCell>
+                                    </TableRow>
+                                  ),
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {/* Refuel Details: show count, hover for details */}
+                    {Array.isArray(row.Fuel) && row.Fuel.length > 0 ? (
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <span className="cursor-pointer underline text-blue-600">
+                            {row.Fuel.length}
+                          </span>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="p-2">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Miles At Fueling
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    Gallons Refueled
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {row.Fuel.map((f: FuelItem, idx: number) => (
                                   <TableRow
                                     key={idx}
                                     className={
@@ -607,32 +565,90 @@ export default function TruckingReport({
                                     }
                                   >
                                     <TableCell className="px-2 py-1 border-b">
-                                      {s.state}
+                                      {f.milesAtFueling}
                                     </TableCell>
                                     <TableCell className="px-2 py-1 border-b">
-                                      {s.stateLineMileage}
+                                      {f.gallonsRefueled}
                                     </TableCell>
                                   </TableRow>
-                                )
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ) : (
-                    "-"
-                  )}
-                </TableCell>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {/* Stateline Mileage: show count, hover for details */}
+                    {Array.isArray(row.StateMileages) &&
+                    row.StateMileages.length > 0 ? (
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <span className="cursor-pointer underline text-blue-600">
+                            {row.StateMileages.length}
+                          </span>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="p-2">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    State
+                                  </TableHead>
+                                  <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                                    State Line Mileage
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {row.StateMileages.map(
+                                  (s: StateMileageItem, idx: number) => (
+                                    <TableRow
+                                      key={idx}
+                                      className={
+                                        idx % 2 === 0
+                                          ? "bg-white"
+                                          : "bg-gray-100"
+                                      }
+                                    >
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {s.state}
+                                      </TableCell>
+                                      <TableCell className="px-2 py-1 border-b">
+                                        {s.stateLineMileage}
+                                      </TableCell>
+                                    </TableRow>
+                                  ),
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
 
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {row.notes}
-                </TableCell>
-              </TableRow>
-            ))
-          )}
+                  <TableCell className="border-r border-gray-200 text-xs text-center">
+                    {row.notes}
+                  </TableCell>
+                </TableRow>
+              ))}
         </TableBody>
       </Table>
+      {data.length === 0 && !loading && (
+        <div className="w-full h-full flex justify-center items-center absolute left-0 top-0 z-50  rounded-[10px]">
+          <p className="text-gray-500 italic">
+            No data available for a Trucking Report.
+          </p>
+        </div>
+      )}
+
       {showExportModal && (
         <ExportTruckingReportModal
           onClose={() => setShowExportModal(false)}

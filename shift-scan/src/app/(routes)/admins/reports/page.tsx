@@ -11,15 +11,39 @@ import {
 } from "@/components/ui/select";
 import { useSidebar } from "@/components/ui/sidebar";
 import TascoReport from "./_reports/tascoReport";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import TruckingReport from "./_reports/truckingReport";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
   const { setOpen, open } = useSidebar();
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>(
-    undefined
+    undefined,
   );
+  // For reload button state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  // Ref to hold reload functions for each report
+  const reportReloaders = useRef<{
+    [key: string]: (() => Promise<void>) | undefined;
+  }>({});
+
+  // Called by ReloadBtnSpinner
+  const fetchData = async () => {
+    if (selectedReportId && reportReloaders.current[selectedReportId]) {
+      setIsRefreshing(true);
+      try {
+        await reportReloaders.current[selectedReportId]!();
+      } finally {
+        setIsRefreshing(false);
+      }
+    }
+  };
   const reports = [
     {
       id: "tasco-report",
@@ -30,10 +54,13 @@ export default function AdminReports() {
         <TascoReport
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
+          registerReload={(fn: () => Promise<void>) => {
+            reportReloaders.current["tasco-report"] = fn;
+          }}
+          isRefreshing={isRefreshing}
         />
       ),
     },
-
     {
       id: "trucking-mileage-report",
       label: "Trucking Mileage Reports",
@@ -43,13 +70,17 @@ export default function AdminReports() {
         <TruckingReport
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
+          registerReload={(fn: () => Promise<void>) => {
+            reportReloaders.current["trucking-mileage-report"] = fn;
+          }}
+          isRefreshing={isRefreshing}
         />
       ),
     },
   ];
   const selectedReport = reports.find((r) => r.id === selectedReportId);
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
       <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
         <div className="w-full flex flex-row gap-5 ">
           <div className="flex items-center justify-center">
@@ -70,7 +101,7 @@ export default function AdminReports() {
               />
             </Button>
           </div>
-          <div className="w-full flex flex-col gap-1">
+          <div className="w-fit flex flex-col gap-1 ">
             <p className="text-left w-fit text-base text-white font-bold">
               Reports
             </p>
@@ -79,46 +110,57 @@ export default function AdminReports() {
             </p>
           </div>
         </div>
-        <div className="flex flex-col justify-center">
-          <Select
-            name="report"
-            onValueChange={setSelectedReportId}
-            value={selectedReportId}
-          >
-            <SelectTrigger className="w-[180px] bg-white">
-              <SelectValue placeholder="Select a report" />
-            </SelectTrigger>
-            <SelectContent>
-              {reports.map((report) => (
-                <SelectItem key={report.id} value={report.id}>
-                  {report.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex justify-center items-center">
-          <Button
-            onClick={() => {
-              setShowExportModal(true);
-            }}
-            variant={"default"}
-            size={"default"}
-            className="px-6 py-1 rounded-lg hover:bg-slate-800 "
-          >
-            <img
-              src="/export-white.svg"
-              alt="Export Form"
-              className="h-3 w-3 mr-1"
-            />
-            <p className="text-xs">Export</p>
-          </Button>
-        </div>
+        <ReloadBtnSpinner
+          isRefreshing={isRefreshing}
+          fetchData={fetchData}
+          reportPage={true}
+          selectedReportId={selectedReportId}
+        />
       </div>
-      <div className="h-[90vh] rounded-lg  w-full relative bg-white">
+      <div className="h-fit max-h-12 justify-between w-full flex flex-row gap-4">
+        <Select
+          name="report"
+          onValueChange={setSelectedReportId}
+          value={selectedReportId}
+        >
+          <SelectTrigger className="w-[350px] bg-white">
+            <SelectValue placeholder="Select a report" />
+          </SelectTrigger>
+          <SelectContent>
+            {reports.map((report) => (
+              <SelectItem key={report.id} value={report.id}>
+                {report.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                setShowExportModal(true);
+              }}
+              variant={"default"}
+              size={"icon"}
+              className="rounded-lg min-w-12 hover:bg-slate-800 "
+            >
+              <img
+                src="/export-white.svg"
+                alt="Export Form"
+                className="h-4 w-4 "
+              />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent align="center" side="top">
+            Export
+          </TooltipContent>
+        </Tooltip>
+      </div>
+      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
         <ScrollArea
           alwaysVisible
-          className="h-[85vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
+          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
         >
           {selectedReport ? (
             selectedReport.render()

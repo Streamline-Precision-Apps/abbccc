@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     console.error("Error during authentication:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -135,8 +135,8 @@ export async function GET(req: Request) {
 
     if (!formattedReport.length) {
       return NextResponse.json(
-        { error: "No equipment with OverWeight found" },
-        { status: 404 }
+        { error: "No Trucking Reports found" },
+        { status: 404 },
       );
     }
     return NextResponse.json(formattedReport);
@@ -145,7 +145,7 @@ export async function GET(req: Request) {
     console.error("Error fetching equipment by id:", error);
     return NextResponse.json(
       { error: "Failed to fetch equipment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

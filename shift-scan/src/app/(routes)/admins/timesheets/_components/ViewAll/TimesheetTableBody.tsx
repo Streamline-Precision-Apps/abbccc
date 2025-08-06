@@ -1,13 +1,24 @@
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { Check, X } from "lucide-react";
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card";
 
 interface Timesheet {
   id: string;
   date: Date | string;
   User: { id: string; firstName: string; lastName: string };
-  Jobsite: { id: string; name: string };
-  CostCode: { id: string; name: string };
+  Jobsite: { id: string; name: string; code: string };
+  CostCode: { id: string; name: string; code: string };
   nu: string;
   Fp: string;
   startTime: Date | string;
@@ -26,6 +37,8 @@ interface TimesheetTableBodyProps {
   onEditClick?: (id: string) => void;
   editingId?: string | null;
   showPendingOnly: boolean;
+  onApprovalAction?: (id: string, action: "APPROVED" | "REJECTED") => void;
+  statusLoading?: Record<string, 'APPROVED' | 'REJECTED' | undefined>;
 }
 
 export function TimesheetTableBody({
@@ -35,6 +48,8 @@ export function TimesheetTableBody({
   onEditClick,
   editingId,
   showPendingOnly,
+  onApprovalAction,
+  statusLoading = {},
 }: TimesheetTableBodyProps) {
   if (timesheets.length === 0) {
     return (
@@ -72,42 +87,6 @@ export function TimesheetTableBody({
             {format(timesheet.date, "MM/dd/yy")}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.User.firstName} {timesheet.User.lastName}
-          </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.Jobsite?.name}
-          </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.CostCode?.name}
-          </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.startTime, "hh:mm a")}
-          </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.endTime ? format(timesheet.endTime, "hh:mm a") : ""}
-          </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.comment}
-          </TableCell>
-
-          <TableCell className="border-r border-gray-200 text-xs text-center min-w-[120px]">
-            {timesheet.status === "PENDING" ? (
-              <span className=" bg-yellow-300 px-3 py-1 rounded-xl ">
-                Pending
-              </span>
-            ) : timesheet.status === "DRAFT" ? (
-              <span className=" bg-sky-200 px-3 py-1 rounded-xl ">
-                In Progress
-              </span>
-            ) : timesheet.status === "APPROVED" ? (
-              <span className=" bg-green-300 px-3 py-1 rounded-xl">
-                Approved
-              </span>
-            ) : (
-              <span className="bg-red-300 px-3 py-1 rounded-xl ">Rejected</span>
-            )}
-          </TableCell>
-          <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.workType === "TRUCK_DRIVER" ? (
               <span>Trucking</span>
             ) : timesheet.workType === "TASCO" ? (
@@ -119,38 +98,229 @@ export function TimesheetTableBody({
             ) : null}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {format(timesheet.createdAt, "MM/dd/yy")}
+            {timesheet.User.firstName} {timesheet.User.lastName}
+          </TableCell>
+          <TableCell className="border-r border-gray-200 text-xs text-center">
+            {timesheet.Jobsite ? (
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
+                    {timesheet.Jobsite.code}
+                  </span>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <div className="text-xs font-semibold">
+                    {timesheet.Jobsite.name}
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            ) : null}
+          </TableCell>
+          <TableCell className="border-r border-gray-200 text-xs text-center">
+            {timesheet.CostCode ? (
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
+                    {timesheet.CostCode.code}
+                  </span>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <div className="text-xs font-semibold">
+                    {timesheet.CostCode.name}
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            ) : null}
+          </TableCell>
+          <TableCell className="border-r border-gray-200 text-xs text-center">
+            {format(timesheet.startTime, "hh:mm a")}
+          </TableCell>
+          <TableCell className="border-r border-gray-200 text-xs text-center">
+            {timesheet.endTime ? format(timesheet.endTime, "hh:mm a") : ""}
+          </TableCell>
+          <TableCell className="border-r border-gray-200 text-xs text-center">
+            {timesheet.comment}
+          </TableCell>
+
+          <TableCell className="border-r border-gray-200 text-xs text-center min-w-[50px]">
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                {timesheet.status === "PENDING" ? (
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
+                    P
+                  </span>
+                ) : timesheet.status === "DRAFT" ? (
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-200 rounded-full cursor-pointer font-semibold">
+                    P
+                  </span>
+                ) : timesheet.status === "APPROVED" ? (
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-green-300 rounded-full cursor-pointer font-semibold">
+                    A
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-red-300 rounded-full cursor-pointer font-semibold">
+                    R
+                  </span>
+                )}
+              </HoverCardTrigger>
+              <HoverCardContent
+                align="center"
+                className="w-[120px] justify-center"
+              >
+                <div className="text-xs text-center">
+                  {timesheet.status === "PENDING"
+                    ? "Pending"
+                    : timesheet.status === "DRAFT"
+                      ? "In Progress"
+                      : timesheet.status === "APPROVED"
+                        ? "Approved"
+                        : "Rejected"}
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.updatedAt, "MM/dd/yy")}
           </TableCell>
           <TableCell className=" sticky right-0 border-r border-gray-200 text-xs text-center">
-            <Button
-              variant={"link"}
-              size={"icon"}
-              className={`border-none w-fit h-full ${
-                editingId === timesheet.id ? "animate-pulse" : ""
-              }`}
-              onClick={() => onEditClick && onEditClick(timesheet.id)}
-              aria-label="Edit Timesheet"
-            >
-              <img
-                src="/formEdit.svg"
-                alt="Edit Form"
-                className="h-4 w-4 mr-4"
-              />
-            </Button>
-            <Button
-              size={"icon"}
-              variant={"link"}
-              className={`border-none w-fit h-full justify-center ${
-                deletingId === timesheet.id ? "animate-pulse" : ""
-              }`}
-              onClick={() => onDeleteClick && onDeleteClick(timesheet.id)}
-              aria-label="Delete Timesheet"
-            >
-              <img src="/trash-red.svg" alt="Delete Form" className="h-4 w-4" />
-            </Button>
+            <div className="flex flex-row justify-center items-center">
+              {showPendingOnly && (
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size={"icon"}
+                        variant={"link"}
+                        className={`border-none w-fit h-full justify-center ${
+                          statusLoading[timesheet.id] === 'APPROVED' ? "animate-pulse" : ""
+                        }`}
+                        onClick={() =>
+                          !statusLoading[timesheet.id] &&
+                          onApprovalAction &&
+                          onApprovalAction(timesheet.id, "APPROVED")
+                        }
+                        aria-label="Approve Timesheet"
+                        disabled={statusLoading[timesheet.id] === 'APPROVED'}
+                      >
+                        {statusLoading[timesheet.id] === 'APPROVED' ? (
+                          <span className="h-3 w-3 mr-4 flex items-center justify-center">
+                            <svg
+                              className="animate-spin h-4 w-4 text-green-600"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8z"
+                              ></path>
+                            </svg>
+                          </span>
+                        ) : (
+                          <Check className="h-3 w-3 mr-4" color="green" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Approve</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size={"icon"}
+                        variant={"link"}
+                        className={`border-none w-fit h-full justify-center ${
+                          statusLoading[timesheet.id] === 'REJECTED' ? "animate-pulse" : ""
+                        }`}
+                        onClick={() =>
+                          !statusLoading[timesheet.id] &&
+                          onApprovalAction &&
+                          onApprovalAction(timesheet.id, "REJECTED")
+                        }
+                        aria-label="Deny Timesheet"
+                        disabled={statusLoading[timesheet.id] === 'REJECTED'}
+                      >
+                        {statusLoading[timesheet.id] === 'REJECTED' ? (
+                          <span className="h-3 w-3 mr-4 flex items-center justify-center">
+                            <svg
+                              className="animate-spin h-4 w-4 text-red-600"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8z"
+                              ></path>
+                            </svg>
+                          </span>
+                        ) : (
+                          <X className="h-3 w-3 mr-4" color="red" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Deny</TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={"link"}
+                    size={"icon"}
+                    className={`border-none w-fit h-full ${
+                      editingId === timesheet.id ? "animate-pulse" : ""
+                    }`}
+                    onClick={() => onEditClick && onEditClick(timesheet.id)}
+                    aria-label="Edit Timesheet"
+                  >
+                    <img
+                      src="/formEdit.svg"
+                      alt="Edit Form"
+                      className="h-4 w-4 mr-4"
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">Edit</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size={"icon"}
+                    variant={"link"}
+                    className={`border-none w-fit h-full justify-center ${
+                      deletingId === timesheet.id ? "animate-pulse" : ""
+                    }`}
+                    onClick={() => onDeleteClick && onDeleteClick(timesheet.id)}
+                    aria-label="Delete Timesheet"
+                  >
+                    <img
+                      src="/trash-red.svg"
+                      alt="Delete Form"
+                      className="h-4 w-4 "
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">Delete</TooltipContent>
+              </Tooltip>
+            </div>
           </TableCell>
         </TableRow>
       ))}

@@ -3,7 +3,7 @@ import { TimesheetTableHeader } from "./TimesheetTableHeader";
 import { TimesheetTableBody } from "./TimesheetTableBody";
 import { TimesheetTableSkeleton } from "./TimesheetTableSkeleton";
 import { TimesheetFooter } from "./TimesheetFooter";
-import { TimeSheetStatus, WorkType } from "@/lib/enums";
+import { ApprovalStatus, TimeSheetStatus, WorkType } from "@/lib/enums";
 import { HorizontalScrollArea } from "@/components/ui/HorizontalScrollArea";
 
 export type Timesheet = {
@@ -17,17 +17,19 @@ export type Timesheet = {
   Jobsite: {
     id: string;
     name: string;
+    code: string;
   };
   CostCode: {
     id: string;
     name: string;
+    code: string;
   };
   nu: string;
   Fp: string;
   startTime: Date | string;
   endTime: Date | string | null;
   comment: string;
-  status: TimeSheetStatus;
+  status: ApprovalStatus;
   workType: WorkType;
   createdAt: Date | string;
   updatedAt: Date | string;
@@ -50,6 +52,8 @@ export default function ViewAllTimesheets({
   isDeleting,
   isEditing,
   showPendingOnly,
+  onApprovalAction,
+  statusLoading,
 }: {
   timesheets: Timesheet[];
   loading: boolean;
@@ -67,10 +71,13 @@ export default function ViewAllTimesheets({
   editingId?: string | null;
   isEditing?: boolean;
   showPendingOnly: boolean;
+  onApprovalAction?: (id: string, action: "APPROVED" | "REJECTED") => void;
+  statusLoading?: Record<string, "APPROVED" | "REJECTED" | undefined>;
 }) {
   const timesheetHeaders = [
     "ID",
     "Date",
+    "Work Type",
     "Employee Name",
     "Profit Id",
     "Cost Code",
@@ -78,8 +85,6 @@ export default function ViewAllTimesheets({
     "End Time",
     "Comment",
     "Status",
-    "Work Type",
-    "Created At",
     "Last modified",
   ];
 
@@ -109,6 +114,8 @@ export default function ViewAllTimesheets({
         onEditClick={onEditClick}
         editingId={editingId}
         showPendingOnly={showPendingOnly}
+        onApprovalAction={onApprovalAction}
+        statusLoading={statusLoading}
       />
     </Table>
   );

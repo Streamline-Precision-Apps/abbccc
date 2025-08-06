@@ -42,6 +42,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 
 // Form field definition
 interface FormField {
@@ -242,13 +243,13 @@ export default function Forms() {
             .map((row) =>
               row
                 .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
-                .join(",")
+                .join(","),
             )
             .join("\n");
           const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`,
           );
         } else {
           const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -258,7 +259,7 @@ export default function Forms() {
           const blob = new Blob([wbout], { type: "application/octet-stream" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`,
           );
         }
 
@@ -305,23 +306,6 @@ export default function Forms() {
             </p>
           </div>
         </div>
-        <div>
-          {" "}
-          <div className="h-fit flex flex-row ">
-            <div className="flex flex-row gap-2">
-              <Link href={`/admins/forms/create`}>
-                <Button>
-                  <img
-                    src="/plus-white.svg"
-                    alt="Create New Form"
-                    className="h-4 w-4 mr-1"
-                  />
-                  <p>Form Template</p>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
       <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-4 mb-2">
@@ -350,6 +334,21 @@ export default function Forms() {
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="h-fit flex flex-row gap-4 ">
+          <div className="flex flex-row gap-2">
+            <Link href={`/admins/forms/create`}>
+              <Button>
+                <img
+                  src="/plus-white.svg"
+                  alt="Create New Form"
+                  className="h-4 w-4 mr-1"
+                />
+                <p>Form Template</p>
+              </Button>
+            </Link>
+          </div>
+          <ReloadBtnSpinner isRefreshing={loading} fetchData={refetch} />
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">

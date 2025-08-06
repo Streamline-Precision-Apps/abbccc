@@ -10,6 +10,16 @@ import { EquipmentSummary } from "./useEquipmentData";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function EquipmentTable({
   loading,
@@ -146,9 +156,44 @@ export default function EquipmentTable({
               <TableCell className="border-r border-gray-200 text-xs text-center">
                 {equipment.state || "-"}
               </TableCell>
-              <TableCell className="text-xs border-r border-gray-200 text-center">
-                {equipment.approvalStatus || "-"}
+              <TableCell className="border-r border-gray-200 text-xs text-center min-w-[50px]">
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    {equipment.approvalStatus === "PENDING" ? (
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
+                        P
+                      </span>
+                    ) : equipment.approvalStatus === "DRAFT" ? (
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-200 rounded-full cursor-pointer font-semibold">
+                        P
+                      </span>
+                    ) : equipment.approvalStatus === "APPROVED" ? (
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-green-300 rounded-full cursor-pointer font-semibold">
+                        A
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-red-300 rounded-full cursor-pointer font-semibold">
+                        R
+                      </span>
+                    )}
+                  </HoverCardTrigger>
+                  <HoverCardContent
+                    align="center"
+                    className="w-[120px] justify-center"
+                  >
+                    <div className="text-xs text-center">
+                      {equipment.approvalStatus === "PENDING"
+                        ? "Pending"
+                        : equipment.approvalStatus === "DRAFT"
+                          ? "In Progress"
+                          : equipment.approvalStatus === "APPROVED"
+                            ? "Approved"
+                            : "Rejected"}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
               </TableCell>
+
               <TableCell className="border-r border-gray-200  text-xs text-center">
                 {format(equipment.createdAt, "MM/dd/yy") || "-"}
               </TableCell>
@@ -156,32 +201,51 @@ export default function EquipmentTable({
                 {format(equipment.updatedAt, "MM/dd/yy") || "-"}
               </TableCell>
               <TableCell className="text-xs text-center">
-                <div className="flex flex-row ">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openHandleQr(equipment.id)}
-                  >
-                    <img src="/qrCode.svg" alt="Edit" className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openHandleEdit(equipment.id)}
-                  >
-                    <img src="/formEdit.svg" alt="Edit" className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openHandleDelete(equipment.id)}
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Delete"
-                      className="w-4 h-4"
-                    />
-                  </Button>
+                <div className="flex flex-row justify-center ">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openHandleQr(equipment.id)}
+                      >
+                        <img src="/qrCode.svg" alt="Edit" className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Print QR Code</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openHandleEdit(equipment.id)}
+                      >
+                        <img
+                          src="/formEdit.svg"
+                          alt="Edit"
+                          className="w-4 h-4"
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Edit</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openHandleDelete(equipment.id)}
+                      >
+                        <img
+                          src="/trash-red.svg"
+                          alt="Delete"
+                          className="w-4 h-4"
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Delete</TooltipContent>
+                  </Tooltip>
                 </div>
               </TableCell>
             </TableRow>
