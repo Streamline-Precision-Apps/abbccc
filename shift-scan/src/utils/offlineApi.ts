@@ -76,7 +76,7 @@ export async function fetchWithOfflineCache<T = any>(
   key: string,
   fetcher: () => Promise<T>,
   options: { ttl?: number; forceRefresh?: boolean } = {}
-): Promise<T> {
+): Promise<T | null> {
   const { ttl = DEFAULT_TTL, forceRefresh = false } = options;
   
   // Check cache first if not forcing refresh
@@ -133,7 +133,10 @@ export async function fetchWithOfflineCache<T = any>(
       console.warn('Offline cache read error:', cacheError);
     }
     
-    throw new Error('Offline and no cached data available for key: ' + key);
+    // Return null instead of throwing when offline and no cache available
+    // This allows components to handle missing data gracefully
+    console.warn('Offline and no cached data available for key:', key);
+    return null;
   }
 }
 
@@ -237,64 +240,102 @@ export async function executeOrQueueAction<T = any>(
 }
 
 /**
- * Attempts to sync all queued actions when online
+ * Attempts to sync all queued actions when online with throttling
  */
 export async function syncQueuedActions(): Promise<SyncResult> {
   if (!isOnline()) {
     return { success: false, syncedCount: 0, failedCount: 0, errors: [] };
   }
   
-  const actions = await offlineDb.queuedActions.orderBy('timestamp').toArray();
-  let syncedCount = 0;
-  let failedCount = 0;
-  const errors: Array<{ action: QueuedAction; error: string }> = [];
+  const THROTTLE_MINUTES = 5; // Minimum minutes between retries
+  const now = Date.now();
+  const throttleThreshold = now - (THROTTLE_MINUTES * 60 * 1000);
+
+  // First, clear any invalid server actions that can't be synced
+  await clearInvalidServerActions();
   
-  for (const action of actions) {
-    try {
-      const response = await fetchWithTimeout(action.endpoint, {
-        method: action.method,
-        headers: { 'Content-Type': 'application/json' },
-        body: action.payload ? JSON.stringify(action.payload) : undefined,
-        timeout: DEFAULT_TIMEOUT,
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      // Success: remove from queue and invalidate cache
-      await offlineDb.queuedActions.delete(action.id!);
-      await invalidateCacheByPattern(action.endpoint);
-      syncedCount++;
-      
-    } catch (error) {
-      const retryCount = (action.retryCount || 0) + 1;
-      const maxRetries = action.maxRetries || MAX_RETRY_ATTEMPTS;
-      
-      if (retryCount >= maxRetries) {
-        // Max retries reached, remove from queue
+  try {
+    // Get only actions that are eligible for retry (older than throttle period)
+    const allActions = await offlineDb.queuedActions.orderBy('timestamp').toArray();
+    const eligibleActions = allActions.filter(action => 
+      !action.timestamp || action.timestamp <= throttleThreshold
+    );
+
+    console.log(`Found ${eligibleActions.length} actions eligible for sync (older than ${THROTTLE_MINUTES} minutes)`);
+
+    let syncedCount = 0;
+    let failedCount = 0;
+    const errors: Array<{ action: QueuedAction; error: string }> = [];
+    
+    for (const action of eligibleActions) {
+      try {
+        console.log(`Attempting to sync: ${action.method} ${action.endpoint}`);
+        
+        const response = await fetchWithTimeout(action.endpoint, {
+          method: action.method,
+          headers: { 'Content-Type': 'application/json' },
+          body: action.payload ? JSON.stringify(action.payload) : undefined,
+          timeout: DEFAULT_TIMEOUT,
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        // Success: remove from queue and invalidate cache
         await offlineDb.queuedActions.delete(action.id!);
-        failedCount++;
-        errors.push({
-          action,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
-      } else {
-        // Increment retry count
-        await offlineDb.queuedActions.update(action.id!, { 
-          ...action,
-          retryCount 
-        });
+        await invalidateCacheByPattern(action.endpoint);
+        syncedCount++;
+        console.log(`Successfully synced: ${action.endpoint}`);
+        
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.warn(`Sync failed for ${action.endpoint}:`, errorMessage);
+        
+        const retryCount = (action.retryCount || 0) + 1;
+        const maxRetries = action.maxRetries || MAX_RETRY_ATTEMPTS;
+        
+        if (retryCount >= maxRetries) {
+          // Max retries reached, remove from queue
+          await offlineDb.queuedActions.delete(action.id!);
+          failedCount++;
+          errors.push({
+            action,
+            error: errorMessage,
+          });
+          console.log(`Removed action after ${maxRetries} retries: ${action.endpoint}`);
+        } else {
+          // Update timestamp and retry count to throttle retry
+          await offlineDb.queuedActions.update(action.id!, {
+            ...action,
+            timestamp: now,
+            lastError: errorMessage,
+            retryCount
+          });
+          console.log(`Throttling retry ${retryCount}/${maxRetries} for: ${action.endpoint}`);
+        }
       }
     }
+    
+    const success = failedCount === 0;
+    
+    console.log(`Sync completed: ${syncedCount} synced, ${failedCount} failed (throttled for ${THROTTLE_MINUTES} minutes)`);
+    
+    return {
+      success,
+      syncedCount,
+      failedCount,
+      errors,
+    };
+  } catch (error) {
+    console.error('Sync operation failed:', error);
+    return {
+      success: false,
+      syncedCount: 0,
+      failedCount: 0,
+      errors: [{ action: { endpoint: 'unknown', method: 'unknown', payload: null, timestamp: now }, error: error instanceof Error ? error.message : 'Unknown error' }],
+    };
   }
-  
-  return {
-    success: failedCount === 0,
-    syncedCount,
-    failedCount,
-    errors,
-  };
 }
 
 /**
@@ -363,6 +404,41 @@ export async function cleanupExpiredCache(): Promise<void> {
     }
   } catch (error) {
     console.warn('Cache cleanup failed:', error);
+  }
+}
+
+/**
+ * Clears all queued actions (useful for cleanup)
+ */
+export async function clearAllQueuedActions(): Promise<void> {
+  try {
+    await offlineDb.queuedActions.clear();
+    console.log('Cleared all queued actions');
+  } catch (error) {
+    console.warn('Failed to clear all queued actions:', error);
+  }
+}
+
+/**
+ * Clears invalid server action entries that can't be synced via HTTP
+ */
+export async function clearInvalidServerActions(): Promise<void> {
+  try {
+    const actions = await offlineDb.queuedActions.toArray();
+    const serverActionNames = ['setPrevTimeSheet', 'setTruck', 'setEquipment', 'setJobSite', 'setCostCodeCookie', 'setStartingMileage'];
+    
+    const invalidActions = actions.filter(action => 
+      serverActionNames.some(serverAction => action.endpoint === serverAction || action.endpoint.includes(serverAction))
+    );
+    
+    if (invalidActions.length > 0) {
+      console.log(`Clearing ${invalidActions.length} invalid server actions from queue`);
+      for (const action of invalidActions) {
+        await offlineDb.queuedActions.delete(action.id!);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to clear invalid server actions:', error);
   }
 }
 

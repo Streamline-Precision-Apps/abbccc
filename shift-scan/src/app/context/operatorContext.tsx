@@ -3,7 +3,6 @@
 import { setEquipment } from "@/actions/cookieActions";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import React, {
   createContext,
   useState,
@@ -23,43 +22,58 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [equipmentId, setEquipmentId] = useState<string | null>(null);
-  const online = useOnlineStatus();
+  const [isInitialized, setIsInitialized] = useState(false);
   const { execute: executeServerAction } = useServerAction();
 
-  // Load initial state from localStorage if available
+  // Load initial state from localStorage if available - ONLY ONCE
   useEffect(() => {
+    if (isInitialized) return; // Prevent multiple initializations
+    
+    console.log("operatorContext1");
     const initializeEquipment = async () => {
       try {
         // Fetch cookie data once during initialization
         const previousTruck = await fetchWithOfflineCache(
           "equipment-cookie",
-          () => fetch("/api/cookies?method=get&name=equipment").then((res) => res.json())
+          () =>
+            fetch("/api/cookies?method=get&name=equipment").then((res) =>
+              res.json(),
+            ),
         );
 
         if (previousTruck && previousTruck !== "") {
           setEquipmentId(previousTruck);
         }
       } catch (error) {
-        console.error("Error fetching job site cookie:", error);
+        console.error("Error fetching equipment cookie:", error);
+      } finally {
+        setIsInitialized(true);
       }
     };
 
     initializeEquipment();
-  }, [online]); // Run when online status changes
+  }, [isInitialized]); // Only depend on initialization state
 
+  // Save equipment ID changes - but only after initialization and when value actually changes
   useEffect(() => {
+    if (!isInitialized || equipmentId === null) return; // Don't save during initialization
+    
+    console.log("operatorContext2");
     const saveEquipmentId = async () => {
-      // Renamed function
       try {
         if (equipmentId !== "") {
-          await executeServerAction("setEquipment", setEquipment, equipmentId || ""); // Use wrapped server action
+          await executeServerAction(
+            "setEquipment",
+            setEquipment,
+            equipmentId || "",
+          ); // Use wrapped server action
         }
       } catch (error) {
         console.error("Error saving equipment cookie:", error);
       }
     };
     saveEquipmentId();
-  }, [equipmentId, executeServerAction]);
+  }, [equipmentId, executeServerAction, isInitialized]); // Include isInitialized to prevent premature saves
 
   return (
     <EquipmentData.Provider value={{ equipmentId, setEquipmentId }}>

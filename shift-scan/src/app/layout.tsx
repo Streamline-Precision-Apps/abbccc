@@ -9,12 +9,8 @@ import dynamic from "next/dynamic";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import OfflineCSSFallback from "../components/OfflineCSSFallback";
 import CSSDebugger from "../components/CSSDebugger";
+import OfflineStatusManager from "../components/OfflineStatusManager";
 import "@/app/globals.css";
-
-const AutoPermissionsManager = dynamic(
-  () => import("@/components/(settings)/AutoPermissionsManager"),
-  { ssr: false }
-);
 import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
 
 export const viewport: Viewport = {
@@ -76,6 +72,8 @@ export default async function RootLayout({
               <OfflineCSSFallback />
               {/* CSS debugger for development (Ctrl+Shift+D to toggle) */}
               <CSSDebugger />
+              {/* Offline status and caching manager */}
+              <OfflineStatusManager />
             </Providers>
           </NextIntlClientProvider>
         </main>

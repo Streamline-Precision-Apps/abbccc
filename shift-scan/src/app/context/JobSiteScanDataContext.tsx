@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 // Define the shape of your scan result
 type ScanResult = {
@@ -37,11 +36,15 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
-  const online = useOnlineStatus();
-  const { execute: executeServerAction, syncQueued } = useServerAction();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { execute: executeServerAction } = useServerAction();
   const [error, setError] = useState<string | null>(null);
 
+  // Initialize only once
   useEffect(() => {
+    if (isInitialized) return;
+    
+    console.log("JobSiteScanDataContext1");
     const initializeJobSite = async () => {
       try {
         const cookieRes = await fetch("/api/cookies?method=get&name=jobSite");
@@ -80,12 +83,18 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         setError("Error initializing job site.");
         setScanResult(null);
         console.error("Error initializing job site:", error);
+      } finally {
+        setIsInitialized(true);
       }
     };
     initializeJobSite();
-  }, []);
+  }, [isInitialized]);
 
+  // Save changes only after initialization
   useEffect(() => {
+    if (!isInitialized || !scanResult?.qrCode) return;
+    
+    console.log("JobSiteScanDataContext2");
     const saveJobSite = async () => {
       try {
         if (scanResult?.qrCode) {
@@ -100,13 +109,9 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
       }
     };
     saveJobSite();
-  }, [scanResult, executeServerAction]);
+  }, [scanResult, executeServerAction, isInitialized]);
 
-  useEffect(() => {
-    if (online) {
-      syncQueued();
-    }
-  }, [online, syncQueued]);
+  // Removed redundant sync call - useOfflineSync hook handles auto-sync
 
   return (
     <ScanDataContext.Provider

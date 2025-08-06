@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 export const useServiceWorker = (): void => {
   useEffect(() => {
+    console.log("useServiceWorker1");
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/service-worker.js')

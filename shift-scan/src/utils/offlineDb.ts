@@ -15,6 +15,7 @@ export interface QueuedAction {
   timestamp: number;
   retryCount?: number;
   maxRetries?: number;
+  lastError?: string; // Track last error for debugging
 }
 
 /**
@@ -26,7 +27,13 @@ class OfflineDb extends Dexie {
 
   constructor() {
     super('OfflineDb');
-    this.version(1).stores({
+    this.version(2).stores({
+      cachedApiResponses: 'key',
+      queuedActions: '++id,endpoint,method,timestamp',
+    });
+    
+    // Add index for timestamp-based queries
+    this.version(2).stores({
       cachedApiResponses: 'key',
       queuedActions: '++id,endpoint,method,timestamp',
     });

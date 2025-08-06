@@ -10,7 +10,6 @@ import React, {
 } from "react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { setCostCode as setCostCodeCookie } from "@/actions/cookieActions";
 // creates a prop to be passes to a context
 type SavedCostCodeProps = {
@@ -28,36 +27,45 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [costcode, setCostCode] = useState<string | null>(null);
-  const online = useOnlineStatus();
-  const { execute: executeServerAction, syncQueued } = useServerAction();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { execute: executeServerAction } = useServerAction();
 
+  // Initialize only once
   useEffect(() => {
+    if (isInitialized) return;
+    
+    console.log("CostCodeContext1");
     const initializeCostCode = async () => {
       try {
         const previousCostCode = await fetchWithOfflineCache("costCode", () =>
           fetch("/api/cookies?method=get&name=costCode").then((res) =>
-            res.json()
-          )
+            res.json(),
+          ),
         );
         if (previousCostCode && previousCostCode !== "") {
           setCostCode(previousCostCode);
         }
       } catch (error) {
-        console.error("Error fetching job site cookie:", error);
+        console.error("Error fetching cost code cookie:", error);
+      } finally {
+        setIsInitialized(true);
       }
     };
     initializeCostCode();
-  }, []);
+  }, [isInitialized]);
 
-  // when the provider is called it will return the value below
+  // Save changes only after initialization
   useEffect(() => {
+    if (!isInitialized || costcode === null) return;
+    
+    console.log("CostCodeContext2");
     const savedCostCodeAsync = async () => {
       try {
         if (costcode !== "") {
           await executeServerAction(
             "setCostCodeCookie",
             setCostCodeCookie,
-            costcode || ""
+            costcode || "",
           );
         }
       } catch (error) {
@@ -65,13 +73,9 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
       }
     };
     savedCostCodeAsync();
-  }, [costcode, executeServerAction]);
+  }, [costcode, executeServerAction, isInitialized]);
 
-  useEffect(() => {
-    if (online) {
-      syncQueued();
-    }
-  }, [online, syncQueued]);
+  // Removed redundant sync call - useOfflineSync hook handles auto-sync
   return (
     <savedCostCode.Provider value={{ savedCostCode: costcode, setCostCode }}>
       {children}

@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 type StartingMileageProps = {
   startingMileage: number | null;
@@ -17,51 +16,66 @@ type StartingMileageProps = {
 };
 
 const StartingMileage = createContext<StartingMileageProps | undefined>(
-  undefined
+  undefined,
 );
 
 export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [startingMileage, setStartingMileageState] = useState<number | null>(null);
-  const online = useOnlineStatus();
-  const { execute: executeServerAction, syncQueued } = useServerAction();
+  const [startingMileage, setStartingMileageState] = useState<number | null>(
+    null,
+  );
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { execute: executeServerAction } = useServerAction();
 
+  // Initialize only once
   useEffect(() => {
+    if (isInitialized) return;
+    
+    console.log("StartingMileageContext1");
     const initializeMileage = async () => {
       try {
         const previousStartingMileage = await fetchWithOfflineCache(
           "startingMileage",
-          () => fetch("/api/cookies?method=get&name=truck").then((res) => res.json())
+          () =>
+            fetch("/api/cookies?method=get&name=truck").then((res) =>
+              res.json(),
+            ),
         );
         if (previousStartingMileage && previousStartingMileage !== "") {
           setStartingMileageState(previousStartingMileage);
         }
       } catch (error) {
-        console.error("Error fetching job site cookie:", error);
+        console.error("Error fetching starting mileage cookie:", error);
+      } finally {
+        setIsInitialized(true);
       }
     };
     initializeMileage();
-  }, []);
+  }, [isInitialized]);
 
+  // Save changes only after initialization
   useEffect(() => {
+    if (!isInitialized || startingMileage === null) return;
+    
+    console.log("StartingMileageContext2");
     const setStartingMileageStateAsync = async () => {
       try {
         if (startingMileage !== null) {
-          await executeServerAction("setStartingMileage", setStartingMileage, startingMileage?.toString() || "");
+          await executeServerAction(
+            "setStartingMileage",
+            setStartingMileage,
+            startingMileage?.toString() || "",
+          );
         }
       } catch (error) {
-        console.error("Error saving job site cookie:", error);
+        console.error("Error saving starting mileage cookie:", error);
       }
     };
     setStartingMileageStateAsync();
-  }, [startingMileage, executeServerAction]);
+  }, [startingMileage, executeServerAction, isInitialized]);
 
-  useEffect(() => {
-    if (online) {
-      syncQueued();
-    }
-  }, [online, syncQueued]);
+  // Removed redundant sync call - useOfflineSync hook handles auto-sync
   return (
     <StartingMileage.Provider
       value={{ startingMileage, setStartingMileage: setStartingMileageState }}
@@ -75,7 +89,7 @@ export const useStartingMileage = () => {
   const context = useContext(StartingMileage);
   if (!context) {
     throw new Error(
-      "useStartingMileage must be used within a StartingMileageProvider"
+      "useStartingMileage must be used within a StartingMileageProvider",
     );
   }
   return context;

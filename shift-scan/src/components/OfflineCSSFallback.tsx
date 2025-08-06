@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 
 const OfflineCSSFallback = () => {
   useEffect(() => {
+    console.log("useOfflineCSSFallback1");
     const ensureCSSLoaded = async () => {
       // Check if Tailwind CSS is working by testing a known class
       const testElement = document.createElement('div');

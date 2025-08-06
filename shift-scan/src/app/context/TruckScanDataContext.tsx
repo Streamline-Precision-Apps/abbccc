@@ -31,8 +31,8 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
         // Use offline cache for API data
         const previousTruck = await fetchWithOfflineCache("truckId", () =>
           fetch("/api/cookies?method=get&name=truckId").then((res) =>
-            res.json()
-          )
+            res.json(),
+          ),
         );
         if (previousTruck && previousTruck !== "") {
           setTruckScanDataState(previousTruck);
@@ -57,12 +57,7 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
     setTruckScanData();
   }, [truckScanData, executeServerAction]);
 
-  // Sync queued actions when back online
-  useEffect(() => {
-    if (online) {
-      syncQueued();
-    }
-  }, [online, syncQueued]);
+  // Removed redundant sync call - useOfflineSync hook handles auto-sync
   return (
     <TruckScanData.Provider
       value={{ truckScanData, setTruckScanData: setTruckScanDataState }}
@@ -76,7 +71,7 @@ export const useTruckScanData = () => {
   const context = useContext(TruckScanData);
   if (!context) {
     throw new Error(
-      "useTruckScanData must be used within a TruckScanDataProvider"
+      "useTruckScanData must be used within a TruckScanDataProvider",
     );
   }
   return context;

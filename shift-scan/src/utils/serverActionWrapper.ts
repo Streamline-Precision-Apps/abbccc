@@ -23,12 +23,8 @@ export async function executeServerAction<T extends any[], R>(
       // Try to execute immediately if online
       const result = await serverAction(...args);
       
-      // If successful, try to sync any queued actions
-      try {
-        await syncQueuedActions();
-      } catch (syncError) {
-        console.warn("Failed to sync queued actions:", syncError);
-      }
+      // Removed auto-sync after every server action to prevent spam
+      // useOfflineSync hook handles sync timing appropriately
       
       return result;
     } catch (error) {

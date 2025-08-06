@@ -1,9 +1,50 @@
-const CACHE_NAME = 'shift-scan-cache-v4'; // Updated version to fix CSS caching
+const CACHE_NAME = 'shift-scan-cache-v5'; // Updated version for comprehensive caching
 const STATIC_ASSETS = [
   '/manifest.json',
   '/offline.html',
   '/fallback.css', // Fallback CSS for offline mode
   '/', // Cache the root page to help with CSS discovery
+  '/dashboard', // Main dashboard page
+  '/clock', // Clock page
+  '/break', // Break page
+  '/dashboard/equipment/log-new', // Equipment log page
+  '/dashboard/switch-jobs', // Switch jobs page
+];
+
+// Critical assets that should be pre-cached
+const CRITICAL_ASSETS = [
+  // SVG icons (add all your SVGs)
+  '/logo.svg',
+  '/arrowBack.svg',
+  '/arrowDown.svg',
+  '/arrowLeft.svg',
+  '/arrowRight.svg',
+  '/home.svg',
+  '/clock.svg',
+  '/equipment.svg',
+  '/form.svg',
+  '/inbox.svg',
+  '/jobsite.svg',
+  '/plus.svg',
+  '/calendar.svg',
+  '/camera.svg',
+  '/comment.svg',
+  '/export.svg',
+  '/eye.svg',
+  '/fileClosed.svg',
+  '/fileOpen.svg',
+  '/filterDials.svg',
+  '/filterFunnel.svg',
+  '/header.svg',
+  '/information.svg',
+  '/language.svg',
+  '/layout.svg',
+  '/message.svg',
+  '/mileage.svg',
+  '/minus.svg',
+  '/moreOptions.svg',
+  '/policies.svg',
+  // Add more SVGs as needed
 ];
 
 // URLs patterns that should be cached with network-first strategy
@@ -15,6 +56,17 @@ const CACHE_PATTERNS = [
   /\.js(\?.*)?$/,                            // All JavaScript files with query params
   /\.(png|jpg|jpeg|gif|svg|ico|webp)(\?.*)?$/, // Images with query params
   /\/api\/.*$/,                              // API routes (for offline fallback)
+  /\/_next\/image(\?.*)?$/,                  // Next.js optimized images
+];
+
+// API endpoints to cache responses for offline use
+const API_CACHE_PATTERNS = [
+  /\/api\/cookies(\?.*)?$/,
+  /\/api\/getRecentTimecard$/,
+  /\/api\/jobsites\/.*$/,
+  /\/api\/getJobsites$/,
+  /\/api\/getCostCodes$/,
+  /\/api\/getEquipment$/,
 ];
 
 // Debug logging function
@@ -22,20 +74,33 @@ const log = (message, data = '') => {
   console.log(`[ServiceWorker] ${message}`, data);
 };
 
-// Function to discover and cache CSS files
-const discoverAndCacheCSS = async (cache) => {
+// Enhanced function to discover and cache all critical app resources
+const discoverAndCacheAppResources = async (cache) => {
   try {
-    // Try to fetch the main page to discover CSS files
+    // 1. Cache critical SVG assets first
+    for (const asset of CRITICAL_ASSETS) {
+      try {
+        const response = await fetch(asset);
+        if (response.ok) {
+          await cache.put(asset, response);
+          log('Cached critical asset:', asset);
+        }
+      } catch (err) {
+        log('Failed to cache critical asset:', asset, err.message);
+      }
+    }
+
+    // 2. Discover and cache CSS files from the main page
     const response = await fetch('/');
     if (response.ok) {
       const html = await response.text();
       
-      // Extract CSS file URLs from the HTML
+      // Extract and cache CSS files
       const cssMatches = html.match(/href="([^"]*\.css[^"]*)"/g);
       if (cssMatches) {
         for (const match of cssMatches) {
           const href = match.match(/href="([^"]*)"/)[1];
-          if (href.startsWith('/_next/static/css/')) {
+          if (href.startsWith('/_next/static/css/') || href.startsWith('/')) {
             try {
               const cssResponse = await fetch(href);
               if (cssResponse.ok) {
@@ -55,9 +120,65 @@ const discoverAndCacheCSS = async (cache) => {
           }
         }
       }
+
+      // Extract and cache JavaScript files
+      const jsMatches = html.match(/src="([^"]*\.js[^"]*)"/g);
+      if (jsMatches) {
+        for (const match of jsMatches) {
+          const src = match.match(/src="([^"]*)"/)[1];
+          if (src.startsWith('/_next/static/')) {
+            try {
+              const jsResponse = await fetch(src);
+              if (jsResponse.ok) {
+                await cache.put(src, jsResponse.clone());
+                log('Discovered and cached JS:', src);
+              }
+            } catch (err) {
+              log('Failed to cache discovered JS:', src, err.message);
+            }
+          }
+        }
+      }
     }
+
+    // 3. Pre-cache important pages by visiting them
+    const importantPages = ['/dashboard', '/clock', '/break'];
+    for (const page of importantPages) {
+      try {
+        const pageResponse = await fetch(page);
+        if (pageResponse.ok) {
+          await cache.put(page, pageResponse.clone());
+          log('Pre-cached page:', page);
+          
+          // Extract resources from this page too
+          const pageHtml = await pageResponse.text();
+          const pageResources = [
+            ...pageHtml.match(/href="([^"]*\.(css|js)[^"]*)"/g) || [],
+            ...pageHtml.match(/src="([^"]*\.(js|png|jpg|jpeg|svg)[^"]*)"/g) || []
+          ];
+          
+          for (const resource of pageResources) {
+            const url = resource.match(/(href|src)="([^"]*)"/)[2];
+            if (url.startsWith('/_next/') || url.startsWith('/')) {
+              try {
+                const resourceResponse = await fetch(url);
+                if (resourceResponse.ok) {
+                  await cache.put(url, resourceResponse);
+                  log('Cached page resource:', url);
+                }
+              } catch (err) {
+                // Ignore individual resource failures
+              }
+            }
+          }
+        }
+      } catch (err) {
+        log('Failed to pre-cache page:', page, err.message);
+      }
+    }
+    
   } catch (err) {
-    log('CSS discovery failed:', err.message);
+    log('App resource discovery failed:', err.message);
   }
 };
 
@@ -91,7 +212,7 @@ const findCachedCSS = async (request) => {
 };
 
 self.addEventListener('install', event => {
-  log('Service Worker installing...');
+  log('Service Worker installing with comprehensive caching...');
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
       try {
@@ -99,9 +220,10 @@ self.addEventListener('install', event => {
         await cache.addAll(STATIC_ASSETS);
         log('Static assets cached successfully');
         
-        // Discover and cache CSS files from the main page
-        await discoverAndCacheCSS(cache);
+        // Discover and cache all app resources comprehensively
+        await discoverAndCacheAppResources(cache);
         
+        log('Comprehensive app caching completed');
       } catch (err) {
         log('Install failed:', err);
         throw err;
@@ -161,23 +283,57 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Enhanced API caching for offline functionality
+  const isApiRequest = API_CACHE_PATTERNS.some(pattern => pattern.test(fullUrl));
+  if (isApiRequest) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response && response.status === 200) {
+            const cloned = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, cloned);
+              log('Cached API response:', fullUrl);
+            }).catch(err => {
+              log('Failed to cache API response:', err);
+            });
+          }
+          return response;
+        })
+        .catch(async () => {
+          log('API request failed, trying cache for:', fullUrl);
+          const cached = await caches.match(event.request);
+          if (cached) {
+            log('Serving API from cache:', fullUrl);
+            return cached;
+          }
+          // Return a default response for failed API calls
+          return new Response(JSON.stringify({ error: 'Offline', cached: false }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        })
+    );
+    return;
+  }
+
   // Check if this request should be cached based on patterns
   const shouldCache = CACHE_PATTERNS.some(pattern => pattern.test(fullUrl) || pattern.test(pathname));
 
   if (shouldCache) {
     const isCss = pathname.endsWith('.css');
+    const isImage = /\.(png|jpg|jpeg|gif|svg|ico|webp)(\?.*)?$/.test(pathname);
+    
     // Always use the base path (no query params) as the cache key for CSS
     const cacheKey = isCss ? `${url.origin}${pathname}` : event.request;
 
-    // Only log and cache the base CSS file (no query params)
+    // Special handling for CSS files with query params
     if (isCss && url.search) {
-      // For requests with query params, just serve the cached base file (if available)
       event.respondWith(
         caches.open(CACHE_NAME).then(async cache => {
           const cached = await cache.match(cacheKey);
           if (cached) {
-            // Only log once for serving from cache
-            // log('Serving CSS from cache (query param request):', cacheKey);
+            // Silently serve from cache to reduce log spam
             return cached;
           }
           // If not cached, try to fetch and cache the base file
@@ -205,48 +361,50 @@ self.addEventListener('fetch', event => {
       return;
     }
 
-    // For base CSS file (no query params), fetch, cache, and log ONCE
+    // For all other cached resources (including base CSS, JS, images)
     event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (response && response.status === 200 && response.type !== 'opaque') {
-            log('Successfully fetched and caching:', cacheKey);
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(cacheKey, responseToCache).catch(err => 
-                log('Failed to cache asset:', cacheKey, err)
-              );
-            });
-          }
-          return response;
-        })
-        .catch(async () => {
-          log('Network failed, trying cache for:', cacheKey);
-          // Try to get from cache
-          const cached = await caches.match(cacheKey);
+      caches.open(CACHE_NAME).then(async cache => {
+        // Check cache first for images to reduce redundant fetching
+        if (isImage) {
+          const cached = await cache.match(cacheKey);
           if (cached) {
-            log('Serving from cache:', cacheKey);
+            // Silently serve images from cache to reduce log spam
             return cached;
           }
-          // For CSS files, try to find a cached version with different query params
-          if (isCss) {
-            const cachedCSS = await findCachedCSS(event.request);
-            if (cachedCSS) {
-              log('Serving CSS from cache (query param match):', cacheKey);
-              return cachedCSS;
+        }
+
+        // Try to fetch from network
+        try {
+          const response = await fetch(event.request);
+          if (response && response.status === 200 && response.type !== 'opaque') {
+            // Only log for new resources, not repeated fetches
+            if (!isImage || !(await cache.match(cacheKey))) {
+              log('Successfully fetched and caching:', event.request);
             }
-            // If no CSS found and it's a critical CSS file, serve fallback
-            if (pathname.includes('app/layout.css') || pathname.includes('app/page.css')) {
-              const fallbackCSS = await caches.match('/fallback.css');
-              if (fallbackCSS) {
-                log('Serving fallback CSS for:', cacheKey);
-                return fallbackCSS;
-              }
-            }
+            const responseToCache = response.clone();
+            cache.put(cacheKey, responseToCache).catch(err => 
+              log('Failed to cache asset:', cacheKey, err)
+            );
+            return response;
           }
-          log('No cache found for:', cacheKey);
-          throw new Error('No cache available');
-        })
+          return response;
+        } catch (err) {
+          log('Network failed, trying cache for:', cacheKey);
+          // Try to get from cache
+          const cached = await cache.match(cacheKey);
+          if (cached) {
+            // Only log for non-frequent files to reduce spam
+            const isFrequentFile = event.request.url.includes('manifest.json') || 
+                                   event.request.url.endsWith('/') || 
+                                   event.request.url.includes('.ico');
+            if (!isFrequentFile) {
+              log('Serving from cache (default):', event.request.url);
+            }
+            return cached;
+          }
+          throw err; // Re-throw if no cached version
+        }
+      })
     );
     return;
   }
@@ -255,7 +413,11 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) {
-        log('Serving from cache (default):', fullUrl);
+        // Only log for non-frequent files to reduce spam
+        const isFrequentFile = pathname === '/' || pathname === '/manifest.json' || pathname.includes('.ico');
+        if (!isFrequentFile) {
+          log('Serving from cache (default):', fullUrl);
+        }
         return cached;
       }
       
@@ -277,6 +439,45 @@ self.addEventListener('fetch', event => {
   );
 });
 
+// Force cache all critical routes (can be triggered manually)
+const cacheAllRoutes = async () => {
+  const criticalRoutes = [
+    '/',
+    '/dashboard',
+    '/clock',
+    '/break',
+    '/dashboard/equipment/log-new',
+    '/dashboard/switch-jobs',
+    '/signin', // Even though we exclude it from SW, cache for offline fallback
+  ];
+
+  const cache = await caches.open(CACHE_NAME);
+  
+  for (const route of criticalRoutes) {
+    try {
+      const response = await fetch(route);
+      if (response.ok) {
+        await cache.put(route, response);
+        log('Force cached route:', route);
+      }
+    } catch (err) {
+      log('Failed to force cache route:', route, err.message);
+    }
+  }
+};
+
+// Message handler for manual cache control
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'CACHE_ALL_ROUTES') {
+    log('Manual cache all routes requested');
+    event.waitUntil(cacheAllRoutes());
+  }
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // Background sync event handler
 self.addEventListener('sync', event => {
   if (event.tag === 'offline-sync') {
@@ -285,50 +486,136 @@ self.addEventListener('sync', event => {
   }
 });
 
-// Handle background sync
+// Handle background sync with throttling to prevent excessive retries
 async function handleBackgroundSync() {
+  const THROTTLE_MINUTES = 5; // Minimum minutes between retries
+  const now = Date.now();
+
   try {
-    // Get queued actions from IndexedDB and sync them
-    const dbRequest = indexedDB.open('OfflineDb', 1);
-    
-    return new Promise((resolve, reject) => {
-      dbRequest.onsuccess = async () => {
-        const db = dbRequest.result;
-        const transaction = db.transaction(['queuedActions'], 'readwrite');
-        const store = transaction.objectStore('queuedActions');
-        const getAllRequest = store.getAll();
+    // Open database with proper error handling
+    const db = await new Promise((resolve, reject) => {
+      const dbRequest = indexedDB.open('OfflineDb', 2); // Version 2 for timestamp support
+      
+      dbRequest.onupgradeneeded = (event) => {
+        const database = event.target.result;
         
-        getAllRequest.onsuccess = async () => {
-          const actions = getAllRequest.result;
-          let syncedCount = 0;
-          
-          for (const action of actions) {
-            try {
-              const response = await fetch(action.endpoint, {
-                method: action.method,
-                headers: { 'Content-Type': 'application/json' },
-                body: action.payload ? JSON.stringify(action.payload) : undefined,
-              });
-              
-              if (response.ok) {
-                // Remove successfully synced action
-                store.delete(action.id);
-                syncedCount++;
-              }
-            } catch (err) {
-              log('Background sync action failed:', err);
-            }
+        // Ensure queuedActions store exists with proper schema
+        if (!database.objectStoreNames.contains('queuedActions')) {
+          const store = database.createObjectStore('queuedActions', { 
+            keyPath: 'id',
+            autoIncrement: true 
+          });
+          store.createIndex('by_timestamp', 'timestamp', { unique: false });
+          log('Created queuedActions store with timestamp index');
+        } else {
+          // If store exists but needs index, add it
+          const transaction = event.target.transaction;
+          const store = transaction.objectStore('queuedActions');
+          if (!store.indexNames.contains('by_timestamp')) {
+            store.createIndex('by_timestamp', 'timestamp', { unique: false });
+            log('Added timestamp index to existing store');
           }
-          
-          log(`Background sync completed: ${syncedCount} actions synced`);
-          resolve();
-        };
-        
-        getAllRequest.onerror = () => reject(getAllRequest.error);
+        }
       };
       
+      dbRequest.onsuccess = () => resolve(dbRequest.result);
       dbRequest.onerror = () => reject(dbRequest.error);
     });
+
+    const transaction = db.transaction(['queuedActions'], 'readwrite');
+    const store = transaction.objectStore('queuedActions');
+
+    // Get actions using timestamp-based throttling
+    let actions;
+    try {
+      // Try to use the timestamp index for efficient querying
+      const index = store.index('by_timestamp');
+      const throttleThreshold = now - (THROTTLE_MINUTES * 60 * 1000);
+      const range = IDBKeyRange.upperBound(throttleThreshold);
+      
+      actions = await new Promise((resolve, reject) => {
+        const request = index.getAll(range);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      
+      log(`Found ${actions.length} actions eligible for sync (older than ${THROTTLE_MINUTES} minutes)`);
+    } catch (indexError) {
+      // Fallback: get all actions if index doesn't exist yet
+      log('Timestamp index not available, using fallback method');
+      actions = await new Promise((resolve, reject) => {
+        const request = store.getAll();
+        request.onsuccess = () => {
+          const allActions = request.result;
+          // Filter by timestamp manually
+          const throttleThreshold = now - (THROTTLE_MINUTES * 60 * 1000);
+          const filteredActions = allActions.filter(action => 
+            !action.timestamp || action.timestamp <= throttleThreshold
+          );
+          resolve(filteredActions);
+        };
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    let syncedCount = 0;
+    let failedCount = 0;
+
+    for (const action of actions) {
+      try {
+        log(`Attempting to sync: ${action.method} ${action.endpoint}`);
+        
+        const response = await fetch(action.endpoint, {
+          method: action.method,
+          headers: { 'Content-Type': 'application/json' },
+          body: action.payload ? JSON.stringify(action.payload) : undefined,
+        });
+
+        if (response.ok) {
+          // Success: remove the action from queue
+          await new Promise((resolve, reject) => {
+            const deleteRequest = store.delete(action.id);
+            deleteRequest.onsuccess = () => resolve();
+            deleteRequest.onerror = () => reject(deleteRequest.error);
+          });
+          syncedCount++;
+          log(`Successfully synced: ${action.endpoint}`);
+        } else {
+          // HTTP error: update timestamp to throttle retry
+          await new Promise((resolve, reject) => {
+            const updateRequest = store.put({
+              ...action,
+              timestamp: now,
+              lastError: `HTTP ${response.status}: ${response.statusText}`
+            });
+            updateRequest.onsuccess = () => resolve();
+            updateRequest.onerror = () => reject(updateRequest.error);
+          });
+          failedCount++;
+          log(`Sync failed (HTTP ${response.status}), throttling: ${action.endpoint}`);
+        }
+      } catch (fetchError) {
+        // Network error: update timestamp to throttle retry
+        await new Promise((resolve, reject) => {
+          const updateRequest = store.put({
+            ...action,
+            timestamp: now,
+            lastError: fetchError.message
+          });
+          updateRequest.onsuccess = () => resolve();
+          updateRequest.onerror = () => reject(updateRequest.error);
+        });
+        failedCount++;
+        log(`Sync failed (network error), throttling: ${action.endpoint}`, fetchError.message);
+      }
+    }
+
+    // Close database connection
+    db.close();
+
+    log(`Background sync completed: ${syncedCount} synced, ${failedCount} failed (throttled for ${THROTTLE_MINUTES} minutes)`);
+    
+    return { syncedCount, failedCount };
   } catch (error) {
     log('Background sync failed:', error);
     throw error;
