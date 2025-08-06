@@ -19,8 +19,8 @@ model User {
   clockedIn            Boolean              @default(false)
   companyId            String
   passwordResetTokenId String?
-  accountSetupToken    AccountSetupToken?
   workTypeId           String?
+  accountSetupToken    AccountSetupToken?
   Client               Client[]
   Contact              Contacts?
   Equipment            Equipment[]
@@ -39,15 +39,17 @@ model User {
 }
 
 model UserSettings {
-  id                String  @id @default(uuid())
-  userId            String  @unique
-  language          String  @default("en")
-  generalReminders  Boolean @default(false)
-  personalReminders Boolean @default(false)
-  cameraAccess      Boolean @default(false)
-  locationAccess    Boolean @default(false)
-  cookiesAccess     Boolean @default(false)
-  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  language          String   @default("en")
+  generalReminders  Boolean  @default(false)
+  personalReminders Boolean  @default(false)
+  cameraAccess      Boolean  @default(false)
+  locationAccess    Boolean  @default(false)
+  cookiesAccess     Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  lastUpdated       DateTime @default(now())
+  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Contacts {
@@ -73,10 +75,9 @@ model PasswordResetToken {
 
 model AccountSetupToken {
   id        String   @id @default(uuid())
-  code      String // 6-digit code
+  code      String
   userId    String   @unique
   expiresAt DateTime
   used      Boolean  @default(false)
-
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

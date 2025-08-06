@@ -33,7 +33,7 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
   // Initialize only once
   useEffect(() => {
     if (isInitialized) return;
-    
+
     console.log("CostCodeContext1");
     const initializeCostCode = async () => {
       try {
@@ -57,7 +57,7 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
   // Save changes only after initialization
   useEffect(() => {
     if (!isInitialized || costcode === null) return;
-    
+
     console.log("CostCodeContext2");
     const savedCostCodeAsync = async () => {
       try {

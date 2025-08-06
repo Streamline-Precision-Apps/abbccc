@@ -39,21 +39,26 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     // Create a unique key based on URL
     const currentKey = `${url}`;
-    
+
     // Skip if we've already processed this exact scenario
     if (initializationKey.current === currentKey) {
       return;
     }
-    
+
     // Only run for specific routes
-    const validRoutes = ["/clock", "/dashboard/equipment/log-new", "/dashboard/switch-jobs", "/break"];
+    const validRoutes = [
+      "/clock",
+      "/dashboard/equipment/log-new",
+      "/dashboard/switch-jobs",
+      "/break",
+    ];
     if (!validRoutes.includes(url)) {
       initializationKey.current = currentKey;
       return;
     }
-    
+
     console.log("TimeSheetIdContext1");
-    
+
     const savedTimeSheet = async () => {
       try {
         const data = await fetchWithOfflineCache("recentTimecard", () =>
@@ -79,7 +84,7 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
         initializationKey.current = currentKey;
       }
     };
-    
+
     savedTimeSheet();
   }, [url]); // Only depend on URL changes
 

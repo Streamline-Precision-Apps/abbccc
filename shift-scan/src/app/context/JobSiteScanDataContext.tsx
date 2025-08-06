@@ -43,7 +43,7 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   // Initialize only once
   useEffect(() => {
     if (isInitialized) return;
-    
+
     console.log("JobSiteScanDataContext1");
     const initializeJobSite = async () => {
       try {
@@ -93,7 +93,7 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   // Save changes only after initialization
   useEffect(() => {
     if (!isInitialized || !scanResult?.qrCode) return;
-    
+
     console.log("JobSiteScanDataContext2");
     const saveJobSite = async () => {
       try {

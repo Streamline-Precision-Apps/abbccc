@@ -31,7 +31,7 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   // Initialize only once
   useEffect(() => {
     if (isInitialized) return;
-    
+
     console.log("StartingMileageContext1");
     const initializeMileage = async () => {
       try {
@@ -57,7 +57,7 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   // Save changes only after initialization
   useEffect(() => {
     if (!isInitialized || startingMileage === null) return;
-    
+
     console.log("StartingMileageContext2");
     const setStartingMileageStateAsync = async () => {
       try {

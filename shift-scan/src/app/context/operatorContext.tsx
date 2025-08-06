@@ -28,7 +28,7 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
   // Load initial state from localStorage if available - ONLY ONCE
   useEffect(() => {
     if (isInitialized) return; // Prevent multiple initializations
-    
+
     console.log("operatorContext1");
     const initializeEquipment = async () => {
       try {
@@ -57,7 +57,7 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
   // Save equipment ID changes - but only after initialization and when value actually changes
   useEffect(() => {
     if (!isInitialized || equipmentId === null) return; // Don't save during initialization
-    
+
     console.log("operatorContext2");
     const saveEquipmentId = async () => {
       try {
