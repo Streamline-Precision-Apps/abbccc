@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../personnel/components/SearchBar";
 import React, { useEffect, useState } from "react";
 import JobsiteTable from "./_components/jobsiteTable";
 import QRCode from "qrcode";
@@ -28,6 +27,13 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import SearchBarPopover from "../_pages/searchBarPopover";
 
 export default function JobsitePage() {
   const { setOpen, open } = useSidebar();
@@ -41,6 +47,8 @@ export default function JobsitePage() {
     pageSize,
     setPage,
     setPageSize,
+    showPendingOnly,
+    setShowPendingOnly,
   } = useJobsiteData();
 
   // State for modals
@@ -52,9 +60,6 @@ export default function JobsitePage() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [pendingQrId, setPendingQrId] = useState<string | null>(null);
-
-  // Approval Button States
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   // Pagination state
 
@@ -84,12 +89,11 @@ export default function JobsitePage() {
 
   // Count all pending items
   const pendingCount = jobsiteDetails.filter(
-    (item) => item.approvalStatus === "PENDING"
+    (item) => item.approvalStatus === "PENDING",
   ).length;
 
   // Filter job sites by name or client name and by approval status if showPendingOnly is active
   const filteredJobsites = jobsiteDetails.filter((item) => {
-    if (showPendingOnly && item.approvalStatus !== "PENDING") return false;
     const term = searchTerm.trim().toLowerCase();
     if (!term || term.length < 3) return true;
     const jobsiteName = item.name?.toLowerCase() || "";
@@ -101,7 +105,7 @@ export default function JobsitePage() {
   const totalPages = Math.ceil(totalJobsites / pageSize);
   const paginatedJobsites = filteredJobsites.slice(
     (page - 1) * pageSize,
-    page * pageSize
+    page * pageSize,
   );
 
   // Reset to page 1 if search or filter changes
@@ -240,11 +244,12 @@ export default function JobsitePage() {
             </p>
           </div>
         </div>
+        <ReloadBtnSpinner isRefreshing={loading} fetchData={rerender} />
       </div>
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
+          <div className="h-full w-fit p-1 bg-white rounded-lg ">
+            <SearchBarPopover
               term={searchTerm}
               handleSearchChange={(e) => setSearchTerm(e.target.value)}
               placeholder={"Search by name or client..."}
@@ -254,30 +259,52 @@ export default function JobsitePage() {
           </div>
         </div>
         <div className="flex flex-row justify-end w-full gap-4">
-          <Button onClick={() => setCreateJobsiteModal(true)}>
-            <img src="/plus-white.svg" alt="Add Jobsite" className="w-4 h-4" />
-            <p className="text-left text-xs text-white">New Jobsite</p>
-          </Button>
-          <Button
-            onClick={() => setShowPendingOnly(!showPendingOnly)}
-            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
-              showPendingOnly ? "ring-2 ring-red-400" : ""
-            }`}
-          >
-            <div className="flex flex-row items-center">
-              <img
-                src="/inbox-white.svg"
-                alt="Approval"
-                className="h-4 w-4 mr-2"
-              />
-              <p className="text-white text-sm font-extrabold">Approval</p>
-              {pendingCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
-                  {pendingCount}
-                </Badge>
-              )}
-            </div>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size={"icon"}
+                onClick={() => setCreateJobsiteModal(true)}
+                className="min-w-12"
+              >
+                <img
+                  src="/plus-white.svg"
+                  alt="Add Jobsite"
+                  className="w-4 h-4"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="start" side="top">
+              Create Jobsite
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size={"icon"}
+                onClick={() => setShowPendingOnly(!showPendingOnly)}
+                className={`relative border-none min-w-16  bg-gray-900 hover:bg-gray-800 text-white ${
+                  showPendingOnly ? "ring-2 ring-red-400" : ""
+                }`}
+              >
+                <div className="flex flex-row items-center">
+                  <img
+                    src="/inbox-white.svg"
+                    alt="Approval"
+                    className="h-4 w-4"
+                  />
+
+                  {pendingCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                      {pendingCount}
+                    </Badge>
+                  )}
+                </div>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="end" side="top">
+              Jobsite Approval
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
@@ -298,6 +325,7 @@ export default function JobsitePage() {
             openHandleDelete={openHandleDelete}
             openHandleEdit={openHandleEdit}
             openHandleQr={openHandleQr}
+            showPendingOnly={showPendingOnly}
           />
           <ScrollBar orientation="vertical" />
           <div className="h-1  absolute bottom-0 right-0 left-0">

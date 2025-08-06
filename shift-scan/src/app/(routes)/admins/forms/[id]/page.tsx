@@ -91,6 +91,7 @@ import {
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FormTemplate } from "../_components/List/hooks/types";
 import Spinner from "@/components/(animations)/spinner";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -149,14 +150,14 @@ const FormPage = ({ params, searchParams }: PageProps) => {
         let dateParams = "";
         if (dateRange.start)
           dateParams += `&startDate=${encodeURIComponent(
-            format(dateRange.start, "yyyy-MM-dd")
+            format(dateRange.start, "yyyy-MM-dd"),
           )}`;
         if (dateRange.end)
           dateParams += `&endDate=${encodeURIComponent(
-            format(dateRange.end, "yyyy-MM-dd")
+            format(dateRange.end, "yyyy-MM-dd"),
           )}`;
         const response = await fetch(
-          `/api/getFormSubmissionsById/${id}?page=${page}&pageSize=${pageSize}&statusFilter=${statusFilter}${dateParams}`
+          `/api/getFormSubmissionsById/${id}?page=${page}&pageSize=${pageSize}&statusFilter=${statusFilter}${dateParams}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch form template");
@@ -238,7 +239,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
   const triggerRerender = () => setRefreshKey((k) => k + 1);
 
   const handleStatusChange = async (
-    status: "ACTIVE" | "ARCHIVED" | "DRAFT"
+    status: "ACTIVE" | "ARCHIVED" | "DRAFT",
   ) => {
     if (!formTemplate) return;
     if (formTemplate.isActive === status) return;
@@ -247,15 +248,15 @@ const FormPage = ({ params, searchParams }: PageProps) => {
         status === "ACTIVE"
           ? "publish"
           : status === "ARCHIVED"
-          ? "archive"
-          : "draft"
+            ? "archive"
+            : "draft",
       );
       if (status === "ACTIVE") {
         const isPublished = await publishFormTemplate(formTemplate.id);
         if (isPublished) {
           toast.success("Form template published successfully");
           setFormTemplate((prev) =>
-            prev ? { ...prev, isActive: "ACTIVE" } : prev
+            prev ? { ...prev, isActive: "ACTIVE" } : prev,
           );
         }
       } else if (status === "ARCHIVED") {
@@ -263,7 +264,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
         if (isArchived) {
           toast.success("Form template archived successfully");
           setFormTemplate((prev) =>
-            prev ? { ...prev, isActive: "ARCHIVED" } : prev
+            prev ? { ...prev, isActive: "ARCHIVED" } : prev,
           );
         }
       } else if (status === "DRAFT") {
@@ -272,7 +273,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
         if (isDrafted) {
           toast.success("Form template drafted successfully");
           setFormTemplate((prev) =>
-            prev ? { ...prev, isActive: "DRAFT" } : prev
+            prev ? { ...prev, isActive: "DRAFT" } : prev,
           );
         }
       }
@@ -303,7 +304,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
         color: "bg-yellow-400",
       },
     ],
-    []
+    [],
   );
 
   const currentStatus = useMemo(() => {
@@ -335,8 +336,8 @@ const FormPage = ({ params, searchParams }: PageProps) => {
                     ? actionLoading === "archive"
                       ? "Archiving..."
                       : actionLoading === "publish"
-                      ? "Publishing..."
-                      : "Updating..."
+                        ? "Publishing..."
+                        : "Updating..."
                     : currentStatus?.label}
                 </span>
                 <svg
@@ -364,7 +365,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
                     }`}
                     onClick={() =>
                       handleStatusChange(
-                        status.value as "ACTIVE" | "ARCHIVED" | "DRAFT"
+                        status.value as "ACTIVE" | "ARCHIVED" | "DRAFT",
                       )
                     }
                     disabled={
@@ -525,7 +526,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
             .map((row) =>
               row
                 .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
-                .join(",")
+                .join(","),
             )
             .join("\n");
           const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -535,7 +536,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
               ?.toISOString()
               .slice(0, 10)}_${exportDateRange.to
               ?.toISOString()
-              .slice(0, 10)}.csv`
+              .slice(0, 10)}.csv`,
           );
         } else {
           const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -549,7 +550,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
               ?.toISOString()
               .slice(0, 10)}_${exportDateRange.to
               ?.toISOString()
-              .slice(0, 10)}.xlsx`
+              .slice(0, 10)}.xlsx`,
           );
         }
 
@@ -740,7 +741,7 @@ const FormPage = ({ params, searchParams }: PageProps) => {
               value={statusFilter}
               onChange={(e) =>
                 setStatusFilter(
-                  e.target.value as "ALL" | keyof typeof FormStatus
+                  e.target.value as "ALL" | keyof typeof FormStatus,
                 )
               }
             >
@@ -764,11 +765,11 @@ const FormPage = ({ params, searchParams }: PageProps) => {
                     {dateRange.start && dateRange.end
                       ? `${format(dateRange.start, "MMM d, yyyy")} - ${format(
                           dateRange.end,
-                          "MMM d, yyyy"
+                          "MMM d, yyyy",
                         )}`
                       : dateRange.start
-                      ? `${format(dateRange.start, "MMM d, yyyy")} - ...`
-                      : "Pick date range"}
+                        ? `${format(dateRange.start, "MMM d, yyyy")} - ...`
+                        : "Pick date range"}
                   </span>
                   <svg
                     className="w-4 h-4 ml-2"
@@ -855,6 +856,10 @@ const FormPage = ({ params, searchParams }: PageProps) => {
             <p className="text-xs ">Create</p>
           </Button>
         </div>
+        <ReloadBtnSpinner
+          isRefreshing={loading}
+          fetchData={() => setRefreshKey((k) => k + 1)}
+        />
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
         {loading && (

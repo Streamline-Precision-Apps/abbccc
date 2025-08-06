@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSidebar } from "@/components/ui/sidebar";
-import Link from "next/link";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 
 type timesheetPending = {
   length: number;
@@ -13,12 +13,16 @@ export default function TimesheetDescription({
   setShowPendingOnly,
   showPendingOnly,
   approvalInbox,
+  loading,
+  refetchAll,
 }: {
   setShowCreateModal: (value: boolean) => void;
   setExportModal: (value: boolean) => void;
   setShowPendingOnly: (value: boolean) => void;
   showPendingOnly: boolean;
   approvalInbox: timesheetPending | null;
+  loading: boolean;
+  refetchAll: () => Promise<void>;
 }) {
   const { setOpen, open } = useSidebar();
   return (
@@ -51,51 +55,8 @@ export default function TimesheetDescription({
           </p>
         </div>
       </div>
-      <div className="w-full flex flex-row justify-end h-full">
-        <Button
-          onClick={() => setExportModal(true)}
-          size={"icon"}
-          className=" relative border-none hover:bg-gray-800 text-white mr-2"
-        >
-          <div className="flex w-fit h-fit flex-row items-center">
-            <img src="/export-white.svg" alt="Export" className="h-4 w-4 " />
-          </div>
-        </Button>
-        <Button
-          className="border-none w-fit h-fit px-4  hover:bg-gray-800 text-white mr-2"
-          onClick={() => setShowCreateModal(true)}
-        >
-          <div className="items-center flex flex-row">
-            <img
-              src="/plus-white.svg"
-              alt="Create New Form"
-              className="h-4 w-4 mr-2"
-            />
-            <p className="text-white  text-sm font-extrabold">New Timesheet</p>
-          </div>
-        </Button>
 
-        <Button
-          onClick={() => setShowPendingOnly(!showPendingOnly)}
-          className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
-            showPendingOnly ? "ring-2 ring-red-400" : ""
-          }`}
-        >
-          <div className="flex flex-row items-center">
-            <img
-              src="/inbox-white.svg"
-              alt="Approval"
-              className="h-4 w-4 mr-2"
-            />
-            <p className="text-white text-sm font-extrabold">Approval</p>
-            {approvalInbox && approvalInbox.length > 0 && (
-              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
-                {approvalInbox.length}
-              </Badge>
-            )}
-          </div>
-        </Button>
-      </div>
+      <ReloadBtnSpinner isRefreshing={loading} fetchData={refetchAll} />
     </div>
   );
 }

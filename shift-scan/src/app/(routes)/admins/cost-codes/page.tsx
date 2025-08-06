@@ -32,6 +32,14 @@ import { useTagData } from "./_components/useTagData";
 import TagTable from "./_components/TagTable";
 import CreateTagModal from "./_components/CreateTagModal";
 import EditTagModal from "./_components/EditTagModal";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import SearchBarPopover from "../_pages/searchBarPopover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Tags, Puzzle } from "lucide-react";
 
 export default function CostCodePage() {
   const { setOpen, open } = useSidebar();
@@ -58,8 +66,7 @@ export default function CostCodePage() {
     setPage: setTagPage,
     setPageSize: setTagPageSize,
   } = useTagData();
-  // Combine loading states for both cost codes and tags for a unified loading experience
-  const loadingState = loading && tagLoading;
+
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
   // State for modals, dialogs, and pending actions
   // Cost Codes
@@ -74,7 +81,7 @@ export default function CostCodePage() {
   const [showDeleteTagDialog, setShowDeleteTagDialog] = useState(false);
   const [pendingTagEditId, setPendingTagEditId] = useState<string | null>(null);
   const [pendingTagDeleteId, setPendingTagDeleteId] = useState<string | null>(
-    null
+    null,
   );
   // Cost Codes helper functions
   const openHandleEdit = (id: string) => {
@@ -120,12 +127,12 @@ export default function CostCodePage() {
   };
   // Simple filter by cost code name
   const filteredCostCodes = CostCodeDetails.filter((costCode) =>
-    costCode.name.toLowerCase().includes(searchTerm.toLowerCase())
+    costCode.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Simple filter by tag name
   const filteredTags = tagDetails.filter((tag) =>
-    tag.name.toLowerCase().includes(searchTag.toLowerCase())
+    tag.name.toLowerCase().includes(searchTag.toLowerCase()),
   );
 
   // Pagination logic
@@ -133,14 +140,14 @@ export default function CostCodePage() {
   const totalPages = Math.ceil(totalCostCodes / pageSize);
   const paginatedCostCodes = filteredCostCodes.slice(
     (page - 1) * pageSize,
-    page * pageSize
+    page * pageSize,
   );
 
   const totalTags = filteredTags.length;
   const totalPagesTags = Math.ceil(totalTags / tagPageSize);
   const paginatedTags = filteredTags.slice(
     (tagPage - 1) * tagPageSize,
-    tagPage * tagPageSize
+    tagPage * tagPageSize,
   );
 
   // Reset to page 1 if search or filter changes
@@ -184,12 +191,16 @@ export default function CostCodePage() {
             </p>
           </div>
         </div>
+        <ReloadBtnSpinner
+          isRefreshing={pageState === "CostCode" ? loading : tagLoading}
+          fetchData={pageState === "CostCode" ? rerender : tagRerender}
+        />
       </div>
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
+      <div className="h-full max-h-12 w-full flex flex-row justify-between mb-2 ">
+        <div className="flex flex-row w-full">
+          <div className="bg-white rounded-lg h-full max-h-8 px-1 flex items-center">
             {pageState === "CostCode" ? (
-              <SearchBar
+              <SearchBarPopover
                 term={searchTerm}
                 handleSearchChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={"Search by name..."}
@@ -197,7 +208,7 @@ export default function CostCodePage() {
                 imageSize="6"
               />
             ) : (
-              <SearchBar
+              <SearchBarPopover
                 term={searchTag}
                 handleSearchChange={(e) => setSearchTag(e.target.value)}
                 placeholder={"Search by name..."}
@@ -208,41 +219,65 @@ export default function CostCodePage() {
           </div>
         </div>
         <div className="flex flex-row justify-end w-full gap-4">
-          <Button
-            onClick={
-              pageState === "CostCode"
-                ? () => setPageState("Tags")
-                : () => setPageState("CostCode")
-            }
-          >
-            <img
-              src="/statusOngoing-white.svg"
-              alt="Add CostCode"
-              className="w-4 h-4"
-            />
-            <div className="flex flex-row items-center gap-2">
-              {pageState === "CostCode" ? "Tags" : "Cost Codes"}
-            </div>
-          </Button>
           {pageState === "CostCode" ? (
-            <Button onClick={() => setCreateCostCodeModal(true)}>
-              <img
-                src="/plus-white.svg"
-                alt="Add CostCode"
-                className="w-4 h-4"
-              />
-              <p className="text-left text-xs text-white">New Cost Code</p>
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="min-w-12"
+                  onClick={() => setCreateCostCodeModal(true)}
+                >
+                  <img
+                    src="/plus-white.svg"
+                    alt="Add CostCode"
+                    className="w-4 h-4"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent align="center" side="top">
+                Create Cost Code
+              </TooltipContent>
+            </Tooltip>
           ) : (
-            <Button onClick={() => setCreateTagModal(true)}>
-              <img
-                src="/plus-white.svg"
-                alt="Add CostCode"
-                className="w-4 h-4"
-              />
-              <p className="text-left text-xs text-white">New Tag</p>
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="min-w-12"
+                  onClick={() => setCreateTagModal(true)}
+                >
+                  <img
+                    src="/plus-white.svg"
+                    alt="Add CostCode"
+                    className="w-4 h-4"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent align="center" side="top">
+                Create Tag
+              </TooltipContent>
+            </Tooltip>
           )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="min-w-12"
+                size={"icon"}
+                onClick={
+                  pageState === "CostCode"
+                    ? () => setPageState("Tags")
+                    : () => setPageState("CostCode")
+                }
+              >
+                {pageState !== "CostCode" ? (
+                  <Puzzle className="w-4 h-4" />
+                ) : (
+                  <Tags className="w-4 h-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="center" side="top">
+              {pageState === "CostCode" ? "Tags" : "Cost Codes"}
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
@@ -265,12 +300,7 @@ export default function CostCodePage() {
                 <span className="text-lg text-gray-500">No Results found</span>
               </div>
             )}
-          {loadingState && (
-            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-              <Spinner size={20} />
-              <span className="text-lg text-gray-500">Loading...</span>
-            </div>
-          )}
+
           {loading && !tagLoading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
               <Spinner size={20} />

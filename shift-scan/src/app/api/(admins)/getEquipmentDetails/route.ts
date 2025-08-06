@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { el } from "date-fns/locale";
 
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
@@ -21,46 +22,72 @@ export async function GET(req: Request) {
 
     // Parse query params for pagination
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
+    const status = searchParams.get("status") || "all";
 
-    // Fetch total count for pagination
-    const total = await prisma.equipment.count();
-
-    // Fetch only essential fields from equipment
-    const equipmentSummary = await prisma.equipment.findMany({
-      skip,
-      take,
-      select: {
-        id: true,
-        name: true,
-        qrId: true,
-        description: true,
-        equipmentTag: true,
-        approvalStatus: true,
-        state: true,
-        createdAt: true,
-        updatedAt: true,
-        equipmentVehicleInfo: {
-          select: {
-            make: true,
-            model: true,
-            year: true,
+    let equipmentSummary, total, pageSize, page, skip, totalPages;
+    if (status === "pending") {
+      page = undefined;
+      pageSize = undefined;
+      skip = undefined;
+      totalPages = 1;
+      equipmentSummary = await prisma.equipment.findMany({
+        where: {
+          approvalStatus: "PENDING",
+        },
+        select: {
+          id: true,
+          name: true,
+          qrId: true,
+          description: true,
+          equipmentTag: true,
+          approvalStatus: true,
+          state: true,
+          createdAt: true,
+          updatedAt: true,
+          equipmentVehicleInfo: {
+            select: {
+              make: true,
+              model: true,
+              year: true,
+            },
           },
         },
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
+        orderBy: {
+          name: "asc",
+        },
+      });
+    } else {
+      page = parseInt(searchParams.get("page") || "1", 10);
+      pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
+      skip = (page - 1) * pageSize;
+      total = await prisma.equipment.count();
+      totalPages = Math.ceil(total / pageSize);
 
-    if (!equipmentSummary || equipmentSummary.length === 0) {
-      return NextResponse.json(
-        { message: "No equipment found." },
-        { status: 404 }
-      );
+      equipmentSummary = await prisma.equipment.findMany({
+        skip,
+        take: pageSize,
+        select: {
+          id: true,
+          name: true,
+          qrId: true,
+          description: true,
+          equipmentTag: true,
+          approvalStatus: true,
+          state: true,
+          createdAt: true,
+          updatedAt: true,
+          equipmentVehicleInfo: {
+            select: {
+              make: true,
+              model: true,
+              year: true,
+            },
+          },
+        },
+        orderBy: {
+          name: "asc",
+        },
+      });
     }
 
     return NextResponse.json({
@@ -68,7 +95,7 @@ export async function GET(req: Request) {
       total,
       page,
       pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages,
     });
   } catch (error) {
     Sentry.captureException(error);
