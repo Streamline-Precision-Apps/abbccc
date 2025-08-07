@@ -3,7 +3,7 @@ import "@/app/globals.css";
 import { UserEditProvider } from "@/app/context/(admin)/UserEditContext";
 import { CrewEditProvider } from "@/app/context/(admin)/CrewEditContext";
 import { Toaster } from "@/components/ui/sonner";
-import LeftSidebar from "./_pages/leftSide";
+import LeftSidebar from "./_pages/sidebar/leftSide";
 import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
