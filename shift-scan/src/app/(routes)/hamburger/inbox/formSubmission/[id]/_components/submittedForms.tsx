@@ -72,7 +72,6 @@ export default function SubmittedForms({
   const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
   const [deleteRequestModal, setDeleteRequestModal] = useState(false);
-  console.log(signature);
 
   type FormValues = Record<string, string>;
 
@@ -85,7 +84,7 @@ export default function SubmittedForms({
           userId,
           formData.formType,
           submissionId ? submissionId : "",
-          title
+          title,
         );
       } catch (error) {
         console.error("Error saving draft:", error);
@@ -144,8 +143,8 @@ export default function SubmittedForms({
                   submissionStatus === "PENDING"
                     ? "/statusOngoingFilled.svg"
                     : submissionStatus === "APPROVED"
-                    ? "/statusApprovedFilled.svg"
-                    : "/statusDeniedFilled.svg"
+                      ? "/statusApprovedFilled.svg"
+                      : "/statusDeniedFilled.svg"
                 }
                 className="max-w-10 h-auto object-contain"
               />
