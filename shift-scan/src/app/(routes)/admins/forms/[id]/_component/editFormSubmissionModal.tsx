@@ -116,26 +116,6 @@ export default function EditFormSubmissionModal({
             processedData[key] = String(value);
           }
         });
-
-        // If we have form template, also create mappings for field access consistency
-        if (formTemplate?.FormGrouping) {
-          formTemplate.FormGrouping.forEach((group) => {
-            group.Fields.forEach((field) => {
-              // Ensure data is accessible by both field.id and field.label
-              const valueById = processedData[field.id];
-              const valueByLabel = processedData[field.label];
-
-              if (valueById !== undefined && valueByLabel === undefined) {
-                processedData[field.label] = valueById;
-              } else if (
-                valueByLabel !== undefined &&
-                valueById === undefined
-              ) {
-                processedData[field.id] = valueByLabel;
-              }
-            });
-          });
-        }
       }
       setEditData(processedData);
       setLoading(false);
@@ -154,9 +134,21 @@ export default function EditFormSubmissionModal({
   // Fetch clients data
   useEffect(() => {
     const fetchClients = async () => {
-      const res = await fetch("/api/getClientsSummary");
-      const clients = await res.json();
-      setClients(clients);
+      try {
+        const res = await fetch("/api/getClientsSummary");
+        const data = await res.json();
+
+        // Check if the response is successful and contains an array
+        if (res.ok && Array.isArray(data)) {
+          setClients(data);
+        } else {
+          console.warn("No clients found or invalid response:", data);
+          setClients([]);
+        }
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        setClients([]);
+      }
     };
     fetchClients();
   }, []);
