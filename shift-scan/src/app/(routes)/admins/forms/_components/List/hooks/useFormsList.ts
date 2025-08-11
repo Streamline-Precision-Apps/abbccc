@@ -25,7 +25,7 @@ export function useFormsList() {
     setError(null);
     try {
       const res = await fetch(
-        `/api/getAllForms?page=${page}&pageSize=${pageSize}`
+        `/api/getAllForms?page=${page}&pageSize=${pageSize}`,
       );
       if (!res.ok) throw new Error("Failed to fetch forms");
       const result = await res.json();

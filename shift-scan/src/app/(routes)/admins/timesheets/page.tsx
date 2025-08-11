@@ -7,8 +7,6 @@ import {
 } from "@/components/ui/tooltip";
 import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
-import { ApprovalStatus, TimeSheetStatus, WorkType } from "@/lib/enums";
-import { useEffect, useState } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -17,10 +15,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
-import {
-  adminDeleteTimesheet,
-  adminUpdateTimesheetStatus,
-} from "@/actions/records-timesheets";
+import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import { toast } from "sonner";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
@@ -45,230 +40,50 @@ import {
 import Spinner from "@/components/(animations)/spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { Badge } from "@/components/ui/badge";
-import { clear } from "console";
-/**
- * Timesheet domain entity.
- * @property equipmentUsages - Array of equipment usage records for this timesheet.
- */
-export type Timesheet = {
-  id: string;
-  date: Date | string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-  Jobsite: {
-    id: string;
-    code: string;
-    name: string;
-  };
-  CostCode: {
-    id: string;
-    name: string;
-    code: string;
-  };
-  nu: string;
-  Fp: string;
-  startTime: Date | string;
-  endTime: Date | string | null;
-  comment: string;
-  status: ApprovalStatus;
-  workType: WorkType;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-  EmployeeEquipmentLogs: {
-    id: string;
-    equipmentId: string;
-    Equipment: {
-      id: string;
-      name: string;
-    };
-    startTime: Date | string;
-    endTime: Date | string;
-  }[];
-  TruckingLogs: {
-    truckNumber: string;
-    startingMileage: number | null;
-    endingMileage: number | null;
-    RefuelLogs: {
-      milesAtFueling: number | null;
-    }[];
-  }[];
-};
-
-type timesheetPending = {
-  length: number;
-};
-
-// Updated CreateTimesheetModal with user/jobsite dropdowns and removed nu, Fp, location, status
+import useAllTimeSheetData, {
+  Timesheet,
+} from "./_components/useAllTimeSheetData";
 
 export default function AdminTimesheets() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
-  const pageSizeOptions = [25, 50, 75, 100];
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({ from: undefined, to: undefined });
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
-    null,
-  );
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
-  const [exportModal, setExportModal] = useState(false);
-  // Loading state for status change
-  const [statusLoading, setStatusLoading] = useState<
-    Record<string, "APPROVED" | "REJECTED" | undefined>
-  >({});
-
-  // Fetch all timesheets (paginated) or all pending timesheets (no pagination)
-  const fetchTimesheets = async (pendingOnly = false) => {
-    try {
-      setLoading(true);
-      let response;
-      if (pendingOnly) {
-        response = await fetch(`/api/getAllTimesheetInfo?status=pending`, {
-          next: { tags: ["timesheets"] },
-        });
-        const data = await response.json();
-        // If API returns array, set as allTimesheets
-        setAllTimesheets(data.timesheets || []);
-        setTotalPages(data.totalPages);
-        setTotal(data.total || 0);
-      } else {
-        response = await fetch(
-          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`,
-          {
-            next: { tags: ["timesheets"] },
-          },
-        );
-        const data = await response.json();
-        setAllTimesheets(data.timesheets);
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
-      }
-    } catch (error) {
-      console.error("Error fetching timesheets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch count of pending timesheets for inbox badge
-  const fetchTimesheetsPending = async () => {
-    try {
-      const response = await fetch(`/api/getAllTimesheetsPending`, {
-        next: { tags: ["timesheets"] },
-      });
-      const data = await response.json();
-      setApprovalInbox(Array.isArray(data) ? { length: data.length } : data);
-    } catch (error) {
-      console.error("Error fetching timesheets:", error);
-    }
-  };
-
-  // Refetch both after creation
-  const refetchAll = async () => {
-    await fetchTimesheets(showPendingOnly);
-    await fetchTimesheetsPending();
-  };
-
-  // Fetch timesheets when page/pageSize changes or when showPendingOnly toggles
-  useEffect(() => {
-    fetchTimesheets(showPendingOnly);
-  }, [page, pageSize, showPendingOnly]);
-
-  // Always update approval inbox count when allTimesheets changes
-  useEffect(() => {
-    fetchTimesheetsPending();
-  }, [allTimesheets]);
-
-  // Filter timesheets based on searchTerm and date range
-  const filteredTimesheets = allTimesheets.filter((ts) => {
-    const id = ts.id || "";
-    const firstName = ts?.User?.firstName || "";
-    const lastName = ts?.User?.lastName || "";
-    const jobsite = ts?.Jobsite?.name || "";
-    const costCode = ts?.CostCode?.name || "";
-    const term = searchTerm.toLowerCase();
-    // Date filter: support single date (entire day) or range
-    let inDateRange = true;
-    if (dateRange.from && !dateRange.to) {
-      // Only one date selected: filter for that entire day
-      const fromStart = new Date(dateRange.from);
-      fromStart.setHours(0, 0, 0, 0);
-      const fromEnd = new Date(dateRange.from);
-      fromEnd.setHours(23, 59, 59, 999);
-      const tsDate = new Date(ts.date);
-      inDateRange = tsDate >= fromStart && tsDate <= fromEnd;
-    } else {
-      if (dateRange.from) {
-        inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
-      }
-      if (dateRange.to) {
-        inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
-      }
-    }
-    return (
-      inDateRange &&
-      (id.toLowerCase().includes(term) ||
-        firstName.toLowerCase().includes(term) ||
-        lastName.toLowerCase().includes(term) ||
-        jobsite.toLowerCase().includes(term) ||
-        costCode.toLowerCase().includes(term))
-    );
-  });
-
-  // Use filteredTimesheets, sorted by date descending
-  const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
-
+  const {
+    inputValue,
+    setInputValue,
+    setAllTimesheets,
+    loading,
+    page,
+    setPage,
+    totalPages,
+    total,
+    pageSize,
+    pageSizeOptions,
+    setPageSize,
+    dateRange,
+    setDateRange,
+    showCreateModal,
+    setShowCreateModal,
+    deletingId,
+    setDeletingId,
+    isDeleting,
+    setIsDeleting,
+    showEditModal,
+    setShowEditModal,
+    editingId,
+    setEditingId,
+    approvalInbox,
+    showPendingOnly,
+    setShowPendingOnly,
+    exportModal,
+    setExportModal,
+    statusLoading,
+    sortedTimesheets,
+    rerender,
+    handleApprovalAction,
+  } = useAllTimeSheetData();
   const handleDeleteClick = (id: string) => {
     setDeletingId(id);
     setIsDeleting(true);
   };
 
-  // Approve or deny a timesheet (no modal)
-  const handleApprovalAction = async (
-    id: string,
-    action: "APPROVED" | "REJECTED",
-  ) => {
-    setStatusLoading((prev) => ({ ...prev, [id]: action }));
-    try {
-      const res = await adminUpdateTimesheetStatus(id, action);
-      if (!res || res.success !== true)
-        throw new Error("Failed to update timesheet status");
-      setAllTimesheets((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, status: action } : t)),
-      );
-      toast.success(
-        `Timesheet ${action === "APPROVED" ? "approved" : "denied"}!`,
-      );
-      fetchTimesheetsPending();
-    } catch (e) {
-      toast.error(
-        `Failed to ${action === "APPROVED" ? "approve" : "deny"} timesheet.`,
-      );
-    } finally {
-      setStatusLoading((prev) => {
-        const copy = { ...prev };
-        delete copy[id];
-        return copy;
-      });
-    }
-  };
   const handleDeleteCancel = () => {
     setDeletingId(null);
     setIsDeleting(false);
@@ -400,11 +215,13 @@ export default function AdminTimesheets() {
           ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
           : "",
     };
+
     // Remove 'Status' from selectedFields if present
     const filteredFields =
       selectedFields && selectedFields.length > 0
         ? selectedFields.filter((f) => f !== "Status")
         : Object.keys(allFields);
+
     const exportData = exportRows.map((ts) => {
       const row: Record<string, string> = {};
       filteredFields.forEach((f) => {
@@ -444,31 +261,31 @@ export default function AdminTimesheets() {
         showPendingOnly={showPendingOnly}
         approvalInbox={approvalInbox}
         loading={loading}
-        refetchAll={refetchAll}
+        rerender={rerender}
       />
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-2 mb-2">
-          <div className="bg-white rounded-lg h-full max-h-8 px-1 flex items-center">
+          <div className=" rounded-lg px-1 flex items-center">
             <SearchBarPopover
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search by id, employee, Profit Id or cost code..."}
+              term={inputValue}
+              handleSearchChange={(e) => setInputValue(e.target.value)}
+              placeholder={"Search by id, name, or work Type"}
               textSize="xs"
-              imageSize="6"
+              imageSize="10"
             />
           </div>
-          <div className="w-fit min-w-[40px] h-full max-h-8 flex flex-row">
+          <div className="w-fit min-w-[40px] h-full max-h-10 flex flex-row">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="bg-white h-full max-h-8 w-full max-w-[40px] justify-center items-center"
+                  className="bg-white h-full w-full max-w-[40px] justify-center items-center"
                 >
                   <img
                     src="/calendar.svg"
                     alt="Filter"
-                    className="h-full w-full object-contain p-2 "
+                    className="h-8 w-8 object-contain p-2 "
                   />
                 </Button>
               </PopoverTrigger>
@@ -624,6 +441,7 @@ export default function AdminTimesheets() {
             }}
             onApprovalAction={handleApprovalAction}
             statusLoading={statusLoading}
+            searchTerm={inputValue}
           />
           <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
             <ScrollBar
@@ -697,7 +515,7 @@ export default function AdminTimesheets() {
       {showCreateModal && (
         <CreateTimesheetModal
           onClose={() => setShowCreateModal(false)}
-          onCreated={refetchAll}
+          onCreated={rerender}
         />
       )}
       {/* Export Modal */}
@@ -713,7 +531,7 @@ export default function AdminTimesheets() {
           timesheetId={editingId}
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
-          onUpdated={refetchAll}
+          onUpdated={rerender}
         />
       )}
       <Dialog open={isDeleting} onOpenChange={setIsDeleting}>

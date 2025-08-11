@@ -1,5 +1,4 @@
 "use client";
-import SearchBar from "../_pages/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
@@ -43,6 +42,14 @@ import {
 } from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
 import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import SearchBarPopover from "../_pages/searchBarPopover";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 // Form field definition
 interface FormField {
@@ -306,49 +313,70 @@ export default function Forms() {
             </p>
           </div>
         </div>
+        <ReloadBtnSpinner isRefreshing={loading} fetchData={refetch} />
       </div>
       <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search forms by name..."}
-              textSize="xs"
-              imageSize="6"
-            />
+        <div className="flex flex-row w-full gap-2">
+          <SearchBarPopover
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={"Search by form..."}
+            textSize="xs"
+            imageSize="10"
+          />
+          <div className="relative flex items-center">
+            <Select
+              value={formType}
+              onValueChange={(val) => setFormType(val as typeof formType)}
+            >
+              <SelectTrigger className="px-2 text-xs w-full max-w-[150px] text-center h-full bg-white border rounded-lg">
+                <SelectValue placeholder="Form Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Filter By Category</SelectItem>
+                {formTemplateCategoryValues.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {formType !== "ALL" && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge
+                    variant="destructive"
+                    className="h-4 w-4 absolute -top-1 -right-1 p-0.5 cursor-pointer hover:bg-red-400 hover:bg-opacity-100"
+                    onClick={() => setFormType("ALL")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={10} side="right" align="end">
+                  <p className="text-xs">Remove</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
-          <Select
-            value={formType}
-            onValueChange={(val) => setFormType(val as typeof formType)}
-          >
-            <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded-lg">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Categories</SelectItem>
-              {formTemplateCategoryValues.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
         <div className="h-fit flex flex-row gap-4 ">
           <div className="flex flex-row gap-2">
-            <Link href={`/admins/forms/create`}>
-              <Button>
-                <img
-                  src="/plus-white.svg"
-                  alt="Create New Form"
-                  className="h-4 w-4 mr-1"
-                />
-                <p>Form Template</p>
-              </Button>
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/admins/forms/create`}>
+                  <Button size={"icon"}>
+                    <img
+                      src="/plus-white.svg"
+                      alt="Create New Form"
+                      className="h-6 w-6 "
+                    />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Create Form Template</TooltipContent>
+            </Tooltip>
           </div>
-          <ReloadBtnSpinner isRefreshing={loading} fetchData={refetch} />
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">

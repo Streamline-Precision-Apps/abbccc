@@ -14,7 +14,7 @@ export default function TimesheetDescription({
   showPendingOnly,
   approvalInbox,
   loading,
-  refetchAll,
+  rerender,
 }: {
   setShowCreateModal: (value: boolean) => void;
   setExportModal: (value: boolean) => void;
@@ -22,7 +22,7 @@ export default function TimesheetDescription({
   showPendingOnly: boolean;
   approvalInbox: timesheetPending | null;
   loading: boolean;
-  refetchAll: () => Promise<void>;
+  rerender: () => void;
 }) {
   const { setOpen, open } = useSidebar();
   return (
@@ -56,7 +56,7 @@ export default function TimesheetDescription({
         </div>
       </div>
 
-      <ReloadBtnSpinner isRefreshing={loading} fetchData={refetchAll} />
+      <ReloadBtnSpinner isRefreshing={loading} fetchData={rerender} />
     </div>
   );
 }

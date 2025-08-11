@@ -15,6 +15,12 @@ import {
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
 import { Grouping, Submission } from "./hooks/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { highlight } from "../../../_pages/higlight";
 
 interface SubmissionTableProps {
   groupings: Grouping[];
@@ -29,6 +35,7 @@ interface SubmissionTableProps {
   onDeleteSubmission: (id: string) => void;
   loading: false;
   isSignatureRequired?: boolean;
+  searchTerm: string;
 }
 
 /**
@@ -41,6 +48,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
   setSelectedSubmissionId,
   onDeleteSubmission,
   isSignatureRequired = false,
+  searchTerm,
 }) => {
   // Flatten all fields from all groupings, ordered
   const fields = groupings
@@ -79,7 +87,10 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
               submission == null ? null : (
                 <TableRow key={submission.id}>
                   <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
-                    {submission.User.firstName} {submission.User.lastName}
+                    {highlight(
+                      `${submission.User.firstName} ${submission.User.lastName}`,
+                      searchTerm,
+                    )}
                   </TableCell>
                   {fields.map((field) => {
                     // Use the same fallback pattern as the main forms list
@@ -226,33 +237,47 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                   )}
                   <TableCell className="text-xs border border-slate-200 px-2 bg-slate-50/80 bg-gray-50 sticky right-0 z-10">
                     <div className="flex flex-row justify-center">
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          setShowFormSubmission(true);
-                          setSelectedSubmissionId(submission.id);
-                        }}
-                      >
-                        <img
-                          src="/formEdit.svg"
-                          alt="Edit Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {
-                          onDeleteSubmission(submission.id);
-                        }}
-                      >
-                        <img
-                          src="/trash-red.svg"
-                          alt="Delete Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size={"icon"}
+                            onClick={() => {
+                              setShowFormSubmission(true);
+                              setSelectedSubmissionId(submission.id);
+                            }}
+                          >
+                            <img
+                              src="/formEdit.svg"
+                              alt="Edit Form"
+                              className="h-4 w-4 cursor-pointer"
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Edit Submission</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size={"icon"}
+                            onClick={() => {
+                              onDeleteSubmission(submission.id);
+                            }}
+                          >
+                            <img
+                              src="/trash-red.svg"
+                              alt="Delete Form"
+                              className="h-4 w-4 cursor-pointer"
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete Submission</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </TableCell>
                 </TableRow>

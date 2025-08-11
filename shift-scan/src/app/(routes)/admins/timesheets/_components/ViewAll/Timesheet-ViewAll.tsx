@@ -54,6 +54,7 @@ export default function ViewAllTimesheets({
   showPendingOnly,
   onApprovalAction,
   statusLoading,
+  searchTerm,
 }: {
   timesheets: Timesheet[];
   loading: boolean;
@@ -73,6 +74,7 @@ export default function ViewAllTimesheets({
   showPendingOnly: boolean;
   onApprovalAction?: (id: string, action: "APPROVED" | "REJECTED") => void;
   statusLoading?: Record<string, "APPROVED" | "REJECTED" | undefined>;
+  searchTerm: string;
 }) {
   const timesheetHeaders = [
     "ID",
@@ -116,6 +118,7 @@ export default function ViewAllTimesheets({
         showPendingOnly={showPendingOnly}
         onApprovalAction={onApprovalAction}
         statusLoading={statusLoading}
+        searchTerm={searchTerm}
       />
     </Table>
   );

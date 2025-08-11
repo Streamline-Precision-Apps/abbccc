@@ -125,7 +125,9 @@ export default function CrewTable({
                   {c.leadId ? leadUser(c) : ""}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  {c.crewType ? crewType(c) : ""}
+                  <span className="bg-blue-300/70 px-3 py-1 rounded-xl">
+                    {c.crewType ? crewType(c) : ""}
+                  </span>
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {c.createdAt ? format(c.createdAt, "MM/dd/yy") : ""}
@@ -134,7 +136,7 @@ export default function CrewTable({
                   {c.Users ? (
                     <HoverCard>
                       <HoverCardTrigger asChild>
-                        <span className="cursor-pointer underline decoration-dotted underline-offset-2">
+                        <span className="cursor-pointer text-blue-600 underline-offset-2 decoration-solid underline ">
                           {c.Users.length}
                         </span>
                       </HoverCardTrigger>
@@ -197,7 +199,7 @@ export default function CrewTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">Edit</TooltipContent>
+                      <TooltipContent>Edit</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -213,7 +215,7 @@ export default function CrewTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">Delete</TooltipContent>
+                      <TooltipContent>Delete</TooltipContent>
                     </Tooltip>
                   </div>
                 </TableCell>

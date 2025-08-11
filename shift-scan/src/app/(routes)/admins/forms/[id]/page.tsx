@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../../_pages/SearchBar";
 import { useEffect, useState, useCallback, useMemo, use } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,40 +12,9 @@ import {
 import { useRouter } from "next/navigation";
 import {
   FormIndividualTemplate,
-  Submission,
   Fields as FormField,
 } from "./_component/hooks/types";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Additional type definitions
-// Using a type that's compatible with what's expected by the component
-interface FormSubmission {
-  id: string;
-  title: string | null;
-  formTemplateId: string;
-  userId: string;
-  formType: string | null;
-  data: Record<string, unknown> | null;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-  submittedAt: string | Date | null;
-  status: string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-}
-
-interface PersonSearchResult {
-  name: string;
-  [key: string]: unknown;
-}
-
-interface AssetSearchResult {
-  name: string;
-  [key: string]: unknown;
-}
 import {
   Table,
   TableHeader,
@@ -84,14 +52,27 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { FormTemplate } from "../_components/List/hooks/types";
 import Spinner from "@/components/(animations)/spinner";
 import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import SearchBarPopover from "../../_pages/searchBarPopover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -174,10 +155,6 @@ const FormPage = ({ params, searchParams }: PageProps) => {
     };
     fetchFormTemplate();
   }, [id, page, pageSize, statusFilter, dateRange, refreshKey]);
-
-  const returnToList = () => {
-    router.push("/admins/forms");
-  };
 
   const handleDelete = async (submissionId: string) => {
     try {
@@ -320,97 +297,96 @@ const FormPage = ({ params, searchParams }: PageProps) => {
     return (
       <div className="flex flex-row gap-2 items-center">
         {formTemplate && (
-          <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={`flex items-center gap-2 min-w-[120px] `}
-                disabled={actionLoading !== null}
-              >
-                <span
-                  className={`inline-block w-3 h-3 rounded-full ${currentStatus?.color} border border-gray-300`}
-                />
-                <span className="font-semibold text-xs">
-                  {actionLoading
-                    ? actionLoading === "archive"
-                      ? "Archiving..."
-                      : actionLoading === "publish"
-                        ? "Publishing..."
-                        : "Updating..."
-                    : currentStatus?.label}
-                </span>
-                <svg
-                  className="w-3 h-3 ml-1"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
+          <>
+            <p className="text-white text-sm">Current Status: </p>
+            <Popover
+              open={statusPopoverOpen}
+              onOpenChange={setStatusPopoverOpen}
+            >
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`flex items-center gap-2 min-w-[120px] `}
+                  disabled={actionLoading !== null}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
+                  <span
+                    className={`inline-block w-3 h-3 rounded-full ${currentStatus?.color} border border-gray-300`}
                   />
-                </svg>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-40 p-0">
-              <div className="py-1">
-                {STATUS_OPTIONS.map((status) => (
-                  <button
-                    key={status.value}
-                    className={`flex items-center w-full px-3 py-2 text-left text-xs hover:bg-gray-100 ${
-                      formTemplate.isActive === status.value ? "bg-gray-50" : ""
-                    }`}
-                    onClick={() =>
-                      handleStatusChange(
-                        status.value as "ACTIVE" | "ARCHIVED" | "DRAFT",
-                      )
-                    }
-                    disabled={
-                      formTemplate.isActive === status.value ||
-                      actionLoading !== null
-                    }
+                  <span className="font-semibold text-xs">
+                    {actionLoading
+                      ? actionLoading === "archive"
+                        ? "Archiving..."
+                        : actionLoading === "publish"
+                          ? "Publishing..."
+                          : "Updating..."
+                      : currentStatus?.label}
+                  </span>
+                  <svg
+                    className="w-3 h-3 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
                   >
-                    <span
-                      className={`inline-block w-3 h-3 rounded-full mr-2 ${status.color} border border-gray-300`}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
                     />
-                    <span className="flex-1">{status.label}</span>
-                    {formTemplate.isActive === status.value && (
-                      <svg
-                        className="w-3 h-3 ml-2 text-emerald-500"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+                  </svg>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-40 p-0">
+                <div className="py-1">
+                  {STATUS_OPTIONS.map((status) => (
+                    <button
+                      key={status.value}
+                      className={`flex items-center w-full px-3 py-2 text-left text-xs hover:bg-gray-100 ${
+                        formTemplate.isActive === status.value
+                          ? "bg-gray-50"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        handleStatusChange(
+                          status.value as "ACTIVE" | "ARCHIVED" | "DRAFT",
+                        )
+                      }
+                      disabled={
+                        formTemplate.isActive === status.value ||
+                        actionLoading !== null
+                      }
+                    >
+                      <span
+                        className={`inline-block w-3 h-3 rounded-full mr-2 ${status.color} border border-gray-300`}
+                      />
+                      <span className="flex-1">{status.label}</span>
+                      {formTemplate.isActive === status.value && (
+                        <svg
+                          className="w-3 h-3 ml-2 text-emerald-500"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </>
         )}
-        <Button
-          variant={"destructive"}
-          size={"sm"}
-          className="min-w-[120px] hover:bg-slate-500 hover:bg-opacity-20"
-          onClick={() => {
-            if (formTemplate) {
-              openHandleDelete(formTemplate.id);
-            }
-          }}
-        >
-          <p className="text-xs font-semibold">Delete</p>
-          <img src="/trash.svg" alt="Delete Form" className="h-4 w-4" />
-        </Button>
+        <ReloadBtnSpinner
+          isRefreshing={loading}
+          fetchData={() => setRefreshKey((k) => k + 1)}
+        />
       </div>
     );
   }, [
@@ -566,75 +542,119 @@ const FormPage = ({ params, searchParams }: PageProps) => {
 
   const renderTableSection = () => {
     if (loading) {
+      // Match SubmissionTable columns: Submitted By, dynamic fields, Status, Submitted At, (Signature), Actions
+      // We'll use 4 dynamic fields as a placeholder for skeletons
+      const dynamicFieldCount = 4;
+      const hasSignature = formTemplate?.isSignatureRequired;
       return (
-        <>
-          <Table className="bg-white rounded-t-lg w-full h-full rounded-lg">
-            <TableHeader className="rounded-t-md">
-              <TableRow>
-                <TableHead className="text-xs rounded-tl-md">
-                  <Skeleton className="h-4 w-20" />
+        <Table className="w-full h-full bg-white relative rounded-xl">
+          <TableHeader className="rounded-t-md ">
+            <TableRow className="">
+              <TableHead className="text-xs text-center rounded-tl-md min-w-[80px]">
+                <Skeleton className="h-4 w-20 mx-auto" />
+              </TableHead>
+              {[...Array(dynamicFieldCount)].map((_, i) => (
+                <TableHead
+                  key={i}
+                  className="text-xs text-center max-w-[200px]"
+                >
+                  <Skeleton className="h-4 w-20 mx-auto" />
                 </TableHead>
-                {[...Array(4)].map((_, i) => (
-                  <TableHead key={i} className="text-xs">
-                    <Skeleton className="h-4 w-20" />
-                  </TableHead>
-                ))}
-                <TableHead className="text-xs">
-                  <Skeleton className="h-4 w-12" />
-                </TableHead>
-                <TableHead className="text-xs">
-                  <Skeleton className="h-4 w-20" />
-                </TableHead>
-                <TableHead className="text-xs text-center">
-                  <Skeleton className="h-4 w-16 mx-auto" />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="bg-white h-full w-full">
-              {[...Array(25)].map((_, rowIdx) => (
-                <TableRow key={rowIdx} className="bg-white">
-                  <TableCell className="text-xs">
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  {[...Array(4)].map((_, colIdx) => (
-                    <TableCell key={colIdx} className="text-xs">
-                      <Skeleton className="h-4 w-20" />
-                    </TableCell>
-                  ))}
-                  <TableCell className="text-xs">
-                    <Skeleton className="h-4 w-12" />
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell className="w-[160px]">
-                    <div className="flex flex-row justify-center gap-2">
-                      <Skeleton className="h-6 w-6 rounded-full" />
-                      <Skeleton className="h-6 w-6 rounded-full" />
-                      <Skeleton className="h-6 w-6 rounded-full" />
-                    </div>
-                  </TableCell>
-                </TableRow>
               ))}
-            </TableBody>
-          </Table>
-          <div className="absolute bottom-0 h-10 left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-            <Skeleton className="h-4 w-32" />
-            <div className="flex flex-row gap-2 items-center">
-              <Skeleton className="h-8 w-32" />
-              <Skeleton className="h-8 w-20" />
-            </div>
-          </div>
-        </>
+              <TableHead className="text-xs text-center ">
+                <Skeleton className="h-4 w-12 mx-auto" />
+              </TableHead>
+              <TableHead className="text-xs text-center ">
+                <Skeleton className="h-4 w-20 mx-auto" />
+              </TableHead>
+              {hasSignature && (
+                <TableHead className="text-xs text-center ">
+                  <Skeleton className="h-4 w-20 mx-auto" />
+                </TableHead>
+              )}
+              <TableHead className="text-xs text-center bg-gray-50 rounded-tr-lg sticky right-0 z-10 ">
+                <Skeleton className="h-4 w-16 mx-auto" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white h-full w-full text-center ">
+            {[...Array(10)].map((_, rowIdx) => (
+              <TableRow key={rowIdx}>
+                <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                  <Skeleton className="h-4 w-20 mx-auto" />
+                </TableCell>
+                {[...Array(dynamicFieldCount)].map((_, colIdx) => (
+                  <TableCell
+                    key={colIdx}
+                    className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80"
+                  >
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </TableCell>
+                ))}
+                <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                  <Skeleton className="h-4 w-12 mx-auto" />
+                </TableCell>
+                <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                  <Skeleton className="h-4 w-20 mx-auto" />
+                </TableCell>
+                {hasSignature && (
+                  <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </TableCell>
+                )}
+                <TableCell className="text-xs border border-slate-200 px-2 bg-slate-50/80 bg-gray-50 sticky right-0 z-10">
+                  <div className="flex flex-row justify-center gap-2">
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       );
     }
 
     if (formTemplate && formTemplate !== null) {
+      // Filter submissions by searchTerm (case-insensitive, checks user name and submission id)
+      const filteredSubmissions = (formTemplate.Submissions || []).filter(
+        (submission) => {
+          if (!searchTerm) return true;
+          const lower = searchTerm.toLowerCase();
+          // Check id
+          if (submission.id && submission.id.toLowerCase().includes(lower))
+            return true;
+          // Check user name
+          if (submission.User) {
+            const name =
+              `${submission.User.firstName ?? ""} ${submission.User.lastName ?? ""}`.toLowerCase();
+            if (name.includes(lower)) return true;
+          }
+          // Check createdAt or submittedAt
+          if (
+            submission.createdAt &&
+            String(submission.createdAt).toLowerCase().includes(lower)
+          )
+            return true;
+          if (
+            submission.submittedAt &&
+            String(submission.submittedAt).toLowerCase().includes(lower)
+          )
+            return true;
+          // Check all field values
+          if (submission.data && typeof submission.data === "object") {
+            for (const val of Object.values(submission.data)) {
+              if (val && String(val).toLowerCase().includes(lower)) return true;
+            }
+          }
+          return false;
+        },
+      );
       return (
         <>
           <SubmissionTable
             groupings={formTemplate.FormGrouping}
-            submissions={formTemplate.Submissions}
+            submissions={filteredSubmissions}
             setShowFormSubmission={setShowFormSubmission}
             setSelectedSubmissionId={setSelectedSubmissionId}
             onDeleteSubmission={openHandleDeleteSubmission}
@@ -645,15 +665,15 @@ const FormPage = ({ params, searchParams }: PageProps) => {
             pageSize={pageSize}
             loading={loading}
             isSignatureRequired={formTemplate.isSignatureRequired}
+            searchTerm={searchTerm}
           />
-          {formTemplate.Submissions &&
-            formTemplate.Submissions.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-xs text-muted-foreground select-none">
-                  No submissions found.
-                </p>
-              </div>
-            )}
+          {filteredSubmissions.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-xs text-muted-foreground select-none">
+                No submissions found.
+              </p>
+            </div>
+          )}
         </>
       );
     }
@@ -711,83 +731,52 @@ const FormPage = ({ params, searchParams }: PageProps) => {
           </div>
         </div>
       </div>
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="w-full flex flex-row gap-4 ">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-full w-fit text-xs"
-            onClick={returnToList}
-          >
-            <img
-              src="/arrowBack.svg"
-              alt="back"
-              className="w-4 h-auto object-contain"
-            />
-            <p>Back</p>
-          </Button>
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search forms by name..."}
-              textSize="xs"
-              imageSize="6"
-            />
-          </div>
-          <div className="h-full w-full p-1 bg-white max-w-[200px] rounded-lg flex items-center">
-            <select
-              className="block w-full h-full rounded-md bg-white text-xs "
-              value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(
-                  e.target.value as "ALL" | keyof typeof FormStatus,
-                )
-              }
-            >
-              <option value="ALL">All Status</option>
-              {Object.keys(FormStatus).map((status) => (
-                <option key={status} value={status}>
-                  {status.charAt(0) + status.slice(1).toLowerCase()}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="h-full w-full  bg-white max-w-[250px]  rounded-lg flex items-center">
+      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-2 mb-2 ">
+        <div className="w-full flex flex-row gap-2 ">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => router.push("/admins/forms")}
+                variant="outline"
+                size="sm"
+                className="h-full w-fit text-xs"
+              >
+                <img
+                  src="/arrowBack.svg"
+                  alt="back"
+                  className="w-4 h-auto object-contain"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={4} side="top" align="center">
+              <p className="text-xs">Back</p>
+            </TooltipContent>
+          </Tooltip>
+          <SearchBarPopover
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={"Search forms by name..."}
+            textSize="xs"
+            imageSize="10"
+          />
+          <div className="w-fit min-w-[40px] h-full flex flex-row">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full h-full flex justify-between items-center text-xs"
+                  variant="ghost"
+                  size="icon"
+                  className="bg-white h-full  w-full max-w-[40px] justify-center items-center"
                 >
-                  <span>
-                    {dateRange.start && dateRange.end
-                      ? `${format(dateRange.start, "MMM d, yyyy")} - ${format(
-                          dateRange.end,
-                          "MMM d, yyyy",
-                        )}`
-                      : dateRange.start
-                        ? `${format(dateRange.start, "MMM d, yyyy")} - ...`
-                        : "Pick date range"}
-                  </span>
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  <img
+                    src="/calendar.svg"
+                    alt="Filter"
+                    className="h-8 w-8 object-contain p-2 "
+                  />
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                align="end"
+                align="start"
+                side="right"
                 className="p-2 w-auto bg-white rounded-lg shadow-lg border"
               >
                 <Calendar
@@ -822,44 +811,110 @@ const FormPage = ({ params, searchParams }: PageProps) => {
               </PopoverContent>
             </Popover>
           </div>
-          <div className="flex items-center ">
-            <p className="font-light text-xs text-white">{`${formTemplate?.Submissions?.length} of ${formTemplate?.total} submissions`}</p>
+          <div className="relative flex items-center  w-[160px] ">
+            <Select
+              value={statusFilter}
+              onValueChange={(val) =>
+                setStatusFilter(val as "ALL" | keyof typeof FormStatus)
+              }
+            >
+              <SelectTrigger className="px-2 text-xs text-center h-full bg-white border rounded-lg">
+                <SelectValue placeholder="Form Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Filter By Approval</SelectItem>
+                {Object.keys(FormStatus).map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.charAt(0) + status.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {statusFilter !== "ALL" && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge
+                    variant="destructive"
+                    className="h-4 w-4 absolute -top-1 -right-1 p-0.5 cursor-pointer hover:bg-red-400 hover:bg-opacity-100"
+                    onClick={() => setStatusFilter("ALL")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={10} side="right" align="end">
+                  <p className="text-xs">Remove</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <Button
-            onClick={() => {
-              setShowExportModal(true);
-            }}
-            variant={"default"}
-            size={"default"}
-            className="px-6 py-1 rounded-lg hover:bg-slate-800 "
-          >
-            <img
-              src="/export-white.svg"
-              alt="Export Form"
-              className="h-3 w-3 mr-1"
-            />
-            <p className="text-xs">Export</p>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  setShowExportModal(true);
+                }}
+                variant={"default"}
+                size={"icon"}
+                className="rounded-lg hover:bg-slate-800 "
+              >
+                <img
+                  src="/export-white.svg"
+                  alt="Export Form"
+                  className="h-4 w-4 "
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={2} side="top" align="center">
+              <p className="text-xs">Export</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="flex justify-center items-center">
-          <Button
-            onClick={() => {
-              setShowCreateModal(true);
-            }}
-            variant={"default"}
-            size={"default"}
-            className="px-6 py-1 rounded-lg  hover:bg-slate-800"
-          >
-            <img src="/plus-white.svg" alt="Export Form" className="h-4 w-4" />
-            <p className="text-xs ">Create</p>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  setShowCreateModal(true);
+                }}
+                variant={"default"}
+                size={"icon"}
+                className="rounded-lg hover:bg-slate-800"
+              >
+                <img
+                  src="/plus-white.svg"
+                  alt="Export Form"
+                  className="h-4 w-4"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={2} side="top" align="center">
+              <p className="text-xs">Create</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
-        <ReloadBtnSpinner
-          isRefreshing={loading}
-          fetchData={() => setRefreshKey((k) => k + 1)}
-        />
+        <div className="flex justify-center items-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={"destructive"}
+                size={"icon"}
+                className=" hover:bg-opacity-20"
+                onClick={() => {
+                  if (formTemplate) {
+                    openHandleDelete(formTemplate.id);
+                  }
+                }}
+              >
+                <img src="/trash.svg" alt="Delete Form" className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={2} side="top" align="center">
+              <p className="text-xs">Delete Template</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
         {loading && (

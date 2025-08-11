@@ -12,6 +12,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FormItem } from "./hooks/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface ListProps {
   forms: FormItem[];
@@ -141,7 +146,7 @@ const List: React.FC<ListProps> = ({
                     {form.formType}
                   </span>
                 </TableCell>
-                <TableCell className="text-center text-xs text-sky-900 underline hover:text-sky-600 cursor-pointer">
+                <TableCell className="text-center text-xs text-blue-600  underline-offset-2 decoration-solid underline hover:text-sky-600 cursor-pointer">
                   <Link href={`/admins/forms/${form.id}`}>
                     {form._count.Submissions}
                   </Link>
@@ -174,50 +179,69 @@ const List: React.FC<ListProps> = ({
                 <TableCell className="w-[160px]">
                   <div className="flex flex-row justify-center">
                     <Link href={`/admins/forms/${form.id}`}>
-                      <Button variant="ghost" size={"icon"}>
-                        <img
-                          src="/eye.svg"
-                          alt="View Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size={"icon"}>
+                            <img
+                              src="/eye.svg"
+                              alt="View Form"
+                              className="h-4 w-4 cursor-pointer"
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>View Submissions</TooltipContent>
+                      </Tooltip>
                     </Link>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size={"icon"}
+                          onClick={() => setPendingExportId(form.id)}
+                        >
+                          <img
+                            src="/export.svg"
+                            alt="Export Form"
+                            className="h-4 w-4 cursor-pointer"
+                          />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Export Submissions</TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                      variant="ghost"
-                      size={"icon"}
-                      onClick={() => setPendingExportId(form.id)}
-                    >
-                      <img
-                        src="/export.svg"
-                        alt="Export Form"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link href={`/admins/forms/edit/${form.id}`}>
+                          <Button variant="ghost" size={"icon"}>
+                            <img
+                              src="/formEdit.svg"
+                              alt="Edit Form"
+                              className="h-4 w-4 cursor-pointer"
+                            />
+                          </Button>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>Edit Form Template</TooltipContent>
+                    </Tooltip>
 
-                    <Link href={`/admins/forms/edit/${form.id}`}>
-                      <Button variant="ghost" size={"icon"}>
-                        <img
-                          src="/formEdit.svg"
-                          alt="Edit Form"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                    </Link>
-
-                    <Button
-                      variant="ghost"
-                      size={"icon"}
-                      onClick={() => {
-                        openHandleDelete(form.id);
-                      }}
-                    >
-                      <img
-                        src="/trash-red.svg"
-                        alt="Delete Form"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size={"icon"}
+                          onClick={() => {
+                            openHandleDelete(form.id);
+                          }}
+                        >
+                          <img
+                            src="/trash-red.svg"
+                            alt="Delete Form"
+                            className="h-4 w-4 cursor-pointer"
+                          />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Delete Form Template</TooltipContent>
+                    </Tooltip>
                   </div>
                 </TableCell>
               </TableRow>

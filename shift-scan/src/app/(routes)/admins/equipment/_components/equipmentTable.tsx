@@ -36,8 +36,7 @@ export default function EquipmentTable({
 }) {
   const header = [
     "ID",
-    "Name",
-    "Description",
+    "Name & Description",
     "Make",
     "Model",
     "Year",
@@ -76,7 +75,10 @@ export default function EquipmentTable({
               </TableCell>
               {/* Name */}
               <TableCell className="border-r border-gray-200 text-xs text-center">
-                <Skeleton className="h-4 w-3/4 mx-auto" />
+                <div className="flex flex-col gap-1">
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                </div>
               </TableCell>
               {/* Description */}
               <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -133,28 +135,58 @@ export default function EquipmentTable({
               key={equipment.id}
             >
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.id || "-"}
+                {equipment.id || " "}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.name || "-"}
+                <div className="flex flex-col gap-1 text-left">
+                  <p>{equipment.name || " "}</p>
+                  <p className="text-[10px] text-gray-400 italic">
+                    {equipment.description || "No description available"}
+                  </p>
+                </div>
+              </TableCell>
+
+              <TableCell className=" border-r border-gray-200 text-xs text-center">
+                {equipment.equipmentVehicleInfo?.make || " "}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.description || "-"}
+                {equipment.equipmentVehicleInfo?.model || " "}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.equipmentVehicleInfo?.make || "-"}
+                {equipment.equipmentVehicleInfo?.year || " "}
               </TableCell>
               <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.equipmentVehicleInfo?.model || "-"}
-              </TableCell>
-              <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.equipmentVehicleInfo?.year || "-"}
-              </TableCell>
-              <TableCell className=" border-r border-gray-200 text-xs text-center">
-                {equipment.equipmentTag || "-"}
+                <span className="bg-orange-300 px-3 py-1 rounded-xl">
+                  {equipment.equipmentTag || " "}
+                </span>
               </TableCell>
               <TableCell className="border-r border-gray-200 text-xs text-center">
-                {equipment.state || "-"}
+                {equipment.state === "AVAILABLE" ? (
+                  <span className="bg-blue-300/70 px-3 py-1 rounded-xl">
+                    {equipment.state.slice(0, 1) +
+                      equipment.state.slice(1).toLowerCase()}
+                  </span>
+                ) : equipment.state === "MAINTENANCE" ? (
+                  <span className="bg-blue-400/70 px-3 py-1 rounded-xl">
+                    {equipment.state.slice(0, 1) +
+                      equipment.state.slice(1).toLowerCase()}
+                  </span>
+                ) : equipment.state === "IN_USE" ? (
+                  <span className="bg-orange-200 px-3 py-1 rounded-xl">
+                    {equipment.state.slice(0, 1) +
+                      equipment.state.slice(1).toLowerCase()}
+                  </span>
+                ) : equipment.state === "NEEDS_REPAIR" ? (
+                  <span className="bg-red-300/90 px-3 py-1 rounded-xl">
+                    {equipment.state.slice(0, 1) +
+                      equipment.state.slice(1).toLowerCase()}
+                  </span>
+                ) : (
+                  <span className="bg-slate-300 px-3 py-1 rounded-xl">
+                    {equipment.state.slice(0, 1) +
+                      equipment.state.slice(1).toLowerCase()}
+                  </span>
+                )}
               </TableCell>
               <TableCell className="border-r border-gray-200 text-xs text-center min-w-[50px]">
                 <HoverCard>
@@ -179,6 +211,7 @@ export default function EquipmentTable({
                   </HoverCardTrigger>
                   <HoverCardContent
                     align="center"
+                    side="right"
                     className="w-[120px] justify-center"
                   >
                     <div className="text-xs text-center">
@@ -195,10 +228,10 @@ export default function EquipmentTable({
               </TableCell>
 
               <TableCell className="border-r border-gray-200  text-xs text-center">
-                {format(equipment.createdAt, "MM/dd/yy") || "-"}
+                {format(equipment.createdAt, "MM/dd/yy") || " "}
               </TableCell>
               <TableCell className="border-r border-gray-200 text-xs text-center">
-                {format(equipment.updatedAt, "MM/dd/yy") || "-"}
+                {format(equipment.updatedAt, "MM/dd/yy") || " "}
               </TableCell>
               <TableCell className="text-xs text-center">
                 <div className="flex flex-row justify-center ">
@@ -212,7 +245,7 @@ export default function EquipmentTable({
                         <img src="/qrCode.svg" alt="Edit" className="w-4 h-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Print QR Code</TooltipContent>
+                    <TooltipContent>Print QR Code</TooltipContent>
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -228,7 +261,7 @@ export default function EquipmentTable({
                         />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Edit</TooltipContent>
+                    <TooltipContent>Edit</TooltipContent>
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -244,7 +277,7 @@ export default function EquipmentTable({
                         />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Delete</TooltipContent>
+                    <TooltipContent>Delete</TooltipContent>
                   </Tooltip>
                 </div>
               </TableCell>

@@ -196,29 +196,27 @@ export default function CostCodePage() {
           fetchData={pageState === "CostCode" ? rerender : tagRerender}
         />
       </div>
-      <div className="h-full max-h-12 w-full flex flex-row justify-between mb-2 ">
-        <div className="flex flex-row w-full">
-          <div className="bg-white rounded-lg h-full max-h-8 px-1 flex items-center">
-            {pageState === "CostCode" ? (
-              <SearchBarPopover
-                term={searchTerm}
-                handleSearchChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={"Search by name..."}
-                textSize="xs"
-                imageSize="6"
-              />
-            ) : (
-              <SearchBarPopover
-                term={searchTag}
-                handleSearchChange={(e) => setSearchTag(e.target.value)}
-                placeholder={"Search by name..."}
-                textSize="xs"
-                imageSize="6"
-              />
-            )}
-          </div>
+      <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
+        <div className="flex flex-row w-full gap-2">
+          {pageState === "CostCode" ? (
+            <SearchBarPopover
+              term={searchTerm}
+              handleSearchChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={"Search by name..."}
+              textSize="xs"
+              imageSize="10"
+            />
+          ) : (
+            <SearchBarPopover
+              term={searchTag}
+              handleSearchChange={(e) => setSearchTag(e.target.value)}
+              placeholder={"Search by name..."}
+              textSize="xs"
+              imageSize="10"
+            />
+          )}
         </div>
-        <div className="flex flex-row justify-end w-full gap-4">
+        <div className="flex flex-row justify-end w-full gap-2">
           {pageState === "CostCode" ? (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -268,7 +266,7 @@ export default function CostCodePage() {
                 }
               >
                 {pageState !== "CostCode" ? (
-                  <Puzzle className="w-4 h-4" />
+                  <img src="/qrCode-white.svg" alt="Tags" className="w-4 h-4" />
                 ) : (
                   <Tags className="w-4 h-4" />
                 )}

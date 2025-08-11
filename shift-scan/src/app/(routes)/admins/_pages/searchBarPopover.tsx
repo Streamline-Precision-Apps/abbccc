@@ -1,3 +1,4 @@
+"use client";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import {
@@ -5,6 +6,11 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import React from "react";
 
 interface SearchBarProps {
@@ -29,52 +35,49 @@ const SearchBarPopover: React.FC<SearchBarProps> = ({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label="Open search"
-          disabled={disabled}
-          className={`flex items-center justify-center w-${imageSize} h-${imageSize} bg-white p-1 hover:bg-slate-100 transition focus:outline-none focus:ring-none focus:ring-blue-500`}
-        >
-          <img
-            src="/searchLeft.svg"
-            alt="search"
-            className={`w-${imageSize} h-${imageSize}`}
-          />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="center"
-        side="right"
-        sideOffset={10}
-        className={`w-[400px] h-${imageSize} bg-white border border-slate-200 rounded-md shadow-lg`}
-      >
-        <Holds
-          background={disabled ? "lightGray" : "white"}
-          position="row"
-          className="px-2 w-full h-full gap-x-3 relative"
+    <div className="bg-white rounded-lg w-10 justify-center h-full flex items-center">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label="Open search"
+            disabled={disabled}
+            className={`flex items-center justify-center w-${imageSize} h-${imageSize} p-3  transition focus:outline-none focus:ring-none focus:ring-blue-500 ${open ? "rounded-tl-md rounded-bl-md border-r border-black bg-app-blue hover:bg-sky-300 " : "rounded-md bg-white hover:bg-slate-100 "}`}
+          >
+            <img
+              src="/searchLeft.svg"
+              alt="search"
+              className={`w-${imageSize} h-${imageSize}`}
+            />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="center"
+          side="right"
+          sideOffset={0}
+          className={`w-[400px] h-${imageSize} bg-white border border-slate-200 rounded-l-none rounded-tr-md rounded-br-md shadow-lg`}
         >
           <Holds
-            className={`w-${imageSize} h-full justify-center items-center`}
+            background={disabled ? "lightGray" : "white"}
+            position="row"
+            className="w-full h-full relative"
           >
-            <img src="/searchLeft.svg" alt="search" />
+            <Holds className="w-full h-auto justify-center items-center ">
+              <Inputs
+                type="search"
+                placeholder={placeholder}
+                value={term}
+                onChange={handleSearchChange}
+                disabled={disabled}
+                autoFocus
+                className={`border-none outline-hidden text-${textSize} text-left w-full h-full rounded-tr-md rounded-br-md bg-white focus:ring-0 focus:border-none focus:outline-none`}
+              />
+            </Holds>
+            {children}
           </Holds>
-          <Holds className="w-full h-auto justify-center items-center ">
-            <Inputs
-              type="search"
-              placeholder={placeholder}
-              value={term}
-              onChange={handleSearchChange}
-              disabled={disabled}
-              autoFocus
-              className={`border-none outline-hidden text-${textSize} text-left w-full h-full rounded-md bg-white focus:ring-0 focus:border-none focus:outline-none`}
-            />
-          </Holds>
-          {children}
-        </Holds>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
 

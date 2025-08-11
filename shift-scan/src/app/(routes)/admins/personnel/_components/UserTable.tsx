@@ -14,11 +14,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { PersonnelSummary } from "./usePersonnelData";
 import { formatPhoneNumber } from "@/utils/phoneNumberFormater";
 import { UserX } from "lucide-react";
@@ -193,30 +188,59 @@ export default function UserTable({
                   {`${personnel.Contact.emergencyContact ? personnel.Contact.emergencyContact + "-" : ""} ${personnel.Contact.emergencyContactNumber ? formatPhoneNumber(personnel.Contact.emergencyContactNumber) : ""}`}
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {personnel.permission.slice(0, 1) +
-                    personnel.permission.slice(1).toLowerCase()}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="bg-emerald-300 px-2 py-1 rounded-md">
+                        {personnel.permission.slice(0, 1)}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {personnel.permission.slice(0, 1) +
+                        personnel.permission.slice(1).toLowerCase()}
+                    </TooltipContent>
+                  </Tooltip>
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   <div className="flex flex-row gap-1 justify-center">
                     {personnel.truckView && (
-                      <div className="bg-blue-300 rounded-md px-2 py-1">
-                        <p className="text-xs">{"TR"}</p>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                            <p className="text-xs">{"TR"}</p>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>Trucking Role</TooltipContent>
+                      </Tooltip>
                     )}
                     {personnel.tascoView && (
-                      <div className="bg-blue-300 rounded-md px-2 py-1">
-                        <p className="text-xs">{"TS"}</p>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                            <p className="text-xs">{"TS"}</p>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>Tasco Role</TooltipContent>
+                      </Tooltip>
                     )}
                     {personnel.mechanicView && (
-                      <div className="bg-blue-300 rounded-md px-2 py-1">
-                        <p className="text-xs">{"M"}</p>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                            <p className="text-xs">{"M"}</p>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>Mechanic Role</TooltipContent>
+                      </Tooltip>
                     )}
                     {personnel.laborView && (
-                      <div className="bg-blue-300 rounded-md px-2 py-1">
-                        <p className="text-xs">{"G"}</p>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                            <p className="text-xs">{"G"}</p>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>General Role</TooltipContent>
+                      </Tooltip>
                     )}
                   </div>
                 </TableCell>
@@ -236,7 +260,7 @@ export default function UserTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">Edit</TooltipContent>
+                      <TooltipContent>Edit</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -252,7 +276,7 @@ export default function UserTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">Delete</TooltipContent>
+                      <TooltipContent>Delete</TooltipContent>
                     </Tooltip>
                   </div>
                 </TableCell>
