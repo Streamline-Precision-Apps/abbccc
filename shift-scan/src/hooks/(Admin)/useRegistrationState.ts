@@ -1,5 +1,5 @@
 // hooks/useRegistrationState.ts
-import { RegistrationState } from "@/app/(routes)/admins/personnel/components/types/personnel";
+import { RegistrationState } from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 import { useState } from "react";
 
 export const useRegistrationState = () => {
@@ -75,7 +75,7 @@ export const useRegistrationState = () => {
       .map(([_, value]) => value);
 
     const hasTextContent = relevantFields.some(
-      (value) => typeof value === "string" && value.trim() !== ""
+      (value) => typeof value === "string" && value.trim() !== "",
     );
 
     // Check if any crews are selected

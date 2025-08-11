@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../personnel/components/SearchBar";
+import SearchBar from "../personnel-old/components/SearchBar";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,

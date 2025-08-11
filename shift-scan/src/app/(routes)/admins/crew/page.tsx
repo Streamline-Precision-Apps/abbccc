@@ -2,15 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../personnel-old/components/SearchBar";
-import { useState } from "react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,89 +11,86 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useClientData } from "./_component/useClientData";
-import { deleteClient } from "@/actions/AssetActions";
-import ClientTable from "./_component/clientTable";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
-import { Badge } from "@/components/ui/badge";
-import CreateClientModal from "./_component/CreateClientModal";
-import EditClientModal from "./_component/EditClientModal";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import SearchBarPopover from "../_pages/searchBarPopover";
+// import CreateUserModal from "./_components/createUser";
+import { deleteCrew, deleteUser } from "@/actions/adminActions";
+import { useCrewsData } from "./_component/useCrewsData";
+import CrewTable from "./_component/CrewTable";
+import CreateCrewModal from "./_component/createCrewModal";
+import EditCrewModal from "./_component/editCrewModal";
+// import EditUserModal from "./_components/editUser";
 
-export default function ClientsPage() {
+export default function CrewPage() {
   const { setOpen, open } = useSidebar();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
-  const [createClientModal, setCreateClientModal] = useState(false);
-  const [editClientModal, setEditClientModal] = useState(false);
   const {
     loading,
-    ClientDetails,
-    rerender,
+    crew,
     total,
+    totalPages,
     page,
     pageSize,
     setPage,
     setPageSize,
-  } = useClientData();
+    setShowInactive,
+    showInactive,
+    searchTerm,
+    setSearchTerm,
+    rerender,
+  } = useCrewsData();
 
-  const pendingCount = ClientDetails.filter(
-    (item) => item.approvalStatus === "PENDING",
-  ).length;
+  //   // State for modals
+  const [editCrewModal, setEditCrewModal] = useState(false);
+  const [createCrewModal, setCreateCrewModal] = useState(false);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
 
-  const filteredClientDetails = ClientDetails.filter((client) => {
-    if (showPendingOnly && client.approvalStatus !== "PENDING") return false;
-    const term = searchTerm.toLowerCase();
-    return (
-      client.id.toLowerCase().includes(term) ||
-      client.name.toLowerCase().includes(term) ||
-      (client.description?.toLowerCase() || "").includes(term) ||
-      [
-        client.Address?.street,
-        client.Address?.city,
-        client.Address?.state,
-        client.Address?.zipCode,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(term) ||
-      (client.contactPerson?.toLowerCase() || "").includes(term) ||
-      (client.contactEmail?.toLowerCase() || "").includes(term) ||
-      (client.contactPhone?.toLowerCase() || "").includes(term)
-    );
-  });
+  // State for delete confirmation dialog
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
-  const totalClientDetails = filteredClientDetails.length;
-  const totalPages = Math.ceil(totalClientDetails / pageSize);
-  const paginatedClientDetails = filteredClientDetails.slice(
-    (page - 1) * pageSize,
-    page * pageSize,
-  );
+  //   // Pagination state
 
-  // Helper Function
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
-    setEditClientModal(true);
+    setEditCrewModal(true);
   };
+
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
   const confirmDelete = async () => {
     if (pendingDeleteId) {
-      await deleteClient(pendingDeleteId);
+      await deleteCrew(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
       rerender();
     }
   };
+
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
   };
-  const openHandleDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteDialog(true);
-  };
+
+  // Reset to page 1 if search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, showInactive]);
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
@@ -127,71 +116,65 @@ export default function ClientsPage() {
           </div>
           <div className="w-full flex flex-col gap-1">
             <p className="text-left w-fit text-base text-white font-bold">
-              Client Management
+              Crew Management
             </p>
             <p className="text-left text-xs text-white">
-              Create, edit, and manage Client details
+              Create, edit, and manage crew details
             </p>
           </div>
         </div>
+        <ReloadBtnSpinner isRefreshing={loading} fetchData={rerender} />
       </div>
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
+          <div className="h-full w-fit p-1 bg-white rounded-lg ">
+            <SearchBarPopover
               term={searchTerm}
               handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search by name..."}
+              placeholder={"Search by name, username, or number..."}
               textSize="xs"
               imageSize="6"
             />
           </div>
         </div>
         <div className="flex flex-row justify-end w-full gap-4">
-          <Button onClick={() => setCreateClientModal(true)}>
-            <img src="/plus-white.svg" alt="Add Client" className="w-4 h-4" />
-            <p className="text-left text-xs text-white">New Client</p>
-          </Button>
-          <Button
-            onClick={() => setShowPendingOnly(!showPendingOnly)}
-            className={`relative border-none w-fit h-fit px-4 bg-gray-900 hover:bg-gray-800 text-white ${
-              showPendingOnly ? "ring-2 ring-red-400" : ""
-            }`}
-          >
-            <div className="flex flex-row items-center">
-              <img
-                src="/inbox-white.svg"
-                alt="Approval"
-                className="h-4 w-4 mr-2"
-              />
-              <p className="text-white text-sm font-extrabold">Approval</p>
-              {pendingCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
-                  {pendingCount}
-                </Badge>
-              )}
-            </div>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size={"icon"}
+                onClick={() => setCreateCrewModal(true)}
+                className="min-w-12"
+              >
+                <img src="/plus-white.svg" alt="Add Crew" className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="start" side="top">
+              Create Crew
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        {loading && (
-          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-            <Spinner size={20} />
-            <span className="text-lg text-gray-500">Loading...</span>
-          </div>
-        )}
         <ScrollArea
           alwaysVisible
           className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
         >
-          <ClientTable
+          {/* Loading overlay */}
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          <CrewTable
             loading={loading}
-            clientDetails={paginatedClientDetails}
-            openHandleEdit={openHandleEdit}
+            crew={crew}
             openHandleDelete={openHandleDelete}
+            openHandleEdit={openHandleEdit}
+            showInactive={showInactive}
           />
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
+          <ScrollBar orientation="vertical" />
+          <div className="h-1  absolute bottom-0 right-0 left-0">
             <ScrollBar
               orientation="horizontal"
               className="w-full h-3 ml-2 mr-2 rounded-full"
@@ -199,7 +182,7 @@ export default function ClientsPage() {
           </div>
         </ScrollArea>
         {totalPages > 1 && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
+          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
             <div className="text-xs text-gray-600">
               Showing page {page} of {totalPages} ({total} total)
             </div>
@@ -259,31 +242,27 @@ export default function ClientsPage() {
           </div>
         )}
       </div>
-      {/* Create Modal */}
-      {createClientModal && (
-        <CreateClientModal
-          cancel={() => setCreateClientModal(false)}
-          rerender={rerender}
-        />
-      )}
-
-      {editClientModal && pendingEditId && (
-        <EditClientModal
-          cancel={() => setEditClientModal(false)}
+      {editCrewModal && pendingEditId && (
+        <EditCrewModal
+          cancel={() => setEditCrewModal(false)}
           pendingEditId={pendingEditId}
           rerender={rerender}
         />
       )}
+      {createCrewModal && (
+        <CreateCrewModal
+          cancel={() => setCreateCrewModal(false)}
+          rerender={rerender}
+        />
+      )}
 
-      {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Client</DialogTitle>
+            <DialogTitle>Delete Crew</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this Client? All Client data will
-              be permanently deleted including Timesheets. This action cannot be
-              undone.
+              Are you sure you want to delete this crew? All crew data will be
+              permanently deleted. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

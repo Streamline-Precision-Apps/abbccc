@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   UserData,
   CrewData,
-} from "@/app/(routes)/admins/personnel/components/types/personnel";
+} from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 
 export const usePersonnelState = () => {
   const [loading, setLoading] = useState(false);
@@ -50,13 +50,13 @@ export const usePersonnelState = () => {
   const filteredList = useMemo(() => {
     if (!term.trim())
       return [...employees].sort((a, b) =>
-        a.lastName.localeCompare(b.lastName)
+        a.lastName.localeCompare(b.lastName),
       );
     return employees
       .filter((employee) =>
         `${employee.firstName} ${employee.lastName}`
           .toLowerCase()
-          .includes(term.toLowerCase())
+          .includes(term.toLowerCase()),
       )
       .sort((a, b) => a.lastName.localeCompare(b.lastName));
   }, [term, employees]);
@@ -65,7 +65,7 @@ export const usePersonnelState = () => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTerm(e.target.value);
     },
-    []
+    [],
   );
 
   return {

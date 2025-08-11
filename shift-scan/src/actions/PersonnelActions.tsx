@@ -2,7 +2,7 @@
 import prisma from "@/lib/prisma";
 import { Permission } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { CrewData } from "@/app/(routes)/admins/personnel/components/types/personnel";
+import { CrewData } from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 
 //------------------------------------------------------------------------------------------------------------------------
 // Personnel server actions
@@ -41,7 +41,7 @@ export async function editPersonnelInfo(formData: FormData) {
     >;
     const terminationDate = formData.get("terminationDate") as string | null;
     const selectedCrews = JSON.parse(
-      formData.get("selectedCrews") as string
+      formData.get("selectedCrews") as string,
     ) as string[];
 
     // Execute all updates in a transaction
