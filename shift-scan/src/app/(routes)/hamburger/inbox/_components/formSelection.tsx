@@ -45,6 +45,11 @@ type SentContent = {
     name: string;
     formType: string;
   };
+  User?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
   status: FormStatus;
 };
 // todo you need to fetch the draft forms as well as the other forms adjust api and server actions
@@ -70,17 +75,17 @@ export default function FormSelection({
 
   const fetchSentContent = async (
     skip: number,
-    reset?: boolean
+    reset?: boolean,
   ): Promise<SentContent[]> => {
     const response = await fetch(
-      `/api/formSubmissions/${selectedFilter}?skip=${skip}&take=10`
+      `/api/formSubmissions/${selectedFilter}?skip=${skip}&take=10`,
     );
     const data = await response.json();
     // Defensive: filter out any non-object/string results
     return Array.isArray(data)
       ? data.filter(
           (item): item is SentContent =>
-            typeof item === "object" && item !== null && "id" in item
+            typeof item === "object" && item !== null && "id" in item,
         )
       : [];
   };
@@ -128,7 +133,7 @@ export default function FormSelection({
     }
     router.push(
       `/hamburger/inbox/formSubmission/${selectedForm}?submissionId=${submissionId}&status=DRAFT
-        `
+        `,
     );
   };
 
@@ -245,10 +250,10 @@ export default function FormSelection({
                         {selectedFilter === "denied"
                           ? t("NoDeniedFormsSubmitted")
                           : selectedFilter === "pending"
-                          ? t("NoPendingFormsSubmitted")
-                          : selectedFilter === "approved"
-                          ? t("NoApprovedFormsSubmitted")
-                          : t("NoFormsSubmitted")}
+                            ? t("NoPendingFormsSubmitted")
+                            : selectedFilter === "approved"
+                              ? t("NoApprovedFormsSubmitted")
+                              : t("NoFormsSubmitted")}
                       </Texts>
                       <Texts size={"p7"} className="italic text-gray-500">
                         {t("GoToFormsSectionToCreateForms")}
@@ -280,14 +285,14 @@ export default function FormSelection({
                               form.status === "PENDING"
                                 ? "orange"
                                 : form.status === "APPROVED"
-                                ? "green"
-                                : form.status === "DENIED"
-                                ? "red"
-                                : "lightBlue"
+                                  ? "green"
+                                  : form.status === "DENIED"
+                                    ? "red"
+                                    : "lightBlue"
                             }
                             onClick={() => {
                               router.push(
-                                `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
+                                `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`,
                               );
                             }}
                             disabled={isLoading}
@@ -304,10 +309,10 @@ export default function FormSelection({
                                   form.status === "PENDING"
                                     ? "/statusOngoingFilled.svg"
                                     : form.status === "APPROVED"
-                                    ? "/statusApprovedFilled.svg"
-                                    : form.status === "DENIED"
-                                    ? "/statusDeniedFilled.svg"
-                                    : "/formSent.svg"
+                                      ? "/statusApprovedFilled.svg"
+                                      : form.status === "DENIED"
+                                        ? "/statusDeniedFilled.svg"
+                                        : "/formSent.svg"
                                 }
                                 className="absolute max-w-10 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
                               />

@@ -79,11 +79,11 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   // State for different asset types
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
   const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
 
   const [users, setUsers] = useState<
@@ -127,9 +127,21 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   useEffect(() => {
     const fetchClients = async () => {
-      const res = await fetch("/api/getClientsSummary");
-      const clients = await res.json();
-      setClients(clients);
+      try {
+        const res = await fetch("/api/getClientsSummary");
+        const data = await res.json();
+
+        // Check if the response is successful and contains an array
+        if (res.ok && Array.isArray(data)) {
+          setClients(data);
+        } else {
+          console.warn("No clients found or invalid response:", data);
+          setClients([]);
+        }
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        setClients([]);
+      }
     };
     fetchClients();
   }, []);
@@ -182,7 +194,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   const handleFieldChange = (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => {
     // Convert value to a format compatible with our formData state
     let compatibleValue: string | number | boolean | null = null;
