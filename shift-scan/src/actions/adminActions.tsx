@@ -43,80 +43,6 @@ const newUserSchema = z.object({
   generalView: z.boolean().optional(),
 });
 
-export async function submitNewEmployee(formData: NewEmployeeFormData) {
-  const parsed = newUserSchema.safeParse(formData);
-  if (!parsed.success) {
-    throw new Error("Invalid form data");
-  }
-
-  const {
-    username,
-    password,
-    firstName,
-    lastName,
-    permissionLevel,
-    employmentStatus,
-    crews,
-    truckingView = false,
-    tascoView = false,
-    engineerView = false,
-    generalView = false,
-  } = parsed.data;
-
-  const hashedPassword = await hash(password, 10);
-
-  // Use a transaction to ensure both operations succeed or fail together
-  const result = await prisma.$transaction(async (prisma) => {
-    // Create the user
-    const user = await prisma.user.create({
-      data: {
-        username,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        // email,
-        // DOB: dateOfBirth,
-        permission: permissionLevel as Permission,
-        truckView: truckingView,
-        tascoView: tascoView,
-        mechanicView: engineerView,
-        laborView: generalView,
-        clockedIn: false,
-        accountSetup: false,
-        startDate: new Date(),
-        Crews: {
-          connect: crews.map((crewId: string) => ({ id: crewId })),
-        },
-        Contact: {
-          create: {
-            // phoneNumber,
-            // emergencyContact,
-            // emergencyContactNumber,
-          },
-        },
-        Company: { connect: { id: "1" } },
-      },
-    });
-
-    // Create user settings
-    await prisma.userSettings.create({
-      data: {
-        userId: user.id,
-        language: "en",
-        generalReminders: false,
-        personalReminders: false,
-        cameraAccess: false,
-        locationAccess: false,
-      },
-    });
-
-    revalidatePath("/admins/personnel");
-    return { success: true, userId: user.id };
-  });
-
-  return result;
-}
-
 export async function createUserAdmin(payload: {
   terminationDate: Date | null;
   createdById: string;
@@ -394,7 +320,7 @@ export async function editCrew(formData: FormData) {
     // First, fetch existing crew to get current users
     const existingCrew = await prisma.crew.findUnique({
       where: { id: crewId },
-      include: { Users: true }
+      include: { Users: true },
     });
 
     if (!existingCrew) {
@@ -414,8 +340,8 @@ export async function editCrew(formData: FormData) {
         leadId: teamLead,
         crewType: crewType,
         Users: {
-          disconnect: existingCrew.Users.map(user => ({ id: user.id })),
-          connect: newUsers.map(user => ({ id: user.id }))
+          disconnect: existingCrew.Users.map((user) => ({ id: user.id })),
+          connect: newUsers.map((user) => ({ id: user.id })),
         },
       },
     });
