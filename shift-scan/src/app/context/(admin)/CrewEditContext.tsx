@@ -2,7 +2,7 @@
 import {
   CrewData,
   CrewEditState,
-} from "@/app/(routes)/admins/personnel/components/types/personnel";
+} from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 import { createContext, useContext, useState } from "react";
 
 type CrewEditContextType = {
@@ -12,7 +12,7 @@ type CrewEditContextType = {
 
   updateCrewEditState: (
     crewId: string,
-    updates: Partial<CrewEditState>
+    updates: Partial<CrewEditState>,
   ) => void;
   retainOnlyCrewEditState: (crewId: string) => void;
   isCrewEditStateDirty: (crewId: string) => boolean;
@@ -20,7 +20,7 @@ type CrewEditContextType = {
 };
 
 const CrewEditContext = createContext<CrewEditContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const CrewEditProvider = ({
@@ -44,7 +44,7 @@ export const CrewEditProvider = ({
 
   const updateCrewEditState = (
     crewId: string,
-    updates: Partial<CrewEditState>
+    updates: Partial<CrewEditState>,
   ) => {
     setCrewEditStates((prev) => ({
       ...prev,

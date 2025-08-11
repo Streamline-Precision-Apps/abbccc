@@ -1,6 +1,6 @@
 // hooks/useCrewCreationState.ts
 "use client";
-import { CrewCreationState } from "@/app/(routes)/admins/personnel/components/types/personnel";
+import { CrewCreationState } from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 import { useState } from "react";
 
 export const useCrewCreationState = () => {
@@ -49,7 +49,7 @@ export const useCrewCreationState = () => {
   const removeMembers = (userIds: string[]) => {
     setState((prev) => {
       const newUsers = prev.selectedUsers.filter(
-        (user) => !userIds.includes(user.id)
+        (user) => !userIds.includes(user.id),
       );
 
       // If we're removing the current team lead, clear it
@@ -79,7 +79,7 @@ export const useCrewCreationState = () => {
       isSuccess: false,
     });
   };
-  
+
   // Check if the crew creation form has any user-entered data
   const isCrewCreationFormDirty = () => {
     // Check if crew name has content

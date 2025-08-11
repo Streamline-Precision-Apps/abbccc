@@ -2,7 +2,7 @@
 import {
   UserData,
   UserEditState,
-} from "@/app/(routes)/admins/personnel/components/types/personnel";
+} from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 import { createContext, useContext, useState } from "react";
 
 type UserEditContextType = {
@@ -11,7 +11,7 @@ type UserEditContextType = {
   initializeUserEditState: (userData: UserData) => UserEditState;
   updateUserEditState: (
     userId: string,
-    updates: Partial<UserEditState>
+    updates: Partial<UserEditState>,
   ) => void;
   retainOnlyUserEditState: (userId: string) => void;
   isUserEditStateDirty: (userId: string) => boolean;
@@ -19,7 +19,7 @@ type UserEditContextType = {
 };
 
 const UserEditContext = createContext<UserEditContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const UserEditProvider = ({
@@ -35,10 +35,13 @@ export const UserEditProvider = ({
     const crewIds = userData.Crews.map((c) => c.id);
 
     // Initialize crew leads state - create an object mapping crew IDs to whether this user leads them
-    const crewLeadsMap = userData.Crews.reduce((acc, crew) => {
-      acc[crew.id] = crew.leadId === userData.id;
-      return acc;
-    }, {} as Record<string, boolean>);
+    const crewLeadsMap = userData.Crews.reduce(
+      (acc, crew) => {
+        acc[crew.id] = crew.leadId === userData.id;
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
     console.log(crewLeadsMap);
 
     return {
@@ -56,7 +59,7 @@ export const UserEditProvider = ({
 
   const updateUserEditState = (
     userId: string,
-    updates: Partial<UserEditState>
+    updates: Partial<UserEditState>,
   ) => {
     setUserEditStates((prev) => ({
       ...prev,
