@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../../personnel-old/components/SearchBar";
+import SearchBar from "../../_pages/SearchBar";
 import { useEffect, useState, useCallback, useMemo, use } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";

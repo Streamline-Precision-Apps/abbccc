@@ -1,5 +1,5 @@
 "use client";
-import SearchBar from "../personnel-old/components/SearchBar";
+import SearchBar from "../_pages/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
