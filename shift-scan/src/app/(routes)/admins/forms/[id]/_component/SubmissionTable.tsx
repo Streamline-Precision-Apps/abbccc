@@ -82,7 +82,20 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     {submission.User.firstName} {submission.User.lastName}
                   </TableCell>
                   {fields.map((field) => {
-                    const val = submission.data[field.id];
+                    // Use the same fallback pattern as the main forms list
+                    const val = (submission.data?.[
+                      field.id as keyof typeof submission.data
+                    ] ??
+                      submission.data?.[
+                        field.label as keyof typeof submission.data
+                      ]) as
+                      | string
+                      | number
+                      | boolean
+                      | object
+                      | Array<unknown>
+                      | null
+                      | undefined;
 
                     // If the field is a date or time, format it
                     let display: string | number | undefined = val as
@@ -165,7 +178,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                                       >
                                         {item.name || ""}
                                       </div>
-                                    )
+                                    ),
                                   )}
                                 </div>
                               </PopoverContent>
@@ -180,12 +193,12 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                                   >
                                     {item.name || ""}
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           )
                         ) : (
-                          display ?? ""
+                          (display ?? "")
                         )}
                       </TableCell>
                     );
@@ -199,7 +212,8 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                   {isSignatureRequired && (
                     <TableCell className="text-xs min-w-[80px] max-w-[180px] border border-slate-200 px-2 bg-slate-50/80">
                       {/* Render signature info here, e.g. a checkmark or signature image if available */}
-                      {submission.data.signature ? (
+                      {submission.data?.signature ||
+                      submission.data?.Signature ? (
                         <span className="text-emerald-600 font-bold">
                           Signed
                         </span>
@@ -242,7 +256,7 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
                     </div>
                   </TableCell>
                 </TableRow>
-              )
+              ),
             )
           : null}
       </TableBody>

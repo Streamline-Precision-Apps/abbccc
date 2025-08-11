@@ -1,8 +1,9 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidateTag } from "next/cache";
+
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
 export async function GET(
   req: Request,
