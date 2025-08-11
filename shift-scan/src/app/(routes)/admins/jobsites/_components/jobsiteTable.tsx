@@ -126,18 +126,18 @@ export default function JobsiteTable({
                 key={jobsite.id}
               >
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {jobsite.id || "-"}
+                  {jobsite.id || " "}
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {jobsite.name || "-"}
+                  {jobsite.name || " "}
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {jobsite.description || "-"}
+                  {jobsite.description || " "}
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   {jobsite.createdAt
                     ? format(new Date(jobsite.createdAt), "MM/dd/yyyy")
-                    : "-"}
+                    : " "}
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   {jobsite.isActive ? "Active" : "Inactive"}
@@ -168,6 +168,7 @@ export default function JobsiteTable({
                       )}
                     </HoverCardTrigger>
                     <HoverCardContent
+                      side="right"
                       align="center"
                       className="w-[120px] justify-center"
                     >
@@ -183,18 +184,10 @@ export default function JobsiteTable({
                     </HoverCardContent>
                   </HoverCard>
                 </TableCell>
-
-                {/* <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {jobsite.approvalStatus
-                    .toLowerCase()
-                    .slice(0, 1)
-                    .toUpperCase() +
-                    jobsite.approvalStatus.slice(1).toLowerCase()}
-                </TableCell> */}
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   {jobsite.updatedAt
                     ? format(new Date(jobsite.updatedAt), "MM/dd/yyyy")
-                    : "-"}
+                    : " "}
                 </TableCell>
                 <TableCell className="text-xs text-center">
                   <div className="flex flex-row items-center justify-center ">
@@ -212,9 +205,7 @@ export default function JobsiteTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        Print QR Code
-                      </TooltipContent>
+                      <TooltipContent>Print QR Code</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -230,7 +221,7 @@ export default function JobsiteTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">Edit</TooltipContent>
+                      <TooltipContent>Edit</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -246,7 +237,7 @@ export default function JobsiteTable({
                           />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom">Delete</TooltipContent>
+                      <TooltipContent>Delete</TooltipContent>
                     </Tooltip>
                   </div>
                 </TableCell>

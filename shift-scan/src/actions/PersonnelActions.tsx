@@ -2,7 +2,6 @@
 import prisma from "@/lib/prisma";
 import { Permission } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { CrewData } from "@/app/(routes)/admins/personnel-old/components/types/personnel";
 
 //------------------------------------------------------------------------------------------------------------------------
 // Personnel server actions
@@ -162,13 +161,6 @@ export async function createJobsite(formData: FormData) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------
-
-// Save (create or update) a crew
-export async function saveCrew(crew: CrewData) {
-  console.log("Saving crew...");
-  console.log(crew);
-  return;
-}
 
 // Delete a crew by id
 export async function deleteCrew(crewId: string) {

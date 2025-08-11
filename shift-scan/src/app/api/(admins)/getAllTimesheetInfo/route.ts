@@ -30,7 +30,8 @@ export async function GET(req: Request) {
 
   // Parse pagination params
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status") || "all"; // Default to 'all' if not provided
+  const status = searchParams.get("status") || "all";
+  const search = searchParams.get("search")?.trim() || "";
 
   let timesheets, total, pageSize, page, skip, totalPages;
   try {
@@ -41,7 +42,10 @@ export async function GET(req: Request) {
     if (status === "pending") {
       // Return all pending timesheets, no pagination
       timesheets = await prisma.timeSheet.findMany({
-        where: { status: "PENDING" },
+        where: {
+          status: "PENDING",
+        },
+
         select: {
           id: true,
           date: true,
@@ -104,6 +108,74 @@ export async function GET(req: Request) {
         orderBy: { createdAt: "desc" },
       });
       total = timesheets.length;
+    } else if (search !== "") {
+      page = undefined;
+      pageSize = undefined;
+      skip = undefined;
+      totalPages = 1;
+      // Query the database for paginated timesheets
+      timesheets = await prisma.timeSheet.findMany({
+        select: {
+          id: true,
+          date: true,
+          User: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          Jobsite: {
+            select: {
+              name: true,
+              code: true,
+            },
+          },
+          CostCode: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          nu: true,
+          Fp: true,
+          startTime: true,
+          endTime: true,
+          comment: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          workType: true,
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              equipmentId: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              startTime: true,
+              endTime: true,
+            },
+          },
+          TruckingLogs: {
+            select: {
+              truckNumber: true,
+              startingMileage: true,
+              endingMileage: true,
+              RefuelLogs: {
+                select: {
+                  milesAtFueling: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
     } else {
       page = parseInt(searchParams.get("page") || "1", 10);
       pageSize = parseInt(searchParams.get("pageSize") || "25", 10);

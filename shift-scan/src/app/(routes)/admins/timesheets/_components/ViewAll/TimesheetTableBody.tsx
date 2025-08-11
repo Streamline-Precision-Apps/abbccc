@@ -12,6 +12,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "@/components/ui/hover-card";
+import { highlight } from "../../../_pages/higlight";
 
 interface Timesheet {
   id: string;
@@ -38,7 +39,8 @@ interface TimesheetTableBodyProps {
   editingId?: string | null;
   showPendingOnly: boolean;
   onApprovalAction?: (id: string, action: "APPROVED" | "REJECTED") => void;
-  statusLoading?: Record<string, 'APPROVED' | 'REJECTED' | undefined>;
+  statusLoading?: Record<string, "APPROVED" | "REJECTED" | undefined>;
+  searchTerm: string;
 }
 
 export function TimesheetTableBody({
@@ -50,6 +52,7 @@ export function TimesheetTableBody({
   showPendingOnly,
   onApprovalAction,
   statusLoading = {},
+  searchTerm,
 }: TimesheetTableBodyProps) {
   if (timesheets.length === 0) {
     return (
@@ -81,7 +84,7 @@ export function TimesheetTableBody({
           key={timesheet.id}
         >
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.id}
+            {highlight(timesheet.id, searchTerm)}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.date, "MM/dd/yy")}
@@ -98,14 +101,17 @@ export function TimesheetTableBody({
             ) : null}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
-            {timesheet.User.firstName} {timesheet.User.lastName}
+            {highlight(
+              `${timesheet.User.firstName} ${timesheet.User.lastName}`,
+              searchTerm,
+            )}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.Jobsite ? (
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
-                    {timesheet.Jobsite.code}
+                    {highlight(timesheet.Jobsite.code, searchTerm)}
                   </span>
                 </HoverCardTrigger>
                 <HoverCardContent>
@@ -121,7 +127,7 @@ export function TimesheetTableBody({
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
-                    {timesheet.CostCode.code}
+                    {highlight(timesheet.CostCode.code, searchTerm)}
                   </span>
                 </HoverCardTrigger>
                 <HoverCardContent>
@@ -192,7 +198,9 @@ export function TimesheetTableBody({
                         size={"icon"}
                         variant={"link"}
                         className={`border-none w-fit h-full justify-center ${
-                          statusLoading[timesheet.id] === 'APPROVED' ? "animate-pulse" : ""
+                          statusLoading[timesheet.id] === "APPROVED"
+                            ? "animate-pulse"
+                            : ""
                         }`}
                         onClick={() =>
                           !statusLoading[timesheet.id] &&
@@ -200,9 +208,9 @@ export function TimesheetTableBody({
                           onApprovalAction(timesheet.id, "APPROVED")
                         }
                         aria-label="Approve Timesheet"
-                        disabled={statusLoading[timesheet.id] === 'APPROVED'}
+                        disabled={statusLoading[timesheet.id] === "APPROVED"}
                       >
-                        {statusLoading[timesheet.id] === 'APPROVED' ? (
+                        {statusLoading[timesheet.id] === "APPROVED" ? (
                           <span className="h-3 w-3 mr-4 flex items-center justify-center">
                             <svg
                               className="animate-spin h-4 w-4 text-green-600"
@@ -238,7 +246,9 @@ export function TimesheetTableBody({
                         size={"icon"}
                         variant={"link"}
                         className={`border-none w-fit h-full justify-center ${
-                          statusLoading[timesheet.id] === 'REJECTED' ? "animate-pulse" : ""
+                          statusLoading[timesheet.id] === "REJECTED"
+                            ? "animate-pulse"
+                            : ""
                         }`}
                         onClick={() =>
                           !statusLoading[timesheet.id] &&
@@ -246,9 +256,9 @@ export function TimesheetTableBody({
                           onApprovalAction(timesheet.id, "REJECTED")
                         }
                         aria-label="Deny Timesheet"
-                        disabled={statusLoading[timesheet.id] === 'REJECTED'}
+                        disabled={statusLoading[timesheet.id] === "REJECTED"}
                       >
-                        {statusLoading[timesheet.id] === 'REJECTED' ? (
+                        {statusLoading[timesheet.id] === "REJECTED" ? (
                           <span className="h-3 w-3 mr-4 flex items-center justify-center">
                             <svg
                               className="animate-spin h-4 w-4 text-red-600"

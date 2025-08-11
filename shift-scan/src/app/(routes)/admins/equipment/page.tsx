@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../_pages/SearchBar";
 import { useEffect, useState } from "react";
 import EquipmentTable from "./_components/equipmentTable";
 import {
@@ -240,19 +239,17 @@ export default function EquipmentPage() {
         </div>
         <ReloadBtnSpinner isRefreshing={loading} fetchData={rerender} />
       </div>
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-fit p-1 bg-white  rounded-lg ">
-            <SearchBarPopover
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search by name, make, or model..."}
-              textSize="xs"
-              imageSize="6"
-            />
-          </div>
+      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-2 mb-2 ">
+        <div className="flex flex-row w-full gap-2 mb-2">
+          <SearchBarPopover
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={"Search by name, make, or model..."}
+            textSize="xs"
+            imageSize="10"
+          />
         </div>
-        <div className="flex flex-row justify-end w-full gap-4">
+        <div className="flex flex-row justify-end w-full gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
