@@ -17,18 +17,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { highlight } from "../../../_pages/higlight";
 
 export interface ListProps {
   forms: FormItem[];
   loading: boolean;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  total: number;
-  setPage: (page: number) => void;
-  setPageSize: (size: number) => void;
   openHandleDelete: (id: string) => void;
   setPendingExportId: Dispatch<SetStateAction<string | null>>;
+  inputValue: string;
 }
 
 /**
@@ -37,14 +33,10 @@ export interface ListProps {
 const List: React.FC<ListProps> = ({
   forms,
   loading,
-  page,
-  pageSize,
-  totalPages,
-  total,
-  setPage,
-  setPageSize,
+
   setPendingExportId,
   openHandleDelete,
+  inputValue,
 }) => {
   return (
     <>
@@ -135,7 +127,9 @@ const List: React.FC<ListProps> = ({
               <TableRow key={form.id} className="odd:bg-white even:bg-gray-100">
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold">{form.name}</span>
+                    <span className="text-sm font-semibold">
+                      {highlight(form.name, inputValue)}
+                    </span>
                     <span className="text-xs text-gray-500">
                       {form.description || "No description"}
                     </span>

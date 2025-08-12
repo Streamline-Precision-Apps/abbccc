@@ -106,8 +106,8 @@ export default function Forms() {
     to: undefined,
   });
   const {
-    searchTerm,
-    setSearchTerm,
+    inputValue,
+    setInputValue,
     formType,
     setFormType,
     loading,
@@ -318,9 +318,9 @@ export default function Forms() {
       <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-2">
           <SearchBarPopover
-            term={searchTerm}
-            handleSearchChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={"Search by form..."}
+            term={inputValue}
+            handleSearchChange={(e) => setInputValue(e.target.value)}
+            placeholder={"Search by form name..."}
             textSize="xs"
             imageSize="10"
           />
@@ -393,17 +393,12 @@ export default function Forms() {
           <List
             forms={filteredForms}
             loading={loading}
-            page={page}
-            pageSize={pageSize}
-            totalPages={totalPages}
-            total={total}
-            setPage={setPage}
-            setPageSize={setPageSize}
             openHandleDelete={openHandleDelete}
             setPendingExportId={(id) => {
               setExportingFormId(id);
               setShowExportModal(true);
             }}
+            inputValue={inputValue}
           />
           <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
             <ScrollBar

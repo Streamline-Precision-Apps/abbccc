@@ -269,7 +269,7 @@ export default function AdminTimesheets() {
             <SearchBarPopover
               term={inputValue}
               handleSearchChange={(e) => setInputValue(e.target.value)}
-              placeholder={"Search by id, name, or work Type"}
+              placeholder={"Search by id, name, profit id, or cost code... "}
               textSize="xs"
               imageSize="10"
             />

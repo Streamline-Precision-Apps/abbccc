@@ -1,9 +1,8 @@
-
 import { NextResponse } from "next/server";
 // Sentry import already present if needed
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -20,57 +19,103 @@ export async function GET(req: Request) {
 
     // Parse pagination params
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
+    const search = searchParams.get("search")?.trim() || "";
 
-    // Get total count for pagination
-    const total = await prisma.formTemplate.count();
-
-    const forms = await prisma.formTemplate.findMany({
-      skip,
-      take,
-      include: {
-        _count: {
-          select: {
-            Submissions: true,
+    let forms, total, pageSize, page, skip, totalPages;
+    if (search !== "") {
+      page = undefined;
+      pageSize = undefined;
+      skip = undefined;
+      totalPages = 1;
+      forms = await prisma.formTemplate.findMany({
+        include: {
+          _count: {
+            select: {
+              Submissions: true,
+            },
           },
-        },
-        FormGrouping: {
-          select: {
-            id: true,
-            title: true,
-            order: true,
-            Fields: {
-              select: {
-                label: true,
-                type: true,
-                required: true,
-                order: true,
-                placeholder: true,
-                minLength: true,
-                maxLength: true,
-                multiple: true,
-                content: true,
-                filter: true,
-                Options: true,
+          FormGrouping: {
+            select: {
+              id: true,
+              title: true,
+              order: true,
+              Fields: {
+                select: {
+                  label: true,
+                  type: true,
+                  required: true,
+                  order: true,
+                  placeholder: true,
+                  minLength: true,
+                  maxLength: true,
+                  multiple: true,
+                  content: true,
+                  filter: true,
+                  Options: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      total = forms.length;
+    } else {
+      page = parseInt(searchParams.get("page") || "1", 10);
+      pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+      skip = (page - 1) * pageSize;
+      const take = pageSize;
+      // Fetch total count for pagination
+      total = await prisma.formTemplate.count();
+      totalPages = Math.ceil(total / pageSize);
+      // Get total count for pagination
+
+      forms = await prisma.formTemplate.findMany({
+        skip,
+        take,
+        include: {
+          _count: {
+            select: {
+              Submissions: true,
+            },
+          },
+          FormGrouping: {
+            select: {
+              id: true,
+              title: true,
+              order: true,
+              Fields: {
+                select: {
+                  label: true,
+                  type: true,
+                  required: true,
+                  order: true,
+                  placeholder: true,
+                  minLength: true,
+                  maxLength: true,
+                  multiple: true,
+                  content: true,
+                  filter: true,
+                  Options: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }
 
     return NextResponse.json({
       data: forms,
       page,
       pageSize,
       total,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages,
     });
   } catch (error) {
     Sentry.captureException(error);
