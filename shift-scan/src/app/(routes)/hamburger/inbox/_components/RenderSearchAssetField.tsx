@@ -34,7 +34,6 @@ export default function RenderSearchAssetField({
   field,
   handleFieldChange,
   formData,
-  clientOptions,
   equipmentOptions,
   jobsiteOptions,
   costCodeOptions,
@@ -42,10 +41,6 @@ export default function RenderSearchAssetField({
   touchedFields,
   error,
 }: {
-  clientOptions: {
-    value: string;
-    label: string;
-  }[];
   equipmentOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -78,7 +73,7 @@ export default function RenderSearchAssetField({
   touchedFields: Record<string, boolean>;
   error?: string | null;
 }) {
-  let assetOptions = clientOptions || [];
+  let assetOptions = [{ value: "", label: "" }];
   let assetType = "client";
 
   if (field.filter) {
@@ -96,14 +91,6 @@ export default function RenderSearchAssetField({
         assetOptions = costCodeOptions || [];
         assetType = "costCode";
         break;
-      case "CLIENTS":
-        assetOptions = clientOptions || [];
-        assetType = "client";
-        break;
-      default:
-        console.warn("Unknown filter type:", field.filter);
-        assetOptions = clientOptions || [];
-        assetType = "client";
     }
   }
 

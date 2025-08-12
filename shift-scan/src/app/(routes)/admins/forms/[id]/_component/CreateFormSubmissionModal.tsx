@@ -89,16 +89,10 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);
-  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 
   const userOptions = users.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
-  }));
-
-  const clientOptions = clients.map((c) => ({
-    value: c.id,
-    label: `${c.name}`,
   }));
 
   const equipmentOptions = equipment.map((e) => ({
@@ -123,27 +117,6 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
       setUsers(employees);
     };
     fetchEmployees();
-  }, []);
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const res = await fetch("/api/getClientsSummary");
-        const data = await res.json();
-
-        // Check if the response is successful and contains an array
-        if (res.ok && Array.isArray(data)) {
-          setClients(data);
-        } else {
-          console.warn("No clients found or invalid response:", data);
-          setClients([]);
-        }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-        setClients([]);
-      }
-    };
-    fetchClients();
   }, []);
 
   // Fetch equipment data
@@ -289,7 +262,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               submittedByTouched={submittedByTouched}
               formData={formData}
               handleFieldChange={handleFieldChange}
-              clientOptions={clientOptions}
+              // clientOptions={clientOptions}
               equipmentOptions={equipmentOptions}
               jobsiteOptions={jobsiteOptions}
               costCodeOptions={costCodeOptions}

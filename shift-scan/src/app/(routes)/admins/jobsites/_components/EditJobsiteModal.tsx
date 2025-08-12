@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { Jobsite, useJobsiteDataById } from "./useJobsiteDataById";
 import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,13 +11,6 @@ import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export default function EditJobsiteModal({
   cancel,
@@ -29,7 +21,7 @@ export default function EditJobsiteModal({
   pendingEditId: string;
   rerender: () => void;
 }) {
-  const { jobSiteDetails, tagSummaries, clients, loading } =
+  const { jobSiteDetails, tagSummaries, loading } =
     useJobsiteDataById(pendingEditId);
   const [formData, setFormData] = useState<Jobsite>();
   const [originalForm, setOriginalForm] = useState<Jobsite | null>(null);
@@ -42,7 +34,7 @@ export default function EditJobsiteModal({
   }, [jobSiteDetails]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) =>
@@ -52,7 +44,7 @@ export default function EditJobsiteModal({
             [name]:
               type === "number" ? (value === "" ? null : Number(value)) : value,
           }
-        : prev
+        : prev,
     );
   };
 
@@ -73,7 +65,7 @@ export default function EditJobsiteModal({
       fd.append("isActive", String(formData.isActive));
       fd.append(
         "CCTags",
-        JSON.stringify(formData.CCTags.map((tag) => ({ id: tag.id })))
+        JSON.stringify(formData.CCTags.map((tag) => ({ id: tag.id }))),
       );
 
       const result = await updateJobsiteAdmin(fd);
@@ -91,7 +83,7 @@ export default function EditJobsiteModal({
     }
   };
 
-  if (loading || !formData || !originalForm || !tagSummaries || !clients) {
+  if (loading || !formData || !originalForm || !tagSummaries) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
         <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
@@ -140,8 +132,8 @@ export default function EditJobsiteModal({
                       originalForm.approvalStatus === "APPROVED"
                         ? "text-green-600"
                         : originalForm.approvalStatus === "PENDING"
-                        ? "text-sky-600"
-                        : "text-red-600"
+                          ? "text-sky-600"
+                          : "text-red-600"
                     }`}
                   >
                     {originalForm.approvalStatus
@@ -265,10 +257,10 @@ export default function EditJobsiteModal({
                           ? {
                               ...prev,
                               CCTags: tagSummaries.filter((tag) =>
-                                selectedIds.includes(tag.id)
+                                selectedIds.includes(tag.id),
                               ),
                             }
-                          : prev
+                          : prev,
                       );
                     }}
                   />
@@ -290,10 +282,10 @@ export default function EditJobsiteModal({
                                 ? {
                                     ...prev,
                                     CCTags: prev.CCTags.filter(
-                                      (j) => j.id !== js.id
+                                      (j) => j.id !== js.id,
                                     ),
                                   }
-                                : prev
+                                : prev,
                             );
                           }}
                           aria-label={`Remove ${js.name}`}
