@@ -74,7 +74,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
   const [costCodeOptions, setCostCodeOptions] = useState<Option[]>([]);
   const [userOptions, setUserOptions] = useState<Option[]>([]);
-  const [clientOptions, setClientOptions] = useState<Option[]>([]);
 
   const { equipmentResults } = useDBEquipment();
   const { costcodeResults } = useDBCostcode();
@@ -128,35 +127,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       }
     };
     fetchUsers();
-  }, []);
-
-  // Fetch client options
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const res = await fetch("/api/getClientsForForms", {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
-        });
-        const data = await res.json();
-
-        // Check if the response is successful and contains an array
-        if (res.ok && Array.isArray(data)) {
-          const options = data.map((client: { id: string; name: string }) => ({
-            value: client.id,
-            label: client.name,
-          }));
-          setClientOptions(options);
-        } else {
-          console.warn("No clients found or invalid response:", data);
-          setClientOptions([]);
-        }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-        setClientOptions([]);
-      }
-    };
-    fetchClients();
   }, []);
 
   // Convert FormTemplate to FormIndividualTemplate for RenderFields
@@ -371,7 +341,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       submittedByTouched={false}
       formData={convertedValues}
       handleFieldChange={handleFieldChange}
-      clientOptions={clientOptions}
       equipmentOptions={equipmentOptions}
       jobsiteOptions={jobsiteOptions}
       costCodeOptions={costCodeOptions}

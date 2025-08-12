@@ -131,27 +131,7 @@ export default function EditFormSubmissionModal({
     };
     fetchUsers();
   }, []);
-  // Fetch clients data
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const res = await fetch("/api/getClientsSummary");
-        const data = await res.json();
 
-        // Check if the response is successful and contains an array
-        if (res.ok && Array.isArray(data)) {
-          setClients(data);
-        } else {
-          console.warn("No clients found or invalid response:", data);
-          setClients([]);
-        }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-        setClients([]);
-      }
-    };
-    fetchClients();
-  }, []);
   // Fetch equipment data
   useEffect(() => {
     const fetchEquipment = async () => {
@@ -524,7 +504,6 @@ export default function EditFormSubmissionModal({
                     handleFieldChange={handleFieldChange}
                     handleFieldTouch={handleFieldTouch}
                     touchedFields={touchedFields}
-                    clientOptions={clientOptions}
                     equipmentOptions={equipmentOptions}
                     jobsiteOptions={jobsiteOptions}
                     costCodeOptions={costCodeOptions}

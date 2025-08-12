@@ -33,7 +33,7 @@ export default function RenderFields({
   submittedByTouched,
   formData,
   handleFieldChange,
-  clientOptions = [],
+
   equipmentOptions = [],
   jobsiteOptions = [],
   costCodeOptions = [],
@@ -49,7 +49,6 @@ export default function RenderFields({
   submittedByTouched: boolean;
   formData: Record<string, FormFieldValue>;
   handleFieldChange: (fieldId: string, value: FormFieldValue) => void;
-  clientOptions: { value: string; label: string }[];
   equipmentOptions?: { value: string; label: string }[];
   jobsiteOptions?: { value: string; label: string }[];
   costCodeOptions?: { value: string; label: string }[];
@@ -406,7 +405,6 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       formData={formData}
-                      clientOptions={clientOptions || []}
                       equipmentOptions={equipmentOptions || []}
                       jobsiteOptions={jobsiteOptions || []}
                       costCodeOptions={costCodeOptions || []}
