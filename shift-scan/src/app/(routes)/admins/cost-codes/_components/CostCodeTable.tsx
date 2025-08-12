@@ -15,26 +15,22 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { highlight } from "../../_pages/higlight";
 
 export default function CostCodeTable({
   loading,
   costCodeDetails,
   openHandleDelete,
   openHandleEdit,
+  inputValue,
 }: {
   loading: boolean;
   costCodeDetails: CostCodeSummary[];
   openHandleDelete: (id: string) => void;
   openHandleEdit: (id: string) => void;
+  inputValue: string;
 }) {
-  const header = [
-    "ID",
-    "Name",
-    "Created At",
-    "Active",
-    "Updated At",
-    "Actions",
-  ];
+  const header = ["Name", "Created At", "Active", "Updated At", "Actions"];
 
   return (
     <>
@@ -58,10 +54,6 @@ export default function CostCodeTable({
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
               >
-                {/* ID */}
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-2/3 mx-auto" />
-                </TableCell>
                 {/* Name */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-3/4 mx-auto" />
@@ -96,10 +88,7 @@ export default function CostCodeTable({
                 key={costCode.id}
               >
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {costCode.id || "-"}
-                </TableCell>
-                <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {costCode.name || "-"}
+                  {highlight(costCode.name, inputValue) || "-"}
                 </TableCell>
 
                 <TableCell className=" border-r border-gray-200 text-xs text-center">

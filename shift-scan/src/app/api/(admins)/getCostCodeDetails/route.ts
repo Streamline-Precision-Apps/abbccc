@@ -19,34 +19,57 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
-
-    // Fetch total count for pagination
-    const total = await prisma.costCode.count();
-    // Fetch only essential fields from cost codes
-    const costCodeSummary = await prisma.costCode.findMany({
-      skip,
-      take,
-      include: {
-        CCTags: {
-          select: {
-            id: true,
-            name: true,
+    const search = searchParams.get("search")?.trim() || "";
+    let costCodeSummary, total, pageSize, page, skip, totalPages;
+    if (search !== "") {
+      page = undefined;
+      pageSize = undefined;
+      skip = undefined;
+      totalPages = 1;
+      costCodeSummary = await prisma.costCode.findMany({
+        include: {
+          CCTags: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
+        orderBy: {
+          name: "asc",
+        },
+      });
+      total = costCodeSummary.length;
+    } else {
+      page = parseInt(searchParams.get("page") || "1", 10);
+      pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+      skip = (page - 1) * pageSize;
+      const take = pageSize;
+      // Fetch total count for pagination
+      total = await prisma.costCode.count();
+      totalPages = Math.ceil(total / pageSize);
+      // Fetch only essential fields from cost codes
+      costCodeSummary = await prisma.costCode.findMany({
+        skip,
+        take,
+        include: {
+          CCTags: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          name: "asc",
+        },
+      });
+    }
 
     if (!costCodeSummary || costCodeSummary.length === 0) {
       return NextResponse.json(
         { message: "No cost codes found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,7 +78,7 @@ export async function GET(req: Request) {
       total,
       page,
       pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages,
     });
   } catch (error) {
     Sentry.captureException(error);

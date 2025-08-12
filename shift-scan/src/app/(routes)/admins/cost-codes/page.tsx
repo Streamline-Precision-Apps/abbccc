@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../_pages/SearchBar";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -39,12 +38,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Tags, Puzzle } from "lucide-react";
+import { Tags } from "lucide-react";
 
 export default function CostCodePage() {
   const { setOpen, open } = useSidebar();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchTag, setSearchTag] = useState("");
   const {
     loading,
     CostCodeDetails,
@@ -54,6 +51,8 @@ export default function CostCodePage() {
     pageSize,
     setPage,
     setPageSize,
+    inputValue,
+    setInputValue,
   } = useCostCodeData();
 
   const {
@@ -65,6 +64,8 @@ export default function CostCodePage() {
     pageSize: tagPageSize,
     setPage: setTagPage,
     setPageSize: setTagPageSize,
+    inputValue: searchTag,
+    setInputValue: setSearchTag,
   } = useTagData();
 
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
@@ -127,7 +128,7 @@ export default function CostCodePage() {
   };
   // Simple filter by cost code name
   const filteredCostCodes = CostCodeDetails.filter((costCode) =>
-    costCode.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    costCode.name.toLowerCase().includes(inputValue.toLowerCase()),
   );
 
   // Simple filter by tag name
@@ -153,7 +154,7 @@ export default function CostCodePage() {
   // Reset to page 1 if search or filter changes
   useEffect(() => {
     setPage(1);
-  }, [searchTerm]);
+  }, [inputValue]);
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
@@ -200,8 +201,8 @@ export default function CostCodePage() {
         <div className="flex flex-row w-full gap-2">
           {pageState === "CostCode" ? (
             <SearchBarPopover
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
+              term={inputValue}
+              handleSearchChange={(e) => setInputValue(e.target.value)}
               placeholder={"Search by name..."}
               textSize="xs"
               imageSize="10"
@@ -317,6 +318,7 @@ export default function CostCodePage() {
               costCodeDetails={paginatedCostCodes}
               openHandleDelete={openHandleDelete}
               openHandleEdit={openHandleEdit}
+              inputValue={inputValue}
             />
           ) : (
             <TagTable

@@ -23,6 +23,16 @@ export const useCostCodeData = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchTerm(inputValue);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [inputValue]);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -30,8 +40,9 @@ export const useCostCodeData = () => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
+        const encodedSearch = encodeURIComponent(searchTerm.trim());
         const response = await fetch(
-          `/api/getCostCodeDetails?page=${page}&pageSize=${pageSize}`
+          `/api/getCostCodeDetails?page=${page}&pageSize=${pageSize}&search=${encodedSearch}`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
@@ -47,7 +58,7 @@ export const useCostCodeData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey, page, pageSize]);
+  }, [refreshKey, page, pageSize, searchTerm]);
 
   return {
     CostCodeDetails,
@@ -65,5 +76,7 @@ export const useCostCodeData = () => {
     setPage,
     setPageSize,
     setTotalPages,
+    inputValue,
+    setInputValue,
   };
 };
