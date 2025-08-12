@@ -40,10 +40,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                               <EquipmentListProvider>
                                 <JobSiteProvider>
                                   <CostCodeProvider>
-                                    {/* <RecentCostCodeProvider> */}
-                                    {/*<RecentJobSiteProvider> */}
                                     <PayPeriodTimeSheetProvider>
-                                      {/* <RecentEquipmentProvider> */}
                                       <NotificationProvider>
                                         <CommentDataProvider>
                                           <EquipmentIdProvider>
@@ -51,10 +48,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                           </EquipmentIdProvider>
                                         </CommentDataProvider>
                                       </NotificationProvider>
-                                      {/* </RecentEquipmentProvider> */}
                                     </PayPeriodTimeSheetProvider>
-                                    {/* </RecentJobSiteProvider> */}
-                                    {/*</RecentCostCodeProvider> */}
                                   </CostCodeProvider>
                                 </JobSiteProvider>
                               </EquipmentListProvider>

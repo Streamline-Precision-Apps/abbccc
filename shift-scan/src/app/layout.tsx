@@ -5,7 +5,7 @@ import { Providers } from "./providers";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
+import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManagerClient";
 
 export const viewport: Viewport = {
   themeColor: "#57BDE9",
@@ -52,7 +52,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="h-full">
-      <body className="min-h-screen overflow-auto bg-gradient-to-b from-app-dark-blue to-app-blue">
+      <body suppressHydrationWarning>
         <main className="min-h-screen overflow-auto bg-gradient-to-b from-app-dark-blue to-app-blue">
           <NextIntlClientProvider messages={messages}>
             <Providers>
