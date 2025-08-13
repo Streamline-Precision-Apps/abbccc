@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { deleteUser } from "@/actions/adminActions";
 
 export type PersonnelSummary = {
   id: string;
@@ -39,6 +40,15 @@ export const usePersonnelData = () => {
   const [searchTerm, setSearchTerm] = useState<string>(""); // debounced value
   const [searchInput, setSearchInput] = useState<string>(""); // immediate input
 
+  //   // State for modals
+  const [editUserModal, setEditUserModal] = useState(false);
+  const [createUserModal, setCreateUserModal] = useState(false);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+
+  //   // State for delete confirmation dialog
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -77,6 +87,35 @@ export const usePersonnelData = () => {
     fetchPersonnelSummaries();
   }, [refreshKey, page, pageSize, showInactive, searchTerm]);
 
+  const openHandleEdit = (id: string) => {
+    setPendingEditId(id);
+    setEditUserModal(true);
+  };
+
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (pendingDeleteId) {
+      await deleteUser(pendingDeleteId);
+      setShowDeleteDialog(false);
+      setPendingDeleteId(null);
+      rerender();
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setPendingDeleteId(null);
+  };
+
+  // Reset to page 1 if search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, showInactive]);
+
   return {
     personnelDetails,
     setPersonnelDetails,
@@ -94,10 +133,21 @@ export const usePersonnelData = () => {
     setPageSize,
     setTotalPages,
     // Show inactive employee only
-    setShowInactive,
+
     showInactive,
     // Search
     searchTerm: searchInput,
     setSearchTerm: setSearchInput,
+    editUserModal,
+    setEditUserModal,
+    createUserModal,
+    setCreateUserModal,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    openHandleEdit,
+    openHandleDelete,
+    confirmDelete,
+    cancelDelete,
+    pendingEditId,
   };
 };

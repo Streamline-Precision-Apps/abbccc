@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { highlight } from "../../_pages/higlight";
+import { SquareCheck, SquareX } from "lucide-react";
 
 export default function CostCodeTable({
   loading,
@@ -64,7 +65,7 @@ export default function CostCodeTable({
                 </TableCell>
                 {/* Active */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-1/2 mx-auto" />
+                  <Skeleton className="h-4 w-4 mx-auto" />
                 </TableCell>
                 {/* Updated At */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -96,8 +97,21 @@ export default function CostCodeTable({
                     ? format(new Date(costCode.createdAt), "MM/dd/yyyy")
                     : "-"}
                 </TableCell>
-                <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {costCode.isActive ? "Active" : "Inactive"}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex justify-center">
+                        {costCode.isActive ? (
+                          <SquareCheck className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <SquareX className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {costCode.isActive ? "Active" : "Inactive"}
+                    </TooltipContent>
+                  </Tooltip>
                 </TableCell>
 
                 <TableCell className=" border-r border-gray-200 text-xs text-center">

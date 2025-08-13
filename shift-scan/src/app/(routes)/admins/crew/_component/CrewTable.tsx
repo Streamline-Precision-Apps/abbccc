@@ -36,7 +36,6 @@ export default function CrewTable({
   showInactive: boolean;
 }) {
   const header = [
-    "Crew Name",
     "Supervisor",
     "Crew Type",
     "Created On",
@@ -64,17 +63,35 @@ export default function CrewTable({
 
   return (
     <>
-      <Table className="w-full mb-10">
+      <Table className="w-full mb-5">
         <TableHeader>
           <TableRow>
-            {header.map((h) => (
+            <TableHead className="sticky  text-center  top-0 z-10 bg-gray-100 border-r border-gray-200">
+              Crew Name
+            </TableHead>
+            <TableHead className="sticky text-center  top-0 z-10 bg-gray-100 border-r border-gray-200">
+              Supervisor
+            </TableHead>
+            <TableHead className="w-[150px] text-center  sticky top-0 z-10 bg-gray-100 border-r border-gray-200">
+              Crew Type
+            </TableHead>
+            <TableHead className="w-[150px] text-center  sticky top-0 z-10 bg-gray-100 border-r border-gray-200">
+              Created
+            </TableHead>
+            <TableHead className="w-[180px] text-center  sticky top-0 z-10 bg-gray-100 border-r border-gray-200">
+              Total Crew Members
+            </TableHead>
+            <TableHead className="sticky text-center top-0 z-10 bg-gray-100 border-r border-gray-200 ">
+              Actions
+            </TableHead>
+            {/* {header.map((h) => (
               <TableHead
                 key={h}
                 className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10"
               >
                 {h}
               </TableHead>
-            ))}
+            ))} */}
           </TableRow>
         </TableHeader>
         {loading ? (
@@ -115,24 +132,27 @@ export default function CrewTable({
             ))}
           </TableBody>
         ) : (
-          <TableBody>
+          <TableBody className="divide-y divide-gray-200 bg-white">
             {crew.map((c) => (
-              <TableRow className="odd:bg-white even:bg-gray-100 " key={c.id}>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
+              <TableRow
+                className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                key={c.id}
+              >
+                <TableCell className="border-r border-gray-200 text-xs text-left">
                   {c.name ? c.name : ""}
                 </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
+                <TableCell className="border-r border-gray-200 text-xs text-left">
                   {c.leadId ? leadUser(c) : ""}
                 </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <span className="bg-blue-300/70 px-3 py-1 rounded-xl">
+                <TableCell className="border-r border-gray-200 text-xs text-left ">
+                  <span className="bg-blue-300/70 px-3 py-1 rounded-xl ">
                     {c.crewType ? crewType(c) : ""}
                   </span>
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {c.createdAt ? format(c.createdAt, "MM/dd/yy") : ""}
                 </TableCell>
-                <TableCell className="border-r border-gray-200 text-xs text-center">
+                <TableCell className="border-r border-gray-200 text-sm text-center">
                   {c.Users ? (
                     <HoverCard>
                       <HoverCardTrigger asChild>
@@ -140,7 +160,7 @@ export default function CrewTable({
                           {c.Users.length}
                         </span>
                       </HoverCardTrigger>
-                      <HoverCardContent className=" min-w-[220px] max-w-[340px]">
+                      <HoverCardContent className=" p-0 min-w-[220px] max-w-[340px]">
                         {c.Users.length > 0 ? (
                           <Table>
                             <TableHeader>

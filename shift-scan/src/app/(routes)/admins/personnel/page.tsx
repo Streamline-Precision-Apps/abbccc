@@ -19,7 +19,6 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -29,12 +28,11 @@ import SearchBarPopover from "../_pages/searchBarPopover";
 import { usePersonnelData } from "./_components/usePersonnelData";
 import UserTable from "./_components/UserTable";
 import CreateUserModal from "./_components/createUser";
-import { deleteUser } from "@/actions/adminActions";
+
 import EditUserModal from "./_components/editUser";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function JobsitePage() {
-  const { setOpen, open } = useSidebar();
   const {
     loading,
     personnelDetails,
@@ -45,54 +43,24 @@ export default function JobsitePage() {
     pageSize,
     setPage,
     setPageSize,
-    setShowInactive,
     showInactive,
     searchTerm,
     setSearchTerm,
+    editUserModal,
+    setEditUserModal,
+    createUserModal,
+    setCreateUserModal,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    openHandleEdit,
+    openHandleDelete,
+    confirmDelete,
+    cancelDelete,
+    pendingEditId,
   } = usePersonnelData();
 
-  //   // State for modals
-  const [editUserModal, setEditUserModal] = useState(false);
-  const [createUserModal, setCreateUserModal] = useState(false);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-
-  //   // State for delete confirmation dialog
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
-  //   // Pagination state
-
-  const openHandleEdit = (id: string) => {
-    setPendingEditId(id);
-    setEditUserModal(true);
-  };
-
-  const openHandleDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (pendingDeleteId) {
-      await deleteUser(pendingDeleteId);
-      setShowDeleteDialog(false);
-      setPendingDeleteId(null);
-      rerender();
-    }
-  };
-
-  const cancelDelete = () => {
-    setShowDeleteDialog(false);
-    setPendingDeleteId(null);
-  };
-
-  // Reset to page 1 if search or filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [searchTerm, showInactive]);
-
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={loading}
         headerText=" Personnel Management"
@@ -102,23 +70,22 @@ export default function JobsitePage() {
         }}
       />
 
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <SearchBarPopover
-            term={searchTerm}
-            handleSearchChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={"Search by name, username, or number..."}
-            textSize="xs"
-            imageSize="10"
-          />
-        </div>
-        <div className="flex flex-row justify-end w-full gap-4">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
+        <SearchBarPopover
+          term={searchTerm}
+          handleSearchChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={"Search by name, username, or number..."}
+          textSize="xs"
+          imageSize="10"
+        />
+
+        <div className="w-full h-full flex flex-row justify-end items-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size={"icon"}
                 onClick={() => setCreateUserModal(true)}
-                className="min-w-12"
+                className="min-w-12 h-full"
               >
                 <img src="/plus-white.svg" alt="Add User" className="w-4 h-4" />
               </Button>

@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -9,11 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSidebar } from "@/components/ui/sidebar";
 import TascoReport from "./_reports/tascoReport";
 import { useRef, useState } from "react";
 import TruckingReport from "./_reports/truckingReport";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -23,7 +20,6 @@ import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
-  const { setOpen, open } = useSidebar();
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>(
     undefined,
   );
@@ -81,7 +77,7 @@ export default function AdminReports() {
   ];
   const selectedReport = reports.find((r) => r.id === selectedReportId);
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={isRefreshing}
         headerText=" Reports"
@@ -93,7 +89,7 @@ export default function AdminReports() {
         selectedReportId={selectedReportId}
       />
 
-      <div className="h-fit max-h-12 justify-between w-full flex flex-row gap-4">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
         <Select
           name="report"
           onValueChange={setSelectedReportId}
@@ -119,7 +115,7 @@ export default function AdminReports() {
               }}
               variant={"default"}
               size={"icon"}
-              className="rounded-lg min-w-12 hover:bg-slate-800 "
+              className="rounded-lg min-w-12 h-full hover:bg-slate-800 "
             >
               <img
                 src="/export-white.svg"

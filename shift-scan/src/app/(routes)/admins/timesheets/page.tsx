@@ -12,12 +12,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
-import { adminDeleteTimesheet } from "@/actions/records-timesheets";
-import { toast } from "sonner";
-import { saveAs } from "file-saver";
-import * as XLSX from "xlsx";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
 import { ExportModal } from "./_components/Export/ExportModal";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -39,16 +34,13 @@ import {
 import Spinner from "@/components/(animations)/spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { Badge } from "@/components/ui/badge";
-import useAllTimeSheetData, {
-  Timesheet,
-} from "./_components/useAllTimeSheetData";
+import useAllTimeSheetData from "./_components/useAllTimeSheetData";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function AdminTimesheets() {
   const {
     inputValue,
     setInputValue,
-    setAllTimesheets,
     loading,
     page,
     setPage,
@@ -62,7 +54,6 @@ export default function AdminTimesheets() {
     showCreateModal,
     setShowCreateModal,
     deletingId,
-    setDeletingId,
     isDeleting,
     setIsDeleting,
     showEditModal,
@@ -78,182 +69,15 @@ export default function AdminTimesheets() {
     sortedTimesheets,
     rerender,
     handleApprovalAction,
+    handleDeleteClick,
+    handleDeleteCancel,
+    handleDeleteConfirm,
+    handlePageSizeChange,
+    handleExport,
   } = useAllTimeSheetData();
-  const handleDeleteClick = (id: string) => {
-    setDeletingId(id);
-    setIsDeleting(true);
-  };
-
-  const handleDeleteCancel = () => {
-    setDeletingId(null);
-    setIsDeleting(false);
-  };
-  const handleDeleteConfirm = async () => {
-    if (!deletingId) return;
-    setIsDeleting(true);
-    try {
-      await adminDeleteTimesheet(deletingId);
-      setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
-      setDeletingId(null);
-      toast.success("Timesheet deleted successfully!");
-    } catch (e) {
-      // Optionally show error
-      console.error("Error deleting timesheet:", e);
-      toast.error("Failed to delete timesheet. Please try again.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  // Handler to reset page to 1 when page size changes
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPage(1);
-    setPageSize(Number(e.target.value));
-  };
-
-  const handleExport = (
-    exportFormat: "csv" | "xlsx",
-    dateRange?: { from?: Date; to?: Date },
-    selectedFields?: string[],
-  ) => {
-    let exportRows = sortedTimesheets.filter((ts) => ts.status === "APPROVED");
-    if (dateRange?.from || dateRange?.to) {
-      // Set from to 12:00am and to to 11:59:59pm
-      const fromDate = dateRange.from
-        ? new Date(dateRange.from.setHours(0, 0, 0, 0))
-        : undefined;
-      const toDate = dateRange.to
-        ? new Date(dateRange.to.setHours(23, 59, 59, 999))
-        : undefined;
-      exportRows = exportRows.filter((ts) => {
-        const tsDate = new Date(ts.date);
-        if (fromDate && tsDate < fromDate) return false;
-        if (toDate && tsDate > toDate) return false;
-        return true;
-      });
-    }
-    const formatDateVal = (d: Date | string | undefined | null) => {
-      if (!d) return "";
-      const dateObj = typeof d === "string" ? new Date(d) : d;
-      if (isNaN(dateObj.getTime())) return "";
-      return format(dateObj, "MM-dd-yyyy");
-    };
-    const formatTimeVal = (d: Date | string | undefined | null) => {
-      if (!d) return "";
-      const dateObj = typeof d === "string" ? new Date(d) : d;
-      if (isNaN(dateObj.getTime())) return "";
-      return format(dateObj, "hh:mm a");
-    };
-    // All possible fields (Status removed from export)
-    /**
-     * Field mapping for export. Includes EquipmentId and EquipmentUsage aggregation.
-     */
-    const allFields: Record<string, (ts: Timesheet) => string> = {
-      Id: (ts) => ts.id,
-      WorkType: (ts) => String(ts.workType),
-      Date: (ts) => formatDateVal(ts.date),
-      Employee: (ts) =>
-        ts.User ? `${ts.User.firstName} ${ts.User.lastName}` : "",
-      Jobsite: (ts) => ts.Jobsite?.code || "",
-      CostCode: (ts) => ts.CostCode?.code || "",
-      NU: () => "NU",
-      FP: () => "FP",
-      Start: (ts) => formatTimeVal(ts.startTime),
-      End: (ts) => formatTimeVal(ts.endTime),
-      Duration: (ts) => {
-        if (!ts.startTime || !ts.endTime) return "";
-        const start = new Date(ts.startTime);
-        const end = new Date(ts.endTime);
-        const durationMs = end.getTime() - start.getTime();
-        const hours = Math.floor(durationMs / (1000 * 60 * 60));
-        const minutes = Math.floor(
-          (durationMs % (1000 * 60 * 60)) / (1000 * 60),
-        );
-        return `${hours} hr ${minutes} min`;
-      },
-      Comment: (ts) => ts.comment,
-      EquipmentId: (ts) =>
-        ts.EmployeeEquipmentLogs.map((log) => log.Equipment.name).join(", "),
-      EquipmentUsage: (ts) => {
-        if (
-          !Array.isArray(ts.EmployeeEquipmentLogs) ||
-          ts.EmployeeEquipmentLogs.length === 0
-        )
-          return "";
-        let totalMs = 0;
-        ts.EmployeeEquipmentLogs.forEach((log) => {
-          if (log.startTime && log.endTime) {
-            const start = new Date(log.startTime).getTime();
-            const end = new Date(log.endTime).getTime();
-            if (!isNaN(start) && !isNaN(end) && end > start) {
-              totalMs += end - start;
-            }
-          }
-        });
-        if (totalMs <= 0) return "0 min";
-        const totalMinutes = Math.round(totalMs / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60);
-        const mins = totalMinutes % 60;
-        if (hours > 0 && mins > 0) return `${hours} hr ${mins} min`;
-        if (hours > 0) return `${hours} hr`;
-        return `${mins} min`;
-      },
-      TruckNumber: (ts) =>
-        ts.TruckingLogs?.[0]?.truckNumber
-          ? String(ts.TruckingLogs[0].truckNumber)
-          : "",
-      TruckStartingMileage: (ts) =>
-        ts.TruckingLogs?.[0]?.startingMileage != null
-          ? String(ts.TruckingLogs[0].startingMileage)
-          : "",
-      TruckEndingMileage: (ts) =>
-        ts.TruckingLogs?.[0]?.endingMileage != null
-          ? String(ts.TruckingLogs[0].endingMileage)
-          : "",
-      MilesAtFueling: (ts) =>
-        ts.TruckingLogs?.[0]?.RefuelLogs?.[0]?.milesAtFueling != null
-          ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
-          : "",
-    };
-
-    // Remove 'Status' from selectedFields if present
-    const filteredFields =
-      selectedFields && selectedFields.length > 0
-        ? selectedFields.filter((f) => f !== "Status")
-        : Object.keys(allFields);
-
-    const exportData = exportRows.map((ts) => {
-      const row: Record<string, string> = {};
-      filteredFields.forEach((f) => {
-        row[f] = allFields[f] ? allFields[f](ts) : "";
-      });
-      return row;
-    });
-    if (exportFormat === "csv") {
-      const header = filteredFields.join(",");
-      const rows = exportData
-        .map((row) =>
-          filteredFields
-            .map((f) => `"${String(row[f] ?? "").replace(/"/g, '""')}"`)
-            .join(","),
-        )
-        .join("\n");
-      const csv = `${header}\n${rows}`;
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.csv`);
-    } else {
-      // XLSX
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Timesheets");
-      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-      const blob = new Blob([wbout], { type: "application/octet-stream" });
-      saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.xlsx`);
-    }
-  };
 
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={loading}
         headerText="Timesheets Management"
@@ -262,18 +86,17 @@ export default function AdminTimesheets() {
           rerender();
         }}
       />
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-2 mb-2">
-          <div className=" rounded-lg flex items-center">
-            <SearchBarPopover
-              term={inputValue}
-              handleSearchChange={(e) => setInputValue(e.target.value)}
-              placeholder={"Search by id, name, profit id, or cost code... "}
-              textSize="xs"
-              imageSize="10"
-            />
-          </div>
-          <div className="w-fit min-w-[40px] h-full max-h-10 flex flex-row">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
+        <div className="flex flex-row w-full gap-2">
+          <SearchBarPopover
+            term={inputValue}
+            handleSearchChange={(e) => setInputValue(e.target.value)}
+            placeholder={"Search by id, name, profit id, or cost code... "}
+            textSize="xs"
+            imageSize="10"
+          />
+
+          <div className="w-full min-w-[40px] max-h-10 flex flex-row">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -341,13 +164,13 @@ export default function AdminTimesheets() {
             </Popover>
           </div>
         </div>
-        <div className="w-full flex flex-row justify-end items-center">
+        <div className="w-full h-full flex flex-row justify-end items-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 onClick={() => setExportModal(true)}
                 size={"icon"}
-                className=" relative border-none hover:bg-gray-800 min-w-12 text-white mr-2"
+                className=" relative border-none hover:bg-gray-800 min-w-12 h-full  text-white mr-2"
               >
                 <div className="flex w-fit h-fit flex-row items-center">
                   <img
@@ -366,7 +189,7 @@ export default function AdminTimesheets() {
             <TooltipTrigger asChild>
               <Button
                 size={"icon"}
-                className=" relative border-none hover:bg-gray-800 min-w-12 text-white mr-2"
+                className=" relative border-none hover:bg-gray-800 min-w-12 h-full  text-white mr-2"
                 onClick={() => setShowCreateModal(true)}
               >
                 <div className="flex w-fit h-fit flex-row items-center">
@@ -386,7 +209,7 @@ export default function AdminTimesheets() {
               <Button
                 size={"icon"}
                 onClick={() => setShowPendingOnly(!showPendingOnly)}
-                className={`relative border-none min-w-16  bg-gray-900 hover:bg-gray-800 text-white ${
+                className={`relative border-none min-w-16 h-full  bg-gray-900 hover:bg-gray-800 text-white ${
                   showPendingOnly ? "ring-2 ring-red-400" : ""
                 }`}
               >

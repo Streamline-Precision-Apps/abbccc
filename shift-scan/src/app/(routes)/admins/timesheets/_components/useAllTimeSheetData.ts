@@ -3,7 +3,10 @@ import { ApprovalStatus, WorkType } from "@/lib/enums";
 import { useEffect, useState } from "react";
 import { adminUpdateTimesheetStatus } from "@/actions/records-timesheets";
 import { toast } from "sonner";
-
+import { adminDeleteTimesheet } from "@/actions/records-timesheets";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
+import { format } from "date-fns";
 /**
  * Timesheet domain entity.
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
@@ -242,6 +245,179 @@ export default function AdminTimesheets() {
     }
   };
 
+  const handleDeleteClick = (id: string) => {
+    setDeletingId(id);
+    setIsDeleting(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletingId(null);
+    setIsDeleting(false);
+  };
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
+    try {
+      await adminDeleteTimesheet(deletingId);
+      setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
+      setDeletingId(null);
+      toast.success("Timesheet deleted successfully!");
+    } catch (e) {
+      // Optionally show error
+      console.error("Error deleting timesheet:", e);
+      toast.error("Failed to delete timesheet. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handler to reset page to 1 when page size changes
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPage(1);
+    setPageSize(Number(e.target.value));
+  };
+
+  const handleExport = (
+    exportFormat: "csv" | "xlsx",
+    dateRange?: { from?: Date; to?: Date },
+    selectedFields?: string[],
+  ) => {
+    let exportRows = sortedTimesheets.filter((ts) => ts.status === "APPROVED");
+    if (dateRange?.from || dateRange?.to) {
+      // Set from to 12:00am and to to 11:59:59pm
+      const fromDate = dateRange.from
+        ? new Date(dateRange.from.setHours(0, 0, 0, 0))
+        : undefined;
+      const toDate = dateRange.to
+        ? new Date(dateRange.to.setHours(23, 59, 59, 999))
+        : undefined;
+      exportRows = exportRows.filter((ts) => {
+        const tsDate = new Date(ts.date);
+        if (fromDate && tsDate < fromDate) return false;
+        if (toDate && tsDate > toDate) return false;
+        return true;
+      });
+    }
+    const formatDateVal = (d: Date | string | undefined | null) => {
+      if (!d) return "";
+      const dateObj = typeof d === "string" ? new Date(d) : d;
+      if (isNaN(dateObj.getTime())) return "";
+      return format(dateObj, "MM-dd-yyyy");
+    };
+    const formatTimeVal = (d: Date | string | undefined | null) => {
+      if (!d) return "";
+      const dateObj = typeof d === "string" ? new Date(d) : d;
+      if (isNaN(dateObj.getTime())) return "";
+      return format(dateObj, "hh:mm a");
+    };
+    // All possible fields (Status removed from export)
+    /**
+     * Field mapping for export. Includes EquipmentId and EquipmentUsage aggregation.
+     */
+    const allFields: Record<string, (ts: Timesheet) => string> = {
+      Id: (ts) => ts.id,
+      WorkType: (ts) => String(ts.workType),
+      Date: (ts) => formatDateVal(ts.date),
+      Employee: (ts) =>
+        ts.User ? `${ts.User.firstName} ${ts.User.lastName}` : "",
+      Jobsite: (ts) => ts.Jobsite?.code || "",
+      CostCode: (ts) => ts.CostCode?.code || "",
+      NU: () => "NU",
+      FP: () => "FP",
+      Start: (ts) => formatTimeVal(ts.startTime),
+      End: (ts) => formatTimeVal(ts.endTime),
+      Duration: (ts) => {
+        if (!ts.startTime || !ts.endTime) return "";
+        const start = new Date(ts.startTime);
+        const end = new Date(ts.endTime);
+        const durationMs = end.getTime() - start.getTime();
+        const hours = Math.floor(durationMs / (1000 * 60 * 60));
+        const minutes = Math.floor(
+          (durationMs % (1000 * 60 * 60)) / (1000 * 60),
+        );
+        return `${hours} hr ${minutes} min`;
+      },
+      Comment: (ts) => ts.comment,
+      EquipmentId: (ts) =>
+        ts.EmployeeEquipmentLogs.map((log) => log.Equipment.name).join(", "),
+      EquipmentUsage: (ts) => {
+        if (
+          !Array.isArray(ts.EmployeeEquipmentLogs) ||
+          ts.EmployeeEquipmentLogs.length === 0
+        )
+          return "";
+        let totalMs = 0;
+        ts.EmployeeEquipmentLogs.forEach((log) => {
+          if (log.startTime && log.endTime) {
+            const start = new Date(log.startTime).getTime();
+            const end = new Date(log.endTime).getTime();
+            if (!isNaN(start) && !isNaN(end) && end > start) {
+              totalMs += end - start;
+            }
+          }
+        });
+        if (totalMs <= 0) return "0 min";
+        const totalMinutes = Math.round(totalMs / (1000 * 60));
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+        if (hours > 0 && mins > 0) return `${hours} hr ${mins} min`;
+        if (hours > 0) return `${hours} hr`;
+        return `${mins} min`;
+      },
+      TruckNumber: (ts) =>
+        ts.TruckingLogs?.[0]?.truckNumber
+          ? String(ts.TruckingLogs[0].truckNumber)
+          : "",
+      TruckStartingMileage: (ts) =>
+        ts.TruckingLogs?.[0]?.startingMileage != null
+          ? String(ts.TruckingLogs[0].startingMileage)
+          : "",
+      TruckEndingMileage: (ts) =>
+        ts.TruckingLogs?.[0]?.endingMileage != null
+          ? String(ts.TruckingLogs[0].endingMileage)
+          : "",
+      MilesAtFueling: (ts) =>
+        ts.TruckingLogs?.[0]?.RefuelLogs?.[0]?.milesAtFueling != null
+          ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
+          : "",
+    };
+
+    // Remove 'Status' from selectedFields if present
+    const filteredFields =
+      selectedFields && selectedFields.length > 0
+        ? selectedFields.filter((f) => f !== "Status")
+        : Object.keys(allFields);
+
+    const exportData = exportRows.map((ts) => {
+      const row: Record<string, string> = {};
+      filteredFields.forEach((f) => {
+        row[f] = allFields[f] ? allFields[f](ts) : "";
+      });
+      return row;
+    });
+    if (exportFormat === "csv") {
+      const header = filteredFields.join(",");
+      const rows = exportData
+        .map((row) =>
+          filteredFields
+            .map((f) => `"${String(row[f] ?? "").replace(/"/g, '""')}"`)
+            .join(","),
+        )
+        .join("\n");
+      const csv = `${header}\n${rows}`;
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.csv`);
+    } else {
+      // XLSX
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Timesheets");
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([wbout], { type: "application/octet-stream" });
+      saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+  };
+
   return {
     inputValue,
     setInputValue,
@@ -282,5 +458,10 @@ export default function AdminTimesheets() {
     sortedTimesheets,
     rerender,
     handleApprovalAction,
+    handleDeleteClick,
+    handleDeleteCancel,
+    handleDeleteConfirm,
+    handlePageSizeChange,
+    handleExport,
   };
 }
