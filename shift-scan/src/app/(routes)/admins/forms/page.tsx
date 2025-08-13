@@ -1,5 +1,4 @@
 "use client";
-import SearchBar from "../personnel/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
@@ -42,6 +41,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import SearchBarPopover from "../_pages/searchBarPopover";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 // Form field definition
 interface FormField {
@@ -98,8 +107,8 @@ export default function Forms() {
     to: undefined,
   });
   const {
-    searchTerm,
-    setSearchTerm,
+    inputValue,
+    setInputValue,
     formType,
     setFormType,
     loading,
@@ -242,13 +251,13 @@ export default function Forms() {
             .map((row) =>
               row
                 .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
-                .join(",")
+                .join(","),
             )
             .join("\n");
           const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`,
           );
         } else {
           const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -258,7 +267,7 @@ export default function Forms() {
           const blob = new Blob([wbout], { type: "application/octet-stream" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`,
           );
         }
 
@@ -276,80 +285,77 @@ export default function Forms() {
   // Main render
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
-        <div className="flex flex-row gap-5 ">
-          <div className="flex items-center justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-              }`}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <img
-                src={open ? "/condense-white.svg" : "/condense.svg"}
-                alt="logo"
-                className="w-4 h-auto object-contain "
-              />
-            </Button>
-          </div>
-          <div className="flex flex-col">
-            <p className="text-left font-bold text-base text-white">
-              Forms Management
-            </p>
-            <p className="text-left font-normal text-xs text-white">
-              Create, manage, and track form templates and submissions
-            </p>
-          </div>
-        </div>
-        <div>
-          {" "}
-          <div className="h-fit flex flex-row ">
-            <div className="flex flex-row gap-2">
-              <Link href={`/admins/forms/create`}>
-                <Button>
-                  <img
-                    src="/plus-white.svg"
-                    alt="Create New Form"
-                    className="h-4 w-4 mr-1"
-                  />
-                  <p>Form Template</p>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeaderContainer
+        loading={loading}
+        headerText="Forms Management"
+        descriptionText="Create, manage, and track form templates and submissions"
+        refetch={() => {
+          refetch();
+        }}
+      />
+
       <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search forms by name..."}
-              textSize="xs"
-              imageSize="6"
-            />
+        <div className="flex flex-row w-full gap-2">
+          <SearchBarPopover
+            term={inputValue}
+            handleSearchChange={(e) => setInputValue(e.target.value)}
+            placeholder={"Search by form name..."}
+            textSize="xs"
+            imageSize="10"
+          />
+          <div className="relative flex items-center">
+            <Select
+              value={formType}
+              onValueChange={(val) => setFormType(val as typeof formType)}
+            >
+              <SelectTrigger className="px-2 text-xs w-full max-w-[150px] text-center h-full bg-white border rounded-lg">
+                <SelectValue placeholder="Form Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Filter By Category</SelectItem>
+                {formTemplateCategoryValues.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {formType !== "ALL" && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge
+                    variant="destructive"
+                    className="h-4 w-4 absolute -top-1 -right-1 p-0.5 cursor-pointer hover:bg-red-400 hover:bg-opacity-100"
+                    onClick={() => setFormType("ALL")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={10} side="right" align="end">
+                  <p className="text-xs">Remove</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
-          <Select
-            value={formType}
-            onValueChange={(val) => setFormType(val as typeof formType)}
-          >
-            <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded-lg">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Categories</SelectItem>
-              {formTemplateCategoryValues.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        </div>
+        <div className="h-fit flex flex-row gap-4 ">
+          <div className="flex flex-row gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/admins/forms/create`}>
+                  <Button size={"icon"}>
+                    <img
+                      src="/plus-white.svg"
+                      alt="Create New Form"
+                      className="h-4 w-4 "
+                    />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Create Form Template</TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
@@ -366,17 +372,12 @@ export default function Forms() {
           <List
             forms={filteredForms}
             loading={loading}
-            page={page}
-            pageSize={pageSize}
-            totalPages={totalPages}
-            total={total}
-            setPage={setPage}
-            setPageSize={setPageSize}
             openHandleDelete={openHandleDelete}
             setPendingExportId={(id) => {
               setExportingFormId(id);
               setShowExportModal(true);
             }}
+            inputValue={inputValue}
           />
           <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
             <ScrollBar

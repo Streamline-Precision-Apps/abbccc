@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import SearchBar from "../personnel/components/SearchBar";
-import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
-import { TimeSheetStatus, WorkType } from "@/lib/enums";
-import { useEffect, useState } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -36,180 +37,53 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Spinner from "@/components/(animations)/spinner";
-/**
- * Timesheet domain entity.
- * @property equipmentUsages - Array of equipment usage records for this timesheet.
- */
-export type Timesheet = {
-  id: string;
-  date: Date | string;
-  User: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-  Jobsite: {
-    id: string;
-    code: string;
-    name: string;
-  };
-  CostCode: {
-    id: string;
-    name: string;
-    code: string;
-  };
-  nu: string;
-  Fp: string;
-  startTime: Date | string;
-  endTime: Date | string | null;
-  comment: string;
-  status: TimeSheetStatus;
-  workType: WorkType;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-  EmployeeEquipmentLogs: {
-    id: string;
-    equipmentId: string;
-    Equipment: {
-      id: string;
-      name: string;
-    };
-    startTime: Date | string;
-    endTime: Date | string;
-  }[];
-  TruckingLogs: {
-    truckNumber: string;
-    startingMileage: number | null;
-    endingMileage: number | null;
-    RefuelLogs: {
-      milesAtFueling: number | null;
-    }[];
-  }[];
-};
-
-type timesheetPending = {
-  length: number;
-};
-
-// Updated CreateTimesheetModal with user/jobsite dropdowns and removed nu, Fp, location, status
+import SearchBarPopover from "../_pages/searchBarPopover";
+import { Badge } from "@/components/ui/badge";
+import useAllTimeSheetData, {
+  Timesheet,
+} from "./_components/useAllTimeSheetData";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function AdminTimesheets() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
-  const pageSizeOptions = [25, 50, 75, 100];
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({ from: undefined, to: undefined });
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
-    null
-  );
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
-  const [exportModal, setExportModal] = useState(false);
-
-  // Move fetch functions out for reuse
-  const fetchTimesheets = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}`,
-        {
-          next: {
-            tags: ["timesheets"],
-          },
-        }
-      );
-      const data = await response.json();
-      setAllTimesheets(data.timesheets);
-      setTotalPages(data.totalPages);
-      setTotal(data.total);
-    } catch (error) {
-      console.error("Error fetching timesheets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchTimesheetsPending = async () => {
-    try {
-      const response = await fetch(`/api/getAllTimesheetsPending`, {
-        next: {
-          tags: ["timesheets"],
-        },
-      });
-      const data = await response.json();
-      setApprovalInbox(data);
-    } catch (error) {
-      console.error("Error fetching timesheets:", error);
-    }
-  };
-
-  // Refetch both after creation
-  const refetchAll = async () => {
-    await fetchTimesheets();
-    await fetchTimesheetsPending();
-  };
-
-  useEffect(() => {
-    fetchTimesheets();
-  }, [page, pageSize]);
-
-  useEffect(() => {
-    fetchTimesheetsPending();
-  }, [allTimesheets]);
-
-  // Filter timesheets based on searchTerm and date range
-  let filteredTimesheets = allTimesheets.filter((ts) => {
-    const id = ts.id || "";
-    const firstName = ts?.User?.firstName || "";
-    const lastName = ts?.User?.lastName || "";
-    const jobsite = ts?.Jobsite?.name || "";
-    const costCode = ts?.CostCode?.name || "";
-    const term = searchTerm.toLowerCase();
-    // Date range filter
-    let inDateRange = true;
-    if (dateRange.from) {
-      inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
-    }
-    if (dateRange.to) {
-      inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
-    }
-    return (
-      inDateRange &&
-      (id.toLowerCase().includes(term) ||
-        firstName.toLowerCase().includes(term) ||
-        lastName.toLowerCase().includes(term) ||
-        jobsite.toLowerCase().includes(term) ||
-        costCode.toLowerCase().includes(term))
-    );
-  });
-
-  if (showPendingOnly) {
-    filteredTimesheets = filteredTimesheets.filter(
-      (ts) => ts.status === "PENDING" && ts.endTime !== null
-    );
-  }
-
-  // Use filteredTimesheets, sorted by date descending
-  const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
-
+  const {
+    inputValue,
+    setInputValue,
+    setAllTimesheets,
+    loading,
+    page,
+    setPage,
+    totalPages,
+    total,
+    pageSize,
+    pageSizeOptions,
+    setPageSize,
+    dateRange,
+    setDateRange,
+    showCreateModal,
+    setShowCreateModal,
+    deletingId,
+    setDeletingId,
+    isDeleting,
+    setIsDeleting,
+    showEditModal,
+    setShowEditModal,
+    editingId,
+    setEditingId,
+    approvalInbox,
+    showPendingOnly,
+    setShowPendingOnly,
+    exportModal,
+    setExportModal,
+    statusLoading,
+    sortedTimesheets,
+    rerender,
+    handleApprovalAction,
+  } = useAllTimeSheetData();
   const handleDeleteClick = (id: string) => {
     setDeletingId(id);
     setIsDeleting(true);
   };
+
   const handleDeleteCancel = () => {
     setDeletingId(null);
     setIsDeleting(false);
@@ -240,7 +114,7 @@ export default function AdminTimesheets() {
   const handleExport = (
     exportFormat: "csv" | "xlsx",
     dateRange?: { from?: Date; to?: Date },
-    selectedFields?: string[]
+    selectedFields?: string[],
   ) => {
     let exportRows = sortedTimesheets.filter((ts) => ts.status === "APPROVED");
     if (dateRange?.from || dateRange?.to) {
@@ -293,7 +167,7 @@ export default function AdminTimesheets() {
         const durationMs = end.getTime() - start.getTime();
         const hours = Math.floor(durationMs / (1000 * 60 * 60));
         const minutes = Math.floor(
-          (durationMs % (1000 * 60 * 60)) / (1000 * 60)
+          (durationMs % (1000 * 60 * 60)) / (1000 * 60),
         );
         return `${hours} hr ${minutes} min`;
       },
@@ -341,11 +215,13 @@ export default function AdminTimesheets() {
           ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
           : "",
     };
+
     // Remove 'Status' from selectedFields if present
     const filteredFields =
       selectedFields && selectedFields.length > 0
         ? selectedFields.filter((f) => f !== "Status")
         : Object.keys(allFields);
+
     const exportData = exportRows.map((ts) => {
       const row: Record<string, string> = {};
       filteredFields.forEach((f) => {
@@ -359,7 +235,7 @@ export default function AdminTimesheets() {
         .map((row) =>
           filteredFields
             .map((f) => `"${String(row[f] ?? "").replace(/"/g, '""')}"`)
-            .join(",")
+            .join(","),
         )
         .join("\n");
       const csv = `${header}\n${rows}`;
@@ -378,45 +254,76 @@ export default function AdminTimesheets() {
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <TimesheetDescription
-        setShowCreateModal={setShowCreateModal}
-        setExportModal={setExportModal}
-        setShowPendingOnly={setShowPendingOnly}
-        showPendingOnly={showPendingOnly}
-        approvalInbox={approvalInbox}
+      <PageHeaderContainer
+        loading={loading}
+        headerText="Timesheets Management"
+        descriptionText="Create, manage, and track timesheets"
+        refetch={() => {
+          rerender();
+        }}
       />
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="bg-white rounded-lg h-full max-h-8 w-full max-w-[450px] py-2">
-            <SearchBar
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search by id, employee, Profit Id or cost code..."}
+        <div className="flex flex-row w-full gap-2 mb-2">
+          <div className=" rounded-lg flex items-center">
+            <SearchBarPopover
+              term={inputValue}
+              handleSearchChange={(e) => setInputValue(e.target.value)}
+              placeholder={"Search by id, name, profit id, or cost code... "}
               textSize="xs"
-              imageSize="6"
+              imageSize="10"
             />
           </div>
-          <div className="w-fit min-w-[40px] h-full max-h-8 flex flex-row">
+          <div className="w-fit min-w-[40px] h-full max-h-10 flex flex-row">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="bg-white h-full max-h-8 w-full max-w-[40px] justify-center items-center"
+                  className="bg-white h-full w-full max-w-[40px] justify-center items-center"
                 >
                   <img
-                    src="/filterDials.svg"
+                    src="/calendar.svg"
                     alt="Filter"
-                    className="h-full w-full object-contain p-2 "
+                    className="h-8 w-8 object-contain p-2 "
                   />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="min-w-[320px] p-4 ">
+              <PopoverContent
+                align="start"
+                side="right"
+                className="min-w-[320px] p-4 "
+              >
                 <div className="">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block mb-1 font-semibold">
-                      Date Range
-                    </label>
+                  <div className="flex items-center justify-center gap-2 overflow-visible">
+                    <Calendar
+                      mode="range"
+                      selected={dateRange}
+                      onSelect={(value) => {
+                        if (value?.from && !value?.to) {
+                          // Set from to start of day, to to end of day
+                          const from = new Date(value.from);
+                          from.setHours(0, 0, 0, 0);
+                          const to = new Date(value.from);
+                          to.setHours(23, 59, 59, 999);
+                          setDateRange({ from, to });
+                        } else if (value?.from && value?.to) {
+                          // Set from to start of from day, to to end of to day
+                          const from = new Date(value.from);
+                          from.setHours(0, 0, 0, 0);
+                          const to = new Date(value.to);
+                          to.setHours(23, 59, 59, 999);
+                          setDateRange({ from, to });
+                        } else {
+                          setDateRange({
+                            from: undefined,
+                            to: undefined,
+                          });
+                        }
+                      }}
+                      autoFocus
+                    />
+                  </div>
+                  <div className="flex items-center justify-center ">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -426,47 +333,82 @@ export default function AdminTimesheets() {
                       }
                       aria-label="Clear date range"
                     >
-                      <img
-                        src="/trash-red.svg"
-                        alt="Clear date range"
-                        className="h-5 w-5"
-                      />
+                      clear
                     </Button>
-                  </div>
-
-                  <div className="mt-2 text-xs text-center text-muted-foreground">
-                    {dateRange.from && dateRange.to ? (
-                      `${format(dateRange.from, "PPP")} - ${format(
-                        dateRange.to,
-                        "PPP"
-                      )}`
-                    ) : dateRange.from ? (
-                      `${format(dateRange.from, "PPP")} - ...`
-                    ) : (
-                      <span>Pick a date range</span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-center gap-2 overflow-visible">
-                    <Calendar
-                      mode="range"
-                      selected={dateRange}
-                      onSelect={(value) =>
-                        setDateRange({ from: value?.from, to: value?.to })
-                      }
-                      autoFocus
-                    />
                   </div>
                 </div>
               </PopoverContent>
             </Popover>
           </div>
-          <div className=" w-[300px] h-full max-h-8  my-auto items-center flex text-xs text-white">
-            {pageSize === sortedTimesheets.length && (
-              <>
-                {pageSize} of {total} rows
-              </>
-            )}
-          </div>
+        </div>
+        <div className="w-full flex flex-row justify-end items-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setExportModal(true)}
+                size={"icon"}
+                className=" relative border-none hover:bg-gray-800 min-w-12 text-white mr-2"
+              >
+                <div className="flex w-fit h-fit flex-row items-center">
+                  <img
+                    src="/export-white.svg"
+                    alt="Export"
+                    className="h-4 w-4"
+                  />
+                </div>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="start" side="top">
+              Export
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size={"icon"}
+                className=" relative border-none hover:bg-gray-800 min-w-12 text-white mr-2"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <div className="flex w-fit h-fit flex-row items-center">
+                  <img
+                    src="/plus-white.svg"
+                    alt="Create New Form"
+                    className="h-4 w-4"
+                  />
+                </div>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Create Timesheet</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size={"icon"}
+                onClick={() => setShowPendingOnly(!showPendingOnly)}
+                className={`relative border-none min-w-16  bg-gray-900 hover:bg-gray-800 text-white ${
+                  showPendingOnly ? "ring-2 ring-red-400" : ""
+                }`}
+              >
+                <div className="flex flex-row items-center">
+                  <img
+                    src="/inbox-white.svg"
+                    alt="Approval"
+                    className="h-4 w-4"
+                  />
+                  {/* <p className="text-white text-sm font-extrabold">Approval</p> */}
+                  {approvalInbox && approvalInbox.length > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                      {approvalInbox.length}
+                    </Badge>
+                  )}
+                </div>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="end" side="top">
+              Timecard Approval
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       {/* ...existing code... */}
@@ -499,6 +441,9 @@ export default function AdminTimesheets() {
               setEditingId(id);
               setShowEditModal(true);
             }}
+            onApprovalAction={handleApprovalAction}
+            statusLoading={statusLoading}
+            searchTerm={inputValue}
           />
           <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
             <ScrollBar
@@ -507,7 +452,8 @@ export default function AdminTimesheets() {
             />
           </div>
         </ScrollArea>
-        {totalPages > 1 && (
+        {/* Hide pagination if showing pending only */}
+        {!showPendingOnly && totalPages > 1 && (
           <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
             <div className="text-xs text-gray-600">
               Showing page {page} of {totalPages} ({total} total)
@@ -571,7 +517,7 @@ export default function AdminTimesheets() {
       {showCreateModal && (
         <CreateTimesheetModal
           onClose={() => setShowCreateModal(false)}
-          onCreated={refetchAll}
+          onCreated={rerender}
         />
       )}
       {/* Export Modal */}
@@ -587,7 +533,7 @@ export default function AdminTimesheets() {
           timesheetId={editingId}
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
-          onUpdated={refetchAll}
+          onUpdated={rerender}
         />
       )}
       <Dialog open={isDeleting} onOpenChange={setIsDeleting}>

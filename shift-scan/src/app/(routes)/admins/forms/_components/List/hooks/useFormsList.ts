@@ -19,13 +19,23 @@ export function useFormsList() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [inputValue, setInputValue] = useState("");
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchTerm(inputValue);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [inputValue]);
 
   const fetchForms = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      const encodedSearch = encodeURIComponent(searchTerm.trim());
       const res = await fetch(
-        `/api/getAllForms?page=${page}&pageSize=${pageSize}`
+        `/api/getAllForms?page=${page}&pageSize=${pageSize}&search=${encodedSearch}`,
       );
       if (!res.ok) throw new Error("Failed to fetch forms");
       const result = await res.json();
@@ -37,11 +47,11 @@ export function useFormsList() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize]);
+  }, [page, searchTerm]);
 
   useEffect(() => {
     fetchForms();
-  }, [fetchForms]);
+  }, [fetchForms, searchTerm]);
 
   // Get unique form types from the current forms
   const formTypes = useMemo(() => {
@@ -80,8 +90,8 @@ export function useFormsList() {
     filteredForms,
     loading,
     error,
-    searchTerm,
-    setSearchTerm,
+    inputValue,
+    setInputValue,
     formType,
     setFormType,
     formTypes,

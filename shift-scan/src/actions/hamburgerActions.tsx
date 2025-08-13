@@ -74,7 +74,7 @@ export async function updateSettings(data: {
     "cookiesAccess",
   ];
   const hasSettings = userSettingsFields.some(
-    (key) => settings[key] !== undefined
+    (key) => settings[key] !== undefined,
   );
   if (hasSettings) {
     await prisma.userSettings.update({
@@ -108,11 +108,11 @@ export async function createFormSubmission(formData: FormData) {
       throw new Error("Form template not found");
     }
 
-    // Initialize the data object with field.label as keys and field.content as default value
+    // Initialize the data object with field.id as keys and field.content as default value
     const initialData: Record<string, string> = {};
     for (const group of formTemplate.FormGrouping) {
       for (const field of group.Fields) {
-        initialData[field.label] = field.content || ""; // Set default values if available
+        initialData[field.id] = field.content || ""; // Use field.id instead of field.label
       }
     }
 
@@ -165,7 +165,7 @@ export async function saveDraft(
   userId: string,
   formType?: string,
   submissionId?: string,
-  title?: string
+  title?: string,
 ) {
   try {
     if (submissionId) {
@@ -234,7 +234,7 @@ export async function saveDraftToPending(
   userId: string,
   formType?: string,
   submissionId?: string,
-  title?: string
+  title?: string,
 ) {
   try {
     console.log("saveDraftToPending called with:", {
@@ -243,9 +243,9 @@ export async function saveDraftToPending(
       userId,
       formType,
       submissionId,
-      title
+      title,
     });
-    
+
     if (submissionId) {
       // Fetch the existing submission to compare with the new data
       const existingSubmission = await prisma.formSubmission.findUnique({
@@ -317,7 +317,7 @@ export async function savePending(
   userId: string,
   formType?: string,
   submissionId?: string,
-  title?: string
+  title?: string,
 ) {
   try {
     if (submissionId) {
@@ -382,7 +382,7 @@ export async function savePending(
 
 export async function createFormApproval(
   formData: FormData,
-  approval: FormStatus.APPROVED | FormStatus.DENIED
+  approval: FormStatus.APPROVED | FormStatus.DENIED,
 ) {
   try {
     console.log("Creating form approval...");

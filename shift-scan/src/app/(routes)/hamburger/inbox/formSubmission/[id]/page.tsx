@@ -114,10 +114,11 @@ export default function DynamicForm({
   const [formData, setFormData] = useState<FormIndividualTemplate | null>(null);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formValues, setFormValues] = useState<Record<string, FormFieldValue>>(
-    {}
+    {},
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState<number>(Date.now());
   const [signature, setSignature] = useState<string | null>(null);
   const [submittedForm, setSubmittedForm] = useState<string | null>(null);
   const [managerFormApproval, setManagerFormApproval] =
@@ -135,8 +136,13 @@ export default function DynamicForm({
       setError(null);
 
       try {
-        // Fetch the form template
-        const formRes = await fetch(`/api/form/` + id);
+        // Fetch the form template with cache busting
+        const formRes = await fetch(`/api/form/` + id, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
         if (!formRes.ok) throw new Error("Failed to fetch form template");
         const apiData = await formRes.json();
         // Map API data to FormIndividualTemplate if needed
@@ -162,9 +168,8 @@ export default function DynamicForm({
           } else if (submissionApprovingStatus === "true") {
             console.log("has approval");
             submissionData = await fetchTeamSubmissionData(submissionId);
-            managerFormApprovalData = await fetchManagerApprovalData(
-              submissionId
-            );
+            managerFormApprovalData =
+              await fetchManagerApprovalData(submissionId);
           }
         } else if (
           submissionStatus === "APPROVED" ||
@@ -173,14 +178,12 @@ export default function DynamicForm({
           console.log("APPROVED or DENIED");
           if (submissionApprovingStatus === null) {
             submissionData = await fetchSubmissionData(submissionId);
-            managerFormApprovalData = await fetchManagerApprovalData(
-              submissionId
-            );
+            managerFormApprovalData =
+              await fetchManagerApprovalData(submissionId);
           } else if (submissionApprovingStatus === "true") {
             submissionData = await fetchTeamSubmissionData(submissionId);
-            managerFormApprovalData = await fetchManagerApprovalData(
-              submissionId
-            );
+            managerFormApprovalData =
+              await fetchManagerApprovalData(submissionId);
           }
         } else if (
           submissionStatus !== "PENDING" &&
@@ -189,9 +192,8 @@ export default function DynamicForm({
         ) {
           console.log("Not PENDING or DRAFT and has approval");
           submissionData = await fetchTeamSubmissionData(submissionId);
-          managerFormApprovalData = await fetchManagerApprovalData(
-            submissionId
-          );
+          managerFormApprovalData =
+            await fetchManagerApprovalData(submissionId);
         }
         console.log(submissionData);
 
@@ -203,7 +205,7 @@ export default function DynamicForm({
           // Convert form values from label-based to ID-based keys
           const convertedValues = convertFormValuesToIdBased(
             submissionData.data,
-            legacyTemplate
+            legacyTemplate,
           );
 
           setFormValues(convertedValues);
@@ -212,7 +214,7 @@ export default function DynamicForm({
               (submissionData.user?.firstName && submissionData.user?.lastName
                 ? `${submissionData.user.firstName} ${submissionData.user.lastName}`
                 : "") ||
-              ""
+              "",
           );
           setSignature(submissionData.User?.signature || null);
           setSubmittedForm(submissionData.submittedAt || "");
@@ -230,23 +232,62 @@ export default function DynamicForm({
     };
 
     fetchForm();
-  }, [id, submissionId, submissionStatus, submissionApprovingStatus]);
+  }, [
+    id,
+    submissionId,
+    submissionStatus,
+    submissionApprovingStatus,
+    refreshKey,
+  ]);
+
+  // Refresh data when page becomes visible again (e.g., when user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Page is now visible, refresh the data
+        setRefreshKey(Date.now());
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Also refresh when page gets focus (additional safeguard)
+    const handleFocus = () => {
+      setRefreshKey(Date.now());
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
   // Helper functions for fetching data
   const fetchDraftData = async (submissionId: string) => {
-    const draftRes = await fetch(`/api/formDraft/` + submissionId);
+    const draftRes = await fetch(`/api/formDraft/` + submissionId, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!draftRes.ok) throw new Error("Failed to fetch draft data");
     return await draftRes.json();
   };
 
   const fetchSubmissionData = async (submissionId: string) => {
-    const submissionRes = await fetch(`/api/formSubmission/` + submissionId);
+    const submissionRes = await fetch(`/api/formSubmission/` + submissionId, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!submissionRes.ok) throw new Error("Failed to fetch submission data");
     return await submissionRes.json();
   };
 
   const fetchTeamSubmissionData = async (submissionId: string) => {
-    const submissionRes = await fetch(`/api/teamSubmission/` + submissionId);
+    const submissionRes = await fetch(`/api/teamSubmission/` + submissionId, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!submissionRes.ok)
       throw new Error("Failed to fetch team submission data");
     return await submissionRes.json();
@@ -254,7 +295,11 @@ export default function DynamicForm({
 
   const fetchManagerApprovalData = async (submissionId: string) => {
     const managerFormApprovalRes = await fetch(
-      `/api/managerFormApproval/` + submissionId
+      `/api/managerFormApproval/` + submissionId,
+      {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      },
     );
     if (!managerFormApprovalRes.ok)
       throw new Error("Failed to fetch manager approval data");
@@ -288,28 +333,33 @@ export default function DynamicForm({
 
   // Convert FormFieldValue to string for legacy components
   const convertFormValuesToString = (
-    values: Record<string, FormFieldValue>
+    values: Record<string, FormFieldValue>,
   ): Record<string, string> => {
     const stringValues: Record<string, string> = {};
 
     // Get the form template for mapping
     const template = formData ? convertToLegacyFormTemplate(formData) : null;
 
-    // Create a mapping from field IDs to field labels for saving
+    // Create mappings from field IDs to field labels and vice versa
     const idToLabelMap: Record<string, string> = {};
+    const labelToIdMap: Record<string, string> = {};
+    const allFieldIds = new Set<string>();
+
     if (template) {
       template.groupings.forEach((group) => {
         group.fields.forEach((field) => {
           idToLabelMap[field.id] = field.label;
+          labelToIdMap[field.label] = field.id;
+          allFieldIds.add(field.id);
         });
       });
     }
 
     Object.entries(values).forEach(([key, value]) => {
-      // Find the field to understand its type
+      // Find the field to understand its type - check both by ID and label
       const field = template?.groupings
         ?.flatMap((group) => group.fields || [])
-        .find((f) => f.id === key);
+        .find((f) => f.id === key || f.label === key);
 
       // Convert the value to string based on field type
       let stringValue = "";
@@ -369,10 +419,18 @@ export default function DynamicForm({
         }
       }
 
-      // Use field label as key if available, otherwise use original key
-      const fieldLabel = idToLabelMap[key];
-      const finalKey = fieldLabel || key;
-      stringValues[finalKey] = stringValue;
+      // For rendering, always use field.id as the key to match RenderFields expectations
+      // The RenderFields component will access values using field.id with field.label fallback
+      if (allFieldIds.has(key)) {
+        // Key is already a field ID
+        stringValues[key] = stringValue;
+      } else if (labelToIdMap[key]) {
+        // Key is a field label, convert to field ID
+        stringValues[labelToIdMap[key]] = stringValue;
+      } else {
+        // Unknown key, keep as-is
+        stringValues[key] = stringValue;
+      }
     });
 
     return stringValues;
@@ -380,7 +438,7 @@ export default function DynamicForm({
 
   // Convert API response to FormTemplate for legacy components
   const convertToLegacyFormTemplate = (
-    template: FormIndividualTemplate | FormTemplate
+    template: FormIndividualTemplate | FormTemplate,
   ): FormTemplate => {
     // Check if the template is already in the correct format from the API
     if ((template as FormTemplate).groupings) {
@@ -406,7 +464,7 @@ export default function DynamicForm({
                 (field): FormField => ({
                   id: field.id,
                   label: field.label,
-                  name: field.label, // Use label as name for backward compatibility
+                  name: field.id, // Use field ID as name for consistency with admin
                   type: field.type,
                   required: field.required,
                   order: field.order,
@@ -415,9 +473,9 @@ export default function DynamicForm({
                   options:
                     field.Options?.map((opt: { value: string }) => opt.value) ||
                     undefined,
-                })
+                }),
               ) || [],
-          })
+          }),
         ) || [],
     };
   };
@@ -425,26 +483,37 @@ export default function DynamicForm({
   // Convert form values from label-based keys to ID-based keys
   const convertFormValuesToIdBased = (
     values: Record<string, FormFieldValue>,
-    template: FormTemplate
+    template: FormTemplate,
   ): Record<string, FormFieldValue> => {
     const result: Record<string, FormFieldValue> = {};
 
-    // Create a mapping from field labels to field IDs
+    // Create mappings from field labels to field IDs and field IDs to field labels
     const labelToIdMap: Record<string, string> = {};
+    const idToLabelMap: Record<string, string> = {};
+    const allFieldIds = new Set<string>();
+
     template.groupings.forEach((group) => {
       group.fields.forEach((field) => {
         labelToIdMap[field.label] = field.id;
+        idToLabelMap[field.id] = field.label;
+        allFieldIds.add(field.id);
       });
     });
 
-    // Convert values using the mapping
+    // Convert values using the mapping, handling both UUID keys and label keys
     Object.entries(values).forEach(([key, value]) => {
-      const fieldId = labelToIdMap[key];
-      if (fieldId) {
-        result[fieldId] = value;
-      } else {
-        // If no mapping found, use the original key (might be ID already)
+      // Check if key is already a field ID (UUID format)
+      if (allFieldIds.has(key)) {
         result[key] = value;
+      } else {
+        // Try to find field ID by label
+        const fieldId = labelToIdMap[key];
+        if (fieldId) {
+          result[fieldId] = value;
+        } else {
+          // If no mapping found, use the original key (fallback)
+          result[key] = value;
+        }
       }
     });
 
@@ -477,7 +546,7 @@ export default function DynamicForm({
         userId,
         formData.formType,
         submissionId,
-        formTitle
+        formTitle,
       );
 
       console.log("Form submission result:", result);

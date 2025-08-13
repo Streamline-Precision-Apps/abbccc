@@ -79,26 +79,20 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   // State for different asset types
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
   const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
 
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);
-  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 
   const userOptions = users.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
-  }));
-
-  const clientOptions = clients.map((c) => ({
-    value: c.id,
-    label: `${c.name}`,
   }));
 
   const equipmentOptions = equipment.map((e) => ({
@@ -123,15 +117,6 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
       setUsers(employees);
     };
     fetchEmployees();
-  }, []);
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      const res = await fetch("/api/getClientsSummary");
-      const clients = await res.json();
-      setClients(clients);
-    };
-    fetchClients();
   }, []);
 
   // Fetch equipment data
@@ -182,7 +167,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   const handleFieldChange = (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => {
     // Convert value to a format compatible with our formData state
     let compatibleValue: string | number | boolean | null = null;
@@ -277,7 +262,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               submittedByTouched={submittedByTouched}
               formData={formData}
               handleFieldChange={handleFieldChange}
-              clientOptions={clientOptions}
+              // clientOptions={clientOptions}
               equipmentOptions={equipmentOptions}
               jobsiteOptions={jobsiteOptions}
               costCodeOptions={costCodeOptions}

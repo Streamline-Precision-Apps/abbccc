@@ -1,5 +1,4 @@
 // this Api is used to fetch employee requests by employee id for the manager, there will be a way to filter the request by team
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";

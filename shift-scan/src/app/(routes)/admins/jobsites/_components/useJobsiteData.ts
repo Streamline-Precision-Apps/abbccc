@@ -28,6 +28,7 @@ export const useJobsiteData = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -35,9 +36,13 @@ export const useJobsiteData = () => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/jobsiteManager?page=${page}&pageSize=${pageSize}`
-        );
+        let url = "";
+        if (showPendingOnly) {
+          url = `/api/jobsiteManager?status=pending`;
+        } else {
+          url = `/api/jobsiteManager?page=${page}&pageSize=${pageSize}`;
+        }
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
         }
@@ -52,7 +57,7 @@ export const useJobsiteData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey, page, pageSize]);
+  }, [refreshKey, page, pageSize, showPendingOnly]);
 
   return {
     jobsiteDetails,
@@ -70,5 +75,8 @@ export const useJobsiteData = () => {
     setPage,
     setPageSize,
     setTotalPages,
+    // Show pending only
+    showPendingOnly,
+    setShowPendingOnly,
   };
 };

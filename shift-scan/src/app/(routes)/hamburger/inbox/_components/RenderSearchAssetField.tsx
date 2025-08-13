@@ -34,7 +34,6 @@ export default function RenderSearchAssetField({
   field,
   handleFieldChange,
   formData,
-  clientOptions,
   equipmentOptions,
   jobsiteOptions,
   costCodeOptions,
@@ -42,10 +41,6 @@ export default function RenderSearchAssetField({
   touchedFields,
   error,
 }: {
-  clientOptions: {
-    value: string;
-    label: string;
-  }[];
   equipmentOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -71,14 +66,14 @@ export default function RenderSearchAssetField({
   value: string;
   handleFieldChange: (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => void;
   formData: Record<string, unknown>;
   handleFieldTouch: (fieldId: string) => void;
   touchedFields: Record<string, boolean>;
   error?: string | null;
 }) {
-  let assetOptions = clientOptions || [];
+  let assetOptions = [{ value: "", label: "" }];
   let assetType = "client";
 
   if (field.filter) {
@@ -96,14 +91,6 @@ export default function RenderSearchAssetField({
         assetOptions = costCodeOptions || [];
         assetType = "costCode";
         break;
-      case "CLIENTS":
-        assetOptions = clientOptions || [];
-        assetType = "client";
-        break;
-      default:
-        console.warn("Unknown filter type:", field.filter);
-        assetOptions = clientOptions || [];
-        assetType = "client";
     }
   }
 
@@ -112,8 +99,8 @@ export default function RenderSearchAssetField({
     const selectedAssets: Asset[] = Array.isArray(formData[field.id])
       ? (formData[field.id] as Asset[])
       : formData[field.id]
-      ? [formData[field.id] as Asset]
-      : [];
+        ? [formData[field.id] as Asset]
+        : [];
 
     const showError = field.required && selectedAssets.length === 0;
 
@@ -136,7 +123,7 @@ export default function RenderSearchAssetField({
             if (option) {
               // Check if asset is already selected
               const isSelected = selectedAssets.some(
-                (a: Asset) => a.id === option.value
+                (a: Asset) => a.id === option.value,
               );
 
               if (!isSelected) {
@@ -159,7 +146,7 @@ export default function RenderSearchAssetField({
           <div className="max-w-md flex flex-wrap gap-2 mt-3 mb-2">
             {selectedAssets.map((asset: Asset, idx: number) => (
               <div
-                key={idx}
+                key={asset.id || `asset-${idx}`}
                 className="bg-green-100 text-green-800 text-xl px-3 py-2 rounded-lg flex items-center gap-2"
               >
                 <span className="text-lg font-medium">{asset.name}</span>
@@ -168,11 +155,11 @@ export default function RenderSearchAssetField({
                   className="text-green-800 hover:text-green-900 text-2xl font-bold leading-none"
                   onClick={() => {
                     const updatedAssets = selectedAssets.filter(
-                      (_: Asset, i: number) => i !== idx
+                      (_: Asset, i: number) => i !== idx,
                     );
                     handleFieldChange(
                       field.id,
-                      updatedAssets.length ? updatedAssets : null
+                      updatedAssets.length ? updatedAssets : null,
                     );
                   }}
                   aria-label={`Remove ${asset.name}`}

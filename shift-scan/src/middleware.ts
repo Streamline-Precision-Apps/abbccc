@@ -17,19 +17,19 @@ const PUBLIC_PATHS = [
   "/sentry-example-page",
 ];
 
+// Paths that require ADMIN or SUPERADMIN permissions
+const ADMIN_PATHS = ["/admins"];
+
 /**
  * Middleware function that runs before each request
  * Checks if the user is authenticated and redirects to signin if not
  */
 export async function middleware(request: NextRequest) {
   try {
-    // Check if the path is in the public paths
-    const isPublicPath = PUBLIC_PATHS.some((path) =>
-      request.nextUrl.pathname.startsWith(path),
-    );
+    const pathname = request.nextUrl.pathname;
 
-    // Allow access to public paths without authentication
-    if (isPublicPath) {
+    // Allow public paths without authentication
+    if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
       return NextResponse.next();
     }
 
@@ -40,6 +40,16 @@ export async function middleware(request: NextRequest) {
     // redirect to signin page
     if (!session) {
       return NextResponse.redirect(new URL("/signin", request.url));
+    }
+
+    const userPermission = session.user?.permission;
+
+    const isAdminPath = ADMIN_PATHS.some((path) => pathname.startsWith(path));
+
+    if (isAdminPath) {
+      if (userPermission !== "ADMIN" && userPermission !== "SUPERADMIN") {
+        return NextResponse.redirect(new URL("/not-authorized", request.url));
+      }
     }
 
     // User is authenticated, allow access

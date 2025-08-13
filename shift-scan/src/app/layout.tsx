@@ -5,8 +5,7 @@ import { Providers } from "./providers";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import dynamic from "next/dynamic";
-import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
+import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManagerClient";
 
 export const viewport: Viewport = {
   themeColor: "#57BDE9",
@@ -21,19 +20,25 @@ export async function generateMetadata(): Promise<Metadata> {
   const traceData = Sentry.getTraceData(); // Get Sentry trace data
 
   return {
+    title: { default: "Shift Scan", template: "%s | Shift Scan" },
+    description: "Time Cards made easier",
+    manifest: "/manifest.json",
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
       title: "Shift Scan",
+    },
+    formatDetection: {
+      telephone: false,
+      date: false,
+      email: false,
+      address: false,
     },
     other: {
       "apple-mobile-web-app-capable": "yes",
       "mobile-web-app-capable": "yes",
       ...traceData, // Merge Sentry trace data
     },
-    title: { default: "Shift Scan", template: "%s | Shift Scan" },
-    description: "Time Cards made easier",
-    manifest: "/manifest.json",
   };
 }
 
@@ -47,14 +52,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="h-full">
-      <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#57BDE9" />
-      </head>
-      <body className="min-h-screen overflow-auto bg-gradient-to-b from-app-dark-blue to-app-blue">
+      <body suppressHydrationWarning>
         <main className="min-h-screen overflow-auto bg-gradient-to-b from-app-dark-blue to-app-blue">
           <NextIntlClientProvider messages={messages}>
             <Providers>

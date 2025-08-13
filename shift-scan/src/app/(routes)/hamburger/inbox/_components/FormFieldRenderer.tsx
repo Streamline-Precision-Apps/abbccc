@@ -74,7 +74,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
   const [costCodeOptions, setCostCodeOptions] = useState<Option[]>([]);
   const [userOptions, setUserOptions] = useState<Option[]>([]);
-  const [clientOptions, setClientOptions] = useState<Option[]>([]);
 
   const { equipmentResults } = useDBEquipment();
   const { costcodeResults } = useDBCostcode();
@@ -111,13 +110,16 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/getAllActiveEmployeeName");
+        const res = await fetch("/api/getAllActiveEmployeeName", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
         const employees = await res.json();
         const options = employees.map(
           (user: { id: string; firstName: string; lastName: string }) => ({
             value: user.id,
             label: `${user.firstName} ${user.lastName}`,
-          })
+          }),
         );
         setUserOptions(options);
       } catch (error) {
@@ -127,27 +129,9 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
     fetchUsers();
   }, []);
 
-  // Fetch client options
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const res = await fetch("/api/getClientsSummary");
-        const clients = await res.json();
-        const options = clients.map((client: { id: string; name: string }) => ({
-          value: client.id,
-          label: client.name,
-        }));
-        setClientOptions(options);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
-    };
-    fetchClients();
-  }, []);
-
   // Convert FormTemplate to FormIndividualTemplate for RenderFields
   const convertToIndividualTemplate = (
-    template: FormTemplate
+    template: FormTemplate,
   ): FormIndividualTemplate => {
     return {
       id: template.id,
@@ -195,17 +179,17 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
 
   // Convert string values to proper types for RenderFields
   const convertToFormFieldValues = (
-    values: Record<string, string>
+    values: Record<string, string>,
   ): Record<string, FormFieldValue> => {
     const result: Record<string, FormFieldValue> = {};
-    console.log("convertToFormFieldValues input values:", values);
+
     Object.entries(values).forEach(([key, value]) => {
       // Find the field to understand its type
       // First try to find by field ID, then by field label/name, then by order
       let field = formData.groupings
         ?.flatMap((group: FormGrouping) => group.fields || [])
         .find(
-          (f: FormField) => f.id === key || f.label === key || f.name === key
+          (f: FormField) => f.id === key || f.label === key || f.name === key,
         );
 
       // If no field found and key is numeric, try to find by order
@@ -217,24 +201,12 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       }
 
       if (field) {
-        console.log("Found field for key:", {
-          key,
-          field: field.id,
-          type: field.type,
-          value,
-        });
         switch (field.type) {
           case "NUMBER":
             result[field.id] = value ? parseFloat(value) : 0;
             break;
           case "CHECKBOX":
             const checkboxValue = value === "true";
-            console.log("CHECKBOX conversion:", {
-              key,
-              value,
-              checkboxValue,
-              fieldId: field.id,
-            });
             result[field.id] = checkboxValue;
             break;
           case "DATE":
@@ -272,7 +244,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
         result[key] = value || "";
       }
     });
-    console.log("convertToFormFieldValues final result:", result);
+
     return result;
   };
 
@@ -294,18 +266,11 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   };
 
   const handleFieldChange = (fieldId: string, value: FormFieldValue) => {
-    console.log("handleFieldChange called with:", { fieldId, value });
-    console.log("readOnly:", readOnly);
-    console.log("setFormValues:", setFormValues);
-    console.log("setFormValues type:", typeof setFormValues);
-
     if (!readOnly && setFormValues) {
       // Find the field to understand its type
       const field = formData.groupings
         ?.flatMap((group: FormGrouping) => group.fields || [])
         .find((f: FormField) => f.id === fieldId);
-
-      console.log("Found field:", field);
 
       let convertedValue = "";
 
@@ -352,31 +317,14 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
         convertedValue = convertFromFormFieldValue(value);
       }
 
-      console.log("Converted value:", convertedValue);
-      console.log("Current formValues keys:", Object.keys(formValues));
-
-      // Find the original key in formValues that corresponds to this field
-      // The formValues might be using field labels as keys instead of field IDs
-      const originalKey = Object.keys(formValues).find((key) => {
-        const foundField = formData.groupings
-          ?.flatMap((group: FormGrouping) => group.fields || [])
-          .find((f: FormField) => f.id === fieldId);
-        return (
-          foundField &&
-          (foundField.id === key ||
-            foundField.label === key ||
-            foundField.name === key)
-        );
-      });
-
-      const keyToUpdate = originalKey || fieldId;
-      console.log("Key to update:", keyToUpdate, "Original key:", originalKey);
+      // Always use field.id as the key since we're standardizing on that
+      // RenderFields will handle both field.id and field.label lookups
+      const keyToUpdate = fieldId;
 
       const newFormValues = {
         ...formValues,
         [keyToUpdate]: convertedValue,
       };
-      console.log("New form values:", newFormValues);
       setFormValues(newFormValues);
     }
   };
@@ -393,7 +341,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       submittedByTouched={false}
       formData={convertedValues}
       handleFieldChange={handleFieldChange}
-      clientOptions={clientOptions}
       equipmentOptions={equipmentOptions}
       jobsiteOptions={jobsiteOptions}
       costCodeOptions={costCodeOptions}
