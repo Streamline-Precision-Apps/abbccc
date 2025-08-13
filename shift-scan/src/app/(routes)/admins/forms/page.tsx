@@ -284,7 +284,7 @@ export default function Forms() {
 
   // Main render
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={loading}
         headerText="Forms Management"
@@ -294,7 +294,7 @@ export default function Forms() {
         }}
       />
 
-      <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
         <div className="flex flex-row w-full gap-2">
           <SearchBarPopover
             term={inputValue}
@@ -339,23 +339,21 @@ export default function Forms() {
             )}
           </div>
         </div>
-        <div className="h-fit flex flex-row gap-4 ">
-          <div className="flex flex-row gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href={`/admins/forms/create`}>
-                  <Button size={"icon"}>
-                    <img
-                      src="/plus-white.svg"
-                      alt="Create New Form"
-                      className="h-4 w-4 "
-                    />
-                  </Button>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>Create Form Template</TooltipContent>
-            </Tooltip>
-          </div>
+        <div className="h-full flex flex-row gap-4 ">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href={`/admins/forms/create`}>
+                <Button size={"icon"} className="min-w-12">
+                  <img
+                    src="/plus-white.svg"
+                    alt="Create New Form"
+                    className="h-4 w-4 "
+                  />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Create Form Template</TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">

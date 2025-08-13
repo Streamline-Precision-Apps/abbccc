@@ -72,11 +72,6 @@ export default function EquipmentTable({
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
               >
-                {/* ID */}
-                {/* <TableCell className="border-r border-gray-200 text-xs text-center min-w-[60px]">
-                  <Skeleton className="h-4 w-2/3 mx-auto" />
-                </TableCell> */}
-                {/* Name */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <div className="flex flex-col gap-1">
                     <Skeleton className="h-4 w-3/4 mx-auto" />
@@ -133,10 +128,6 @@ export default function EquipmentTable({
                 className="odd:bg-white even:bg-gray-100 "
                 key={equipment.id}
               >
-                {/* <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  {equipment.id || " "}
-                </TableCell> */}
-
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   <div className="flex flex-col gap-1 text-left">
                     <p>{equipment.name || " "}</p>

@@ -193,7 +193,7 @@ export default function RenderButtonsAndFilters({
               }}
               variant={"default"}
               size={"icon"}
-              className="rounded-lg hover:bg-slate-800 "
+              className="rounded-lg hover:bg-slate-800 min-w-12 "
             >
               <img
                 src="/export-white.svg"
@@ -216,7 +216,7 @@ export default function RenderButtonsAndFilters({
               }}
               variant={"default"}
               size={"icon"}
-              className="rounded-lg hover:bg-slate-800"
+              className="rounded-lg hover:bg-slate-800 min-w-12"
             >
               <img
                 src="/plus-white.svg"
@@ -236,7 +236,7 @@ export default function RenderButtonsAndFilters({
             <Button
               variant={"destructive"}
               size={"icon"}
-              className=" hover:bg-opacity-20"
+              className=" hover:bg-opacity-20 min-w-12"
               onClick={() => {
                 if (formTemplate) {
                   openHandleDelete(formTemplate.id);

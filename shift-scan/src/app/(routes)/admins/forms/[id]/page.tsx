@@ -80,7 +80,7 @@ const FormPage = ({ params }: PageProps) => {
   const router = useRouter();
 
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <RenderTitleDescriptionStatus
         formTemplate={formTemplate}
         loading={loading}

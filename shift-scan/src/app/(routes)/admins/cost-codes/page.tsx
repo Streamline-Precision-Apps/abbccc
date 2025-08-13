@@ -12,10 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { deleteCostCode, deleteTag } from "@/actions/AssetActions";
-import {
-  CostCodeSummary,
-  useCostCodeData,
-} from "./_components/useCostCodeData";
+import { useCostCodeData } from "./_components/useCostCodeData";
 import {
   Pagination,
   PaginationContent,
@@ -31,7 +28,6 @@ import { useTagData } from "./_components/useTagData";
 import TagTable from "./_components/TagTable";
 import CreateTagModal from "./_components/CreateTagModal";
 import EditTagModal from "./_components/EditTagModal";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import {
   Tooltip,
@@ -42,7 +38,6 @@ import { Tags } from "lucide-react";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function CostCodePage() {
-  const { setOpen, open } = useSidebar();
   const {
     loading,
     CostCodeDetails,
@@ -158,7 +153,7 @@ export default function CostCodePage() {
   }, [inputValue]);
 
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={pageState === "CostCode" ? loading : tagLoading}
         headerText={
@@ -170,32 +165,31 @@ export default function CostCodePage() {
         refetch={pageState === "CostCode" ? rerender : tagRerender}
       />
 
-      <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-2">
-          {pageState === "CostCode" ? (
-            <SearchBarPopover
-              term={inputValue}
-              handleSearchChange={(e) => setInputValue(e.target.value)}
-              placeholder={"Search by name..."}
-              textSize="xs"
-              imageSize="10"
-            />
-          ) : (
-            <SearchBarPopover
-              term={searchTag}
-              handleSearchChange={(e) => setSearchTag(e.target.value)}
-              placeholder={"Search by name..."}
-              textSize="xs"
-              imageSize="10"
-            />
-          )}
-        </div>
+      <div className="h-10 w-full flex flex-row justify-between">
+        {pageState === "CostCode" ? (
+          <SearchBarPopover
+            term={inputValue}
+            handleSearchChange={(e) => setInputValue(e.target.value)}
+            placeholder={"Search by name..."}
+            textSize="xs"
+            imageSize="10"
+          />
+        ) : (
+          <SearchBarPopover
+            term={searchTag}
+            handleSearchChange={(e) => setSearchTag(e.target.value)}
+            placeholder={"Search by name..."}
+            textSize="xs"
+            imageSize="10"
+          />
+        )}
+
         <div className="flex flex-row justify-end w-full gap-2">
           {pageState === "CostCode" ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  className="min-w-12"
+                  className="min-w-12 h-full"
                   onClick={() => setCreateCostCodeModal(true)}
                 >
                   <img
@@ -213,7 +207,7 @@ export default function CostCodePage() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  className="min-w-12"
+                  className="min-w-12 h-full"
                   onClick={() => setCreateTagModal(true)}
                 >
                   <img
@@ -231,7 +225,7 @@ export default function CostCodePage() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                className="min-w-12"
+                className="min-w-12 h-full"
                 size={"icon"}
                 onClick={
                   pageState === "CostCode"

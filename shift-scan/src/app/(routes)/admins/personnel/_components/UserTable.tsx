@@ -39,8 +39,8 @@ export default function UserTable({
     "Phone Number",
     "Date of Birth",
     "Emergency Contact",
-    "Permission",
-    "Current Roles",
+    "Access Level",
+    "Role(s)",
     "Actions",
   ];
 
@@ -187,59 +187,50 @@ export default function UserTable({
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   {`${personnel.Contact.emergencyContact ? personnel.Contact.emergencyContact + "-" : ""} ${personnel.Contact.emergencyContactNumber ? formatPhoneNumber(personnel.Contact.emergencyContactNumber) : ""}`}
                 </TableCell>
-                <TableCell className=" border-r border-gray-200 text-xs text-center">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="bg-emerald-300 px-2 py-1 rounded-md">
-                        {personnel.permission.slice(0, 1)}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {personnel.permission.slice(0, 1) +
-                        personnel.permission.slice(1).toLowerCase()}
-                    </TooltipContent>
-                  </Tooltip>
+                <TableCell className="border-r border-gray-200 text-xs justify-left">
+                  {personnel.permission.slice(0, 1) +
+                    personnel.permission.slice(1).toLowerCase()}
                 </TableCell>
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   <div className="flex flex-row gap-1 justify-center">
                     {personnel.truckView && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-blue-300 rounded-md px-2 py-1">
-                            <p className="text-xs">{"TR"}</p>
+                          <div className="bg-emerald-300 rounded-full px-2 py-1">
+                            <p className="text-xs">{"T"}</p>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent>Trucking Role</TooltipContent>
+                        <TooltipContent>Trucking</TooltipContent>
                       </Tooltip>
                     )}
                     {personnel.tascoView && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                          <div className="bg-red-300 rounded-full px-2 py-1">
                             <p className="text-xs">{"TS"}</p>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent>Tasco Role</TooltipContent>
+                        <TooltipContent>Tasco</TooltipContent>
                       </Tooltip>
                     )}
                     {personnel.mechanicView && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                          <div className="bg-blue-400 rounded-full px-2 py-1">
                             <p className="text-xs">{"M"}</p>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent>Mechanic Role</TooltipContent>
+                        <TooltipContent>Mechanic</TooltipContent>
                       </Tooltip>
                     )}
                     {personnel.laborView && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-blue-300 rounded-md px-2 py-1">
+                          <div className="bg-sky-300 rounded-full px-2 py-1">
                             <p className="text-xs">{"G"}</p>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent>General Role</TooltipContent>
+                        <TooltipContent>General</TooltipContent>
                       </Tooltip>
                     )}
                   </div>

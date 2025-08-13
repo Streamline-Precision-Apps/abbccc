@@ -1,8 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useSidebar } from "@/components/ui/sidebar";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,24 +18,19 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import SearchBarPopover from "../_pages/searchBarPopover";
-// import CreateUserModal from "./_components/createUser";
-import { deleteCrew, deleteUser } from "@/actions/adminActions";
 import { useCrewsData } from "./_component/useCrewsData";
 import CrewTable from "./_component/CrewTable";
 import CreateCrewModal from "./_component/createCrewModal";
 import EditCrewModal from "./_component/editCrewModal";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
-// import EditUserModal from "./_components/editUser";
 
 export default function CrewPage() {
-  const { setOpen, open } = useSidebar();
   const {
     loading,
     crew,
@@ -46,55 +40,25 @@ export default function CrewPage() {
     pageSize,
     setPage,
     setPageSize,
-    setShowInactive,
     showInactive,
     searchTerm,
     setSearchTerm,
     rerender,
+    editCrewModal,
+    setEditCrewModal,
+    createCrewModal,
+    setCreateCrewModal,
+    pendingEditId,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    openHandleEdit,
+    openHandleDelete,
+    confirmDelete,
+    cancelDelete,
   } = useCrewsData();
 
-  //   // State for modals
-  const [editCrewModal, setEditCrewModal] = useState(false);
-  const [createCrewModal, setCreateCrewModal] = useState(false);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-
-  // State for delete confirmation dialog
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
-  //   // Pagination state
-
-  const openHandleEdit = (id: string) => {
-    setPendingEditId(id);
-    setEditCrewModal(true);
-  };
-
-  const openHandleDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (pendingDeleteId) {
-      await deleteCrew(pendingDeleteId);
-      setShowDeleteDialog(false);
-      setPendingDeleteId(null);
-      rerender();
-    }
-  };
-
-  const cancelDelete = () => {
-    setShowDeleteDialog(false);
-    setPendingDeleteId(null);
-  };
-
-  // Reset to page 1 if search or filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [searchTerm, showInactive]);
-
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={loading}
         headerText="Crew Management"
@@ -103,8 +67,8 @@ export default function CrewPage() {
           rerender();
         }}
       />
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
+        <div className="flex flex-row w-full gap-2">
           <SearchBarPopover
             term={searchTerm}
             handleSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -113,13 +77,13 @@ export default function CrewPage() {
             imageSize="10"
           />
         </div>
-        <div className="flex flex-row justify-end w-full gap-4">
+        <div className="w-full h-full flex flex-row justify-end items-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size={"icon"}
                 onClick={() => setCreateCrewModal(true)}
-                className="min-w-12"
+                className="min-w-12 h-full"
               >
                 <img src="/plus-white.svg" alt="Add Crew" className="w-4 h-4" />
               </Button>
