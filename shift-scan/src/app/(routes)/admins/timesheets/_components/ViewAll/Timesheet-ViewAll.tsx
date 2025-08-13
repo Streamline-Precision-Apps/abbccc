@@ -2,9 +2,7 @@ import { Table, TableHeader } from "@/components/ui/table";
 import { TimesheetTableHeader } from "./TimesheetTableHeader";
 import { TimesheetTableBody } from "./TimesheetTableBody";
 import { TimesheetTableSkeleton } from "./TimesheetTableSkeleton";
-import { TimesheetFooter } from "./TimesheetFooter";
-import { TimeSheetStatus, WorkType } from "@/lib/enums";
-import { HorizontalScrollArea } from "@/components/ui/HorizontalScrollArea";
+import { ApprovalStatus, WorkType } from "@/lib/enums";
 
 export type Timesheet = {
   id: string;
@@ -17,17 +15,19 @@ export type Timesheet = {
   Jobsite: {
     id: string;
     name: string;
+    code: string;
   };
   CostCode: {
     id: string;
     name: string;
+    code: string;
   };
   nu: string;
   Fp: string;
   startTime: Date | string;
   endTime: Date | string | null;
   comment: string;
-  status: TimeSheetStatus;
+  status: ApprovalStatus;
   workType: WorkType;
   createdAt: Date | string;
   updatedAt: Date | string;
@@ -50,6 +50,9 @@ export default function ViewAllTimesheets({
   isDeleting,
   isEditing,
   showPendingOnly,
+  onApprovalAction,
+  statusLoading,
+  searchTerm,
 }: {
   timesheets: Timesheet[];
   loading: boolean;
@@ -67,10 +70,14 @@ export default function ViewAllTimesheets({
   editingId?: string | null;
   isEditing?: boolean;
   showPendingOnly: boolean;
+  onApprovalAction?: (id: string, action: "APPROVED" | "REJECTED") => void;
+  statusLoading?: Record<string, "APPROVED" | "REJECTED" | undefined>;
+  searchTerm: string;
 }) {
   const timesheetHeaders = [
     "ID",
     "Date",
+    "Work Type",
     "Employee Name",
     "Profit Id",
     "Cost Code",
@@ -78,15 +85,13 @@ export default function ViewAllTimesheets({
     "End Time",
     "Comment",
     "Status",
-    "Work Type",
-    "Created At",
     "Last modified",
   ];
 
   if (loading) {
     return (
       <Table className="w-full">
-        <TableHeader className="sticky top-0 z-10 bg-gray-50 border-b-2 border-gray-300">
+        <TableHeader className="sticky top-0 z-10 ">
           <TimesheetTableHeader headers={timesheetHeaders} loading />
         </TableHeader>
         <TimesheetTableSkeleton
@@ -109,6 +114,9 @@ export default function ViewAllTimesheets({
         onEditClick={onEditClick}
         editingId={editingId}
         showPendingOnly={showPendingOnly}
+        onApprovalAction={onApprovalAction}
+        statusLoading={statusLoading}
+        searchTerm={searchTerm}
       />
     </Table>
   );

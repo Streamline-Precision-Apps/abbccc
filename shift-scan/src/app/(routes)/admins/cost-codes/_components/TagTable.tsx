@@ -10,6 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { TagSummary } from "./useTagData";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function TagTable({
   loading,
@@ -94,29 +99,42 @@ export default function TagTable({
 
                       <TableCell className="text-xs text-center w-[150px]">
                         <div className="flex flex-row items-center justify-center ">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openHandleEdit(tag.id)}
-                          >
-                            <img
-                              src="/formEdit.svg"
-                              alt="Edit"
-                              className="w-4 h-4"
-                            />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openHandleDelete(tag.id)}
-                          >
-                            <img
-                              src="/trash-red.svg"
-                              alt="Delete"
-                              className="w-4 h-4"
-                            />
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openHandleEdit(tag.id)}
+                              >
+                                <img
+                                  src="/formEdit.svg"
+                                  alt="Edit"
+                                  className="w-4 h-4"
+                                />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openHandleDelete(tag.id)}
+                              >
+                                <img
+                                  src="/trash-red.svg"
+                                  alt="Delete"
+                                  className="w-4 h-4"
+                                />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete</p>
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                       </TableCell>
                     </>
@@ -128,7 +146,7 @@ export default function TagTable({
         )}
       </Table>
       {/* Show message when no tags are except the default "All" tag */}
-      {tagDetails.length === 1 && (
+      {tagDetails.length === 1 && !loading && (
         <div className="w-full h-full flex justify-center items-center absolute left-0 top-0 z-50  rounded-[10px]">
           <p className="text-gray-500 italic">No tags created or found</p>
         </div>

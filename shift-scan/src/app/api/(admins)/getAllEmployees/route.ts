@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -18,24 +18,23 @@ export async function GET() {
       select: {
         id: true,
         firstName: true,
+        middleName: true,
         lastName: true,
-        username: true,
+        secondLastName: true,
         permission: true,
-        DOB: true,
         truckView: true,
         mechanicView: true,
         laborView: true,
         tascoView: true,
         image: true,
         terminationDate: true,
-        accountSetup: true,
       },
     });
 
     if (!employees || employees.length === 0) {
       return NextResponse.json(
         { message: "No employees found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

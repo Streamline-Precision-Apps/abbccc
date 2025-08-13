@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
@@ -30,7 +29,7 @@ export async function GET(
   let whereClause: {
     userId: string;
     status?: FormStatus | { not: FormStatus };
-  } = { userId };
+  } = { userId }; // Always filter by current user's ID
 
   if (status === "pending") {
     whereClause = { ...whereClause, status: FormStatus.PENDING };
@@ -38,8 +37,10 @@ export async function GET(
     whereClause = { ...whereClause, status: FormStatus.APPROVED };
   } else if (status === "denied") {
     whereClause = { ...whereClause, status: FormStatus.DENIED };
+  } else if (status === "draft") {
+    whereClause = { ...whereClause, status: FormStatus.DRAFT };
   } else if (status === "all") {
-    whereClause = { ...whereClause };
+    // No status filter for "all"
   }
 
   try {
@@ -50,6 +51,13 @@ export async function GET(
           select: {
             name: true,
             formType: true,
+          },
+        },
+        User: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },

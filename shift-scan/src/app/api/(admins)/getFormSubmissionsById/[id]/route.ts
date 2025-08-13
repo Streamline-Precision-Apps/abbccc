@@ -4,7 +4,7 @@ import { FormStatus } from "@/lib/enums";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const { searchParams } = new URL(request.url);
@@ -32,6 +32,8 @@ export async function GET(
       where: {
         formTemplateId: id,
         ...(statusFilter && { status: statusFilter }),
+        ...(!statusFilter && { status: { not: "DRAFT" } }),
+        ...(statusFilter === "DRAFT" && { status: "DRAFT" }),
       },
     });
 
@@ -67,7 +69,7 @@ export async function GET(
     if (!formTemplate) {
       return NextResponse.json(
         { error: "Form template not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -75,6 +77,8 @@ export async function GET(
       where: {
         formTemplateId: id,
         ...(statusFilter && { status: statusFilter }),
+        ...(!statusFilter && { status: { not: "DRAFT" } }),
+        ...(statusFilter === "DRAFT" && { status: "DRAFT" }),
         ...(dateRangeStart || dateRangeEnd
           ? {
               submittedAt: {
@@ -110,7 +114,7 @@ export async function GET(
     console.error("Error fetching form template:", error);
     return NextResponse.json(
       { error: "Failed to fetch form template" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

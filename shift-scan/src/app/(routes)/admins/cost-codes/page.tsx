@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../personnel/components/SearchBar";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -32,11 +31,18 @@ import { useTagData } from "./_components/useTagData";
 import TagTable from "./_components/TagTable";
 import CreateTagModal from "./_components/CreateTagModal";
 import EditTagModal from "./_components/EditTagModal";
+import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
+import SearchBarPopover from "../_pages/searchBarPopover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Tags } from "lucide-react";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function CostCodePage() {
   const { setOpen, open } = useSidebar();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchTag, setSearchTag] = useState("");
   const {
     loading,
     CostCodeDetails,
@@ -46,6 +52,8 @@ export default function CostCodePage() {
     pageSize,
     setPage,
     setPageSize,
+    inputValue,
+    setInputValue,
   } = useCostCodeData();
 
   const {
@@ -57,9 +65,10 @@ export default function CostCodePage() {
     pageSize: tagPageSize,
     setPage: setTagPage,
     setPageSize: setTagPageSize,
+    inputValue: searchTag,
+    setInputValue: setSearchTag,
   } = useTagData();
-  // Combine loading states for both cost codes and tags for a unified loading experience
-  const loadingState = loading && tagLoading;
+
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
   // State for modals, dialogs, and pending actions
   // Cost Codes
@@ -74,7 +83,7 @@ export default function CostCodePage() {
   const [showDeleteTagDialog, setShowDeleteTagDialog] = useState(false);
   const [pendingTagEditId, setPendingTagEditId] = useState<string | null>(null);
   const [pendingTagDeleteId, setPendingTagDeleteId] = useState<string | null>(
-    null
+    null,
   );
   // Cost Codes helper functions
   const openHandleEdit = (id: string) => {
@@ -120,12 +129,12 @@ export default function CostCodePage() {
   };
   // Simple filter by cost code name
   const filteredCostCodes = CostCodeDetails.filter((costCode) =>
-    costCode.name.toLowerCase().includes(searchTerm.toLowerCase())
+    costCode.name.toLowerCase().includes(inputValue.toLowerCase()),
   );
 
   // Simple filter by tag name
   const filteredTags = tagDetails.filter((tag) =>
-    tag.name.toLowerCase().includes(searchTag.toLowerCase())
+    tag.name.toLowerCase().includes(searchTag.toLowerCase()),
   );
 
   // Pagination logic
@@ -133,116 +142,114 @@ export default function CostCodePage() {
   const totalPages = Math.ceil(totalCostCodes / pageSize);
   const paginatedCostCodes = filteredCostCodes.slice(
     (page - 1) * pageSize,
-    page * pageSize
+    page * pageSize,
   );
 
   const totalTags = filteredTags.length;
   const totalPagesTags = Math.ceil(totalTags / tagPageSize);
   const paginatedTags = filteredTags.slice(
     (tagPage - 1) * tagPageSize,
-    tagPage * tagPageSize
+    tagPage * tagPageSize,
   );
 
   // Reset to page 1 if search or filter changes
   useEffect(() => {
     setPage(1);
-  }, [searchTerm]);
+  }, [inputValue]);
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
-        <div className="w-full flex flex-row  ">
-          <div className="flex items-center justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-              }`}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <img
-                src={open ? "/condense-white.svg" : "/condense.svg"}
-                alt="logo"
-                className="w-4 h-auto object-contain "
-              />
-            </Button>
-          </div>
+      <PageHeaderContainer
+        loading={pageState === "CostCode" ? loading : tagLoading}
+        headerText={
+          pageState === "CostCode" ? "Cost Code Management" : "Tag Management"
+        }
+        descriptionText={`Create, edit, and manage 
+              ${pageState === "CostCode" ? "Cost Code" : "Tag"} details
+              `}
+        refetch={pageState === "CostCode" ? rerender : tagRerender}
+      />
 
-          <div className="w-fit flex flex-col gap-1 ml-4">
-            <p className="text-left w-fit text-base text-white font-bold">
-              {pageState === "CostCode"
-                ? "Cost Code Management"
-                : "Tag Management"}
-            </p>
-
-            <p className="text-left text-xs text-white">
-              Create, edit, and manage{" "}
-              {pageState === "CostCode" ? "Cost Code" : "Tag"} details
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            {pageState === "CostCode" ? (
-              <SearchBar
-                term={searchTerm}
-                handleSearchChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={"Search by name..."}
-                textSize="xs"
-                imageSize="6"
-              />
-            ) : (
-              <SearchBar
-                term={searchTag}
-                handleSearchChange={(e) => setSearchTag(e.target.value)}
-                placeholder={"Search by name..."}
-                textSize="xs"
-                imageSize="6"
-              />
-            )}
-          </div>
-        </div>
-        <div className="flex flex-row justify-end w-full gap-4">
-          <Button
-            onClick={
-              pageState === "CostCode"
-                ? () => setPageState("Tags")
-                : () => setPageState("CostCode")
-            }
-          >
-            <img
-              src="/statusOngoing-white.svg"
-              alt="Add CostCode"
-              className="w-4 h-4"
-            />
-            <div className="flex flex-row items-center gap-2">
-              {pageState === "CostCode" ? "Tags" : "Cost Codes"}
-            </div>
-          </Button>
+      <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
+        <div className="flex flex-row w-full gap-2">
           {pageState === "CostCode" ? (
-            <Button onClick={() => setCreateCostCodeModal(true)}>
-              <img
-                src="/plus-white.svg"
-                alt="Add CostCode"
-                className="w-4 h-4"
-              />
-              <p className="text-left text-xs text-white">New Cost Code</p>
-            </Button>
+            <SearchBarPopover
+              term={inputValue}
+              handleSearchChange={(e) => setInputValue(e.target.value)}
+              placeholder={"Search by name..."}
+              textSize="xs"
+              imageSize="10"
+            />
           ) : (
-            <Button onClick={() => setCreateTagModal(true)}>
-              <img
-                src="/plus-white.svg"
-                alt="Add CostCode"
-                className="w-4 h-4"
-              />
-              <p className="text-left text-xs text-white">New Tag</p>
-            </Button>
+            <SearchBarPopover
+              term={searchTag}
+              handleSearchChange={(e) => setSearchTag(e.target.value)}
+              placeholder={"Search by name..."}
+              textSize="xs"
+              imageSize="10"
+            />
           )}
+        </div>
+        <div className="flex flex-row justify-end w-full gap-2">
+          {pageState === "CostCode" ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="min-w-12"
+                  onClick={() => setCreateCostCodeModal(true)}
+                >
+                  <img
+                    src="/plus-white.svg"
+                    alt="Add CostCode"
+                    className="w-4 h-4"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent align="center" side="top">
+                Create Cost Code
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="min-w-12"
+                  onClick={() => setCreateTagModal(true)}
+                >
+                  <img
+                    src="/plus-white.svg"
+                    alt="Add CostCode"
+                    className="w-4 h-4"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent align="center" side="top">
+                Create Tag
+              </TooltipContent>
+            </Tooltip>
+          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="min-w-12"
+                size={"icon"}
+                onClick={
+                  pageState === "CostCode"
+                    ? () => setPageState("Tags")
+                    : () => setPageState("CostCode")
+                }
+              >
+                {pageState !== "CostCode" ? (
+                  <img src="/qrCode-white.svg" alt="Tags" className="w-4 h-4" />
+                ) : (
+                  <Tags className="w-4 h-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="center" side="top">
+              {pageState === "CostCode" ? "Tags" : "Cost Codes"}
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <div className="h-[85vh] rounded-lg  w-full relative bg-white">
@@ -265,12 +272,7 @@ export default function CostCodePage() {
                 <span className="text-lg text-gray-500">No Results found</span>
               </div>
             )}
-          {loadingState && (
-            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-              <Spinner size={20} />
-              <span className="text-lg text-gray-500">Loading...</span>
-            </div>
-          )}
+
           {loading && !tagLoading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
               <Spinner size={20} />
@@ -289,6 +291,7 @@ export default function CostCodePage() {
               costCodeDetails={paginatedCostCodes}
               openHandleDelete={openHandleDelete}
               openHandleEdit={openHandleEdit}
+              inputValue={inputValue}
             />
           ) : (
             <TagTable

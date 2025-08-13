@@ -43,49 +43,47 @@ const newUserSchema = z.object({
   generalView: z.boolean().optional(),
 });
 
-export async function submitNewEmployee(formData: NewEmployeeFormData) {
-  const parsed = newUserSchema.safeParse(formData);
-  if (!parsed.success) {
-    throw new Error("Invalid form data");
-  }
-
-  const {
-    username,
-    password,
-    firstName,
-    lastName,
-    permissionLevel,
-    employmentStatus,
-    crews,
-    truckingView = false,
-    tascoView = false,
-    engineerView = false,
-    generalView = false,
-  } = parsed.data;
-
-  const hashedPassword = await hash(password, 10);
+export async function createUserAdmin(payload: {
+  terminationDate: Date | null;
+  createdById: string;
+  username: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  secondLastName: string;
+  password: string;
+  permission: string;
+  truckView: boolean;
+  tascoView: boolean;
+  mechanicView: boolean;
+  laborView: boolean;
+  crews: {
+    id: string;
+  }[];
+}) {
+  console.log("Creating user admin...");
+  console.log(payload);
+  const hashedPassword = await hash(payload.password, 10);
 
   // Use a transaction to ensure both operations succeed or fail together
   const result = await prisma.$transaction(async (prisma) => {
     // Create the user
     const user = await prisma.user.create({
       data: {
-        username,
+        username: payload.username,
         password: hashedPassword,
-        firstName,
-        lastName,
-        // email,
-        // DOB: dateOfBirth,
-        permission: permissionLevel as Permission,
-        truckView: truckingView,
-        tascoView: tascoView,
-        mechanicView: engineerView,
-        laborView: generalView,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        permission: payload.permission as Permission,
+        truckView: payload.truckView,
+        tascoView: payload.tascoView,
+        mechanicView: payload.mechanicView,
+        laborView: payload.laborView,
         clockedIn: false,
         accountSetup: false,
         startDate: new Date(),
         Crews: {
-          connect: crews.map((crewId: string) => ({ id: crewId })),
+          connect: payload.crews.map((crew) => ({ id: crew.id })),
         },
         Contact: {
           create: {
@@ -115,6 +113,71 @@ export async function submitNewEmployee(formData: NewEmployeeFormData) {
   });
 
   return result;
+}
+
+export async function editUserAdmin(payload: {
+  id: string;
+  terminationDate: string | null;
+  username: string;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  secondLastName: string | null;
+  permission: string;
+  truckView: boolean;
+  tascoView: boolean;
+  mechanicView: boolean;
+  laborView: boolean;
+  crews: {
+    id: string;
+  }[];
+}) {
+  console.log("Creating user admin...");
+  console.log(payload);
+
+  // Use a transaction to ensure both operations succeed or fail together
+  const result = await prisma.$transaction(async (prisma) => {
+    // Create the user
+
+    // Disconnect all crews, then connect only the selected ones
+    const user = await prisma.user.update({
+      where: { id: payload.id },
+      data: {
+        username: payload.username,
+        firstName: payload.firstName,
+        middleName: payload.middleName,
+        lastName: payload.lastName,
+        secondLastName: payload.secondLastName,
+        permission: payload.permission as Permission,
+        truckView: payload.truckView,
+        tascoView: payload.tascoView,
+        mechanicView: payload.mechanicView,
+        laborView: payload.laborView,
+        Crews: {
+          set: [], // disconnect all crews first
+          connect: payload.crews.map((crew) => ({ id: crew.id })),
+        },
+        Company: { connect: { id: "1" } },
+      },
+    });
+
+    revalidatePath("/admins/personnel");
+    return { success: true, userId: user.id };
+  });
+
+  return result;
+}
+
+export async function deleteUser(id: string) {
+  try {
+    await prisma.user.delete({
+      where: { id },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return { success: false, error: error };
+  }
 }
 
 // Update an existing employee's info and contact details (for UserSelected save)
@@ -187,27 +250,21 @@ export async function updateEmployeeAndContact(formData: FormData) {
 export async function createCrew(formData: FormData) {
   try {
     console.log("Creating new crew...");
-
     // Extract data from formData
-    const crewName = formData.get("crewName") as string;
-    const crewDescription = formData.get("crewDescription") as string;
-    const crewRaw = formData.get("crew") as string;
-    const teamLead = formData.get("teamLead") as string;
+    const crewName = formData.get("name") as string;
+    const Users = formData.get("Users") as string;
+    const teamLead = formData.get("leadId") as string;
     const crewType = formData.get("crewType") as WorkType;
 
     if (!crewName || !crewName.trim()) {
       throw new Error("Crew name is required.");
     }
-    if (!crewRaw) {
+    if (!Users) {
       throw new Error("Crew members data is missing.");
     }
     if (!teamLead) {
       throw new Error("A team lead is required.");
     }
-
-    const crew = JSON.parse(crewRaw as string) as Array<{
-      id: string;
-    }>;
 
     // Create the crew
     const newCrew = await prisma.crew.create({
@@ -216,15 +273,15 @@ export async function createCrew(formData: FormData) {
         leadId: teamLead,
         crewType: crewType,
         Users: {
-          connect: crew.map((user) => ({
-            id: user.id,
-          })),
+          connect: JSON.parse(Users as string) as Array<{
+            id: string;
+          }>,
         },
       },
     });
 
     revalidateTag("crews");
-    revalidatePath(`/admins/personnel/crew/new-crew`);
+    revalidatePath(`/admins/crew`);
     return {
       success: true,
       crewId: newCrew.id,
@@ -240,6 +297,83 @@ export async function createCrew(formData: FormData) {
   }
 }
 
+export async function editCrew(formData: FormData) {
+  try {
+    console.log("Editing crew...");
+    // Extract data from formData
+    const crewName = formData.get("name") as string;
+    const Users = formData.get("Users") as string;
+    const teamLead = formData.get("leadId") as string;
+    const crewType = formData.get("crewType") as WorkType;
+    const crewId = formData.get("id") as string;
+
+    if (!crewName || !crewName.trim()) {
+      throw new Error("Crew name is required.");
+    }
+    if (!Users) {
+      throw new Error("Crew members data is missing.");
+    }
+    if (!teamLead) {
+      throw new Error("A team lead is required.");
+    }
+
+    // First, fetch existing crew to get current users
+    const existingCrew = await prisma.crew.findUnique({
+      where: { id: crewId },
+      include: { Users: true },
+    });
+
+    if (!existingCrew) {
+      throw new Error("Crew not found.");
+    }
+
+    // Parse new users from form data
+    const newUsers = JSON.parse(Users as string) as Array<{
+      id: string;
+    }>;
+
+    // Update the crew - first disconnect all users, then connect the new selection
+    const updatedCrew = await prisma.crew.update({
+      where: { id: crewId },
+      data: {
+        name: crewName.trim(),
+        leadId: teamLead,
+        crewType: crewType,
+        Users: {
+          disconnect: existingCrew.Users.map((user) => ({ id: user.id })),
+          connect: newUsers.map((user) => ({ id: user.id })),
+        },
+      },
+    });
+
+    revalidateTag("crews");
+    revalidatePath(`/admins/crew`);
+    return {
+      success: true,
+      crewId: updatedCrew.id,
+      message: "Crew updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating crew:", error);
+    throw new Error(
+      `Failed to update crew: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+    );
+  }
+}
+
+export async function deleteCrew(id: string) {
+  try {
+    await prisma.crew.delete({
+      where: { id },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting crew:", error);
+    return { success: false, error: error };
+  }
+}
 // Todo: Test Server Action
 export async function deleteLog(id: string) {
   try {

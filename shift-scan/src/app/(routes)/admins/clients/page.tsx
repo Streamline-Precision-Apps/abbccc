@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import SearchBar from "../personnel/components/SearchBar";
+import SearchBar from "../_pages/SearchBar";
 import { useState } from "react";
 import {
   Pagination,
@@ -48,7 +48,7 @@ export default function ClientsPage() {
   } = useClientData();
 
   const pendingCount = ClientDetails.filter(
-    (item) => item.approvalStatus === "PENDING"
+    (item) => item.approvalStatus === "PENDING",
   ).length;
 
   const filteredClientDetails = ClientDetails.filter((client) => {
@@ -78,7 +78,7 @@ export default function ClientsPage() {
   const totalPages = Math.ceil(totalClientDetails / pageSize);
   const paginatedClientDetails = filteredClientDetails.slice(
     (page - 1) * pageSize,
-    page * pageSize
+    page * pageSize,
   );
 
   // Helper Function

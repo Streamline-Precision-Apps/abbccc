@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     console.error("Error during authentication:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -30,92 +30,238 @@ export async function GET(req: Request) {
 
   // Parse pagination params
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
-  const skip = (page - 1) * pageSize;
+  const status = searchParams.get("status") || "all";
+  const search = searchParams.get("search")?.trim() || "";
 
+  let timesheets, total, pageSize, page, skip, totalPages;
   try {
-    // Get total count for pagination
-    const total = await prisma.timeSheet.count();
+    page = undefined;
+    pageSize = undefined;
+    skip = undefined;
+    totalPages = 1;
+    if (status === "pending") {
+      // Return all pending timesheets, no pagination
+      timesheets = await prisma.timeSheet.findMany({
+        where: {
+          status: "PENDING",
+        },
 
-    // Query the database for paginated timesheets
-    const timesheets = await prisma.timeSheet.findMany({
-      skip,
-      take: pageSize,
-      select: {
-        id: true,
-        date: true,
-        User: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-        Jobsite: {
-          select: {
-            name: true,
-            code: true,
-          },
-        },
-        CostCode: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-          },
-        },
-        nu: true,
-        Fp: true,
-        startTime: true,
-        endTime: true,
-        comment: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-        workType: true,
-        EmployeeEquipmentLogs: {
-          select: {
-            id: true,
-            equipmentId: true,
-            Equipment: {
-              select: {
-                id: true,
-                name: true,
-              },
+        select: {
+          id: true,
+          date: true,
+          User: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
             },
-            startTime: true,
-            endTime: true,
           },
-        },
-        TruckingLogs: {
-          select: {
-            truckNumber: true,
-            startingMileage: true,
-            endingMileage: true,
-            RefuelLogs: {
-              select: {
-                milesAtFueling: true,
+          Jobsite: {
+            select: {
+              name: true,
+              code: true,
+            },
+          },
+          CostCode: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          nu: true,
+          Fp: true,
+          startTime: true,
+          endTime: true,
+          comment: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          workType: true,
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              equipmentId: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              startTime: true,
+              endTime: true,
+            },
+          },
+          TruckingLogs: {
+            select: {
+              truckNumber: true,
+              startingMileage: true,
+              endingMileage: true,
+              RefuelLogs: {
+                select: {
+                  milesAtFueling: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      });
+      total = timesheets.length;
+    } else if (search !== "") {
+      page = undefined;
+      pageSize = undefined;
+      skip = undefined;
+      totalPages = 1;
+      // Query the database for paginated timesheets
+      timesheets = await prisma.timeSheet.findMany({
+        select: {
+          id: true,
+          date: true,
+          User: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          Jobsite: {
+            select: {
+              name: true,
+              code: true,
+            },
+          },
+          CostCode: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          nu: true,
+          Fp: true,
+          startTime: true,
+          endTime: true,
+          comment: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          workType: true,
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              equipmentId: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              startTime: true,
+              endTime: true,
+            },
+          },
+          TruckingLogs: {
+            select: {
+              truckNumber: true,
+              startingMileage: true,
+              endingMileage: true,
+              RefuelLogs: {
+                select: {
+                  milesAtFueling: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    } else {
+      page = parseInt(searchParams.get("page") || "1", 10);
+      pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
+      skip = (page - 1) * pageSize;
+      total = await prisma.timeSheet.count();
+      totalPages = Math.ceil(total / pageSize);
+      // Query the database for paginated timesheets
+      timesheets = await prisma.timeSheet.findMany({
+        skip,
+        take: pageSize,
+
+        select: {
+          id: true,
+          date: true,
+          User: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          Jobsite: {
+            select: {
+              name: true,
+              code: true,
+            },
+          },
+          CostCode: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          nu: true,
+          Fp: true,
+          startTime: true,
+          endTime: true,
+          comment: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          workType: true,
+          EmployeeEquipmentLogs: {
+            select: {
+              id: true,
+              equipmentId: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              startTime: true,
+              endTime: true,
+            },
+          },
+          TruckingLogs: {
+            select: {
+              truckNumber: true,
+              startingMileage: true,
+              endingMileage: true,
+              RefuelLogs: {
+                select: {
+                  milesAtFueling: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
 
     return NextResponse.json({
       timesheets,
       total,
       page,
       pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages,
     });
   } catch (error) {
     console.error("Error fetching Time Sheets:", error);
     return NextResponse.json(
       { error: "Failed to fetch pay period sheets" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

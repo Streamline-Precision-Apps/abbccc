@@ -30,11 +30,6 @@ export type Jobsite = {
   }>;
 };
 
-type ClientsSummary = {
-  id: string;
-  name: string;
-};
-
 export const useJobsiteDataById = (id: string) => {
   const [jobSiteDetails, setJobSiteDetails] = useState<Jobsite | null>(null);
   const [tagSummaries, setTagSummaries] = useState<
@@ -43,7 +38,6 @@ export const useJobsiteDataById = (id: string) => {
       name: string;
     }>
   >([]);
-  const [clients, setClients] = useState<ClientsSummary[]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -53,10 +47,9 @@ export const useJobsiteDataById = (id: string) => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        const [jobsiteDetails, tag, client] = await Promise.all([
+        const [jobsiteDetails, tag] = await Promise.all([
           fetch("/api/getJobsiteById/" + id),
           fetch("/api/getTagSummary"),
-          fetch("/api/getClientsSummary"),
         ]).then((res) => Promise.all(res.map((r) => r.json())));
 
         setJobSiteDetails(jobsiteDetails);
@@ -64,10 +57,9 @@ export const useJobsiteDataById = (id: string) => {
           (tag: { id: string; name: string }) => ({
             id: tag.id,
             name: tag.name,
-          })
+          }),
         );
         setTagSummaries(filteredTags);
-        setClients(client);
       } catch (error) {
         console.error("Failed to fetch job site details:", error);
       } finally {
@@ -81,7 +73,6 @@ export const useJobsiteDataById = (id: string) => {
     jobSiteDetails,
     setJobSiteDetails,
     tagSummaries,
-    clients,
     loading,
     setLoading,
     rerender,

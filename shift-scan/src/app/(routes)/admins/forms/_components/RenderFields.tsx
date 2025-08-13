@@ -33,7 +33,7 @@ export default function RenderFields({
   submittedByTouched,
   formData,
   handleFieldChange,
-  clientOptions = [],
+  // clientOptions = [],
   equipmentOptions = [],
   jobsiteOptions = [],
   costCodeOptions = [],
@@ -42,18 +42,18 @@ export default function RenderFields({
   userOptions: { value: string; label: string }[];
   submittedBy: { id: string; firstName: string; lastName: string } | null;
   setSubmittedBy: (
-    user: { id: string; firstName: string; lastName: string } | null
+    user: { id: string; firstName: string; lastName: string } | null,
   ) => void;
   submittedByTouched: boolean;
   formData: Record<string, FormFieldValue>;
   handleFieldChange: (fieldId: string, value: FormFieldValue) => void;
-  clientOptions: { value: string; label: string }[];
+  // clientOptions: { value: string; label: string }[];
   equipmentOptions?: { value: string; label: string }[];
   jobsiteOptions?: { value: string; label: string }[];
   costCodeOptions?: { value: string; label: string }[];
 }) {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
 
   const handleFieldTouch = (fieldId: string) => {
@@ -73,7 +73,7 @@ export default function RenderFields({
   // Helper function to get correctly typed value based on field type
   const getTypedValue = (
     field: Fields,
-    rawValue: FormFieldValue
+    rawValue: FormFieldValue,
   ): FormFieldValue => {
     if (rawValue === null || rawValue === undefined) {
       switch (field.type) {
@@ -140,6 +140,7 @@ export default function RenderFields({
                 case "TEXTAREA":
                   return (
                     <RenderTextArea
+                      key={field.id}
                       field={field}
                       value={value as string}
                       handleFieldChange={handleFieldChange}
@@ -151,6 +152,7 @@ export default function RenderFields({
                 case "NUMBER":
                   return (
                     <RenderNumberField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       handleFieldChange={handleFieldChange}
@@ -162,6 +164,7 @@ export default function RenderFields({
                 case "DATE":
                   return (
                     <RenderDateField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       handleFieldChange={handleFieldChange}
@@ -173,6 +176,7 @@ export default function RenderFields({
                 case "TIME":
                   return (
                     <RenderTimeField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       handleFieldChange={handleFieldChange}
@@ -184,6 +188,7 @@ export default function RenderFields({
                 case "DROPDOWN":
                   return (
                     <RenderDropdownField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       options={options}
@@ -196,6 +201,7 @@ export default function RenderFields({
                 case "RADIO":
                   return (
                     <RenderRadioField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       options={options}
@@ -208,6 +214,7 @@ export default function RenderFields({
                 case "CHECKBOX":
                   return (
                     <RenderCheckboxField
+                      key={field.id}
                       field={field}
                       value={value as string | boolean}
                       handleFieldChange={handleFieldChange}
@@ -235,6 +242,7 @@ export default function RenderFields({
                 case "MULTISELECT":
                   return (
                     <RenderMultiselectField
+                      key={field.id}
                       field={field}
                       value={value as string | string[]}
                       options={options}
@@ -247,6 +255,7 @@ export default function RenderFields({
                 case "SEARCH_PERSON":
                   return (
                     <RenderSearchPersonField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       userOptions={userOptions} // Use the userOptions array
@@ -260,13 +269,14 @@ export default function RenderFields({
                 case "SEARCH_ASSET":
                   return (
                     <RenderSearchAssetField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       handleFieldChange={handleFieldChange}
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       formData={formData}
-                      clientOptions={clientOptions}
+                      // clientOptions={clientOptions}
                       equipmentOptions={equipmentOptions}
                       jobsiteOptions={jobsiteOptions}
                       costCodeOptions={costCodeOptions}
@@ -276,6 +286,7 @@ export default function RenderFields({
                 default:
                   return (
                     <RenderInputField
+                      key={field.id}
                       field={field}
                       value={value as string}
                       handleFieldChange={handleFieldChange}

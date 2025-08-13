@@ -49,6 +49,8 @@ interface TascoReportRow {
 interface TascoReportProps {
   showExportModal: boolean;
   setShowExportModal: (show: boolean) => void;
+  registerReload?: (reloadFn: () => Promise<void>) => void;
+  isRefreshing?: boolean;
 }
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
@@ -56,6 +58,8 @@ type DateRange = { from: Date | undefined; to: Date | undefined };
 export default function TascoReport({
   showExportModal,
   setShowExportModal,
+  registerReload,
+  isRefreshing,
 }: TascoReportProps) {
   const [data, setData] = useState<TascoReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,29 +68,35 @@ export default function TascoReport({
     to: undefined,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/reports/tasco");
-        const json = await response.json();
-        if (!response.ok) {
-          throw new Error(json.message || "Failed to fetch Tasco report data");
-        }
-        setData(json);
-      } catch (error) {
-        console.error("Error fetching Tasco report data:", error);
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/reports/tasco");
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.message || "Failed to fetch Tasco report data");
       }
-    };
+      setData(json);
+    } catch (error) {
+      console.error("Error fetching Tasco report data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register reload function on mount
+  useEffect(() => {
+    if (registerReload) {
+      registerReload(fetchData);
+    }
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registerReload]);
 
   const onExport = (
     exportFormat: "csv" | "xlsx",
     _dateRange?: { from?: Date; to?: Date },
-    selectedFields?: string[]
+    selectedFields?: string[],
   ) => {
     if (!data.length) return;
     // Filter by dateRange if set
@@ -120,18 +130,18 @@ export default function TascoReport({
             row.shiftType === "ABCD Shift"
               ? "TASCO - A, B, C, D Shift"
               : row.shiftType === "E Shift"
-              ? "TASCO - E Shift Mud Conditioning"
-              : row.shiftType,
+                ? "TASCO - E Shift Mud Conditioning"
+                : row.shiftType,
             format(row.submittedDate, "yyyy-MM-dd"),
             row.employee,
             format(row.dateWorked, "yyyy-MM-dd"),
             row.laborType === "tascoAbcdEquipment"
               ? "Equipment Operator"
               : row.laborType === "tascoEEquipment"
-              ? "-"
-              : row.laborType === "tascoAbcdLabor"
-              ? "Equipment Operator"
-              : "-",
+                ? "-"
+                : row.laborType === "tascoAbcdLabor"
+                  ? "Equipment Operator"
+                  : "-",
             row.equipment || "-",
             row.loadsABCDE || "-",
             row.loadsF || "-",
@@ -141,8 +151,8 @@ export default function TascoReport({
             row.LoadType === "SCREENED"
               ? "Screened"
               : row.LoadType === "UNSCREENED"
-              ? "Unscreened"
-              : "-",
+                ? "Unscreened"
+                : "-",
           ]
             .map((cell) => {
               if (cell === null || cell === undefined) return "";
@@ -150,7 +160,7 @@ export default function TascoReport({
               // Always quote, and escape quotes inside
               return '"' + str.replace(/"/g, '""') + '"';
             })
-            .join(",")
+            .join(","),
         ),
       ];
       const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
@@ -171,8 +181,8 @@ export default function TascoReport({
               row.shiftType === "ABCD Shift"
                 ? "TASCO - A, B, C, D Shift"
                 : row.shiftType === "E Shift"
-                ? "TASCO - E Shift Mud Conditioning"
-                : row.shiftType,
+                  ? "TASCO - E Shift Mud Conditioning"
+                  : row.shiftType,
             "Submitted Date": format(row.submittedDate, "yyyy/MM/dd"),
             Employee: row.employee,
             "Date Worked": format(row.dateWorked, "yyyy/MM/dd"),
@@ -180,10 +190,10 @@ export default function TascoReport({
               row.laborType === "tascoAbcdEquipment"
                 ? "Equipment Operator"
                 : row.laborType === "tascoEEquipment"
-                ? "-"
-                : row.laborType === "tascoAbcdLabor"
-                ? "Equipment Operator"
-                : "-",
+                  ? "-"
+                  : row.laborType === "tascoAbcdLabor"
+                    ? "Equipment Operator"
+                    : "-",
             Equipment: row.equipment || "-",
             "Loads - ABCDE": row.loadsABCDE || "-",
             "Loads - F": row.loadsF || "-",
@@ -194,9 +204,9 @@ export default function TascoReport({
               row.LoadType === "SCREENED"
                 ? "Screened"
                 : row.LoadType === "UNSCREENED"
-                ? "Unscreened"
-                : "-",
-          }))
+                  ? "Unscreened"
+                  : "-",
+          })),
         );
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Tasco Report");
@@ -259,8 +269,8 @@ export default function TascoReport({
                   {row.shiftType === "ABCD Shift"
                     ? "TASCO - A, B, C, D Shift"
                     : row.shiftType === "E shift"
-                    ? "TASCO - E Shift Mud Conditioning"
-                    : row.shiftType}
+                      ? "TASCO - E Shift Mud Conditioning"
+                      : row.shiftType}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {format(row.submittedDate, "yyyy/MM/dd")}
@@ -275,10 +285,10 @@ export default function TascoReport({
                   {row.laborType === "tascoAbcdEquipment"
                     ? "Equipment Operator"
                     : row.laborType === "tascoEEquipment"
-                    ? "-"
-                    : row.laborType === "tascoAbcdLabor"
-                    ? "Equipment Operator"
-                    : "-"}
+                      ? "-"
+                      : row.laborType === "tascoAbcdLabor"
+                        ? "Equipment Operator"
+                        : "-"}
                 </TableCell>
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   {row.equipment || "-"}
@@ -302,14 +312,21 @@ export default function TascoReport({
                   {row.LoadType === "SCREENED"
                     ? "Screened"
                     : row.LoadType === "UNSCREENED"
-                    ? "Unscreened"
-                    : "-"}
+                      ? "Unscreened"
+                      : "-"}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         )}
       </Table>
+      {data.length === 0 && !loading && (
+        <div className="w-full h-full flex justify-center items-center absolute left-0 top-0 z-50  rounded-[10px]">
+          <p className="text-gray-500 italic">
+            No data available for a TASCO Reports.
+          </p>
+        </div>
+      )}
 
       {showExportModal && (
         <ExportReportModal

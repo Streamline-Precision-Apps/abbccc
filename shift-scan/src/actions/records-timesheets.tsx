@@ -262,6 +262,23 @@ export async function adminDeleteTimesheet(id: string) {
   }
 }
 
+export async function adminUpdateTimesheetStatus(
+  id: string,
+  status: "APPROVED" | "REJECTED",
+) {
+  try {
+    await prisma.timeSheet.update({
+      where: { id },
+      data: { status: status as ApprovalStatus },
+    });
+    revalidateTag("timesheets");
+    return { success: true };
+  } catch (error) {
+    console.error(`Error deleting timesheet with ID ${id}:`, error);
+    throw error;
+  }
+}
+
 /**
  * Updates a timesheet and all attached logs and connections.
  * Replaces all logs for the timesheet with the new data from the form.

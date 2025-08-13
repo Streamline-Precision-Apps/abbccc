@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ employee: string }> }
+  { params }: { params: Promise<{ employee: string }> },
 ) {
   try {
     // Authenticate user
@@ -21,7 +21,7 @@ export async function GET(
     if (!employee) {
       return NextResponse.json(
         { error: "Missing or invalid employee ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,7 +33,9 @@ export async function GET(
       select: {
         id: true,
         firstName: true,
+        middleName: true,
         lastName: true,
+        secondLastName: true,
         username: true,
         email: true,
         DOB: true,
@@ -66,7 +68,7 @@ export async function GET(
     if (!EmployeeData) {
       return NextResponse.json(
         { error: "Employee not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
