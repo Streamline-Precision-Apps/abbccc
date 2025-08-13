@@ -31,6 +31,7 @@ import UserTable from "./_components/UserTable";
 import CreateUserModal from "./_components/createUser";
 import { deleteUser } from "@/actions/adminActions";
 import EditUserModal from "./_components/editUser";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function JobsitePage() {
   const { setOpen, open } = useSidebar();
@@ -92,37 +93,15 @@ export default function JobsitePage() {
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
-        <div className="w-full flex flex-row gap-5 ">
-          <div className="flex items-center justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-              }`}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <img
-                src={open ? "/condense-white.svg" : "/condense.svg"}
-                alt="logo"
-                className="w-4 h-auto object-contain "
-              />
-            </Button>
-          </div>
-          <div className="w-full flex flex-col gap-1">
-            <p className="text-left w-fit text-base text-white font-bold">
-              Personnel Management
-            </p>
-            <p className="text-left text-xs text-white">
-              Create, edit, and manage personnel details
-            </p>
-          </div>
-        </div>
-        <ReloadBtnSpinner isRefreshing={loading} fetchData={rerender} />
-      </div>
+      <PageHeaderContainer
+        loading={loading}
+        headerText=" Personnel Management"
+        descriptionText="Create, edit, and manage personnel details"
+        refetch={() => {
+          rerender();
+        }}
+      />
+
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-4 mb-2">
           <SearchBarPopover

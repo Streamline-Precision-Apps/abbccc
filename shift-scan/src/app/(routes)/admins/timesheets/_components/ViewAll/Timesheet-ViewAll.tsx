@@ -2,9 +2,7 @@ import { Table, TableHeader } from "@/components/ui/table";
 import { TimesheetTableHeader } from "./TimesheetTableHeader";
 import { TimesheetTableBody } from "./TimesheetTableBody";
 import { TimesheetTableSkeleton } from "./TimesheetTableSkeleton";
-import { TimesheetFooter } from "./TimesheetFooter";
-import { ApprovalStatus, TimeSheetStatus, WorkType } from "@/lib/enums";
-import { HorizontalScrollArea } from "@/components/ui/HorizontalScrollArea";
+import { ApprovalStatus, WorkType } from "@/lib/enums";
 
 export type Timesheet = {
   id: string;
@@ -93,7 +91,7 @@ export default function ViewAllTimesheets({
   if (loading) {
     return (
       <Table className="w-full">
-        <TableHeader className="sticky top-0 z-10 bg-gray-50 border-b-2 border-gray-300">
+        <TableHeader className="sticky top-0 z-10 ">
           <TimesheetTableHeader headers={timesheetHeaders} loading />
         </TableHeader>
         <TimesheetTableSkeleton

@@ -13,7 +13,10 @@ export function TimesheetTableSkeleton({
   return (
     <TableBody className="divide-y divide-gray-200 bg-white">
       {Array.from({ length: pageSize }).map((_, rowIdx) => (
-        <TableRow key={rowIdx} className="hover:bg-gray-50 transition-colors">
+        <TableRow
+          key={rowIdx}
+          className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+        >
           {headers.map((_, colIdx) => (
             <TableCell
               key={colIdx}

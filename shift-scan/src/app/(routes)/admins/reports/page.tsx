@@ -19,6 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
@@ -81,42 +82,17 @@ export default function AdminReports() {
   const selectedReport = reports.find((r) => r.id === selectedReportId);
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
-        <div className="w-full flex flex-row gap-5 ">
-          <div className="flex items-center justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-              }`}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <img
-                src={open ? "/condense-white.svg" : "/condense.svg"}
-                alt="logo"
-                className="w-4 h-auto object-contain "
-              />
-            </Button>
-          </div>
-          <div className="w-fit flex flex-col gap-1 ">
-            <p className="text-left w-fit text-base text-white font-bold">
-              Reports
-            </p>
-            <p className="text-left text-xs text-white">
-              Run select reports and download them in CSV or Excel reports
-            </p>
-          </div>
-        </div>
-        <ReloadBtnSpinner
-          isRefreshing={isRefreshing}
-          fetchData={fetchData}
-          reportPage={true}
-          selectedReportId={selectedReportId}
-        />
-      </div>
+      <PageHeaderContainer
+        loading={isRefreshing}
+        headerText=" Reports"
+        descriptionText="Run select reports and download them in CSV or Excel reports"
+        refetch={() => {
+          fetchData();
+        }}
+        reportPage={true}
+        selectedReportId={selectedReportId}
+      />
+
       <div className="h-fit max-h-12 justify-between w-full flex flex-row gap-4">
         <Select
           name="report"
