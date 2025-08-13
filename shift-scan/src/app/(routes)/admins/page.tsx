@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import Spinner from "@/components/(animations)/spinner";
 import Link from "next/link";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PageHeaderContainer } from "./_pages/PageHeaderContainer";
 
 type DashboardData = {
   clockedInUsers: number;
@@ -48,33 +48,15 @@ export default function Admins() {
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_1fr] gap-4">
       {/* Main content goes here */}
-      <div className="flex flex-row justify-between h-full max-h-[3rem] row-span-1 border-b border-gray-200 pb-4">
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-              open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-            }`}
-            onClick={() => {
-              setOpen(!open);
-            }}
-          >
-            <img
-              src={open ? "/condense-white.svg" : "/condense.svg"}
-              alt="logo"
-              className="w-4 h-auto object-contain "
-            />
-          </Button>
-          <div className="flex flex-col">
-            <p className="text-white text-lg">Admin Dashboard</p>
-            <p className="text-xs text-white">Quick Actions</p>
-          </div>
-        </div>
+      <PageHeaderContainer
+        loading={isRefreshing}
+        headerText="Admin Dashboard"
+        descriptionText="Quick Actions - review pending tasks & keep track of new entries."
+        refetch={() => {
+          fetchData();
+        }}
+      />
 
-        {/* Refresh button */}
-        <ReloadBtnSpinner isRefreshing={isRefreshing} fetchData={fetchData} />
-      </div>
       <ScrollArea className="h-full max-h-[calc(100vh-6rem)] w-full row-span-1">
         <div className="">
           <div className="w-full flex flex-row flex-wrap gap-4 md:gap-6 lg:gap-10 justify-center md:justify-center">

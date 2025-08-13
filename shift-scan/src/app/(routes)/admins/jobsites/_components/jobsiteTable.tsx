@@ -37,13 +37,12 @@ export default function JobsiteTable({
   showPendingOnly: boolean;
 }) {
   const header = [
-    "ID",
+    // "ID",
     "Name",
     "Description",
     "Created At",
     "Active",
     "Site Address",
-    // "Client Name",
     "Approval Status",
     "Updated At",
     "Actions",
@@ -72,9 +71,9 @@ export default function JobsiteTable({
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
               >
                 {/* ID */}
-                <TableCell className="border-r border-gray-200 text-xs text-center w-[300px]">
+                {/* <TableCell className="border-r border-gray-200 text-xs text-center w-[300px]">
                   <Skeleton className="h-4 w-2/3 mx-auto" />
-                </TableCell>
+                </TableCell> */}
                 {/* Name */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-3/4 mx-auto" />
@@ -95,10 +94,7 @@ export default function JobsiteTable({
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-full mx-auto" />
                 </TableCell>
-                {/* Client Name */}
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-3/4 mx-auto" />
-                </TableCell>
+
                 {/* Approval Status */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-1/2 mx-auto" />
@@ -125,9 +121,9 @@ export default function JobsiteTable({
                 className="odd:bg-white even:bg-gray-100 "
                 key={jobsite.id}
               >
-                <TableCell className=" border-r border-gray-200 text-xs text-center">
+                {/* <TableCell className=" border-r border-gray-200 text-xs text-center">
                   {jobsite.id || " "}
-                </TableCell>
+                </TableCell> */}
                 <TableCell className=" border-r border-gray-200 text-xs text-center">
                   {jobsite.name || " "}
                 </TableCell>

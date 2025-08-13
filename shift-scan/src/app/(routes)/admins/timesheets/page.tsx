@@ -5,7 +5,6 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import TimesheetDescription from "./_components/ViewAll/Timesheet-Description";
 import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
 import {
   Popover,
@@ -43,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import useAllTimeSheetData, {
   Timesheet,
 } from "./_components/useAllTimeSheetData";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 export default function AdminTimesheets() {
   const {
@@ -254,18 +254,17 @@ export default function AdminTimesheets() {
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <TimesheetDescription
-        setShowCreateModal={setShowCreateModal}
-        setExportModal={setExportModal}
-        setShowPendingOnly={setShowPendingOnly}
-        showPendingOnly={showPendingOnly}
-        approvalInbox={approvalInbox}
+      <PageHeaderContainer
         loading={loading}
-        rerender={rerender}
+        headerText="Timesheets Management"
+        descriptionText="Create, manage, and track timesheets"
+        refetch={() => {
+          rerender();
+        }}
       />
       <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-2 mb-2">
-          <div className=" rounded-lg px-1 flex items-center">
+          <div className=" rounded-lg flex items-center">
             <SearchBarPopover
               term={inputValue}
               handleSearchChange={(e) => setInputValue(e.target.value)}
@@ -315,7 +314,10 @@ export default function AdminTimesheets() {
                           to.setHours(23, 59, 59, 999);
                           setDateRange({ from, to });
                         } else {
-                          setDateRange({ from: undefined, to: undefined });
+                          setDateRange({
+                            from: undefined,
+                            to: undefined,
+                          });
                         }
                       }}
                       autoFocus

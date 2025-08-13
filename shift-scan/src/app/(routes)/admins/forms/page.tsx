@@ -50,6 +50,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 
 // Form field definition
 interface FormField {
@@ -284,37 +285,15 @@ export default function Forms() {
   // Main render
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
-        <div className="flex flex-row gap-5 ">
-          <div className="flex items-center justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-              }`}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <img
-                src={open ? "/condense-white.svg" : "/condense.svg"}
-                alt="logo"
-                className="w-4 h-auto object-contain "
-              />
-            </Button>
-          </div>
-          <div className="flex flex-col">
-            <p className="text-left font-bold text-base text-white">
-              Forms Management
-            </p>
-            <p className="text-left font-normal text-xs text-white">
-              Create, manage, and track form templates and submissions
-            </p>
-          </div>
-        </div>
-        <ReloadBtnSpinner isRefreshing={loading} fetchData={refetch} />
-      </div>
+      <PageHeaderContainer
+        loading={loading}
+        headerText="Forms Management"
+        descriptionText="Create, manage, and track form templates and submissions"
+        refetch={() => {
+          refetch();
+        }}
+      />
+
       <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
         <div className="flex flex-row w-full gap-2">
           <SearchBarPopover
@@ -369,7 +348,7 @@ export default function Forms() {
                     <img
                       src="/plus-white.svg"
                       alt="Create New Form"
-                      className="h-6 w-6 "
+                      className="h-4 w-4 "
                     />
                   </Button>
                 </Link>

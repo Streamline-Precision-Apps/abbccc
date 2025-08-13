@@ -56,26 +56,32 @@ const SubmissionTable: React.FC<SubmissionTableProps> = ({
     .sort((a, b) => a.order - b.order);
 
   return (
-    <Table className="w-full h-full bg-white relative rounded-xl">
-      <TableHeader className="rounded-t-md ">
+    <Table className="w-full">
+      <TableHeader className="sticky top-0 z-10 bg-gray-50 border-b-2 border-gray-300">
         <TableRow className="">
-          <TableHead className="text-xs text-center rounded-tl-md min-w-[80px]">
+          <TableHead className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs">
             Submitted By
           </TableHead>
           {fields.map((field) => (
             <TableHead
               key={field.label}
-              className="text-xs text-center max-w-[200px]"
+              className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs"
             >
               {field.label}
             </TableHead>
           ))}
-          <TableHead className="text-xs text-center ">Status</TableHead>
-          <TableHead className="text-xs text-center ">Submitted At</TableHead>
+          <TableHead className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs">
+            Status
+          </TableHead>
+          <TableHead className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs">
+            Submitted At
+          </TableHead>
           {isSignatureRequired && (
-            <TableHead className="text-xs text-center ">Signature</TableHead>
+            <TableHead className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs">
+              Signature
+            </TableHead>
           )}
-          <TableHead className="text-xs text-center bg-gray-50 rounded-tr-lg sticky right-0 z-10 ">
+          <TableHead className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs">
             Actions
           </TableHead>
         </TableRow>

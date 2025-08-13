@@ -7,11 +7,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Check, X } from "lucide-react";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@/components/ui/hover-card";
 import { highlight } from "../../../_pages/higlight";
 
 interface Timesheet {
@@ -30,7 +25,6 @@ interface Timesheet {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
-
 interface TimesheetTableBodyProps {
   timesheets: Timesheet[];
   onDeleteClick?: (id: string) => void;
@@ -108,34 +102,34 @@ export function TimesheetTableBody({
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.Jobsite ? (
-              <HoverCard>
-                <HoverCardTrigger asChild>
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
                     {highlight(timesheet.Jobsite.code, searchTerm)}
                   </span>
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </TooltipTrigger>
+                <TooltipContent>
                   <div className="text-xs font-semibold">
-                    {timesheet.Jobsite.name}
+                    {timesheet.Jobsite.name.split("-").slice(1).join(" ")}
                   </div>
-                </HoverCardContent>
-              </HoverCard>
+                </TooltipContent>
+              </Tooltip>
             ) : null}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {timesheet.CostCode ? (
-              <HoverCard>
-                <HoverCardTrigger asChild>
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
                     {highlight(timesheet.CostCode.code, searchTerm)}
                   </span>
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </TooltipTrigger>
+                <TooltipContent>
                   <div className="text-xs font-semibold">
-                    {timesheet.CostCode.name}
+                    {timesheet.CostCode.name.split(" ").slice(1).join(" ")}
                   </div>
-                </HoverCardContent>
-              </HoverCard>
+                </TooltipContent>
+              </Tooltip>
             ) : null}
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -149,8 +143,8 @@ export function TimesheetTableBody({
           </TableCell>
 
           <TableCell className="border-r border-gray-200 text-xs text-center min-w-[50px]">
-            <HoverCard>
-              <HoverCardTrigger asChild>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 {timesheet.status === "PENDING" ? (
                   <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
                     P
@@ -168,8 +162,9 @@ export function TimesheetTableBody({
                     R
                   </span>
                 )}
-              </HoverCardTrigger>
-              <HoverCardContent
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
                 align="center"
                 className="w-[120px] justify-center"
               >
@@ -182,8 +177,8 @@ export function TimesheetTableBody({
                         ? "Approved"
                         : "Rejected"}
                 </div>
-              </HoverCardContent>
-            </HoverCard>
+              </TooltipContent>
+            </Tooltip>
           </TableCell>
           <TableCell className="border-r border-gray-200 text-xs text-center">
             {format(timesheet.updatedAt, "MM/dd/yy")}
