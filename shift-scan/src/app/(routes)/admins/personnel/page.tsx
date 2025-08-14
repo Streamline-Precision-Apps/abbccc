@@ -1,8 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useSidebar } from "@/components/ui/sidebar";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
 import {
   Tooltip,
@@ -28,9 +20,9 @@ import SearchBarPopover from "../_pages/searchBarPopover";
 import { usePersonnelData } from "./_components/usePersonnelData";
 import UserTable from "./_components/UserTable";
 import CreateUserModal from "./_components/createUser";
-
 import EditUserModal from "./_components/editUser";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import { FooterPagination } from "../_pages/FooterPagination";
 
 export default function JobsitePage() {
   const {
@@ -124,64 +116,14 @@ export default function JobsitePage() {
           </div>
         </ScrollArea>
         {totalPages > 1 && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-            <div className="text-xs text-gray-600">
-              Showing page {page} of {totalPages} ({total} total)
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.max(1, page - 1));
-                      }}
-                      aria-disabled={page === 1}
-                      tabIndex={page === 1 ? -1 : 0}
-                      style={{
-                        pointerEvents: page === 1 ? "none" : undefined,
-                        opacity: page === 1 ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <span className="text-xs border rounded py-1 px-2">
-                      {page}
-                    </span>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.min(totalPages, page + 1));
-                      }}
-                      aria-disabled={page === totalPages}
-                      tabIndex={page === totalPages ? -1 : 0}
-                      style={{
-                        pointerEvents: page === totalPages ? "none" : undefined,
-                        opacity: page === totalPages ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-              <select
-                className="ml-2 px-1 py-1 rounded text-xs border"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[25, 50, 75, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} Rows
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <FooterPagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            setPage={setPage}
+            setPageSize={setPageSize}
+          />
         )}
       </div>
       {editUserModal && pendingEditId && (

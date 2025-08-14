@@ -1,8 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useSidebar } from "@/components/ui/sidebar";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteCostCode, deleteTag } from "@/actions/AssetActions";
 import { useCostCodeData } from "./_components/useCostCodeData";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
 import CostCodeTable from "./_components/CostCodeTable";
 import CreateCostCodeModal from "./_components/CreateCostCodeModal";
@@ -36,121 +27,55 @@ import {
 } from "@/components/ui/tooltip";
 import { Tags } from "lucide-react";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import { FooterPagination } from "../_pages/FooterPagination";
 
 export default function CostCodePage() {
+  const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
   const {
     loading,
     CostCodeDetails,
     rerender,
     total,
     page,
+    totalPages,
     pageSize,
     setPage,
     setPageSize,
     inputValue,
     setInputValue,
+    editCostCodeModal,
+    setEditCostCodeModal,
+    createCostCodeModal,
+    setCreateCostCodeModal,
+    pendingEditId,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    openHandleEdit,
+    confirmDelete,
+    openHandleDelete,
+    cancelDelete,
+    filteredCostCodes,
   } = useCostCodeData();
 
   const {
+    createTagModal,
+    setCreateTagModal,
+    editTagModal,
+    setEditTagModal,
+    showDeleteTagDialog,
+    setShowDeleteTagDialog,
+    pendingTagEditId,
     loading: tagLoading,
-    tagDetails,
     rerender: tagRerender,
-    total: tagTotal,
-    page: tagPage,
-    pageSize: tagPageSize,
-    setPage: setTagPage,
-    setPageSize: setTagPageSize,
     inputValue: searchTag,
     setInputValue: setSearchTag,
+    confirmTagDelete,
+    cancelTagDelete,
+    openHandleTagEdit,
+    openHandleTagDelete,
+    totalPages: totalPagesTags,
+    filteredTags,
   } = useTagData();
-
-  const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
-  // State for modals, dialogs, and pending actions
-  // Cost Codes
-  const [editCostCodeModal, setEditCostCodeModal] = useState(false);
-  const [createCostCodeModal, setCreateCostCodeModal] = useState(false);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  // Tags
-  const [createTagModal, setCreateTagModal] = useState(false);
-  const [editTagModal, setEditTagModal] = useState(false);
-  const [showDeleteTagDialog, setShowDeleteTagDialog] = useState(false);
-  const [pendingTagEditId, setPendingTagEditId] = useState<string | null>(null);
-  const [pendingTagDeleteId, setPendingTagDeleteId] = useState<string | null>(
-    null,
-  );
-  // Cost Codes helper functions
-  const openHandleEdit = (id: string) => {
-    setPendingEditId(id);
-    setEditCostCodeModal(true);
-  };
-  const confirmDelete = async () => {
-    if (pendingDeleteId) {
-      await deleteCostCode(pendingDeleteId);
-      setShowDeleteDialog(false);
-      setPendingDeleteId(null);
-      rerender();
-    }
-  };
-  const cancelDelete = () => {
-    setShowDeleteDialog(false);
-    setPendingDeleteId(null);
-  };
-  const openHandleDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteDialog(true);
-  };
-  // Tag helper functions
-  const confirmTagDelete = async () => {
-    if (pendingTagDeleteId) {
-      await deleteTag(pendingTagDeleteId);
-      setShowDeleteTagDialog(false);
-      setPendingTagDeleteId(null);
-      tagRerender();
-    }
-  };
-  const cancelTagDelete = () => {
-    setShowDeleteTagDialog(false);
-    setPendingTagDeleteId(null);
-  };
-  const openHandleTagEdit = (id: string) => {
-    setPendingTagEditId(id);
-    setEditTagModal(true);
-  };
-  const openHandleTagDelete = (id: string) => {
-    setPendingTagDeleteId(id);
-    setShowDeleteTagDialog(true);
-  };
-  // Simple filter by cost code name
-  const filteredCostCodes = CostCodeDetails.filter((costCode) =>
-    costCode.name.toLowerCase().includes(inputValue.toLowerCase()),
-  );
-
-  // Simple filter by tag name
-  const filteredTags = tagDetails.filter((tag) =>
-    tag.name.toLowerCase().includes(searchTag.toLowerCase()),
-  );
-
-  // Pagination logic
-  const totalCostCodes = filteredCostCodes.length;
-  const totalPages = Math.ceil(totalCostCodes / pageSize);
-  const paginatedCostCodes = filteredCostCodes.slice(
-    (page - 1) * pageSize,
-    page * pageSize,
-  );
-
-  const totalTags = filteredTags.length;
-  const totalPagesTags = Math.ceil(totalTags / tagPageSize);
-  const paginatedTags = filteredTags.slice(
-    (tagPage - 1) * tagPageSize,
-    tagPage * tagPageSize,
-  );
-
-  // Reset to page 1 if search or filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [inputValue]);
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
@@ -282,7 +207,7 @@ export default function CostCodePage() {
           {pageState === "CostCode" ? (
             <CostCodeTable
               loading={loading}
-              costCodeDetails={paginatedCostCodes}
+              costCodeDetails={filteredCostCodes}
               openHandleDelete={openHandleDelete}
               openHandleEdit={openHandleEdit}
               inputValue={inputValue}
@@ -290,7 +215,7 @@ export default function CostCodePage() {
           ) : (
             <TagTable
               loading={tagLoading}
-              tagDetails={paginatedTags}
+              tagDetails={filteredTags}
               openHandleDelete={openHandleTagDelete}
               openHandleEdit={openHandleTagEdit}
             />
@@ -307,130 +232,28 @@ export default function CostCodePage() {
         {pageState === "CostCode" ? (
           <>
             {totalPages > 1 && (
-              <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
-                <div className="text-xs text-gray-600">
-                  Showing page {page} of {totalPages} ({total} total)
-                </div>
-                <div className="flex flex-row gap-2 items-center">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setPage(Math.max(1, page - 1));
-                          }}
-                          aria-disabled={page === 1}
-                          tabIndex={page === 1 ? -1 : 0}
-                          style={{
-                            pointerEvents: page === 1 ? "none" : undefined,
-                            opacity: page === 1 ? 0.5 : 1,
-                          }}
-                        />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <span className="text-xs border rounded py-1 px-2">
-                          {page}
-                        </span>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setPage(Math.min(totalPages, page + 1));
-                          }}
-                          aria-disabled={page === totalPages}
-                          tabIndex={page === totalPages ? -1 : 0}
-                          style={{
-                            pointerEvents:
-                              page === totalPages ? "none" : undefined,
-                            opacity: page === totalPages ? 0.5 : 1,
-                          }}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                  <select
-                    className="ml-2 px-1 py-1 rounded text-xs border"
-                    value={pageSize}
-                    onChange={(e) => {
-                      setPageSize(Number(e.target.value));
-                      setPage(1);
-                    }}
-                  >
-                    {[25, 50, 75, 100].map((size) => (
-                      <option key={size} value={size}>
-                        {size} Rows
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <FooterPagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                pageSize={pageSize}
+                setPage={setPage}
+                setPageSize={setPageSize}
+              />
             )}
           </>
         ) : (
           <>
             {totalPagesTags > 1 && (
-              <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
-                <div className="text-xs text-gray-600">
-                  Showing page {tagPage - 1} of {totalPagesTags - 1} (
-                  {totalTags - 1} total)
-                </div>
-                <div className="flex flex-row gap-2 items-center">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setPage(Math.max(1, tagPage - 1));
-                          }}
-                          aria-disabled={tagPage === 1}
-                          tabIndex={tagPage === 1 ? -1 : 0}
-                          style={{
-                            pointerEvents: tagPage === 1 ? "none" : undefined,
-                            opacity: tagPage === 1 ? 0.5 : 1,
-                          }}
-                        />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <span className="text-xs border rounded py-1 px-2">
-                          {tagPage || ""}
-                        </span>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setPage(Math.min(totalPagesTags, tagPage + 1));
-                          }}
-                          aria-disabled={tagPage === totalPagesTags}
-                          tabIndex={tagPage === totalPagesTags ? -1 : 0}
-                          style={{
-                            pointerEvents:
-                              tagPage === totalPagesTags ? "none" : undefined,
-                            opacity: tagPage === totalPagesTags ? 0.5 : 1,
-                          }}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                  <select
-                    className="ml-2 px-1 py-1 rounded text-xs border"
-                    value={tagPageSize}
-                    onChange={(e) => {
-                      setTagPageSize(Number(e.target.value));
-                      setTagPage(1);
-                    }}
-                  >
-                    {[25, 50, 75, 100].map((size) => (
-                      <option key={size} value={size}>
-                        {size} Rows
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <FooterPagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                pageSize={pageSize}
+                setPage={setPage}
+                setPageSize={setPageSize}
+                hideItems={1}
+              />
             )}
           </>
         )}

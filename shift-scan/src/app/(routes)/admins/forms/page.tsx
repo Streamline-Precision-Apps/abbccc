@@ -33,15 +33,7 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
@@ -51,6 +43,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import { FooterPagination } from "../_pages/FooterPagination";
 
 // Form field definition
 interface FormField {
@@ -385,64 +378,14 @@ export default function Forms() {
           </div>
         </ScrollArea>
         {totalPages > 1 && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
-            <div className="text-xs text-gray-600">
-              Showing page {page} of {totalPages} ({total} total)
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.max(1, page - 1));
-                      }}
-                      aria-disabled={page === 1}
-                      tabIndex={page === 1 ? -1 : 0}
-                      style={{
-                        pointerEvents: page === 1 ? "none" : undefined,
-                        opacity: page === 1 ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <span className="text-xs border rounded py-1 px-2">
-                      {page}
-                    </span>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.min(totalPages, page + 1));
-                      }}
-                      aria-disabled={page === totalPages}
-                      tabIndex={page === totalPages ? -1 : 0}
-                      style={{
-                        pointerEvents: page === totalPages ? "none" : undefined,
-                        opacity: page === totalPages ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-              <select
-                className="ml-2 px-1 py-1 rounded text-xs border"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[25, 50, 75, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} Rows
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <FooterPagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            setPage={setPage}
+            setPageSize={setPageSize}
+          />
         )}
       </div>
 
