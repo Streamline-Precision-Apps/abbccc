@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import React from "react";
 import {
   Dialog,
@@ -18,11 +17,11 @@ import {
 } from "@/components/ui/tooltip";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { usePersonnelData } from "./_components/usePersonnelData";
-import UserTable from "./_components/UserTable";
 import CreateUserModal from "./_components/createUser";
 import EditUserModal from "./_components/editUser";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
+import { PersonnelDataTable } from "./_components/ViewAll/PersonnelDataTable";
 
 export default function JobsitePage() {
   const {
@@ -88,33 +87,30 @@ export default function JobsitePage() {
           </Tooltip>
         </div>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          {/* Loading overlay */}
-          {loading && (
-            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-              <Spinner size={20} />
-              <span className="text-lg text-gray-500">Loading...</span>
-            </div>
-          )}
-          <UserTable
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+            <Spinner size={20} />
+            <span className="text-lg text-gray-500">Loading...</span>
+          </div>
+        )}
+        <div className="h-full w-full overflow-auto pb-10 border border-slate-200 rounded-t-lg">
+          <PersonnelDataTable
+            data={personnelDetails}
             loading={loading}
-            personnelDetails={personnelDetails}
-            openHandleDelete={openHandleDelete}
-            openHandleEdit={openHandleEdit}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            searchTerm={searchTerm}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            onEditClick={openHandleEdit}
+            onDeleteClick={openHandleDelete}
             showInactive={showInactive}
           />
-          <ScrollBar orientation="vertical" />
-          <div className="h-1  absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
-            />
-          </div>
-        </ScrollArea>
+        </div>
         {totalPages > 1 && (
           <FooterPagination
             page={page}

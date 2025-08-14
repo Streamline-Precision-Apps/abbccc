@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import TimesheetViewAll from "./_components/ViewAll/Timesheet-ViewAll";
+import { TimesheetDataTable } from "./_components/ViewAll/TimesheetDataTable";
 import {
   Popover,
   PopoverTrigger,
@@ -15,7 +15,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
 import { ExportModal } from "./_components/Export/ExportModal";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -24,12 +23,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Spinner from "@/components/(animations)/spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { Badge } from "@/components/ui/badge";
 import useAllTimeSheetData from "./_components/useAllTimeSheetData";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function AdminTimesheets() {
   const {
@@ -228,26 +227,17 @@ export default function AdminTimesheets() {
           </Tooltip>
         </div>
       </div>
-      {/* ...existing code... */}
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        {loading && (
-          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-            <Spinner size={20} />
-            <span className="text-lg text-gray-500">Loading...</span>
-          </div>
-        )}
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          <TimesheetViewAll
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
+          <TimesheetDataTable
+            data={sortedTimesheets}
             showPendingOnly={showPendingOnly}
-            timesheets={sortedTimesheets}
             loading={loading}
             page={page}
             totalPages={totalPages}
             total={total}
             pageSize={pageSize}
+            setPageSize={setPageSize}
             pageSizeOptions={pageSizeOptions}
             onPageSizeChange={handlePageSizeChange}
             onPageChange={setPage}
@@ -261,25 +251,25 @@ export default function AdminTimesheets() {
             onApprovalAction={handleApprovalAction}
             statusLoading={statusLoading}
             searchTerm={inputValue}
+            setPage={setPage}
           />
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          <div className="flex items-center justify-end space-x-2 py-4 ">
+            <FooterPagination
+              page={loading ? 1 : page}
+              totalPages={loading ? 1 : totalPages}
+              total={loading ? 0 : total}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
             />
           </div>
-        </ScrollArea>
-        {/* pagination component */}
-        {!showPendingOnly && totalPages > 1 && (
-          <FooterPagination
-            page={page}
-            totalPages={totalPages}
-            total={total}
-            pageSize={pageSize}
-            setPage={setPage}
-            setPageSize={setPageSize}
-          />
-        )}
+        </div>
       </div>
 
       {/*Modal Section*/}

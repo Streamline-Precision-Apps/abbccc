@@ -103,21 +103,23 @@ export default function ViewAllTimesheets({
   }
 
   return (
-    <Table className="w-full">
-      <TableHeader className="sticky top-0 z-10 ">
-        <TimesheetTableHeader headers={timesheetHeaders} />
-      </TableHeader>
-      <TimesheetTableBody
-        timesheets={timesheets}
-        onDeleteClick={onDeleteClick}
-        deletingId={deletingId}
-        onEditClick={onEditClick}
-        editingId={editingId}
-        showPendingOnly={showPendingOnly}
-        onApprovalAction={onApprovalAction}
-        statusLoading={statusLoading}
-        searchTerm={searchTerm}
-      />
-    </Table>
+    <div className="overflow-hidden rounded-md border">
+      <Table className="h-full">
+        <TableHeader className="sticky top-0 z-10 ">
+          <TimesheetTableHeader headers={timesheetHeaders} />
+        </TableHeader>
+        <TimesheetTableBody
+          timesheets={timesheets}
+          onDeleteClick={onDeleteClick}
+          deletingId={deletingId}
+          onEditClick={onEditClick}
+          editingId={editingId}
+          showPendingOnly={showPendingOnly}
+          onApprovalAction={onApprovalAction}
+          statusLoading={statusLoading}
+          searchTerm={searchTerm}
+        />
+      </Table>
+    </div>
   );
 }

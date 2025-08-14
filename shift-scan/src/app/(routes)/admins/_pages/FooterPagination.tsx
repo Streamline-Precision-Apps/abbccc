@@ -27,7 +27,7 @@ export const FooterPagination = ({
   return (
     <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
       <div className="text-xs text-gray-600">
-        {`Showing page ${page - hideItems} of ${totalPages} (${total - hideItems} total)`}
+        {`Showing page ${page} of ${totalPages} (${total - hideItems} total)`}
       </div>
       <div className="flex flex-row gap-2 items-center">
         <Pagination>

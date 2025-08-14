@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
-import List from "./_components/List/List";
 import { FormTemplateCategory } from "@/lib/enums";
 import {
   Select,
@@ -11,7 +10,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 import {
   deleteFormTemplate,
@@ -32,7 +30,6 @@ import { ExportModal } from "./_components/List/exportModal";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Spinner from "@/components/(animations)/spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +41,7 @@ import {
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
+import { FormsDataTable } from "./_components/List/FormsDataTable";
 
 // Form field definition
 interface FormField {
@@ -89,7 +87,6 @@ export interface FormItem {
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
 export default function Forms() {
-  const { setOpen, open } = useSidebar();
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -148,6 +145,12 @@ export default function Forms() {
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
+  };
+
+  // Helper function to show export modal and set exportingFormId
+  const handleShowExportModal = (id: string) => {
+    setExportingFormId(id);
+    setShowExportModal(true);
   };
 
   const handleExport = async (exportFormat = "xlsx") => {
@@ -349,44 +352,39 @@ export default function Forms() {
           </Tooltip>
         </div>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        {loading && (
-          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-            <Spinner size={20} />
-            <span className="text-lg text-gray-500">Loading...</span>
-          </div>
-        )}
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          <List
-            forms={filteredForms}
+
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
+          <FormsDataTable
+            data={filteredForms}
             loading={loading}
-            openHandleDelete={openHandleDelete}
-            setPendingExportId={(id) => {
-              setExportingFormId(id);
-              setShowExportModal(true);
-            }}
-            inputValue={inputValue}
-          />
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
-            />
-          </div>
-        </ScrollArea>
-        {totalPages > 1 && (
-          <FooterPagination
             page={page}
             totalPages={totalPages}
             total={total}
             pageSize={pageSize}
+            searchTerm={inputValue}
             setPage={setPage}
             setPageSize={setPageSize}
+            openHandleDelete={openHandleDelete}
+            handleShowExportModal={handleShowExportModal}
           />
-        )}
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          <div className="flex items-center justify-end space-x-2 py-4 ">
+            <FooterPagination
+              page={loading ? 1 : page}
+              totalPages={loading ? 1 : totalPages}
+              total={loading ? 0 : total}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
+            />
+          </div>
+        </div>
       </div>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -8,15 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import TascoReport from "./_reports/tascoReport";
 import { useRef, useState } from "react";
-import TruckingReport from "./_reports/truckingReport";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import TascoReport from "./_reports/tascoReport";
+import TruckingReport from "./_reports/truckingReport";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
@@ -129,29 +128,18 @@ export default function AdminReports() {
           </TooltipContent>
         </Tooltip>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          {selectedReport ? (
-            selectedReport.render()
-          ) : (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-              <p className="text-base text-slate-400 ">
-                Select a report to view its details.
-              </p>
-            </div>
-          )}
 
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-1 ml-2 mr-2 rounded-full"
-            />
+      {selectedReport ? (
+        selectedReport.render()
+      ) : (
+        <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+            <p className="text-base text-slate-400 ">
+              Select a report to view its details.
+            </p>
           </div>
-        </ScrollArea>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
