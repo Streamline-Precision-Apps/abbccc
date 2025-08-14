@@ -21,6 +21,7 @@ import RenderTableSection from "./_component/renderTableSection";
 import RenderTitleDescriptionStatus from "./_component/RenderTitleDescriptionStatus";
 import RenderButtonsAndFilters from "./_component/RenderButtonsAndFilters";
 import { FooterPagination } from "../../_pages/FooterPagination";
+import { FormSubmissionDataTable } from "./_component/formSubmissionDataTable";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -70,6 +71,7 @@ const FormPage = ({ params }: PageProps) => {
     triggerRerender,
     handleStatusChange,
     handleExport,
+    setPendingSubmissionDeleteId,
   } = useSubmissionDataById(id);
   const router = useRouter();
 
@@ -101,7 +103,7 @@ const FormPage = ({ params }: PageProps) => {
         FormStatus={FormStatus}
       />
 
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+      {/* <div className="h-[85vh] rounded-lg  w-full relative bg-white">
         {loading && (
           <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
             <Spinner size={20} />
@@ -141,7 +143,44 @@ const FormPage = ({ params }: PageProps) => {
             setPageSize={setPageSize}
           />
         )}
+      </div> */}
+
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
+          <FormSubmissionDataTable
+            formTemplate={formTemplate}
+            loading={loading}
+            page={page}
+            pageSize={pageSize}
+            inputValue={inputValue}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            setShowFormSubmission={setShowFormSubmission}
+            setSelectedSubmissionId={setSelectedSubmissionId}
+            openHandleDeleteSubmission={openHandleDeleteSubmission}
+            isSignatureRequired={formTemplate?.isSignatureRequired}
+            searchTerm={inputValue}
+          />
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-end space-x-2 py-4 ">
+            <FooterPagination
+              page={loading ? 1 : page}
+              totalPages={loading ? 1 : formTemplate?.totalPages || 1}
+              total={loading ? 0 : formTemplate?.total || 0}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
+            />
+          </div>
+        </div>
       </div>
+
       {/* Create Section Modal */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>

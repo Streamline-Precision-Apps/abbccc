@@ -1,8 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import React from "react";
-import JobsiteTable from "./_components/jobsiteTable";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +22,7 @@ import {
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
+import { JobsiteDataTable } from "./_components/ViewAll/JobsiteDataTable";
 
 export default function JobsitePage() {
   const {
@@ -123,11 +122,8 @@ export default function JobsitePage() {
           </Tooltip>
         </div>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10 border border-slate-200 rounded-t-lg">
           {/* Loading overlay */}
           {loading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
@@ -135,24 +131,24 @@ export default function JobsitePage() {
               <span className="text-lg text-gray-500">Loading...</span>
             </div>
           )}
-          <JobsiteTable
+          <JobsiteDataTable
+            data={paginatedJobsites}
             loading={loading}
-            jobsiteDetails={paginatedJobsites}
-            openHandleDelete={openHandleDelete}
-            openHandleEdit={openHandleEdit}
-            openHandleQr={openHandleQr}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            searchTerm={searchTerm}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            onEditClick={openHandleEdit}
+            onDeleteClick={openHandleDelete}
+            onQrClick={openHandleQr}
             showPendingOnly={showPendingOnly}
           />
-          <ScrollBar orientation="vertical" />
-          <div className="h-1  absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
-            />
-          </div>
-        </ScrollArea>
+        </div>
         {/* Pagination Controls */}
-        {totalPages > 1 && (
+        <div className="flex items-center justify-end space-x-2 py-4">
           <FooterPagination
             page={page}
             totalPages={totalPages}
@@ -161,7 +157,7 @@ export default function JobsitePage() {
             setPage={setPage}
             setPageSize={setPageSize}
           />
-        )}
+        </div>
       </div>
       {editJobsiteModal && pendingEditId && (
         <EditJobsiteModal

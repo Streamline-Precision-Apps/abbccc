@@ -1,0 +1,216 @@
+import { ColumnDef } from "@tanstack/react-table";
+import { Timesheet } from "../useAllTimeSheetData";
+import { format } from "date-fns";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { highlight } from "../../../_pages/higlight";
+
+// Define the column configuration for the timesheet table
+export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
+  {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">
+          {highlight(row.original.id, "")}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {format(row.original.date, "MM/dd/yy")}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "workType",
+    header: "Work Type",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {row.original.workType === "TRUCK_DRIVER" ? (
+            <span>Trucking</span>
+          ) : row.original.workType === "TASCO" ? (
+            <span>Tasco</span>
+          ) : row.original.workType === "LABOR" ? (
+            <span>General</span>
+          ) : row.original.workType === "MECHANIC" ? (
+            <span>Mechanic</span>
+          ) : null}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "employeeName",
+    header: "Employee Name",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {highlight(
+            `${row.original.User.firstName} ${row.original.User.lastName}`,
+            "",
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "jobsite",
+    header: "Profit Id",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {row.original.Jobsite ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
+                  {highlight(row.original.Jobsite.code, "")}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-xs font-semibold">
+                  {row.original.Jobsite.name.split("-").slice(1).join(" ")}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          ) : null}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "costCode",
+    header: "Cost Code",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {row.original.CostCode ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
+                  {highlight(row.original.CostCode.code, "")}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-xs font-semibold">
+                  {row.original.CostCode.name.split(" ").slice(1).join(" ")}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          ) : null}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "startTime",
+    header: "Start Time",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {format(row.original.startTime, "hh:mm a")}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "endTime",
+    header: "End Time",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {row.original.endTime ? format(row.original.endTime, "hh:mm a") : ""}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "comment",
+    header: "Comment",
+    cell: ({ row }) => {
+      return <div className=" text-xs text-center">{row.original.comment}</div>;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center min-w-[50px]">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {row.original.status === "PENDING" ? (
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
+                  P
+                </span>
+              ) : row.original.status === "DRAFT" ? (
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-200 rounded-full cursor-pointer font-semibold">
+                  P
+                </span>
+              ) : row.original.status === "APPROVED" ? (
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-green-300 rounded-full cursor-pointer font-semibold">
+                  A
+                </span>
+              ) : (
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-red-300 rounded-full cursor-pointer font-semibold">
+                  R
+                </span>
+              )}
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              align="center"
+              className="w-[120px] justify-center"
+            >
+              <div className="text-xs text-center">
+                {row.original.status === "PENDING"
+                  ? "Pending"
+                  : row.original.status === "DRAFT"
+                    ? "In Progress"
+                    : row.original.status === "APPROVED"
+                      ? "Approved"
+                      : "Rejected"}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "updatedAt",
+    header: "Last modified",
+    cell: ({ row }) => {
+      return (
+        <div className=" text-xs text-center">
+          {format(row.original.updatedAt, "MM/dd/yy")}
+        </div>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      // This is a placeholder - the actual implementation is in TimesheetDataTable
+      return (
+        <div className="sticky right-0 text-xs text-center">
+          <div className="flex flex-row justify-center items-center">
+            {/* Action buttons will be replaced */}
+          </div>
+        </div>
+      );
+    },
+  },
+];

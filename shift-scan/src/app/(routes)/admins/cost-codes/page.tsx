@@ -28,6 +28,8 @@ import {
 import { Tags } from "lucide-react";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
+import CostCodeDataTable from "./_components/ViewAll/CostCodeDataTable";
+import TagDataTable from "./_components/ViewAll/TagDataTable";
 
 export default function CostCodePage() {
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
@@ -75,6 +77,7 @@ export default function CostCodePage() {
     openHandleTagDelete,
     totalPages: totalPagesTags,
     filteredTags,
+    total: totalTags,
   } = useTagData();
 
   return (
@@ -171,15 +174,12 @@ export default function CostCodePage() {
           </Tooltip>
         </div>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          {/* Loading overlay */}
+
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
           {filteredTags.length === 0 &&
             pageState === "Tags" &&
-            loading === false && (
+            tagLoading === false && (
               <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center rounded-lg">
                 <span className="text-lg text-gray-500">No Results found</span>
               </div>
@@ -205,58 +205,60 @@ export default function CostCodePage() {
             </div>
           )}
           {pageState === "CostCode" ? (
-            <CostCodeTable
+            <CostCodeDataTable
               loading={loading}
-              costCodeDetails={filteredCostCodes}
+              data={filteredCostCodes}
               openHandleDelete={openHandleDelete}
               openHandleEdit={openHandleEdit}
-              inputValue={inputValue}
+              searchTerm={inputValue}
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
             />
           ) : (
-            <TagTable
+            <TagDataTable
               loading={tagLoading}
-              tagDetails={filteredTags}
+              data={filteredTags}
               openHandleDelete={openHandleTagDelete}
               openHandleEdit={openHandleTagEdit}
+              searchTerm={inputValue}
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
             />
           )}
-          <ScrollBar orientation="vertical" />
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
-            />
-          </div>
-        </ScrollArea>
-        {/* Pagination Controls */}
-        {pageState === "CostCode" ? (
-          <>
-            {totalPages > 1 && (
+
+          {pageState === "CostCode" ? (
+            <div className="flex items-center justify-end space-x-2 py-4 ">
               <FooterPagination
-                page={page}
-                totalPages={totalPages}
-                total={total}
+                page={loading ? 1 : page}
+                totalPages={loading ? 1 : totalPages}
+                total={loading ? 1 : total}
                 pageSize={pageSize}
                 setPage={setPage}
                 setPageSize={setPageSize}
               />
-            )}
-          </>
-        ) : (
-          <>
-            {totalPagesTags > 1 && (
+            </div>
+          ) : (
+            <div className="flex items-center justify-end space-x-2 py-4 ">
               <FooterPagination
-                page={page}
-                totalPages={totalPages}
-                total={total}
+                page={loading ? 1 : page}
+                totalPages={loading ? 1 : totalPagesTags}
+                total={loading ? 1 : totalTags}
                 pageSize={pageSize}
                 setPage={setPage}
                 setPageSize={setPageSize}
                 hideItems={1}
               />
-            )}
-          </>
-        )}
+            </div>
+          )}
+        </div>
       </div>
       {editCostCodeModal && pendingEditId && (
         <EditCostCodeModal
