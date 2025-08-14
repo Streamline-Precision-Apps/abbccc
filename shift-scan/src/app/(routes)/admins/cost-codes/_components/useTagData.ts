@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { deleteTag } from "@/actions/AssetActions";
 
 export type TagSummary = {
   id: string;
@@ -17,6 +18,15 @@ export const useTagData = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
+
+  // Tags
+  const [createTagModal, setCreateTagModal] = useState(false);
+  const [editTagModal, setEditTagModal] = useState(false);
+  const [showDeleteTagDialog, setShowDeleteTagDialog] = useState(false);
+  const [pendingTagEditId, setPendingTagEditId] = useState<string | null>(null);
+  const [pendingTagDeleteId, setPendingTagDeleteId] = useState<string | null>(
+    null,
+  );
 
   // Debounce search input
   useEffect(() => {
@@ -52,23 +62,55 @@ export const useTagData = () => {
     fetchEquipmentSummaries();
   }, [refreshKey, page, pageSize, searchTerm]);
 
+  // Tag helper functions
+  const confirmTagDelete = async () => {
+    if (pendingTagDeleteId) {
+      await deleteTag(pendingTagDeleteId);
+      setShowDeleteTagDialog(false);
+      setPendingTagDeleteId(null);
+      rerender();
+    }
+  };
+  const cancelTagDelete = () => {
+    setShowDeleteTagDialog(false);
+    setPendingTagDeleteId(null);
+  };
+  const openHandleTagEdit = (id: string) => {
+    setPendingTagEditId(id);
+    setEditTagModal(true);
+  };
+  const openHandleTagDelete = (id: string) => {
+    setPendingTagDeleteId(id);
+    setShowDeleteTagDialog(true);
+  };
+
+  // Simple filter by tag name
+  const filteredTags = tagDetails.filter((tag) =>
+    tag.name.toLowerCase().includes(inputValue.toLowerCase()),
+  );
+
+  // Reset to page 1 if search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [inputValue]);
+
   return {
-    tagDetails,
-    setTagDetails,
+    createTagModal,
+    setCreateTagModal,
+    editTagModal,
+    setEditTagModal,
+    showDeleteTagDialog,
+    setShowDeleteTagDialog,
+    pendingTagEditId,
     loading,
-    setLoading,
     rerender,
-    // Pagination state
-    total,
-    page,
-    pageSize,
-    totalPages,
-    // Pagination handlers
-    setTotal,
-    setPage,
-    setPageSize,
-    setTotalPages,
     inputValue,
     setInputValue,
+    confirmTagDelete,
+    cancelTagDelete,
+    openHandleTagEdit,
+    openHandleTagDelete,
+    totalPages,
+    filteredTags,
   };
 };
