@@ -1,7 +1,5 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -9,21 +7,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSidebar } from "@/components/ui/sidebar";
-import TascoReport from "./_reports/tascoReport";
 import { useRef, useState } from "react";
-import TruckingReport from "./_reports/truckingReport";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import TascoReport from "./_components/tascoReport";
+import TruckingReport from "./_components/truckingReport";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
-  const { setOpen, open } = useSidebar();
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>(
     undefined,
   );
@@ -81,7 +76,7 @@ export default function AdminReports() {
   ];
   const selectedReport = reports.find((r) => r.id === selectedReportId);
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={isRefreshing}
         headerText=" Reports"
@@ -93,7 +88,7 @@ export default function AdminReports() {
         selectedReportId={selectedReportId}
       />
 
-      <div className="h-fit max-h-12 justify-between w-full flex flex-row gap-4">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
         <Select
           name="report"
           onValueChange={setSelectedReportId}
@@ -119,7 +114,7 @@ export default function AdminReports() {
               }}
               variant={"default"}
               size={"icon"}
-              className="rounded-lg min-w-12 hover:bg-slate-800 "
+              className="rounded-lg min-w-12 h-full hover:bg-slate-800 "
             >
               <img
                 src="/export-white.svg"
@@ -133,29 +128,18 @@ export default function AdminReports() {
           </TooltipContent>
         </Tooltip>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          {selectedReport ? (
-            selectedReport.render()
-          ) : (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-              <p className="text-base text-slate-400 ">
-                Select a report to view its details.
-              </p>
-            </div>
-          )}
 
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-1 ml-2 mr-2 rounded-full"
-            />
+      {selectedReport ? (
+        selectedReport.render()
+      ) : (
+        <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+            <p className="text-base text-slate-400 ">
+              Select a report to view its details.
+            </p>
           </div>
-        </ScrollArea>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

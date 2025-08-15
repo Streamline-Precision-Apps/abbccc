@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
-import { DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { SingleCombobox } from "@/components/ui/single-combobox";
 
 interface EmployeeEquipmentLog {
@@ -17,7 +17,7 @@ interface EditEmployeeEquipmentLogsProps {
   onLogChange: (
     idx: number,
     field: keyof EmployeeEquipmentLog,
-    value: string
+    value: string,
   ) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;

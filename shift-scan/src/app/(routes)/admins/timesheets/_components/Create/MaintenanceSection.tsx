@@ -2,7 +2,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { SingleCombobox } from "@/components/ui/single-combobox";
 
 export type MaintenanceLogDraft = {
