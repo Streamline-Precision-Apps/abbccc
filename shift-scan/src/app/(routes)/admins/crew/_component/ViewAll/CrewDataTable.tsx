@@ -143,7 +143,7 @@ export function CrewDataTable({
     <div className="w-full h-full flex flex-col relative">
       <div className="flex-1 overflow-visible pb-[50px]">
         <div className="rounded-md w-full h-full">
-          <Table className="w-full mb-5">
+          <Table className="w-full">
             <TableHeader className="sticky top-0 z-10 bg-gray-100">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="bg-muted">

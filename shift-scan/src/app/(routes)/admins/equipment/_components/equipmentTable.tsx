@@ -58,7 +58,7 @@ export default function EquipmentTable({
             {header.map((h) => (
               <TableHead
                 key={h}
-                className="text-sm text-center border-r border-gray-200 bg-gray-100"
+                className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10"
               >
                 {h}
               </TableHead>
@@ -67,16 +67,21 @@ export default function EquipmentTable({
         </TableHeader>
         {loading ? (
           <TableBody className="divide-y divide-gray-200 bg-white">
-            {Array.from({ length: 20 }).map((_, rowIdx) => (
+            {Array.from({ length: 10 }).map((_, rowIdx) => (
               <TableRow
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
               >
+                {/* Name & Description */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <div className="flex flex-col gap-1">
                     <Skeleton className="h-4 w-3/4 mx-auto" />
-                    <Skeleton className="h-4 w-3/4 mx-auto" />
+                    <Skeleton className="h-4 w-1/2 mx-auto" />
                   </div>
+                </TableCell>
+                {/* Created */}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  <Skeleton className="h-4 w-1/2 mx-auto" />
                 </TableCell>
                 {/* Make */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
@@ -90,25 +95,21 @@ export default function EquipmentTable({
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-1/2 mx-auto" />
                 </TableCell>
-                {/* Equipment Type */}
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-3/4 mx-auto" />
-                </TableCell>
-                {/* Equipment State */}
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-3/4 mx-auto" />
-                </TableCell>
-                {/* Approval Status */}
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-1/2 mx-auto" />
-                </TableCell>
-                {/* Created At */}
-                <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-1/2 mx-auto" />
-                </TableCell>
                 {/* Updated At */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-1/2 mx-auto" />
+                </TableCell>
+                {/* Equipment Type */}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  <Skeleton className="h-5 w-20 rounded-md mx-auto" />
+                </TableCell>
+                {/* Equipment State */}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  <Skeleton className="h-5 w-20 rounded-md mx-auto" />
+                </TableCell>
+                {/* Status */}
+                <TableCell className="border-r border-gray-200 text-xs text-center">
+                  <Skeleton className="h-5 w-5 rounded-full mx-auto" />
                 </TableCell>
                 {/* Actions (QR, Edit, Delete buttons) */}
                 <TableCell className="text-xs text-center">

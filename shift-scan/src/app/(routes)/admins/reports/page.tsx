@@ -14,8 +14,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
-import TascoReport from "./_reports/tascoReport";
-import TruckingReport from "./_reports/truckingReport";
+import TascoReport from "./_components/tascoReport";
+import TruckingReport from "./_components/truckingReport";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);

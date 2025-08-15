@@ -96,7 +96,7 @@ export default function CrewTable({
         </TableHeader>
         {loading ? (
           <TableBody className="divide-y divide-gray-200 bg-white">
-            {Array.from({ length: 18 }).map((_, rowIdx) => (
+            {Array.from({ length: 10 }).map((_, rowIdx) => (
               <TableRow
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
