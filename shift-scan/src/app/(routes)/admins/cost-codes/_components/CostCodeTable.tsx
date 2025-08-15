@@ -41,7 +41,7 @@ export default function CostCodeTable({
             {header.map((h) => (
               <TableHead
                 key={h}
-                className="text-sm text-center border-r border-gray-200 bg-gray-100"
+                className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10"
               >
                 {h}
               </TableHead>
@@ -50,7 +50,7 @@ export default function CostCodeTable({
         </TableHeader>
         {loading ? (
           <TableBody className="divide-y divide-gray-200 bg-white">
-            {Array.from({ length: 20 }).map((_, rowIdx) => (
+            {Array.from({ length: 10 }).map((_, rowIdx) => (
               <TableRow
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
@@ -65,7 +65,7 @@ export default function CostCodeTable({
                 </TableCell>
                 {/* Active */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-4 mx-auto" />
+                  <Skeleton className="h-5 w-5 mx-auto rounded" />
                 </TableCell>
                 {/* Updated At */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">

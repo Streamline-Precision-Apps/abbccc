@@ -43,62 +43,59 @@ export default function JobsiteTable({
       <Table className="w-full mb-10">
         <TableHeader>
           <TableRow>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Name & Description
             </TableHead>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Created
             </TableHead>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Active
             </TableHead>
 
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Site Address
             </TableHead>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Status
             </TableHead>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Updated At
             </TableHead>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10">
               Actions
             </TableHead>
           </TableRow>
         </TableHeader>
         {loading ? (
           <TableBody className="divide-y divide-gray-200 bg-white">
-            {Array.from({ length: 20 }).map((_, rowIdx) => (
+            {Array.from({ length: 10 }).map((_, rowIdx) => (
               <TableRow
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
               >
-                {/* ID */}
-                {/* <TableCell className="border-r border-gray-200 text-xs text-center w-[300px]">
-                  <Skeleton className="h-4 w-2/3 mx-auto" />
-                </TableCell> */}
-                {/* Name */}
+                {/* Name & Description */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-4 w-3/4 mx-auto" />
+                    <Skeleton className="h-4 w-1/2 mx-auto" />
+                  </div>
                 </TableCell>
-
-                {/* Created At */}
+                {/* Created */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
                   <Skeleton className="h-4 w-1/2 mx-auto" />
                 </TableCell>
                 {/* Active */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-4 mx-auto" />
+                  <Skeleton className="h-5 w-5 mx-auto rounded" />
                 </TableCell>
                 {/* Site Address */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-full mx-auto" />
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
                 </TableCell>
-
-                {/* Approval Status */}
+                {/* Status */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">
-                  <Skeleton className="h-4 w-1/2 mx-auto" />
+                  <Skeleton className="h-5 w-16 rounded-md mx-auto" />
                 </TableCell>
                 {/* Updated At */}
                 <TableCell className="border-r border-gray-200 text-xs text-center">

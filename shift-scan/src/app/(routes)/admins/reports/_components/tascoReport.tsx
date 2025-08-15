@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TascoDataTable } from "../_components/ViewAll/TascoDataTable";
-import { TascoReportRow } from "../_components/ViewAll/tascoReportTableColumns";
-import { ExportReportModal } from "../ExportModal";
+
+import { TascoReportRow } from "./_tascoReport/tascoReportTableColumns";
+import { ExportReportModal } from "./ExportModal";
 import { format } from "date-fns";
+import { TascoDataTable } from "./_tascoReport/TascoDataTable";
 
 interface TascoReportProps {
   showExportModal: boolean;

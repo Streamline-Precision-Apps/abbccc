@@ -34,25 +34,25 @@ export default function TagTable({
       <Table className="w-full border border-gray-200">
         <TableHeader>
           <TableRow>
-            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 w-[300px]">
+            <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100 w-[300px] sticky top-0 z-10">
               ID
             </TableHead>
             {header.map((h) => (
               <TableHead
                 key={h}
-                className="text-sm text-center border-r border-gray-200 bg-gray-100"
+                className="text-sm text-center border-r border-gray-200 bg-gray-100 sticky top-0 z-10"
               >
                 {h}
               </TableHead>
             ))}
-            <TableHead className="text-sm text-center bg-gray-100 w-[150px]">
+            <TableHead className="text-sm text-center bg-gray-100 w-[150px] sticky top-0 z-10">
               Actions
             </TableHead>
           </TableRow>
         </TableHeader>
         {loading ? (
           <TableBody className="divide-y divide-gray-200 bg-white">
-            {Array.from({ length: 20 }).map((_, rowIdx) => (
+            {Array.from({ length: 10 }).map((_, rowIdx) => (
               <TableRow
                 key={rowIdx}
                 className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
@@ -106,7 +106,7 @@ export default function TagTable({
                   )}
                 </TableCell>
 
-                <TableCell className=" border-r border-gray-200 text-xs text-center">
+                <TableCell className=" border-r  border-gray-200 text-xs text-center">
                   {tag.description || "-"}
                 </TableCell>
 

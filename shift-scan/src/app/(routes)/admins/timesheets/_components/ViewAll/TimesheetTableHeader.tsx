@@ -15,12 +15,12 @@ export function TimesheetTableHeader({
       {headers.map((header) => (
         <TableHead
           key={header}
-          className="font-semibold text-gray-700  text-center  border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs"
+          className="font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs sticky top-0 z-10"
         >
           {loading ? <Skeleton className="h-5 w-20" /> : header}
         </TableHead>
       ))}
-      <TableHead className="font-semibold text-gray-700 sticky right-0 text-center  bg-gray-100 border-l border-gray-200">
+      <TableHead className="font-semibold text-gray-700 sticky right-0 top-0 z-10 text-center bg-gray-100 border-l border-gray-200">
         {loading ? <Skeleton className="h-5 w-16" /> : "Actions"}
       </TableHead>
     </TableRow>

@@ -122,19 +122,16 @@ export default function LeftSidebar() {
 
             <SidebarMenu className="w-full h-full mt-4">
               {Page.map((item) => {
-                // Check if the first segment of the current path matches the item's link
-                // e.g. /admins/forms/1234 should match /admins/forms
-                const itemBase = item.link
-                  .split("/")
-                  .filter(Boolean)
-                  .slice(0, 3)
-                  .join("/");
-                const pathBase = pathname
-                  .split("/")
-                  .filter(Boolean)
-                  .slice(0, 3)
-                  .join("/");
-                const isActive = itemBase === pathBase;
+                // Special handling for the Dashboard with path "/admins"
+                // It should only be active when exactly on "/admins"
+                let isActive;
+                if (item.link === "/admins") {
+                  isActive = pathname === "/admins";
+                } else {
+                  // For all other items, check if the path starts with the item's link
+                  // e.g. /admins/forms/1234 should match /admins/forms
+                  isActive = pathname.startsWith(item.link);
+                }
                 return (
                   <Link key={item.id} href={item.link} className="w-full">
                     <SidebarMenuItem className="py-2">

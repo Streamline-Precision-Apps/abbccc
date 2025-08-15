@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { PersonnelSummary } from "../usePersonnelData";
+import { PersonnelSummary } from "./usePersonnelData";
 import { format } from "date-fns";
 import { formatPhoneNumber } from "@/utils/phoneNumberFormater";
 import { UserX } from "lucide-react";

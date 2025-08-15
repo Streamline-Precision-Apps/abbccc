@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TruckingDataTable } from "../_components/ViewAll/TruckingDataTable";
-import { TruckingReportRow } from "../_components/ViewAll/truckingReportTableColumns";
-import { ExportReportModal } from "../ExportModal";
+import { TruckingReportRow } from "./_truckingReport/truckingReportTableColumns";
+import { ExportReportModal } from "./ExportModal";
 import { format } from "date-fns";
+import { TruckingDataTable } from "./_truckingReport/TruckingDataTable";
 
 interface TruckingReportProps {
   showExportModal: boolean;

@@ -21,7 +21,7 @@ import CreateUserModal from "./_components/createUser";
 import EditUserModal from "./_components/editUser";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
-import { PersonnelDataTable } from "./_components/ViewAll/PersonnelDataTable";
+import { PersonnelDataTable } from "./_components/PersonnelDataTable";
 
 export default function JobsitePage() {
   const {

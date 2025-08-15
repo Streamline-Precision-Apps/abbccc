@@ -80,6 +80,8 @@ export default function CostCodePage() {
     total: totalTags,
   } = useTagData();
 
+  const pageLoading = tagLoading || loading;
+
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
@@ -192,18 +194,13 @@ export default function CostCodePage() {
               </div>
             )}
 
-          {loading && !tagLoading && (
+          {pageLoading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
               <Spinner size={20} />
               <span className="text-lg text-gray-500">Loading...</span>
             </div>
           )}
-          {tagLoading && !loading && (
-            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-              <Spinner size={20} />
-              <span className="text-lg text-gray-500">Loading...</span>
-            </div>
-          )}
+
           {pageState === "CostCode" ? (
             <CostCodeDataTable
               loading={loading}
@@ -254,7 +251,6 @@ export default function CostCodePage() {
                 pageSize={pageSize}
                 setPage={setPage}
                 setPageSize={setPageSize}
-                hideItems={1}
               />
             </div>
           )}
