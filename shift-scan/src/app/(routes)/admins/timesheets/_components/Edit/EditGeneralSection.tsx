@@ -19,7 +19,7 @@ import {
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
-import { DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { TimesheetData } from "./hooks/useTimesheetData";
 
 export interface EditGeneralSectionProps {
@@ -35,7 +35,7 @@ export interface EditGeneralSectionProps {
   handleChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => void;
   workTypeOptions: {
     value: string;

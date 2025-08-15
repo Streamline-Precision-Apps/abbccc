@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { Combobox } from "@/components/ui/combobox";
 import { SingleCombobox } from "@/components/ui/single-combobox";
 
@@ -21,7 +21,7 @@ interface EditMaintenanceLogsProps {
   onLogChange: (
     idx: number,
     field: keyof MaintenanceLog,
-    value: MaintenanceLog[keyof MaintenanceLog]
+    value: MaintenanceLog[keyof MaintenanceLog],
   ) => void;
   onAddLog: () => void;
   onRemoveLog: (idx: number) => void;

@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -12,11 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { useCostCodeData } from "./_components/useCostCodeData";
 import Spinner from "@/components/(animations)/spinner";
-import CostCodeTable from "./_components/CostCodeTable";
 import CreateCostCodeModal from "./_components/CreateCostCodeModal";
 import EditCostCodeModal from "./_components/EditCostCodeModal";
 import { useTagData } from "./_components/useTagData";
-import TagTable from "./_components/TagTable";
 import CreateTagModal from "./_components/CreateTagModal";
 import EditTagModal from "./_components/EditTagModal";
 import SearchBarPopover from "../_pages/searchBarPopover";
