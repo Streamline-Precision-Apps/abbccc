@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
-import List from "./_components/List/List";
 import { FormTemplateCategory } from "@/lib/enums";
 import {
   Select,
@@ -11,7 +10,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 import {
   deleteFormTemplate,
@@ -32,16 +30,7 @@ import { ExportModal } from "./_components/List/exportModal";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
@@ -51,6 +40,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import { FooterPagination } from "../_pages/FooterPagination";
+import { FormsDataTable } from "./_components/List/FormsDataTable";
 
 // Form field definition
 interface FormField {
@@ -96,7 +87,6 @@ export interface FormItem {
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
 export default function Forms() {
-  const { setOpen, open } = useSidebar();
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -155,6 +145,12 @@ export default function Forms() {
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
+  };
+
+  // Helper function to show export modal and set exportingFormId
+  const handleShowExportModal = (id: string) => {
+    setExportingFormId(id);
+    setShowExportModal(true);
   };
 
   const handleExport = async (exportFormat = "xlsx") => {
@@ -284,7 +280,7 @@ export default function Forms() {
 
   // Main render
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={loading}
         headerText="Forms Management"
@@ -294,7 +290,7 @@ export default function Forms() {
         }}
       />
 
-      <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
         <div className="flex flex-row w-full gap-2">
           <SearchBarPopover
             term={inputValue}
@@ -339,113 +335,56 @@ export default function Forms() {
             )}
           </div>
         </div>
-        <div className="h-fit flex flex-row gap-4 ">
-          <div className="flex flex-row gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href={`/admins/forms/create`}>
-                  <Button size={"icon"}>
-                    <img
-                      src="/plus-white.svg"
-                      alt="Create New Form"
-                      className="h-4 w-4 "
-                    />
-                  </Button>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>Create Form Template</TooltipContent>
-            </Tooltip>
-          </div>
+        <div className="h-full flex flex-row gap-4 ">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href={`/admins/forms/create`}>
+                <Button size={"icon"} className="min-w-12">
+                  <img
+                    src="/plus-white.svg"
+                    alt="Create New Form"
+                    className="h-4 w-4 "
+                  />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Create Form Template</TooltipContent>
+          </Tooltip>
         </div>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        {loading && (
-          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-            <Spinner size={20} />
-            <span className="text-lg text-gray-500">Loading...</span>
-          </div>
-        )}
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          <List
-            forms={filteredForms}
+
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
+          <FormsDataTable
+            data={filteredForms}
             loading={loading}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            searchTerm={inputValue}
+            setPage={setPage}
+            setPageSize={setPageSize}
             openHandleDelete={openHandleDelete}
-            setPendingExportId={(id) => {
-              setExportingFormId(id);
-              setShowExportModal(true);
-            }}
-            inputValue={inputValue}
+            handleShowExportModal={handleShowExportModal}
           />
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          <div className="flex items-center justify-end space-x-2 py-4 ">
+            <FooterPagination
+              page={loading ? 1 : page}
+              totalPages={loading ? 1 : totalPages}
+              total={loading ? 0 : total}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
             />
           </div>
-        </ScrollArea>
-        {totalPages > 1 && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
-            <div className="text-xs text-gray-600">
-              Showing page {page} of {totalPages} ({total} total)
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.max(1, page - 1));
-                      }}
-                      aria-disabled={page === 1}
-                      tabIndex={page === 1 ? -1 : 0}
-                      style={{
-                        pointerEvents: page === 1 ? "none" : undefined,
-                        opacity: page === 1 ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <span className="text-xs border rounded py-1 px-2">
-                      {page}
-                    </span>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.min(totalPages, page + 1));
-                      }}
-                      aria-disabled={page === totalPages}
-                      tabIndex={page === totalPages ? -1 : 0}
-                      style={{
-                        pointerEvents: page === totalPages ? "none" : undefined,
-                        opacity: page === totalPages ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-              <select
-                className="ml-2 px-1 py-1 rounded text-xs border"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[25, 50, 75, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} Rows
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

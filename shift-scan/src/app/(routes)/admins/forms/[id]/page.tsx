@@ -14,19 +14,14 @@ import { FormStatus } from "@/lib/enums";
 import { ExportModal } from "../_components/List/exportModal";
 import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
 import CreateFormSubmissionModal from "./_component/CreateFormSubmissionModal";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Spinner from "@/components/(animations)/spinner";
 import useSubmissionDataById from "./_component/hooks/useSubmissionDataById";
 import RenderTableSection from "./_component/renderTableSection";
 import RenderTitleDescriptionStatus from "./_component/RenderTitleDescriptionStatus";
 import RenderButtonsAndFilters from "./_component/RenderButtonsAndFilters";
+import { FooterPagination } from "../../_pages/FooterPagination";
+import { FormSubmissionDataTable } from "./_component/formSubmissionDataTable";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -76,11 +71,12 @@ const FormPage = ({ params }: PageProps) => {
     triggerRerender,
     handleStatusChange,
     handleExport,
+    setPendingSubmissionDeleteId,
   } = useSubmissionDataById(id);
   const router = useRouter();
 
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <RenderTitleDescriptionStatus
         formTemplate={formTemplate}
         loading={loading}
@@ -107,7 +103,7 @@ const FormPage = ({ params }: PageProps) => {
         FormStatus={FormStatus}
       />
 
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
+      {/* <div className="h-[85vh] rounded-lg  w-full relative bg-white">
         {loading && (
           <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
             <Spinner size={20} />
@@ -138,68 +134,53 @@ const FormPage = ({ params }: PageProps) => {
           </div>
         </ScrollArea>
         {formTemplate && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
-            <div className="text-xs text-gray-600">
-              Showing page {page} of {formTemplate.totalPages} (
-              {formTemplate.total} total)
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.max(1, page - 1));
-                      }}
-                      aria-disabled={page === 1}
-                      tabIndex={page === 1 ? -1 : 0}
-                      style={{
-                        pointerEvents: page === 1 ? "none" : undefined,
-                        opacity: page === 1 ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <span className="text-xs border rounded py-1 px-2">
-                      {page}
-                    </span>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.min(formTemplate.totalPages, page + 1));
-                      }}
-                      aria-disabled={page === formTemplate.totalPages}
-                      tabIndex={page === formTemplate.totalPages ? -1 : 0}
-                      style={{
-                        pointerEvents:
-                          page === formTemplate.totalPages ? "none" : undefined,
-                        opacity: page === formTemplate.totalPages ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-              <select
-                className="ml-2 px-1 py-1 rounded text-xs border"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[25, 50, 75, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} Rows
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <FooterPagination
+            page={page}
+            totalPages={formTemplate.totalPages}
+            total={formTemplate.total}
+            pageSize={pageSize}
+            setPage={setPage}
+            setPageSize={setPageSize}
+          />
         )}
+      </div> */}
+
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
+          <FormSubmissionDataTable
+            formTemplate={formTemplate}
+            loading={loading}
+            page={page}
+            pageSize={pageSize}
+            inputValue={inputValue}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            setShowFormSubmission={setShowFormSubmission}
+            setSelectedSubmissionId={setSelectedSubmissionId}
+            openHandleDeleteSubmission={openHandleDeleteSubmission}
+            isSignatureRequired={formTemplate?.isSignatureRequired}
+            searchTerm={inputValue}
+          />
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-end space-x-2 py-4 ">
+            <FooterPagination
+              page={loading ? 1 : page}
+              totalPages={loading ? 1 : formTemplate?.totalPages || 1}
+              total={loading ? 0 : formTemplate?.total || 0}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
+            />
+          </div>
+        </div>
       </div>
+
       {/* Create Section Modal */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>

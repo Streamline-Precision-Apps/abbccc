@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { deleteCrew } from "@/actions/adminActions";
 export interface CrewData {
   id: string;
   name: string;
@@ -18,7 +19,14 @@ export interface CrewData {
 
 export const useCrewsData = () => {
   const [crew, setCrew] = useState<CrewData[]>([]);
+  //   // State for modals
+  const [editCrewModal, setEditCrewModal] = useState(false);
+  const [createCrewModal, setCreateCrewModal] = useState(false);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
 
+  // State for delete confirmation dialog
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [total, setTotal] = useState<number>(0);
@@ -68,6 +76,35 @@ export const useCrewsData = () => {
     fetchAllData();
   }, [refreshKey, page, pageSize, showInactive, searchTerm]);
 
+  const openHandleEdit = (id: string) => {
+    setPendingEditId(id);
+    setEditCrewModal(true);
+  };
+
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (pendingDeleteId) {
+      await deleteCrew(pendingDeleteId);
+      setShowDeleteDialog(false);
+      setPendingDeleteId(null);
+      rerender();
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setPendingDeleteId(null);
+  };
+
+  // Reset to page 1 if search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, showInactive]);
+
   return {
     loading,
     crew,
@@ -77,10 +114,20 @@ export const useCrewsData = () => {
     pageSize,
     setPage,
     setPageSize,
-    setShowInactive,
     showInactive,
     searchTerm: searchInput,
     setSearchTerm: setSearchInput,
     rerender,
+    editCrewModal,
+    setEditCrewModal,
+    createCrewModal,
+    setCreateCrewModal,
+    pendingEditId,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    openHandleEdit,
+    openHandleDelete,
+    confirmDelete,
+    cancelDelete,
   };
 };

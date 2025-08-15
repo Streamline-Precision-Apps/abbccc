@@ -19,7 +19,7 @@ import { format as formatDate, parseISO } from "date-fns";
 import React, { Dispatch, SetStateAction, use, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
-import { DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { SingleCombobox } from "@/components/ui/single-combobox";
 export default function GeneralSection({
   form,
@@ -75,7 +75,7 @@ export default function GeneralSection({
     }>
   >;
   handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   userOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];

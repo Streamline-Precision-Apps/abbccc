@@ -419,7 +419,7 @@ export default function useSubmissionDataById(id: string) {
     STATUS_OPTIONS,
     currentStatus,
     openHandleDelete,
-
+    setPendingSubmissionDeleteId,
     confirmDelete,
     cancelDelete,
     openHandleDeleteSubmission,

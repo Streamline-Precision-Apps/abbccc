@@ -1,10 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useSidebar } from "@/components/ui/sidebar";
-import React, { useEffect, useState } from "react";
-import JobsiteTable from "./_components/jobsiteTable";
-import QRCode from "qrcode";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,21 +9,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteJobsite } from "@/actions/AssetActions";
-
 import { Badge } from "@/components/ui/badge";
-import { JobsiteSummary, useJobsiteData } from "./_components/useJobsiteData";
+import { useJobsiteData } from "./_components/useJobsiteData";
 import EditJobsiteModal from "./_components/EditJobsiteModal";
 import CreateJobsiteModal from "./_components/CreateJobsiteModal";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
-import ReloadBtnSpinner from "@/components/(animations)/reload-btn-spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -35,13 +21,14 @@ import {
 } from "@/components/ui/tooltip";
 import SearchBarPopover from "../_pages/searchBarPopover";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import { FooterPagination } from "../_pages/FooterPagination";
+import { JobsiteDataTable } from "./_components/ViewAll/JobsiteDataTable";
 
 export default function JobsitePage() {
-  const { setOpen, open } = useSidebar();
-  const [searchTerm, setSearchTerm] = useState("");
   const {
+    searchTerm,
+    setSearchTerm,
     loading,
-    jobsiteDetails,
     rerender,
     total,
     page,
@@ -50,172 +37,25 @@ export default function JobsitePage() {
     setPageSize,
     showPendingOnly,
     setShowPendingOnly,
+    editJobsiteModal,
+    setEditJobsiteModal,
+    createJobsiteModal,
+    setCreateJobsiteModal,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    pendingEditId,
+    openHandleEdit,
+    openHandleDelete,
+    openHandleQr,
+    confirmDelete,
+    cancelDelete,
+    pendingCount,
+    totalPages,
+    paginatedJobsites,
   } = useJobsiteData();
 
-  // State for modals
-  const [editJobsiteModal, setEditJobsiteModal] = useState(false);
-  const [createJobsiteModal, setCreateJobsiteModal] = useState(false);
-
-  // State for delete confirmation dialog
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-  const [pendingQrId, setPendingQrId] = useState<string | null>(null);
-
-  // Pagination state
-
-  const openHandleEdit = (id: string) => {
-    setPendingEditId(id);
-    setEditJobsiteModal(true);
-  };
-
-  const openHandleDelete = (id: string) => {
-    setPendingDeleteId(id);
-    setShowDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (pendingDeleteId) {
-      await deleteJobsite(pendingDeleteId);
-      setShowDeleteDialog(false);
-      setPendingDeleteId(null);
-      rerender();
-    }
-  };
-
-  const cancelDelete = () => {
-    setShowDeleteDialog(false);
-    setPendingDeleteId(null);
-  };
-
-  // Count all pending items
-  const pendingCount = jobsiteDetails.filter(
-    (item) => item.approvalStatus === "PENDING",
-  ).length;
-
-  // Filter job sites by name or client name and by approval status if showPendingOnly is active
-  const filteredJobsites = jobsiteDetails.filter((item) => {
-    const term = searchTerm.trim().toLowerCase();
-    if (!term || term.length < 3) return true;
-    const jobsiteName = item.name?.toLowerCase() || "";
-    return jobsiteName.includes(term);
-  });
-
-  // Pagination logic
-  const totalJobsites = filteredJobsites.length;
-  const totalPages = Math.ceil(totalJobsites / pageSize);
-  const paginatedJobsites = filteredJobsites.slice(
-    (page - 1) * pageSize,
-    page * pageSize,
-  );
-
-  // Reset to page 1 if search or filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [searchTerm, showPendingOnly]);
-
-  const openHandleQr = (id: string) => {
-    setPendingQrId(id);
-    const jobsite = jobsiteDetails.find((j) => j.id === id);
-    if (jobsite) {
-      printQRCode(jobsite);
-    }
-  };
-
-  const printQRCode = async (jobsite: JobsiteSummary) => {
-    if (!pendingQrId) return;
-    const url = await QRCode.toDataURL(jobsite.qrId || "");
-    // Open a new window for printing
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      alert("Please allow popups to print the QR code");
-      return;
-    }
-
-    // Write HTML content to the new window
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Print QR Code - ${jobsite.name || "Jobsite"}</title>
-        <style>
-          body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-          }
-          .qr-code-container {
-            text-align: center;
-          }
-          .qr-code {
-            width: 300px;
-            height: 300px;
-            border: 4px solid black;
-            border-radius: 10px;
-            margin-bottom: 20px;
-          }
-          .equipment-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-          }
-          .equipment-id {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 8px;
-          }
-          .equipment-description {
-            font-size: 16px;
-            color: #555;
-            max-width: 350px;
-            padding: 0 20px;
-            line-height: 1.4;
-            margin-top: 8px;
-            white-space: pre-wrap;
-            overflow-wrap: break-word;
-          }
-          @media print {
-            body {
-              -webkit-print-color-adjust: exact;
-              color-adjust: exact;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="qr-code-container">
-          <div class="equipment-name">${jobsite.name || "N/A"}</div>
-          <img src="${url}" alt="QR Code" class="qr-code" />
-          <div class="equipment-id">ID: ${jobsite.qrId || "N/A"}</div>
-          <div class="equipment-description">${
-            jobsite.description
-              ? `Brief Description:\n${jobsite.description || ""}`
-              : ""
-          }</div>
-        </div>
-        <script>
-          // Print and close window when loaded
-          window.onload = function() {
-            window.print();
-            // Close after printing is done or canceled
-            setTimeout(() => window.close());
-          };
-        </script>
-      </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-  };
-
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
         loading={loading}
         headerText="Jobsite Management"
@@ -224,23 +64,22 @@ export default function JobsitePage() {
           rerender();
         }}
       />
-      <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-2 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <SearchBarPopover
-            term={searchTerm}
-            handleSearchChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={"Search by name or client..."}
-            textSize="xs"
-            imageSize="10"
-          />
-        </div>
+      <div className="h-10 w-full flex flex-row justify-between">
+        <SearchBarPopover
+          term={searchTerm}
+          handleSearchChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={"Search by name or client..."}
+          textSize="xs"
+          imageSize="10"
+        />
+
         <div className="flex flex-row justify-end w-full gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size={"icon"}
                 onClick={() => setCreateJobsiteModal(true)}
-                className="min-w-12"
+                className="min-w-12 h-full"
               >
                 <img
                   src="/plus-white.svg"
@@ -258,7 +97,7 @@ export default function JobsitePage() {
               <Button
                 size={"icon"}
                 onClick={() => setShowPendingOnly(!showPendingOnly)}
-                className={`relative border-none min-w-16  bg-gray-900 hover:bg-gray-800 text-white ${
+                className={`relative border-none min-w-16 h-full  bg-gray-900 hover:bg-gray-800 text-white ${
                   showPendingOnly ? "ring-2 ring-red-400" : ""
                 }`}
               >
@@ -283,11 +122,8 @@ export default function JobsitePage() {
           </Tooltip>
         </div>
       </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10 border border-slate-200 rounded-t-lg">
           {/* Loading overlay */}
           {loading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
@@ -295,83 +131,33 @@ export default function JobsitePage() {
               <span className="text-lg text-gray-500">Loading...</span>
             </div>
           )}
-          <JobsiteTable
+          <JobsiteDataTable
+            data={paginatedJobsites}
             loading={loading}
-            jobsiteDetails={paginatedJobsites}
-            openHandleDelete={openHandleDelete}
-            openHandleEdit={openHandleEdit}
-            openHandleQr={openHandleQr}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            searchTerm={searchTerm}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            onEditClick={openHandleEdit}
+            onDeleteClick={openHandleDelete}
+            onQrClick={openHandleQr}
             showPendingOnly={showPendingOnly}
           />
-          <ScrollBar orientation="vertical" />
-          <div className="h-1  absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
-            />
-          </div>
-        </ScrollArea>
+        </div>
         {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-2 bg-white border-t border-gray-200 rounded-b-lg">
-            <div className="text-xs text-gray-600">
-              Showing page {page} of {totalPages} ({total} total)
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.max(1, page - 1));
-                      }}
-                      aria-disabled={page === 1}
-                      tabIndex={page === 1 ? -1 : 0}
-                      style={{
-                        pointerEvents: page === 1 ? "none" : undefined,
-                        opacity: page === 1 ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <span className="text-xs border rounded py-1 px-2">
-                      {page}
-                    </span>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.min(totalPages, page + 1));
-                      }}
-                      aria-disabled={page === totalPages}
-                      tabIndex={page === totalPages ? -1 : 0}
-                      style={{
-                        pointerEvents: page === totalPages ? "none" : undefined,
-                        opacity: page === totalPages ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-              <select
-                className="ml-2 px-1 py-1 rounded text-xs border"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[25, 50, 75, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} Rows
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <FooterPagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            setPage={setPage}
+            setPageSize={setPageSize}
+          />
+        </div>
       </div>
       {editJobsiteModal && pendingEditId && (
         <EditJobsiteModal
