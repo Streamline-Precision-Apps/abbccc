@@ -5,6 +5,7 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
+import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
@@ -106,13 +107,17 @@ export default function VerificationStep({
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
-          savedCommentData?.id.toString() || ""
+          savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
       }
 
-      // Use the new transaction-based function
-      const response = await handleGeneralTimeSheet(formData);
+      // Use the new offline-first function that doesn't hit DB when offline
+      const response = await executeOfflineFirstAction(
+        "handleGeneralTimeSheet",
+        handleGeneralTimeSheet,
+        formData,
+      );
 
       // Update state and redirect
       setTimeSheetData({ id: response || "" });

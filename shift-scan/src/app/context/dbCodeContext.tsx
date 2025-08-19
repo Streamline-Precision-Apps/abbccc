@@ -28,14 +28,14 @@ const JobsitesSchema = z.array(
     country: z.string().optional(),
     description: z.string().nullable().optional(),
     comment: z.string().nullable().optional(),
-  })
+  }),
 );
 
 const CostCodesSchema = z.array(
   z.object({
     id: z.string(),
     name: z.string(),
-  })
+  }),
 );
 
 const EquipmentSchema = z.array(
@@ -44,7 +44,7 @@ const EquipmentSchema = z.array(
     qrId: z.string(),
     name: z.string(),
     equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
-  })
+  }),
 );
 
 type JobSiteContextType = {
@@ -73,10 +73,10 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           jobsiteUrl.startsWith("/dashboard/myTeam/")
         ) {
           const jobSites = await fetchWithOfflineCache("getJobsites", () =>
-            fetch("/api/getJobsites").then((res) => res.json())
+            fetch("/api/getJobsites").then((res) => res.json()),
           );
           const validatedJobSites = JobsitesSchema.parse(
-            jobSites as JobCodes[]
+            jobSites as JobCodes[],
           );
           setJobsiteResults(validatedJobSites);
         }
@@ -108,7 +108,7 @@ type CostCodeContextType = {
 };
 
 const CostCodeContext = createContext<CostCodeContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
@@ -125,10 +125,10 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
           costCodeUrl === "/break"
         ) {
           const costCodes = await fetchWithOfflineCache("getCostCodes", () =>
-            fetch("/api/getCostCodes").then((res) => res.json())
+            fetch("/api/getCostCodes").then((res) => res.json()),
           );
           const validatedCostCodes = CostCodesSchema.parse(
-            costCodes as CostCodes[]
+            costCodes as CostCodes[],
           );
           setCostcodeResults(validatedCostCodes);
         }
@@ -153,7 +153,7 @@ type EquipmentContextType = {
 };
 
 const EquipmentContext = createContext<EquipmentContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
@@ -170,10 +170,10 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           equipmentUrl === "/break"
         ) {
           const equipment = await fetchWithOfflineCache("getEquipment", () =>
-            fetch("/api/getEquipment").then((res) => res.json())
+            fetch("/api/getEquipment").then((res) => res.json()),
           );
           const validatedEquipment = EquipmentSchema.parse(
-            equipment as EquipmentCode[]
+            equipment as EquipmentCode[],
           );
           setEquipmentResults(validatedEquipment);
         }
@@ -194,4 +194,17 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+export const useDBCostcode = () => {
+  const context = useContext(CostCodeContext);
+  if (!context)
+    throw new Error("useDBCostcode must be used within a CostCodeProvider");
+  return context;
+};
+
+export const useDBEquipment = () => {
+  const context = useContext(EquipmentContext);
+  if (!context)
+    throw new Error("useDBEquipment must be used within an EquipmentProvider");
+  return context;
+};
 // ...existing code...

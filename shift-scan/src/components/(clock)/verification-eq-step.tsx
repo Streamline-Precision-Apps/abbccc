@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
+import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 import { Contents } from "../(reusable)/contents";
 import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
@@ -52,7 +53,11 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
     formData.append("startTime", new Date().toString());
     formData.append("employeeId", id || "");
 
-    const result = await CreateEmployeeEquipmentLog(formData);
+    const result = await executeOfflineFirstAction(
+      "CreateEmployeeEquipmentLog",
+      CreateEmployeeEquipmentLog,
+      formData,
+    );
     if (result) {
       router.push("/dashboard/equipment");
     }

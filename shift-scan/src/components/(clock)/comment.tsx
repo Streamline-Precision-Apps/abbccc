@@ -9,6 +9,7 @@ import { Texts } from "../(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Titles } from "../(reusable)/titles";
 import { breakOutTimeSheet } from "@/actions/timeSheetActions";
+import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 import { setCurrentPageView } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 
@@ -35,7 +36,11 @@ export default function Comment({
       formData2.append("endTime", new Date().toISOString());
       formData2.append("timesheetComments", commentsValue);
 
-      const isUpdated = await breakOutTimeSheet(formData2);
+      const isUpdated = await executeOfflineFirstAction(
+        "breakOutTimeSheet",
+        breakOutTimeSheet,
+        formData2,
+      );
       if (isUpdated) {
         setCurrentPageView("break");
         router.push("/");

@@ -15,14 +15,75 @@ const pwaConfig = {
   workboxOptions: {
     disableDevLogs: true,
     runtimeCaching: [
+      // App routes and API
       {
-        urlPattern: /^https?.*/,
+        urlPattern: /^https?:\/\/.*/, // All HTTP(S) requests
         handler: "NetworkFirst",
         options: {
           cacheName: "offlineCache",
           expiration: {
             maxEntries: 200,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+            maxAgeSeconds: 24 * 60 * 60,
+          },
+        },
+      },
+      // Dynamic JS chunks (Next.js)
+      {
+        urlPattern: /^\/(_next\/static\/chunks\/.*\.js)$/,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "js-chunks",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 7 * 24 * 60 * 60,
+          },
+        },
+      },
+      // Worker scripts (e.g. qr-scanner)
+      {
+        urlPattern: /^\/(_next\/static\/chunks\/.*worker.*\.js)$/,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "worker-js",
+          expiration: {
+            maxEntries: 10,
+            maxAgeSeconds: 7 * 24 * 60 * 60,
+          },
+        },
+      },
+      // Fonts
+      {
+        urlPattern: /^\/(__nextjs_font\/.*\.woff2)$/,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "fonts",
+          expiration: {
+            maxEntries: 20,
+            maxAgeSeconds: 30 * 24 * 60 * 60,
+          },
+        },
+      },
+      // SVGs
+      {
+        urlPattern: /^\/.*\.svg$/,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "svg-assets",
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 30 * 24 * 60 * 60,
+          },
+        },
+      },
+      // CSS
+      {
+        urlPattern: /^\/(_next\/static\/css\/.*\.css)$/,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "css-assets",
+          expiration: {
+            maxEntries: 20,
+            maxAgeSeconds: 30 * 24 * 60 * 60,
           },
         },
       },

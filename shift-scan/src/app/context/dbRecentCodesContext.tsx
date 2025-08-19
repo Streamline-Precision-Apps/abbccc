@@ -20,7 +20,7 @@ const CostCodesRecentSchema = z
     z.object({
       id: z.string(),
       name: z.string(),
-    })
+    }),
   )
   .nullable();
 
@@ -29,7 +29,8 @@ const EquipmentSchema = z.array(
     id: z.string(),
     qrId: z.string(),
     name: z.string(),
-  })
+    equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
+  }),
 );
 
 const JobsitesRecentSchema = z
@@ -47,7 +48,7 @@ const JobsitesRecentSchema = z
       country: z.string().optional(),
       description: z.string().nullable().optional(),
       comment: z.string().nullable().optional(),
-    })
+    }),
   )
   .nullable();
 
@@ -71,44 +72,84 @@ const JobsitesRecentSchema = z
 //   const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>(
 //     []
 //   );
-const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>(
-  []
-);
-const recentJobsiteUrl = usePathname();
-const recentJobsiteOnline = useOnlineStatus();
+type RecentJobSiteContextType = {
+  recentlyUsedJobCodes: JobCodes[];
+  setRecentlyUsedJobCodes: React.Dispatch<React.SetStateAction<JobCodes[]>>;
+  addRecentlyUsedJobCode: (code: JobCodes) => void;
+};
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      if (
-        recentJobsiteUrl === "/clock" ||
-        recentJobsiteUrl === "/dashboard/equipment/log-new" ||
-        recentJobsiteUrl === "/dashboard/switch-jobs" ||
-        recentJobsiteUrl === "/break"
-      ) {
-        const recentJobSites = await fetchWithOfflineCache(
-          "getRecentJobsites",
-          () => fetch("/api/getRecentJobsites").then((res) => res.json())
-        );
-        const validatedRecentJobSites =
-          JobsitesRecentSchema.parse(recentJobSites);
-        if (validatedRecentJobSites === null) {
-          setRecentlyUsedJobCodes([]);
-        } else {
-          setRecentlyUsedJobCodes(validatedRecentJobSites);
+const RecentJobSiteContext = createContext<
+  RecentJobSiteContextType | undefined
+>(undefined);
+
+export const RecentJobSiteProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>(
+    [],
+  );
+  const recentJobsiteUrl = usePathname();
+  const recentJobsiteOnline = useOnlineStatus();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (
+          recentJobsiteUrl === "/clock" ||
+          recentJobsiteUrl === "/dashboard/equipment/log-new" ||
+          recentJobsiteUrl === "/dashboard/switch-jobs" ||
+          recentJobsiteUrl === "/break"
+        ) {
+          const recentJobSites = await fetchWithOfflineCache(
+            "getRecentJobsites",
+            () => fetch("/api/getRecentJobsites").then((res) => res.json()),
+          );
+          const validatedRecentJobSites =
+            JobsitesRecentSchema.parse(recentJobSites);
+          setRecentlyUsedJobCodes(validatedRecentJobSites ?? []);
+        }
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error(
+            "Validation error in Recent JobSites schema:",
+            error.issues,
+          );
         }
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error(
-          "Validation error in Recent JobSites schema:",
-          error.errors
-        );
-      }
-    }
+    };
+    fetchData();
+  }, [recentJobsiteUrl, recentJobsiteOnline]);
+
+  const addRecentlyUsedJobCode = (code: JobCodes) => {
+    setRecentlyUsedJobCodes((prev) => {
+      const updatedList = [code, ...prev.filter((c) => c.qrId !== code.qrId)];
+      return updatedList.slice(0, 5);
+    });
   };
-  fetchData();
-}, [recentJobsiteUrl, recentJobsiteOnline]);
+
+  return (
+    <RecentJobSiteContext.Provider
+      value={{
+        recentlyUsedJobCodes,
+        setRecentlyUsedJobCodes,
+        addRecentlyUsedJobCode,
+      }}
+    >
+      {children}
+    </RecentJobSiteContext.Provider>
+  );
+};
+
+export const useRecentDBJobsite = () => {
+  const context = useContext(RecentJobSiteContext);
+  if (!context)
+    throw new Error(
+      "useRecentDBJobsite must be used within a RecentJobSiteProvider",
+    );
+  return context;
+};
 
 //   const addRecentlyUsedJobCode = (code: JobCodes) => {
 //     setRecentlyUsedJobCodes((prev) => {
@@ -152,43 +193,87 @@ useEffect(() => {
 //   const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<
 //     CostCodes[]
 //   >([]);
-const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<CostCodes[]>(
-  []
-);
-const recentCostCodeUrl = usePathname();
-const recentCostCodeOnline = useOnlineStatus();
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      if (
-        recentCostCodeUrl === "/clock" ||
-        recentCostCodeUrl === "/dashboard/equipment/log-new" ||
-        recentCostCodeUrl === "/dashboard/switch-jobs" ||
-        recentCostCodeUrl === "/break"
-      ) {
-        const recentCostCodes = await fetchWithOfflineCache(
-          "getRecentCostCodes",
-          () => fetch("/api/getRecentCostCodes").then((res) => res.json())
-        );
-        const validatedRecentCostCodes =
-          CostCodesRecentSchema.parse(recentCostCodes);
-        if (validatedRecentCostCodes === null) {
-          setRecentlyUsedCostCodes([]);
-        } else {
-          setRecentlyUsedCostCodes(validatedRecentCostCodes);
+type RecentCostCodeContextType = {
+  recentlyUsedCostCodes: CostCodes[];
+  setRecentlyUsedCostCodes: React.Dispatch<React.SetStateAction<CostCodes[]>>;
+  addRecentlyUsedCostCode: (code: CostCodes) => void;
+};
+
+const RecentCostCodeContext = createContext<
+  RecentCostCodeContextType | undefined
+>(undefined);
+
+export const RecentCostCodeProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<
+    CostCodes[]
+  >([]);
+  const recentCostCodeUrl = usePathname();
+  const recentCostCodeOnline = useOnlineStatus();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (
+          recentCostCodeUrl === "/clock" ||
+          recentCostCodeUrl === "/dashboard/equipment/log-new" ||
+          recentCostCodeUrl === "/dashboard/switch-jobs" ||
+          recentCostCodeUrl === "/break"
+        ) {
+          const recentCostCodes = await fetchWithOfflineCache(
+            "getRecentCostCodes",
+            () => fetch("/api/getRecentCostCodes").then((res) => res.json()),
+          );
+          const validatedRecentCostCodes =
+            CostCodesRecentSchema.parse(recentCostCodes);
+          setRecentlyUsedCostCodes(validatedRecentCostCodes ?? []);
+        }
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error(
+            "Validation error in Recent CostCodes schema:",
+            error.issues,
+          );
         }
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error(
-          "Validation error in Recent CostCodes schema:",
-          error.errors
-        );
-      }
-    }
+    };
+    fetchData();
+  }, [recentCostCodeUrl, recentCostCodeOnline]);
+
+  const addRecentlyUsedCostCode = (code: CostCodes) => {
+    setRecentlyUsedCostCodes((prev) => {
+      const updatedList = [
+        code,
+        ...prev.filter((c) => c !== null && c.name !== code.name),
+      ];
+      return updatedList.slice(0, 5);
+    });
   };
-  fetchData();
-}, [recentCostCodeUrl, recentCostCodeOnline]);
+
+  return (
+    <RecentCostCodeContext.Provider
+      value={{
+        recentlyUsedCostCodes,
+        setRecentlyUsedCostCodes,
+        addRecentlyUsedCostCode,
+      }}
+    >
+      {children}
+    </RecentCostCodeContext.Provider>
+  );
+};
+
+export const useRecentDBCostcode = () => {
+  const context = useContext(RecentCostCodeContext);
+  if (!context)
+    throw new Error(
+      "useRecentDBCostcode must be used within a RecentCostCodeProvider",
+    );
+  return context;
+};
 
 //   const addRecentlyUsedCostCode = (code: CostCodes) => {
 //     setRecentlyUsedCostCodes((prev) => {
@@ -237,38 +322,89 @@ useEffect(() => {
 //   const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
 //     EquipmentCode[]
 //   >([]);
-const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
-  EquipmentCode[]
->([]);
-const recentEquipmentUrl = usePathname();
-const recentEquipmentOnline = useOnlineStatus();
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      if (
-        recentEquipmentUrl === "/clock" ||
-        recentEquipmentUrl === "/dashboard/log-new" ||
-        recentEquipmentUrl === "/dashboard/switch-jobs" ||
-        recentEquipmentUrl === "/break"
-      ) {
-        const recentEquipment = await fetchWithOfflineCache(
-          "getRecentEquipment",
-          () => fetch("/api/getRecentEquipment").then((res) => res.json())
-        );
-        const validatedRecentEquipment = EquipmentSchema.parse(recentEquipment);
-        setRecentlyUsedEquipment(validatedRecentEquipment as EquipmentCode[]);
+type RecentEquipmentContextType = {
+  recentlyUsedEquipment: EquipmentCode[];
+  setRecentlyUsedEquipment: React.Dispatch<
+    React.SetStateAction<EquipmentCode[]>
+  >;
+  addRecentlyUsedEquipment: (equipment: EquipmentCode) => void;
+};
+
+const RecentEquipmentContext = createContext<
+  RecentEquipmentContextType | undefined
+>(undefined);
+
+export const RecentEquipmentProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
+    EquipmentCode[]
+  >([]);
+  const recentEquipmentUrl = usePathname();
+  const recentEquipmentOnline = useOnlineStatus();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (
+          recentEquipmentUrl === "/clock" ||
+          recentEquipmentUrl === "/dashboard/log-new" ||
+          recentEquipmentUrl === "/dashboard/switch-jobs" ||
+          recentEquipmentUrl === "/break"
+        ) {
+          const recentEquipment = await fetchWithOfflineCache(
+            "getRecentEquipment",
+            () => fetch("/api/getRecentEquipment").then((res) => res.json()),
+          );
+          const validatedRecentEquipment =
+            EquipmentSchema.parse(recentEquipment);
+          setRecentlyUsedEquipment(validatedRecentEquipment ?? []);
+        }
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error(
+            "Validation error in Recent Equipment schema:",
+            error.issues,
+          );
+        }
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error(
-          "Validation error in Recent Equipment schema:",
-          error.errors
-        );
-      }
-    }
+    };
+    fetchData();
+  }, [recentEquipmentUrl, recentEquipmentOnline]);
+
+  const addRecentlyUsedEquipment = (equipment: EquipmentCode) => {
+    setRecentlyUsedEquipment((prev) => {
+      const updatedList = [
+        equipment,
+        ...prev.filter((e) => e.qrId !== equipment.qrId),
+      ];
+      return updatedList.slice(0, 5);
+    });
   };
-  fetchData();
-}, [recentEquipmentUrl, recentEquipmentOnline]);
+
+  return (
+    <RecentEquipmentContext.Provider
+      value={{
+        recentlyUsedEquipment,
+        setRecentlyUsedEquipment,
+        addRecentlyUsedEquipment,
+      }}
+    >
+      {children}
+    </RecentEquipmentContext.Provider>
+  );
+};
+
+export const useRecentDBEquipment = () => {
+  const context = useContext(RecentEquipmentContext);
+  if (!context)
+    throw new Error(
+      "useRecentDBEquipment must be used within a RecentEquipmentProvider",
+    );
+  return context;
+};
 
 //   const addRecentlyUsedEquipment = (equipment: EquipmentCode) => {
 //     setRecentlyUsedEquipment((prev) => {

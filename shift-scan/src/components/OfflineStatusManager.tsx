@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useOfflineSync } from "@/utils/offlineFirstWrapper";
 import {
   cacheEntireApp,
   checkOfflineReadiness,
@@ -27,6 +28,7 @@ interface CacheStats {
 
 export const OfflineStatusManager = () => {
   const isOnline = useOnlineStatus();
+  const { getOfflineQueue, syncOfflineActions } = useOfflineSync();
   const [offlineReadiness, setOfflineReadiness] = useState<OfflineReadiness>({
     isReady: false,
     cachedRoutes: [],
@@ -39,12 +41,15 @@ export const OfflineStatusManager = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [pendingActions, setPendingActions] = useState(0);
 
   const updateStatus = async () => {
     const readiness = await checkOfflineReadiness();
     const stats = await getCacheStats();
+    const pending = getOfflineQueue().length;
     setOfflineReadiness(readiness);
     setCacheStats(stats);
+    setPendingActions(pending);
   };
 
   useEffect(() => {
@@ -104,6 +109,11 @@ export const OfflineStatusManager = () => {
           />
           <span className={`font-medium text-sm ${getStatusColor()}`}>
             {getStatusText()}
+            {pendingActions > 0 && (
+              <span className="ml-1 bg-blue-500 text-white text-xs px-1 rounded-full">
+                {pendingActions}
+              </span>
+            )}
           </span>
         </div>
         <button
@@ -120,7 +130,21 @@ export const OfflineStatusManager = () => {
             <div>Cached Assets: {cacheStats.totalEntries}</div>
             <div>Storage Used: {cacheStats.estimatedSize}</div>
             <div>Cached Routes: {offlineReadiness.cachedRoutes.length}</div>
+            {pendingActions > 0 && (
+              <div className="text-blue-600 font-medium">
+                Pending Actions: {pendingActions}
+              </div>
+            )}
           </div>
+
+          {isOnline && pendingActions > 0 && (
+            <button
+              onClick={syncOfflineActions}
+              className="w-full bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+            >
+              Sync Now
+            </button>
+          )}
 
           {isOnline && (
             <div className="space-y-1">

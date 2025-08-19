@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated import
+import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 import { useSession } from "next-auth/react";
 import { useCommentData } from "@/app/context/CommentContext";
 import {
@@ -125,13 +126,17 @@ export default function TascoVerificationStep({
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
-          savedCommentData?.id.toString() || ""
+          savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
       }
 
-      // Use the new transaction-based function
-      const response = await handleTascoTimeSheet(formData);
+      // Use the new offline-first function that doesn't hit DB when offline
+      const response = await executeOfflineFirstAction(
+        "handleTascoTimeSheet",
+        handleTascoTimeSheet,
+        formData,
+      );
 
       // Update state and redirect
       setTimeSheetData({ id: response || "" });
@@ -215,10 +220,10 @@ export default function TascoVerificationStep({
                           clockInRoleTypes === "tascoAbcdLabor"
                             ? "TASCO ABCD Labor"
                             : clockInRoleTypes === "tascoAbcdEquipment"
-                            ? "TASCO ABCD EQ Operator"
-                            : clockInRoleTypes === "tascoEEquipment"
-                            ? "TASCO E EQ Operator"
-                            : clockInRoleTypes
+                              ? "TASCO ABCD EQ Operator"
+                              : clockInRoleTypes === "tascoEEquipment"
+                                ? "TASCO E EQ Operator"
+                                : clockInRoleTypes
                         }
                         className="text-center text-base"
                       />

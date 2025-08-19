@@ -46,3 +46,5 @@ certificates
 .env.sentry-build-plugin
 
 prisma/generated/
+
+neon_backup.dump

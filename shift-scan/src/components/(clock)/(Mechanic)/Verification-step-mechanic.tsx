@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleMechanicTimeSheet } from "@/actions/timeSheetActions";
+import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 
 import { useCommentData } from "@/app/context/CommentContext";
 import { useRouter } from "next/navigation";
@@ -110,13 +111,17 @@ export default function MechanicVerificationStep({
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
-          savedCommentData?.id.toString() || ""
+          savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
       }
 
-      // Use the new transaction-based function
-      const response = await handleMechanicTimeSheet(formData);
+      // Use the new offline-first function that doesn't hit DB when offline
+      const response = await executeOfflineFirstAction(
+        "handleMechanicTimeSheet",
+        handleMechanicTimeSheet,
+        formData,
+      );
 
       // Update state and redirect
       setTimeSheetData({ id: response || "" });
