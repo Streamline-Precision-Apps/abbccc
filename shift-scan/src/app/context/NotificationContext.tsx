@@ -15,7 +15,7 @@ type NotificationProps = {
   type: NotificationType; // Add type to indicate the state
   setNotification: (
     notification: string | null,
-    type?: NotificationType
+    type?: NotificationType,
   ) => void;
 };
 
@@ -29,7 +29,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
   const setNotification = (
     message: string | null,
-    stateType: NotificationType = "neutral"
+    stateType: NotificationType = "neutral",
   ) => {
     setNotificationState(message);
     setType(stateType);
@@ -39,7 +39,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       if (message) {
         localStorage.setItem(
           "notification",
-          JSON.stringify({ message, stateType })
+          JSON.stringify({ message, stateType }),
         );
       } else {
         localStorage.removeItem("notification");
@@ -49,7 +49,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
   // Automatically clear the notification after 4 seconds
   useEffect(() => {
-    console.log("notification", notification);
     if (notification) {
       const timer = setTimeout(() => {
         setNotificationState(null);
@@ -71,7 +70,7 @@ export const useNotification = () => {
   const context = useContext(Notification);
   if (!context) {
     throw new Error(
-      "useNotification must be used within a NotificationProvider"
+      "useNotification must be used within a NotificationProvider",
     );
   }
   return context;

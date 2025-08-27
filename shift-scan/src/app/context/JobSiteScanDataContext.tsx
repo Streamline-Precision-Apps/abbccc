@@ -44,7 +44,6 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (isInitialized) return;
 
-    console.log("JobSiteScanDataContext1");
     const initializeJobSite = async () => {
       try {
         const cookieRes = await fetch("/api/cookies?method=get&name=jobSite");

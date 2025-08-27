@@ -29,7 +29,6 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (isInitialized) return; // Prevent multiple initializations
 
-    console.log("operatorContext1");
     const initializeEquipment = async () => {
       try {
         // Fetch cookie data once during initialization

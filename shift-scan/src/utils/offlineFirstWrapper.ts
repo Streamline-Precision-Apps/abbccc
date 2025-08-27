@@ -1,19 +1,20 @@
 "use client";
 
 import React from "react";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 // Local storage keys
 const OFFLINE_QUEUE_KEY = "offline_timesheet_queue";
 const OFFLINE_TIMESHEET_KEY = "offline_timesheet_data";
 
 // Types for offline data
-interface OfflineTimesheet {
+export interface OfflineTimesheet {
   id: string;
   actionName: string;
   formData: { [key: string]: any };
   timestamp: number;
-  status: "pending" | "synced";
+  status: "pending" | "syncing" | "synced" | "failed";
+  retryCount?: number;
+  lastError?: string;
 }
 
 /**
@@ -46,7 +47,8 @@ export async function executeOfflineFirstAction<T extends any[], R>(
       actionName,
       formData: formDataObj,
       timestamp: Date.now(),
-      status: "pending"
+      status: "pending",
+      retryCount: 0
     };
 
     // Store in offline queue
@@ -58,6 +60,14 @@ export async function executeOfflineFirstAction<T extends any[], R>(
     localStorage.setItem(`${OFFLINE_TIMESHEET_KEY}_${mockTimesheetId}`, JSON.stringify(offlineTimesheet));
 
     console.log(`[OFFLINE] Stored ${actionName} locally with ID: ${mockTimesheetId}`);
+    
+    // Dispatch custom event for UI updates
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('offlineActionStored', { 
+        detail: { actionName, id: mockTimesheetId } 
+      }));
+    }
+    
     return mockTimesheetId as R;
   } else {
     try {
@@ -65,7 +75,8 @@ export async function executeOfflineFirstAction<T extends any[], R>(
       const result = await serverAction(...args);
       
       // After successful online action, try to sync any pending offline actions
-      syncOfflineActions();
+      // Don't await this to avoid blocking the current action
+      setTimeout(() => syncOfflineActions(), 100);
       
       return result;
     } catch (error) {
@@ -89,21 +100,51 @@ function getOfflineQueue(): OfflineTimesheet[] {
 }
 
 /**
+ * Update a specific offline action in the queue and local storage
+ */
+function updateOfflineAction(updatedAction: OfflineTimesheet): void {
+  try {
+    // Update in queue
+    const queue = getOfflineQueue();
+    const index = queue.findIndex(action => action.id === updatedAction.id);
+    if (index !== -1) {
+      queue[index] = updatedAction;
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+    }
+    
+    // Update individual timesheet data
+    localStorage.setItem(`${OFFLINE_TIMESHEET_KEY}_${updatedAction.id}`, JSON.stringify(updatedAction));
+  } catch (error) {
+    console.error('Failed to update offline action:', error);
+  }
+}
+
+/**
  * Sync offline actions when back online
  */
-export async function syncOfflineActions() {
+export async function syncOfflineActions(): Promise<{ success: number; failed: number }> {
   const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
-  if (!isOnline) return;
+  if (!isOnline) return { success: 0, failed: 0 };
 
   const queue = getOfflineQueue();
-  const pendingActions = queue.filter(action => action.status === "pending");
+  const pendingActions = queue.filter(action => 
+    action.status === "pending" && (action.retryCount || 0) < 3
+  );
 
-  if (pendingActions.length === 0) return;
+  if (pendingActions.length === 0) return { success: 0, failed: 0 };
 
   console.log(`[SYNC] Syncing ${pendingActions.length} offline actions...`);
 
+  let successCount = 0;
+  let failedCount = 0;
+
+  // Process actions sequentially to avoid overwhelming the server
   for (const action of pendingActions) {
     try {
+      // Mark as syncing
+      action.status = "syncing";
+      updateOfflineAction(action);
+
       // Reconstruct FormData from stored object
       const formData = new FormData();
       Object.entries(action.formData).forEach(([key, value]) => {
@@ -135,6 +176,10 @@ export async function syncOfflineActions() {
           break;
         default:
           console.warn(`Unknown action: ${action.actionName}`);
+          action.status = "failed";
+          action.lastError = `Unknown action type: ${action.actionName}`;
+          updateOfflineAction(action);
+          failedCount++;
           continue;
       }
 
@@ -142,25 +187,59 @@ export async function syncOfflineActions() {
         const result = await serverAction(formData);
         console.log(`[SYNC] Successfully synced ${action.actionName}:`, result);
         
-        // Mark as synced
+        // Mark as synced and remove offline data
         action.status = "synced";
+        action.lastError = undefined;
+        updateOfflineAction(action);
         
         // Remove offline timesheet data
         localStorage.removeItem(`${OFFLINE_TIMESHEET_KEY}_${action.id}`);
+        
+        successCount++;
+
+        // Dispatch success event
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('offlineActionSynced', { 
+            detail: { actionName: action.actionName, id: action.id, result } 
+          }));
+        }
       }
     } catch (error) {
       console.error(`[SYNC] Failed to sync ${action.actionName}:`, error);
+      
+      // Update retry count and status
+      action.retryCount = (action.retryCount || 0) + 1;
+      action.lastError = error instanceof Error ? error.message : 'Unknown error';
+      
+      if (action.retryCount >= 3) {
+        action.status = "failed";
+        console.error(`[SYNC] Max retries reached for ${action.actionName}, marking as failed`);
+      } else {
+        action.status = "pending";
+      }
+      
+      updateOfflineAction(action);
+      failedCount++;
+
+      // Dispatch failure event
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('offlineActionFailed', { 
+          detail: { actionName: action.actionName, id: action.id, error: action.lastError } 
+        }));
+      }
     }
+
+    // Small delay between actions to prevent overwhelming the server
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
 
-  // Update the queue with synced status
-  const updatedQueue = queue.map(action => 
-    pendingActions.some(p => p.id === action.id) ? { ...action, status: "synced" as const } : action
-  );
+  // Clean up the queue - keep failed actions for manual retry, remove synced ones
+  const updatedQueue = queue.filter(action => action.status !== "synced");
+  localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(updatedQueue));
 
-  // Remove synced actions from queue (keep only last 10 for reference)
-  const cleanedQueue = updatedQueue.filter(action => action.status === "pending").slice(-10);
-  localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(cleanedQueue));
+  console.log(`[SYNC] Completed: ${successCount} succeeded, ${failedCount} failed`);
+  
+  return { success: successCount, failed: failedCount };
 }
 
 /**
@@ -179,13 +258,29 @@ export function getOfflineTimesheet(id: string): OfflineTimesheet | null {
  * Hook to automatically sync when coming back online
  */
 export function useOfflineSync() {
-  const isOnline = useOnlineStatus();
+  const [isOnline, setIsOnline] = React.useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  );
 
   React.useEffect(() => {
-    if (isOnline) {
+    function handleOnline() { 
+      setIsOnline(true);
       syncOfflineActions();
     }
-  }, [isOnline]);
+    function handleOffline() { 
+      setIsOnline(false);
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+      
+      return () => {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
+    }
+  }, []);
 
   return {
     isOnline,
@@ -199,4 +294,66 @@ export function useOfflineSync() {
  */
 export function isOfflineTimesheet(id: string): boolean {
   return id.startsWith("offline_");
+}
+
+/**
+ * Get all offline actions with their current status
+ */
+export function getOfflineActionsStatus(): {
+  pending: OfflineTimesheet[];
+  syncing: OfflineTimesheet[];
+  failed: OfflineTimesheet[];
+  total: number;
+} {
+  const queue = getOfflineQueue();
+  return {
+    pending: queue.filter(a => a.status === "pending"),
+    syncing: queue.filter(a => a.status === "syncing"),
+    failed: queue.filter(a => a.status === "failed"),
+    total: queue.length
+  };
+}
+
+/**
+ * Manually retry failed offline actions
+ */
+export async function retryFailedActions(): Promise<{ success: number; failed: number }> {
+  const queue = getOfflineQueue();
+  const failedActions = queue.filter(action => action.status === "failed");
+  
+  // Reset failed actions to pending for retry
+  failedActions.forEach(action => {
+    action.status = "pending";
+    action.retryCount = 0;
+    action.lastError = undefined;
+    updateOfflineAction(action);
+  });
+  
+  if (failedActions.length > 0) {
+    console.log(`[RETRY] Retrying ${failedActions.length} failed actions...`);
+    return await syncOfflineActions();
+  }
+  
+  return { success: 0, failed: 0 };
+}
+
+/**
+ * Clear all offline data (for development/testing)
+ */
+export function clearOfflineData(): void {
+  try {
+    const queue = getOfflineQueue();
+    
+    // Remove individual timesheet data
+    queue.forEach(action => {
+      localStorage.removeItem(`${OFFLINE_TIMESHEET_KEY}_${action.id}`);
+    });
+    
+    // Clear the queue
+    localStorage.removeItem(OFFLINE_QUEUE_KEY);
+    
+    console.log('[OFFLINE] Cleared all offline data');
+  } catch (error) {
+    console.error('Failed to clear offline data:', error);
+  }
 }

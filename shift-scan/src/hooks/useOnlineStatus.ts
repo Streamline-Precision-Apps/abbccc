@@ -9,7 +9,7 @@ export function useOnlineStatus(): boolean {
   useEffect(() => {
     function handleOnline() { setOnline(true); }
     function handleOffline() { setOnline(false); }
-    console.log("useOnlineStatus1");
+    
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     return () => {

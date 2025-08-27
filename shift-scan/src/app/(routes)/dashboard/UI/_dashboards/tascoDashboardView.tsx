@@ -5,6 +5,7 @@ import ClockOutBtn from "../_buttons/clockOutBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
+import OfflineStatusWidget from "@/components/(offline)/offline-status-widget";
 import { Dispatch, SetStateAction, use, useEffect } from "react";
 import TascoBtn from "../_buttons/TascoBtn";
 import { LogItem } from "@/lib/types";
@@ -40,45 +41,47 @@ export default function TascoDashboardView({
 
   if (laborType === "tascoAbcdLabor") {
     return (
-        <>
-          <Contents width={"section"} className="py-5">
-            <Grids cols={"2"} rows={"3"} gap={"5"}>
-              <>
-                <EquipmentBtn permission={permission} />
-    
-                <SwitchJobsBtn
-                  {...modalState}
-                  permission={permission}
-                  logs={logs}
-                  laborType={"general"}
-                  view={"general"}
-                />
-    
-                {permission !== "USER" && !additionalButtonsType && (
-                  <GeneratorBtn />
-                )}
-    
-                {permission !== "USER" && !additionalButtonsType && (
-                  <MyTeamWidget />
-                )}
-    
-                <ClockOutBtn
-                  handleShowAdditionalButtons={verifyLogsCompletion}
-                  permission={permission}
-                  logs={logs}
-                  mechanicProjectID={mechanicProjectID}
-                  View={"general"}
-                  laborType="general"
-                />
-              </>
-            </Grids>
-          </Contents>
-        </>
-      );
+      <>
+        <Contents width={"section"} className="py-5">
+          <OfflineStatusWidget className="mb-4" />
+          <Grids cols={"2"} rows={"3"} gap={"5"}>
+            <>
+              <EquipmentBtn permission={permission} />
+
+              <SwitchJobsBtn
+                {...modalState}
+                permission={permission}
+                logs={logs}
+                laborType={"general"}
+                view={"general"}
+              />
+
+              {permission !== "USER" && !additionalButtonsType && (
+                <GeneratorBtn />
+              )}
+
+              {permission !== "USER" && !additionalButtonsType && (
+                <MyTeamWidget />
+              )}
+
+              <ClockOutBtn
+                handleShowAdditionalButtons={verifyLogsCompletion}
+                permission={permission}
+                logs={logs}
+                mechanicProjectID={mechanicProjectID}
+                View={"general"}
+                laborType="general"
+              />
+            </>
+          </Grids>
+        </Contents>
+      </>
+    );
   } else {
     return (
       <>
         <Contents width={"section"} className="py-5">
+          <OfflineStatusWidget className="mb-4" />
           <Grids cols={"2"} rows={"3"} gap={"5"}>
             <>
               <TascoBtn

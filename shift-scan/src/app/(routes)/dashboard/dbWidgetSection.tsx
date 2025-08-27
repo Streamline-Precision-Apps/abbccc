@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Session } from "next-auth";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
+import { useOfflineAwareData } from "@/hooks/useOfflineAwareData";
 import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
 import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
 import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
@@ -20,28 +21,42 @@ type props = {
   laborType: string;
 };
 
-// Verifies if there are any unSubmitted logs
+// Offline-aware logs fetching
 const useFetchLogs = (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setLogs: React.Dispatch<React.SetStateAction<LogItem[]>>
+  setLogs: React.Dispatch<React.SetStateAction<LogItem[]>>,
+  userId: string,
 ) => {
   const e = useTranslations("Err-Msg");
+  const { fetchLogs, isOnline } = useOfflineAwareData();
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    const fetchLogs = async () => {
+    // Only fetch once per user
+    if (hasFetched) return;
+
+    const loadLogs = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/api/getLogs");
-        const logsData = await response.json();
-        setLogs(logsData);
+        const logsData = await fetchLogs();
+        setLogs(logsData || []);
+        setHasFetched(true);
+
+        if (!isOnline) {
+          console.log("[OFFLINE] Using offline/mock logs data");
+        }
       } catch (error) {
-        console.error(e("Logs-Fetch"));
+        console.error(e("Logs-Fetch"), error);
+        // In offline mode or on error, use empty logs
+        setLogs([]);
+        setHasFetched(true);
       } finally {
         setLoading(false);
       }
     };
-    fetchLogs();
-  }, [e, setLoading, setLogs]);
+
+    loadLogs();
+  }, [userId]); // Only depend on userId to prevent infinite loops
 };
 
 export default function DbWidgetSection({
@@ -60,7 +75,7 @@ export default function DbWidgetSection({
   const router = useRouter();
   const { currentView } = useCurrentView();
 
-  useFetchLogs(setLoading, setLogs);
+  useFetchLogs(setLoading, setLogs, session.user.id);
   const modalState = useModalState();
 
   const verifyLogsCompletion = useCallback(() => {

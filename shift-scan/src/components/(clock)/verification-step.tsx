@@ -1,11 +1,16 @@
 "use client";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
-import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
+import {
+  executeOfflineFirstAction,
+  isOfflineTimesheet,
+  getOfflineActionsStatus,
+} from "@/utils/offlineFirstWrapper";
+import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
@@ -67,14 +72,25 @@ export default function VerificationStep({
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
+  const { isOnline, summary } = useEnhancedOfflineStatus();
+
+  // Check offline status and pending actions
+  useEffect(() => {
+    // Listen for offline action events is handled by useEnhancedOfflineStatus
+    console.log(`Connection status: ${isOnline ? "Online" : "Offline"}`);
+  }, [isOnline]);
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
   const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
-      const res = await fetch("/api/getRecentTimecard");
-      const data = await res.json();
+      // Import the offline API wrapper
+      const { getRecentTimecardOffline } = await import(
+        "@/utils/offlineApiWrapper"
+      );
+      const data = await getRecentTimecardOffline();
+      console.log("[TIMESHEET] Recent timesheet data:", data);
       return data?.id || null;
     } catch (error) {
       console.error("Error fetching recent timesheet ID:", error);
@@ -101,18 +117,33 @@ export default function VerificationStep({
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
-        const timeSheetId = await fetchRecentTimeSheetId();
-        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+        let timeSheetId: string | null = null;
+
+        if (isOnline) {
+          timeSheetId = await fetchRecentTimeSheetId();
+        } else {
+          // In offline mode, try to get the most recent offline timesheet
+          const offlineStatus = getOfflineActionsStatus();
+          const recentOfflineTimesheet = offlineStatus.pending.sort(
+            (a, b) => b.timestamp - a.timestamp,
+          )[0];
+          timeSheetId = recentOfflineTimesheet?.id || null;
+        }
+
+        if (!timeSheetId) {
+          throw new Error("No valid TimeSheet ID found for job switch.");
+        }
+
         formData.append("id", timeSheetId);
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
           savedCommentData?.id.toString() || "",
         );
-        formData.append("type", "switchJobs"); // added to switch jobs
+        formData.append("type", "switchJobs");
       }
 
-      // Use the new offline-first function that doesn't hit DB when offline
+      // Use the offline-first function
       const response = await executeOfflineFirstAction(
         "handleGeneralTimeSheet",
         handleGeneralTimeSheet,
@@ -120,17 +151,89 @@ export default function VerificationStep({
       );
 
       // Update state and redirect
-      setTimeSheetData({ id: response || "" });
+      const timesheetId = response || "";
+      setTimeSheetData({ id: timesheetId });
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 
+      // Store timesheet info for offline dashboard use
+      if (isOfflineTimesheet(timesheetId)) {
+        const offlineTimesheetData = {
+          id: timesheetId,
+          userId: id,
+          date: new Date().toISOString(),
+          startTime: new Date().toISOString(),
+          endTime: null,
+          status: "DRAFT",
+          workType: role,
+          jobsiteId: jobsite?.id || "",
+          costCode: cc?.code || "",
+          jobsiteLabel: jobsite?.label || "",
+          costCodeLabel: cc?.label || "",
+          isOffline: true,
+          offlineTimestamp: Date.now(),
+        };
+
+        // Store current timesheet
+        localStorage.setItem(
+          "current_offline_timesheet",
+          JSON.stringify(offlineTimesheetData),
+        );
+
+        // Store comprehensive dashboard data
+        const dashboardData = {
+          timesheet: offlineTimesheetData,
+          logs: [], // Start with empty logs for new timesheet
+          projects: [],
+          lastUpdate: Date.now(),
+          workRole: role,
+          isOfflineSession: true,
+        };
+
+        localStorage.setItem(
+          "offline_dashboard_data",
+          JSON.stringify(dashboardData),
+        );
+
+        // Also store for API fallback
+        localStorage.setItem(
+          "cached_recent_timecard",
+          JSON.stringify(offlineTimesheetData),
+        );
+
+        console.log(`[OFFLINE] Stored comprehensive offline timesheet data:`, {
+          timesheetId,
+          jobsite: jobsite?.label,
+          costCode: cc?.label,
+          workType: role,
+        });
+      }
+
+      // Update cookies and navigate
       await Promise.all([
         setCurrentPageView("dashboard"),
         setWorkRole(role),
         setLaborType(clockInRoleTypes || ""),
-      ]).then(() => router.push("/dashboard"));
+      ]);
+
+      // Check if this was an offline operation
+      if (isOfflineTimesheet(timesheetId)) {
+        console.log(`[OFFLINE] Timesheet created offline: ${timesheetId}`);
+        console.log(`[OFFLINE] Navigating to dashboard with offline data`);
+        // Show user that they're working offline but the action was saved
+      }
+
+      console.log(
+        `[NAVIGATION] Redirecting to dashboard with timesheet: ${timesheetId}`,
+      );
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error in handleSubmit:", error);
+
+      // Show user-friendly error message
+      if (!isOnline) {
+        console.log("[OFFLINE] Action saved locally and will sync when online");
+      }
     } finally {
       setLoading(false);
     }
@@ -148,6 +251,16 @@ export default function VerificationStep({
         className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `}
       >
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          {/* Add offline status indicator */}
+          {!isOnline && (
+            <Holds className="absolute top-2 right-2 z-10">
+              <div className="flex items-center gap-2 bg-amber-100 border border-amber-400 text-amber-800 px-3 py-1 rounded-md text-sm">
+                <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                <span>Offline Mode</span>
+              </div>
+            </Holds>
+          )}
+
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes position={"row"} onClick={handlePreviousStep}>
               <Titles position={"right"} size={"h4"}>
@@ -226,7 +339,9 @@ export default function VerificationStep({
                     background={"green"}
                     className=" w-full h-full py-2"
                   >
-                    <Titles size={"h2"}>{t("StartDay")}</Titles>
+                    <Titles size={"h2"}>
+                      {!isOnline ? t("SaveOffline") : t("StartDay")}
+                    </Titles>
                   </Buttons>
                 </Holds>
               </Grids>

@@ -9,6 +9,8 @@ import { Grids } from "@/components/(reusable)/grids";
 import BannerRotating from "@/components/(reusable)/bannerRotating";
 import { cookies } from "next/headers";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
+import OfflineIndicator from "@/components/(offline)/offline-indicator";
+import OfflineDebugger from "@/components/(offline)/offline-debugger";
 
 export default async function Dashboard() {
   //------------------------------------------------------------------------
@@ -34,6 +36,8 @@ export default async function Dashboard() {
 
   return (
     <Bases>
+      <OfflineIndicator position="top-right" />
+      <OfflineDebugger />
       <Contents>
         <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />

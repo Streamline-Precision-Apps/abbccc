@@ -51,8 +51,6 @@ export const useOfflineSync = () => {
         errors: result.errors.map(e => e.error),
       }));
 
-      console.log("useOfflineSync1");
-
       if (result.success) {
         console.log(`Successfully synced ${result.syncedCount} actions`);
       } else {
@@ -69,7 +67,6 @@ export const useOfflineSync = () => {
 
   // Auto-sync when coming online (with debouncing to prevent spam)
   useEffect(() => {
-    console.log("useOfflineSync2");
     if (isOnline && state.queuedActionsCount > 0) {
       // Add a small delay to prevent immediate sync spam
       const timer = setTimeout(() => {
@@ -82,13 +79,11 @@ export const useOfflineSync = () => {
 
   // Update online status
   useEffect(() => {
-    console.log("useOfflineSync2");
     setState(prev => ({ ...prev, isOnline }));
   }, [isOnline]);
 
   // Update queued count on mount and periodically (reduced frequency)
   useEffect(() => {
-    console.log("useOfflineSync3");
     updateQueuedCount();
     const interval = setInterval(updateQueuedCount, 60000); // Reduced from 30s to 60s
     return () => clearInterval(interval);

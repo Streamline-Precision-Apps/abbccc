@@ -34,7 +34,6 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (isInitialized) return;
 
-    console.log("CostCodeContext1");
     const initializeCostCode = async () => {
       try {
         const previousCostCode = await fetchWithOfflineCache("costCode", () =>

@@ -10,6 +10,7 @@ import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import OfflineCSSFallback from "../components/OfflineCSSFallback";
 import CSSDebugger from "../components/CSSDebugger";
 import OfflineStatusManager from "../components/OfflineStatusManager";
+import OfflineIndicator from "@/components/(offline)/offline-indicator";
 import "@/app/globals.css";
 import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
 
@@ -66,6 +67,8 @@ export default async function RootLayout({
               <ErrorBoundary>{children}</ErrorBoundary>
               <SpeedInsights />
               <AutoPermissionsManager />
+              {/* Subtle offline indicator for general use */}
+              <OfflineIndicator position="top-left" className="text-white" />
               {/* Register service worker for offline support */}
               <ServiceWorkerRegister />
               {/* Ensure CSS fallback is available when offline */}

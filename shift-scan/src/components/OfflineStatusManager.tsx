@@ -94,6 +94,22 @@ export const OfflineStatusManager = () => {
     return "Limited Offline";
   };
 
+  // Only show the status manager during development or when there are critical issues
+  // In production, use the subtle offline indicators instead
+  const shouldShowManager =
+    process.env.NODE_ENV === "development" && showDetails;
+
+  // Always run background sync if there are pending actions and we're online
+  useEffect(() => {
+    if (isOnline && pendingActions > 0) {
+      syncOfflineActions();
+    }
+  }, [isOnline, pendingActions]);
+
+  if (!shouldShowManager) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-4 right-4 z-50 bg-white shadow-lg rounded-lg p-3 max-w-sm">
       <div className="flex items-center justify-between mb-2">

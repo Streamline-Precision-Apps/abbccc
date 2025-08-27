@@ -32,7 +32,6 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (isInitialized) return;
 
-    console.log("StartingMileageContext1");
     const initializeMileage = async () => {
       try {
         const previousStartingMileage = await fetchWithOfflineCache(
