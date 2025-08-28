@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shift-scan-cache-v5'; // Updated version for comprehensive caching
+const CACHE_NAME = 'shift-scan-cache-v7'; // Fixed asset handling to prevent offline redirect
 const STATIC_ASSETS = [
   '/manifest.json',
   '/offline.html',
@@ -9,6 +9,22 @@ const STATIC_ASSETS = [
   '/break', // Break page
   '/dashboard/equipment/log-new', // Equipment log page
   '/dashboard/switch-jobs', // Switch jobs page
+  '/dashboard/equipment', // Equipment page
+  '/dashboard/clock-out', // Clock out page
+];
+
+// Server Actions that need offline support
+const OFFLINE_SERVER_ACTIONS = [
+  'handleGeneralTimeSheet',
+  'handleMechanicTimeSheet', 
+  'handleTascoTimeSheet',
+  'handleTruckTimeSheet',
+  'CreateEmployeeEquipmentLog',
+  'updateTimeSheetBySwitch',
+  'updateTruckDriverTSBySwitch',
+  'breakOutTimeSheet',
+  'updateTimeSheet',
+  'returnToPrevWork'
 ];
 
 // Critical assets that should be pre-cached
@@ -84,6 +100,203 @@ const log = (message, data = '') => {
       console.log(`[ServiceWorker] ${message}`, data);
       logThrottle.set(message, now);
     }
+  }
+};
+
+// ===============================================
+// OFFLINE DATA MANAGEMENT
+// ===============================================
+
+// Generate unique offline IDs
+const generateOfflineId = (prefix = 'offline') => {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Store offline action for later sync
+const storeOfflineAction = (actionName, formData, additionalData = {}) => {
+  try {
+    const offlineId = generateOfflineId();
+    const action = {
+      id: offlineId,
+      actionName,
+      formData: Object.fromEntries(formData.entries()),
+      timestamp: Date.now(),
+      status: 'pending',
+      retryCount: 0,
+      ...additionalData
+    };
+
+    // Store in queue
+    const queue = JSON.parse(localStorage.getItem('offline_action_queue') || '[]');
+    queue.push(action);
+    localStorage.setItem('offline_action_queue', JSON.stringify(queue));
+
+    // Store individual action
+    localStorage.setItem(`offline_action_${offlineId}`, JSON.stringify(action));
+
+    log(`Stored offline action: ${actionName}`, offlineId);
+    return offlineId;
+  } catch (error) {
+    log('Failed to store offline action:', error);
+    return null;
+  }
+};
+
+// Get cached offline data with fallbacks
+const getOfflineData = (key, fallback = null) => {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : fallback;
+  } catch (error) {
+    log(`Failed to get offline data for ${key}:`, error);
+    return fallback;
+  }
+};
+
+// Store offline data
+const storeOfflineData = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    log(`Failed to store offline data for ${key}:`, error);
+    return false;
+  }
+};
+
+// Create offline timesheet entity
+const createOfflineTimesheet = (formData, workType = 'LABOR') => {
+  const timesheetId = generateOfflineId('timesheet');
+  
+  const timesheet = {
+    id: timesheetId,
+    userId: formData.get('userId'),
+    date: formData.get('date') || new Date().toISOString(),
+    startTime: formData.get('startTime') || new Date().toISOString(),
+    endTime: formData.get('endTime') || null,
+    status: 'DRAFT',
+    workType: workType,
+    jobsiteId: formData.get('jobsiteId') || '',
+    costCode: formData.get('costcode') || '',
+    comment: formData.get('comment') || '',
+    isOffline: true,
+    offlineTimestamp: Date.now()
+  };
+
+  // Store timesheet
+  storeOfflineData(`offline_timesheet_${timesheetId}`, timesheet);
+  storeOfflineData('current_offline_timesheet', timesheet);
+
+  // Update dashboard data
+  const dashboardData = getOfflineData('offline_dashboard_data', {});
+  dashboardData.timesheet = timesheet;
+  dashboardData.lastUpdate = Date.now();
+  storeOfflineData('offline_dashboard_data', dashboardData);
+
+  return timesheet;
+};
+
+// Create offline equipment log entity  
+const createOfflineEquipmentLog = (formData) => {
+  const logId = generateOfflineId('equipment_log');
+  
+  const equipmentLog = {
+    id: logId,
+    equipmentId: formData.get('equipmentId'),
+    timesheetId: formData.get('timesheetId'),
+    startTime: formData.get('startTime') || new Date().toISOString(),
+    endTime: formData.get('endTime') || null,
+    notes: formData.get('notes') || '',
+    isOffline: true,
+    offlineTimestamp: Date.now()
+  };
+
+  // Store equipment log
+  storeOfflineData(`offline_equipment_log_${logId}`, equipmentLog);
+  
+  // Add to equipment logs array
+  const equipmentLogs = getOfflineData('offline_equipment_logs', []);
+  equipmentLogs.push(equipmentLog);
+  storeOfflineData('offline_equipment_logs', equipmentLogs);
+
+  return equipmentLog;
+};
+
+// Handle server action offline
+const handleServerActionOffline = (actionName, formData) => {
+  log(`Handling ${actionName} offline`);
+  
+  switch (actionName) {
+    case 'handleGeneralTimeSheet':
+    case 'handleMechanicTimeSheet':
+    case 'handleTascoTimeSheet':
+    case 'handleTruckTimeSheet':
+      const workTypeMap = {
+        'handleGeneralTimeSheet': 'LABOR',
+        'handleMechanicTimeSheet': 'MECHANIC', 
+        'handleTascoTimeSheet': 'TASCO',
+        'handleTruckTimeSheet': 'TRUCK_DRIVER'
+      };
+      const timesheet = createOfflineTimesheet(formData, workTypeMap[actionName]);
+      storeOfflineAction(actionName, formData, { entityType: 'timesheet', entityId: timesheet.id });
+      return { success: true, data: timesheet };
+
+    case 'CreateEmployeeEquipmentLog':
+      const equipmentLog = createOfflineEquipmentLog(formData);
+      storeOfflineAction(actionName, formData, { entityType: 'equipment_log', entityId: equipmentLog.id });
+      return { success: true, data: equipmentLog };
+
+    case 'updateTimeSheetBySwitch':
+    case 'updateTruckDriverTSBySwitch':
+      // Handle job switching offline
+      const currentTimesheet = getOfflineData('current_offline_timesheet');
+      if (currentTimesheet) {
+        currentTimesheet.endTime = new Date().toISOString();
+        currentTimesheet.status = 'PENDING';
+        storeOfflineData(`offline_timesheet_${currentTimesheet.id}`, currentTimesheet);
+      }
+      
+      // Create new timesheet for switch
+      const newTimesheet = createOfflineTimesheet(formData);
+      storeOfflineAction(actionName, formData, { entityType: 'timesheet_switch', entityId: newTimesheet.id });
+      return { success: true, data: newTimesheet };
+
+    case 'breakOutTimeSheet':
+      // Handle break time offline
+      const breakData = {
+        id: generateOfflineId('break'),
+        timesheetId: formData.get('timesheetId'),
+        startTime: new Date().toISOString(),
+        endTime: formData.get('endTime') || null,
+        isOffline: true
+      };
+      storeOfflineData(`offline_break_${breakData.id}`, breakData);
+      storeOfflineAction(actionName, formData, { entityType: 'break', entityId: breakData.id });
+      return { success: true, data: breakData };
+
+    case 'updateTimeSheet':
+      // Handle timesheet updates offline
+      const timesheetId = formData.get('id');
+      const existingTimesheet = getOfflineData(`offline_timesheet_${timesheetId}`);
+      if (existingTimesheet) {
+        // Update existing offline timesheet
+        Object.entries(Object.fromEntries(formData.entries())).forEach(([key, value]) => {
+          if (value !== null && value !== undefined) {
+            existingTimesheet[key] = value;
+          }
+        });
+        existingTimesheet.lastModified = Date.now();
+        storeOfflineData(`offline_timesheet_${timesheetId}`, existingTimesheet);
+        storeOfflineData('current_offline_timesheet', existingTimesheet);
+      }
+      storeOfflineAction(actionName, formData, { entityType: 'timesheet_update', entityId: timesheetId });
+      return { success: true, data: existingTimesheet };
+
+    default:
+      // Generic offline action storage
+      const genericId = generateOfflineId('action');
+      storeOfflineAction(actionName, formData, { entityType: 'generic', entityId: genericId });
+      return { success: true, data: { id: genericId } };
   }
 };
 
@@ -275,14 +488,212 @@ const findCachedCSS = async (request) => {
   return null;
 };
 
+// ===============================================
+// SERVER ACTION HANDLING
+// ===============================================
+
+// Handle server action requests with offline support
+const handleServerActionRequest = async (request, actionName) => {
+  try {
+    // Try network first
+    if (navigator.onLine) {
+      const response = await fetch(request.clone());
+      if (response.ok) {
+        log(`Server action ${actionName} completed online`);
+        return response;
+      }
+      throw new Error(`Server action failed: ${response.status}`);
+    } else {
+      throw new Error('Offline');
+    }
+  } catch (error) {
+    // Handle offline
+    log(`Handling server action ${actionName} offline:`, error.message);
+    
+    try {
+      const formData = await request.formData();
+      const result = handleServerActionOffline(actionName, formData);
+      
+      // Return a successful response
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        statusText: 'OK (Offline)',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Offline': 'true'
+        }
+      });
+    } catch (offlineError) {
+      log(`Offline handling failed for ${actionName}:`, offlineError);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Offline processing failed',
+        message: 'Unable to process request offline'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+};
+
+// Network first with offline fallback for API requests
+const networkFirstWithOfflineFallback = async (request) => {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+      return networkResponse;
+    }
+    throw new Error(`Network response not ok: ${networkResponse.status}`);
+  } catch (error) {
+    // Return cached version or offline data
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    // Generate offline fallback data for specific API routes
+    const url = new URL(request.url);
+    if (url.pathname.includes('/api/dashboard')) {
+      const offlineData = getOfflineData('offline_dashboard_data', {
+        timesheet: getOfflineData('current_offline_timesheet'),
+        equipmentLogs: getOfflineData('offline_equipment_logs', []),
+        user: { name: 'Offline User' },
+        lastUpdate: Date.now()
+      });
+      
+      return new Response(JSON.stringify(offlineData), {
+        status: 200,
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Offline': 'true'
+        }
+      });
+    }
+
+    return new Response(JSON.stringify({ 
+      error: 'Offline', 
+      message: 'No cached data available' 
+    }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+};
+
+// ===============================================
+// SYNC MECHANISM
+// ===============================================
+
+// Sync offline actions when back online
+const syncOfflineActions = async () => {
+  if (!navigator.onLine) {
+    log('Cannot sync - still offline');
+    return false;
+  }
+
+  try {
+    const queue = getOfflineData('offline_action_queue', []);
+    const pendingActions = queue.filter(action => action.status === 'pending');
+    
+    if (pendingActions.length === 0) {
+      log('No pending actions to sync');
+      return true;
+    }
+
+    log(`Syncing ${pendingActions.length} offline actions`);
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const action of pendingActions) {
+      try {
+        // Reconstruct FormData
+        const formData = new FormData();
+        Object.entries(action.formData).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+
+        // Make the actual server action request
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: {
+            'Next-Action': action.actionName,
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          // Mark as synced
+          action.status = 'synced';
+          action.syncedAt = Date.now();
+          localStorage.setItem(`offline_action_${action.id}`, JSON.stringify(action));
+          successCount++;
+          log(`Synced action: ${action.actionName}`, action.id);
+        } else {
+          throw new Error(`Sync failed with status: ${response.status}`);
+        }
+      } catch (error) {
+        // Mark as failed and increment retry count
+        action.status = 'failed';
+        action.retryCount = (action.retryCount || 0) + 1;
+        action.lastError = error.message;
+        localStorage.setItem(`offline_action_${action.id}`, JSON.stringify(action));
+        failCount++;
+        log(`Failed to sync action: ${action.actionName}`, error);
+      }
+    }
+
+    // Update the queue
+    const updatedQueue = queue.map(action => {
+      const updatedAction = JSON.parse(localStorage.getItem(`offline_action_${action.id}`) || JSON.stringify(action));
+      return updatedAction;
+    });
+    localStorage.setItem('offline_action_queue', JSON.stringify(updatedQueue));
+
+    log(`Sync complete: ${successCount} success, ${failCount} failed`);
+    return failCount === 0;
+  } catch (error) {
+    log('Sync failed:', error);
+    return false;
+  }
+};
+
+// Debug function to check what's in cache
+const debugCacheContents = async () => {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const keys = await cache.keys();
+    log('Cache contents:');
+    keys.forEach(request => {
+      log(`  - ${request.url}`);
+    });
+    return keys;
+  } catch (error) {
+    log('Failed to check cache contents:', error);
+    return [];
+  }
+};
+
 self.addEventListener('install', event => {
   log('Service Worker installing with comprehensive caching...');
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
       try {
-        // Cache static assets first
-        await cache.addAll(STATIC_ASSETS);
-        log('Static assets cached successfully');
+        // Cache static assets first with better error handling
+        log('Caching static assets:', STATIC_ASSETS);
+        for (const asset of STATIC_ASSETS) {
+          try {
+            await cache.add(asset);
+            log(`Successfully cached: ${asset}`);
+          } catch (err) {
+            log(`Failed to cache ${asset}:`, err.message);
+            // Continue with other assets even if one fails
+          }
+        }
         
         // Discover and cache all app resources comprehensively
         await discoverAndCacheAppResources(cache);
@@ -307,28 +718,47 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-
-  // Only handle GET requests
-  if (event.request.method !== 'GET') return;
-
-  const url = new URL(event.request.url);
+  const { request } = event;
+  const url = new URL(request.url);
   const pathname = url.pathname;
   const fullUrl = url.href;
 
-  // Exclude /signin and /api/auth/* from service worker handling
-  if (pathname === '/signin' || pathname.startsWith('/api/auth/')) {
+  // Exclude specific paths from service worker handling
+  if (pathname === '/signin' || 
+      pathname.startsWith('/api/auth/') ||
+      pathname.startsWith('/debug-') ||
+      pathname.endsWith('.map') ||
+      pathname.startsWith('/_next/webpack-hmr') ||
+      pathname.startsWith('/_next/static/webpack-hmr') ||
+      fullUrl.includes('turbopack-hmr') ||
+      url.protocol === 'chrome-extension:') {
     return;
   }
 
+  // Handle POST requests (server actions)
+  if (request.method === 'POST') {
+    const actionHeader = request.headers.get('Next-Action');
+    if (actionHeader && OFFLINE_SERVER_ACTIONS.includes(actionHeader)) {
+      log(`Intercepting server action: ${actionHeader}`);
+      event.respondWith(handleServerActionRequest(request, actionHeader));
+      return;
+    }
+    // Let other POST requests pass through normally
+    return;
+  }
+
+  // Only handle GET requests from here on
+  if (request.method !== 'GET') return;
+
   // Special handling for navigation requests (HTML pages)
-  if (event.request.mode === 'navigate') {
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
+      fetch(request)
         .then(response => {
           if (response && response.status === 200) {
             const cloned = response.clone();
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, cloned).catch(err => 
+              cache.put(request, cloned).catch(err => 
                 log('Failed to cache navigation request:', err)
               );
             });
@@ -338,22 +768,61 @@ self.addEventListener('fetch', event => {
         .catch(async () => {
           log('Navigation request failed, trying cache for:', pathname);
           
-          // Try to serve from cache first
-          const cached = await caches.match(event.request);
+          // Try to serve from cache first - try exact match
+          const cached = await caches.match(request);
           if (cached) {
-            log('Serving cached page for offline navigation:', pathname);
+            log('Serving exact cached page for offline navigation:', pathname);
             return cached;
           }
           
-          // For specific routes, try alternative cache keys
-          if (pathname === '/dashboard') {
+          // Try without query parameters
+          const urlWithoutQuery = `${url.origin}${pathname}`;
+          const cachedWithoutQuery = await caches.match(urlWithoutQuery);
+          if (cachedWithoutQuery) {
+            log('Serving cached page without query params:', pathname);
+            return cachedWithoutQuery;
+          }
+          
+          // For clock page specifically, try multiple strategies
+          if (pathname === '/clock') {
+            log('Special handling for clock page');
+            
+            // Try multiple variations for clock page
+            const clockVariations = [
+              '/clock',
+              '/clock/',
+              `${url.origin}/clock`,
+              `${url.origin}/clock/`,
+              new Request('/clock'),
+              new Request(`${url.origin}/clock`)
+            ];
+            
+            for (const variation of clockVariations) {
+              const clockCache = await caches.match(variation);
+              if (clockCache) {
+                log('Serving cached clock page variation:', variation);
+                return clockCache;
+              }
+            }
+            
+            // If no clock page cached, serve root page instead of offline page
+            // This allows the app to load and then handle navigation client-side
+            const rootCache = await caches.match('/');
+            if (rootCache) {
+              log('Serving root page as fallback for clock page (client-side routing can handle)');
+              return rootCache;
+            }
+          }
+          
+          // For dashboard pages
+          if (pathname === '/dashboard' || pathname.startsWith('/dashboard')) {
             const dashboardCache = await caches.match('/dashboard');
             if (dashboardCache) {
               log('Serving cached dashboard for offline navigation');
               return dashboardCache;
             }
             
-            // Try to serve root page as fallback for dashboard
+            // Try root as fallback for dashboard too
             const rootCache = await caches.match('/');
             if (rootCache) {
               log('Serving root page as fallback for dashboard');
@@ -361,17 +830,50 @@ self.addEventListener('fetch', event => {
             }
           }
           
-          if (pathname === '/clock') {
-            const clockCache = await caches.match('/clock');
-            if (clockCache) {
-              log('Serving cached clock page for offline navigation');
-              return clockCache;
+          // For other STATIC_ASSETS pages, try to find them
+          const staticAssetPaths = [
+            '/dashboard/equipment',
+            '/dashboard/equipment/log-new', 
+            '/dashboard/switch-jobs',
+            '/dashboard/clock-out',
+            '/break'
+          ];
+          
+          if (staticAssetPaths.some(path => pathname === path || pathname.startsWith(path))) {
+            // Try to find any cached version of this path
+            for (const assetPath of staticAssetPaths) {
+              if (pathname.startsWith(assetPath)) {
+                const assetCache = await caches.match(assetPath);
+                if (assetCache) {
+                  log(`Serving cached asset page: ${assetPath} for ${pathname}`);
+                  return assetCache;
+                }
+              }
+            }
+            
+            // Fallback to root for asset pages too (let client-side routing handle it)
+            const rootCache = await caches.match('/');
+            if (rootCache) {
+              log('Serving root as fallback for asset page:', pathname);
+              return rootCache;
             }
           }
           
-          // Fallback: return the branded offline.html page
-          log('No cached version found, serving offline.html');
-          return caches.match('/offline.html');
+          // Last resort: try to serve root page for ANY navigation
+          const rootFallback = await caches.match('/');
+          if (rootFallback) {
+            log('Serving root page as final fallback for:', pathname);
+            return rootFallback;
+          }
+          
+          // Only serve offline page if absolutely nothing else is available
+          log('No cached pages found, serving offline.html for:', pathname);
+          const offlinePage = await caches.match('/offline.html');
+          return offlinePage || new Response('Offline', { 
+            status: 503, 
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/html' }
+          });
         })
     );
     return;
@@ -381,58 +883,7 @@ self.addEventListener('fetch', event => {
   const isApiRequest = API_CACHE_PATTERNS.some(pattern => pattern.test(fullUrl));
   if (isApiRequest) {
     event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (response && response.status === 200) {
-            const cloned = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, cloned);
-              log('Cached API response:', fullUrl);
-            }).catch(err => {
-              log('Failed to cache API response:', err);
-            });
-          }
-          return response;
-        })
-        .catch(async () => {
-          log('API request failed, trying cache for:', fullUrl);
-          const cached = await caches.match(event.request);
-          if (cached) {
-            log('Serving API from cache:', fullUrl);
-            return cached;
-          }
-          
-          // Enhanced offline API responses
-          if (fullUrl.includes('/api/getRecentTimecard')) {
-            // Try to provide offline timesheet data
-            const offlineResponse = generateOfflineTimecardResponse();
-            if (offlineResponse) {
-              log('Serving offline timecard response');
-              return new Response(JSON.stringify(offlineResponse), {
-                status: 200,
-                headers: { 'Content-Type': 'application/json' }
-              });
-            }
-          }
-          
-          if (fullUrl.includes('/api/getLogs')) {
-            log('Serving empty logs for offline mode');
-            return new Response(JSON.stringify([]), {
-              status: 200,
-              headers: { 'Content-Type': 'application/json' }
-            });
-          }
-          
-          // Return a default response for failed API calls
-          return new Response(JSON.stringify({ 
-            error: 'Offline', 
-            cached: false,
-            timestamp: Date.now()
-          }), {
-            status: 503,
-            headers: { 'Content-Type': 'application/json' }
-          });
-        })
+      networkFirstWithOfflineFallback(request)
     );
     return;
   }
@@ -559,9 +1010,43 @@ self.addEventListener('fetch', event => {
           });
         }
         return response;
-      }).catch(() => {
+      }).catch(async () => {
         log('Failed to fetch and no cache for:', fullUrl);
-        return caches.match('/offline.html');
+        
+        // For Next.js assets with version parameters, try to find a cached version without the version
+        if (pathname.includes('/_next/static/') && url.search) {
+          const baseUrl = `${url.origin}${pathname}`;
+          const cached = await caches.match(baseUrl);
+          if (cached) {
+            log('Serving cached version without query params for:', baseUrl);
+            return cached;
+          }
+          
+          // Try to find any cached version of this file (different version)
+          const cache = await caches.open(CACHE_NAME);
+          const keys = await cache.keys();
+          const similarAsset = keys.find(request => 
+            request.url.includes(pathname.split('?')[0])
+          );
+          if (similarAsset) {
+            const similarCached = await cache.match(similarAsset);
+            if (similarCached) {
+              log('Serving similar cached asset for:', pathname);
+              return similarCached;
+            }
+          }
+        }
+        
+        // Only return offline.html for navigation requests, not assets
+        if (request.mode === 'navigate') {
+          return caches.match('/offline.html');
+        }
+        
+        // For assets, return a network error instead of offline page
+        return new Response('', { 
+          status: 404, 
+          statusText: 'Not Found' 
+        });
       });
     })
   );
@@ -749,3 +1234,80 @@ async function handleBackgroundSync() {
     throw error;
   }
 }
+
+// ===============================================
+// ENHANCED EVENT HANDLERS FOR OFFLINE SYNC
+// ===============================================
+
+// Listen for online/offline events for our new sync system
+self.addEventListener('online', () => {
+  log('Device is online - attempting offline action sync');
+  syncOfflineActions();
+});
+
+// Enhanced message handling for manual sync triggers and status
+self.addEventListener('message', (event) => {
+  const { type, data } = event.data || {};
+  
+  switch (type) {
+    case 'SYNC_OFFLINE_ACTIONS':
+      log('Manual sync requested for offline actions');
+      event.waitUntil(syncOfflineActions().then(success => {
+        event.ports[0]?.postMessage({ success });
+      }));
+      break;
+      
+    case 'GET_OFFLINE_STATUS':
+      const queue = getOfflineData('offline_action_queue', []);
+      const pendingCount = queue.filter(action => action.status === 'pending').length;
+      event.ports[0]?.postMessage({ 
+        offline: !navigator.onLine,
+        pendingActions: pendingCount,
+        totalActions: queue.length,
+        offlineData: {
+          timesheets: Object.keys(localStorage).filter(key => key.startsWith('offline_timesheet_')).length,
+          equipmentLogs: Object.keys(localStorage).filter(key => key.startsWith('offline_equipment_log_')).length
+        }
+      });
+      break;
+      
+    case 'CLEAR_OFFLINE_DATA':
+      try {
+        localStorage.removeItem('offline_action_queue');
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('offline_')) {
+            localStorage.removeItem(key);
+          }
+        });
+        log('Offline data cleared');
+        event.ports[0]?.postMessage({ success: true });
+      } catch (error) {
+        log('Failed to clear offline data:', error);
+        event.ports[0]?.postMessage({ success: false, error: error.message });
+      }
+      break;
+
+    case 'GET_PENDING_ACTIONS':
+      const pendingActions = getOfflineData('offline_action_queue', [])
+        .filter(action => action.status === 'pending')
+        .map(action => ({
+          id: action.id,
+          actionName: action.actionName,
+          timestamp: action.timestamp,
+          retryCount: action.retryCount || 0
+        }));
+      event.ports[0]?.postMessage({ pendingActions });
+      break;
+
+    case 'DEBUG_CACHE':
+      debugCacheContents().then(keys => {
+        event.ports[0]?.postMessage({ 
+          cacheKeys: keys.map(request => request.url),
+          cacheName: CACHE_NAME
+        });
+      });
+      break;
+  }
+});
+
+log('Service Worker script loaded with comprehensive offline support');
