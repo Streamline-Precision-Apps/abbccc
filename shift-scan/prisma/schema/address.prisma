@@ -5,7 +5,6 @@ model Address {
   state   String
   zipCode String
   country String    @default("US")
-  Client  Client[]
   Company Company[]
   Jobsite Jobsite[]
 
