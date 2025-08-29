@@ -15,9 +15,9 @@ export type TruckingMaterialDraft = {
   location: string;
   name: string;
   quantity: string;
-  unit: string;
+  unit: "TONS" | "YARDS" | "";
   // materialWeight: string;
-  loadType: "screened" | "unscreened" | "";
+  loadType: "SCREENED" | "UNSCREENED" | "";
 };
 export type TruckingLogDraft = {
   equipmentId: string;
@@ -297,7 +297,10 @@ export function TruckingSection({
                       value={mat.unit}
                       onValueChange={(val) => {
                         const updated = [...truckingLogs];
-                        updated[idx].materials[matIdx].unit = val;
+                        updated[idx].materials[matIdx].unit = val as
+                          | "TONS"
+                          | "YARDS"
+                          | "";
                         setTruckingLogs(updated);
                       }}
                     >
@@ -316,8 +319,9 @@ export function TruckingSection({
                     onValueChange={(val) => {
                       const updated = [...truckingLogs];
                       updated[idx].materials[matIdx].loadType = val as
-                        | "screened"
-                        | "unscreened";
+                        | "SCREENED"
+                        | "UNSCREENED"
+                        | "";
                       setTruckingLogs(updated);
                     }}
                   >
@@ -325,8 +329,8 @@ export function TruckingSection({
                       <SelectValue placeholder="Load Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="screened">Screened</SelectItem>
-                      <SelectItem value="unscreened">Unscreened</SelectItem>
+                      <SelectItem value="SCREENED">Screened</SelectItem>
+                      <SelectItem value="UNSCREENED">Unscreened</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -338,7 +342,7 @@ export function TruckingSection({
                     onClick={() => {
                       const updated = [...truckingLogs];
                       updated[idx].materials = updated[idx].materials.filter(
-                        (_, i) => i !== matIdx
+                        (_, i) => i !== matIdx,
                       );
                       setTruckingLogs(updated);
                     }}
@@ -405,7 +409,7 @@ export function TruckingSection({
                   onClick={() => {
                     const updated = [...truckingLogs];
                     updated[idx].refuelLogs = updated[idx].refuelLogs.filter(
-                      (_, i) => i !== refIdx
+                      (_, i) => i !== refIdx,
                     );
                     setTruckingLogs(updated);
                   }}

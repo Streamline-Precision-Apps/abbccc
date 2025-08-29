@@ -9,14 +9,17 @@ import {
 import { highlight } from "../../../_pages/higlight";
 
 // Define the column configuration for the timesheet table
+// We'll now include the search term as part of the context
 export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      // Access search term from table meta
+      const searchTerm = table.options.meta?.searchTerm as string || "";
       return (
         <div className="text-xs text-center">
-          {highlight(row.original.id, "")}
+          {highlight(row.original.id.toString(), searchTerm)}
         </div>
       );
     },
@@ -54,12 +57,14 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "employeeName",
     header: "Employee Name",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      // Access search term from table meta
+      const searchTerm = table.options.meta?.searchTerm as string || "";
       return (
         <div className=" text-xs text-center">
           {highlight(
             `${row.original.User.firstName} ${row.original.User.lastName}`,
-            "",
+            searchTerm,
           )}
         </div>
       );
@@ -68,14 +73,15 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "jobsite",
     header: "Profit Id",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      const searchTerm = table.options.meta?.searchTerm as string || "";
       return (
         <div className=" text-xs text-center">
           {row.original.Jobsite ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
-                  {highlight(row.original.Jobsite.code, "")}
+                  {highlight(row.original.Jobsite.code, searchTerm)}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
@@ -92,14 +98,15 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "costCode",
     header: "Cost Code",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      const searchTerm = table.options.meta?.searchTerm as string || "";
       return (
         <div className=" text-xs text-center">
           {row.original.CostCode ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
-                  {highlight(row.original.CostCode.code, "")}
+                  {highlight(row.original.CostCode.code, searchTerm)}
                 </span>
               </TooltipTrigger>
               <TooltipContent>

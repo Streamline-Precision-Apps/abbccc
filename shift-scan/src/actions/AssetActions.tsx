@@ -333,7 +333,6 @@ export async function updateJobsite(formData: FormData) {
           // Removed country as it is not a valid field in the Prisma Jobsite model
           comment: comment?.trim() || null,
           isActive: isActive,
-          Client: { connect: { id: client } },
           updatedAt: new Date(),
           CCTags: {
             connect: tagsToConnect.length > 0 ? tagsToConnect : undefined,
@@ -391,18 +390,6 @@ export async function updateJobsiteAdmin(formData: FormData) {
     }
 
     const updateData: Prisma.JobsiteUpdateInput = {};
-    if (formData.has("client")) {
-      const clientId = formData.get("client") as string;
-      if (clientId) {
-        updateData.Client = {
-          connect: { id: clientId },
-        };
-      } else {
-        updateData.Client = {
-          disconnect: true,
-        };
-      }
-    }
     if (formData.has("code")) {
       updateData.code = (formData.get("code") as string)?.trim();
     }
@@ -620,7 +607,6 @@ export async function createJobsiteFromObject(jobsiteData: {
           // Removed address, city, state, zipCode, and country as they are not valid fields in the Prisma Jobsite model
           comment: jobsiteData.comment?.trim() || null,
           isActive: true,
-          Client: { connect: { id: jobsiteData.clientId } },
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -1395,219 +1381,5 @@ export async function createTag(payload: {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
-  }
-}
-
-export async function createClientAdmin({
-  payload,
-}: {
-  payload: {
-    name: string;
-    description: string;
-    approvalStatus: string;
-    contactPerson: string;
-    contactEmail: string;
-    contactPhone: string;
-    Address: {
-      street: string;
-      city: string;
-      state: string;
-      zipCode: string;
-    };
-    createdById?: string;
-  };
-}) {
-  try {
-    console.log("Creating jobsite...");
-    console.log(payload);
-    await prisma.$transaction(async (prisma) => {
-      const existingAddress = await prisma.address.findFirst({
-        where: {
-          street: payload.Address.street.trim(),
-          city: payload.Address.city.trim(),
-          state: payload.Address.state.trim(),
-          zipCode: payload.Address.zipCode.trim(),
-        },
-      });
-
-      if (existingAddress) {
-        await prisma.client.create({
-          data: {
-            name: payload.name.trim(),
-            description: payload.description.trim(),
-            approvalStatus: payload.approvalStatus as ApprovalStatus,
-            contactPerson: payload.contactPerson.trim(),
-            contactEmail: payload.contactEmail.trim(),
-            contactPhone: payload.contactPhone.trim(),
-            createdVia: "ADMIN",
-            Address: {
-              connect: { id: existingAddress.id },
-            },
-            Company: {
-              connect: { id: "1", name: "Streamline Precision LLC" },
-            },
-            createdBy: {
-              connect: { id: payload.createdById?.trim() },
-            },
-          },
-        });
-      } else {
-        await prisma.client.create({
-          data: {
-            name: payload.name.trim(),
-            description: payload.description.trim(),
-            approvalStatus: payload.approvalStatus as ApprovalStatus,
-            contactPerson: payload.contactPerson.trim(),
-            contactEmail: payload.contactEmail.trim(),
-            contactPhone: payload.contactPhone.trim(),
-            createdVia: "ADMIN",
-            Address: {
-              create: {
-                street: payload.Address.street.trim(),
-                city: payload.Address.city.trim(),
-                state: payload.Address.state.trim(),
-                zipCode: payload.Address.zipCode.trim(),
-              },
-            },
-            Company: {
-              connect: { id: "1", name: "Streamline Precision LLC" },
-            },
-            createdBy: {
-              connect: { id: payload.createdById?.trim() },
-            },
-          },
-        });
-      }
-    });
-
-    return {
-      success: true,
-      message: "Jobsite created successfully",
-    };
-  } catch (error) {
-    console.error("Error creating jobsite:", error);
-    throw error;
-  }
-}
-
-export async function deleteClient(id: string) {
-  console.log("Deleting client with ID:", id);
-
-  try {
-    // Check for related records before deletion
-    const clientWithRelations = await prisma.client.findUnique({
-      where: { id },
-    });
-
-    if (!clientWithRelations) {
-      throw new Error("Client not found");
-    }
-    // Delete the client
-    await prisma.client.delete({
-      where: { id },
-    });
-
-    revalidatePath("/admins/clients");
-
-    return {
-      success: true,
-      message: "Client deleted successfully",
-    };
-  } catch (error) {
-    console.error("Error deleting client:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
-  }
-}
-
-export async function updateClientAdmin(formData: FormData) {
-  console.log("Updating client...");
-  console.log(formData);
-  try {
-    const id = formData.get("id") as string;
-
-    if (!id) {
-      throw new Error("Jobsite ID is required");
-    }
-
-    // Fetch existing client early
-    const existingClient = await prisma.client.findUnique({
-      where: { id },
-      include: { Address: true },
-    });
-
-    if (!existingClient) {
-      throw new Error("Client not found");
-    }
-
-    const updateData: Prisma.ClientUpdateInput = {};
-    if (formData.has("name")) {
-      updateData.name = (formData.get("name") as string)?.trim();
-    }
-    if (formData.has("description")) {
-      updateData.description =
-        (formData.get("description") as string)?.trim() || "";
-    }
-    if (formData.has("approvalStatus")) {
-      updateData.approvalStatus = formData.get(
-        "approvalStatus",
-      ) as ApprovalStatus;
-    }
-    if (formData.has("contactPerson")) {
-      updateData.contactPerson = (
-        formData.get("contactPerson") as string
-      )?.trim();
-    }
-    if (formData.has("contactEmail")) {
-      updateData.contactEmail = (
-        formData.get("contactEmail") as string
-      )?.trim();
-    }
-    if (formData.has("contactPhone")) {
-      updateData.contactPhone = (
-        formData.get("contactPhone") as string
-      )?.trim();
-    }
-    if (formData.has("creationReason")) {
-      updateData.creationReason = formData.get("creationReason") as string;
-    }
-    updateData.updatedAt = new Date();
-    if (formData.has("Address")) {
-      const addressString = formData.get("Address") as string;
-      const addressData = JSON.parse(addressString || "{}");
-      updateData.Address = {
-        update: {
-          street: addressData.street?.trim(),
-          city: addressData.city?.trim(),
-          state: addressData.state?.trim(),
-          zipCode: addressData.zipCode?.trim(),
-        },
-      };
-    }
-
-    const updatedClient = await prisma.client.update({
-      where: { id },
-      data: updateData,
-      include: { Address: true },
-    });
-
-    revalidatePath("/admins/clients");
-
-    console.log("Client updated successfully:", updatedClient.id);
-    return {
-      success: true,
-      data: updatedClient,
-      message: "Client updated successfully",
-    };
-  } catch (error) {
-    Sentry.captureException(error);
-    console.error("Error updating client:", error);
-    throw new Error(
-      `Failed to update client: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
-    );
   }
 }

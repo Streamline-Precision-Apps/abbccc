@@ -6,7 +6,7 @@ import { EditTascoLogs } from "./EditTascoLogs";
 import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
 import { adminUpdateTimesheet } from "@/actions/records-timesheets";
 import EditGeneralSection from "./EditGeneralSection";
-import { SquareCheck, SquareXIcon } from "lucide-react";
+import { SquareCheck, SquareXIcon, X } from "lucide-react";
 import { isMaintenanceLogComplete } from "./utils/validation";
 import {
   EditTimesheetModalProps,
@@ -79,7 +79,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       setLoading(true);
       setError(null);
       const formData = new FormData();
-      formData.append("id", timesheetId);
+      formData.append("id", timesheetId.toString());
       formData.append("data", JSON.stringify(form)); // 'form' is your TimesheetData object
       await adminUpdateTimesheet(formData);
       if (onUpdated) onUpdated();
@@ -195,7 +195,16 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           </div>
         )}
         <div className="p-6">
-          <div className="mb-4">
+          <div className="mb-4 relative">
+            <Button
+              type="button"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={onClose}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
             <h2 className="text-xl font-bold">Edit Timesheet</h2>
             <p className="text-xs text-gray-600">Timesheet ID: {timesheetId}</p>
           </div>
@@ -230,7 +239,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   disableAdd={
                     form.MaintenanceLogs.length > 0 &&
                     !isMaintenanceLogComplete(
-                      form.MaintenanceLogs[form.MaintenanceLogs.length - 1]
+                      form.MaintenanceLogs[form.MaintenanceLogs.length - 1],
                     )
                   }
                 />
@@ -247,7 +256,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                     nestedType,
                     nestedIndex,
                     field,
-                    value
+                    value,
                   ) =>
                     logs.handleNestedLogChange(
                       "TruckingLogs",
@@ -255,7 +264,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       nestedType,
                       nestedIndex,
                       field,
-                      value
+                      value,
                     )
                   }
                   truckOptions={truckOptions}
@@ -299,7 +308,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       "EmployeeEquipmentLogs",
                       idx,
                       field,
-                      value
+                      value,
                     )
                   }
                   onAddLog={logs.addEmployeeEquipmentLog}
@@ -377,10 +386,10 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                         form.status === "APPROVED"
                           ? " & Approve"
                           : originalForm &&
-                            originalForm.status === "PENDING" &&
-                            form.status === "REJECTED"
-                          ? " & Reject "
-                          : ""
+                              originalForm.status === "PENDING" &&
+                              form.status === "REJECTED"
+                            ? " & Reject "
+                            : ""
                       }`}
                 </Button>
               </div>

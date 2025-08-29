@@ -12,7 +12,7 @@ import { format } from "date-fns";
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
  */
 export type Timesheet = {
-  id: string;
+  id: number;
   date: Date | string;
   User: {
     id: string;
@@ -78,11 +78,11 @@ export default function AdminTimesheets() {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
     null,
   );
@@ -199,7 +199,7 @@ export default function AdminTimesheets() {
     // Each term must match at least one field
     const matches = terms.every(
       (term) =>
-        id.toLowerCase().includes(term) ||
+        id.toString().includes(term) ||
         firstName.toLowerCase().includes(term) ||
         lastName.toLowerCase().includes(term) ||
         jobsite.toLowerCase().includes(term) ||
@@ -216,7 +216,7 @@ export default function AdminTimesheets() {
 
   // Approve or deny a timesheet (no modal)
   const handleApprovalAction = async (
-    id: string,
+    id: number,
     action: "APPROVED" | "REJECTED",
   ) => {
     setStatusLoading((prev) => ({ ...prev, [id]: action }));
@@ -245,7 +245,7 @@ export default function AdminTimesheets() {
     }
   };
 
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: number) => {
     setDeletingId(id);
     setIsDeleting(true);
   };
@@ -315,7 +315,7 @@ export default function AdminTimesheets() {
      * Field mapping for export. Includes EquipmentId and EquipmentUsage aggregation.
      */
     const allFields: Record<string, (ts: Timesheet) => string> = {
-      Id: (ts) => ts.id,
+      Id: (ts) => String(ts.id),
       WorkType: (ts) => String(ts.workType),
       Date: (ts) => formatDateVal(ts.date),
       Employee: (ts) =>
