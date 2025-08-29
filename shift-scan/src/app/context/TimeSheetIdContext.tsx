@@ -10,7 +10,7 @@ import React, {
 } from "react";
 
 type TimeSheetData = {
-  id: string;
+  id: number;
 };
 
 type TimeSheetDataContextType = {
@@ -26,7 +26,7 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [savedTimeSheetData, setTimeSheetData] = useState<TimeSheetData | null>(
-    null
+    null,
   );
   const url = usePathname();
 
@@ -44,7 +44,7 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
           // Check if the response is OK (status code 200-299)
           if (!prevTimeSheet.ok) {
             throw new Error(
-              `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`
+              `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`,
             );
           }
 
@@ -81,7 +81,7 @@ export const useTimeSheetData = () => {
   const context = useContext(TimeSheetDataContext);
   if (!context) {
     throw new Error(
-      "useTimeSheetData must be used within a TimeSheetDataProvider"
+      "useTimeSheetData must be used within a TimeSheetDataProvider",
     );
   }
   return context;
