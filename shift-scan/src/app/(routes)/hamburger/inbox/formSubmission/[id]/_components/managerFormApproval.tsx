@@ -49,7 +49,7 @@ interface FormTemplate {
 }
 
 type ManagerFormApprovalSchema = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   userId: string;
@@ -66,7 +66,7 @@ type ManagerFormApprovalSchema = {
   status: FormStatus;
   Approvals: Array<{
     id: string;
-    formSubmissionId: string;
+    formSubmissionId: number;
     signedBy: string;
     submittedAt: string;
     updatedAt: string;
@@ -104,7 +104,7 @@ export default function ManagerFormApproval({
   submissionStatus: string | null;
   signature: string | null;
   submittedForm: string | null;
-  submissionId: string | null;
+  submissionId: number | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
   setFormTitle: Dispatch<SetStateAction<string>>;
   updateFormValues: (newValues: Record<string, string>) => void;
@@ -117,7 +117,7 @@ export default function ManagerFormApproval({
   const [managerSignature, setManagerSignature] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [comment, setComment] = useState<string>(
-    managerFormApproval?.Approvals?.[0]?.comment || ""
+    managerFormApproval?.Approvals?.[0]?.comment || "",
   );
   useEffect(() => {
     const fetchSignature = async () => {
@@ -145,7 +145,7 @@ export default function ManagerFormApproval({
 
   // Handle final approval or denial
   const handleApproveOrDeny = async (
-    approval: FormStatus.APPROVED | FormStatus.DENIED
+    approval: FormStatus.APPROVED | FormStatus.DENIED,
   ) => {
     if (!isSignatureShowing) {
       setErrorMessage(t("PleaseProvideASignatureBeforeApproving"));
@@ -158,7 +158,7 @@ export default function ManagerFormApproval({
     }
 
     const formData = new FormData();
-    formData.append("formSubmissionId", submissionId || "");
+    formData.append("formSubmissionId", submissionId?.toString() || "");
     formData.append("signedBy", managerName || "");
     formData.append("signature", managerSignature || "");
     formData.append("comment", comment);
@@ -203,14 +203,14 @@ export default function ManagerFormApproval({
                 {`${t("OriginallySubmitted")} ${format(
                   managerFormApproval?.submittedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
               <Texts size={"p7"}>
                 {`${t("LastEdited")} ${format(
                   managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
             </Holds>

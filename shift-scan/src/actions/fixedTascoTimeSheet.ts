@@ -16,7 +16,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("Handle Tasco TimeSheet:", formData);
-    let newTimeSheet: string | null = null;
+    let newTimeSheet: number | null = null;
 
     // Start a transaction
     await prisma.$transaction(async (prisma) => {
@@ -25,7 +25,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const userId = formData.get("userId") as string;
       const equipmentId = formData.get("equipment") as string;
       const previousTimeSheetComments = formData.get(
-        "timeSheetComments"
+        "timeSheetComments",
       ) as string;
       const costCode = formData.get("costcode") as string;
       const shiftType = formData.get("shiftType") as string;
@@ -99,7 +99,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
 
       // Step 2: If type is "switchJobs", end the previous TimeSheet
       if (type === "switchJobs") {
-        const previousTimeSheetId = formData.get("id") as string;
+        const previousTimeSheetId = Number(formData.get("id"));
         if (!previousTimeSheetId) {
           throw new Error("No valid previous TimeSheet ID found.");
         }

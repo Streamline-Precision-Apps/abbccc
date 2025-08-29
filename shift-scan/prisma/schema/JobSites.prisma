@@ -11,7 +11,6 @@ model Jobsite {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   archiveDate    DateTime?
-  clientId       String?
   createdById    String?
   createdVia     CreatedVia     @default(ADMIN)
   code           String?
@@ -19,11 +18,9 @@ model Jobsite {
   longitude      Float?
   radiusMeters   Float?
   Address        Address?       @relation(fields: [addressId], references: [id])
-  Client         Client?        @relation(fields: [clientId], references: [id])
   createdBy      User?          @relation(fields: [createdById], references: [id])
   TimeSheets     TimeSheet[]
   CCTags         CCTag[]        @relation("CCTagToJobsite")
 
   @@index([qrId])
-  @@index([clientId])
 }

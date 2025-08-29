@@ -14,38 +14,6 @@ export async function getTimeSheetsbyId() {
   return timesheets;
 }
 
-export async function processTimecards() {
-  try {
-    const timecards = await prisma.timeSheet.findMany({
-      where: { endTime: null }, // Find all timecards with empty endTime
-    });
-
-    const midnight = new Date(); // Create a reference for 11:59:59 PM
-    midnight.setHours(23, 59, 59, 999);
-
-    const nextDayStart = new Date(midnight); // Start the next segment at midnight
-    nextDayStart.setMilliseconds(1);
-
-    const updatedTimecards = timecards.map((card) => ({
-      ...card,
-      endTime: midnight, // Update endTime to current time
-    }));
-    const newTimecards = timecards.map((card) => ({
-      ...card,
-      id: "",
-      endTime: nextDayStart, // Update endTime to current time
-    }));
-
-    // Batch update the timecards
-    await prisma.timeSheet.updateMany({ data: updatedTimecards });
-    await prisma.timeSheet.createMany({ data: newTimecards });
-
-    console.log(`${updatedTimecards.length} timecards processed.`);
-  } catch (error) {
-    console.error("Error processing timecards:", error);
-  }
-}
-
 // Get TimeSheet by id
 export async function fetchTimesheets(employeeId: string, date: string) {
   console.log("Fetching timesheets for:", { employeeId, date });
@@ -174,7 +142,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
       "[updateTimeSheetBySwitch] switch jobsite, updating Timesheet...",
     );
 
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const endTimeRaw = formData.get("endTime");
     // Support both timesheetComments and timeSheetComments for robustness
     const commentRaw =
@@ -243,7 +211,7 @@ export async function breakOutTimeSheet(formData: FormData) {
   try {
     console.log("[breakOutTimeSheet] formData:", formData);
     console.log("[breakOutTimeSheet] break out, updating Timesheet...");
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const endTime = formatISO(formData.get("endTime") as string);
     const comment = formData.get("timesheetComments") as string;
 
@@ -280,8 +248,6 @@ export async function breakOutTimeSheet(formData: FormData) {
     throw error;
   }
 }
-//-------------------------------------------------------------------------------------------------------------------------------
-//
 //
 //-------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -397,7 +363,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
     }
     console.log("[updateTruckDriverTSBySwitch] formData:", formData);
 
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const endingMileageStr = formData.get("endingMileage");
     const endingMileage = endingMileageStr
       ? parseInt(endingMileageStr as string, 10)
@@ -466,7 +432,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
  * Ensures that any timesheet with an endTime is set to PENDING if it is still DRAFT.
  * This can be called after a user attempts to clock out or end day, regardless of current state.
  */
-export async function forcePendingIfEnded(id: string) {
+export async function forcePendingIfEnded(id: number) {
   const timesheet = await prisma.timeSheet.findUnique({ where: { id } });
   console.log("[forcePendingIfEnded] timesheet before check:", timesheet);
   if (timesheet && timesheet.endTime && timesheet.status === "DRAFT") {
@@ -500,8 +466,8 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleGeneralTimeSheet] formData:", formData);
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let endTime: string | null = null;
     let type: string | null = null;
@@ -512,7 +478,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
     const costCode = formData.get("costcode") as string;
     type = formData.get("type") as string;
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
@@ -582,8 +548,8 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleMechanicTimeSheet] formData:", formData);
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let endTime: string | null = null;
     let type: string | null = null;
@@ -594,7 +560,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
     const costCode = formData.get("costcode") as string;
     type = formData.get("type") as string;
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
@@ -666,8 +632,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleTascoTimeSheet] formData:", formData);
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previousTimeSheetComments: string | null = null;
     let endTime: string | null = null;
     let type: string | null = null;
@@ -687,7 +653,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       materialType = undefined;
     }
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
@@ -764,8 +730,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
 // --- Transaction to handle Truck Driver TimeSheet
 export async function handleTruckTimeSheet(formData: FormData) {
   try {
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let type: string | null = null;
     // Extract all needed values before transaction
@@ -792,7 +758,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
       trailerNumber = null;
     }
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       // Only use transaction if updating two timesheets
       await prisma.$transaction(async (prisma) => {
         // Step 1: Create a new TimeSheet
@@ -933,7 +899,8 @@ export async function updateTimeSheet(formData: FormData) {
     console.log("formData1:", formData);
 
     // Get the ID from formData
-    const id = formData.get("id") as string;
+    const idString = formData.get("id") as string;
+    const id = parseInt(idString, 10);
     if (!id) {
       throw new Error("Invalid timesheet ID");
     }
@@ -987,7 +954,7 @@ export async function returnToPrevWork(formData: FormData) {
   try {
     console.log("formData:", formData);
 
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const PrevTimeSheet = await prisma.timeSheet.findUnique({
       where: { id },
       select: {

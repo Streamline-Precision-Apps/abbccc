@@ -14,7 +14,7 @@ enum FormStatus {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -27,7 +27,7 @@ export async function GET(
     const { id } = await params;
     const forms = await prisma.formSubmission.findFirst({
       where: {
-        id,
+        id: Number(id),
       },
       include: {
         Approvals: {
@@ -48,7 +48,7 @@ export async function GET(
     console.error("Error fetching form approval:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

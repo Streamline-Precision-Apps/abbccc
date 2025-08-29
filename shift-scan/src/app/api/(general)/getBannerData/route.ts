@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const id = Number(searchParams.get("id"));
 
     if (!id) {
       return NextResponse.json({ error: "No ID provided" }, { status: 400 });
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     if (!jobCode) {
       return NextResponse.json(
         { error: "No active timesheet found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

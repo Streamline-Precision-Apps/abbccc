@@ -58,7 +58,6 @@ export default function MechanicVerificationStep({
   jobsite,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
@@ -110,7 +109,7 @@ export default function MechanicVerificationStep({
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
-          savedCommentData?.id.toString() || ""
+          savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
       }
@@ -119,7 +118,6 @@ export default function MechanicVerificationStep({
       const response = await handleMechanicTimeSheet(formData);
 
       // Update state and redirect
-      setTimeSheetData({ id: response || "" });
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 

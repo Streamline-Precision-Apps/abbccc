@@ -31,8 +31,8 @@ interface SubmissionTableProps {
   setPageSize: Dispatch<SetStateAction<number>>;
   pageSize: number;
   setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
-  setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
-  onDeleteSubmission: (id: string) => void;
+  setSelectedSubmissionId: Dispatch<SetStateAction<number | null>>;
+  onDeleteSubmission: (id: number) => void;
   loading: false;
   isSignatureRequired?: boolean;
   searchTerm: string;

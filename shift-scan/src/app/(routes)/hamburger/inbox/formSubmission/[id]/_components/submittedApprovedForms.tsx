@@ -45,7 +45,7 @@ interface FormTemplate {
 }
 
 type ManagerFormApprovalSchema = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   userId: string;
@@ -62,7 +62,7 @@ type ManagerFormApprovalSchema = {
   status: FormStatus;
   Approvals: Array<{
     id: string;
-    formSubmissionId: string;
+    formSubmissionId: number;
     signedBy: string;
     submittedAt: string;
     updatedAt: string;
@@ -100,7 +100,7 @@ export default function SubmittedFormsApproval({
   submissionStatus: string | null;
   signature: string | null;
   submittedForm: string | null;
-  submissionId: string | null;
+  submissionId: number | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
   setFormTitle: Dispatch<SetStateAction<string>>;
   updateFormValues: (newValues: Record<string, string>) => void;
@@ -148,8 +148,8 @@ export default function SubmittedFormsApproval({
                   submissionStatus === "PENDING"
                     ? "/statusOngoingFilled.svg"
                     : submissionStatus === "APPROVED"
-                    ? "/statusApprovedFilled.svg"
-                    : "/statusDeniedFilled.svg"
+                      ? "/statusApprovedFilled.svg"
+                      : "/statusDeniedFilled.svg"
                 }
                 className="max-w-10 h-auto object-contain"
               />
@@ -178,7 +178,7 @@ export default function SubmittedFormsApproval({
                 {`${t("OriginallySubmitted")} ${format(
                   managerFormApproval?.submittedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
             </Holds>
@@ -201,7 +201,7 @@ export default function SubmittedFormsApproval({
                 {`${t("ApprovalStatusLastUpdated")} ${format(
                   managerFormApproval?.updatedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
             </Holds>

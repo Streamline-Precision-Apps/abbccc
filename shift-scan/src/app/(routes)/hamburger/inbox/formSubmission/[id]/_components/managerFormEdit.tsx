@@ -51,7 +51,7 @@ interface FormTemplate {
 }
 
 type ManagerFormApprovalSchema = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   userId: string;
@@ -68,7 +68,7 @@ type ManagerFormApprovalSchema = {
   status: FormStatus;
   Approvals: Array<{
     id: string;
-    formSubmissionId: string;
+    formSubmissionId: number;
     signedBy: string;
     submittedAt: string;
     updatedAt: string;
@@ -106,7 +106,7 @@ export default function ManagerFormEditApproval({
   submissionStatus: string | null;
   signature: string | null;
   submittedForm: string | null;
-  submissionId: string | null;
+  submissionId: number | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
   setFormTitle: Dispatch<SetStateAction<string>>;
   updateFormValues: (newValues: Record<string, string>) => void;
@@ -114,10 +114,10 @@ export default function ManagerFormEditApproval({
   const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
   const [comment, setComment] = useState<string>(
-    managerFormApproval?.Approvals?.[0]?.comment || ""
+    managerFormApproval?.Approvals?.[0]?.comment || "",
   );
   const [approvalStatus, setApprovalStatus] = useState<FormStatus>(
-    managerFormApproval?.status || FormStatus.PENDING
+    managerFormApproval?.status || FormStatus.PENDING,
   );
   // Handle comment change
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -126,7 +126,7 @@ export default function ManagerFormEditApproval({
   };
   // Handle approval status change
   const handleApprovalStatusChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const newStatus = e.target.value as FormStatus;
     setApprovalStatus(newStatus);
@@ -139,7 +139,7 @@ export default function ManagerFormEditApproval({
     if (!submissionId || !managerFormApproval) return;
     const updatedData = new FormData();
     updatedData.append("id", managerFormApproval.Approvals[0].id);
-    updatedData.append("formSubmissionId", submissionId);
+    updatedData.append("formSubmissionId", submissionId.toString());
     updatedData.append("comment", data.comment);
     // Map approvalStatus to isApproved (boolean)
     const isApproved = data.approvalStatus === FormStatus.APPROVED;
@@ -187,14 +187,14 @@ export default function ManagerFormEditApproval({
                 {`${t("OriginallySubmitted")} ${format(
                   managerFormApproval?.submittedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
               <Texts size={"p7"}>
                 {`${t("LastEdited")} ${format(
                   managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
             </Holds>
@@ -244,7 +244,7 @@ export default function ManagerFormEditApproval({
                 {`${t("ApprovalStatusLastUpdated")} ${format(
                   managerFormApproval?.updatedAt?.toString() ||
                     new Date().toISOString(),
-                  "M/dd/yy"
+                  "M/dd/yy",
                 )}`}
               </Texts>
             </Holds>

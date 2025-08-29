@@ -47,12 +47,6 @@ export async function GET(req: Request) {
               zipCode: true,
             },
           },
-          Client: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
         },
         orderBy: {
           name: "asc",
@@ -86,12 +80,6 @@ export async function GET(req: Request) {
               city: true,
               state: true,
               zipCode: true,
-            },
-          },
-          Client: {
-            select: {
-              id: true,
-              name: true,
             },
           },
         },
