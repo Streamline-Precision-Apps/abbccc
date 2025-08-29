@@ -120,3 +120,8 @@ enum FormTemplateCategory {
   FINANCE
   OTHER
 }
+
+enum CreatedVia {
+  ADMIN
+  MOBILE
+}
