@@ -44,8 +44,8 @@ interface FormsDataTableProps {
   setPageSize: Dispatch<SetStateAction<number>>;
   isSignatureRequired?: boolean;
   setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
-  setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
-  openHandleDeleteSubmission: (id: string) => void;
+  setSelectedSubmissionId: Dispatch<SetStateAction<number | null>>;
+  openHandleDeleteSubmission: (id: number) => void;
   searchTerm?: string;
 }
 
@@ -74,6 +74,19 @@ export function FormSubmissionDataTable({
   // Dynamically create columns based on the form fields
   const columns = useMemo(() => {
     const baseColumns: ColumnDef<Submission>[] = [
+      // ID column
+      {
+        accessorKey: "id",
+        header: "ID",
+        cell: ({ row }) => {
+          const submission = row.original;
+          return (
+            <div className="text-xs text-center">
+              {highlight(submission.id.toString(), searchTerm || "")}
+            </div>
+          );
+        },
+      },
       // Submitted By column
       {
         accessorKey: "submittedBy",
@@ -397,6 +410,11 @@ export function FormSubmissionDataTable({
                     key={`loading-row-${index}`}
                     className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
                   >
+                    {/* ID column */}
+                    <TableCell className="text-xs text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
+                    </TableCell>
+
                     {/* Submitted By column */}
                     <TableCell className="text-xs text-center">
                       <Skeleton className="h-4 w-24 mx-auto" />
