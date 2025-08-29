@@ -4,7 +4,7 @@ import { revalidateTag } from "next/cache";
 
 export async function updateTimesheetServerAction(formData: FormData) {
   console.log(formData);
-  const id = formData.get("id") as string;
+  const id = Number(formData.get("id"));
   const startTime = new Date(formData.get("startTime") as string).toISOString();
   const endTime =
     new Date(formData.get("endTime") as string).toISOString() || null;

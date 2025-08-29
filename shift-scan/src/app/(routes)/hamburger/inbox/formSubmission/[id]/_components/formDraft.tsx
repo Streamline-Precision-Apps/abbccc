@@ -65,7 +65,7 @@ export default function FormDraft({
   setFormTitle: (title: string) => void;
   updateFormValues: (values: Record<string, string>) => void;
   userId: string;
-  submissionId: string;
+  submissionId: number;
 }) {
   type FormValues = Record<string, string>;
   const t = useTranslations("Hamburger-Inbox");
@@ -98,7 +98,7 @@ export default function FormDraft({
           userId,
           formData.formType,
           submissionId,
-          title
+          title,
         );
       } catch (error) {
         console.error("Error saving draft:", error);
@@ -121,7 +121,7 @@ export default function FormDraft({
   //validation map function to required all fields that are required within form template
   const validateForm = (
     formValues: Record<string, string>,
-    formData: FormTemplate
+    formData: FormTemplate,
   ): boolean => {
     for (const group of formData.groupings) {
       for (const field of group.fields) {
@@ -130,7 +130,7 @@ export default function FormDraft({
           const fieldValue = formValues[field.id] || formValues[field.label];
           if (!fieldValue || fieldValue.trim() === "") {
             console.log(
-              `Validation failed for field: ${field.label} (${field.id})`
+              `Validation failed for field: ${field.label} (${field.id})`,
             );
             return false;
           }
@@ -145,13 +145,13 @@ export default function FormDraft({
               const parsed = JSON.parse(fieldValue);
               if (Array.isArray(parsed) && parsed.length === 0) {
                 console.log(
-                  `Validation failed for empty array field: ${field.label} (${field.id})`
+                  `Validation failed for empty array field: ${field.label} (${field.id})`,
                 );
                 return false;
               }
               if (parsed === null || parsed === undefined) {
                 console.log(
-                  `Validation failed for null/undefined field: ${field.label} (${field.id})`
+                  `Validation failed for null/undefined field: ${field.label} (${field.id})`,
                 );
                 return false;
               }
@@ -159,7 +159,7 @@ export default function FormDraft({
               // If it's not valid JSON, treat as string validation
               if (!fieldValue || fieldValue.trim() === "") {
                 console.log(
-                  `Validation failed for non-JSON field: ${field.label} (${field.id})`
+                  `Validation failed for non-JSON field: ${field.label} (${field.id})`,
                 );
                 return false;
               }
@@ -171,7 +171,7 @@ export default function FormDraft({
     return true;
   };
 
-  const handleDeleteForm = async (id: string) => {
+  const handleDeleteForm = async (id: number) => {
     try {
       await deleteFormSubmission(id);
       router.back();
@@ -275,7 +275,7 @@ export default function FormDraft({
                   <Buttons
                     type="submit"
                     background={
-                      !validateForm(formValues, formData) || 
+                      !validateForm(formValues, formData) ||
                       (formData.isSignatureRequired && !showSignature)
                         ? "darkGray"
                         : "green"

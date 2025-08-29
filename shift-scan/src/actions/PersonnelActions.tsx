@@ -146,7 +146,6 @@ export async function createJobsite(formData: FormData) {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-        Client: { connect: { id: formData.get("clientId") as string } },
       },
     });
     // Removed creation of PendingApproval as the model does not exist in Prisma schema

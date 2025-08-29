@@ -5,19 +5,19 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id: timesheetId } = await params;
     if (!timesheetId) {
       return new Response(
         JSON.stringify({ error: "Missing timesheet id in URL params." }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const timesheet = await prisma.timeSheet.findUnique({
-      where: { id: timesheetId },
+      where: { id: Number(timesheetId) },
       select: {
         id: true,
         comment: true,
@@ -52,7 +52,7 @@ export async function GET(
         error: "Internal server error",
         details: String(error),
       }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -14,7 +14,7 @@ enum FormStatus {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -25,7 +25,7 @@ export async function GET(
   const { id } = await params;
   const forms = await prisma.formSubmission.findUnique({
     where: {
-      id,
+      id: Number(id),
       userId,
       status: FormStatus.DRAFT,
     },
