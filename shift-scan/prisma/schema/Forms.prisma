@@ -46,7 +46,7 @@ model FormFieldOption {
 }
 
 model FormSubmission {
-  id             String         @id @default(uuid())
+  id             Int            @id @default(autoincrement())
   title          String?
   formTemplateId String
   userId         String
@@ -63,7 +63,7 @@ model FormSubmission {
 
 model FormApproval {
   id               String         @id @default(uuid())
-  formSubmissionId String
+  formSubmissionId Int
   signedBy         String?
   submittedAt      DateTime       @default(now())
   updatedAt        DateTime       @updatedAt

@@ -1,7 +1,7 @@
 import { ApprovalStatus } from "@/lib/enums";
 
 export interface EditTimesheetModalProps {
-  timesheetId: string;
+  timesheetId: number;
   isOpen: boolean;
   onClose: () => void;
   onUpdated?: () => void; // Optional callback for parent to refetch
@@ -98,7 +98,7 @@ export type TascoNestedTypeMap = {
 };
 
 export interface TimesheetData {
-  id: string;
+  id: number;
   date: Date | string;
   User: { id: string; firstName: string; lastName: string };
   Jobsite: { id: string; name: string };

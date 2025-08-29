@@ -31,7 +31,7 @@ export default function EditFormSubmissionModal({
   formTemplate,
   onSuccess,
 }: {
-  id: string;
+  id: number;
   closeModal: () => void;
   formTemplate: FormIndividualTemplate | null;
   onSuccess: () => void;

@@ -2,15 +2,15 @@ import { PrismaClient } from "@prisma/client";
 import {
   initialCompany,
   initialFormTemplates,
-  initialUsers,
+  // initialUsers,
   initialAddresses,
   // initialClients,
   // initialJobsites,
-  initialCostCodes,
-  initialCCTags,
-  updatedEquipment,
-  initialCrews,
-  initialUserSettings,
+  // initialCostCodes,
+  // initialCCTags,
+  // updatedEquipment,
+  // initialCrews,
+  // initialUserSettings,
   // initialTimeSheets,
   // initialTruckingLogs,
   // initialEmployeeEquipmentLogs,
@@ -47,7 +47,7 @@ async function main() {
       } catch (error) {
         console.error(
           "Error upserting address:",
-          error instanceof Error ? error.stack || error : error
+          error instanceof Error ? error.stack || error : error,
         );
         continue;
       }
@@ -66,7 +66,7 @@ async function main() {
       } catch (error) {
         console.error(
           "Error upserting company:",
-          error instanceof Error ? error.stack || error : error
+          error instanceof Error ? error.stack || error : error,
         );
         continue;
       }
@@ -84,7 +84,7 @@ async function main() {
       } catch (error) {
         console.error(
           "Error creating form template:",
-          error instanceof Error ? error.stack || error : error
+          error instanceof Error ? error.stack || error : error,
         );
         continue;
       }
@@ -92,23 +92,23 @@ async function main() {
     console.log("Form templates inserted successfully.");
 
     // 3. Upsert Users
-    for (const user of initialUsers) {
-      try {
-        const upsertedUser = await prisma.user.upsert({
-          where: { id: user.id },
-          update: user,
-          create: user,
-        });
-        // console.log("Upserted user with id:", upsertedUser.id);
-      } catch (error) {
-        console.error(
-          "Error upserting user:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
-    console.log("Users upsert operation completed.");
+    // for (const user of initialUsers) {
+    //   try {
+    //     const upsertedUser = await prisma.user.upsert({
+    //       where: { id: user.id },
+    //       update: user,
+    //       create: user,
+    //     });
+    //     // console.log("Upserted user with id:", upsertedUser.id);
+    //   } catch (error) {
+    //     console.error(
+    //       "Error upserting user:",
+    //       error instanceof Error ? error.stack || error : error
+    //     );
+    //     continue;
+    //   }
+    // }
+    // console.log("Users upsert operation completed.");
 
     // 3.6. Insert Clients
 
@@ -141,35 +141,35 @@ async function main() {
 
     // 5. Insert Cost Codes
 
-    for (const costCode of initialCostCodes) {
-      try {
-        const newCostCode = await prisma.costCode.create({ data: costCode });
-        // console.log("Created cost code with id:", newCostCode.id);
-      } catch (error) {
-        console.error(
-          "Error creating cost code:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
-    console.log("Cost codes inserted successfully.");
+    // for (const costCode of initialCostCodes) {
+    //   try {
+    //     const newCostCode = await prisma.costCode.create({ data: costCode });
+    //     // console.log("Created cost code with id:", newCostCode.id);
+    //   } catch (error) {
+    //     console.error(
+    //       "Error creating cost code:",
+    //       error instanceof Error ? error.stack || error : error
+    //     );
+    //     continue;
+    //   }
+    // }
+    // console.log("Cost codes inserted successfully.");
 
     // 6. Insert CCTags
 
-    for (const cctag of initialCCTags) {
-      try {
-        const newCCTag = await prisma.cCTag.create({ data: cctag });
-        // console.log("Created CCTag with id:", newCCTag.id);
-      } catch (error) {
-        console.error(
-          "Error creating CCTag:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
-    console.log("CCTags inserted successfully.");
+    // for (const cctag of initialCCTags) {
+    //   try {
+    //     const newCCTag = await prisma.cCTag.create({ data: cctag });
+    //     // console.log("Created CCTag with id:", newCCTag.id);
+    //   } catch (error) {
+    //     console.error(
+    //       "Error creating CCTag:",
+    //       error instanceof Error ? error.stack || error : error
+    //     );
+    //     continue;
+    //   }
+    // }
+    // console.log("CCTags inserted successfully.");
 
     // 7. Insert Document Tags (new model)
 
@@ -209,76 +209,76 @@ async function main() {
 
     // 9. Insert Equipment (using updatedEquipment seed values)
 
-    for (const equip of updatedEquipment) {
-      if (equip.DocumentTags && equip.DocumentTags.connect) {
-        const connectValue = equip.DocumentTags.connect;
-        const connectArray = Array.isArray(connectValue)
-          ? connectValue
-          : [connectValue];
-        let allTagsExist = true;
-        for (const tag of connectArray) {
-          const exists = await prisma.documentTag.findUnique({
-            where: { id: tag.id },
-          });
-          if (!exists) {
-            console.warn(
-              `Skipping equipment with id ${
-                equip.id || "[no id]"
-              }: missing DocumentTag id ${tag.id}`
-            );
-            allTagsExist = false;
-            break;
-          }
-        }
-        if (!allTagsExist) continue;
-      }
-      try {
-        const newEquipment = await prisma.equipment.create({ data: equip });
-        // console.log("Created equipment with id:", newEquipment.id);
-      } catch (error) {
-        console.error(
-          "Error creating equipment (check referenced IDs):",
-          equip,
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
-    console.log("Equipment inserted successfully.");
+    // for (const equip of updatedEquipment) {
+    //   if (equip.DocumentTags && equip.DocumentTags.connect) {
+    //     const connectValue = equip.DocumentTags.connect;
+    //     const connectArray = Array.isArray(connectValue)
+    //       ? connectValue
+    //       : [connectValue];
+    //     let allTagsExist = true;
+    //     for (const tag of connectArray) {
+    //       const exists = await prisma.documentTag.findUnique({
+    //         where: { id: tag.id },
+    //       });
+    //       if (!exists) {
+    //         console.warn(
+    //           `Skipping equipment with id ${
+    //             equip.id || "[no id]"
+    //           }: missing DocumentTag id ${tag.id}`
+    //         );
+    //         allTagsExist = false;
+    //         break;
+    //       }
+    //     }
+    //     if (!allTagsExist) continue;
+    //   }
+    //   try {
+    //     const newEquipment = await prisma.equipment.create({ data: equip });
+    //     // console.log("Created equipment with id:", newEquipment.id);
+    //   } catch (error) {
+    //     console.error(
+    //       "Error creating equipment (check referenced IDs):",
+    //       equip,
+    //       error instanceof Error ? error.stack || error : error
+    //     );
+    //     continue;
+    //   }
+    // }
+    // console.log("Equipment inserted successfully.");
 
     // 10. Insert Crews
 
-    for (const crew of initialCrews) {
-      try {
-        const newCrew = await prisma.crew.create({ data: crew });
-        // console.log("Created crew with id:", newCrew.id);
-      } catch (error) {
-        console.error(
-          "Error creating crew:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
-    console.log("Crews inserted successfully.");
+    // for (const crew of initialCrews) {
+    //   try {
+    //     const newCrew = await prisma.crew.create({ data: crew });
+    //     // console.log("Created crew with id:", newCrew.id);
+    //   } catch (error) {
+    //     console.error(
+    //       "Error creating crew:",
+    //       error instanceof Error ? error.stack || error : error
+    //     );
+    //     continue;
+    //   }
+    // }
+    // console.log("Crews inserted successfully.");
 
     // 11. Insert User Settings
 
-    for (const settings of initialUserSettings) {
-      try {
-        const newSettings = await prisma.userSettings.create({
-          data: settings,
-        });
-        // console.log("Created user settings with id:", newSettings.id);
-      } catch (error) {
-        console.error(
-          "Error creating user settings:",
-          error instanceof Error ? error.stack || error : error
-        );
-        continue;
-      }
-    }
-    console.log("User settings inserted successfully.");
+    // for (const settings of initialUserSettings) {
+    //   try {
+    //     const newSettings = await prisma.userSettings.create({
+    //       data: settings,
+    //     });
+    //     // console.log("Created user settings with id:", newSettings.id);
+    //   } catch (error) {
+    //     console.error(
+    //       "Error creating user settings:",
+    //       error instanceof Error ? error.stack || error : error
+    //     );
+    //     continue;
+    //   }
+    // }
+    // console.log("User settings inserted successfully.");
 
     // 12. Insert TimeSheets
 
@@ -551,7 +551,7 @@ async function main() {
       } catch (error) {
         console.error(
           "Error creating Tasco Material Type:",
-          error instanceof Error ? error.stack || error : error
+          error instanceof Error ? error.stack || error : error,
         );
         continue;
       }

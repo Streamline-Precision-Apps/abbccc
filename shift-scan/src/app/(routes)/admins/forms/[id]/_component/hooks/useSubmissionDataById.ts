@@ -54,10 +54,10 @@ export default function useSubmissionDataById(id: string) {
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
   const [showFormSubmission, setShowFormSubmission] = useState(false);
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<
-    string | null
+    number | null
   >(null);
   const [pendingSubmissionDeleteId, setPendingSubmissionDeleteId] = useState<
-    string | null
+    number | null
   >(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -167,7 +167,7 @@ export default function useSubmissionDataById(id: string) {
   };
   //================================================
   // modal helper function for submission deletion
-  const openHandleDeleteSubmission = (id: string) => {
+  const openHandleDeleteSubmission = (id: number) => {
     setPendingSubmissionDeleteId(id);
     setShowDeleteSubmissionDialog(true);
   };

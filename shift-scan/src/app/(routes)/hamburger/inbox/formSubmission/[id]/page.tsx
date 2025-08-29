@@ -60,7 +60,7 @@ interface FormField {
 }
 
 type ManagerFormApprovalSchema = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   userId: string;
@@ -77,7 +77,7 @@ type ManagerFormApprovalSchema = {
   status: FormStatus;
   Approvals: Array<{
     id: string;
-    formSubmissionId: string;
+    formSubmissionId: number;
     signedBy: string;
     submittedAt: string;
     updatedAt: string;
@@ -105,7 +105,7 @@ export default function DynamicForm({
   // Search params from URL
   const t = useTranslations("Hamburger-Inbox");
   const formSubmissions = useSearchParams();
-  const submissionId = formSubmissions.get("submissionId");
+  const submissionId = Number(formSubmissions.get("submissionId"));
   const submissionStatus = formSubmissions.get("status");
   const submissionApprovingStatus = formSubmissions.get("approvingStatus");
   const formApprover = formSubmissions.get("formApprover");
@@ -265,7 +265,7 @@ export default function DynamicForm({
   }, []);
 
   // Helper functions for fetching data
-  const fetchDraftData = async (submissionId: string) => {
+  const fetchDraftData = async (submissionId: number) => {
     const draftRes = await fetch(`/api/formDraft/` + submissionId, {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache" },
@@ -274,7 +274,7 @@ export default function DynamicForm({
     return await draftRes.json();
   };
 
-  const fetchSubmissionData = async (submissionId: string) => {
+  const fetchSubmissionData = async (submissionId: number) => {
     const submissionRes = await fetch(`/api/formSubmission/` + submissionId, {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache" },
@@ -283,7 +283,7 @@ export default function DynamicForm({
     return await submissionRes.json();
   };
 
-  const fetchTeamSubmissionData = async (submissionId: string) => {
+  const fetchTeamSubmissionData = async (submissionId: number) => {
     const submissionRes = await fetch(`/api/teamSubmission/` + submissionId, {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache" },
@@ -293,7 +293,7 @@ export default function DynamicForm({
     return await submissionRes.json();
   };
 
-  const fetchManagerApprovalData = async (submissionId: string) => {
+  const fetchManagerApprovalData = async (submissionId: number) => {
     const managerFormApprovalRes = await fetch(
       `/api/managerFormApproval/` + submissionId,
       {
@@ -618,7 +618,7 @@ export default function DynamicForm({
               formValues={convertFormValuesToString(formValues)}
               updateFormValues={updateFormValuesLegacy}
               userId={userId || ""}
-              submissionId={submissionId || ""}
+              submissionId={submissionId}
             />
           )}
           {submissionApprovingStatus === null &&
@@ -632,7 +632,7 @@ export default function DynamicForm({
                     formValues={convertFormValuesToString(formValues)}
                     updateFormValues={updateFormValuesLegacy}
                     userId={userId || ""}
-                    submissionId={submissionId || ""}
+                    submissionId={submissionId || null}
                     signature={signature}
                     submittedForm={submittedForm}
                     submissionStatus={submissionStatus}
@@ -644,7 +644,7 @@ export default function DynamicForm({
                     setFormTitle={setFormTitle}
                     formValues={convertFormValuesToString(formValues)}
                     updateFormValues={updateFormValuesLegacy}
-                    submissionId={submissionId || ""}
+                    submissionId={submissionId || null}
                     signature={signature}
                     submittedForm={submittedForm}
                     submissionStatus={submissionStatus}
@@ -663,7 +663,7 @@ export default function DynamicForm({
                 setFormTitle={setFormTitle}
                 formValues={convertFormValuesToString(formValues)}
                 updateFormValues={updateFormValuesLegacy}
-                submissionId={submissionId || ""}
+                submissionId={submissionId || null}
                 signature={signature}
                 submittedForm={submittedForm}
                 submissionStatus={submissionStatus}
@@ -681,7 +681,7 @@ export default function DynamicForm({
                 setFormTitle={setFormTitle}
                 formValues={convertFormValuesToString(formValues)}
                 updateFormValues={updateFormValuesLegacy}
-                submissionId={submissionId || ""}
+                submissionId={submissionId || null}
                 signature={signature}
                 submittedForm={submittedForm}
                 submissionStatus={submissionStatus}

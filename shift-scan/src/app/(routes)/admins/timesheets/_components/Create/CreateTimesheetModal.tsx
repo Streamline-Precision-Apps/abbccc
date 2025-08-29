@@ -8,6 +8,8 @@ import { LaborSection } from "./LaborSection";
 import GeneralSection from "./GeneralSection";
 import { adminCreateTimesheet } from "@/actions/records-timesheets";
 import { toast } from "sonner";
+import Spinner from "@/components/(animations)/spinner";
+import { X } from "lucide-react";
 
 // Type for mechanic project summary (expand as needed)
 type MechanicProjectSummary = { id: string };
@@ -19,6 +21,7 @@ export function CreateTimesheetModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     date: new Date(),
     user: { id: "", firstName: "", lastName: "" },
@@ -33,10 +36,10 @@ export function CreateTimesheetModal({
   >([]);
   const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
   const [costCode, setCostCode] = useState<{ value: string; label: string }[]>(
-    []
+    [],
   );
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [trucks, setTrucks] = useState<{ id: string; name: string }[]>([]);
   const [trailers, setTrailers] = useState<{ id: string; name: string }[]>([]);
@@ -54,16 +57,16 @@ export function CreateTimesheetModal({
     maintenanceId: string;
   };
   const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceLogDraft[]>(
-    [{ maintenanceId: "", startTime: "", endTime: "" }]
+    [{ maintenanceId: "", startTime: "", endTime: "" }],
   );
   // Trucking log type
   type TruckingMaterialDraft = {
     location: string;
     name: string;
     quantity: string;
-    unit: string;
+    unit: "TONS" | "YARDS" | "";
     // materialWeight: string;
-    loadType: "screened" | "unscreened" | "";
+    loadType: "SCREENED" | "UNSCREENED" | "";
   };
   type TruckingLogDraft = {
     equipmentId: string;
@@ -104,7 +107,6 @@ export function CreateTimesheetModal({
           name: "",
           quantity: "",
           unit: "",
-          // materialWeight: "",
           loadType: "",
         },
       ],
@@ -118,6 +120,7 @@ export function CreateTimesheetModal({
     laborType: "Equipment Operator" | "Labor" | "";
     materialType: string; // id from materialTypes
     loadQuantity: string;
+    screenType: "SCREENED" | "UNSCREENED" | "";
     refuelLogs: { gallonsRefueled: string }[];
     equipment: { id: string; name: string }[];
   };
@@ -127,6 +130,7 @@ export function CreateTimesheetModal({
       laborType: "",
       materialType: "",
       loadQuantity: "",
+      screenType: "",
       refuelLogs: [{ gallonsRefueled: "" }],
       equipment: [{ id: "", name: "" }],
     },
@@ -203,37 +207,45 @@ export function CreateTimesheetModal({
   // Fetch users and jobsites for dropdowns using your real API endpoints
   useEffect(() => {
     async function fetchDropdowns() {
-      const usersRes = await fetch("/api/getAllActiveEmployeeName");
-      const jobsitesRes = await fetch("/api/getJobsiteSummary");
-      const equipmentRes = await fetch("/api/getAllEquipment");
+      try {
+        setLoading(true);
 
-      const jobsite = await jobsitesRes.json();
-      const equipment = await equipmentRes.json();
-      const users = await usersRes.json();
+        const usersRes = await fetch("/api/getAllActiveEmployeeName");
+        const jobsitesRes = await fetch("/api/getJobsiteSummary");
+        const equipmentRes = await fetch("/api/getAllEquipment");
 
-      const filteredJobsite = jobsite.filter(
-        (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED"
-      );
-      const filteredJobsites = filteredJobsite.map(
-        (j: { id: string; name: string }) => ({
-          id: j.id,
-          name: j.name,
-        })
-      );
+        const jobsite = (await jobsitesRes.json()) || [];
+        const equipment = (await equipmentRes.json()) || [];
+        const users = (await usersRes.json()) || [];
 
-      const filteredTrucks = equipment.filter(
-        (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK"
-      );
-      const filteredTrailers = equipment.filter(
-        (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
-      );
+        const filteredJobsite = jobsite.filter(
+          (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED",
+        );
+        const filteredJobsites = filteredJobsite.map(
+          (j: { id: string; name: string }) => ({
+            id: j.id,
+            name: j.name,
+          }),
+        );
+        if (equipment) {
+          const filteredTrucks = equipment.filter(
+            (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
+          );
+          const filteredTrailers = equipment.filter(
+            (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER",
+          );
 
-      setTrucks(filteredTrucks);
-      setTrailers(filteredTrailers);
-
-      setEquipment(equipment);
-      setUsers(users);
-      setJobsites(filteredJobsites);
+          setTrucks(filteredTrucks);
+          setTrailers(filteredTrailers);
+        }
+        setEquipment(equipment);
+        setUsers(users);
+        setJobsites(filteredJobsites);
+      } catch (error) {
+        console.error("Error fetching dropdowns:", error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchDropdowns();
   }, []);
@@ -248,7 +260,7 @@ export function CreateTimesheetModal({
       }
       try {
         const res = await fetch(
-          `/api/getAllCostCodesByJobSites?jobsiteId=${form.jobsite.id}`
+          `/api/getAllCostCodesByJobSites?jobsiteId=${form.jobsite.id}`,
         );
         if (!res.ok) {
           setCostCode([]);
@@ -265,7 +277,7 @@ export function CreateTimesheetModal({
         if (
           !options.find(
             (c: { value: string; label: string }) =>
-              c.value === form.costcode.id
+              c.value === form.costcode.id,
           )
         ) {
           setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
@@ -291,7 +303,7 @@ export function CreateTimesheetModal({
   };
 
   const handleChange = async (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     // If the field is costcode and not using the Combobox, update as string fallback
     if (e.target.name === "costcode") {
@@ -305,12 +317,40 @@ export function CreateTimesheetModal({
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Map tascoLogs to match server expectations (loadsHauled)
+      // Map tascoLogs to match server expectations (convert types accordingly)
       const mappedTascoLogs = tascoLogs.map((log) => ({
         ...log,
-        loadsHauled: log.loadQuantity,
+        loadsHauled: log.loadQuantity, // Keep loadsHauled for API compatibility
         loadQuantity: undefined, // Remove loadQuantity
+        // Convert screenType for API compatibility
+        screenType:
+          log.screenType === "SCREENED"
+            ? "screened"
+            : log.screenType === "UNSCREENED"
+              ? "unscreened"
+              : "",
       }));
+
+      // Map trucking logs to convert loadType to lowercase for API compatibility
+      const mappedTruckingLogs = truckingLogs.map((log) => ({
+        ...log,
+        materials: log.materials.map((mat) => {
+          // Define the converted loadType
+          let convertedLoadType: "" | "screened" | "unscreened" = "";
+          if (mat.loadType === "SCREENED") convertedLoadType = "screened";
+          else if (mat.loadType === "UNSCREENED")
+            convertedLoadType = "unscreened";
+
+          return {
+            location: mat.location,
+            name: mat.name,
+            quantity: mat.quantity,
+            unit: mat.unit as string, // Cast to string
+            loadType: convertedLoadType,
+          };
+        }),
+      }));
+
       const data = {
         form: {
           ...form,
@@ -318,7 +358,7 @@ export function CreateTimesheetModal({
           endTime: form.endTime ? form.endTime.toISOString() : null,
         },
         maintenanceLogs,
-        truckingLogs,
+        truckingLogs: mappedTruckingLogs,
         tascoLogs: mappedTascoLogs,
         laborLogs,
       };
@@ -347,11 +387,44 @@ export function CreateTimesheetModal({
     }
   }, [form.workType]);
 
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="bg-white rounded-lg shadow-lg p-6 min-w-[700px] max-h-[90vh] overflow-y-auto">
+          <div className="mb-4 relative">
+            <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
+            <Button
+              type="button"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={onClose}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+            <div className="w-full justify-center items-center mt-4">
+              <Spinner />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg p-6 min-w-[700px] max-h-[90vh] overflow-y-auto">
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
+          <Button
+            type="button"
+            variant={"ghost"}
+            size={"icon"}
+            onClick={onClose}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
           <p className="text-sm mb-1 text-gray-600">
             Use the form below to enter and submit a new timesheet on behalf of
             an employee.

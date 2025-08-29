@@ -66,7 +66,7 @@ export default function SubmittedForms({
   userId: string;
   signature: string | null;
   submittedForm: string | null;
-  submissionId: string | null;
+  submissionId: number | null;
   submissionStatus: string | null;
 }) {
   const t = useTranslations("Hamburger-Inbox");
@@ -83,7 +83,7 @@ export default function SubmittedForms({
           formData.id,
           userId,
           formData.formType,
-          submissionId ? submissionId : "",
+          submissionId ? submissionId : undefined,
           title,
         );
       } catch (error) {

@@ -104,7 +104,7 @@ export async function saveFormTemplate(data: SaveFormData) {
       for (const field of fields) {
         if (
           ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
-            field.type?.toUpperCase?.()
+            field.type?.toUpperCase?.(),
           ) &&
           !field.Options
         ) {
@@ -128,7 +128,7 @@ export async function saveFormTemplate(data: SaveFormData) {
         // Handle field options for dropdowns, radios, multiselects
         if (
           ["DROPDOWN", "RADIO", "MULTISELECT"].includes(
-            field.type?.toUpperCase?.()
+            field.type?.toUpperCase?.(),
           ) &&
           field.Options &&
           field.Options.length > 0
@@ -451,7 +451,7 @@ export interface FormSubmissionWithTemplate {
   };
 }
 
-export async function getFormSubmissionById(submissionId: string) {
+export async function getFormSubmissionById(submissionId: number) {
   try {
     const submission = await prisma.formSubmission.findUnique({
       where: { id: submissionId },
@@ -509,7 +509,7 @@ export async function getFormSubmissions(
   dateRange?: {
     from?: Date;
     to?: Date;
-  }
+  },
 ) {
   try {
     const formSubmissions = await prisma.formSubmission.findMany({
@@ -535,12 +535,13 @@ export async function getFormSubmissions(
 
 // Update a form submission's data (for editing submissions)
 export interface UpdateFormSubmissionInput {
-  submissionId: string;
+  submissionId: number;
   data: Record<string, string | number | boolean | null>;
 }
 
 // Create a new form submission
 import { FormStatus } from "@prisma/client";
+import { n } from "framer-motion/dist/types.d-Cjd591yU";
 
 export interface CreateFormSubmissionInput {
   formTemplateId: string;
@@ -602,7 +603,7 @@ export async function updateFormSubmission(input: UpdateFormSubmissionInput) {
   }
 }
 
-export async function deleteFormSubmission(submissionId: string) {
+export async function deleteFormSubmission(submissionId: number) {
   try {
     const submission = await prisma.formSubmission.delete({
       where: { id: submissionId },

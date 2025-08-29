@@ -133,11 +133,11 @@ export async function createFormSubmission(formData: FormData) {
   }
 }
 
-export async function deleteFormSubmission(id: string) {
+export async function deleteFormSubmission(id: number) {
   try {
     await prisma.formSubmission.delete({
       where: {
-        id,
+        id: id,
       },
     });
     revalidatePath("/hamburger/inbox");
@@ -147,24 +147,24 @@ export async function deleteFormSubmission(id: string) {
   }
 }
 
-export async function fetchDraft(submissionId: string) {
-  try {
-    const submission = await prisma.formSubmission.findUnique({
-      where: { id: submissionId },
-    });
-    return submission;
-  } catch (error) {
-    console.error("Error fetching draft:", error);
-    throw new Error("Failed to fetch draft");
-  }
-}
+// export async function fetchDraft(submissionId: string) {
+//   try {
+//     const submission = await prisma.formSubmission.findUnique({
+//       where: { id: submissionId },
+//     });
+//     return submission;
+//   } catch (error) {
+//     console.error("Error fetching draft:", error);
+//     throw new Error("Failed to fetch draft");
+//   }
+// }
 
 export async function saveDraft(
   formData: Record<string, string>,
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string,
+  submissionId?: number,
   title?: string,
 ) {
   try {
@@ -233,7 +233,7 @@ export async function saveDraftToPending(
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string,
+  submissionId?: number,
   title?: string,
 ) {
   try {
@@ -316,7 +316,7 @@ export async function savePending(
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string,
+  submissionId?: number,
   title?: string,
 ) {
   try {
@@ -386,7 +386,7 @@ export async function createFormApproval(
 ) {
   try {
     console.log("Creating form approval...");
-    const formSubmissionId = formData.get("formSubmissionId") as string;
+    const formSubmissionId = Number(formData.get("formSubmissionId"));
     const signedBy = formData.get("signedBy") as string;
     const signature = formData.get("signature") as string;
     const comment = formData.get("comment") as string;
@@ -421,7 +421,7 @@ export async function updateFormApproval(formData: FormData) {
 
     // Extract data from FormData
     const id = formData.get("id") as string;
-    const formSubmissionId = formData.get("formSubmissionId") as string;
+    const formSubmissionId = Number(formData.get("formSubmissionId"));
     const comment = formData.get("comment") as string;
     const isApp = formData.get("isApproved") === "true"; // Convert string to boolean
 

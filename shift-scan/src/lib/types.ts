@@ -187,7 +187,6 @@ export type TimeSheets = {
   duration: number | null;
 };
 
-
 export type EquipmentLog = {
   id: string;
   employeeId: string;
@@ -393,7 +392,7 @@ export type TruckingMileageItem = {
 export type TimesheetHighlights = {
   submitDate: string;
   date: Date | string;
-  id: string;
+  id: number;
   userId: string;
   jobsiteId: string;
   costcode: string;
@@ -851,7 +850,7 @@ export interface EmployeeEquipmentLogWithEquipment
 }
 
 export type TimesheetUpdate = {
-  id: string;
+  id: number;
   startTime?: string;
   endTime?: string | null;
   jobsiteId?: string;
@@ -906,13 +905,13 @@ export type TimesheetFilter =
 
 // Helper: Flatten EquipmentLogsData to array of { id, startTime, endTime }
 export function flattenEquipmentLogs(
-  logs: EquipmentLogsData
+  logs: EquipmentLogsData,
 ): { id: string; startTime: Date; endTime: Date }[] {
   return logs
     .flatMap((item) => item.EmployeeEquipmentLogs)
     .filter(
       (log): log is EmployeeEquipmentLogData =>
-        !!log && typeof log.id === "string"
+        !!log && typeof log.id === "string",
     )
     .map((log) => ({
       id: log.id,
@@ -928,7 +927,7 @@ export function flattenEquipmentLogs(
 
 // Helper: Flatten EquipmentRefuelLogs to array of { id, gallonsRefueled }
 export function flattenEquipmentRefuelLogs(
-  logs: EmployeeEquipmentLogWithRefuel[]
+  logs: EmployeeEquipmentLogWithRefuel[],
 ): { id: string; gallonsRefueled: number | null }[] {
   return logs.flatMap((log) =>
     (log.RefuelLogs ?? []).map((refuel) => ({
@@ -937,9 +936,9 @@ export function flattenEquipmentRefuelLogs(
         typeof refuel.gallonsRefueled === "number"
           ? refuel.gallonsRefueled
           : refuel.gallonsRefueled
-          ? Number(refuel.gallonsRefueled)
-          : null,
-    }))
+            ? Number(refuel.gallonsRefueled)
+            : null,
+    })),
   );
 }
 

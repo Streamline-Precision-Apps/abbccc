@@ -43,7 +43,7 @@ model EquipmentVehicleInfo {
 
 model EmployeeEquipmentLog {
   id            String       @id @default(uuid())
-  timeSheetId   String
+  timeSheetId   Int
   equipmentId   String?
   maintenanceId String?
   startTime     DateTime     @default(now())
