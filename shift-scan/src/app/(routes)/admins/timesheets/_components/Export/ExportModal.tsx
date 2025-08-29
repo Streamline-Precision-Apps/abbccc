@@ -18,12 +18,12 @@ interface ExportModalProps {
       from?: Date;
       to?: Date;
     },
-    selectedFields?: string[]
+    selectedFields?: string[],
   ) => void;
 }
 
 import { useMemo } from "react";
-import { ChevronDownIcon, Download } from "lucide-react";
+import { ChevronDownIcon, Download, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -59,23 +59,23 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
     to: undefined,
   });
   const [selectedFields, setSelectedFields] = useState<string[]>(
-    EXPORT_FIELDS.map((f) => f.key)
+    EXPORT_FIELDS.map((f) => f.key),
   );
   const [exportFormat, setExportFormat] = useState<"csv" | "xlsx" | "">("");
 
   const allChecked = useMemo(
     () => selectedFields.length === EXPORT_FIELDS.length,
-    [selectedFields]
+    [selectedFields],
   );
   const isIndeterminate = useMemo(
     () =>
       selectedFields.length > 0 && selectedFields.length < EXPORT_FIELDS.length,
-    [selectedFields]
+    [selectedFields],
   );
 
   const handleFieldChange = (key: string) => {
     setSelectedFields((prev) =>
-      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key],
     );
   };
 
@@ -89,7 +89,16 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
       <div className="bg-white rounded-lg shadow-lg w-[600px]  max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
         <div className="flex flex-col gap-4 w-full items-center">
           <div className="w-full flex flex-col  mb-2">
-            <div className="flex flex-col  mb-6">
+            <div className="flex flex-col mb-6 relative">
+              <Button
+                type="button"
+                variant={"ghost"}
+                size={"icon"}
+                onClick={onClose}
+                className="absolute top-0 right-0 cursor-pointer"
+              >
+                <X width={20} height={20} />
+              </Button>
               <div className="flex flex-row gap-2">
                 <Download className="h-5 w-5" />
                 <h2 className="text-base font-bold">Export Timesheet Data</h2>
@@ -116,7 +125,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                     {dateRange.from && dateRange.to
                       ? `${format(dateRange.from, "PPP")} - ${format(
                           dateRange.to,
-                          "PPP"
+                          "PPP",
                         )}`
                       : "Select date range"}
                     <ChevronDownIcon />

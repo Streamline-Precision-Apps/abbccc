@@ -58,7 +58,6 @@ export default function EditJobsiteModal({
       fd.append("id", formData.id);
       fd.append("code", formData.code || ""); // Ensure code is included
       fd.append("name", formData.name);
-      fd.append("client", formData.Client?.id || "");
       fd.append("description", formData.description || "");
       fd.append("creationReason", formData.creationReason || "");
       fd.append("approvalStatus", formData.approvalStatus);

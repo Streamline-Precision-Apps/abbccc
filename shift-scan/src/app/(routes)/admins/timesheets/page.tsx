@@ -244,7 +244,7 @@ export default function AdminTimesheets() {
             onDeleteClick={handleDeleteClick}
             deletingId={deletingId}
             isDeleting={isDeleting}
-            onEditClick={(id: string) => {
+            onEditClick={(id: number) => {
               setEditingId(id);
               setShowEditModal(true);
             }}

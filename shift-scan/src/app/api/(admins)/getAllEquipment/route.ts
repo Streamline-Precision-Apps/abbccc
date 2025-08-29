@@ -67,13 +67,6 @@ export async function GET(req: Request) {
       });
     }
 
-    if (!equipment || equipment.length === 0) {
-      return NextResponse.json(
-        { message: "No equipment found for the given filter." },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(equipment);
   } catch (error) {
     console.error("Error fetching equipment data:", error);

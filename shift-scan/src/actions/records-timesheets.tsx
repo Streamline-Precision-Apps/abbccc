@@ -249,7 +249,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
   revalidateTag("timesheets");
 }
 
-export async function adminDeleteTimesheet(id: string) {
+export async function adminDeleteTimesheet(id: number) {
   try {
     await prisma.timeSheet.delete({
       where: { id },
@@ -263,7 +263,7 @@ export async function adminDeleteTimesheet(id: string) {
 }
 
 export async function adminUpdateTimesheetStatus(
-  id: string,
+  id: number,
   status: "APPROVED" | "REJECTED",
 ) {
   try {
@@ -291,7 +291,7 @@ export async function adminUpdateTimesheetStatus(
  * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
  */
 export async function adminUpdateTimesheet(formData: FormData) {
-  const id = formData.get("id") as string;
+  const id = Number(formData.get("id"));
   const dataJson = formData.get("data") as string;
   if (!id || !dataJson) {
     throw new Error("Timesheet ID and data are required for update.");
