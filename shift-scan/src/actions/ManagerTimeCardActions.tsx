@@ -6,7 +6,8 @@ export async function ApproveUsersTimeSheets(formData: FormData) {
   const id = formData.get("id") as string;
   const statusComment = formData.get("statusComment") as string;
   const timesheetIdsString = formData.get("timesheetIds") as string;
-  const timesheetIds = JSON.parse(timesheetIdsString) as string[];
+  const stringIds = JSON.parse(timesheetIdsString) as number[];
+  const timesheetIds = stringIds.map((id) => id);
 
   try {
     // Update all matching timesheets with the same values

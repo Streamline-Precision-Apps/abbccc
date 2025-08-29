@@ -17,8 +17,8 @@ interface PageProps {
   formTemplate?: FormIndividualTemplate;
   inputValue: string;
   setShowFormSubmission: Dispatch<SetStateAction<boolean>>;
-  setSelectedSubmissionId: Dispatch<SetStateAction<string | null>>;
-  openHandleDeleteSubmission: (id: string) => void;
+  setSelectedSubmissionId: Dispatch<SetStateAction<number | null>>;
+  openHandleDeleteSubmission: (id: number) => void;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   pageSize: number;
@@ -115,7 +115,10 @@ export default function RenderTableSection({
         if (!inputValue) return true;
         const lower = inputValue.toLowerCase();
         // Check id
-        if (submission.id && submission.id.toLowerCase().includes(lower))
+        if (
+          submission.id &&
+          submission.id.toString().toLowerCase().includes(lower)
+        )
           return true;
         // Check user name
         if (submission.User) {

@@ -185,7 +185,7 @@ export async function startEngineerProject(formData: FormData) {
     console.log(formData);
 
     const maintenanceId = formData.get("maintenanceId") as string;
-    const timeSheetId = formData.get("timeSheetId") as string;
+    const timeSheetId = Number(formData.get("timeSheetId"));
     const userId = formData.get("userId") as string;
     const startTime = new Date().toISOString();
 
@@ -299,7 +299,7 @@ export async function SubmitEngineerProject(formData: FormData) {
     const problemDiagnosis = formData.get("diagnosedProblem") as string;
     const solution = formData.get("solution") as string;
     const totalHoursLaboured = parseFloat(
-      formData.get("totalHoursLaboured") as string
+      formData.get("totalHoursLaboured") as string,
     );
 
     // Check for open MaintenanceLogs (endTime is null) for this Maintenance

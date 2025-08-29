@@ -1,6 +1,19 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, TableMeta } from "@tanstack/react-table";
 import { Timesheet } from "../useAllTimeSheetData";
 import { format } from "date-fns";
+
+// Define custom meta types for the table
+export interface TimesheetTableMeta {
+  searchTerm: string;
+}
+
+// This will allow TypeScript to recognize our custom meta properties
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData> {
+    searchTerm?: string;
+  }
+}
+
 import {
   Tooltip,
   TooltipTrigger,
@@ -16,7 +29,7 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
     header: "ID",
     cell: ({ row, table }) => {
       // Access search term from table meta
-      const searchTerm = table.options.meta?.searchTerm as string || "";
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className="text-xs text-center">
           {highlight(row.original.id.toString(), searchTerm)}
@@ -59,7 +72,7 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
     header: "Employee Name",
     cell: ({ row, table }) => {
       // Access search term from table meta
-      const searchTerm = table.options.meta?.searchTerm as string || "";
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className=" text-xs text-center">
           {highlight(
@@ -74,7 +87,7 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
     accessorKey: "jobsite",
     header: "Profit Id",
     cell: ({ row, table }) => {
-      const searchTerm = table.options.meta?.searchTerm as string || "";
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className=" text-xs text-center">
           {row.original.Jobsite ? (
@@ -99,7 +112,7 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
     accessorKey: "costCode",
     header: "Cost Code",
     cell: ({ row, table }) => {
-      const searchTerm = table.options.meta?.searchTerm as string || "";
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className=" text-xs text-center">
           {row.original.CostCode ? (

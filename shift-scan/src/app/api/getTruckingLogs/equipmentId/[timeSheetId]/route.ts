@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ timeSheetId: string }> }
+  { params }: { params: Promise<{ timeSheetId: number }> },
 ) {
   try {
     const { timeSheetId } = await params;
@@ -11,7 +11,7 @@ export async function GET(
     if (!timeSheetId) {
       return NextResponse.json(
         { error: "Missing timeSheetId parameter" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET(
     if (!truckingLog) {
       return NextResponse.json(
         { error: "No trucking log found for this timesheet" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -47,7 +47,7 @@ export async function GET(
     console.error("Error fetching equipment ID from trucking log:", error);
     return NextResponse.json(
       { error: "Failed to fetch equipment ID" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

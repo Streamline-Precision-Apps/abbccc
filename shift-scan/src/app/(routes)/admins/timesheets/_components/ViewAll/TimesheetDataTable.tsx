@@ -25,7 +25,6 @@ import {
 import { Button } from "@/components/ui/button";
 import React, { Dispatch, SetStateAction, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import "./types"; // Import the type augmentation
 
 interface TimesheetDataTableProps {
   data: Timesheet[];
