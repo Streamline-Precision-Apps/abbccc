@@ -4,7 +4,6 @@ import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { FormEvent } from "react";
 import { deleteFormSubmission, saveDraft } from "@/actions/hamburgerActions";
-import { debounce } from "lodash";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
@@ -168,6 +167,7 @@ export default function FormDraft({
         }
       }
     }
+
     return true;
   };
 
@@ -187,13 +187,13 @@ export default function FormDraft({
         className="row-start-1 row-end-2 h-full justify-center"
       >
         <TitleBoxes onClick={() => router.push("/hamburger/inbox")}>
-          <Titles size={"h2"}>{formData.name}</Titles>
+          <Titles size={"md"}>{formData.name}</Titles>
         </TitleBoxes>
       </Holds>
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-8 "
+        className="w-full h-full row-start-2 row-end-8"
       >
         <form
           onSubmit={async (e) => {
@@ -205,73 +205,73 @@ export default function FormDraft({
               setIsSubmitting(false);
             }
           }}
-          className="h-full mt-3 mb-5"
+          className="h-full pt-3 pb-3"
         >
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-8 h-full w-full border-black border-opacity-5 border-b-2 ">
+            {/* Form content area */}
+            <Holds className="row-start-1 row-end-8 h-full w-full border-black border-opacity-5 border-b-2">
               <div className="overflow-y-auto no-scrollbar">
                 <Contents width={"section"}>
-                  <Holds>
-                    <Labels size={"p4"} htmlFor="title">
-                      {t("TitleOptional")}
-                    </Labels>
-                    <Inputs
-                      type="text"
-                      placeholder={t("EnterATitleHere")}
-                      name="title"
-                      value={formTitle}
-                      className="text-center text-base"
-                      onChange={(e) => setFormTitle(e.target.value)}
-                    />
-                  </Holds>
+                  {/* Title input */}
+                  <Labels size={"p4"} htmlFor="title" className="mb-2">
+                    {t("TitleOptional")}
+                  </Labels>
+                  <Inputs
+                    type="text"
+                    placeholder={t("EnterATitleHere")}
+                    name="title"
+                    value={formTitle}
+                    className="text-center text-base mb-4"
+                    onChange={(e) => setFormTitle(e.target.value)}
+                  />
+
+                  {/* Form fields */}
                   <FormFieldRenderer
                     formData={formData}
                     formValues={formValues}
                     setFormValues={updateFormValues}
                     readOnly={false}
                   />
-                  <Holds>
-                    {formData.isSignatureRequired && (
-                      <Holds className="h-full w-full">
-                        <Labels size={"p5"} htmlFor="signature">
-                          {t("Signature")}
-                        </Labels>
-                        {showSignature ? (
-                          <Holds
-                            onClick={() => setShowSignature(false)}
-                            className="w-full h-full border-[3px] rounded-[10px] border-black"
-                          >
-                            {signature && (
-                              <Holds className="w-full h-full">
-                                <img
-                                  src={signature}
-                                  alt="signature"
-                                  className="h-20 w-full object-contain"
-                                />
-                              </Holds>
-                            )}
-                          </Holds>
-                        ) : (
-                          <Holds className="w-full h-full ">
-                            <Buttons
-                              onClick={() => setShowSignature(true)}
-                              type="button"
-                              className="shadow-none w-full h-20"
-                            >
-                              {t("TapToSign")}
-                            </Buttons>
-                          </Holds>
-                        )}
-                      </Holds>
-                    )}
-                  </Holds>
+
+                  {/* Signature section - only shown if required */}
+                  {formData.isSignatureRequired && (
+                    <div className="">
+                      <Labels size={"p5"} htmlFor="signature" className="mb-2">
+                        {t("Signature")}
+                      </Labels>
+
+                      {showSignature ? (
+                        <div
+                          onClick={() => setShowSignature(false)}
+                          className="w-full h-full border-[3px] rounded-[10px] border-black cursor-pointer"
+                        >
+                          {signature && (
+                            <img
+                              src={signature}
+                              alt="signature"
+                              className="h-20 w-full object-contain"
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <Buttons
+                          onClick={() => setShowSignature(true)}
+                          type="button"
+                          className="shadow-none w-full h-20"
+                        >
+                          {t("TapToSign")}
+                        </Buttons>
+                      )}
+                    </div>
+                  )}
                 </Contents>
               </div>
             </Holds>
 
+            {/* Action buttons */}
             <Holds className="row-start-8 row-end-9 h-full w-full">
               <Contents width={"section"}>
-                <Holds position={"row"} className="w-full h-full gap-x-3">
+                <div className="w-full h-full flex gap-x-3">
                   <Buttons
                     type="submit"
                     background={
@@ -287,7 +287,7 @@ export default function FormDraft({
                     }
                     className="w-full"
                   >
-                    <Titles size={"h4"}>
+                    <Titles size={"md"}>
                       {isSubmitting ? t("Submitting") : t("SubmitRequest")}
                     </Titles>
                   </Buttons>
@@ -297,9 +297,9 @@ export default function FormDraft({
                     onClick={() => handleDeleteForm(submissionId)}
                     className="w-full"
                   >
-                    <Titles size={"h4"}>{t("DeleteDraft")}</Titles>
+                    <Titles size={"md"}>{t("DeleteDraft")}</Titles>
                   </Buttons>
-                </Holds>
+                </div>
               </Contents>
             </Holds>
           </Grids>
