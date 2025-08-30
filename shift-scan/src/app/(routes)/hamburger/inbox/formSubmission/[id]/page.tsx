@@ -581,7 +581,7 @@ export default function DynamicForm({
                   router.back();
                 }}
               >
-                <Titles size={"h2"}>{t("Loading")}</Titles>
+                <Titles size={"md"}>{t("Loading")}</Titles>
               </TitleBoxes>
             </Holds>
             <Holds

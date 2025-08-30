@@ -155,17 +155,17 @@ export default function SubmittedForms({
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-8 "
+        className="w-full h-full row-start-2 row-end-8 no-scrollbar  "
       >
         <Contents width={"section"}>
           <form
             onSubmit={() => {
               handleDelete();
             }}
-            className="h-full "
+            className="h-full py-3"
           >
-            <Grids rows={"6"} gap={"3"} className="h-full w-full">
-              <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-auto">
+            <Grids rows={"8"} gap={"5"} className="h-full w-full">
+              <Holds className="row-start-1 row-end-8 h-full w-full overflow-y-auto no-scrollbar">
                 <FormFieldRenderer
                   formData={formData}
                   formValues={formValues}
@@ -202,7 +202,7 @@ export default function SubmittedForms({
                 </Holds>
               </Holds>
               {submissionStatus === "PENDING" && (
-                <Holds className="row-start-6 row-end-7 justify-center h-full w-full">
+                <Holds className="row-start-8 row-end-9 justify-center h-full w-full">
                   <Buttons
                     background={"red"}
                     type="button"
