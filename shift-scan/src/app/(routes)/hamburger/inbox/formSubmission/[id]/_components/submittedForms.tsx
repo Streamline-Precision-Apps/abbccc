@@ -16,6 +16,7 @@ import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
+import { Label } from "@/components/ui/label";
 
 interface FormField {
   id: string;
@@ -157,98 +158,108 @@ export default function SubmittedForms({
         background={"white"}
         className="w-full h-full row-start-2 row-end-8 no-scrollbar  "
       >
-        <Contents width={"section"}>
-          <form
-            onSubmit={() => {
-              handleDelete();
-            }}
-            className="h-full py-3"
-          >
-            <Grids rows={"8"} gap={"5"} className="h-full w-full">
-              <Holds className="row-start-1 row-end-8 h-full w-full overflow-y-auto no-scrollbar">
+        <form
+          onSubmit={() => {
+            handleDelete();
+          }}
+          className="h-full pb-3"
+        >
+          <Grids rows={"8"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-8 h-full w-full py-3 overflow-y-auto no-scrollbar">
+              <Contents width={"section"}>
+                <div className="h-full border-b-2 mb-2 border-neutral-100 pb-2 flex flex-row justify-between items-center">
+                  <p className="text-blue-500 font-semibold  text-sm">
+                    Submission Details
+                  </p>
+                  <p className="text-xs text-right italic text-neutral-400">
+                    {`${t("OriginallySubmitted")} ${
+                      format(new Date(submittedForm || ""), "M/dd/yy") || ""
+                    } `}
+                  </p>
+                </div>
                 <FormFieldRenderer
                   formData={formData}
                   formValues={formValues}
                   setFormValues={updateFormValues}
-                  readOnly={submissionStatus !== "PENDING"}
+                  readOnly={true}
+                  disabled={true}
                 />
-
-                <Holds className="h-full w-full pt-4">
+              </Contents>
+              <Contents width={"section"}>
+                <Holds className="h-full w-full">
                   {submissionStatus === "PENDING" && (
-                    <Holds className="border-[3px] rounded-[10px] border-black justify-center items-center">
-                      {signature ? (
-                        <Images
-                          titleImgAlt={"form Status"}
-                          titleImg={signature}
-                          className=" w-full h-24 object-contain"
-                        />
-                      ) : (
-                        <Holds className="w-full h-24 flex items-center justify-center">
-                          <Texts>{t("NoSignature")}</Texts>
-                        </Holds>
-                      )}
-                    </Holds>
-                  )}
-                  {submittedForm && (
-                    <Texts
-                      className="pt-1"
-                      position={"left"}
-                      size={"p7"}
-                      text={"gray"}
-                    >{`${t("OriginallySubmitted")} ${
-                      format(new Date(submittedForm || ""), "M/dd/yy") || ""
-                    } `}</Texts>
+                    <>
+                      <Label className="text-sm font-medium mb-1">
+                        {t("Signature")}
+                      </Label>
+                      <Holds className="border-[1px] rounded-md border-neutral-100 justify-center items-center">
+                        {signature ? (
+                          <Images
+                            titleImgAlt={"form Status"}
+                            titleImg={signature}
+                            className=" w-full h-10 object-contain"
+                          />
+                        ) : (
+                          <Holds className="w-full h-10 flex items-center justify-center">
+                            <Texts>{t("NoSignature")}</Texts>
+                          </Holds>
+                        )}
+                      </Holds>
+                    </>
                   )}
                 </Holds>
-              </Holds>
-              {submissionStatus === "PENDING" && (
-                <Holds className="row-start-8 row-end-9 justify-center h-full w-full">
+              </Contents>
+            </Holds>
+            {submissionStatus === "PENDING" && (
+              <Holds className="row-start-8 row-end-9 justify-center h-full w-full pt-5 border-t-2 border-neutral-100">
+                <Contents width={"section"}>
                   <Buttons
                     background={"red"}
                     type="button"
                     onClick={() => setDeleteRequestModal(true)}
-                    className="w-full h-[50px]"
+                    className="w-full h-full"
+                    shadow={"none"}
                   >
-                    <Titles size={"h4"}>{t("DeleteRequest")}</Titles>
+                    <Titles size={"sm"}>{t("DeleteRequest")}</Titles>
+                  </Buttons>
+                </Contents>
+              </Holds>
+            )}
+            <NModals
+              background={"noOpacity"}
+              isOpen={deleteRequestModal}
+              handleClose={() => setDeleteRequestModal(false)}
+              size={"medWW"}
+            >
+              <Holds className="w-full h-full pb-5">
+                <Holds className="w-full h-3/4 justify-center items-center">
+                  <Texts size={"lg"}>
+                    {t("AreYouSureYouWantToDeleteThisRequest")}
+                  </Texts>
+                </Holds>
+                <Holds position={"row"} className="gap-4 h-1/4">
+                  <Buttons
+                    background={"green"}
+                    type="button"
+                    onClick={() => handleDelete()}
+                    className="w-full"
+                  >
+                    <Titles size={"md"}>{t("Yes")}</Titles>
+                  </Buttons>
+
+                  <Buttons
+                    background={"neutral"}
+                    type="button"
+                    onClick={() => setDeleteRequestModal(false)}
+                    className="w-full"
+                  >
+                    <Titles size={"md"}>{t("Cancel")}</Titles>
                   </Buttons>
                 </Holds>
-              )}
-              <NModals
-                background={"noOpacity"}
-                isOpen={deleteRequestModal}
-                handleClose={() => setDeleteRequestModal(false)}
-                size={"medWW"}
-              >
-                <Holds className="w-full h-full pb-5">
-                  <Holds className="w-full h-3/4 justify-center items-center">
-                    <Texts size={"p2"}>
-                      {t("AreYouSureYouWantToDeleteThisRequest")}
-                    </Texts>
-                  </Holds>
-                  <Holds position={"row"} className="gap-4 h-1/4">
-                    <Buttons
-                      background={"green"}
-                      type="button"
-                      onClick={() => handleDelete()}
-                      className="w-full py-2"
-                    >
-                      <Titles size={"h4"}>{t("Yes")}</Titles>
-                    </Buttons>
-
-                    <Buttons
-                      background={"red"}
-                      type="button"
-                      onClick={() => setDeleteRequestModal(false)}
-                      className="w-full py-2"
-                    >
-                      <Titles size={"h4"}>{t("Cancel")}</Titles>
-                    </Buttons>
-                  </Holds>
-                </Holds>
-              </NModals>
-            </Grids>
-          </form>
-        </Contents>
+              </Holds>
+            </NModals>
+          </Grids>
+        </form>
       </Holds>
     </>
   );

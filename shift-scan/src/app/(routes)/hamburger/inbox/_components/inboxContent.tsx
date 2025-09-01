@@ -89,22 +89,6 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
                   setLoading={setLoading}
                   isManager={isManager}
                 />
-                {/* New Form System Link (Testing) */}
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                  <h3 className="font-medium text-blue-800 mb-2">
-                    Try the New Form System
-                  </h3>
-                  <p className="text-sm text-blue-600 mb-2">
-                    We've improved our form system for better performance. Try
-                    it out!
-                  </p>
-                  <a
-                    href="/forms"
-                    className="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                  >
-                    Try New Forms
-                  </a>
-                </div>
               </Holds>
             </Grids>
           </Holds>

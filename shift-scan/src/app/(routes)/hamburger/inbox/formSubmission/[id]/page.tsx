@@ -562,16 +562,12 @@ export default function DynamicForm({
     }
   };
 
-  // useEffect(() => {
-  //   console.log("Manager Form Approval Data:", managerFormApproval);
-  // }, [managerFormApproval]);
-
   // Loading state
   if (loading || !formData) {
     return (
       <Bases>
         <Contents>
-          <Grids rows={"7"} gap={"5"} className="h-full">
+          <Grids rows={"7"} gap={"5"} className="h-full no-scrollbar">
             <Holds
               background={"white"}
               className="row-span-1 h-full justify-center animate-pulse"
@@ -588,10 +584,10 @@ export default function DynamicForm({
               background={"white"}
               className="w-full h-full row-span-7 animate-pulse"
             >
-              <Contents width={"section"}>
+              <Contents width={"section"} className="h-full">
                 <form className="h-full">
-                  <Grids rows={"6"} gap={"3"} className="h-full w-full my-5">
-                    <Holds className="row-start-1 row-end-6 h-full w-full justify-center">
+                  <Grids rows={"6"} gap={"3"} className="h-full w-full">
+                    <Holds className="row-start-1 row-end-7 h-full w-full justify-center ">
                       <Spinner />
                     </Holds>
                   </Grids>

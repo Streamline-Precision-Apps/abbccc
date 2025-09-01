@@ -1,11 +1,9 @@
 "use client";
-import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
@@ -13,6 +11,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { format } from "date-fns";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
+import { Label } from "@/components/ui/label";
 
 interface FormField {
   id: string;
@@ -163,48 +162,60 @@ export default function SubmittedFormsApproval({
         className="w-full h-full row-start-2 row-end-8"
       >
         <Contents width={"section"}>
-          <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 ">
-            <FormFieldRenderer
-              formData={formData}
-              formValues={formValues}
-              setFormValues={() => {}}
-              readOnly={true}
-            />
-            <Holds
-              position={"row"}
-              className="pb-3 w-full justify-between border-black border-opacity-5 border-b-2"
-            >
-              <Texts size={"p7"}>
+          <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 gap-2 ">
+            <div className="h-full border-b-2 pt-2 pb-1 border-neutral-100 flex flex-row justify-between items-center">
+              <p className="text-blue-500 font-semibold  text-sm">
+                Approval Details
+              </p>
+              <p className="text-xs text-right italic text-neutral-400">
+                {`${t("OriginallySubmitted")} ${format(
+                  managerFormApproval?.Approvals[0]?.updatedAt?.toString() ||
+                    new Date().toISOString(),
+                  "M/dd/yy",
+                )}`}
+              </p>
+            </div>
+
+            <div className="h-full w-full gap-2 flex flex-wrap">
+              <Texts position={"left"} size={"sm"} className="w-fit">{`${
+                status === FormStatus.APPROVED ? t("ApprovedBy") : t("DeniedBy")
+              }`}</Texts>
+              <Texts
+                position={"left"}
+                size={"sm"}
+                className="text-neutral-400 break-words w-full"
+              >{`${managerName ? managerName : "Admin"}`}</Texts>
+            </div>
+            <Holds className="h-full pb-3 ">
+              <Holds>
+                <Label className="text-xs ">{t("ManagerComments")}</Label>
+                <TextAreas
+                  value={comment}
+                  readOnly
+                  className="w-full border-neutral-100 border-2"
+                />
+              </Holds>
+            </Holds>
+            <div className="h-full border-b-2 pt-2 pb-1 border-neutral-100 flex flex-row justify-between items-center">
+              <p className="text-blue-500 font-semibold  text-sm">
+                Submission Details
+              </p>
+              <p className="text-xs text-right italic text-neutral-400">
                 {`${t("OriginallySubmitted")} ${format(
                   managerFormApproval?.submittedAt?.toString() ||
                     new Date().toISOString(),
                   "M/dd/yy",
                 )}`}
-              </Texts>
-            </Holds>
-            <Holds position={"row"} className="h-full py-3 gap-1">
-              <Texts position={"left"} size={"p5"} className="italic">{`${
-                status === FormStatus.APPROVED ? t("ApprovedBy") : t("DeniedBy")
-              }`}</Texts>
-              <Texts
-                position={"left"}
-                size={"p5"}
-                className="italic"
-              >{`${managerName}`}</Texts>
-            </Holds>
-            <Holds className="h-full pb-3">
-              <Holds>
-                <Labels size={"p5"}>{t("ManagerComments")}</Labels>
-                <TextAreas value={comment} disabled className="w-full" />
-              </Holds>
-              <Texts size={"p7"} position={"left"}>
-                {`${t("ApprovalStatusLastUpdated")} ${format(
-                  managerFormApproval?.updatedAt?.toString() ||
-                    new Date().toISOString(),
-                  "M/dd/yy",
-                )}`}
-              </Texts>
-            </Holds>
+              </p>
+            </div>
+
+            <FormFieldRenderer
+              formData={formData}
+              formValues={formValues}
+              setFormValues={() => {}}
+              readOnly={true}
+              disabled={true}
+            />
           </Holds>
         </Contents>
       </Holds>

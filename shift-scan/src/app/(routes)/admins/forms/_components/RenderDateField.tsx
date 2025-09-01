@@ -17,6 +17,7 @@ export default function RenderDateField({
   handleFieldTouch,
   touchedFields,
   error,
+  disabled,
 }: {
   field: {
     id: string;
@@ -28,6 +29,7 @@ export default function RenderDateField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -46,6 +48,7 @@ export default function RenderDateField({
             className={`border rounded px-2 py-1 cursor-pointer bg-white ${
               error && touchedFields[field.id] ? "border-red-500" : ""
             }`}
+            disabled={disabled}
           />
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

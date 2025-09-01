@@ -183,14 +183,14 @@ export default function ManagerFormEditApproval({
               position={"row"}
               className="py-3 w-full justify-between border-black border-opacity-5 border-b-2"
             >
-              <Texts size={"p7"}>
+              <Texts size={"xs"}>
                 {`${t("OriginallySubmitted")} ${format(
                   managerFormApproval?.submittedAt?.toString() ||
                     new Date().toISOString(),
                   "M/dd/yy",
                 )}`}
               </Texts>
-              <Texts size={"p7"}>
+              <Texts size={"xs"}>
                 {`${t("LastEdited")} ${format(
                   managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
                     new Date().toISOString(),
