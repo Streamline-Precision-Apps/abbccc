@@ -40,6 +40,7 @@ export default function RenderSearchAssetField({
   handleFieldTouch,
   touchedFields,
   error,
+  disabled,
 }: {
   equipmentOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
@@ -72,6 +73,7 @@ export default function RenderSearchAssetField({
   handleFieldTouch: (fieldId: string) => void;
   touchedFields: Record<string, boolean>;
   error?: string | null;
+  disabled?: boolean;
 }) {
   let assetOptions = [{ value: "", label: "" }];
   let assetType = "client";
@@ -140,6 +142,7 @@ export default function RenderSearchAssetField({
           }}
           placeholder={`Select ${assetType}...`}
           filterKeys={["value", "label"]}
+          disabled={disabled}
         />
         {/* Display selected assets as tags */}
         {selectedAssets.length > 0 && (

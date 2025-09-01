@@ -62,6 +62,7 @@ interface FormFieldRendererProps {
   formValues: Record<string, string>;
   setFormValues?: (values: Record<string, string>) => void;
   readOnly?: boolean;
+  disabled?: boolean;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
@@ -69,6 +70,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   formValues,
   setFormValues,
   readOnly = false,
+  disabled = false,
 }) => {
   const [equipmentOptions, setEquipmentOptions] = useState<Option[]>([]);
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
@@ -81,29 +83,35 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
 
   // Convert equipment data to Option format
   useEffect(() => {
-    const options = equipmentResults.map((equipment) => ({
-      value: equipment.id,
-      label: equipment.name,
-    }));
-    setEquipmentOptions(options);
+    if (equipmentResults && Array.isArray(equipmentResults)) {
+      const options = equipmentResults.map((equipment) => ({
+        value: equipment.id,
+        label: equipment.name,
+      }));
+      setEquipmentOptions(options);
+    }
   }, [equipmentResults]);
 
   // Convert jobsite data to Option format
   useEffect(() => {
-    const options = jobsiteResults.map((jobsite) => ({
-      value: jobsite.id,
-      label: jobsite.name,
-    }));
-    setJobsiteOptions(options);
+    if (jobsiteResults && Array.isArray(jobsiteResults)) {
+      const options = jobsiteResults.map((jobsite) => ({
+        value: jobsite.id,
+        label: jobsite.name,
+      }));
+      setJobsiteOptions(options);
+    }
   }, [jobsiteResults]);
 
   // Convert cost code data to Option format
   useEffect(() => {
-    const options = costcodeResults.map((costcode) => ({
-      value: costcode.id,
-      label: costcode.name,
-    }));
-    setCostCodeOptions(options);
+    if (costcodeResults && Array.isArray(costcodeResults)) {
+      const options = costcodeResults.map((costcode) => ({
+        value: costcode.id,
+        label: costcode.name,
+      }));
+      setCostCodeOptions(options);
+    }
   }, [costcodeResults]);
 
   // Fetch user options
@@ -346,6 +354,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       costCodeOptions={costCodeOptions}
       readOnly={readOnly}
       hideSubmittedBy={true}
+      disabled={disabled}
     />
   );
 };
