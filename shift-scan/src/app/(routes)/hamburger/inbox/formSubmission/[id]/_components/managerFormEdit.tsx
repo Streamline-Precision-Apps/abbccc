@@ -163,92 +163,125 @@ export default function ManagerFormEditApproval({
         className="row-start-1 row-end-2 h-full justify-center"
       >
         <TitleBoxes onClick={() => router.back()}>
-          <Titles size={"h3"}>{formData.name}</Titles>
+          <div className="flex flex-col items-center">
+            <Titles size={"h3"} className="text-center">
+              {formData.name}
+            </Titles>
+          </div>
         </TitleBoxes>
       </Holds>
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-8 "
+        className="w-full h-full row-start-2 row-end-8"
       >
         <Contents width={"section"}>
-          <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 ">
-            <FormFieldRenderer
-              formData={formData}
-              formValues={formValues}
-              setFormValues={() => {}}
-              readOnly={true}
-            />
-            <Holds
-              position={"row"}
-              className="py-3 w-full justify-between border-black border-opacity-5 border-b-2"
-            >
-              <Texts size={"xs"}>
-                {`${t("OriginallySubmitted")} ${format(
-                  managerFormApproval?.submittedAt?.toString() ||
-                    new Date().toISOString(),
-                  "M/dd/yy",
-                )}`}
-              </Texts>
-              <Texts size={"xs"}>
-                {`${t("LastEdited")} ${format(
-                  managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
-                    new Date().toISOString(),
-                  "M/dd/yy",
-                )}`}
-              </Texts>
-            </Holds>
-            <Holds className="relative pb-3">
-              <Labels size={"p5"} htmlFor="managerName">
-                {t("Manager")}
-              </Labels>
-              <Inputs
-                id="managerName"
-                name="managerName"
-                type="text"
-                value={`${managerFormApproval?.Approvals?.[0]?.Approver?.firstName} ${managerFormApproval?.Approvals?.[0]?.Approver?.lastName}`}
-                disabled
-                className="text-center text-base"
+          <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
+            {/* Form Details Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+              <div className="mb-3">
+                <h3 className="text-blue-600 font-semibold text-sm">
+                  Form Details
+                </h3>
+              </div>
+              <FormFieldRenderer
+                formData={formData}
+                formValues={formValues}
+                setFormValues={() => {}}
+                readOnly={true}
               />
-            </Holds>
-            <Holds className="relative pb-3">
-              <Labels size={"p5"} htmlFor="approvalStatus">
-                {t("ApprovalStatus")}
-              </Labels>
-              <Selects
-                id="approvalStatus"
-                value={approvalStatus}
-                onChange={handleApprovalStatusChange}
-              >
-                <option value="APPROVED">{t("Approved")}</option>
-                <option value="DENIED">{t("Denied")}</option>
-              </Selects>
-            </Holds>
-            <Holds className="relative">
-              <Labels size={"p5"} htmlFor="comment">
-                {t("ManagerComments")}
-              </Labels>
-              <Holds className="w-full relative">
-                <TextAreas
-                  name="comment"
-                  id="comment"
-                  value={comment}
-                  onChange={handleCommentChange}
-                  maxLength={40}
-                />
-                <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded-sm text-sm text-gray-500">
-                  {comment.length} / 40
-                </Texts>
-              </Holds>
-              <Texts position={"right"} size={"p7"}>
-                {`${t("ApprovalStatusLastUpdated")} ${format(
-                  managerFormApproval?.updatedAt?.toString() ||
-                    new Date().toISOString(),
-                  "M/dd/yy",
-                )}`}
-              </Texts>
-            </Holds>
-          </Holds>
+
+              <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-200">
+                <p className="text-xs text-gray-500">
+                  {`${t("OriginallySubmitted")} ${format(
+                    managerFormApproval?.submittedAt?.toString() ||
+                      new Date().toISOString(),
+                    "M/dd/yy",
+                  )}`}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {`${t("LastEdited")} ${format(
+                    managerFormApproval?.Approvals?.[0]?.updatedAt?.toString() ||
+                      new Date().toISOString(),
+                    "M/dd/yy",
+                  )}`}
+                </p>
+              </div>
+            </div>
+
+            {/* Manager Approval Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+              <div className="mb-3">
+                <h3 className="text-blue-600 font-semibold text-sm">
+                  Manager Approval
+                </h3>
+              </div>
+
+              {/* Manager Name */}
+              <div className="mb-4">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("Manager")}
+                  </span>
+                </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-md p-2 text-center">
+                  <span className="text-sm text-gray-700">
+                    {`${managerFormApproval?.Approvals?.[0]?.Approver?.firstName} ${managerFormApproval?.Approvals?.[0]?.Approver?.lastName}`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Approval Status */}
+              <div className="mb-4">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("ApprovalStatus")}
+                  </span>
+                </div>
+                <Selects
+                  id="approvalStatus"
+                  value={approvalStatus}
+                  onChange={handleApprovalStatusChange}
+                  className="w-full border border-gray-200 rounded-md p-2 bg-white"
+                >
+                  <option value="APPROVED">{t("Approved")}</option>
+                  <option value="DENIED">{t("Denied")}</option>
+                </Selects>
+              </div>
+
+              {/* Manager Comments */}
+              <div className="mb-3">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("ManagerComments")}
+                  </span>
+                </div>
+                <div className="relative">
+                  <TextAreas
+                    name="comment"
+                    id="comment"
+                    value={comment}
+                    onChange={handleCommentChange}
+                    maxLength={40}
+                    className="w-full border border-gray-200 rounded-md p-2 min-h-[80px] resize-none"
+                  />
+                  <span className="absolute right-2 bottom-2 px-2 py-1 bg-gray-50 rounded-md text-xs text-gray-500">
+                    {comment.length} / 40
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <p className="text-xs italic text-gray-500">
+                  {`${t("ApprovalStatusLastUpdated")} ${format(
+                    managerFormApproval?.updatedAt?.toString() ||
+                      new Date().toISOString(),
+                    "M/dd/yy",
+                  )}`}
+                </p>
+              </div>
+            </div>
+          </div>
         </Contents>
       </Holds>
     </>

@@ -28,7 +28,6 @@ import {
   EquipmentLogsData,
   EmployeeEquipmentLogWithRefuel,
   EquipmentHauledItem,
-  MaintenanceLog,
 } from "@/lib/types";
 import { MaintenanceLogData } from "./TimeCardMechanicLogs";
 import {
@@ -50,6 +49,12 @@ import {
 } from "./TimeCardTruckingMaterialLogs";
 import { TimesheetDataUnion } from "@/hooks/(ManagerHooks)/useTimesheetData";
 import { useAllEquipment } from "@/hooks/useAllEquipment";
+
+type MaintenanceLog = {
+  id: string;
+  startTime: Date;
+  endTime: Date | null;
+};
 
 // Helper to flatten nested refuel logs for server submission
 const flattenRefuelLogs = (logs: TruckingRefuelLogData) => {
@@ -116,7 +121,7 @@ function isEquipmentLogChange(
         materialType?: string;
         LoadQuantity?: number | null;
       }
-    | { id: string; gallonsRefueled?: number | null }
+    | { id: string; gallonsRefueled?: number | null },
 ): obj is EquipmentLogChange {
   return (
     typeof obj === "object" &&
@@ -144,8 +149,8 @@ function isHaulLogChangeArray(arr: unknown): arr is HaulLogChange[] {
             log &&
             typeof log === "object" &&
             "EquipmentHauled" in log &&
-            Array.isArray(log.EquipmentHauled)
-        )
+            Array.isArray(log.EquipmentHauled),
+        ),
     )
   );
 }
@@ -162,14 +167,14 @@ export default function EmployeeTabs() {
 
   const manager = useMemo(
     () => `${session?.user?.firstName} ${session?.user?.lastName}`,
-    [session]
+    [session],
   );
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [activeTab, setActiveTab] = useState(1);
   const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
   const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
-    "timesheetHighlights"
+    "timesheetHighlights",
   );
 
   const {
@@ -228,7 +233,7 @@ export default function EmployeeTabs() {
           }[]
         | { id: string; gallonsRefueled?: number | null }[]
         | EquipmentLogChange[]
-        | TruckingMileageData
+        | TruckingMileageData,
     ) => {
       try {
         switch (timeSheetFilter) {
@@ -267,7 +272,7 @@ export default function EmployeeTabs() {
                   } else {
                     console.warn(
                       "Invalid startTime detected:",
-                      timesheet.startTime
+                      timesheet.startTime,
                     );
                   }
                 }
@@ -275,7 +280,7 @@ export default function EmployeeTabs() {
                 console.error(
                   "Error processing startTime:",
                   timesheet.startTime,
-                  e
+                  e,
                 );
               }
 
@@ -293,7 +298,7 @@ export default function EmployeeTabs() {
                   } else {
                     console.warn(
                       "Invalid endTime detected:",
-                      timesheet.endTime
+                      timesheet.endTime,
                     );
                   }
                 }
@@ -301,7 +306,7 @@ export default function EmployeeTabs() {
                 console.error(
                   "Error processing endTime:",
                   timesheet.endTime,
-                  e
+                  e,
                 );
               }
 
@@ -315,7 +320,7 @@ export default function EmployeeTabs() {
             });
 
             const validChanges = serializedChanges.filter(
-              (timesheet) => timesheet.id && timesheet.startTime !== undefined
+              (timesheet) => timesheet.id && timesheet.startTime !== undefined,
             );
 
             if (validChanges.length === 0) return;
@@ -367,9 +372,9 @@ export default function EmployeeTabs() {
                       id: hauledItem.id,
                       equipmentId: hauledItem.Equipment?.id,
                       jobSiteId: hauledItem.JobSite?.id,
-                    })
-                  )
-              )
+                    }),
+                  ),
+              ),
             );
 
             if (updates.length === 0) {
@@ -396,7 +401,7 @@ export default function EmployeeTabs() {
               "TruckingLogs" in changes[0]
             ) {
               formattedChanges = flattenMaterialLogs(
-                changes as TruckingMaterialHaulLogData
+                changes as TruckingMaterialHaulLogData,
               );
             } else if (Array.isArray(changes)) {
               formattedChanges = changes as ProcessedMaterialLog[];
@@ -422,7 +427,7 @@ export default function EmployeeTabs() {
               "TruckingLogs" in changes[0]
             ) {
               formattedChanges = flattenRefuelLogs(
-                changes as TruckingRefuelLogData
+                changes as TruckingRefuelLogData,
               );
             } else if (Array.isArray(changes)) {
               formattedChanges = changes as {
@@ -449,7 +454,7 @@ export default function EmployeeTabs() {
                   "shiftType" in change &&
                   "equipmentId" in change &&
                   "materialType" in change &&
-                  "LoadQuantity" in change
+                  "LoadQuantity" in change,
               )
             ) {
               await updateTascoHaulLogs(
@@ -459,7 +464,7 @@ export default function EmployeeTabs() {
                   equipmentId?: string | null | undefined;
                   materialType?: string | undefined;
                   LoadQuantity?: number | null | undefined;
-                }[]
+                }[],
               );
             } else {
               console.error("Invalid changes type");
@@ -473,11 +478,11 @@ export default function EmployeeTabs() {
                 (change) =>
                   "id" in change &&
                   ("gallonsRefueled" in change ||
-                    !("gallonsRefueled" in change))
+                    !("gallonsRefueled" in change)),
               )
             ) {
               await updateTascoRefuelLogs(
-                changes as { id: string; gallonsRefueled?: number | null }[]
+                changes as { id: string; gallonsRefueled?: number | null }[],
               );
             } else {
               console.error("Invalid changes type");
@@ -493,7 +498,7 @@ export default function EmployeeTabs() {
               "endTime" in changes[0]
             ) {
               const validChanges = (changes as EquipmentLogChange[]).filter(
-                (change) => change.id && change.startTime && change.endTime
+                (change) => change.id && change.startTime && change.endTime,
               );
               if (validChanges.length > 0) {
                 await updateEquipmentLogs(
@@ -501,7 +506,7 @@ export default function EmployeeTabs() {
                     id: change.id,
                     startTime: change.startTime,
                     endTime: change.endTime,
-                  }))
+                  })),
                 );
               }
             } else {
@@ -514,11 +519,11 @@ export default function EmployeeTabs() {
             if (
               Array.isArray(changes) &&
               changes.every(
-                (change) => "id" in change && "gallonsRefueled" in change
+                (change) => "id" in change && "gallonsRefueled" in change,
               )
             ) {
               updateEquipmentRefuelLogs(
-                changes as { id: string; gallonsRefueled?: number | null }[]
+                changes as { id: string; gallonsRefueled?: number | null }[],
               );
             } else {
               console.error("Invalid changes type");
@@ -538,7 +543,7 @@ export default function EmployeeTabs() {
                 id: log.id,
                 startTime: log.startTime ? new Date(log.startTime) : undefined,
                 endTime: log.endTime ? new Date(log.endTime) : undefined,
-              })
+              }),
             );
 
             console.log("Saving maintenance logs updates:", maintenanceUpdates);
@@ -553,7 +558,7 @@ export default function EmployeeTabs() {
             } else {
               console.error(
                 "Failed to update maintenance logs:",
-                result?.error
+                result?.error,
               );
             }
             break;
@@ -578,7 +583,7 @@ export default function EmployeeTabs() {
       fetchTimesheetsForDate,
       fetchTimesheetsForFilter,
       setTimesheetData,
-    ]
+    ],
   );
 
   const onCancelEdits = useCallback(() => {
@@ -600,7 +605,7 @@ export default function EmployeeTabs() {
           <TitleBoxes
             onClick={() =>
               router.push(
-                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`
+                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`,
               )
             }
           >
@@ -717,7 +722,7 @@ export interface EmployeeTimeSheetsProps {
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | EquipmentLogChange[]
-      | MaintenanceLogData
+      | MaintenanceLogData,
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;

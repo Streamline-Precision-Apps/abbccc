@@ -1,12 +1,28 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import {
-  RefuelLogType,
-  CreateRefuelLogParams,
-  UpdateRefuelLogParams,
-  DeleteRefuelLogParams,
-} from "@/lib/types";
+
+export interface UpdateRefuelLogParams extends RefuelLogBase {
+  type: RefuelLogType;
+}
+export interface RefuelLogBase {
+  id: string;
+  gallonsRefueled?: number;
+  milesAtfueling?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+export interface DeleteRefuelLogParams {
+  type: RefuelLogType;
+  id: string;
+}
+
+export interface CreateRefuelLogParams {
+  type: RefuelLogType;
+  parentId: string; // tascoLogId or employeeEquipmentLogId
+}
+
+export type RefuelLogType = "tasco" | "equipment";
 
 /* LOADS Hauled */
 //------------------------------------------------------------------

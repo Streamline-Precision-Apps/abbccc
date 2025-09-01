@@ -52,7 +52,7 @@ interface FormTemplate {
 interface FormSubmission {
   id: string;
   formId: string;
-  formData: any; // This should match your actual form data structure
+  formData: unknown; // This should match your actual form data structure
   formTitle?: string;
   status: string;
   createdAt: string;
@@ -62,13 +62,6 @@ interface FormSubmission {
     id: string;
     name: string;
   };
-}
-
-enum FormStatus {
-  DRAFT = "DRAFT",
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  DENIED = "DENIED",
 }
 
 export default function EditFormPage({

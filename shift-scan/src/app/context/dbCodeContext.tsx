@@ -7,10 +7,26 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { CostCodes, JobCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { equipmentTagExists } from "@/actions/equipmentActions";
+import { EquipmentTags } from "@/lib/enums";
+type JobCodes = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
+type CostCodes = {
+  id: string;
+  name: string;
+};
+
+type EquipmentCode = {
+  id: string;
+  qrId: string;
+  name: string;
+  equipmentTag: EquipmentTags;
+};
 
 const JobsitesSchema = z.array(
   z.object({

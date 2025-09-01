@@ -51,7 +51,7 @@ export default function CodeFinder({
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [selectTerm, setSelectTerm] = useState(initialSearchTerm);
   const [selectedOption, setSelectedOption] = useState<Option | null>(
-    initialValue
+    initialValue,
   );
   const [selectedTerm, setSelectedTerm] = useState(!!initialValue);
   const t = useTranslations("Clock");
@@ -91,7 +91,7 @@ export default function CodeFinder({
         name: option.label, // You might want to provide a default name or get it from somewhere
       });
       const selectedJobCode = jobsiteResults.find(
-        (j) => j.qrId === option.code
+        (j) => j.qrId === option.code,
       );
       // if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
@@ -106,7 +106,7 @@ export default function CodeFinder({
         name: option.label, // You might want to provide a default name or get it from somewhere
       });
       const selectedJobCode = jobsiteResults.find(
-        (j) => j.qrId === option.code
+        (j) => j.qrId === option.code,
       );
       // if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
@@ -122,9 +122,11 @@ export default function CodeFinder({
       } else {
         setscanEQResult({ data: option.code });
       }
-      const selectedEquipment = equipmentResults.find(
-        (e) => e.qrId === option.code
-      );
+      if (equipmentResults) {
+        const selectedEquipment = equipmentResults.find(
+          (e) => e.qrId === option.code,
+        );
+      }
       // if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
 

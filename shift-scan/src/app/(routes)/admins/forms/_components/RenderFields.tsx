@@ -103,7 +103,7 @@ export default function RenderFields({
     <>
       <div className="mb-4">
         <Label className="text-sm font-medium mb-1 ">
-          Submitted By <span className="text-red-500">*</span>
+          Submitted For <span className="text-red-500">*</span>
         </Label>
         <SingleCombobox
           options={userOptions}

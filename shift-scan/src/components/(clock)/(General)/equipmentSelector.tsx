@@ -22,26 +22,28 @@ export const EquipmentSelector = ({
   useEquipmentId = false,
 }: EquipmentSelectorProps) => {
   const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
-    null
+    null,
   );
   const [equipmentOptions, setEquipmentOptions] = useState<Option[]>([]);
   const t = useTranslations("Clock");
   const { equipmentResults } = useDBEquipment();
 
   useEffect(() => {
-    const options = equipmentResults.map((equipment) => ({
-      id: equipment.id,
-      code: equipment.qrId,
-      label: equipment.name,
-    }));
-    setEquipmentOptions(options);
+    if (equipmentResults) {
+      const options = equipmentResults.map((equipment) => ({
+        id: equipment.id,
+        code: equipment.qrId,
+        label: equipment.name,
+      }));
+      setEquipmentOptions(options);
+    }
   }, [equipmentResults]);
 
   // Initialize with the passed initialValue, but avoid infinite loops
   useEffect(() => {
     if (initialValue && equipmentOptions.length > 0) {
       const foundOption = equipmentOptions.find(
-        (opt) => opt.code === initialValue.code
+        (opt) => opt.code === initialValue.code,
       );
       // Only update if different
       if (

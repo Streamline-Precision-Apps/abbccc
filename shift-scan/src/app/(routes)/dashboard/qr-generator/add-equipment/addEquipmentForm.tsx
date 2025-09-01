@@ -9,12 +9,11 @@ import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Selects } from "@/components/(reusable)/selects";
-import { NModals } from '@/components/(reusable)/newmodals';
-import { JobsiteSelector } from '@/components/(clock)/(General)/jobsiteSelector';
+import { NModals } from "@/components/(reusable)/newmodals";
+import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { Titles } from "@/components/(reusable)/titles";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
-import { JobCode } from "@/lib/types";
 import { Grids } from "@/components/(reusable)/grids";
 import { v4 as uuidv4 } from "uuid";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -22,6 +21,12 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
+
+export type JobCode = {
+  id: string;
+  qrId: string;
+  name: string;
+};
 
 export default function AddEquipmentForm() {
   const t = useTranslations("Generator");
@@ -38,22 +43,25 @@ export default function AddEquipmentForm() {
   const [formValidation, setFormValidation] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
-    equipmentTag: '',
-    make: '',
-    model: '',
-    year: '',
-    licensePlate: '',
-    registration: '',
-    mileage: '',
-    temporaryEquipmentName: '',
-    creationComment: '',
-    creationReasoning: '',
-    jobsiteLocation: '',
+    equipmentTag: "",
+    make: "",
+    model: "",
+    year: "",
+    licensePlate: "",
+    registration: "",
+    mileage: "",
+    temporaryEquipmentName: "",
+    creationComment: "",
+    creationReasoning: "",
+    jobsiteLocation: "",
   });
 
   // Modal state for jobsite selector
   const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
-  const [selectedJobsite, setSelectedJobsite] = useState<{ id: string; name: string } | null>(null);
+  const [selectedJobsite, setSelectedJobsite] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   // Replace your current validation constants with this function
   const validateForm = () => {
@@ -154,7 +162,7 @@ export default function AddEquipmentForm() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -285,7 +293,7 @@ export default function AddEquipmentForm() {
                             <Texts size={"p7"} className="text-app-dark-gray ">
                               {formData.registration
                                 ? new Date(
-                                    formData.registration
+                                    formData.registration,
                                   ).toLocaleDateString()
                                 : t("Registration")}
                             </Texts>
@@ -336,8 +344,8 @@ export default function AddEquipmentForm() {
                   <Inputs
                     type="text"
                     name="jobsiteLocation"
-                    value={selectedJobsite?.name || ''}
-                    placeholder={t('SelectJobSite')}
+                    value={selectedJobsite?.name || ""}
+                    placeholder={t("SelectJobSite")}
                     className="text-xs text-center h-full py-2 cursor-pointer"
                     onClick={() => setJobsiteModalOpen(true)}
                     readOnly
@@ -357,7 +365,10 @@ export default function AddEquipmentForm() {
                       useJobSiteId={true}
                       onJobsiteSelect={(jobsite) => {
                         if (jobsite) {
-                          setSelectedJobsite({ id: jobsite.code, name: jobsite.label });
+                          setSelectedJobsite({
+                            id: jobsite.code,
+                            name: jobsite.label,
+                          });
                           setFormData((prev) => ({
                             ...prev,
                             jobsiteLocation: jobsite.code,
@@ -367,7 +378,11 @@ export default function AddEquipmentForm() {
                       }}
                       initialValue={
                         selectedJobsite
-                          ? { id: selectedJobsite.id, code: selectedJobsite.id, label: selectedJobsite.name }
+                          ? {
+                              id: selectedJobsite.id,
+                              code: selectedJobsite.id,
+                              label: selectedJobsite.name,
+                            }
                           : undefined
                       }
                     />

@@ -8,7 +8,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
 import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { EmployeeEquipmentLogs } from "@/lib/types";
 import { Bases } from "@/components/(reusable)/bases";
 import { Titles } from "@/components/(reusable)/titles";
 import { differenceInSeconds, parseISO } from "date-fns";
@@ -16,6 +15,46 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { deleteEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { Texts } from "@/components/(reusable)/texts";
+import { FormStatus } from "@/lib/enums";
+
+export type EmployeeEquipmentLogs = {
+  id: string;
+  date: Date;
+  equipmentId: string;
+  jobsiteId: string;
+  employeeId: string;
+  startTime: Date;
+  endTime?: Date | null;
+  duration?: number | null;
+  isRefueled: boolean;
+  fuelUsed?: number | null;
+  comment?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isCompleted: boolean;
+  isFinished: boolean;
+  status: FormStatus;
+  Equipment?: Equipment | null;
+};
+
+export type Equipment = {
+  id: string;
+  qrId: string;
+  name: string;
+  description?: string;
+  equipmentTag: string;
+  lastInspection?: Date | null;
+  lastRepair?: Date | null;
+  status?: string;
+  make?: string | null;
+  model?: string | null;
+  year?: string | null;
+  licensePlate?: string | null;
+  registrationExpiration?: Date | null;
+  mileage?: number | null | undefined;
+  isActive?: boolean;
+  inUse?: boolean;
+};
 
 export default function EquipmentLogContent() {
   const [loading, setLoading] = useState(true);
@@ -171,7 +210,7 @@ export default function EquipmentLogContent() {
                                 {filteredLogs.map((log) => {
                                   // Calculate elapsed time as shown above
                                   const start = parseISO(
-                                    log.startTime.toString()
+                                    log.startTime.toString(),
                                   );
                                   let diffInSeconds = 0;
 
@@ -179,24 +218,24 @@ export default function EquipmentLogContent() {
                                     const end = parseISO(
                                       log.endTime
                                         ? log.endTime.toString()
-                                        : new Date().toString()
+                                        : new Date().toString(),
                                     );
                                     diffInSeconds = differenceInSeconds(
                                       end,
-                                      start
+                                      start,
                                     );
                                   } else {
                                     diffInSeconds = differenceInSeconds(
                                       currentTime,
-                                      start
+                                      start,
                                     );
                                   }
 
                                   const hours = Math.floor(
-                                    diffInSeconds / 3600
+                                    diffInSeconds / 3600,
                                   );
                                   const minutes = Math.floor(
-                                    (diffInSeconds % 3600) / 60
+                                    (diffInSeconds % 3600) / 60,
                                   );
                                   const seconds = diffInSeconds % 60;
 

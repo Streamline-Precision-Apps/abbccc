@@ -4,7 +4,6 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import SearchBar from "@/components/(search)/searchbar";
 import { Holds } from "@/components/(reusable)/holds";
-import { JobCode, EquipmentCode } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "../(reusable)/texts";
@@ -13,6 +12,20 @@ import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
 import Spinner from "../(animations)/spinner";
 import EmptyView from "../(reusable)/emptyView";
+import { EquipmentTags } from "@/lib/enums";
+
+type JobCode = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
+type EquipmentCode = {
+  id: string;
+  qrId: string;
+  name: string;
+  equipmentTag: EquipmentTags;
+};
 
 type Props<T> = {
   datatype: string;
@@ -54,8 +67,8 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
       options.filter(
         (option) =>
           option.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          option.qrId.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+          option.qrId.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
     );
   }, [searchTerm, options]);
 

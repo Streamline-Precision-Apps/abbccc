@@ -604,6 +604,7 @@
     "PullToRefresh": "(Tire para refrescar)"
   },
   "Clock": {
+    "NoResultsFound": "No se encontraron resultados",
     "Equipment": "Equipo",
     "SelectMaterialTypeAndEquipment": "Seleccionar material y equipo",
     "StartDay": "Inicio Día",
