@@ -35,15 +35,21 @@ export default function CodeFinder({
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredOptions = useMemo(() => {
+    if (!searchTerm) return options;
+
     return options
-      .filter((option) =>
-        option.label.toLowerCase().startsWith(searchTerm.toLowerCase())
-      )
+      .filter((option) => {
+        const searchLower = searchTerm.toLowerCase();
+        const labelLower = option.label.toLowerCase();
+
+        // More comprehensive search that checks if the search term appears anywhere in the label
+        return labelLower.includes(searchLower);
+      })
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [options, searchTerm]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value.toUpperCase()); // Convert to uppercase
+    setSearchTerm(e.target.value); // Keep original case for better UX
   };
 
   const clearSelection = () => {
@@ -100,11 +106,13 @@ export default function CodeFinder({
             </Holds>
           ))
         ) : (
-          <Holds className="h-full w-full p-1.5 ">
+          <Holds className="h-full w-full p-1.5">
             <Holds
               background={"white"}
-              className="flex justify-center items-center h-full w-full opacity-10 relative"
-            ></Holds>
+              className="flex justify-center items-center h-full w-full bg-opacity-10 relative"
+            >
+              <p className="text-neutral-100 text-lg">{t("NoResultsFound")}</p>
+            </Holds>
           </Holds>
         )}
       </Holds>
@@ -143,8 +151,10 @@ const SearchBar = ({
             value={searchTerm}
             onChange={onSearchChange}
             placeholder={placeholder}
-            className="w-full h-full text-center placeholder-gray-500 placeholder:text-xl focus:outline-hidden rounded-[10px] "
-            aria-label={label}
+            className="w-full placeholder:text-center text-left h-full placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
+            aria-label={label || "Search"}
+            autoFocus
+            autoComplete="off"
           />
         </Holds>
         <Holds size={"10"}></Holds>

@@ -2,12 +2,35 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimesheetHighlights, TimesheetUpdate } from "@/lib/types";
-import { WorkType } from "@/lib/enums";
+import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
 import { formatISO } from "date-fns";
 // Get all TimeSheets
+type TimesheetUpdate = {
+  id: number;
+  startTime?: string;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
+
+type TimesheetHighlights = {
+  submitDate: string;
+  date: Date | string;
+  id: number;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: Date | string;
+  endTime: Date | string | null;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+  Jobsite: {
+    name: string;
+  };
+};
+
 export async function getTimeSheetsbyId() {
   const timesheets = prisma.timeSheet.findMany();
   console.log(timesheets);

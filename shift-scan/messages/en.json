@@ -609,6 +609,7 @@
   },
 
   "Clock": {
+    "NoResultsFound": "No results found",
     "Equipment": "Equipment",
     "SelectMaterialTypeAndEquipment": "Select Material & Equipment",
     "StartDay": "Start Day",

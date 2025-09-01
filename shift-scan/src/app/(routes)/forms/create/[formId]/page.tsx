@@ -11,7 +11,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState, useCallback } from "react";
+import { FormEvent, useEffect, useState, useCallback, use } from "react";
 import { useSession } from "next-auth/react";
 import { saveDraft, saveDraftToPending } from "@/actions/hamburgerActions";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
@@ -57,16 +57,16 @@ enum FormStatus {
 }
 
 interface FormCreationPageProps {
-  params: {
+  params: Promise<{
     formId: string;
-  };
+  }>;
 }
 
 export default function FormCreationPage({ params }: FormCreationPageProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user.id;
-  const { formId } = params;
+  const formId = use(params).formId;
   const t = useTranslations("Hamburger-Inbox");
 
   // Form state

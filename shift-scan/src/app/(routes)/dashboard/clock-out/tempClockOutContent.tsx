@@ -9,9 +9,26 @@ import { Bases } from "@/components/(reusable)/bases";
 import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockOut";
 import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
-import ReviewYourTeam from "./(components)/reviewYourTeam";
-import EditTeamTimeSheet from "./(components)/editTeamTimeSheet";
-import { TimesheetFilter, crewUsers } from "@/lib/types";
+
+type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};
+
+type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
 
 export type TimeSheet = {
   submitDate: string;

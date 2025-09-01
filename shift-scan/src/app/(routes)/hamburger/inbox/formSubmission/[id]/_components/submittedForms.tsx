@@ -76,6 +76,12 @@ export default function SubmittedForms({
 
   type FormValues = Record<string, string>;
 
+  // Helper function to validate date string
+  const isValidDate = (dateString: string): boolean => {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+  };
+
   const saveDraftData = async (values: FormValues, title: string) => {
     if ((Object.keys(values).length > 0 || title) && formData) {
       try {
@@ -120,104 +126,122 @@ export default function SubmittedForms({
   };
   return (
     <>
-      <Holds background={"white"} className="row-start-1 row-end-2 h-full  ">
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
         <TitleBoxes
           onClick={() => {
             router.back();
           }}
         >
-          <>
-            <Holds className="px-8 h-full justify-center items-center">
-              <Titles size={"h3"}>
+          <Holds className="px-8 h-full justify-center items-center">
+            <div className="flex flex-col items-center">
+              <Titles size={"h3"} className="text-center">
                 {formTitle
                   ? formTitle.charAt(0).toUpperCase() +
                     formTitle.slice(1).slice(0, 24)
                   : formData.name.charAt(0).toUpperCase() +
                     formData.name.slice(1).slice(0, 24)}
               </Titles>
-              {formTitle !== "" && <Titles size={"h6"}>{formData.name}</Titles>}
-            </Holds>
-            <Holds className=" w-12 h-12 absolute right-1 top-0 justify-center">
-              <Images
-                titleImgAlt={"form Status"}
-                titleImg={
-                  submissionStatus === "PENDING"
-                    ? "/statusOngoingFilled.svg"
-                    : submissionStatus === "APPROVED"
-                      ? "/statusApprovedFilled.svg"
-                      : "/statusDeniedFilled.svg"
-                }
-                className="max-w-10 h-auto object-contain"
-              />
-            </Holds>
-          </>
+              {formTitle !== "" && (
+                <Titles size={"h6"} className="text-gray-500">
+                  {formData.name}
+                </Titles>
+              )}
+            </div>
+          </Holds>
         </TitleBoxes>
       </Holds>
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-8 no-scrollbar  "
+        className="w-full h-full row-start-2 row-end-8"
       >
         <form
           onSubmit={() => {
             handleDelete();
           }}
-          className="h-full pb-3"
+          className="h-full"
         >
           <Grids rows={"8"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-8 h-full w-full py-3 overflow-y-auto no-scrollbar">
+            <Holds className="row-start-1 row-end-8 h-full w-full overflow-y-auto no-scrollbar">
               <Contents width={"section"}>
-                <div className="h-full border-b-2 mb-2 border-neutral-100 pb-2 flex flex-row justify-between items-center">
-                  <p className="text-blue-500 font-semibold  text-sm">
-                    Submission Details
-                  </p>
-                  <p className="text-xs text-right italic text-neutral-400">
-                    {`${t("OriginallySubmitted")} ${
-                      format(new Date(submittedForm || ""), "M/dd/yy") || ""
-                    } `}
-                  </p>
-                </div>
-                <FormFieldRenderer
-                  formData={formData}
-                  formValues={formValues}
-                  setFormValues={updateFormValues}
-                  readOnly={true}
-                  disabled={true}
-                />
-              </Contents>
-              <Contents width={"section"}>
-                <Holds className="h-full w-full">
+                <div className="h-full py-4 px-1">
+                  {/* Submission Details Card */}
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-blue-600 font-semibold text-sm">
+                        Submission Details
+                      </h3>
+                      <p className="text-xs italic text-gray-500">
+                        {`${t("OriginallySubmitted")} ${
+                          submittedForm && isValidDate(submittedForm)
+                            ? format(new Date(submittedForm), "M/dd/yy")
+                            : ""
+                        }`}
+                      </p>
+                    </div>
+
+                    {/* Status indicator */}
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          Status:
+                        </span>
+                        <div className="py-1 px-3 rounded-md bg-orange-100 border border-app-orange">
+                          <p className="text-sm font-medium text-app-orange">
+                            Pending
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Form Fields */}
+                    <div className="bg-white rounded-lg">
+                      <FormFieldRenderer
+                        formData={formData}
+                        formValues={formValues}
+                        setFormValues={updateFormValues}
+                        readOnly={true}
+                        disabled={true}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Signature Section */}
                   {submissionStatus === "PENDING" && (
-                    <>
-                      <Label className="text-sm font-medium mb-1">
-                        {t("Signature")}
-                      </Label>
-                      <Holds className="border-[1px] rounded-md border-neutral-100 justify-center items-center">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                      <div className="mb-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          {t("Signature")}
+                        </span>
+                      </div>
+                      <div className="bg-gray-50 border border-gray-200 rounded-md p-2 flex justify-center items-center">
                         {signature ? (
                           <Images
-                            titleImgAlt={"form Status"}
+                            titleImgAlt={"Signature"}
                             titleImg={signature}
-                            className=" w-full h-10 object-contain"
+                            className="w-full h-12 object-contain"
                           />
                         ) : (
-                          <Holds className="w-full h-10 flex items-center justify-center">
-                            <Texts>{t("NoSignature")}</Texts>
-                          </Holds>
+                          <p className="text-sm text-gray-400 italic py-2">
+                            {t("NoSignature")}
+                          </p>
                         )}
-                      </Holds>
-                    </>
+                      </div>
+                    </div>
                   )}
-                </Holds>
+                </div>
               </Contents>
             </Holds>
+
+            {/* Delete Button Section */}
             {submissionStatus === "PENDING" && (
-              <Holds className="row-start-8 row-end-9 justify-center h-full w-full pt-5 border-t-2 border-neutral-100">
+              <Holds className="row-start-8 row-end-9 justify-center h-full w-full p-4 border-t border-gray-200">
                 <Contents width={"section"}>
                   <Buttons
                     background={"red"}
                     type="button"
                     onClick={() => setDeleteRequestModal(true)}
-                    className="w-full h-full"
+                    className="w-full h-10 rounded-md shadow-sm"
                     shadow={"none"}
                   >
                     <Titles size={"sm"}>{t("DeleteRequest")}</Titles>
@@ -225,24 +249,25 @@ export default function SubmittedForms({
                 </Contents>
               </Holds>
             )}
+            {/* Confirmation Modal */}
             <NModals
               background={"noOpacity"}
               isOpen={deleteRequestModal}
               handleClose={() => setDeleteRequestModal(false)}
               size={"medWW"}
             >
-              <Holds className="w-full h-full pb-5">
-                <Holds className="w-full h-3/4 justify-center items-center">
-                  <Texts size={"lg"}>
+              <div className="w-full h-full p-5 flex flex-col">
+                <div className="flex-grow flex justify-center items-center">
+                  <p className="text-lg font-medium text-gray-700 text-center">
                     {t("AreYouSureYouWantToDeleteThisRequest")}
-                  </Texts>
-                </Holds>
-                <Holds position={"row"} className="gap-4 h-1/4">
+                  </p>
+                </div>
+                <div className="flex gap-4 mt-4">
                   <Buttons
                     background={"green"}
                     type="button"
                     onClick={() => handleDelete()}
-                    className="w-full"
+                    className="w-full h-10 rounded-md"
                   >
                     <Titles size={"md"}>{t("Yes")}</Titles>
                   </Buttons>
@@ -251,12 +276,12 @@ export default function SubmittedForms({
                     background={"neutral"}
                     type="button"
                     onClick={() => setDeleteRequestModal(false)}
-                    className="w-full"
+                    className="w-full h-10 rounded-md"
                   >
                     <Titles size={"md"}>{t("Cancel")}</Titles>
                   </Buttons>
-                </Holds>
-              </Holds>
+                </div>
+              </div>
             </NModals>
           </Grids>
         </form>

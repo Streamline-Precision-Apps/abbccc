@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { FormEvent } from "react";
@@ -11,7 +11,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import Signature from "@/components/(reusable)/signature";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
@@ -84,7 +83,17 @@ export default function FormDraft({
       }
     };
     fetchSignature();
-  }, [Signature]);
+  }, [signature]);
+
+  // Update formValues when showSignature changes
+  const setSignatureData = (value: boolean) => {
+    setShowSignature(value);
+    // Add signature status to formValues
+    updateFormValues({
+      ...formValues,
+      signature: value ? "true" : "false",
+    });
+  };
 
   const saveDraftData = async (values: FormValues, title: string) => {
     if ((Object.keys(values).length > 0 || title) && formData) {
@@ -105,23 +114,26 @@ export default function FormDraft({
     }
   };
 
-  // Use the auto-save hook with the FormValues type
-  const { autoSave, cancel } = useAutoSave<{
-    values: FormValues;
-    title: string;
-  }>((data) => saveDraftData(data.values, data.title), 2000);
+  // Create a save function that can be called manually instead of using auto-save
+  const saveFormData = useCallback(async () => {
+    if (!isSubmitting) {
+      await saveDraftData(formValues, formTitle);
+    }
+  }, [formValues, formTitle, isSubmitting, saveDraftData]);
 
-  // Trigger auto-save when formValues or formTitle changes
-  useEffect(() => {
-    if (isSubmitting) return;
-    autoSave({ values: formValues, title: formTitle });
-  }, [formValues, formTitle, autoSave]);
+  // No longer using auto-save hook for each change
 
   //validation map function to required all fields that are required within form template
   const validateForm = (
     formValues: Record<string, string>,
     formData: FormTemplate,
   ): boolean => {
+    // Check signature requirement separately
+    if (formData.isSignatureRequired && !showSignature) {
+      console.log("Validation failed: Signature is required but not provided");
+      return false;
+    }
+
     for (const group of formData.groupings) {
       for (const field of group.fields) {
         if (field.required) {
@@ -186,8 +198,18 @@ export default function FormDraft({
         background={"white"}
         className="row-start-1 row-end-2 h-full justify-center"
       >
-        <TitleBoxes onClick={() => router.push("/hamburger/inbox")}>
-          <Titles size={"md"}>{formData.name}</Titles>
+        <TitleBoxes
+          onClick={async () => {
+            // Save draft before navigating back
+            await saveFormData();
+            router.push("/hamburger/inbox");
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <Titles size={"md"} className="text-center">
+              {formData.name}
+            </Titles>
+          </div>
         </TitleBoxes>
       </Holds>
 
@@ -199,51 +221,71 @@ export default function FormDraft({
           onSubmit={async (e) => {
             setIsSubmitting(true);
             try {
-              cancel();
+              // Make sure signature value is up to date before submitting
+              if (formData.isSignatureRequired) {
+                console.log(
+                  "Form submission with signature:",
+                  showSignature,
+                  formValues.signature,
+                );
+              }
+
               await handleSubmit(e);
             } finally {
               setIsSubmitting(false);
             }
           }}
-          className="h-full pt-3 pb-3"
+          className="h-full"
         >
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
             {/* Form content area */}
-            <Holds className="row-start-1 row-end-8 h-full w-full border-black border-opacity-5 border-b-2">
-              <div className="overflow-y-auto no-scrollbar">
+            <Holds className="row-start-1 row-end-8 h-full w-full border-b border-gray-200">
+              <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
                 <Contents width={"section"}>
-                  {/* Title input */}
-                  <Labels size={"p4"} htmlFor="title" className="mb-2">
-                    {t("TitleOptional")}
-                  </Labels>
-                  <Inputs
-                    type="text"
-                    placeholder={t("EnterATitleHere")}
-                    name="title"
-                    value={formTitle}
-                    className="text-center text-base mb-4"
-                    onChange={(e) => setFormTitle(e.target.value)}
-                  />
+                  {/* Title input section */}
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                    <div className="mb-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        {t("TitleOptional")}
+                      </span>
+                    </div>
+                    <Inputs
+                      type="text"
+                      placeholder={t("EnterATitleHere")}
+                      name="title"
+                      value={formTitle}
+                      className="text-center text-base border border-gray-200 rounded-md p-2 w-full"
+                      onChange={(e) => setFormTitle(e.target.value)}
+                    />
+                  </div>
 
-                  {/* Form fields */}
-                  <FormFieldRenderer
-                    formData={formData}
-                    formValues={formValues}
-                    setFormValues={updateFormValues}
-                    readOnly={false}
-                  />
+                  {/* Form fields section */}
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                    <div className="mb-3">
+                      <h3 className="text-blue-600 font-semibold text-sm">
+                        Form Details
+                      </h3>
+                    </div>
+                    <FormFieldRenderer
+                      formData={formData}
+                      formValues={formValues}
+                      setFormValues={updateFormValues}
+                      readOnly={false}
+                    />
+                  </div>
 
                   {/* Signature section - only shown if required */}
                   {formData.isSignatureRequired && (
-                    <div className="">
-                      <Labels size={"p5"} htmlFor="signature" className="mb-2">
-                        {t("Signature")}
-                      </Labels>
-
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                      <div className="mb-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          {t("Signature")}
+                        </span>
+                      </div>
                       {showSignature ? (
                         <div
-                          onClick={() => setShowSignature(false)}
-                          className="w-full h-full border-[3px] rounded-[10px] border-black cursor-pointer"
+                          onClick={() => setSignatureData(false)}
+                          className="w-full border-2 rounded-md border-gray-300 cursor-pointer p-2 flex justify-center"
                         >
                           {signature && (
                             <img
@@ -255,11 +297,13 @@ export default function FormDraft({
                         </div>
                       ) : (
                         <Buttons
-                          onClick={() => setShowSignature(true)}
+                          onClick={() => setSignatureData(true)}
                           type="button"
-                          className="shadow-none w-full h-20"
+                          className="w-full h-16 rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 border border-gray-300 transition-colors"
                         >
-                          {t("TapToSign")}
+                          <span className="text-gray-700 font-medium">
+                            {t("TapToSign")}
+                          </span>
                         </Buttons>
                       )}
                     </div>
@@ -269,23 +313,18 @@ export default function FormDraft({
             </Holds>
 
             {/* Action buttons */}
-            <Holds className="row-start-8 row-end-9 h-full w-full">
+            <Holds className="row-start-8 row-end-9 h-full w-full p-4 border-t border-gray-200">
               <Contents width={"section"}>
-                <div className="w-full h-full flex gap-x-3">
+                <div className="w-full flex gap-x-4">
                   <Buttons
                     type="submit"
                     background={
-                      !validateForm(formValues, formData) ||
-                      (formData.isSignatureRequired && !showSignature)
-                        ? "darkGray"
-                        : "green"
+                      !validateForm(formValues, formData) ? "darkGray" : "green"
                     }
                     disabled={
-                      !validateForm(formValues, formData) ||
-                      (formData.isSignatureRequired && !showSignature) ||
-                      isSubmitting
+                      !validateForm(formValues, formData) || isSubmitting
                     }
-                    className="w-full"
+                    className="w-full h-10 rounded-md shadow-sm"
                   >
                     <Titles size={"md"}>
                       {isSubmitting ? t("Submitting") : t("SubmitRequest")}
@@ -294,8 +333,12 @@ export default function FormDraft({
                   <Buttons
                     type="button"
                     background={"red"}
-                    onClick={() => handleDeleteForm(submissionId)}
-                    className="w-full"
+                    onClick={async () => {
+                      // Save any last changes before deleting
+                      await saveFormData();
+                      await handleDeleteForm(submissionId);
+                    }}
+                    className="w-full h-10 rounded-md shadow-sm"
                   >
                     <Titles size={"md"}>{t("DeleteDraft")}</Titles>
                   </Buttons>
