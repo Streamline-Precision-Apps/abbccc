@@ -7,12 +7,17 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
-import { Refueled } from "@/lib/types";
 import RefuelLayout from "./RefuelLayout";
 import TascoComments from "./tascoComments";
 import { SetLoad } from "@/actions/tascoActions";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { useTranslations } from "next-intl";
+
+export type Refueled = {
+  id: string;
+  tascoLogId: string;
+  gallonsRefueled: number;
+};
 
 export default function TascoEQClientPage() {
   const t = useTranslations("Tasco");

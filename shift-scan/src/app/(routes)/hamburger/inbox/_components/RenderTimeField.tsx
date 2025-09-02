@@ -17,6 +17,7 @@ export default function RenderTimeField({
   handleFieldTouch,
   touchedFields,
   error,
+  disabled,
 }: {
   field: {
     id: string;
@@ -28,6 +29,7 @@ export default function RenderTimeField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -47,6 +49,7 @@ export default function RenderTimeField({
         onChange={(e) => handleFieldChange(field.id, e.target.value)}
         onBlur={() => handleFieldTouch(field.id)}
         required={field.required}
+        disabled={disabled}
       />
 
       {error && touchedFields[field.id] && (

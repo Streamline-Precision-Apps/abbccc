@@ -32,10 +32,7 @@ export async function fetchEq(date: string, employeeId: string) {
     where: {
       userId: employeeId,
       startTime: { lte: endOfDay.toISOString() },
-      OR: [
-        { endTime: null },
-        { endTime: { gte: startOfDay.toISOString() } },
-      ],
+      OR: [{ endTime: null }, { endTime: { gte: startOfDay.toISOString() } }],
     },
     select: { id: true },
   });
@@ -56,7 +53,7 @@ export async function fetchEq(date: string, employeeId: string) {
 
   // Ensure no null values are present
   const filteredEqLogs = eqlogs.filter(
-    (log) => log.Equipment !== undefined && log.Equipment !== null
+    (log) => log.Equipment !== undefined && log.Equipment !== null,
   );
 
   console.log("\n\n\nEquipment Logs:", filteredEqLogs);
@@ -133,12 +130,12 @@ export async function createEquipment(formData: FormData) {
     const year = formData.get("year") as string;
     const licensePlate = formData.get("licensePlate") as string;
     const registrationExpiration = new Date(
-      formData.get("registration") as string
+      formData.get("registration") as string,
     );
     const mileage = Number(formData.get("mileage") as string);
     const name = formData.get("temporaryEquipmentName") as string;
     const creationReason = formData.get("creationReasoning") as string;
-    const jobsiteId = formData.get("jobsiteLocation") as string;
+    const destination = formData.get("destination") as string;
     const qrId = formData.get("eqCode") as string;
     const createdById = formData.get("createdById") as string;
     const description = "";
@@ -172,17 +169,20 @@ export async function createEquipment(formData: FormData) {
             name,
             description,
             creationReason,
-            equipmentVehicleInfo: {
-              create: {
-                make,
-                model,
-                year,
-                licensePlate,
-                registrationExpiration,
-                mileage,
-              },
-            },
+            make,
+            model,
+            year,
+            licensePlate,
             equipmentTag,
+          },
+        });
+      }
+
+      if (destination) {
+        await prisma.equipmentHauled.create({
+          data: {
+            equipmentId: newEquipment.id,
+            destination,
           },
         });
       }
@@ -254,15 +254,17 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
         timeSheet?.workType === "MECHANIC"
           ? "MAINTENANCE"
           : timeSheet?.workType === "TRUCK_DRIVER"
-          ? "TRUCKING"
-          : timeSheet?.workType === "LABOR"
-          ? "LABOR"
-          : timeSheet?.workType === "TASCO"
-          ? "TASCO"
-          : "GENERAL";
+            ? "TRUCKING"
+            : timeSheet?.workType === "LABOR"
+              ? "LABOR"
+              : timeSheet?.workType === "TASCO"
+                ? "TASCO"
+                : "GENERAL";
       // 3. Create the EmployeeEquipmentLog entry
       if (!timeSheet?.id) {
-        throw new Error("No open timesheet found for this user. Cannot create equipment log.");
+        throw new Error(
+          "No open timesheet found for this user. Cannot create equipment log.",
+        );
       }
       const newLog = await tx.employeeEquipmentLog.create({
         data: {
@@ -283,7 +285,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
     if (error instanceof Error) {
       console.error("Error creating employee equipment log:", error);
       throw new Error(
-        `Failed to create employee equipment log: ${error.message}`
+        `Failed to create employee equipment log: ${error.message}`,
       );
     } else {
       throw error;
@@ -498,7 +500,7 @@ export async function updateEquipment(formData: FormData) {
     // Validate that equipmentStatus is a valid EquipmentState value
     const validEquipmentStates = Object.values(EquipmentState);
     const status = validEquipmentStates.includes(
-      equipmentStatus as EquipmentState
+      equipmentStatus as EquipmentState,
     )
       ? (equipmentStatus as EquipmentState)
       : EquipmentState.AVAILABLE;

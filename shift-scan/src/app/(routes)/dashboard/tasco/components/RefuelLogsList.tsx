@@ -4,8 +4,13 @@ import { deleteRefuelLog, updateRefuelLog } from "@/actions/tascoActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Refueled } from "@/lib/types";
 import { useTranslations } from "next-intl";
+
+export type Refueled = {
+  id: string;
+  tascoLogId: string;
+  gallonsRefueled: number;
+};
 
 export default function RefuelLogsList({
   refuelLogs,
@@ -15,7 +20,7 @@ export default function RefuelLogsList({
   setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
 }) {
   const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(
-    refuelLogs || []
+    refuelLogs || [],
   );
   const t = useTranslations("Tasco");
   const handleDelete = async (id: string) => {

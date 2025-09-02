@@ -33,6 +33,7 @@ export default function RenderFields({
   submittedByTouched,
   formData,
   handleFieldChange,
+  disabled,
 
   equipmentOptions = [],
   jobsiteOptions = [],
@@ -54,6 +55,7 @@ export default function RenderFields({
   costCodeOptions?: { value: string; label: string }[];
   readOnly?: boolean;
   hideSubmittedBy?: boolean;
+  disabled?: boolean;
 }) {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
     {},
@@ -131,7 +133,7 @@ export default function RenderFields({
             }}
             placeholder="Select user"
             filterKeys={["value", "label"]}
-            disabled={readOnly}
+            disabled={disabled}
           />
           {submittedByTouched && !submittedBy?.id.trim() && (
             <span className="text-xs text-red-500">
@@ -175,6 +177,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "TEXTAREA":
@@ -193,6 +196,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "NUMBER":
@@ -211,6 +215,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "DATE":
@@ -230,6 +235,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "TIME":
@@ -248,6 +254,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "DROPDOWN":
@@ -267,6 +274,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "RADIO":
@@ -286,6 +294,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "CHECKBOX":
@@ -304,6 +313,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "HEADER":
@@ -339,6 +349,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "SEARCH_PERSON":
@@ -377,6 +388,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       formData={formData}
+                      disabled={disabled}
                     />
                   );
                 case "SEARCH_ASSET":
@@ -409,6 +421,7 @@ export default function RenderFields({
                       jobsiteOptions={jobsiteOptions || []}
                       costCodeOptions={costCodeOptions || []}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 default:
@@ -427,6 +440,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
               }

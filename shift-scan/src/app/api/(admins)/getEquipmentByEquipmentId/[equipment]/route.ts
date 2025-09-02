@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ equipment: string }> }
+  { params }: { params: Promise<{ equipment: string }> },
 ) {
   try {
     const { equipment: equipmentId } = await params;
@@ -27,7 +27,7 @@ export async function GET(
     if (!equipmentId) {
       return NextResponse.json(
         { error: "Invalid or missing equipment ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,15 +35,20 @@ export async function GET(
     const equipment = await prisma.equipment.findUnique({
       where: { id: equipmentId },
       include: {
-        equipmentVehicleInfo: true,
         DocumentTags: true,
+        createdBy: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
     if (!equipment) {
       return NextResponse.json(
         { error: "Equipment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

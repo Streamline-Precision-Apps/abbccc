@@ -42,15 +42,10 @@ export async function GET(request: Request, { params }: { params: Params }) {
             name: true,
             state: true,
             equipmentTag: true,
-            equipmentVehicleInfo: {
-              select: {
-                make: true,
-                model: true,
-                year: true,
-                licensePlate: true,
-                mileage: true,
-              },
-            },
+            make: true,
+            model: true,
+            year: true,
+            licensePlate: true,
           },
         },
         RefuelLog: {
@@ -72,7 +67,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     if (!usersLog) {
       return NextResponse.json(
         { error: "No log found for the given ID" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

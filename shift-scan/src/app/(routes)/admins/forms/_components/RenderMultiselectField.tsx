@@ -9,6 +9,7 @@ export default function RenderMultiselectField({
   handleFieldChange,
   error,
   options,
+  disabled,
 }: {
   field: {
     id: string;
@@ -24,6 +25,7 @@ export default function RenderMultiselectField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -43,11 +45,12 @@ export default function RenderMultiselectField({
                 const updatedValue = checked
                   ? [...(Array.isArray(value) ? value : []), opt.value]
                   : (Array.isArray(value) ? value : []).filter(
-                      (v) => v !== opt.value
+                      (v) => v !== opt.value,
                     );
                 handleFieldChange(field.id, updatedValue);
               }}
               id={`${field.id}-${opt.id}`}
+              disabled={disabled}
             />
             <span>{opt.value}</span>
           </label>

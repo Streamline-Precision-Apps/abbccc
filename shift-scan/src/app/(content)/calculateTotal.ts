@@ -1,9 +1,11 @@
-import { PayPeriodTimesheets } from "@/lib/types";
 import { useMemo, useEffect, useState } from "react";
 import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
-
+type PayPeriodTimesheets = {
+  startTime: Date; // Correct field name
+  endTime: Date;
+};
 export const UseTotalPayPeriodHours = (
-  payPeriodSheets: PayPeriodTimesheets[]
+  payPeriodSheets: PayPeriodTimesheets[],
 ) => {
   const { setPayPeriodHours } = usePayPeriodHours();
 
@@ -17,7 +19,7 @@ export const UseTotalPayPeriodHours = (
           (new Date(sheet.endTime).getTime() -
             new Date(sheet.startTime).getTime()) /
             (1000 * 60 * 60),
-        0
+        0,
       );
   }, [payPeriodSheets]);
 

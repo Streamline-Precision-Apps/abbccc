@@ -9,6 +9,7 @@ export default function RenderCheckboxField({
   handleFieldTouch,
   touchedFields,
   error,
+  disabled,
 }: {
   field: {
     id: string;
@@ -20,6 +21,7 @@ export default function RenderCheckboxField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -29,6 +31,7 @@ export default function RenderCheckboxField({
           onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
           id={`checkbox-${field.id}`}
           onBlur={() => handleFieldTouch(field.id)}
+          disabled={disabled}
         />
         <Label className="text-sm font-medium" htmlFor={`checkbox-${field.id}`}>
           {field.label}

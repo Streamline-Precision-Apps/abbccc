@@ -22,20 +22,22 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
   const t = useTranslations("Clock");
   // Initialize with the passed initialValue
   useEffect(() => {
-    const options = equipmentResults
-      .filter((equipment) => equipment.equipmentTag === "TRUCK")
-      .map((equipment) => ({
-        id: equipment.id,
-        code: equipment.qrId,
-        label: equipment.name,
-      }));
-    setTruckOptions(options);
+    if (equipmentResults) {
+      const options = equipmentResults
+        .filter((equipment) => equipment.equipmentTag === "TRUCK")
+        .map((equipment) => ({
+          id: equipment.id,
+          code: equipment.qrId,
+          label: equipment.name,
+        }));
+      setTruckOptions(options);
+    }
   }, [equipmentResults]);
 
   useEffect(() => {
     if (initialValue && truckOptions.length > 0) {
       const foundOption = truckOptions.find(
-        (opt) => opt.code === initialValue.code
+        (opt) => opt.code === initialValue.code,
       );
       if (foundOption) {
         setSelectedTruck(foundOption);

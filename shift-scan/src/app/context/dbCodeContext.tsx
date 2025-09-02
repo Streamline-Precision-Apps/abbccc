@@ -7,10 +7,26 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { CostCodes, JobCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { equipmentTagExists } from "@/actions/equipmentActions";
+import { EquipmentTags } from "@/lib/enums";
+type JobCodes = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
+type CostCodes = {
+  id: string;
+  name: string;
+};
+
+type EquipmentCode = {
+  id: string;
+  qrId: string;
+  name: string;
+  equipmentTag: EquipmentTags;
+};
 
 const JobsitesSchema = z.array(
   z.object({
@@ -36,14 +52,16 @@ const CostCodesSchema = z.array(
   }),
 );
 
-const EquipmentSchema = z.array(
-  z.object({
-    id: z.string(),
-    qrId: z.string(),
-    name: z.string(),
-    equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
-  }),
-);
+const EquipmentSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      qrId: z.string(),
+      name: z.string(),
+      equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
+    }),
+  )
+  .nullable();
 
 type JobSiteContextType = {
   jobsiteResults: JobCodes[];
@@ -158,17 +176,21 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
 export const useDBCostcode = () => useContext(CostCodeContext);
 
 type EquipmentContextType = {
-  equipmentResults: EquipmentCode[];
-  setEquipmentResults: React.Dispatch<React.SetStateAction<EquipmentCode[]>>;
+  equipmentResults: EquipmentCode[] | null;
+  setEquipmentResults: React.Dispatch<
+    React.SetStateAction<EquipmentCode[] | null>
+  >;
 };
 
 const EquipmentContext = createContext<EquipmentContextType>({
-  equipmentResults: [],
+  equipmentResults: null,
   setEquipmentResults: () => {},
 });
 
 export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
-  const [equipmentResults, setEquipmentResults] = useState<EquipmentCode[]>([]);
+  const [equipmentResults, setEquipmentResults] = useState<
+    EquipmentCode[] | null
+  >(null);
   const url = usePathname();
 
   useEffect(() => {
@@ -189,11 +211,33 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           const response = await fetch("/api/getEquipment", {
             cache: "no-store",
           });
+
+          // Check for error status
+          if (!response.ok) {
+            console.error("API error:", response.status);
+            setEquipmentResults(null);
+            return;
+          }
+
           const equipment = await response.json();
-          const validatedEquipment = EquipmentSchema.parse(equipment);
-          setEquipmentResults(validatedEquipment as EquipmentCode[]);
+
+          // Handle 404 or empty arrays properly
+          if (
+            equipment.message === "No equipment found." ||
+            (Array.isArray(equipment) && equipment.length === 0)
+          ) {
+            setEquipmentResults(null);
+            return;
+          }
+
+          const validatedEquipment = EquipmentSchema.parse(
+            Array.isArray(equipment) ? equipment : null,
+          );
+          setEquipmentResults(validatedEquipment);
         }
       } catch (error) {
+        console.error("Error fetching equipment:", error);
+        setEquipmentResults(null);
         if (error instanceof z.ZodError) {
           console.error("Validation error in Equipment schema:", error);
         }

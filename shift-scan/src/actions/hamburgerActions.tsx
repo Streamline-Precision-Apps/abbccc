@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { UserSettings } from "@/lib/types";
 
 enum FormStatus {
   PENDING = "PENDING",
