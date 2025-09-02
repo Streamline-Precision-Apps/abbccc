@@ -10,11 +10,45 @@ import { Labels } from "@/components/(reusable)/labels";
 import Spinner from "@/components/(animations)/spinner";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
-import { TimeSheet } from "@/lib/types";
 import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import TimesheetList from "./timesheetList";
+import { FormStatus, WorkType } from "@/lib/enums";
+
+export type TimeSheet = {
+  id: number;
+  date: Date | string;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  nu: string;
+  Fp: string;
+  startTime: Date | string;
+  endTime: Date | string | null;
+  comment: string | null;
+  statusComment: string | null;
+  location: string | null;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+  editedByUserId: string | null;
+  newTimeSheetId: number | null;
+  createdByAdmin: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  clockInLat: number | null;
+  clockInLng: number | null;
+  clockOutLat: number | null;
+  clockOutLng: number | null;
+  withinFenceIn: boolean | null;
+  withinFenceOut: boolean | null;
+  wasInjured: boolean;
+
+  // Relations
+  Jobsite: {
+    name: string;
+  };
+};
 
 type Props = {
   user: string;
@@ -30,7 +64,7 @@ export default function ViewTimesheets({ user }: Props) {
   // Function to calculate duration
   const calculateDuration = (
     startTime: string | Date | null | undefined,
-    endTime: string | Date | null | undefined
+    endTime: string | Date | null | undefined,
   ): string => {
     if (startTime && endTime) {
       const start = new Date(startTime).getTime();
@@ -100,7 +134,7 @@ export default function ViewTimesheets({ user }: Props) {
             <Titles size={"h2"}>{t("MyTimecards")}</Titles>
             <Images
               titleImg={"/timecards.svg"}
-              titleImgAlt={`${t("Title")}`}
+              titleImgAlt={t("MyTimecards")}
               className="w-8 h-8"
             />
           </Holds>

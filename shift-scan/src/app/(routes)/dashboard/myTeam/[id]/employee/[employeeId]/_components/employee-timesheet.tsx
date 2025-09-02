@@ -41,9 +41,6 @@ import { updateTruckingStateLogs } from "@/actions/myTeamsActions";
 import { updateTascoHaulLogs } from "@/actions/myTeamsActions";
 import { updateTascoRefuelLogs } from "@/actions/myTeamsActions";
 import { updateEquipmentRefuelLogs } from "@/actions/myTeamsActions";
-import { flattenEquipmentLogs, isEquipmentLogsData } from "@/lib/types";
-import { flattenEquipmentRefuelLogs } from "@/lib/types";
-import { useAllEquipment } from "@/hooks/useAllEquipment";
 import { TimeCardEquipmentLogsRef } from "./TimeCardEquipmentLogs";
 
 // Add a type for material haul log changes
@@ -112,7 +109,7 @@ export interface EmployeeTimeSheetsProps {
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | TruckingMileageData
-      | MaintenanceLogData
+      | MaintenanceLogData,
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
@@ -166,10 +163,10 @@ export function EmployeeTimeSheets({
     | MaintenanceLogData
   >([]);
   const [originalData, setOriginalData] = useState<typeof data | null>(
-    data ? JSON.parse(JSON.stringify(data)) : null
+    data ? JSON.parse(JSON.stringify(data)) : null,
   );
   const [newData, setNewData] = useState<typeof data | null>(
-    data ? JSON.parse(JSON.stringify(data)) : null
+    data ? JSON.parse(JSON.stringify(data)) : null,
   );
   const newDataRef = useRef(newData);
   const [isSaving, setIsSaving] = useState(false);
@@ -189,7 +186,7 @@ export function EmployeeTimeSheets({
   // --- Helpers ---
   const isString = (val: unknown): val is string => typeof val === "string";
   const toNumberOrNull = (
-    val: string | number | null | undefined
+    val: string | number | null | undefined,
   ): number | null => {
     if (typeof val === "number") return val;
     if (typeof val === "string") {
@@ -287,8 +284,8 @@ export function EmployeeTimeSheets({
                 typeof refuel.gallonsRefueled === "number"
                   ? refuel.gallonsRefueled
                   : refuel.gallonsRefueled
-                  ? Number(refuel.gallonsRefueled)
-                  : null,
+                    ? Number(refuel.gallonsRefueled)
+                    : null,
             });
           }
         });
@@ -318,7 +315,7 @@ export function EmployeeTimeSheets({
       setIsSaving(true);
       if (timeSheetFilter === "truckingMaterialHaulLogs") {
         const flattened = flattenMaterialLogs(
-          changes as TruckingMaterialHaulLogData
+          changes as TruckingMaterialHaulLogData,
         );
         const updates = flattened.filter(
           (mat) =>
@@ -328,7 +325,7 @@ export function EmployeeTimeSheets({
               mat.LocationOfMaterial ||
               mat.materialWeight !== null ||
               mat.lightWeight !== null ||
-              mat.grossWeight !== null)
+              mat.grossWeight !== null),
         );
         if (updates.length === 0) {
           console.warn("No valid material logs to update.");
@@ -348,7 +345,7 @@ export function EmployeeTimeSheets({
             refuel &&
             refuel.id &&
             refuel.gallonsRefueled !== null &&
-            refuel.gallonsRefueled !== undefined
+            refuel.gallonsRefueled !== undefined,
         );
         if (updates.length === 0) {
           console.warn("No valid refuel logs to update.");
@@ -363,7 +360,7 @@ export function EmployeeTimeSheets({
       }
       if (timeSheetFilter === "truckingStateLogs") {
         const flattened = flattenStateMileageLogs(
-          changes as TruckingStateLogData
+          changes as TruckingStateLogData,
         );
         const updates = flattened.filter(
           (mileage) =>
@@ -371,7 +368,7 @@ export function EmployeeTimeSheets({
             mileage.id &&
             mileage.state &&
             mileage.stateLineMileage !== null &&
-            mileage.stateLineMileage !== undefined
+            mileage.stateLineMileage !== undefined,
         );
         if (updates.length === 0) {
           console.warn("No valid state mileage logs to update.");
@@ -406,7 +403,7 @@ export function EmployeeTimeSheets({
             log.shiftType &&
             log.materialType &&
             log.LoadQuantity !== null &&
-            log.LoadQuantity !== undefined
+            log.LoadQuantity !== undefined,
         );
         if (updates.length === 0) {
           console.warn("No valid tasco haul logs to update.");
@@ -420,7 +417,7 @@ export function EmployeeTimeSheets({
         return;
       }
       const isTascoRefuelLogData = (
-        data: unknown
+        data: unknown,
       ): data is TascoRefuelLogData => {
         return (
           Array.isArray(data) &&
@@ -441,7 +438,7 @@ export function EmployeeTimeSheets({
             log &&
             log.id &&
             log.gallonsRefueled !== null &&
-            log.gallonsRefueled !== undefined
+            log.gallonsRefueled !== undefined,
         );
         if (updates.length === 0) {
           console.warn("No valid tasco refuel logs to update.");
@@ -463,7 +460,7 @@ export function EmployeeTimeSheets({
         }
 
         const validUpdates = equipmentUpdates.filter(
-          (log) => log && log.id && log.startTime && log.endTime
+          (log) => log && log.id && log.startTime && log.endTime,
         );
 
         if (validUpdates.length === 0) {
@@ -491,7 +488,7 @@ export function EmployeeTimeSheets({
 
         console.log(
           "Saving equipment refuel logs updates:",
-          equipmentRefuelUpdates
+          equipmentRefuelUpdates,
         );
         const result = await updateEquipmentRefuelLogs(equipmentRefuelUpdates);
         console.log("Equipment refuel log update result:", result);
@@ -515,12 +512,12 @@ export function EmployeeTimeSheets({
             item !== null &&
             "id" in item &&
             "jobsiteId" in item &&
-            "startTime" in item
+            "startTime" in item,
         );
 
       // Type guard for TimesheetHighlights
       function isTimesheetHighlightsArray(
-        arr: unknown
+        arr: unknown,
       ): arr is TimesheetHighlights[] {
         return (
           Array.isArray(arr) &&
@@ -530,7 +527,7 @@ export function EmployeeTimeSheets({
               typeof item === "object" &&
               "id" in item &&
               "jobsiteId" in item &&
-              "startTime" in item
+              "startTime" in item,
           )
         );
       }
@@ -560,7 +557,7 @@ export function EmployeeTimeSheets({
               } catch (error) {
                 console.warn(
                   `Invalid startTime for timesheet ${timesheet.id}`,
-                  error
+                  error,
                 );
               }
             }
@@ -579,13 +576,13 @@ export function EmployeeTimeSheets({
               } catch (error) {
                 console.warn(
                   `Invalid endTime for timesheet ${timesheet.id}`,
-                  error
+                  error,
                 );
               }
             }
 
             return result as TimesheetHighlights;
-          }
+          },
         );
         await parentOnSaveChanges(validatedTimesheets as TimesheetHighlights[]);
       } else {
@@ -609,7 +606,7 @@ export function EmployeeTimeSheets({
           error.message.includes("Invalid Date"))
       ) {
         console.error(
-          "Detected invalid date format in the data. Please check all date values."
+          "Detected invalid date format in the data. Please check all date values.",
         );
       }
     } finally {
@@ -647,7 +644,7 @@ export function EmployeeTimeSheets({
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
       | TruckingMileageData
-      | MaintenanceLogData
+      | MaintenanceLogData,
   ) => {
     if (timeSheetFilter === "truckingMaterialHaulLogs") {
       setChanges(updatedData as TruckingMaterialHaulLogData);
@@ -681,7 +678,7 @@ export function EmployeeTimeSheets({
       ? updatedData
       : [updatedData];
     const newChanges = changesArray.map((item) =>
-      JSON.parse(JSON.stringify(item))
+      JSON.parse(JSON.stringify(item)),
     );
     setChanges(newChanges);
     setNewData((prevData) => {

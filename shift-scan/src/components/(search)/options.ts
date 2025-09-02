@@ -4,12 +4,30 @@ import {
   useDBCostcode,
   useDBEquipment,
 } from "@/app/context/dbCodeContext";
+import { EquipmentTags } from "@/lib/enums";
 // import {
 //   useRecentDBJobsite,
 //   useRecentDBCostcode,
 //   useRecentDBEquipment,
 // } from "@/app/context/dbRecentCodesContext";
-import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
+
+export type JobCodes = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
+export type CostCodes = {
+  id: string;
+  name: string;
+};
+
+export type EquipmentCode = {
+  id: string;
+  qrId: string;
+  name: string;
+  equipmentTag: EquipmentTags;
+};
 
 interface Option {
   code: string;
@@ -18,7 +36,7 @@ interface Option {
 
 export const CostCodeOptions = (
   dataType: string,
-  searchTerm?: string
+  searchTerm?: string,
 ): Option[] => {
   const { jobsiteResults } = useDBJobsite();
   // const { recentlyUsedJobCodes } = useRecentDBJobsite();
@@ -115,7 +133,7 @@ export const CostCodeOptions = (
   // Filter options based on the search term
   if (searchTerm) {
     options = options.filter((option) =>
-      option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      option.label.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }
 

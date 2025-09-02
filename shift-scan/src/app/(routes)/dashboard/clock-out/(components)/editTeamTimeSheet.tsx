@@ -19,12 +19,6 @@ import {
   TruckingMaterialHaulLogData,
   TruckingRefuelLogData,
   TruckingMileageData,
-  TruckingEquipmentHaulLogData,
-  TruckingStateLogData,
-  TascoHaulLogData,
-  TascoRefuelLogData,
-  EquipmentLogsData,
-  EmployeeEquipmentLogWithRefuel,
   EquipmentHauledItem,
 } from "@/lib/types";
 import { MaintenanceLogData } from "../../myTeam/[id]/employee/[employeeId]/_components/TimeCardMechanicLogs";
@@ -36,7 +30,6 @@ import {
   updateTascoRefuelLogs,
   updateTruckingMaterialLogs,
   updateTruckingRefuelLogs,
-  updateTruckingStateLogs,
   updateEquipmentRefuelLogs,
   updateTruckingMileage,
 } from "@/actions/myTeamsActions";
@@ -127,7 +120,7 @@ function isEquipmentLogChange(
         materialType?: string;
         LoadQuantity?: number | null;
       }
-    | { id: string; gallonsRefueled?: number | null }
+    | { id: string; gallonsRefueled?: number | null },
 ): obj is EquipmentLogChange {
   return (
     typeof obj === "object" &&
@@ -160,14 +153,14 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
 
   const manager = useMemo(
     () => `${session?.user?.firstName} ${session?.user?.lastName}`,
-    [session]
+    [session],
   );
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [date, setDate] = useState<string>(today);
   const [edit, setEdit] = useState(false);
 
   const [timeSheetFilter, setTimeSheetFilter] = useState<TimesheetFilter>(
-    editFilter || "timesheetHighlights"
+    editFilter || "timesheetHighlights",
   );
 
   const {
@@ -223,7 +216,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
           }[]
         | { id: string; gallonsRefueled?: number | null }[]
         | EquipmentLogChange[]
-        | TruckingMileageData
+        | TruckingMileageData,
     ) => {
       try {
         switch (timeSheetFilter) {
@@ -237,7 +230,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
             const serializedChanges = changesArray.map((timesheet) => {
               // Safely convert to ISO string with validation
               const safeToISOString = (
-                dateValue: Date | string | null | undefined
+                dateValue: Date | string | null | undefined,
               ) => {
                 if (!dateValue) return undefined;
 
@@ -255,7 +248,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                   return date.toISOString();
                 } catch (error) {
                   console.error(
-                    `Error converting date to ISO string: ${error}`
+                    `Error converting date to ISO string: ${error}`,
                   );
                   return undefined;
                 }
@@ -271,7 +264,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
             });
 
             const validChanges = serializedChanges.filter(
-              (timesheet) => timesheet.id && timesheet.startTime !== undefined
+              (timesheet) => timesheet.id && timesheet.startTime !== undefined,
             );
 
             if (validChanges.length === 0) return;
@@ -316,8 +309,8 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                 (item) =>
                   typeof item === "object" &&
                   Array.isArray(
-                    (item as { TruckingLogs?: unknown[] }).TruckingLogs
-                  )
+                    (item as { TruckingLogs?: unknown[] }).TruckingLogs,
+                  ),
               )
             ) {
               const haulLogChanges = changes as unknown as Array<{
@@ -332,9 +325,9 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                         id: hauledItem.id,
                         equipmentId: hauledItem.Equipment?.id,
                         jobSiteId: hauledItem.JobSite?.id,
-                      })
-                    )
-                )
+                      }),
+                    ),
+                ),
               );
 
               if (updates.length === 0) {
@@ -362,7 +355,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
               "TruckingLogs" in changes[0]
             ) {
               formattedChanges = flattenMaterialLogs(
-                changes as unknown as TruckingMaterialHaulLogData
+                changes as unknown as TruckingMaterialHaulLogData,
               );
             } else if (Array.isArray(changes)) {
               formattedChanges = changes as unknown as ProcessedMaterialLog[];
@@ -387,7 +380,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
               "TruckingLogs" in changes[0]
             ) {
               formattedChanges = flattenRefuelLogs(
-                changes as TruckingRefuelLogData
+                changes as TruckingRefuelLogData,
               );
             } else if (isRefuelLogArray(changes)) {
               formattedChanges = changes;
@@ -412,7 +405,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                   "shiftType" in change &&
                   "equipmentId" in change &&
                   "materialType" in change &&
-                  "LoadQuantity" in change
+                  "LoadQuantity" in change,
               )
             ) {
               await updateTascoHaulLogs(
@@ -422,7 +415,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                   equipmentId?: string | null | undefined;
                   materialType?: string | undefined;
                   LoadQuantity?: number | null | undefined;
-                }[]
+                }[],
               );
             } else {
               console.error("Invalid changes type");
@@ -436,11 +429,11 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                 (change) =>
                   "id" in change &&
                   ("gallonsRefueled" in change ||
-                    !("gallonsRefueled" in change))
+                    !("gallonsRefueled" in change)),
               )
             ) {
               await updateTascoRefuelLogs(
-                changes as { id: string; gallonsRefueled?: number | null }[]
+                changes as { id: string; gallonsRefueled?: number | null }[],
               );
             } else {
               console.error("Invalid changes type");
@@ -456,7 +449,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
               "endTime" in changes[0]
             ) {
               const validChanges = (changes as EquipmentLogChange[]).filter(
-                (change) => change.id && change.startTime && change.endTime
+                (change) => change.id && change.startTime && change.endTime,
               );
               if (validChanges.length > 0) {
                 await updateEquipmentLogs(
@@ -464,7 +457,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                     id: change.id,
                     startTime: change.startTime,
                     endTime: change.endTime,
-                  }))
+                  })),
                 );
               }
             } else {
@@ -477,11 +470,11 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
             if (
               Array.isArray(changes) &&
               changes.every(
-                (change) => "id" in change && "gallonsRefueled" in change
+                (change) => "id" in change && "gallonsRefueled" in change,
               )
             ) {
               updateEquipmentRefuelLogs(
-                changes as { id: string; gallonsRefueled?: number | null }[]
+                changes as { id: string; gallonsRefueled?: number | null }[],
               );
             } else {
               console.error("Invalid changes type");
@@ -491,18 +484,18 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
           // Handle mechanicLogs (MaintenanceLog data)
           case "mechanicLogs": {
             const updateMaintenanceLogs = async (
-              logs: MaintenanceLogData
+              logs: MaintenanceLogData,
             ): Promise<{ success: boolean }> => {
               const formData = new FormData();
               logs.forEach((log, index) => {
                 formData.append(`logs[${index}].id`, log.id);
                 formData.append(
                   `logs[${index}].startTime`,
-                  log.startTime ? new Date(log.startTime).toISOString() : ""
+                  log.startTime ? new Date(log.startTime).toISOString() : "",
                 );
                 formData.append(
                   `logs[${index}].endTime`,
-                  log.endTime ? new Date(log.endTime).toISOString() : ""
+                  log.endTime ? new Date(log.endTime).toISOString() : "",
                 );
               });
               // ...existing code for submitting the formData...
@@ -519,11 +512,11 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
                   "maintenanceId" in log &&
                   "startTime" in log &&
                   "endTime" in log &&
-                  "Maintenance" in log
+                  "Maintenance" in log,
               )
             ) {
               const result = await updateMaintenanceLogs(
-                changes as unknown as MaintenanceLogData
+                changes as unknown as MaintenanceLogData,
               );
 
               if (result?.success) {
@@ -559,7 +552,7 @@ const EditTeamTimeSheet: React.FC<EditTeamTimeSheetProps> = ({
       fetchTimesheetsForDate,
       fetchTimesheetsForFilter,
       setTimesheetData,
-    ]
+    ],
   );
 
   const onCancelEdits = useCallback(() => {
@@ -673,7 +666,7 @@ export interface EmployeeTimeSheetsProps {
           LoadQuantity?: number | null;
         }[]
       | { id: string; gallonsRefueled?: number | null }[]
-      | EquipmentLogChange[]
+      | EquipmentLogChange[],
   ) => Promise<void>;
   onCancelEdits: () => void;
   fetchTimesheetsForDate: (date: string) => Promise<void>;
@@ -693,7 +686,7 @@ type ProcessedMaterialLog = {
 
 // Helper type guard for refuel log array
 function isRefuelLogArray(
-  arr: unknown
+  arr: unknown,
 ): arr is { id: string; gallonsRefueled?: number | null }[] {
   return (
     Array.isArray(arr) &&
@@ -702,7 +695,7 @@ function isRefuelLogArray(
         item &&
         typeof item === "object" &&
         "id" in item &&
-        typeof (item as { id: unknown }).id === "string"
+        typeof (item as { id: unknown }).id === "string",
     )
   );
 }

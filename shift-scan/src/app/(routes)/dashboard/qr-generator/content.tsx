@@ -64,48 +64,70 @@ export default function QRGeneratorContent() {
     const fetchAllData = async () => {
       try {
         setLoading(true);
-        const [equipmentRes, jobsiteRes] = await Promise.all([
-          fetch("/api/getEquipment"),
-          fetch("/api/getJobsites"),
-        ]);
 
-        if (!equipmentRes.ok || !jobsiteRes.ok) {
-          throw new Error("Failed to fetch data");
-        }
-
-        const equipmentData = await equipmentRes.json();
-        const jobsiteData = await jobsiteRes.json();
+        // Fetch equipment data
         try {
-          JobsiteListSchema.parse(jobsiteData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in jobsite data:", error);
-            return;
-          }
-        }
-        try {
-          EquipmentListSchema.parse(equipmentData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in equipment data:", error);
-            return;
-          }
-        }
-        setGeneratedEquipmentList(
-          equipmentData.map((item: EquipmentCodes) => ({
-            label: item.name.toLowerCase(),
-            code: item.qrId.toLowerCase(),
-          })),
-        );
+          const equipmentRes = await fetch("/api/getEquipment");
 
-        setGeneratedJobsiteList(
-          jobsiteData.map((item: JobCodes) => ({
-            label: item.name.toLowerCase(),
-            code: item.qrId.toLowerCase(),
-          })),
-        );
+          if (equipmentRes.ok) {
+            const equipmentData = await equipmentRes.json();
+
+            try {
+              EquipmentListSchema.parse(equipmentData);
+              setGeneratedEquipmentList(
+                equipmentData.map((item: EquipmentCodes) => ({
+                  id: item.id,
+                  label: item.name.toUpperCase(),
+                  code: item.qrId.toUpperCase(),
+                })),
+              );
+            } catch (error) {
+              if (error instanceof z.ZodError) {
+                console.error("Validation error in equipment data:", error);
+                setGeneratedEquipmentList([]);
+              }
+            }
+          } else {
+            console.error("Failed to fetch equipment data");
+            setGeneratedEquipmentList([]);
+          }
+        } catch (equipError) {
+          console.error("Error fetching equipment data:", equipError);
+          setGeneratedEquipmentList([]);
+        }
+
+        // Fetch jobsite data
+        try {
+          const jobsiteRes = await fetch("/api/getJobsites");
+
+          if (jobsiteRes.ok) {
+            const jobsiteData = await jobsiteRes.json();
+
+            try {
+              JobsiteListSchema.parse(jobsiteData);
+              setGeneratedJobsiteList(
+                jobsiteData.map((item: JobCodes) => ({
+                  id: item.id,
+                  label: item.name.toUpperCase(),
+                  code: item.qrId.toUpperCase(),
+                })),
+              );
+            } catch (error) {
+              if (error instanceof z.ZodError) {
+                console.error("Validation error in jobsite data:", error);
+                setGeneratedJobsiteList([]);
+              }
+            }
+          } else {
+            console.error("Failed to fetch jobsite data");
+            setGeneratedJobsiteList([]);
+          }
+        } catch (jobError) {
+          console.error("Error fetching jobsite data:", jobError);
+          setGeneratedJobsiteList([]);
+        }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error in fetchAllData:", error);
       } finally {
         setLoading(false);
       }

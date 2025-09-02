@@ -15,6 +15,7 @@ export default function RenderDropdownField({
   touchedFields,
   error,
   options,
+  disabled,
 }: {
   field: {
     id: string;
@@ -30,6 +31,7 @@ export default function RenderDropdownField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -38,6 +40,7 @@ export default function RenderDropdownField({
         {field.required && <span className="text-red-500">*</span>}
       </label>
       <Select
+        disabled={disabled}
         value={value}
         onValueChange={(val) => handleFieldChange(field.id, val)}
       >

@@ -9,11 +9,20 @@ import AccountInformation from "./accountInformation";
 import ProfileImageEditor from "@/app/(routes)/hamburger/profile/ProfileImageEditor";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import SettingSelections from "./SettingSelections";
-import { UserSettings } from "@/lib/types";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { z } from "zod";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { usePermissions } from "@/app/context/PermissionsContext";
+
+type UserSettings = {
+  userId: string;
+  language?: string;
+  personalReminders?: boolean;
+  generalReminders?: boolean;
+  cameraAccess?: boolean;
+  locationAccess?: boolean;
+  cookiesAccess?: boolean;
+};
 
 // Define Zod schema for UserSettings
 const userSettingsSchema = z.object({

@@ -472,6 +472,14 @@ export async function getFormSubmissionById(submissionId: number) {
             },
           },
         },
+        Approvals: {
+          include: {
+            Approver: {
+              select: { id: true, firstName: true, lastName: true },
+            },
+          },
+          orderBy: { updatedAt: "desc" },
+        },
       },
     });
     return submission;
@@ -537,6 +545,10 @@ export async function getFormSubmissions(
 export interface UpdateFormSubmissionInput {
   submissionId: number;
   data: Record<string, string | number | boolean | null>;
+  adminUserId: string | null;
+  comment?: string;
+  signature?: string;
+  updateStatus?: string;
 }
 
 // Create a new form submission
@@ -551,6 +563,10 @@ export interface CreateFormSubmissionInput {
     firstName: string;
     lastName: string;
   };
+  adminUserId?: string | null;
+  comment?: string;
+  signature?: string;
+  status?: string;
 }
 
 /**
@@ -559,7 +575,14 @@ export interface CreateFormSubmissionInput {
  */
 export async function createFormSubmission(input: CreateFormSubmissionInput) {
   try {
-    const { formTemplateId, data, submittedBy } = input;
+    const {
+      formTemplateId,
+      data,
+      submittedBy,
+      adminUserId,
+      comment,
+      signature,
+    } = input;
     if (!submittedBy.id) {
       throw new Error("Submitted By is required");
     }
@@ -573,6 +596,18 @@ export async function createFormSubmission(input: CreateFormSubmissionInput) {
         submittedAt: new Date(),
       },
     });
+
+    await prisma.formApproval.create({
+      data: {
+        formSubmissionId: created.id,
+        signedBy: adminUserId,
+        comment: comment || null,
+        signature: signature || null,
+        submittedAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
     revalidatePath(`/admins/forms/${formTemplateId}`);
     return { success: true, submission: created };
   } catch (error) {
@@ -587,14 +622,60 @@ export async function createFormSubmission(input: CreateFormSubmissionInput) {
  */
 export async function updateFormSubmission(input: UpdateFormSubmissionInput) {
   try {
-    const { submissionId, data } = input;
+    const {
+      submissionId,
+      data,
+      adminUserId,
+      comment,
+      signature,
+      updateStatus,
+    } = input;
+
+    // First, update the form submission data
     const updated = await prisma.formSubmission.update({
       where: { id: submissionId },
       data: {
         data,
         updatedAt: new Date(),
+        // Update the status if specified
+        ...(updateStatus && { status: updateStatus as FormStatus }),
       },
     });
+
+    // If there's an admin user making the update, record this as an approval
+    if (adminUserId) {
+      // Check if there's an existing approval for this submission
+      const existingApproval = await prisma.formApproval.findFirst({
+        where: {
+          formSubmissionId: submissionId,
+          signedBy: adminUserId,
+        },
+      });
+
+      if (existingApproval) {
+        // Update existing approval
+        await prisma.formApproval.update({
+          where: { id: existingApproval.id },
+          data: {
+            updatedAt: new Date(),
+            comment: comment || existingApproval.comment,
+            signature: signature || existingApproval.signature,
+          },
+        });
+      } else {
+        // Create new approval record
+        await prisma.formApproval.create({
+          data: {
+            formSubmissionId: submissionId,
+            signedBy: adminUserId,
+            updatedAt: new Date(),
+            comment: comment || null,
+            signature: signature || null,
+          },
+        });
+      }
+    }
+
     revalidatePath(`/admins/forms/${updated.formTemplateId}`);
     return { success: true, submission: updated };
   } catch (error) {

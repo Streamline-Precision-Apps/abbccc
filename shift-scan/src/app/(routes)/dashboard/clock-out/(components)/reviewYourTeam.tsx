@@ -4,7 +4,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { crewUsers, TimesheetFilter, TimesheetHighlights } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef, useMemo } from "react";
 import TimeSheetRenderer from "@/app/(routes)/dashboard/myTeam/[id]/employee/[employeeId]/_components/timeSheetRenderer";
@@ -16,7 +15,44 @@ import TinderSwipe, {
 } from "@/components/(animations)/tinderSwipe";
 import ReviewTabOptions from "./ReviewTabOptions";
 import { useAllEquipment } from "@/hooks/useAllEquipment";
+import { FormStatus, WorkType } from "@/lib/enums";
 // import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
+
+type TimesheetHighlights = {
+  submitDate: string;
+  date: Date | string;
+  id: number;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: Date | string;
+  endTime: Date | string | null;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+  Jobsite: {
+    name: string;
+  };
+};
+
+type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};
+
+type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
 
 const FILTER_OPTIONS: {
   value: TimesheetFilter | "trucking" | "tasco";
@@ -83,7 +119,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     let found: crewUsers | undefined = undefined;
     if (crewMembers && crewMembers.length > 0) {
       found = crewMembers.find(
-        (u) => u.id === manager || `${u.firstName} ${u.lastName}` === manager
+        (u) => u.id === manager || `${u.firstName} ${u.lastName}` === manager,
       );
     }
     if (found) {
@@ -101,7 +137,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
 
   // Remove manager from crewMembers if present, to avoid duplicate
   const filteredTeam = crewMembers.filter(
-    (u) => u.id !== manager && `${u.firstName} ${u.lastName}` !== manager
+    (u) => u.id !== manager && `${u.firstName} ${u.lastName}` !== manager,
   );
   const t = useTranslations("Clock");
   const tinderSwipeRef = useRef<TinderSwipeRef>(null);
@@ -118,7 +154,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     | "mechanicLogs"
   >("timesheetHighlights");
   const [truckingTab, setTruckingTab] = useState<TimesheetFilter>(
-    "truckingEquipmentHaulLogs"
+    "truckingEquipmentHaulLogs",
   );
   const [tascoTab, setTascoTab] = useState<TimesheetFilter>("tascoHaulLogs");
   const tinderRef = useRef<TinderSwipeRef>(null);
@@ -141,7 +177,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     ...(managerUser ? [managerUser] : []),
     ...filteredTeam,
   ].filter(
-    (member, idx, arr) => arr.findIndex((u) => u.id === member.id) === idx
+    (member, idx, arr) => arr.findIndex((u) => u.id === member.id) === idx,
   );
 
   // Memoize the userIds array for stable dependency (as a string key)
@@ -203,7 +239,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     } catch (error) {
       console.error(
         "Error re-fetching pending timesheets after approve:",
-        error
+        error,
       );
     }
     // Move to next user (if any)
@@ -223,8 +259,8 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
       filter === "trucking"
         ? truckingTab
         : filter === "tasco"
-        ? tascoTab
-        : filter
+          ? tascoTab
+          : filter,
     );
     setEmployeeId(focusUser.id);
     handleClick();
@@ -347,7 +383,7 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   useEffect(() => {
     if (hasNoMembers) {
       console.log(
-        "No team members with pending timesheets found, navigating to next step"
+        "No team members with pending timesheets found, navigating to next step",
       );
       // Use setTimeout to defer state updates to next tick to avoid React warnings
       setTimeout(() => {
@@ -397,8 +433,8 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   // Calculate total hours for the focus user from ALL completed timesheets regardless of filter
   const totalHours = calculateTotalHours(
     pendingTimesheets[focusUser?.id]?.filter(
-      (ts) => ts.endTime !== null && ts.endTime !== undefined
-    ) || []
+      (ts) => ts.endTime !== null && ts.endTime !== undefined,
+    ) || [],
   );
   return (
     <Bases>

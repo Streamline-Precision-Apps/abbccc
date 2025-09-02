@@ -20,6 +20,7 @@ const ButtonVariants = cva(
         white: "bg-white",
         lightGray: "bg-app-gray",
         darkGray: "bg-app-dark-gray",
+        neutral: "bg-neutral-300",
         none: "bg-none border-0 shadow-none",
         custom: "",
       },
@@ -53,7 +54,7 @@ const ButtonVariants = cva(
       size: "full",
       shadow: "yes",
     },
-  }
+  },
 );
 
 interface ButtonProps
@@ -66,7 +67,7 @@ interface ButtonProps
 const Buttons = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, background, position, size, shadow, href, ...props },
-    ref: ForwardedRef<HTMLButtonElement>
+    ref: ForwardedRef<HTMLButtonElement>,
   ) => {
     const router = useRouter();
     const pageAction = () => {
@@ -83,12 +84,12 @@ const Buttons = forwardRef<HTMLButtonElement, ButtonProps>(
           pageAction();
         }}
         className={cn(
-          ButtonVariants({ background, size, position, shadow, className })
+          ButtonVariants({ background, size, position, shadow, className }),
         )}
         {...props}
       />
     );
-  }
+  },
 );
 
 Buttons.displayName = "Buttons";

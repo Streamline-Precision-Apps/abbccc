@@ -7,13 +7,22 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import LocaleToggleSwitch from "../(inputs)/toggleSwitch";
 import { Contents } from "../(reusable)/contents";
-import { UserSettings } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Banners } from "../(reusable)/banners";
 import { setUserPermissions } from "@/actions/userActions";
 import { ProgressBar } from "./progressBar";
 import { Button } from "../ui/button";
 import { usePermissions } from "@/app/context/PermissionsContext";
+
+type UserSettings = {
+  userId: string;
+  language?: string;
+  personalReminders?: boolean;
+  generalReminders?: boolean;
+  cameraAccess?: boolean;
+  locationAccess?: boolean;
+  cookiesAccess?: boolean;
+};
 
 type prop = {
   userId: string;

@@ -8,6 +8,7 @@ import StateLog from "./components/StateLog";
 import RefuelLayout from "./components/RefuelLayout";
 import WorkDetails from "./components/workDetails";
 import TruckTabOptions from "./TruckTabOptions";
+import { ZodNullable } from "zod";
 
 type StateMileage = {
   id: string;
@@ -28,7 +29,7 @@ type Refueled = {
 
 type EquipmentHauled = {
   id: string;
-  truckingLogId: string;
+  truckingLogId: string | null;
   equipmentId: string | null;
   createdAt: Date;
   source: string | null;
@@ -130,7 +131,7 @@ export default function TruckDriver() {
         equipmentHauled &&
           equipmentHauled.length >= 0 &&
           equipmentHauled.every(
-            (item) => item.equipmentId && item.source && item.destination
+            (item) => item.equipmentId && item.source && item.destination,
           ) &&
           material &&
           material.length >= 0 &&
@@ -140,9 +141,9 @@ export default function TruckDriver() {
               // TODO: These fields don't exist in current database schema - temporarily commented out
               // item.grossWeight &&
               item.name &&
-              item.unit
+              item.unit,
             // && item.lightWeight
-          )
+          ),
       ),
       notesTab: isEndMileageValid(),
       stateMileageTab: Boolean(
@@ -154,8 +155,8 @@ export default function TruckDriver() {
               item.stateLineMileage !== null &&
               item.stateLineMileage !== undefined &&
               startingMileage !== null &&
-              item.stateLineMileage >= startingMileage
-          )
+              item.stateLineMileage >= startingMileage,
+          ),
       ),
       refuelLogsTab: Boolean(
         refuelLogs &&
@@ -166,8 +167,8 @@ export default function TruckDriver() {
               item.milesAtFueling !== null &&
               item.milesAtFueling !== undefined &&
               startingMileage !== null &&
-              item.milesAtFueling >= startingMileage
-          )
+              item.milesAtFueling >= startingMileage,
+          ),
       ),
     });
     console.log("Hauling Logs", isComplete.haulingLogsTab);

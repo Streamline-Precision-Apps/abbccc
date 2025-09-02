@@ -1,18 +1,22 @@
 // This is used to store the timesheets for the whole pay period. It is used to display the daily hours in the home screen.
 
 "use client";
-import { PayPeriodTimesheets } from "@/lib/types";
 import React, { createContext, useState, ReactNode, useContext } from "react";
+
+type PayPeriodTimesheets = {
+  startTime: Date; // Correct field name
+  endTime: Date;
+};
 
 type PayPeriodTimeSheetProps = {
   payPeriodTimeSheet: PayPeriodTimesheets[] | null;
   setPayPeriodTimeSheets: (
-    payPeriodTimeSheets: PayPeriodTimesheets[] | null
+    payPeriodTimeSheets: PayPeriodTimesheets[] | null,
   ) => void; // Corrected here
-}
+};
 
 const PayPeriodTimeSheet = createContext<PayPeriodTimeSheetProps | undefined>(
-  undefined
+  undefined,
 );
 
 export const PayPeriodTimeSheetProvider: React.FC<{ children: ReactNode }> = ({
@@ -41,7 +45,7 @@ export const usePayPeriodTimeSheet = () => {
   const context = useContext(PayPeriodTimeSheet);
   if (context === undefined) {
     throw new Error(
-      "PayPeriodTimeSheet must be used within a PayPeriodTimeSheetProvider"
+      "PayPeriodTimeSheet must be used within a PayPeriodTimeSheetProvider",
     );
   }
   return context;

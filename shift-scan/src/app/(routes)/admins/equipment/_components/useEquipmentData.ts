@@ -5,28 +5,41 @@ import { deleteEquipment } from "@/actions/AssetActions";
 import { useSidebar } from "@/components/ui/sidebar";
 
 /**
- * EquipmentVehicleInfo type for vehicle-specific info
- */
-export interface EquipmentVehicleInfo {
-  make: string;
-  model: string;
-  year: string;
-}
-
-/**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
  */
 export interface EquipmentSummary {
   id: string;
   qrId: string;
+  code?: string;
   name: string;
   description: string;
-  equipmentTag: "EQUIPMENT" | "VEHICLE" | "TRUCK" | "TRAILER";
-  state: "AVAILABLE" | "NEEDS_REPAIR" | "IN_USE" | "MAINTENANCE" | "RETIRED";
+  memo?: string;
+  ownershipType?: "OWNED" | "LEASED";
+  equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
-  createdAt: string;
-  updatedAt: string;
-  equipmentVehicleInfo: EquipmentVehicleInfo | null;
+  state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  // Direct vehicle/equipment properties
+  make?: string;
+  model?: string;
+  year?: string;
+  color?: string;
+  serialNumber?: string;
+  acquiredDate?: string | Date;
+  acquiredCondition?: "NEW" | "USED";
+  licensePlate?: string;
+  licenseState?: string;
+  registrationExpiration?: string | Date;
+  isDisabledByAdmin?: boolean;
+  createdVia?: "MOBILE" | "WEB" | "IMPORT";
+  overWeight?: boolean;
+  currentWeight?: number;
+  creationReason?: string;
+  createdBy: {
+    firstName?: string;
+    lastName?: string;
+  };
 }
 export const useEquipmentData = () => {
   const [equipmentDetails, setEquipmentDetails] = useState<EquipmentSummary[]>(
@@ -219,10 +232,8 @@ export const useEquipmentData = () => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return true;
     const nameMatch = item.name.toLowerCase().includes(term);
-    const makeMatch =
-      item.equipmentVehicleInfo?.make?.toLowerCase().includes(term) ?? false;
-    const modelMatch =
-      item.equipmentVehicleInfo?.model?.toLowerCase().includes(term) ?? false;
+    const makeMatch = item.make?.toLowerCase().includes(term) ?? false;
+    const modelMatch = item.model?.toLowerCase().includes(term) ?? false;
     return nameMatch || makeMatch || modelMatch;
   });
 

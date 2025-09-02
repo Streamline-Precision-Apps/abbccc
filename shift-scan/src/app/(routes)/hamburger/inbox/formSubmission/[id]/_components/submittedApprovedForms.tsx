@@ -1,11 +1,9 @@
 "use client";
-import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
@@ -13,6 +11,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { format } from "date-fns";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
+import { Label } from "@/components/ui/label";
 
 interface FormField {
   id: string;
@@ -108,6 +107,13 @@ export default function SubmittedFormsApproval({
   const t = useTranslations("Hamburger-Inbox");
   const router = useRouter();
 
+  // Helper function to validate date string
+  const isValidDate = (dateString: string | undefined): boolean => {
+    if (!dateString) return false;
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+  };
+
   let managerName = "";
   if (
     managerFormApproval &&
@@ -128,32 +134,25 @@ export default function SubmittedFormsApproval({
     <>
       <Holds
         background={"white"}
-        className="row-span-1 h-full w-full justify-center "
+        className="row-span-1 h-full w-full justify-center"
       >
         <TitleBoxes onClick={() => router.back()}>
-          <Holds className="px-8 h-full justify-center items-center">
-            <Titles size={"h3"}>
-              {formTitle
-                ? formTitle.charAt(0).toUpperCase() +
-                  formTitle.slice(1).slice(0, 24)
-                : formData.name.charAt(0).toUpperCase() +
-                  formData.name.slice(1).slice(0, 24)}
-            </Titles>
-            {formTitle !== "" && <Titles size={"h6"}>{formData.name}</Titles>}
-
-            <Holds className=" w-12 h-12 absolute right-1 top-0 justify-center">
-              <Images
-                titleImgAlt={"form Status"}
-                titleImg={
-                  submissionStatus === "PENDING"
-                    ? "/statusOngoingFilled.svg"
-                    : submissionStatus === "APPROVED"
-                      ? "/statusApprovedFilled.svg"
-                      : "/statusDeniedFilled.svg"
-                }
-                className="max-w-10 h-auto object-contain"
-              />
-            </Holds>
+          <Holds className="px-8 h-full justify-center items-center relative">
+            {/* Form title */}
+            <div className="flex flex-col items-center">
+              <Titles size={"h3"} className="text-center">
+                {formTitle
+                  ? formTitle.charAt(0).toUpperCase() +
+                    formTitle.slice(1).slice(0, 24)
+                  : formData.name.charAt(0).toUpperCase() +
+                    formData.name.slice(1).slice(0, 24)}
+              </Titles>
+              {formTitle !== "" && (
+                <Titles size={"h6"} className="text-gray-500">
+                  {formData.name}
+                </Titles>
+              )}
+            </div>
           </Holds>
         </TitleBoxes>
       </Holds>
@@ -163,49 +162,123 @@ export default function SubmittedFormsApproval({
         className="w-full h-full row-start-2 row-end-8"
       >
         <Contents width={"section"}>
-          <Holds className="overflow-y-auto no-scrollbar pt-3 pb-5 ">
-            <FormFieldRenderer
-              formData={formData}
-              formValues={formValues}
-              setFormValues={() => {}}
-              readOnly={true}
-            />
-            <Holds
-              position={"row"}
-              className="pb-3 w-full justify-between border-black border-opacity-5 border-b-2"
-            >
-              <Texts size={"p7"}>
-                {`${t("OriginallySubmitted")} ${format(
-                  managerFormApproval?.submittedAt?.toString() ||
-                    new Date().toISOString(),
-                  "M/dd/yy",
-                )}`}
-              </Texts>
-            </Holds>
-            <Holds position={"row"} className="h-full py-3 gap-1">
-              <Texts position={"left"} size={"p5"} className="italic">{`${
-                status === FormStatus.APPROVED ? t("ApprovedBy") : t("DeniedBy")
-              }`}</Texts>
-              <Texts
-                position={"left"}
-                size={"p5"}
-                className="italic"
-              >{`${managerName}`}</Texts>
-            </Holds>
-            <Holds className="h-full pb-3">
-              <Holds>
-                <Labels size={"p5"}>{t("ManagerComments")}</Labels>
-                <TextAreas value={comment} disabled className="w-full" />
-              </Holds>
-              <Texts size={"p7"} position={"left"}>
-                {`${t("ApprovalStatusLastUpdated")} ${format(
-                  managerFormApproval?.updatedAt?.toString() ||
-                    new Date().toISOString(),
-                  "M/dd/yy",
-                )}`}
-              </Texts>
-            </Holds>
-          </Holds>
+          <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
+            {/* Summary Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+              {/* Approval Details Section */}
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-blue-600 font-semibold text-sm">
+                    Approval Details
+                  </h3>
+                  <p className="text-xs italic text-gray-500">
+                    {`${t("OriginallySubmitted")} ${
+                      isValidDate(
+                        managerFormApproval?.Approvals[0]?.updatedAt?.toString(),
+                      )
+                        ? format(
+                            new Date(
+                              managerFormApproval?.Approvals[0]?.updatedAt?.toString() ||
+                                "",
+                            ),
+                            "M/dd/yy",
+                          )
+                        : format(new Date(), "M/dd/yy")
+                    }`}
+                  </p>
+                </div>
+
+                {/* Status indicator */}
+                <div className="flex flex-col gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      Status:
+                    </span>
+                    <div
+                      className={`py-1 px-3 rounded-md ${
+                        status === FormStatus.APPROVED
+                          ? "bg-green-100 border border-app-green"
+                          : "bg-red-100 border border-app-red"
+                      }`}
+                    >
+                      <p
+                        className={`text-sm font-medium ${
+                          status === FormStatus.APPROVED
+                            ? "text-app-green"
+                            : "text-app-red"
+                        }`}
+                      >
+                        {status === FormStatus.APPROVED
+                          ? t("Approved")
+                          : t("Denied")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {`${status === FormStatus.APPROVED ? t("ApprovedBy") : t("DeniedBy")}`}
+                    </span>
+                    <span className="text-sm text-gray-700">
+                      {managerName ? managerName : "Admin"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Manager Comments Section */}
+              <div className="mb-4">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("ManagerComments")}
+                  </span>
+                </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                  {comment ? (
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                      {comment}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-400 italic">
+                      No comments provided
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Submission Details Section */}
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-blue-600 font-semibold text-sm">
+                  Submission Details
+                </h3>
+                <p className="text-xs italic text-gray-500">
+                  {`${t("OriginallySubmitted")} ${
+                    isValidDate(managerFormApproval?.submittedAt?.toString())
+                      ? format(
+                          new Date(
+                            managerFormApproval?.submittedAt?.toString() || "",
+                          ),
+                          "M/dd/yy",
+                        )
+                      : format(new Date(), "M/dd/yy")
+                  }`}
+                </p>
+              </div>
+
+              {/* Form Fields */}
+              <div className="bg-white rounded-lg">
+                <FormFieldRenderer
+                  formData={formData}
+                  formValues={formValues}
+                  setFormValues={() => {}}
+                  readOnly={true}
+                  disabled={true}
+                />
+              </div>
+            </div>
+          </div>
         </Contents>
       </Holds>
     </>

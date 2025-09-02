@@ -13,7 +13,7 @@ import { auth } from "@/auth";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ qrId: string }> }
+  { params }: { params: Promise<{ qrId: string }> },
 ) {
   try {
     const { qrId } = await params;
@@ -27,7 +27,7 @@ export async function GET(
     if (!qrId) {
       return NextResponse.json(
         { error: "Invalid or missing QR ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,23 +44,17 @@ export async function GET(
         approvalStatus: true,
         overWeight: true,
         currentWeight: true,
-        equipmentVehicleInfo: {
-          select: {
-            make: true,
-            model: true,
-            year: true,
-            licensePlate: true,
-            registrationExpiration: true,
-            mileage: true,
-          },
-        },
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
       },
     });
 
     if (!equipment) {
       return NextResponse.json(
         { error: "Equipment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

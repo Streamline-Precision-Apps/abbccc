@@ -9,6 +9,7 @@ export default function RenderNumberField({
   handleFieldTouch,
   touchedFields,
   error,
+  disabled,
 }: {
   field: {
     id: string;
@@ -20,6 +21,7 @@ export default function RenderNumberField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -35,6 +37,7 @@ export default function RenderNumberField({
         value={value}
         onChange={(e) => handleFieldChange(field.id, e.target.value)}
         onBlur={() => handleFieldTouch(field.id)}
+        disabled={disabled}
       />
       {touchedFields[field.id] && error && (
         <p className="text-xs text-red-500 mt-1">{error}</p>
