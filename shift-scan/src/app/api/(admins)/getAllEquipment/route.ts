@@ -28,16 +28,10 @@ export async function GET(req: Request) {
       approvalStatus: true,
       overWeight: true,
       currentWeight: true,
-      equipmentVehicleInfo: {
-        select: {
-          make: true,
-          model: true,
-          year: true,
-          licensePlate: true,
-          registrationExpiration: true,
-          mileage: true,
-        },
-      },
+      make: true,
+      model: true,
+      year: true,
+      licensePlate: true,
     } as const;
 
     let equipment;

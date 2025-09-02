@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -40,15 +41,40 @@ export function DateTimePicker({
     onChange(newDate.toISOString());
   };
 
+  // A type for HTMLInputElement that may have the showPicker method
+  type HTMLInputElementWithShowPicker = HTMLInputElement & {
+    showPicker?: () => void;
+  };
+
+  // Try to open the native time picker when the input is focused or clicked.
+  // Many Chromium-based browsers expose `HTMLInputElement.showPicker()` which
+  // opens the native picker programmatically. If that's not available we
+  // fall back to selecting the input so the user can type immediately.
+  const openTimePicker = (el: HTMLInputElement | null) => {
+    if (!el) return;
+    const inputWithPicker = el as HTMLInputElementWithShowPicker;
+    if (typeof inputWithPicker.showPicker === "function") {
+      try {
+        inputWithPicker.showPicker();
+      } catch (e) {
+        // ignore if it throws; we'll still select the input below
+        el.select?.();
+      }
+    } else {
+      // fallback: select the value so typing replaces it immediately
+      el.select?.();
+    }
+  };
+
   return (
-    <div>
+    <div className="w-full">
       <label className={`block text-xs ${font} mb-1`}>{label}</label>
-      <div className="flex gap-2">
+      <div className="w-full flex gap-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-[160px] justify-start text-left font-normal"
+              className="w-full justify-start text-left font-normal"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {dateValue ? (
@@ -67,11 +93,13 @@ export function DateTimePicker({
             />
           </PopoverContent>
         </Popover>
-        <input
+        <Input
           type="time"
           value={timeValue}
           onChange={handleTimeChange}
-          className="border rounded px-2 py-1 text-xs"
+          onFocus={(e) => openTimePicker(e.currentTarget)}
+          onClick={(e) => openTimePicker(e.currentTarget)}
+          className="border rounded px-2 py-1 text-xs w-full"
         />
       </div>
     </div>

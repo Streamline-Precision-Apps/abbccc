@@ -72,18 +72,21 @@ enum OwnershipType {
   LEASED
 }
 
+// purpose is to show all employee interactions with the equipment
 model EmployeeEquipmentLog {
-  id            String       @id @default(uuid())
+  id            String    @id @default(uuid())
   timeSheetId   Int
   equipmentId   String?
   maintenanceId String?
-  startTime     DateTime     @default(now())
+  startTime     DateTime  @default(now())
   endTime       DateTime?
   comment       String?
-  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
-  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
-  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  RefuelLog     RefuelLog?
+  rental        Boolean   @default(false) // 
+
+  Equipment   Equipment?   @relation(fields: [equipmentId], references: [id])
+  Maintenance Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  TimeSheet   TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  RefuelLog   RefuelLog?
 
   @@index([timeSheetId, equipmentId, maintenanceId])
 }
