@@ -322,6 +322,7 @@
     "Notes": "Notas adicionales"
   },
   "Generator": {
+    "SelectDestination": "Ingrese la ubicación actual...",
     "CreateEquipment": "Crear equipos",
     "EquipmentInfo": "Información del equipo",
     "SubmitJobsite": "Enviar un sitio de trabajo",

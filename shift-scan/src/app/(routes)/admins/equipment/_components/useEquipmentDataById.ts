@@ -16,30 +16,37 @@ export interface EquipmentVehicleInfo {
 export type Equipment = {
   id: string;
   qrId: string;
+  code?: string;
   name: string;
-  description?: string;
-  equipmentTag: string;
+  description: string;
+  memo?: string;
+  ownershipType?: "OWNED" | "LEASED";
+  equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
   isDisabledByAdmin: boolean;
-  overWeight: boolean;
-  currentWeight: number | null;
-  createdById: string;
+  overWeight?: boolean;
+  currentWeight?: number | null;
+  createdById?: string;
   createdVia: string;
+  createdAt: Date;
   updatedAt: Date;
   creationReason?: string;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
-  };
+  // Direct vehicle/equipment properties
+  make?: string;
+  model?: string;
+  year?: string;
+  color?: string;
+  serialNumber?: string;
+  acquiredDate?: Date;
+  acquiredCondition?: Date;
+  licensePlate?: string;
+  licenseState?: string;
+  registrationExpiration?: Date;
 };
 export const useEquipmentDataById = (id: string) => {
   const [equipmentDetails, setEquipmentDetails] = useState<Equipment | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);

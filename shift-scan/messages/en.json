@@ -326,6 +326,7 @@
     "Notes": "Additional notes"
   },
   "Generator": {
+    "SelectDestination": "Enter Current Location...",
     "CreateEquipment": "Create Equipment",
     "EquipmentInfo": "Equipment Info",
     "SubmitJobsite": "Submit Jobsite",

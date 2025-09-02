@@ -12,6 +12,18 @@ import {
 // Define the column configuration
 export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
   {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => {
+      const equipment = row.original;
+      return (
+        <div className="text-xs text-center min-w-[50px]">
+          {equipment.code || " "}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "name",
     header: "Name & Description",
     cell: ({ row }) => {
@@ -27,56 +39,117 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Created",
+    accessorKey: "memo",
+    header: "Memo",
     cell: ({ row }) => {
+      const equipment = row.original;
       return (
-        <div className="text-xs text-center">
-          {format(new Date(row.original.createdAt), "MM/dd/yy") || " "}
+        <div className="text-xs text-center text-gray-400 italic min-w-[120px]">
+          {equipment.memo || ""}
         </div>
       );
     },
   },
   {
-    accessorKey: "equipmentVehicleInfo.make",
-    header: "Make",
+    accessorKey: "ownershipType",
+    header: "Ownership",
     cell: ({ row }) => {
+      const ownershipType = row.original.ownershipType;
       return (
         <div className="text-xs text-center">
-          {row.original.equipmentVehicleInfo?.make || " "}
+          <span
+            className={`px-2 py-1 rounded-lg text-xs ${
+              ownershipType === "OWNED"
+                ? "bg-blue-100 text-blue-800"
+                : ownershipType === "LEASED"
+                  ? "bg-purple-100 text-purple-800"
+                  : ""
+            }`}
+          >
+            {ownershipType || " "}
+          </span>
         </div>
       );
     },
   },
   {
-    accessorKey: "equipmentVehicleInfo.model",
+    accessorKey: "make",
+    header: "Manufacturer",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">{row.original.make || " "}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "model",
     header: "Model",
     cell: ({ row }) => {
       return (
+        <div className="text-xs text-center">{row.original.model || " "}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "year",
+    header: "Model Year",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">{row.original.year || " "}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "color",
+    header: "Color",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">{row.original.color || " "}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "serialNumber",
+    header: "Equipment Serial Number",
+    cell: ({ row }) => {
+      return (
         <div className="text-xs text-center">
-          {row.original.equipmentVehicleInfo?.model || " "}
+          {row.original.serialNumber || " "}
         </div>
       );
     },
   },
   {
-    accessorKey: "equipmentVehicleInfo.year",
-    header: "Year",
+    accessorKey: "acquiredDate",
+    header: "Acquired Date",
     cell: ({ row }) => {
       return (
         <div className="text-xs text-center">
-          {row.original.equipmentVehicleInfo?.year || " "}
+          {row.original.acquiredDate
+            ? format(new Date(row.original.acquiredDate), "MM/dd/yy")
+            : " "}
         </div>
       );
     },
   },
   {
-    accessorKey: "updatedAt",
-    header: "Updated At",
+    accessorKey: "acquiredCondition",
+    header: "Acquired Condition",
     cell: ({ row }) => {
+      const condition = row.original.acquiredCondition;
       return (
         <div className="text-xs text-center">
-          {format(new Date(row.original.updatedAt), "MM/dd/yy") || " "}
+          <span
+            className={`px-2 py-1 rounded-lg text-xs ${
+              condition === "NEW"
+                ? "bg-green-100 text-green-800"
+                : condition === "USED"
+                  ? "bg-amber-100 text-amber-800"
+                  : ""
+            }`}
+          >
+            {condition || " "}
+          </span>
         </div>
       );
     },
@@ -96,37 +169,70 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     },
   },
   {
-    accessorKey: "state",
-    header: "Eq. State",
+    accessorKey: "licenseNumber",
+    header: "License Number",
     cell: ({ row }) => {
-      const state = row.original.state;
       return (
         <div className="text-xs text-center">
-          {state === "AVAILABLE" ? (
-            <span className="bg-blue-300/70 px-3 py-1 rounded-xl">
-              {state.slice(0, 1) + state.slice(1).toLowerCase()}
-            </span>
-          ) : state === "MAINTENANCE" ? (
-            <span className="bg-blue-400/70 px-3 py-1 rounded-xl">
-              {state.slice(0, 1) + state.slice(1).toLowerCase()}
-            </span>
-          ) : state === "IN_USE" ? (
-            <span className="bg-orange-200 px-3 py-1 rounded-xl">
-              {state.slice(0, 1) + state.slice(1).toLowerCase()}
-            </span>
-          ) : state === "NEEDS_REPAIR" ? (
-            <span className="bg-red-300/90 px-3 py-1 rounded-xl">
-              {state.slice(0, 1) + state.slice(1).toLowerCase()}
-            </span>
-          ) : (
-            <span className="bg-slate-300 px-3 py-1 rounded-xl">
-              {state.slice(0, 1) + state.slice(1).toLowerCase()}
-            </span>
-          )}
+          {row.original.licensePlate || " "}
         </div>
       );
     },
   },
+  {
+    accessorKey: "licenseState",
+    header: "License State",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">
+          {row.original.licenseState || " "}
+        </div>
+      );
+    },
+  },
+
+  {
+    accessorKey: "state",
+    header: "Equipment State",
+    cell: ({ row }) => {
+      const state = row.original.state;
+      return (
+        <div className="text-xs text-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={`px-2 py-1 rounded-lg text-xs ${
+                  state === "AVAILABLE"
+                    ? "bg-green-100 text-green-800"
+                    : state === "IN_USE"
+                      ? "bg-blue-100 text-blue-800"
+                      : state === "MAINTENANCE"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : state === "NEEDS_REPAIR"
+                          ? "bg-orange-100 text-orange-800"
+                          : "bg-red-100 text-red-800"
+                }`}
+              >
+                {state ? state.replace("_", " ") : " "}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {state === "AVAILABLE"
+                ? "Equipment is available for use"
+                : state === "IN_USE"
+                  ? "Equipment is currently in use"
+                  : state === "MAINTENANCE"
+                    ? "Equipment is under maintenance"
+                    : state === "NEEDS_REPAIR"
+                      ? "Equipment needs repair"
+                      : "Equipment is retired"}
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      );
+    },
+  },
+
   {
     accessorKey: "approvalStatus",
     header: "Status",
