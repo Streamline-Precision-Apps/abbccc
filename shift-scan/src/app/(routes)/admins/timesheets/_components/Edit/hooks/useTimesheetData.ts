@@ -6,7 +6,6 @@
  */
 import { useEffect, useState } from "react";
 import { ApprovalStatus } from "@/lib/enums";
-
 export interface EditTimesheetModalProps {
   timesheetId: number;
   isOpen: boolean;

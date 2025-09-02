@@ -32,6 +32,7 @@ model TimeSheet {
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
+  ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
 }
 
 model MaintenanceLog {
@@ -161,4 +162,22 @@ model EquipmentHauled {
 enum materialUnit {
   TONS
   YARDS
+}
+
+// New model for tracking TimeSheet changes
+model TimeSheetChangeLog {
+  id           String   @id @default(uuid())
+  timeSheetId  Int
+  changedBy    String // User ID who made the change
+  changedAt    DateTime @default(now())
+  changes      Json // JSON object containing all changes: {fieldName1: {old: value, new: value}, fieldName2: {old: value, new: value}}
+  changeReason String? // Optional reason for the change
+
+  // Relations
+  TimeSheet TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  User      User      @relation("ChangedByUser", fields: [changedBy], references: [id])
+
+  @@index([timeSheetId])
+  @@index([changedBy])
+  @@index([changedAt])
 }

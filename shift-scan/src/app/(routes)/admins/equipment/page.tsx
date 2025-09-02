@@ -22,6 +22,7 @@ import {
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import { EquipmentDataTable } from "./_components/ViewAll/EquipmentDataTable";
+import FilterPopover from "./_components/FilterPopover";
 
 export default function EquipmentPage() {
   const {
@@ -51,6 +52,8 @@ export default function EquipmentPage() {
     filteredEquipment,
     searchTerm,
     setSearchTerm,
+    setFilters,
+    setUseFilters,
   } = useEquipmentData();
 
   return (
@@ -64,13 +67,19 @@ export default function EquipmentPage() {
         }}
       />
       <div className="h-10 w-full flex flex-row justify-between gap-4">
-        <SearchBarPopover
-          term={searchTerm}
-          handleSearchChange={(e) => setSearchTerm(e.target.value)}
-          placeholder={"Search by name, make, or model..."}
-          textSize="xs"
-          imageSize="10"
-        />
+        <div className="flex flex-row gap-2">
+          <SearchBarPopover
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={"Search by name, make, or model..."}
+            textSize="xs"
+            imageSize="10"
+          />
+          <FilterPopover 
+            onFilterChange={setFilters} 
+            onUseFiltersChange={setUseFilters}
+          />
+        </div>
 
         <div className="flex flex-row justify-end w-full gap-2">
           <Tooltip>

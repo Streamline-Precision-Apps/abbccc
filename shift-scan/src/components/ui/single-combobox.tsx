@@ -61,7 +61,7 @@ export function SingleCombobox({
             obj && typeof obj === "object"
               ? (obj as Record<string, unknown>)[k]
               : undefined,
-          option
+          option,
         );
       return (value ?? "")
         .toString()
