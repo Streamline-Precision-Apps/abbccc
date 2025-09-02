@@ -146,16 +146,16 @@ model RefuelLog {
 }
 
 model EquipmentHauled {
-  id            String      @id @default(uuid())
-  truckingLogId String
+  id            String       @id @default(uuid())
+  truckingLogId String?
   equipmentId   String?
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime     @default(now())
   endMileage    Int?
   startMileage  Int?
   destination   String?
   source        String?
-  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
-  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
+  TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
 
 enum materialUnit {

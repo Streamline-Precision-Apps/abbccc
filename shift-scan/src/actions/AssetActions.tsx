@@ -1,9 +1,18 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { EquipmentTags, ApprovalStatus, CreatedVia } from "@/lib/enums";
+import {
+  EquipmentTags,
+  ApprovalStatus,
+  CreatedVia,
+  EquipmentState,
+} from "@/lib/enums";
 import * as Sentry from "@sentry/nextjs";
-import { Prisma } from "../../prisma/generated/prisma/client";
+import {
+  Prisma,
+  Condition,
+  OwnershipType,
+} from "../../prisma/generated/prisma/client";
 
 /**
  * Server action to update equipment asset data
@@ -11,7 +20,7 @@ import { Prisma } from "../../prisma/generated/prisma/client";
  */
 export async function updateEquipmentAsset(formData: FormData) {
   console.log("Updating equipment asset...");
-  console.log(formData);
+  console.log("Form data entries:", Array.from(formData.entries()));
   try {
     const id = formData.get("id") as string;
 
@@ -22,7 +31,6 @@ export async function updateEquipmentAsset(formData: FormData) {
     // Fetch existing equipment early
     const existingEquipment = await prisma.equipment.findUnique({
       where: { id },
-      include: { equipmentVehicleInfo: true },
     });
 
     if (!existingEquipment) {
@@ -30,80 +38,104 @@ export async function updateEquipmentAsset(formData: FormData) {
     }
 
     const updateData: Prisma.EquipmentUpdateInput = {};
+
+    // Process all possible equipment fields
     if (formData.has("name"))
       updateData.name = (formData.get("name") as string)?.trim();
+    if (formData.has("code"))
+      updateData.code = (formData.get("code") as string)?.trim();
     if (formData.has("description"))
       updateData.description =
         (formData.get("description") as string)?.trim() || "";
+    if (formData.has("memo"))
+      updateData.memo = (formData.get("memo") as string)?.trim();
     if (formData.has("equipmentTag"))
       updateData.equipmentTag = formData.get("equipmentTag") as EquipmentTags;
-    if (formData.has("currentWeight"))
-      updateData.currentWeight =
-        parseFloat(formData.get("currentWeight") as string) || 0;
-    if (formData.has("overWeight"))
-      updateData.overWeight = formData.get("overWeight") === "true";
+    if (formData.has("state"))
+      updateData.state = formData.get("state") as EquipmentState;
+    if (formData.has("ownershipType"))
+      updateData.ownershipType =
+        (formData.get("ownershipType") as OwnershipType) || null;
+    if (formData.has("acquiredCondition"))
+      updateData.acquiredCondition =
+        (formData.get("acquiredCondition") as Condition) || null;
+    if (formData.has("serialNumber"))
+      updateData.serialNumber = (
+        formData.get("serialNumber") as string
+      )?.trim();
+    if (formData.has("color"))
+      updateData.color = (formData.get("color") as string)?.trim();
+
+    // Vehicle/equipment specific fields that are now directly in the Equipment model
+    if (formData.has("make"))
+      updateData.make = (formData.get("make") as string)?.trim();
+    if (formData.has("model"))
+      updateData.model = (formData.get("model") as string)?.trim();
+    if (formData.has("year"))
+      updateData.year = (formData.get("year") as string)?.trim();
+    if (formData.has("licensePlate"))
+      updateData.licensePlate = (
+        formData.get("licensePlate") as string
+      )?.trim();
+    if (formData.has("licenseState"))
+      updateData.licenseState = (
+        formData.get("licenseState") as string
+      )?.trim();
+
+    // Handle date fields
+    if (formData.has("acquiredDate")) {
+      const dateValue = formData.get("acquiredDate") as string;
+      updateData.acquiredDate = dateValue ? new Date(dateValue) : null;
+    }
+
+    if (formData.has("registrationExpiration")) {
+      const regExpValue = formData.get("registrationExpiration") as string;
+      if (
+        regExpValue &&
+        regExpValue !== "null" &&
+        regExpValue !== "undefined"
+      ) {
+        updateData.registrationExpiration = new Date(regExpValue);
+      } else {
+        updateData.registrationExpiration = null;
+      }
+    }
+
+    // Handle numeric fields
+    if (formData.has("currentWeight")) {
+      const weightValue = formData.get("currentWeight") as string;
+      updateData.currentWeight = weightValue ? parseFloat(weightValue) || 0 : 0;
+    }
+
+    // Handle boolean fields
+    if (formData.has("overWeight")) {
+      const overWeightValue = formData.get("overWeight") as string;
+      updateData.overWeight = overWeightValue === "true";
+    }
+    if (formData.has("isDisabledByAdmin")) {
+      const disabledValue = formData.get("isDisabledByAdmin") as string;
+      updateData.isDisabledByAdmin = disabledValue === "true";
+    }
+
+    // Handle status fields
     if (formData.has("approvalStatus"))
       updateData.approvalStatus = formData.get(
         "approvalStatus",
       ) as ApprovalStatus;
-    if (formData.has("isDisabledByAdmin"))
-      updateData.isDisabledByAdmin = Boolean(formData.get("isDisabledByAdmin"));
     if (formData.has("creationReason"))
       updateData.creationReason = formData.get("creationReason") as string;
+
+    // Always update the timestamp
     updateData.updatedAt = new Date();
 
-    const tag = formData.get("equipmentTag") as EquipmentTags;
-
-    if (tag === "VEHICLE" || tag === "TRUCK") {
-      const vehicleCreateData: Prisma.EquipmentVehicleInfoCreateWithoutEquipmentInput =
-        {};
-      const vehicleUpdateData: Prisma.EquipmentVehicleInfoUpdateWithoutEquipmentInput =
-        {};
-
-      if (formData.has("make")) {
-        const val = (formData.get("make") as string)?.trim();
-        vehicleCreateData.make = val;
-        vehicleUpdateData.make = val;
-      }
-      if (formData.has("model")) {
-        const val = (formData.get("model") as string)?.trim();
-        vehicleCreateData.model = val;
-        vehicleUpdateData.model = val;
-      }
-      if (formData.has("year")) {
-        const val = (formData.get("year") as string)?.trim();
-        vehicleCreateData.year = val;
-        vehicleUpdateData.year = val;
-      }
-      if (formData.has("licensePlate")) {
-        const val = (formData.get("licensePlate") as string)?.trim();
-        vehicleCreateData.licensePlate = val;
-        vehicleUpdateData.licensePlate = val;
-      }
-      if (formData.has("registrationExpiration")) {
-        const regExp = new Date(
-          formData.get("registrationExpiration") as string,
-        );
-        vehicleCreateData.registrationExpiration = regExp;
-        vehicleUpdateData.registrationExpiration = regExp;
-      }
-      if (formData.has("mileage")) {
-        const mileage = parseInt(formData.get("mileage") as string) || 0;
-        vehicleCreateData.mileage = mileage;
-        vehicleUpdateData.mileage = mileage;
-      }
-
-      updateData.equipmentVehicleInfo = existingEquipment.equipmentVehicleInfo
-        ? { update: vehicleUpdateData }
-        : { create: vehicleCreateData };
-    } else if (existingEquipment.equipmentVehicleInfo) {
-      updateData.equipmentVehicleInfo = { delete: true };
-    }
+    console.log(
+      "Updating equipment with data:",
+      JSON.stringify(updateData, null, 2),
+    );
 
     const updatedEquipment = await prisma.equipment.update({
       where: { id },
       data: updateData,
-      include: { equipmentVehicleInfo: true },
     });
 
     revalidateTag("equipment");
@@ -131,19 +163,26 @@ export async function updateEquipmentAsset(formData: FormData) {
 
 export async function registerEquipment(
   equipmentData: {
+    code: string;
     name: string;
     description?: string;
+    memo?: string;
+    ownershipType?: string | null;
+    make?: string | null;
+    model?: string | null;
+    year?: string | null;
+    color?: string | null;
+    serialNumber?: string | null;
+    acquiredDate?: Date | null;
+    acquiredCondition?: string | null;
+    licensePlate?: string | null;
+    licenseState?: string | null;
     equipmentTag: string;
+    state?: string;
+    approvalStatus?: string;
+    isDisabledByAdmin?: boolean;
     overWeight: boolean | null;
     currentWeight: number | null;
-    equipmentVehicleInfo?: {
-      make: string | null;
-      model: string | null;
-      year: string | null;
-      licensePlate: string | null;
-      registrationExpiration: Date | null;
-      mileage: number | null;
-    };
   },
   createdById: string,
 ) {
@@ -163,62 +202,35 @@ export async function registerEquipment(
     // Generate QR ID for new equipment
     const qrId = `EQ-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const result = await prisma.$transaction(async (prisma) => {
-      // Check if equipment tag requires vehicle info
-      const needsVehicleInfo =
-        equipmentData.equipmentTag === "VEHICLE" ||
-        equipmentData.equipmentTag === "TRUCK";
-
-      if (needsVehicleInfo) {
-        // Validate vehicle-specific fields
-        if (
-          !equipmentData.equipmentVehicleInfo?.make ||
-          !equipmentData.equipmentVehicleInfo?.model ||
-          !equipmentData.equipmentVehicleInfo?.year ||
-          !equipmentData.equipmentVehicleInfo?.licensePlate
-        ) {
-          throw new Error(
-            "All vehicle fields are required for trucks and vehicles",
-          );
-        }
-
-        return await prisma.equipment.create({
-          data: {
-            qrId,
-            name: equipmentData.name,
-            description: equipmentData.description || "",
-            equipmentTag: equipmentData.equipmentTag as EquipmentTags,
-            overWeight: equipmentData.overWeight || false,
-            currentWeight: equipmentData.currentWeight || 0,
-            equipmentVehicleInfo: {
-              create: {
-                make: equipmentData.equipmentVehicleInfo.make,
-                model: equipmentData.equipmentVehicleInfo.model,
-                year: equipmentData.equipmentVehicleInfo.year,
-                licensePlate: equipmentData.equipmentVehicleInfo.licensePlate,
-                registrationExpiration:
-                  equipmentData.equipmentVehicleInfo.registrationExpiration,
-                mileage: equipmentData.equipmentVehicleInfo.mileage || 0,
-              },
-            },
-          },
-          include: {
-            equipmentVehicleInfo: true,
-          },
-        });
-      } else {
-        // Create equipment without vehicle info
-        return await prisma.equipment.create({
-          data: {
-            qrId,
-            name: equipmentData.name,
-            description: equipmentData.description || "",
-            equipmentTag: equipmentData.equipmentTag as EquipmentTags,
-            overWeight: equipmentData.overWeight || false,
-            currentWeight: equipmentData.currentWeight || 0,
-          },
-        });
-      }
+    // Create equipment with flattened structure (no nested vehicle info)
+    const result = await prisma.equipment.create({
+      data: {
+        qrId,
+        code: equipmentData.code || "",
+        name: equipmentData.name,
+        description: equipmentData.description || "",
+        memo: equipmentData.memo || "",
+        ownershipType: (equipmentData.ownershipType as OwnershipType) || null,
+        acquiredDate: equipmentData.acquiredDate,
+        acquiredCondition:
+          (equipmentData.acquiredCondition as Condition) || null,
+        equipmentTag: equipmentData.equipmentTag as EquipmentTags,
+        state: (equipmentData.state as EquipmentState) || "AVAILABLE",
+        approvalStatus:
+          (equipmentData.approvalStatus as ApprovalStatus) || "APPROVED",
+        isDisabledByAdmin: equipmentData.isDisabledByAdmin || false,
+        overWeight: equipmentData.overWeight || false,
+        currentWeight: equipmentData.currentWeight || 0,
+        createdById,
+        // Add vehicle-specific fields directly to the equipment
+        make: equipmentData.make,
+        model: equipmentData.model,
+        year: equipmentData.year,
+        color: equipmentData.color,
+        serialNumber: equipmentData.serialNumber,
+        licensePlate: equipmentData.licensePlate,
+        licenseState: equipmentData.licenseState,
+      },
     });
 
     revalidatePath("/admins/assets");
@@ -669,7 +681,6 @@ export async function deleteEquipment(id: string) {
     // Check if equipment exists
     const existingEquipment = await prisma.equipment.findUnique({
       where: { id },
-      include: { equipmentVehicleInfo: true },
     });
 
     if (!existingEquipment) {

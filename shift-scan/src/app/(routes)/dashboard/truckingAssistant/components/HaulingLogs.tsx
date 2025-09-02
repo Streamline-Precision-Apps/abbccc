@@ -16,7 +16,7 @@ import MaterialItem from "./MaterialItem";
 
 type EquipmentHauled = {
   id: string;
-  truckingLogId: string;
+  truckingLogId: string | null;
   equipmentId: string | null;
   createdAt: Date;
   source: string | null;
@@ -86,7 +86,7 @@ export default function HaulingLogs({
       setEquipmentHauled((prev) => [
         {
           id: tempEquipment.id,
-          truckingLogId: tempEquipment.truckingLogId ?? null,
+          truckingLogId: tempEquipment.truckingLogId,
           equipmentId: tempEquipment.equipmentId ?? null,
           source: "",
           destination: "",
@@ -140,7 +140,7 @@ export default function HaulingLogs({
     try {
       await deleteEquipmentHauled(id);
       setEquipmentHauled(
-        (prevLogs) => prevLogs?.filter((log) => log.id !== id) ?? []
+        (prevLogs) => prevLogs?.filter((log) => log.id !== id) ?? [],
       );
     } catch (error) {
       console.error("Error deleting equipment log:", error);

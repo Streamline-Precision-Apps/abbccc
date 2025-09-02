@@ -108,7 +108,15 @@ export default function ReviewYourDay({
                             </Titles>
                           </Grids>
                         </Holds>
-                        {timesheets.map((timesheet, index) => (
+                        {timesheets
+                          .slice() // Create a copy to avoid mutating the original array
+                          .sort((a, b) => {
+                            // Sort by start time
+                            const startTimeA = new Date(a.startTime).getTime();
+                            const startTimeB = new Date(b.startTime).getTime();
+                            return startTimeA - startTimeB;
+                          })
+                          .map((timesheet, index) => (
                           <Holds
                             position={"row"}
                             className=" border-b-[3px] border-black py-2 pr-1"

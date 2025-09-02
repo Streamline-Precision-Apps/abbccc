@@ -19,8 +19,15 @@ import { v4 as uuidv4 } from "uuid";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Texts } from "@/components/(reusable)/texts";
-import { Images } from "@/components/(reusable)/images";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { US_STATES } from "@/data/stateValues";
 
 export type JobCode = {
   id: string;
@@ -48,12 +55,11 @@ export default function AddEquipmentForm() {
     model: "",
     year: "",
     licensePlate: "",
-    registration: "",
-    mileage: "",
+    licenseState: "",
     temporaryEquipmentName: "",
     creationComment: "",
     creationReasoning: "",
-    jobsiteLocation: "",
+    destination: "",
   });
 
   // Modal state for jobsite selector
@@ -69,7 +75,7 @@ export default function AddEquipmentForm() {
       return formData.equipmentTag.trim() !== "" &&
         formData.temporaryEquipmentName.trim() !== "" &&
         formData.creationReasoning.trim() !== "" &&
-        formData.jobsiteLocation.trim() !== "" &&
+        formData.destination.trim() !== "" &&
         eqCode.trim() !== "" &&
         userId
         ? true
@@ -83,11 +89,9 @@ export default function AddEquipmentForm() {
         formData.model.trim() !== "" &&
         formData.year.trim() !== "" &&
         formData.licensePlate.trim() !== "" &&
-        formData.registration.trim() !== "" &&
-        formData.mileage.trim() !== "" &&
         formData.temporaryEquipmentName.trim() !== "" &&
         formData.creationReasoning.trim() !== "" &&
-        formData.jobsiteLocation.trim() !== "" &&
+        formData.destination.trim() !== "" &&
         eqCode.trim() !== "" &&
         userId
         ? true
@@ -131,6 +135,20 @@ export default function AddEquipmentForm() {
     };
     fetchJobsites();
   }, [t]);
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "overWeight"
+          ? value === "true"
+            ? true
+            : value === "false"
+              ? false
+              : null
+          : value,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -273,47 +291,25 @@ export default function AddEquipmentForm() {
                       </Holds>
                       <Holds position={"row"} className="w-full gap-x-2">
                         <Holds className="w-1/2 h-full relative">
-                          {/* Date Input - Hidden visually but still functional */}
-                          <input
-                            type="date"
-                            name="registration"
-                            value={formData.registration}
-                            onChange={handleInputChange}
-                            ref={dateInputRef}
-                            required
-                            className="absolute opacity-0 w-full h-full" // Hide visually but remain clickable
-                          />
-                          {/* Custom Date Picker UI */}
-                          <Holds
-                            background={"white"}
-                            position={"row"}
-                            onClick={() => handleRegistrationClick()}
-                            className="w-full h-full px-3 border-black border-[3px] flex items-center justify-between relative "
+                          {/* license State */}
+                          <Select
+                            name="licenseState"
+                            value={formData.licenseState}
+                            onValueChange={(value) =>
+                              handleSelectChange("licenseState", value)
+                            }
                           >
-                            <Texts size={"p7"} className="text-app-dark-gray ">
-                              {formData.registration
-                                ? new Date(
-                                    formData.registration,
-                                  ).toLocaleDateString()
-                                : t("Registration")}
-                            </Texts>
-                            <img
-                              className="w-4 h-4"
-                              src={"/calendar.svg"}
-                              alt={"Calendar Icon"}
-                            />
-                          </Holds>
-                        </Holds>
-                        <Holds className="w-1/2 h-full">
-                          <Inputs
-                            type="text"
-                            name="mileage"
-                            value={formData.mileage}
-                            placeholder={t("Mileage")}
-                            className="text-xs pl-3 py-2"
-                            onChange={handleInputChange}
-                            required
-                          />
+                            <SelectTrigger className="text-xs">
+                              <SelectValue placeholder="Select State" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {US_STATES.map((state) => (
+                                <SelectItem key={state.name} value={state.code}>
+                                  {state.code}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </Holds>
                       </Holds>
                     </>
@@ -343,51 +339,14 @@ export default function AddEquipmentForm() {
                 <Holds className="pb-3">
                   <Inputs
                     type="text"
-                    name="jobsiteLocation"
-                    value={selectedJobsite?.name || ""}
-                    placeholder={t("SelectJobSite")}
-                    className="text-xs text-center h-full py-2 cursor-pointer"
-                    onClick={() => setJobsiteModalOpen(true)}
-                    readOnly
+                    name="destination"
+                    value={formData.destination}
+                    placeholder={t("SelectDestination")}
+                    className="text-xs pl-3 py-2"
+                    onChange={handleInputChange}
                     required
                   />
                 </Holds>
-
-                {/* Jobsite Selector Modal */}
-                <NModals
-                  background="white"
-                  size="xlW"
-                  isOpen={jobsiteModalOpen}
-                  handleClose={() => setJobsiteModalOpen(false)}
-                >
-                  <Holds background="white" className="w-full h-full p-2">
-                    <JobsiteSelector
-                      useJobSiteId={true}
-                      onJobsiteSelect={(jobsite) => {
-                        if (jobsite) {
-                          setSelectedJobsite({
-                            id: jobsite.code,
-                            name: jobsite.label,
-                          });
-                          setFormData((prev) => ({
-                            ...prev,
-                            jobsiteLocation: jobsite.code,
-                          }));
-                        }
-                        setJobsiteModalOpen(false);
-                      }}
-                      initialValue={
-                        selectedJobsite
-                          ? {
-                              id: selectedJobsite.id,
-                              code: selectedJobsite.id,
-                              label: selectedJobsite.name,
-                            }
-                          : undefined
-                      }
-                    />
-                  </Holds>
-                </NModals>
 
                 <Holds className="h-full pb-3">
                   <TextAreas

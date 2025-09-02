@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 
 type EquipmentHauled = {
   id: string;
-  truckingLogId: string;
+  truckingLogId: string | null;
   equipmentId: string | null;
   createdAt: Date;
   source: string | null;

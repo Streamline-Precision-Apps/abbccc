@@ -5,13 +5,6 @@ enum Permission {
   SUPERADMIN
 }
 
-enum EquipmentTags {
-  TRUCK
-  TRAILER
-  VEHICLE
-  EQUIPMENT
-}
-
 enum IsActive {
   ACTIVE
   INACTIVE
@@ -43,14 +36,6 @@ enum EquipmentUsageType {
   MAINTENANCE
   LABOR
   GENERAL
-}
-
-enum EquipmentState {
-  AVAILABLE
-  IN_USE
-  MAINTENANCE
-  NEEDS_REPAIR
-  RETIRED
 }
 
 enum ApprovalStatus {
