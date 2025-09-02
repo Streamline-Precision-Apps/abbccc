@@ -71,14 +71,14 @@ export default function EquipmentList({
   const handleFieldChange = (
     id: string,
     field: keyof EquipmentHauled,
-    value: string | number | null
+    value: string | number | null,
   ) => {
     setEquipmentHauled((prev) =>
       prev
         ? prev.map((item) =>
-            item.id === id ? { ...item, [field]: value } : item
+            item.id === id ? { ...item, [field]: value } : item,
           )
-        : []
+        : [],
     );
   };
 
@@ -102,7 +102,7 @@ export default function EquipmentList({
     setEquipmentLoading(true);
     try {
       const currentLog = equipmentHauled.find(
-        (item) => item.id === selectedIndex
+        (item) => item.id === selectedIndex,
       );
       const formData = new FormData();
       formData.append("id", selectedIndex);
@@ -123,9 +123,9 @@ export default function EquipmentList({
                       name: equipment.label,
                     },
                   }
-                : item
+                : item,
             )
-          : []
+          : [],
       );
       setIsEquipmentOpen(false);
       setSelectedIndex(null);
@@ -224,7 +224,7 @@ export default function EquipmentList({
                     handleFieldChange(
                       mat.id,
                       "startMileage",
-                      e.target.value === "" ? null : Number(e.target.value)
+                      e.target.value === "" ? null : Number(e.target.value),
                     )
                   }
                   onBlur={() => handleFieldBlur(mat.id)}
@@ -243,7 +243,7 @@ export default function EquipmentList({
                     handleFieldChange(
                       mat.id,
                       "endMileage",
-                      e.target.value === "" ? null : Number(e.target.value)
+                      e.target.value === "" ? null : Number(e.target.value),
                     )
                   }
                   onBlur={() => handleFieldBlur(mat.id)}
