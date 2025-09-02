@@ -12,7 +12,7 @@ import {
 // Define the column configuration
 export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "code",
     header: "ID",
     cell: ({ row }) => {
       const equipment = row.original;
@@ -28,11 +28,62 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     header: "Name & Description",
     cell: ({ row }) => {
       const equipment = row.original;
+      const tag = equipment.equipmentTag;
+      const os = equipment.ownershipType;
+      const condition = equipment.acquiredCondition;
       return (
         <div className="flex flex-col gap-1 text-left">
           <p className="text-xs">{equipment.name || " "}</p>
+          <div className="flex flex-row gap-2 pt-2">
+            <div className="text-xs text-left justify-start">
+              <span
+                className={`${
+                  tag === "VEHICLE"
+                    ? "text-sky-600 bg-sky-100"
+                    : tag === "TRUCK"
+                      ? "bg-blue-100 text-blue-600"
+                      : tag === "TRAILER"
+                        ? "bg-green-100 text-green-600"
+                        : "bg-orange-100 text-orange-600"
+                } px-2 py-1 text-[10px] rounded-xl`}
+              >
+                {tag ? tag.charAt(0) + tag.slice(1).toLowerCase() : " "}
+              </span>
+            </div>
+            {condition && (
+              <div className="text-xs text-center">
+                <span
+                  className={`px-2 py-1 rounded-lg text-[10px] ${
+                    condition === "NEW"
+                      ? "bg-green-100 text-green-800"
+                      : condition === "USED"
+                        ? "bg-amber-100 text-amber-600"
+                        : ""
+                  }`}
+                >
+                  {condition
+                    ? condition.charAt(0) + condition.slice(1).toLowerCase()
+                    : " "}
+                </span>
+              </div>
+            )}
+            <div className="text-xs text-left">
+              <span
+                className={`px-2 py-0.5 text-[10px] rounded-lg ${
+                  os === "OWNED"
+                    ? "bg-indigo-100 text-indigo-600"
+                    : os === "LEASED"
+                      ? "bg-purple-100 text-purple-600"
+                      : ""
+                }`}
+              >
+                {os ? os.charAt(0) + os.slice(1).toLowerCase() : " "}
+              </span>
+            </div>
+          </div>
+
           <p className="text-[10px] text-gray-400 italic">
-            {equipment.description || "No description available"}
+            {equipment.description || ""}
           </p>
         </div>
       );
@@ -44,34 +95,22 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     cell: ({ row }) => {
       const equipment = row.original;
       return (
-        <div className="text-xs text-center text-gray-400 italic min-w-[120px]">
-          {equipment.memo || ""}
+        <div className="text-xs text-center text-gray-400 italic max-w-[100px]">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="whitespace-normal break-words overflow-hidden text-ellipsis line-clamp-2">
+                {equipment.memo || ""}
+              </p>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[300px] whitespace-normal break-words">
+              {equipment.memo || ""}
+            </TooltipContent>
+          </Tooltip>
         </div>
       );
     },
   },
-  {
-    accessorKey: "ownershipType",
-    header: "Ownership",
-    cell: ({ row }) => {
-      const ownershipType = row.original.ownershipType;
-      return (
-        <div className="text-xs text-center">
-          <span
-            className={`px-2 py-1 rounded-lg text-xs ${
-              ownershipType === "OWNED"
-                ? "bg-blue-100 text-blue-800"
-                : ownershipType === "LEASED"
-                  ? "bg-purple-100 text-purple-800"
-                  : ""
-            }`}
-          >
-            {ownershipType || " "}
-          </span>
-        </div>
-      );
-    },
-  },
+
   {
     accessorKey: "make",
     header: "Manufacturer",
@@ -132,42 +171,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
       );
     },
   },
-  {
-    accessorKey: "acquiredCondition",
-    header: "Acquired Condition",
-    cell: ({ row }) => {
-      const condition = row.original.acquiredCondition;
-      return (
-        <div className="text-xs text-center">
-          <span
-            className={`px-2 py-1 rounded-lg text-xs ${
-              condition === "NEW"
-                ? "bg-green-100 text-green-800"
-                : condition === "USED"
-                  ? "bg-amber-100 text-amber-800"
-                  : ""
-            }`}
-          >
-            {condition || " "}
-          </span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "equipmentTag",
-    header: "Eq. Type",
-    cell: ({ row }) => {
-      const tag = row.original.equipmentTag;
-      return (
-        <div className="text-xs text-center">
-          <span className="bg-orange-300 px-3 py-1 rounded-xl">
-            {tag ? tag.charAt(0) + tag.slice(1).toLowerCase() : " "}
-          </span>
-        </div>
-      );
-    },
-  },
+
   {
     accessorKey: "licenseNumber",
     header: "License Number",
@@ -193,7 +197,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
 
   {
     accessorKey: "state",
-    header: "Equipment State",
+    header: "Status",
     cell: ({ row }) => {
       const state = row.original.state;
       return (
@@ -201,7 +205,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
           <Tooltip>
             <TooltipTrigger asChild>
               <span
-                className={`px-2 py-1 rounded-lg text-xs ${
+                className={`px-1 py-1 rounded-lg text-[10px] ${
                   state === "AVAILABLE"
                     ? "bg-green-100 text-green-800"
                     : state === "IN_USE"
@@ -213,7 +217,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
                           : "bg-red-100 text-red-800"
                 }`}
               >
-                {state ? state.replace("_", " ") : " "}
+                {state ? state.charAt(0) + state.slice(1).toLowerCase() : " "}
               </span>
             </TooltipTrigger>
             <TooltipContent>
@@ -235,7 +239,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
 
   {
     accessorKey: "approvalStatus",
-    header: "Status",
+    header: "Approval",
     cell: ({ row }) => {
       const status = row.original.approvalStatus;
       return (

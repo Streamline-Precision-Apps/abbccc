@@ -1,3 +1,5 @@
+{
+  /*
 import { PrismaClient } from "@prisma/client";
 import {
   initialCompany,
@@ -716,3 +718,5 @@ main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
+*/
+}

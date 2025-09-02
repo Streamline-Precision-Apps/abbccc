@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
+
 import { auth } from "@/auth";
-import { el } from "date-fns/locale";
+import {
+  Condition,
+  EquipmentState,
+  EquipmentTags,
+  OwnershipType,
+} from "../../../../../prisma/generated/prisma/client";
 
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
@@ -23,6 +29,7 @@ export async function GET(req: Request) {
     // Parse query params for pagination
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") || "all";
+    const filtersParam = searchParams.get("filters");
 
     let equipmentSummary, total, pageSize, page, skip, totalPages;
     if (status === "pending") {
@@ -58,9 +65,96 @@ export async function GET(req: Request) {
           licenseState: true,
         },
         orderBy: {
-          name: "asc",
+          code: "asc",
         },
       });
+    } else if (filtersParam) {
+      // When filters are applied, get all equipment without pagination
+      try {
+        const filters = JSON.parse(filtersParam);
+
+        // Define the type for the where clause
+        type WhereClause = {
+          equipmentTag?: { in: EquipmentTags[] };
+          ownershipType?: { in: OwnershipType[] };
+          acquiredCondition?: { in: Condition[] };
+          state?: { in: EquipmentState[] };
+        };
+
+        // Construct where clause based on filters
+        const whereClause: WhereClause = {};
+
+        // Add filter for equipment tags if provided
+        if (filters.equipmentTags && filters.equipmentTags.length > 0) {
+          whereClause.equipmentTag = {
+            in: filters.equipmentTags,
+          };
+        }
+
+        // Add filter for ownership types if provided
+        if (filters.ownershipTypes && filters.ownershipTypes.length > 0) {
+          whereClause.ownershipType = {
+            in: filters.ownershipTypes,
+          };
+        }
+
+        // Add filter for conditions if provided
+        if (filters.conditions && filters.conditions.length > 0) {
+          whereClause.acquiredCondition = {
+            in: filters.conditions,
+          };
+        }
+
+        // Add filter for statuses if provided
+        if (filters.statuses && filters.statuses.length > 0) {
+          whereClause.state = {
+            in: filters.statuses,
+          };
+        }
+
+        // Get all equipment that matches the filters (no pagination)
+        equipmentSummary = await prisma.equipment.findMany({
+          where: whereClause,
+          select: {
+            id: true,
+            qrId: true,
+            code: true,
+            name: true,
+            description: true,
+            memo: true,
+            ownershipType: true,
+            equipmentTag: true,
+            approvalStatus: true,
+            state: true,
+            createdAt: true,
+            updatedAt: true,
+            make: true,
+            model: true,
+            year: true,
+            color: true,
+            serialNumber: true,
+            acquiredDate: true,
+            acquiredCondition: true,
+            licensePlate: true,
+            licenseState: true,
+          },
+          orderBy: {
+            code: "asc",
+          },
+        });
+
+        // Set pagination values for response
+        total = equipmentSummary.length;
+        page = 1;
+        pageSize = total;
+        totalPages = 1;
+      } catch (error) {
+        console.error("Error parsing filters:", error);
+        return NextResponse.json(
+          { error: "Invalid filter format" },
+          { status: 400 },
+        );
+      }
     } else {
       page = parseInt(searchParams.get("page") || "1", 10);
       pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
@@ -95,7 +189,7 @@ export async function GET(req: Request) {
           licenseState: true,
         },
         orderBy: {
-          name: "asc",
+          code: "asc",
         },
       });
     }

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
 import { deleteEquipment } from "@/actions/AssetActions";
 import { useSidebar } from "@/components/ui/sidebar";
+import { FilterOptions } from "./FilterPopover";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
@@ -61,8 +62,17 @@ export const useEquipmentData = () => {
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [pendingQrId, setPendingQrId] = useState<string | null>(null);
 
+  // Filter options state
+  const [filters, setFilters] = useState<FilterOptions>({
+    equipmentTags: [],
+    ownershipTypes: [],
+    conditions: [],
+    statuses: [],
+  });
+
   //Approval Button States
   const [showPendingOnly, setShowPendingOnly] = useState(false);
+  const [useFilters, setUseFilters] = useState(false);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -73,6 +83,9 @@ export const useEquipmentData = () => {
         let url = "";
         if (showPendingOnly) {
           url = `/api/getEquipmentDetails?status=pending`;
+        }
+        if (useFilters) {
+          url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
         } else {
           url = `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`;
         }
@@ -96,7 +109,7 @@ export const useEquipmentData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey, page, pageSize, showPendingOnly]);
+  }, [refreshKey, page, pageSize, showPendingOnly, useFilters]);
 
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
@@ -119,7 +132,7 @@ export const useEquipmentData = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, showPendingOnly]);
+  }, [searchTerm, showPendingOnly, filters]);
 
   const openHandleQr = (id: string) => {
     console.log("openHandleQr called with id:", id);
@@ -229,12 +242,44 @@ export const useEquipmentData = () => {
 
   // Filter equipment by name, make, or model, and by approval status if showPendingOnly is active
   const filteredEquipment = equipmentDetails.filter((item) => {
+    // Text search filter
     const term = searchTerm.trim().toLowerCase();
-    if (!term) return true;
-    const nameMatch = item.name.toLowerCase().includes(term);
-    const makeMatch = item.make?.toLowerCase().includes(term) ?? false;
-    const modelMatch = item.model?.toLowerCase().includes(term) ?? false;
-    return nameMatch || makeMatch || modelMatch;
+    const matchesSearch =
+      !term ||
+      item.name.toLowerCase().includes(term) ||
+      (item.make?.toLowerCase().includes(term) ?? false) ||
+      (item.model?.toLowerCase().includes(term) ?? false);
+
+    if (!matchesSearch) return false;
+
+    // Equipment tag filter
+    const matchesTag =
+      filters.equipmentTags.length === 0 ||
+      filters.equipmentTags.includes(item.equipmentTag);
+
+    if (!matchesTag) return false;
+
+    // Ownership type filter
+    const matchesOwnership =
+      filters.ownershipTypes.length === 0 ||
+      (item.ownershipType &&
+        filters.ownershipTypes.includes(item.ownershipType));
+
+    if (!matchesOwnership) return false;
+
+    // Condition filter
+    const matchesCondition =
+      filters.conditions.length === 0 ||
+      (item.acquiredCondition &&
+        filters.conditions.includes(item.acquiredCondition));
+
+    if (!matchesCondition) return false;
+
+    // Status filter
+    const matchesStatus =
+      filters.statuses.length === 0 || filters.statuses.includes(item.state);
+
+    return matchesStatus;
   });
 
   return {
@@ -266,5 +311,8 @@ export const useEquipmentData = () => {
     filteredEquipment,
     searchTerm,
     setSearchTerm,
+    filters,
+    setFilters,
+    setUseFilters,
   };
 };
