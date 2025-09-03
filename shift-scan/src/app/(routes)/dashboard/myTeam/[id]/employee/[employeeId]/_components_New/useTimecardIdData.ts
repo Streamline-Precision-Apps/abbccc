@@ -1,4 +1,5 @@
 import { updateTimesheetServerAction } from "@/actions/updateTimesheetServerAction";
+import { useSession } from "next-auth/react";
 import { useEffect, useState, useCallback, useRef } from "react";
 
 export interface Timesheet {
@@ -15,6 +16,19 @@ export interface Timesheet {
     name: string;
   } | null;
 }
+
+interface ChangeLogEntry {
+  id: string;
+  changedBy: string;
+  changedAt: string | Date;
+  changes: Record<string, { old: unknown; new: unknown }>;
+  changeReason?: string;
+  User?: {
+    firstName: string;
+    lastName: string;
+  };
+}
+
 /**
  * Hook to fetch timesheet data by ID, track changes, and prepare changed fields for submission.
  * @param id Timesheet ID
@@ -28,6 +42,9 @@ export function useTimecardIdData(id: string) {
     [],
   );
   const [jobSites, setJobSites] = useState<{ id: string; name: string }[]>([]);
+  const { data: session } = useSession();
+  const editorId = session?.user?.id;
+  const [changeReason, setChangeReason] = useState<string>("");
 
   // Use a ref to track if we have an ongoing update
   const isUpdating = useRef(false);
@@ -134,15 +151,49 @@ export function useTimecardIdData(id: string) {
   }, [edited?.Jobsite?.id]);
 
   // Save the entire edited form to the server
+  // Compare original and edited, return changes object
+  const getChanges = useCallback(() => {
+    if (!original || !edited) return {};
+    const changes: Record<string, { old: unknown; new: unknown }> = {};
+    if (original.startTime?.toString() !== edited.startTime?.toString()) {
+      changes.startTime = { old: original.startTime, new: edited.startTime };
+    }
+    if (original.endTime?.toString() !== edited.endTime?.toString()) {
+      changes.endTime = { old: original.endTime, new: edited.endTime };
+    }
+    if (original.Jobsite?.id !== edited.Jobsite?.id) {
+      changes.Jobsite = {
+        old: original.Jobsite?.name,
+        new: edited.Jobsite?.name,
+      };
+    }
+    if (original.CostCode?.id !== edited.CostCode?.id) {
+      changes.CostCode = {
+        old: original.CostCode?.name,
+        new: edited.CostCode?.name,
+      };
+    }
+    return changes;
+  }, [original, edited]);
+
   const save = useCallback(async () => {
     if (!id || !edited) return;
     try {
       const formData = new FormData();
       formData.append("id", id);
 
+      if (!editorId) {
+        throw new Error("No user detected");
+      }
+      formData.append("editorId", editorId);
+
+      if (!changeReason) {
+        throw new Error("Change reason is required");
+      }
+      formData.append("changeReason", changeReason);
+
       // Only include fields that have values
       if (edited.startTime) {
-        // Check if startTime is already a string or a Date object
         const startTimeStr =
           typeof edited.startTime === "string"
             ? edited.startTime
@@ -151,7 +202,6 @@ export function useTimecardIdData(id: string) {
       }
 
       if (edited.endTime) {
-        // Check if endTime is already a string or a Date object
         const endTimeStr =
           typeof edited.endTime === "string"
             ? edited.endTime
@@ -171,6 +221,10 @@ export function useTimecardIdData(id: string) {
         formData.append("comment", edited.comment);
       }
 
+      // Add changes object for logging
+      const changes = getChanges();
+      formData.append("changes", JSON.stringify(changes));
+
       const result = await updateTimesheetServerAction(formData);
 
       // Update the original record with the saved changes
@@ -183,7 +237,7 @@ export function useTimecardIdData(id: string) {
       console.error("Error saving timesheet:", error);
       return { success: false, error: String(error) };
     }
-  }, [id, edited]);
+  }, [id, edited, changeReason, editorId, getChanges]);
 
   /**
    * Reset the edited state to the original state, discarding unsaved changes.
@@ -201,5 +255,6 @@ export function useTimecardIdData(id: string) {
     costCodes,
     jobSites,
     reset,
+    setChangeReason,
   };
 }
