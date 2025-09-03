@@ -37,60 +37,6 @@ export async function getTimeSheetsbyId() {
   return timesheets;
 }
 
-// Get TimeSheet by id
-export async function fetchTimesheets(employeeId: string, date: string) {
-  console.log("Fetching timesheets for:", { employeeId, date });
-
-  // Convert the date to UTC start and end times
-  const startOfDay = new Date(date);
-  startOfDay.setUTCHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(date);
-  endOfDay.setUTCHours(23, 59, 59, 999);
-
-  try {
-    // Fetch timesheets from Prisma, include both DRAFT and PENDING for this user
-    const timeSheets = await prisma.timeSheet.findMany({
-      where: {
-        userId: employeeId,
-        status: { in: ["DRAFT", "PENDING"] },
-        date: {
-          gte: startOfDay.toISOString(), // Start of the day in UTC
-          lte: endOfDay.toISOString(), // End of the day in UTC
-        },
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-      include: {
-        TascoLogs: true,
-        TruckingLogs: true,
-        MaintenanceLogs: true,
-        EmployeeEquipmentLogs: true,
-      },
-    });
-
-    console.log("Fetched Timesheets (DRAFT & PENDING):", timeSheets);
-
-    // Convert fetched ISO times to local timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const adjustedTimeSheets = timeSheets.map((sheet) => ({
-      ...sheet,
-      startTime: sheet.startTime
-        ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-      endTime: sheet.endTime
-        ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-    }));
-
-    console.log("Adjusted Timesheets:", adjustedTimeSheets);
-    return adjustedTimeSheets;
-  } catch (error) {
-    console.error("Error fetching timesheets:", error);
-    throw new Error("Failed to fetch timesheets");
-  }
-}
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  GENERAL CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -532,6 +478,16 @@ export async function handleGeneralTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+        await fetch("/api/notification/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: {
+              title: "New Timesheet Request",
+              body: `Timesheet has been created and is awaiting approval.`,
+            },
+          }),
+        });
         console.log(
           "[handleGeneralTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -613,6 +569,16 @@ export async function handleMechanicTimeSheet(formData: FormData) {
             comment: previoustimeSheetComments,
             status: "PENDING",
           },
+        });
+        await fetch("/api/notification/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: {
+              title: "New Timesheet Request",
+              body: `Timesheet has been created and is awaiting approval.`,
+            },
+          }),
         });
         console.log(
           "[handleMechanicTimeSheet] Previous timesheet set to PENDING:",
@@ -719,6 +685,18 @@ export async function handleTascoTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
+        await fetch("/api/notification/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: {
+              title: "New Timesheet Request",
+              body: `Timesheet has been created and is awaiting approval.`,
+            },
+          }),
+        });
+
         console.log(
           "[handleTascoTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -818,6 +796,17 @@ export async function handleTruckTimeSheet(formData: FormData) {
               comment: previoustimeSheetComments,
               status: "PENDING",
             },
+          });
+
+          await fetch("/api/notification/trigger", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: {
+                title: "New Timesheet Submission",
+                body: `Timesheet has been created and is awaiting approval.`,
+              },
+            }),
           });
           console.log(
             "[handleTruckTimeSheet] Previous timesheet set to PENDING:",
@@ -959,6 +948,17 @@ export async function updateTimeSheet(formData: FormData) {
         status: "PENDING", // Set status to PENDING
         wasInjured: formData.get("wasInjured") === "true",
       },
+    });
+
+    await fetch("/api/notification/trigger", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: {
+          title: "New Timesheet Request",
+          body: `Timesheet has been created and is awaiting approval.`,
+        },
+      }),
     });
 
     console.log("Timesheet updated successfully.");
