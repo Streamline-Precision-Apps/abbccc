@@ -1,30 +1,61 @@
 "use server";
+
 import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
 
 export async function updateTimesheetServerAction(formData: FormData) {
   console.log(formData);
   const id = Number(formData.get("id"));
-  const startTime = new Date(formData.get("startTime") as string).toISOString();
-  const endTime =
-    new Date(formData.get("endTime") as string).toISOString() || null;
+  const editorId = formData.get("editorId") as string;
+  const changesJson = formData.get("changes") as string;
+  const changeReason = formData.get("changeReason") as string;
+  // Form Values
+  const startTime = formData.get("startTime") as string;
+  const endTime = formData.get("endTime") as string | null;
   const jobsite = formData.get("Jobsite") as string;
   const costCode = formData.get("CostCode") as string;
-
+  const comment = formData.get("comment") as string | null;
   try {
-    const updated = await prisma.timeSheet.update({
-      where: { id },
-      data: {
-        startTime,
-        endTime: endTime || null,
-        jobsiteId: jobsite,
-        costcode: costCode,
-      },
-    });
-    if (!updated) {
-      return { error: "Failed to update timesheet." };
+    if (!id) {
+      throw new Error("Timesheet ID is required for update.");
     }
-    console.log("Updated timesheet:", updated);
+
+    if (!editorId) {
+      throw new Error("Editor ID is required for tracking changes.");
+    }
+
+    const changes = changesJson ? JSON.parse(changesJson) : {};
+
+    const updated = await prisma.$transaction(async (tx) => {
+      if (Object.keys(changes).length > 0) {
+        await tx.timeSheetChangeLog.create({
+          data: {
+            timeSheetId: id,
+            changedBy: editorId,
+            changes: changes,
+            changeReason: changeReason || "No reason provided",
+          },
+        });
+      }
+
+      return await tx.timeSheet.update({
+        where: { id },
+        data: {
+          startTime: startTime,
+          endTime: endTime ? new Date(endTime) : undefined,
+          comment: comment ?? undefined,
+          Jobsite: jobsite ? { connect: { id: jobsite } } : undefined,
+          CostCode: costCode ? { connect: { name: costCode } } : undefined,
+        },
+        include: {
+          Jobsite: true,
+          CostCode: true,
+        },
+      });
+    });
+
+    // Fetch the current timesheet from DB for comparison if original is not provided
+
     revalidateTag("timesheet");
     return { success: true, timesheet: updated };
   } catch (error) {

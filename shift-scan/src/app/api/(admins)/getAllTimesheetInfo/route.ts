@@ -104,6 +104,17 @@ export async function GET(req: Request) {
               },
             },
           },
+          TascoLogs: {
+            select: {
+              shiftType: true,
+              LoadQuantity: true,
+            },
+          },
+          _count: {
+            select: {
+              ChangeLogs: true, // Count the number of ChangeLogs
+            },
+          },
         },
         orderBy: { createdAt: "desc" },
       });
@@ -171,6 +182,17 @@ export async function GET(req: Request) {
                   milesAtFueling: true,
                 },
               },
+            },
+          },
+          TascoLogs: {
+            select: {
+              shiftType: true,
+              LoadQuantity: true,
+            },
+          },
+          _count: {
+            select: {
+              ChangeLogs: true, // Count the number of ChangeLogs
             },
           },
         },
@@ -243,6 +265,17 @@ export async function GET(req: Request) {
                   milesAtFueling: true,
                 },
               },
+            },
+          },
+          TascoLogs: {
+            select: {
+              shiftType: true,
+              LoadQuantity: true,
+            },
+          },
+          _count: {
+            select: {
+              ChangeLogs: true, // Count the number of ChangeLogs
             },
           },
         },
