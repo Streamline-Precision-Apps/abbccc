@@ -138,6 +138,17 @@ export async function createJobsite(formData: FormData) {
         });
       }
 
+      await fetch("/api/notification/trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: {
+            title: "New Jobsite Request",
+            body: `Jobsite "${name}" has been created and is awaiting approval.`,
+          },
+        }),
+      });
+
       revalidatePath("/dashboard/qr-generator");
     });
     console.log("Jobsite created successfully.");
