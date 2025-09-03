@@ -24,7 +24,7 @@ export default function EmployeeTimeCards() {
 
   const { data, loading, error, updateDate, reset } = useTimesheetDataSimple(
     employeeId,
-    date
+    date,
   );
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,12 +84,12 @@ export default function EmployeeTimeCards() {
                           ts.workType === "TASCO"
                             ? "/tasco.svg"
                             : ts.workType === "TRUCK_DRIVER"
-                            ? "/trucking.svg"
-                            : ts.workType === "MECHANIC"
-                            ? "/mechanic.svg"
-                            : ts.workType === "LABOR"
-                            ? "/equipment.svg"
-                            : "null"
+                              ? "/trucking.svg"
+                              : ts.workType === "MECHANIC"
+                                ? "/mechanic.svg"
+                                : ts.workType === "LABOR"
+                                  ? "/equipment.svg"
+                                  : "null"
                         }
                         titleImgAlt={`${ts.workType} Icon`}
                         className="m-auto w-8 h-8"

@@ -32,25 +32,26 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
-const EXPORT_FIELDS = [
+export const EXPORT_FIELDS = [
   { key: "Id", label: "Id" },
-  { key: "WorkType", label: "Work Type" },
-  { key: "Date", label: "Date" },
+  { key: "Date", label: "Date Worked" },
   { key: "Employee", label: "Employee" },
-  { key: "Jobsite", label: "Jobsite" },
-  { key: "CostCode", label: "Costcode" },
+  { key: "Jobsite", label: "Profit Center" },
+  { key: "CostCode", label: "Cost Code" },
   { key: "NU", label: "NU" },
   { key: "FP", label: "FP" },
-  { key: "Start", label: "Start" },
-  { key: "End", label: "End" },
-  { key: "Duration", label: "Duration" },
-  { key: "Comment", label: "Comment" },
+  { key: "Start", label: "Start Time" },
+  { key: "End", label: "End Time" },
+  { key: "Duration", label: "Hours" },
+  { key: "Comment", label: "Description" },
   { key: "EquipmentId", label: "Equipment" },
   { key: "EquipmentUsage", label: "Equipment Usage" },
   { key: "TruckNumber", label: "Trucking Number" },
   { key: "TruckStartingMileage", label: "Truck Starting Mileage" },
   { key: "TruckEndingMileage", label: "Truck Ending Mileage" },
   { key: "MilesAtFueling", label: "Miles at Fueling" },
+  { key: "TascoABCDELoads", label: "ABCDE loads" },
+  { key: "TascoFLoads", label: "F loads" },
 ];
 
 const ExportModal = ({ onClose, onExport }: ExportModalProps) => {

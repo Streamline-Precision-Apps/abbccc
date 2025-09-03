@@ -7,6 +7,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useTimecardIdData } from "./useTimecardIdData";
+import { useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,9 +30,20 @@ export default function AppManagerEditTimesheetModal(
   props: AppManagerEditTimesheetModalProps,
 ) {
   const { timesheetId, isOpen, onClose } = props;
-  const { data, setEdited, loading, error, save, costCodes, jobSites, reset } =
-    useTimecardIdData(timesheetId);
+  const {
+    data,
+    setEdited,
+    loading,
+    error,
+    save,
+    costCodes,
+    jobSites,
+    reset,
+    setChangeReason,
+  } = useTimecardIdData(timesheetId);
+
   const [editGeneral, setEditGeneral] = useState(false);
+  const [changeReason, setLocalChangeReason] = useState("");
 
   // State for date and time pickers
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -100,6 +112,7 @@ export default function AppManagerEditTimesheetModal(
   useEffect(() => {
     updateEndDateTime();
   }, [updateEndDateTime]);
+
   if (!isOpen) return null;
 
   const onSave = async () => {
@@ -115,7 +128,7 @@ export default function AppManagerEditTimesheetModal(
     <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-60 overflow-x-hidden">
       <div className="bg-white shadow-2xl  w-full max-w-md h-full flex flex-col overflow-hidden transition-all duration-300 overflow-x-hidden">
         {/* Header */}
-        <div className="px-4 pt-4 border-b bg-gradient-to-tr from-app-dark-blue/20 to-app-blue/20">
+        <div className="px-4 pt-4 border-b bg-neutral-200">
           <div className="flex items-center justify-between pb-1 relative">
             <h2 className="text-lg font-bold text-center absolute left-1/2 -translate-x-1/2 w-full pointer-events-none tracking-wide">
               <span className="inline-flex items-center gap-2">
@@ -133,7 +146,7 @@ export default function AppManagerEditTimesheetModal(
         </div>
         {/* Content */}
         <div
-          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-32 pt-4 transition-colors duration-300"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-32 pt-4 transition-colors duration-300 no-scrollbar"
           style={{
             background: editGeneral ? "rgba(255, 243, 207, 0.15)" : "white",
             maxWidth: "100vw",
@@ -447,7 +460,9 @@ export default function AppManagerEditTimesheetModal(
                   }}
                   disabled={true}
                   className={
-                    editGeneral ? "ring-2 ring-app-orange truncate" : "truncate"
+                    editGeneral
+                      ? "truncate border border-gray-300 bg-gray-50"
+                      : "truncate"
                   }
                   style={{ overflowX: "auto", textOverflow: "ellipsis" }}
                 />
@@ -457,6 +472,32 @@ export default function AppManagerEditTimesheetModal(
                   </span>
                 </div>
               </div>
+              {/* Reason for change */}
+              {editGeneral && (
+                <div className="py-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <img
+                      src="/comment.svg"
+                      alt="Reason"
+                      className="w-4 h-4 opacity-70"
+                    />
+                    <label className="text-xs font-semibold flex-1 max-w-[140px] truncate">
+                      Reason for change <span className="text-red-500">*</span>
+                    </label>
+                  </div>
+                  <Textarea
+                    maxLength={100}
+                    placeholder="Enter reason for change..."
+                    value={changeReason}
+                    onChange={(e) => {
+                      setLocalChangeReason(e.target.value);
+                      setChangeReason(e.target.value);
+                    }}
+                    className="ring-2 ring-app-orange truncate"
+                    required
+                  />
+                </div>
+              )}
             </div>
           ) : null}
         </div>
@@ -482,7 +523,7 @@ export default function AppManagerEditTimesheetModal(
             </Button>
           </div>
         ) : (
-          <div className="fixed bottom-0 left-0 w-full max-w-md bg-gradient-to-tr from-app-dark-blue/20 to-app-blue/20 border-t flex gap-2 px-4 py-3 z-50 shadow-lg animate-fade-in">
+          <div className="fixed bottom-0 left-0 w-full max-w-md bg-neutral-200 border-t flex gap-2 px-4 py-3 z-50 shadow-lg animate-fade-in">
             <Button
               variant="outline"
               className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-medium bg-white hover:bg-gray-100 transition-colors"
@@ -496,6 +537,7 @@ export default function AppManagerEditTimesheetModal(
             <Button
               className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-semibold bg-app-green text-white shadow-md transition-colors"
               onClick={onSave}
+              disabled={!editGeneral || !changeReason.trim()}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
