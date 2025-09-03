@@ -6,9 +6,10 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import SignOutModal from "./SignOutModal";
@@ -16,17 +17,41 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, LogOut } from "lucide-react";
 import { useSession } from "next-auth/react";
 
+type DashboardData = {
+  clockedInUsers: number;
+  totalPendingTimesheets: number;
+  pendingForms: number;
+  equipmentAwaitingApproval: number;
+  jobsitesAwaitingApproval: number;
+};
+
 export default function LeftSidebar() {
   const pathname = usePathname();
   const [showModal, setShowModal] = useState(false);
   const [isProfileOpened, setIsProfileOpened] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [data, setData] = useState<DashboardData | undefined>();
 
   const { data: session } = useSession();
   const name =
     session?.user?.firstName + " " + session?.user?.lastName.slice(0, 1) ||
     "No Name Available";
   const role = session?.user?.permission || "User";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log("🔄 Manual data refresh triggered");
+        const response = await fetch("/api/getDashboard");
+        const json = await response.json();
+        setData(json);
+        console.log("✅ Data refresh complete");
+      } catch (error) {
+        console.error("❌ Error refreshing data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchProfilePicture = async () => {
@@ -82,20 +107,6 @@ export default function LeftSidebar() {
       link: "/admins/jobsites",
     },
     {
-      id: 6,
-      title: "Cost Codes",
-      img: "qrCode",
-      white: "qrCode-white",
-      link: "/admins/cost-codes",
-    },
-    {
-      id: 7,
-      title: "Reports",
-      img: "formList",
-      white: "formList-white",
-      link: "/admins/reports",
-    },
-    {
       id: 8,
       title: "Forms",
       img: "form",
@@ -120,7 +131,7 @@ export default function LeftSidebar() {
               <img src="/logo.svg" alt="logo" className="w-24 h-10" />
             </div>
 
-            <SidebarMenu className="w-full h-full mt-4">
+            <SidebarMenu className="w-full h-full mt-4 gap-4">
               {Page.map((item) => {
                 // Special handling for the Dashboard with path "/admins"
                 // It should only be active when exactly on "/admins"
@@ -128,33 +139,61 @@ export default function LeftSidebar() {
                 if (item.link === "/admins") {
                   isActive = pathname === "/admins";
                 } else {
-                  // For all other items, check if the path starts with the item's link
-                  // e.g. /admins/forms/1234 should match /admins/forms
                   isActive = pathname.startsWith(item.link);
                 }
                 return (
-                  <Link key={item.id} href={item.link} className="w-full">
-                    <SidebarMenuItem className="py-2">
-                      <div
-                        className={`flex flex-row items-center gap-4 p-2 rounded-lg transition-colors ${
-                          isActive ? "bg-app-dark-blue text-white" : ""
-                        }`}
-                      >
+                  <SidebarMenuItem
+                    key={item.id}
+                    className={`flex flex-row items-center  px-2 rounded-lg ${isActive ? "bg-app-dark-blue hover:bg-app-dark-blue/90 " : ""} `}
+                  >
+                    <SidebarMenuButton asChild>
+                      <a href={item.link} className="h-full w-full gap-4">
                         <img
                           src={`/${isActive ? item.white : item.img}.svg`}
                           alt={item.title}
                           className="w-4 h-4"
                         />
-                        <p
-                          className={`text-base ${
-                            isActive ? "text-white" : ""
-                          }`}
+                        <span
+                          className={`text-base ${isActive ? "text-white" : ""}`}
                         >
                           {item.title}
-                        </p>
-                      </div>
-                    </SidebarMenuItem>
-                  </Link>
+                        </span>
+                      </a>
+                    </SidebarMenuButton>
+                    {/* Display badge if there is a count greater than 0 */}
+
+                    {item.title === "Timesheets" &&
+                    data &&
+                    data.totalPendingTimesheets > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        {data.totalPendingTimesheets}
+                      </SidebarMenuBadge>
+                    ) : item.title === "Equipment" &&
+                      data &&
+                      data.equipmentAwaitingApproval > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        <span className="text-sm">
+                          {data.equipmentAwaitingApproval}
+                        </span>
+                      </SidebarMenuBadge>
+                    ) : item.title === "Jobsites" &&
+                      data &&
+                      data.jobsitesAwaitingApproval > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        <span className="text-sm">
+                          {data.jobsitesAwaitingApproval}
+                        </span>
+                      </SidebarMenuBadge>
+                    ) : item.title === "Forms" &&
+                      data &&
+                      data.pendingForms > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        <span className="text-sm">{data.pendingForms}</span>
+                      </SidebarMenuBadge>
+                    ) : null}
+
+                    {/* Display badge if there is a count */}
+                  </SidebarMenuItem>
                 );
               })}
               {/* Button at the bottom, separated from menu */}
