@@ -25,7 +25,7 @@ export default function TeamMemberLayout() {
 
   const manager = useMemo(
     () => `${session?.user?.firstName} ${session?.user?.lastName}`,
-    [session]
+    [session],
   );
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [activeTab, setActiveTab] = useState(1);
@@ -41,9 +41,6 @@ export default function TeamMemberLayout() {
 
   const loading = loadingEmployee;
 
-  // Add state for focusIds
-  const [focusIds, setFocusIds] = useState<string[]>([]);
-
   return (
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="h-full w-full">
@@ -54,7 +51,7 @@ export default function TeamMemberLayout() {
           <TitleBoxes
             onClick={() =>
               router.push(
-                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`
+                timeCard ? timeCard : `/dashboard/myTeam/${id}?rPath=${rPath}`,
               )
             }
           >

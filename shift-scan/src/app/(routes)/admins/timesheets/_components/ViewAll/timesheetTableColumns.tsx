@@ -39,7 +39,7 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   },
   {
     accessorKey: "date",
-    header: "Date",
+    header: "Date Worked",
     cell: ({ row }) => {
       return (
         <div className=" text-xs text-center">
@@ -210,11 +210,18 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   },
   {
     accessorKey: "updatedAt",
-    header: "Last modified",
+    header: "Changes",
     cell: ({ row }) => {
+      const ChangeLogs = row.original._count?.ChangeLogs || 0;
       return (
         <div className=" text-xs text-center">
-          {format(row.original.updatedAt, "MM/dd/yy")}
+          {ChangeLogs > 0 && (
+            <span
+              className={`font-semibold bg-red-500 rounded-full px-2 py-1 text-white`}
+            >
+              {ChangeLogs}
+            </span>
+          )}
         </div>
       );
     },
