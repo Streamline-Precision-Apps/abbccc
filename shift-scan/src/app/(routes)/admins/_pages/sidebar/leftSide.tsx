@@ -14,8 +14,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import SignOutModal from "./SignOutModal";
 import { Button } from "@/components/ui/button";
-import { ChevronUp, ChevronDown, LogOut } from "lucide-react";
+import { ChevronUp, ChevronDown, LogOut, BellPlus } from "lucide-react";
 import { useSession } from "next-auth/react";
+import NotificationModal from "./NotificationModal";
 
 type DashboardData = {
   clockedInUsers: number;
@@ -27,7 +28,8 @@ type DashboardData = {
 
 export default function LeftSidebar() {
   const pathname = usePathname();
-  const [showModal, setShowModal] = useState(false);
+  const [showLogOutModal, setShowLogOutModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [isProfileOpened, setIsProfileOpened] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [data, setData] = useState<DashboardData | undefined>();
@@ -257,15 +259,32 @@ export default function LeftSidebar() {
                     </Button>
                   </div>
                 </div>
+
                 <div className="w-full flex px-4 py-2 justify-start">
-                  <Button
-                    variant={"ghost"}
-                    className="flex flex-row  items-center gap-2 rounded-lg"
-                    onClick={() => setShowModal(true)}
-                  >
-                    <LogOut className="w-2 h-1.5  " color={`black`} />
-                    <p className="text-[10px]">Log Out</p>
-                  </Button>
+                  <div className="flex flex-col w-full gap-2 items-start">
+                    <Button
+                      variant={"ghost"}
+                      className="flex flex-row w-full justify-center gap-2 rounded-lg relative border border-neutral-100"
+                      onClick={() => setShowNotificationModal(true)}
+                    >
+                      <BellPlus
+                        className="w-2 h-1.5 absolute left-2"
+                        color={`black`}
+                      />
+                      <p className="text-[10px]">Notification Settings</p>
+                    </Button>
+                    <Button
+                      variant={"ghost"}
+                      className="flex flex-row w-full gap-2 justify-center rounded-lg relative border border-neutral-100"
+                      onClick={() => setShowLogOutModal(true)}
+                    >
+                      <LogOut
+                        className="w-2 h-1.5 absolute left-2"
+                        color={`black`}
+                      />
+                      <p className="text-[10px]">Log Out</p>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -328,7 +347,15 @@ export default function LeftSidebar() {
         </SidebarGroupContent>
 
         {/* Modal */}
-        {showModal && <SignOutModal open={showModal} setOpen={setShowModal} />}
+        {showLogOutModal && (
+          <SignOutModal open={showLogOutModal} setOpen={setShowLogOutModal} />
+        )}
+        {showNotificationModal && (
+          <NotificationModal
+            open={showNotificationModal}
+            setOpen={setShowNotificationModal}
+          />
+        )}
       </SidebarContent>
     </Sidebar>
   );

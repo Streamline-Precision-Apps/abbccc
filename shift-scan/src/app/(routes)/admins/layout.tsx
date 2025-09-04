@@ -3,23 +3,23 @@ import "@/app/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import LeftSidebar from "./_pages/sidebar/leftSide";
 import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
-import { useNotification } from "@/hooks/useNotification";
-import { useEffect } from "react";
+import PushToastListener from "@/components/PushToastListener";
+import PresencePing from "@/components/notifications/PresencePing";
+import { useSession } from "next-auth/react";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { subscribeToNotifications } = useNotification();
-  useEffect(() => {
-    // Subscribe to notifications when the component mounts
-    subscribeToNotifications();
-  }, [subscribeToNotifications]);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
   return (
     <>
       <Toaster position="top-right" richColors closeButton duration={3000} />
-
+      <PushToastListener />
+      {userId && <PresencePing userId={userId} />}
       <SidebarProvider>
         <Sidebar variant={"sidebar"}>
           <LeftSidebar />

@@ -6,6 +6,7 @@ import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
 import { formatISO } from "date-fns";
+import { triggerTimesheetSubmitted } from "@/lib/notifications";
 // Get all TimeSheets
 type TimesheetUpdate = {
   id: number;
@@ -478,16 +479,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
-        await fetch("/api/notification/trigger", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: {
-              title: "New Timesheet Request",
-              body: `Timesheet has been created and is awaiting approval.`,
-            },
-          }),
-        });
+
         console.log(
           "[handleGeneralTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -501,6 +493,38 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       });
       console.log("[handleGeneralTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleGeneralTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleGeneralTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -570,16 +594,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
-        await fetch("/api/notification/trigger", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: {
-              title: "New Timesheet Request",
-              body: `Timesheet has been created and is awaiting approval.`,
-            },
-          }),
-        });
+
         console.log(
           "[handleMechanicTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -596,6 +611,38 @@ export async function handleMechanicTimeSheet(formData: FormData) {
         created,
       );
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Mechanic timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleMechanicTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleMechanicTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -686,17 +733,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
           },
         });
 
-        await fetch("/api/notification/trigger", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: {
-              title: "New Timesheet Request",
-              body: `Timesheet has been created and is awaiting approval.`,
-            },
-          }),
-        });
-
         console.log(
           "[handleTascoTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -710,6 +746,38 @@ export async function handleTascoTimeSheet(formData: FormData) {
       });
       console.log("[handleTascoTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Tasco timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleTascoTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleTascoTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -798,16 +866,6 @@ export async function handleTruckTimeSheet(formData: FormData) {
             },
           });
 
-          await fetch("/api/notification/trigger", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              message: {
-                title: "New Timesheet Submission",
-                body: `Timesheet has been created and is awaiting approval.`,
-              },
-            }),
-          });
           console.log(
             "[handleTruckTimeSheet] Previous timesheet set to PENDING:",
             updatedPrev,
@@ -849,6 +907,38 @@ export async function handleTruckTimeSheet(formData: FormData) {
       });
       console.log("[handleTruckTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Truck driver timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleTruckTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleTruckTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after DB ops
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -950,19 +1040,35 @@ export async function updateTimeSheet(formData: FormData) {
       },
     });
 
-    await fetch("/api/notification/trigger", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: {
-          title: "New Timesheet Request",
-          body: `Timesheet has been created and is awaiting approval.`,
-        },
-      }),
-    });
-
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
+
+    // Trigger notification for submitted timesheet
+    try {
+      // Get the user information for the notification
+      const timesheet = await prisma.timeSheet.findUnique({
+        where: { id },
+        include: { User: true },
+      });
+
+      if (timesheet && timesheet.User) {
+        await triggerTimesheetSubmitted({
+          timesheetId: id.toString(),
+          submitterName: `${timesheet.User.firstName} ${timesheet.User.lastName}`,
+          message: `Timesheet ${id} has been submitted and is pending approval.`,
+        });
+        console.log(
+          "[updateTimeSheet] Notification triggered for timesheet:",
+          id,
+        );
+      }
+    } catch (notifyError) {
+      // Log but don't fail the whole operation if notification fails
+      console.error(
+        "[updateTimeSheet] Error triggering notification:",
+        notifyError,
+      );
+    }
 
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);

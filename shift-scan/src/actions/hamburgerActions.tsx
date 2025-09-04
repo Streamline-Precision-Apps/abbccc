@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { triggerFormSubmitted } from "@/lib/notifications";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -125,7 +126,10 @@ export async function createFormSubmission(formData: FormData) {
       },
     });
 
-    return submission.id;
+    if (submission) {
+    }
+
+    return null;
   } catch (error) {
     console.error("Error creating form submission:", error);
     throw new Error("Failed to create form submission");
@@ -145,18 +149,6 @@ export async function deleteFormSubmission(id: number) {
     console.error("error deleting Form Submission");
   }
 }
-
-// export async function fetchDraft(submissionId: string) {
-//   try {
-//     const submission = await prisma.formSubmission.findUnique({
-//       where: { id: submissionId },
-//     });
-//     return submission;
-//   } catch (error) {
-//     console.error("Error fetching draft:", error);
-//     throw new Error("Failed to fetch draft");
-//   }
-// }
 
 export async function saveDraft(
   formData: Record<string, string>,
@@ -288,6 +280,36 @@ export async function saveDraftToPending(
       });
 
       console.log("Submission updated successfully:", updatedSubmission.id);
+
+      // Trigger form submission notification
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        const template = await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+
+        await triggerFormSubmitted({
+          formId: updatedSubmission.formTemplateId,
+          submitterName: user
+            ? `${user.firstName} ${user.lastName}`
+            : undefined,
+          formType: template?.name || formType || "new",
+          message: `A form has been submitted.`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[saveDraftToPending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return updatedSubmission;
     } else {
       // Create new draft
@@ -302,6 +324,36 @@ export async function saveDraftToPending(
           submittedAt: new Date().toISOString(),
         },
       });
+
+      // Trigger form submission notification for new submissions
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        const template = await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+
+        await triggerFormSubmitted({
+          formId: newSubmission.formTemplateId,
+          submitterName: user
+            ? `${user.firstName} ${user.lastName}`
+            : undefined,
+          formType: template?.name || formType || "new",
+          message: `A form has been submitted.`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[saveDraftToPending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return newSubmission;
     }
   } catch (error) {
@@ -358,6 +410,35 @@ export async function savePending(
         },
       });
 
+      // Trigger form submission notification
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        const template = await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+
+        await triggerFormSubmitted({
+          formId: updatedSubmission.formTemplateId,
+          submitterName: user
+            ? `${user.firstName} ${user.lastName}`
+            : undefined,
+          formType: template?.name || formType || "new",
+          message: `A form has been submitted.`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[savePending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return updatedSubmission;
     } else {
       // Create new submission with PENDING status
@@ -371,6 +452,36 @@ export async function savePending(
           status: "PENDING", // Ensure the status is PENDING
         },
       });
+
+      // Trigger form submission notification for new form submissions
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        const template = await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+
+        await triggerFormSubmitted({
+          formId: newSubmission.formTemplateId,
+          submitterName: user
+            ? `${user.firstName} ${user.lastName}`
+            : undefined,
+          formType: template?.name || formType || "new",
+          message: `A Form has been submitted.`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[savePending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return newSubmission;
     }
   } catch (error) {

@@ -1,28 +1,81 @@
-import { NextResponse } from "next/server";
-import webPush from "web-push";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+import {
+  triggerFormSubmitted,
+  triggerItemApprovalRequested,
+  triggerTimecardChanged,
+  triggerTimesheetSubmitted,
+} from "@/lib/notifications";
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY!;
+export const runtime = "nodejs";
 
-// Configure web-push
-webPush.setVapidDetails(
-  "mailto:support@shiftscanapp.com",
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY,
-);
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { subscription, message } = await req.json();
+    // Ensure user is authenticated
+    const session = await auth();
+    const userId = session?.user?.id;
 
-    // Send push notification
-    await webPush.sendNotification(subscription, JSON.stringify(message));
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error sending notification:", error);
+    // Get parameters from request body
+    const { type, id, userName, message, additionalInfo } = await req.json();
+
+    let result;
+
+    // Trigger the appropriate notification based on type
+    switch (type) {
+      case "timesheet":
+        result = await triggerTimesheetSubmitted({
+          timesheetId: id,
+          submitterName: userName,
+          message,
+        });
+        break;
+
+      case "form":
+        result = await triggerFormSubmitted({
+          formId: id,
+          submitterName: userName,
+          message,
+          formType: additionalInfo,
+        });
+        break;
+
+      case "item":
+        result = await triggerItemApprovalRequested({
+          itemId: id,
+          requesterName: userName,
+          message,
+          itemType: additionalInfo,
+        });
+        break;
+
+      case "timecard-change":
+        result = await triggerTimecardChanged({
+          timesheetId: id,
+          changerName: userName,
+          message,
+          changeType: additionalInfo,
+        });
+        break;
+
+      default:
+        return NextResponse.json(
+          { error: "Invalid notification type" },
+          { status: 400 },
+        );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `${type} notification triggered successfully`,
+    });
+  } catch (error: any) {
+    console.error("Error triggering test notification:", error);
     return NextResponse.json(
-      { error: "Failed to send notification" },
+      { error: error.message || "Server error" },
       { status: 500 },
     );
   }

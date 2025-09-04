@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
+import { triggerItemApprovalRequested } from "@/lib/notifications";
 
 export async function getJobsiteForms() {
   try {
@@ -34,6 +35,7 @@ export async function createJobsite(formData: FormData) {
   console.log("Creating jobsite...");
   console.log(formData);
 
+  const submitterName = formData.get("submitterName") as string;
   const name = formData.get("temporaryJobsiteName") as string;
   const code = formData.get("code") as string;
   const createdById = formData.get("createdById") as string;
@@ -137,17 +139,14 @@ export async function createJobsite(formData: FormData) {
           },
         });
       }
-
-      await fetch("/api/notification/trigger", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: {
-            title: "New Jobsite Request",
-            body: `Jobsite "${name}" has been created and is awaiting approval.`,
-          },
-        }),
-      });
+      if (createdJobsite) {
+        await triggerItemApprovalRequested({
+          itemId: createdJobsite.id,
+          requesterName: submitterName,
+          message: `New Item created and pending approval`,
+          itemType: "jobsites",
+        });
+      }
 
       revalidatePath("/dashboard/qr-generator");
     });
