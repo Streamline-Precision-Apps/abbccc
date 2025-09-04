@@ -40,6 +40,7 @@ export default function AddEquipmentForm() {
   const { data: session } = useSession();
   const router = useRouter();
   const userId = session?.user.id;
+  const submitterName = session?.user.firstName + " " + session?.user.lastName;
   const [eqCode, setEQCode] = useState("");
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -163,6 +164,7 @@ export default function AddEquipmentForm() {
       });
       formDataToSend.append("eqCode", eqCode);
       formDataToSend.append("createdById", userId || "");
+      formDataToSend.append("submitterName", submitterName || "");
 
       const response = await createEquipment(formDataToSend);
       if (!response.success) {

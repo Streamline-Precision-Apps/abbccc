@@ -22,6 +22,7 @@ export default function AddJobsiteForm() {
   const { data: session } = useSession();
   const router = useRouter();
   const userId = session?.user.id;
+  const submitterName = session?.user.firstName + " " + session?.user.lastName;
   const [qrCode, setQrCode] = useState("");
 
   // Form state
@@ -54,7 +55,7 @@ export default function AddJobsiteForm() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -93,6 +94,7 @@ export default function AddJobsiteForm() {
       });
       formDataToSend.append("qrCode", qrCode);
       formDataToSend.append("createdById", userId);
+      formDataToSend.append("submitterName", submitterName);
       const response = await createJobsite(formDataToSend);
       if (response) {
         router.push("/dashboard/qr-generator");

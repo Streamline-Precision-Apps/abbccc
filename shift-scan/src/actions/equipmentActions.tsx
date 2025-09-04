@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
+import { triggerItemApprovalRequested } from "@/lib/notifications";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -23,6 +24,7 @@ export async function equipmentTagExists(id: string) {
 // Create equipment
 export async function createEquipment(formData: FormData) {
   try {
+    const submitterName = formData.get("submitterName") as string;
     const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
     const make = formData.get("make") as string;
     const model = formData.get("model") as string;
@@ -81,16 +83,15 @@ export async function createEquipment(formData: FormData) {
           },
         });
       }
-      await fetch("/api/notification/trigger", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: {
-            title: "New Equipment Request",
-            body: `Equipment "${name}" has been created and is awaiting approval.`,
-          },
-        }),
-      });
+
+      if (newEquipment) {
+        await triggerItemApprovalRequested({
+          itemId: newEquipment.id,
+          requesterName: submitterName,
+          message: `New Item created and pending approval`,
+          itemType: "equipment",
+        });
+      }
 
       return newEquipment;
     });
