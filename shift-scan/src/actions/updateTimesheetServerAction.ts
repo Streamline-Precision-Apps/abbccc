@@ -1,5 +1,6 @@
 "use server";
 
+import { triggerTimecardChanged } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
 
@@ -38,7 +39,7 @@ export async function updateTimesheetServerAction(formData: FormData) {
         });
       }
 
-      return await tx.timeSheet.update({
+      const updated = await tx.timeSheet.update({
         where: { id },
         data: {
           startTime: startTime,
@@ -52,6 +53,17 @@ export async function updateTimesheetServerAction(formData: FormData) {
           CostCode: true,
         },
       });
+
+      if (updated) {
+        await triggerTimecardChanged({
+          timesheetId: updated.id.toString(),
+          changerName: editorId,
+          message: `Timecard updated by ${editorId}`,
+          changeType: "updated",
+        });
+      }
+
+      return updated;
     });
 
     // Fetch the current timesheet from DB for comparison if original is not provided
