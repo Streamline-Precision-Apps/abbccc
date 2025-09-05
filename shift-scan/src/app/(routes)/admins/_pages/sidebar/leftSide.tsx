@@ -11,66 +11,22 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SignOutModal from "./SignOutModal";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, LogOut, BellPlus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import NotificationModal from "./NotificationModal";
-
-type DashboardData = {
-  clockedInUsers: number;
-  totalPendingTimesheets: number;
-  pendingForms: number;
-  equipmentAwaitingApproval: number;
-  jobsitesAwaitingApproval: number;
-};
+import { useDashboardData } from "./DashboardDataContext";
+import { useUserProfile } from "./UserImageContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [isProfileOpened, setIsProfileOpened] = useState(false);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const [data, setData] = useState<DashboardData | undefined>();
-
-  const { data: session } = useSession();
-  const name =
-    session?.user?.firstName + " " + session?.user?.lastName.slice(0, 1) ||
-    "No Name Available";
-  const role = session?.user?.permission || "User";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log("🔄 Manual data refresh triggered");
-        const response = await fetch("/api/getDashboard");
-        const json = await response.json();
-        setData(json);
-        console.log("✅ Data refresh complete");
-      } catch (error) {
-        console.error("❌ Error refreshing data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchProfilePicture = async () => {
-      try {
-        const response = await fetch(`/api/getUserImage`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile picture");
-        }
-        const data = await response.json();
-        setProfilePicture(data.image || null);
-        // Handle the profile picture data as needed
-      } catch (error) {
-        console.error("Error fetching profile picture:", error);
-      }
-    };
-    fetchProfilePicture();
-  }, []);
+  const { data } = useDashboardData();
+  const { image, name, role, loading } = useUserProfile();
 
   const Page = [
     {
@@ -207,31 +163,11 @@ export default function LeftSidebar() {
                 {/* Profile section */}
                 <div className="w-full px-4 py-2 bg-white rounded-[10px] inline-flex justify-start items-center gap-3">
                   <div className="flex items-center w-11 h-11 justify-center">
-                    {profilePicture === null ? (
-                      // Loading spinner
-                      <svg
-                        className="animate-spin h-7 w-7 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                        ></path>
-                      </svg>
+                    {image === null ? (
+                      <Skeleton className="w-11 h-11 rounded-full bg-gray-200" />
                     ) : (
                       <img
-                        src={profilePicture || "/profileEmpty.svg"}
+                        src={image || "/profileEmpty.svg"}
                         alt="profile"
                         className="w-11 h-11 rounded-full object-cover bg-gray-100"
                         onError={(e) => {
@@ -242,10 +178,16 @@ export default function LeftSidebar() {
                   </div>
                   <div className="inline-flex flex-col  flex-1 justify-center items-start">
                     <div className="justify-start text-black text-xs font-bold ">
-                      {name.length >= 12 ? name.slice(0, 12) + "..." : name}
+                      {loading ? (
+                        <Skeleton className="h-2 w-24" />
+                      ) : name.length >= 12 ? (
+                        name.slice(0, 12) + "..."
+                      ) : (
+                        name
+                      )}
                     </div>
                     <div className="text-center justify-start text-neutral-400 text-[10px] font-normal ">
-                      {role}
+                      {loading ? <Skeleton className="h-2 w-16" /> : role}
                     </div>
                   </div>
                   <div className="flex justify-end items-center w-fit">
@@ -290,31 +232,11 @@ export default function LeftSidebar() {
             ) : (
               <div className="w-full px-4 py-2 bg-white rounded-[10px] inline-flex justify-start items-center gap-3">
                 <div className="flex items-center w-11 h-11 justify-center">
-                  {profilePicture === null ? (
-                    // Loading spinner
-                    <svg
-                      className="animate-spin h-7 w-7 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
+                  {image === null ? (
+                    <Skeleton className="w-11 h-11 rounded-full bg-gray-200" />
                   ) : (
                     <img
-                      src={profilePicture || "/profileEmpty.svg"}
+                      src={image || "/profileEmpty.svg"}
                       alt="profile"
                       className="w-11 h-11 rounded-full object-cover bg-gray-100"
                       onError={(e) => {
@@ -323,12 +245,18 @@ export default function LeftSidebar() {
                     />
                   )}
                 </div>
-                <div className="inline-flex flex-col  flex-1 justify-center items-start">
+                <div className="inline-flex flex-col flex-1 justify-center items-start">
                   <div className="justify-start text-black text-xs font-bold ">
-                    {name.length >= 12 ? name.slice(0, 12) + "..." : name}
+                    {loading ? (
+                      <Skeleton className="h-2 w-24 mb-2" />
+                    ) : name.length >= 12 ? (
+                      name.slice(0, 12) + "..."
+                    ) : (
+                      name
+                    )}
                   </div>
                   <div className="text-center justify-start text-neutral-400 text-[10px] font-normal ">
-                    {role}
+                    {loading ? <Skeleton className="h-2 w-16" /> : role}
                   </div>
                 </div>
                 <div className="flex justify-end items-center w-fit">

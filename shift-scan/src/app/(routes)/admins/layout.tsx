@@ -6,6 +6,8 @@ import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
 import PushToastListener from "@/components/PushToastListener";
 import PresencePing from "@/components/notifications/PresencePing";
 import { useSession } from "next-auth/react";
+import { DashboardDataProvider } from "./_pages/sidebar/DashboardDataContext";
+import { UserProfileProvider } from "./_pages/sidebar/UserImageContext";
 
 export default function RootLayout({
   children,
@@ -20,12 +22,16 @@ export default function RootLayout({
       <Toaster position="top-right" richColors closeButton duration={3000} />
       <PushToastListener />
       {userId && <PresencePing userId={userId} />}
-      <SidebarProvider>
-        <Sidebar variant={"sidebar"}>
-          <LeftSidebar />
-        </Sidebar>
-        {children}
-      </SidebarProvider>
+      <DashboardDataProvider>
+        <UserProfileProvider>
+          <SidebarProvider>
+            <Sidebar variant={"sidebar"}>
+              <LeftSidebar />
+            </Sidebar>
+            {children}
+          </SidebarProvider>
+        </UserProfileProvider>
+      </DashboardDataProvider>
     </>
   );
 }

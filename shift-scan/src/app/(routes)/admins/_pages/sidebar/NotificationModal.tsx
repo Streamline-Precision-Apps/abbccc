@@ -278,8 +278,12 @@ export default function NotificationModal({ open, setOpen }: Props) {
               body: JSON.stringify({
                 endpoint: pushSubscription.endpoint,
                 keys: {
-                  auth: (pushSubscription.toJSON().keys as any).auth,
-                  p256dh: (pushSubscription.toJSON().keys as any).p256dh,
+                  auth: (
+                    pushSubscription.toJSON().keys as Record<string, string>
+                  ).auth,
+                  p256dh: (
+                    pushSubscription.toJSON().keys as Record<string, string>
+                  ).p256dh,
                 },
                 userId,
               }),
@@ -422,8 +426,11 @@ export default function NotificationModal({ open, setOpen }: Props) {
                 body: JSON.stringify({
                   endpoint: subscription.endpoint,
                   keys: {
-                    auth: (subscription.toJSON().keys as any).auth,
-                    p256dh: (subscription.toJSON().keys as any).p256dh,
+                    auth: (subscription.toJSON().keys as Record<string, string>)
+                      .auth,
+                    p256dh: (
+                      subscription.toJSON().keys as Record<string, string>
+                    ).p256dh,
                   },
                   userId,
                 }),
@@ -529,8 +536,8 @@ export default function NotificationModal({ open, setOpen }: Props) {
             </DialogTitle>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Configure how you'd like to receive alerts. You can choose channels
-            and delivery frequency per notification type.
+            Configure how you&apos;d like to receive alerts. You can choose
+            channels and delivery frequency per notification type.
           </p>
         </DialogHeader>
 

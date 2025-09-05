@@ -72,11 +72,12 @@ export async function POST(req: NextRequest) {
       success: true,
       message: `${type} notification triggered successfully`,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error triggering test notification:", error);
-    return NextResponse.json(
-      { error: error.message || "Server error" },
-      { status: 500 },
-    );
+    let errorMessage = "Server error";
+    if (error && typeof error === "object" && "message" in error) {
+      errorMessage = (error as { message?: string }).message || errorMessage;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
