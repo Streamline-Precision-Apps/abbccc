@@ -6,6 +6,7 @@ import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatInTimeZone } from "date-fns-tz";
 import { formatISO } from "date-fns";
+import { triggerTimesheetSubmitted } from "@/lib/notifications";
 // Get all TimeSheets
 type TimesheetUpdate = {
   id: number;
@@ -37,60 +38,6 @@ export async function getTimeSheetsbyId() {
   return timesheets;
 }
 
-// Get TimeSheet by id
-export async function fetchTimesheets(employeeId: string, date: string) {
-  console.log("Fetching timesheets for:", { employeeId, date });
-
-  // Convert the date to UTC start and end times
-  const startOfDay = new Date(date);
-  startOfDay.setUTCHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(date);
-  endOfDay.setUTCHours(23, 59, 59, 999);
-
-  try {
-    // Fetch timesheets from Prisma, include both DRAFT and PENDING for this user
-    const timeSheets = await prisma.timeSheet.findMany({
-      where: {
-        userId: employeeId,
-        status: { in: ["DRAFT", "PENDING"] },
-        date: {
-          gte: startOfDay.toISOString(), // Start of the day in UTC
-          lte: endOfDay.toISOString(), // End of the day in UTC
-        },
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-      include: {
-        TascoLogs: true,
-        TruckingLogs: true,
-        MaintenanceLogs: true,
-        EmployeeEquipmentLogs: true,
-      },
-    });
-
-    console.log("Fetched Timesheets (DRAFT & PENDING):", timeSheets);
-
-    // Convert fetched ISO times to local timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const adjustedTimeSheets = timeSheets.map((sheet) => ({
-      ...sheet,
-      startTime: sheet.startTime
-        ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-      endTime: sheet.endTime
-        ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-    }));
-
-    console.log("Adjusted Timesheets:", adjustedTimeSheets);
-    return adjustedTimeSheets;
-  } catch (error) {
-    console.error("Error fetching timesheets:", error);
-    throw new Error("Failed to fetch timesheets");
-  }
-}
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  GENERAL CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -532,6 +479,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
         console.log(
           "[handleGeneralTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -545,6 +493,38 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       });
       console.log("[handleGeneralTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleGeneralTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleGeneralTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -614,6 +594,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
         console.log(
           "[handleMechanicTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -630,6 +611,38 @@ export async function handleMechanicTimeSheet(formData: FormData) {
         created,
       );
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Mechanic timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleMechanicTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleMechanicTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -719,6 +732,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
         console.log(
           "[handleTascoTimeSheet] Previous timesheet set to PENDING:",
           updatedPrev,
@@ -732,6 +746,38 @@ export async function handleTascoTimeSheet(formData: FormData) {
       });
       console.log("[handleTascoTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Tasco timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleTascoTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleTascoTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -819,6 +865,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
               status: "PENDING",
             },
           });
+
           console.log(
             "[handleTruckTimeSheet] Previous timesheet set to PENDING:",
             updatedPrev,
@@ -860,6 +907,38 @@ export async function handleTruckTimeSheet(formData: FormData) {
       });
       console.log("[handleTruckTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        if (prevTimesheet) {
+          await triggerTimesheetSubmitted({
+            timesheetId: previousTimeSheetId.toString(),
+            submitterName: prevTimesheet.User
+              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
+              : undefined,
+            message: `Truck driver timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
+          });
+          console.log(
+            "[handleTruckTimeSheet] Notification triggered for timesheet:",
+            previousTimeSheetId,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleTruckTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after DB ops
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -963,6 +1042,33 @@ export async function updateTimeSheet(formData: FormData) {
 
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
+
+    // Trigger notification for submitted timesheet
+    try {
+      // Get the user information for the notification
+      const timesheet = await prisma.timeSheet.findUnique({
+        where: { id },
+        include: { User: true },
+      });
+
+      if (timesheet && timesheet.User) {
+        await triggerTimesheetSubmitted({
+          timesheetId: id.toString(),
+          submitterName: `${timesheet.User.firstName} ${timesheet.User.lastName}`,
+          message: `Timesheet ${id} has been submitted and is pending approval.`,
+        });
+        console.log(
+          "[updateTimeSheet] Notification triggered for timesheet:",
+          id,
+        );
+      }
+    } catch (notifyError) {
+      // Log but don't fail the whole operation if notification fails
+      console.error(
+        "[updateTimeSheet] Error triggering notification:",
+        notifyError,
+      );
+    }
 
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);

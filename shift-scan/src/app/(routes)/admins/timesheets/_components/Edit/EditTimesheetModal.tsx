@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { TimeSheetHistory } from "./TimeSheetHistory";
 import { useSession } from "next-auth/react";
 import { Textarea } from "@/components/ui/textarea";
+import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
 
 // Define types for change logs
 interface ChangeLogEntry {
@@ -47,7 +48,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [showHistory, setShowHistory] = useState(false);
   const [changeReason, setChangeReason] = useState("");
   const { data: session } = useSession();
-
+  const { refresh } = useDashboardData();
   const editor = session?.user?.id;
 
   // Fetch dropdown and related data
@@ -210,7 +211,11 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       formData.append("editorId", editor || "");
       formData.append("changeReason", changeReason);
 
-      await adminUpdateTimesheet(formData);
+      const result = await adminUpdateTimesheet(formData);
+      if (result) {
+        refresh();
+      }
+
       if (onUpdated) onUpdated();
       onClose();
       toast.success("Timesheet updated successfully");

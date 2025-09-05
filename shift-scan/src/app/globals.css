@@ -50,6 +50,14 @@ body {
   touch-action: pan-x pan-y;
 }
 
+.custom-badge {
+  background-color: red;
+  color: white;
+  border-radius: 9999px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -6,44 +6,27 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SignOutModal from "./SignOutModal";
 import { Button } from "@/components/ui/button";
-import { ChevronUp, ChevronDown, LogOut } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { ChevronUp, ChevronDown, LogOut, BellPlus } from "lucide-react";
+import NotificationModal from "./NotificationModal";
+import { useDashboardData } from "./DashboardDataContext";
+import { useUserProfile } from "./UserImageContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
-  const [showModal, setShowModal] = useState(false);
+  const [showLogOutModal, setShowLogOutModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [isProfileOpened, setIsProfileOpened] = useState(false);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-
-  const { data: session } = useSession();
-  const name =
-    session?.user?.firstName + " " + session?.user?.lastName.slice(0, 1) ||
-    "No Name Available";
-  const role = session?.user?.permission || "User";
-
-  useEffect(() => {
-    const fetchProfilePicture = async () => {
-      try {
-        const response = await fetch(`/api/getUserImage`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile picture");
-        }
-        const data = await response.json();
-        setProfilePicture(data.image || null);
-        // Handle the profile picture data as needed
-      } catch (error) {
-        console.error("Error fetching profile picture:", error);
-      }
-    };
-    fetchProfilePicture();
-  }, []);
+  const { data } = useDashboardData();
+  const { image, name, role, loading } = useUserProfile();
 
   const Page = [
     {
@@ -82,20 +65,6 @@ export default function LeftSidebar() {
       link: "/admins/jobsites",
     },
     {
-      id: 6,
-      title: "Cost Codes",
-      img: "qrCode",
-      white: "qrCode-white",
-      link: "/admins/cost-codes",
-    },
-    {
-      id: 7,
-      title: "Reports",
-      img: "formList",
-      white: "formList-white",
-      link: "/admins/reports",
-    },
-    {
       id: 8,
       title: "Forms",
       img: "form",
@@ -120,7 +89,7 @@ export default function LeftSidebar() {
               <img src="/logo.svg" alt="logo" className="w-24 h-10" />
             </div>
 
-            <SidebarMenu className="w-full h-full mt-4">
+            <SidebarMenu className="w-full h-full mt-4 gap-4">
               {Page.map((item) => {
                 // Special handling for the Dashboard with path "/admins"
                 // It should only be active when exactly on "/admins"
@@ -128,33 +97,61 @@ export default function LeftSidebar() {
                 if (item.link === "/admins") {
                   isActive = pathname === "/admins";
                 } else {
-                  // For all other items, check if the path starts with the item's link
-                  // e.g. /admins/forms/1234 should match /admins/forms
                   isActive = pathname.startsWith(item.link);
                 }
                 return (
-                  <Link key={item.id} href={item.link} className="w-full">
-                    <SidebarMenuItem className="py-2">
-                      <div
-                        className={`flex flex-row items-center gap-4 p-2 rounded-lg transition-colors ${
-                          isActive ? "bg-app-dark-blue text-white" : ""
-                        }`}
-                      >
+                  <SidebarMenuItem
+                    key={item.id}
+                    className={`flex flex-row items-center  px-2 rounded-lg ${isActive ? "bg-app-dark-blue hover:bg-app-dark-blue/90 " : ""} `}
+                  >
+                    <SidebarMenuButton asChild>
+                      <a href={item.link} className="h-full w-full gap-4">
                         <img
                           src={`/${isActive ? item.white : item.img}.svg`}
                           alt={item.title}
                           className="w-4 h-4"
                         />
-                        <p
-                          className={`text-base ${
-                            isActive ? "text-white" : ""
-                          }`}
+                        <span
+                          className={`text-base ${isActive ? "text-white" : ""}`}
                         >
                           {item.title}
-                        </p>
-                      </div>
-                    </SidebarMenuItem>
-                  </Link>
+                        </span>
+                      </a>
+                    </SidebarMenuButton>
+                    {/* Display badge if there is a count greater than 0 */}
+
+                    {item.title === "Timesheets" &&
+                    data &&
+                    data.totalPendingTimesheets > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        {data.totalPendingTimesheets}
+                      </SidebarMenuBadge>
+                    ) : item.title === "Equipment" &&
+                      data &&
+                      data.equipmentAwaitingApproval > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        <span className="text-sm">
+                          {data.equipmentAwaitingApproval}
+                        </span>
+                      </SidebarMenuBadge>
+                    ) : item.title === "Jobsites" &&
+                      data &&
+                      data.jobsitesAwaitingApproval > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        <span className="text-sm">
+                          {data.jobsitesAwaitingApproval}
+                        </span>
+                      </SidebarMenuBadge>
+                    ) : item.title === "Forms" &&
+                      data &&
+                      data.pendingForms > 0 ? (
+                      <SidebarMenuBadge className="rounded-full justify-center items-center py-3 px-2 bg-app-red text-white">
+                        <span className="text-sm">{data.pendingForms}</span>
+                      </SidebarMenuBadge>
+                    ) : null}
+
+                    {/* Display badge if there is a count */}
+                  </SidebarMenuItem>
                 );
               })}
               {/* Button at the bottom, separated from menu */}
@@ -166,31 +163,11 @@ export default function LeftSidebar() {
                 {/* Profile section */}
                 <div className="w-full px-4 py-2 bg-white rounded-[10px] inline-flex justify-start items-center gap-3">
                   <div className="flex items-center w-11 h-11 justify-center">
-                    {profilePicture === null ? (
-                      // Loading spinner
-                      <svg
-                        className="animate-spin h-7 w-7 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                        ></path>
-                      </svg>
+                    {image === null ? (
+                      <Skeleton className="w-11 h-11 rounded-full bg-gray-200" />
                     ) : (
                       <img
-                        src={profilePicture || "/profileEmpty.svg"}
+                        src={image || "/profileEmpty.svg"}
                         alt="profile"
                         className="w-11 h-11 rounded-full object-cover bg-gray-100"
                         onError={(e) => {
@@ -201,10 +178,16 @@ export default function LeftSidebar() {
                   </div>
                   <div className="inline-flex flex-col  flex-1 justify-center items-start">
                     <div className="justify-start text-black text-xs font-bold ">
-                      {name.length >= 12 ? name.slice(0, 12) + "..." : name}
+                      {loading ? (
+                        <Skeleton className="h-2 w-24" />
+                      ) : name.length >= 12 ? (
+                        name.slice(0, 12) + "..."
+                      ) : (
+                        name
+                      )}
                     </div>
                     <div className="text-center justify-start text-neutral-400 text-[10px] font-normal ">
-                      {role}
+                      {loading ? <Skeleton className="h-2 w-16" /> : role}
                     </div>
                   </div>
                   <div className="flex justify-end items-center w-fit">
@@ -218,45 +201,42 @@ export default function LeftSidebar() {
                     </Button>
                   </div>
                 </div>
+
                 <div className="w-full flex px-4 py-2 justify-start">
-                  <Button
-                    variant={"ghost"}
-                    className="flex flex-row  items-center gap-2 rounded-lg"
-                    onClick={() => setShowModal(true)}
-                  >
-                    <LogOut className="w-2 h-1.5  " color={`black`} />
-                    <p className="text-[10px]">Log Out</p>
-                  </Button>
+                  <div className="flex flex-col w-full gap-2 items-start">
+                    <Button
+                      variant={"ghost"}
+                      className="flex flex-row w-full justify-center gap-2 rounded-lg relative border border-neutral-100"
+                      onClick={() => setShowNotificationModal(true)}
+                    >
+                      <BellPlus
+                        className="w-2 h-1.5 absolute left-2"
+                        color={`black`}
+                      />
+                      <p className="text-[10px]">Notification Settings</p>
+                    </Button>
+                    <Button
+                      variant={"ghost"}
+                      className="flex flex-row w-full gap-2 justify-center rounded-lg relative border border-neutral-100"
+                      onClick={() => setShowLogOutModal(true)}
+                    >
+                      <LogOut
+                        className="w-2 h-1.5 absolute left-2"
+                        color={`black`}
+                      />
+                      <p className="text-[10px]">Log Out</p>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
               <div className="w-full px-4 py-2 bg-white rounded-[10px] inline-flex justify-start items-center gap-3">
                 <div className="flex items-center w-11 h-11 justify-center">
-                  {profilePicture === null ? (
-                    // Loading spinner
-                    <svg
-                      className="animate-spin h-7 w-7 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
+                  {image === null ? (
+                    <Skeleton className="w-11 h-11 rounded-full bg-gray-200" />
                   ) : (
                     <img
-                      src={profilePicture || "/profileEmpty.svg"}
+                      src={image || "/profileEmpty.svg"}
                       alt="profile"
                       className="w-11 h-11 rounded-full object-cover bg-gray-100"
                       onError={(e) => {
@@ -265,12 +245,18 @@ export default function LeftSidebar() {
                     />
                   )}
                 </div>
-                <div className="inline-flex flex-col  flex-1 justify-center items-start">
+                <div className="inline-flex flex-col flex-1 justify-center items-start">
                   <div className="justify-start text-black text-xs font-bold ">
-                    {name.length >= 12 ? name.slice(0, 12) + "..." : name}
+                    {loading ? (
+                      <Skeleton className="h-2 w-24 mb-2" />
+                    ) : name.length >= 12 ? (
+                      name.slice(0, 12) + "..."
+                    ) : (
+                      name
+                    )}
                   </div>
                   <div className="text-center justify-start text-neutral-400 text-[10px] font-normal ">
-                    {role}
+                    {loading ? <Skeleton className="h-2 w-16" /> : role}
                   </div>
                 </div>
                 <div className="flex justify-end items-center w-fit">
@@ -289,7 +275,15 @@ export default function LeftSidebar() {
         </SidebarGroupContent>
 
         {/* Modal */}
-        {showModal && <SignOutModal open={showModal} setOpen={setShowModal} />}
+        {showLogOutModal && (
+          <SignOutModal open={showLogOutModal} setOpen={setShowLogOutModal} />
+        )}
+        {showNotificationModal && (
+          <NotificationModal
+            open={showNotificationModal}
+            setOpen={setShowNotificationModal}
+          />
+        )}
       </SidebarContent>
     </Sidebar>
   );

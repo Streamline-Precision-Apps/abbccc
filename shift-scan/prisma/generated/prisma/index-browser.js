@@ -482,7 +482,8 @@ exports.Prisma.UserScalarFieldEnum = {
   passwordResetTokenId: 'passwordResetTokenId',
   workTypeId: 'workTypeId',
   middleName: 'middleName',
-  secondLastName: 'secondLastName'
+  secondLastName: 'secondLastName',
+  lastSeen: 'lastSeen'
 };
 
 exports.Prisma.UserSettingsScalarFieldEnum = {
@@ -530,6 +531,43 @@ exports.Prisma.AddressScalarFieldEnum = {
   state: 'state',
   zipCode: 'zipCode',
   country: 'country'
+};
+
+exports.Prisma.PushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  endpoint: 'endpoint',
+  auth: 'auth',
+  p256dh: 'p256dh',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastSuccessAt: 'lastSuccessAt',
+  lastFailureAt: 'lastFailureAt',
+  failedCount: 'failedCount'
+};
+
+exports.Prisma.TopicSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  topic: 'topic',
+  inApp: 'inApp',
+  push: 'push',
+  frequency: 'frequency',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  topic: 'topic',
+  title: 'title',
+  body: 'body',
+  url: 'url',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  pushedAt: 'pushedAt',
+  pushAttempts: 'pushAttempts',
+  readAt: 'readAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -684,6 +722,12 @@ exports.Permission = exports.$Enums.Permission = {
   SUPERADMIN: 'SUPERADMIN'
 };
 
+exports.Frequency = exports.$Enums.Frequency = {
+  immediate: 'immediate',
+  hourly: 'hourly',
+  daily: 'daily'
+};
+
 exports.Prisma.ModelName = {
   Company: 'Company',
   CostCode: 'CostCode',
@@ -718,7 +762,10 @@ exports.Prisma.ModelName = {
   Contacts: 'Contacts',
   PasswordResetToken: 'PasswordResetToken',
   AccountSetupToken: 'AccountSetupToken',
-  Address: 'Address'
+  Address: 'Address',
+  PushSubscription: 'PushSubscription',
+  TopicSubscription: 'TopicSubscription',
+  Notification: 'Notification'
 };
 
 /**

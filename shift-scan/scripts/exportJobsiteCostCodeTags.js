@@ -1,4 +1,4 @@
-// const { PrismaClient } = require("@prisma/client");
+// import { PrismaClient } from "../../../../../prisma/generated/prisma/client";
 // const fs = require("fs");
 // const path = require("path");
 
