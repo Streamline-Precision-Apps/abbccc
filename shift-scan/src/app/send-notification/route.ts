@@ -5,12 +5,22 @@ import { NextRequest, NextResponse } from "next/server";
 import serviceAccountJson from "@/service_key.json";
 import prisma from "@/lib/prisma";
 
-const serviceAccount = serviceAccountJson as ServiceAccount;
-// Initialize Firebase Admin SDK
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+// Get the service account from environment variable
+let serviceAccount: ServiceAccount;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+  // Parse the environment variable string to get the service account
+  serviceAccount = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
+  ) as ServiceAccount;
+} else {
+  // Fallback to local import for development (if needed)
+  try {
+    serviceAccount = serviceAccountJson as ServiceAccount;
+  } catch (error) {
+    console.error("Failed to load Firebase service account:", error);
+    throw new Error("Firebase service account is not available");
+  }
 }
 
 export async function POST(request: NextRequest) {
