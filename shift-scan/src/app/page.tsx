@@ -8,17 +8,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import WidgetSection from "./(content)/widgetSection";
 import prisma from "@/lib/prisma";
-import {
-  setCurrentPageView,
-  setWorkRole,
-  setLaborType,
-  setJobSite,
-  setCostCode,
-  setPrevTimeSheet,
-  setEquipment,
-  setTruck,
-  setStartingMileage,
-} from "@/actions/cookieActions";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -93,63 +82,43 @@ export default async function Home() {
     },
   });
 
-  // If there's an incomplete timesheet, set cookies and redirect to dashboard
+  // If there's an incomplete timesheet, redirect to continue-timesheet page with URL parameters
   if (incompleteTimesheet) {
-    // Set the timesheet ID cookie
-    await setPrevTimeSheet(incompleteTimesheet.id);
-
-    // Set the current page view
-    await setCurrentPageView("dashboard");
-
-    // Set work role based on timesheet workType
-    const workRoleMapping: Record<string, string> = {
-      LABOR: "general",
-      MECHANIC: "mechanic",
-      TASCO: "tasco",
-      TRUCK_DRIVER: "truck",
-    };
-    await setWorkRole(
-      workRoleMapping[incompleteTimesheet.workType] || "general",
-    );
-
-    // Set jobsite information
-    await setJobSite({
-      code: incompleteTimesheet.Jobsite.qrId,
-      label: incompleteTimesheet.Jobsite.name,
+    const params = new URLSearchParams({
+      timesheetId: incompleteTimesheet.id.toString(),
+      workType: incompleteTimesheet.workType,
+      jobsiteCode: incompleteTimesheet.Jobsite.qrId,
+      jobsiteName: incompleteTimesheet.Jobsite.name,
+      costCode: incompleteTimesheet.CostCode.name,
     });
 
-    // Set cost code
-    await setCostCode(incompleteTimesheet.CostCode.name);
-
-    // Set labor type and additional cookies based on work type
-    if (
-      incompleteTimesheet.workType === "TASCO" &&
-      incompleteTimesheet.TascoLogs?.[0]
-    ) {
+    // Add TASCO-specific parameters
+    if (incompleteTimesheet.TascoLogs?.[0]) {
       const tascoLog = incompleteTimesheet.TascoLogs[0];
-      await setLaborType(tascoLog.laborType || "");
+      if (tascoLog.laborType) {
+        params.append('tascoLaborType', tascoLog.laborType);
+      }
       if (tascoLog.Equipment?.qrId) {
-        await setEquipment(tascoLog.Equipment.qrId);
+        params.append('tascoEquipmentQrId', tascoLog.Equipment.qrId);
       }
-    } else if (
-      incompleteTimesheet.workType === "TRUCK_DRIVER" &&
-      incompleteTimesheet.TruckingLogs?.[0]
-    ) {
-      const truckingLog = incompleteTimesheet.TruckingLogs[0];
-      await setLaborType(truckingLog.laborType || "truckDriver");
-      if (truckingLog.Equipment?.qrId) {
-        await setTruck(truckingLog.Equipment.qrId);
-      }
-      if (truckingLog.startingMileage) {
-        await setStartingMileage(truckingLog.startingMileage.toString());
-      }
-    } else {
-      // For LABOR and MECHANIC, set default labor type
-      await setLaborType("");
     }
 
-    // Redirect to dashboard
-    redirect("/dashboard");
+    // Add Trucking-specific parameters
+    if (incompleteTimesheet.TruckingLogs?.[0]) {
+      const truckingLog = incompleteTimesheet.TruckingLogs[0];
+      if (truckingLog.laborType) {
+        params.append('truckingLaborType', truckingLog.laborType);
+      }
+      if (truckingLog.Equipment?.qrId) {
+        params.append('truckingEquipmentQrId', truckingLog.Equipment.qrId);
+      }
+      if (truckingLog.startingMileage) {
+        params.append('truckingStartingMileage', truckingLog.startingMileage.toString());
+      }
+    }
+
+    // Redirect to the continue-timesheet page with parameters
+    redirect(`/continue-timesheet?${params.toString()}`);
   }
 
   // Get the current language from cookies
