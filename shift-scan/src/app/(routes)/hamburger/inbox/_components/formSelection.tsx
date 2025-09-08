@@ -19,7 +19,7 @@ type Form = {
   name: string;
 };
 type DraftForm = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   status: FormStatus;
@@ -37,7 +37,7 @@ enum FormStatus {
 }
 
 type SentContent = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   data: Record<string, string>;
@@ -215,14 +215,14 @@ export default function FormSelection({
           <Holds className="row-start-1 row-end-2 h-fit w-full ">
             <Contents width={"section"}>
               <Holds className="pb-1">
-                <Titles position={"left"} size={"h5"}>
+                <Titles position={"left"} size={"md"}>
                   {t("DraftsSubmissions")}
                 </Titles>
               </Holds>
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center "
+                className="text-center text-sm justify-center "
               >
                 <option value="all">{t("SelectAFilter")}</option>
                 <option value="draft">{t("Drafts")}</option>
@@ -246,7 +246,7 @@ export default function FormSelection({
                 {!sentContent ||
                   (sentContent.length === 0 && (
                     <Holds className="h-full">
-                      <Texts size={"p5"} className="italic text-gray-500">
+                      <Texts size={"md"} className="italic text-gray-500">
                         {selectedFilter === "denied"
                           ? t("NoDeniedFormsSubmitted")
                           : selectedFilter === "pending"
@@ -255,7 +255,7 @@ export default function FormSelection({
                               ? t("NoApprovedFormsSubmitted")
                               : t("NoFormsSubmitted")}
                       </Texts>
-                      <Texts size={"p7"} className="italic text-gray-500">
+                      <Texts size={"sm"} className="italic text-gray-500">
                         {t("GoToFormsSectionToCreateForms")}
                       </Texts>
                     </Holds>
@@ -280,7 +280,7 @@ export default function FormSelection({
                           <Buttons
                             ref={isLastItem ? lastItemRef : null}
                             shadow={"none"}
-                            className="py-1 relative"
+                            className="py-1.5 relative"
                             background={
                               form.status === "PENDING"
                                 ? "orange"
@@ -297,11 +297,11 @@ export default function FormSelection({
                             }}
                             disabled={isLoading}
                           >
-                            <Holds className="w-full h-full relative">
-                              <Titles size={"h3"}>{title}</Titles>
-                              <Titles size={"h7"}>
+                            <Holds className="w-full h-full  relative">
+                              <Titles size={"md"}>{title}</Titles>
+                              {/* <Titles size={"sm"}>
                                 {form.FormTemplate?.formType}
-                              </Titles>
+                              </Titles> */}
 
                               <Images
                                 titleImgAlt={"form Status"}
@@ -314,7 +314,7 @@ export default function FormSelection({
                                         ? "/statusDeniedFilled.svg"
                                         : "/formSent.svg"
                                 }
-                                className="absolute max-w-10 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
+                                className="absolute max-w-8 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
                               />
                             </Holds>
                           </Buttons>

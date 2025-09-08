@@ -1,6 +1,19 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, TableMeta } from "@tanstack/react-table";
 import { Timesheet } from "../useAllTimeSheetData";
 import { format } from "date-fns";
+
+// Define custom meta types for the table
+export interface TimesheetTableMeta {
+  searchTerm: string;
+}
+
+// This will allow TypeScript to recognize our custom meta properties
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData> {
+    searchTerm?: string;
+  }
+}
+
 import {
   Tooltip,
   TooltipTrigger,
@@ -9,21 +22,24 @@ import {
 import { highlight } from "../../../_pages/higlight";
 
 // Define the column configuration for the timesheet table
+// We'll now include the search term as part of the context
 export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      // Access search term from table meta
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className="text-xs text-center">
-          {highlight(row.original.id, "")}
+          {highlight(row.original.id.toString(), searchTerm)}
         </div>
       );
     },
   },
   {
     accessorKey: "date",
-    header: "Date",
+    header: "Date Worked",
     cell: ({ row }) => {
       return (
         <div className=" text-xs text-center">
@@ -54,12 +70,14 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "employeeName",
     header: "Employee Name",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      // Access search term from table meta
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className=" text-xs text-center">
           {highlight(
             `${row.original.User.firstName} ${row.original.User.lastName}`,
-            "",
+            searchTerm,
           )}
         </div>
       );
@@ -68,14 +86,15 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "jobsite",
     header: "Profit Id",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className=" text-xs text-center">
           {row.original.Jobsite ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
-                  {highlight(row.original.Jobsite.code, "")}
+                  {highlight(row.original.Jobsite.code, searchTerm)}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
@@ -92,14 +111,15 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   {
     accessorKey: "costCode",
     header: "Cost Code",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      const searchTerm = (table.options.meta?.searchTerm as string) || "";
       return (
         <div className=" text-xs text-center">
           {row.original.CostCode ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-pointer text-blue-600 underline underline-offset-2 decoration-solid">
-                  {highlight(row.original.CostCode.code, "")}
+                  {highlight(row.original.CostCode.code, searchTerm)}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
@@ -190,11 +210,18 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
   },
   {
     accessorKey: "updatedAt",
-    header: "Last modified",
+    header: "Changes",
     cell: ({ row }) => {
+      const ChangeLogs = row.original._count?.ChangeLogs || 0;
       return (
         <div className=" text-xs text-center">
-          {format(row.original.updatedAt, "MM/dd/yy")}
+          {ChangeLogs > 0 && (
+            <span
+              className={`font-semibold bg-red-500 rounded-full px-2 py-1 text-white`}
+            >
+              {ChangeLogs}
+            </span>
+          )}
         </div>
       );
     },

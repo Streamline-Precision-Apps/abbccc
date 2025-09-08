@@ -5,6 +5,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -20,7 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EquipmentSummary } from "../useEquipmentData";
 import { equipmentTableColumns } from "./equipmentTableColumns";
@@ -138,6 +140,15 @@ export function EquipmentDataTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    initialState: {
+      sorting: [
+        {
+          id: "code",
+          desc: false,
+        },
+      ],
+    },
     state: {
       pagination: {
         pageIndex: page - 1, // TanStack Table uses 0-indexed pages

@@ -11,7 +11,26 @@ import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
 import ReviewYourTeam from "./(components)/reviewYourTeam";
 import EditTeamTimeSheet from "./(components)/editTeamTimeSheet";
-import { TimesheetFilter, crewUsers } from "@/lib/types";
+
+type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
+
+type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};
 
 export type TimeSheet = {
   submitDate: string;

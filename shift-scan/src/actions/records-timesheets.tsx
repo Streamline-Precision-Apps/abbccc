@@ -2,9 +2,9 @@
 import { LoadType, WorkType, materialUnit } from "@/lib/enums";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { Prisma } from "../../prisma/generated/prisma/client";
 import { ApprovalStatus } from "@/lib/enums";
 import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
+import { Prisma } from "../../prisma/generated/prisma";
 
 export type TimesheetSubmission = {
   form: {
@@ -249,7 +249,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
   revalidateTag("timesheets");
 }
 
-export async function adminDeleteTimesheet(id: string) {
+export async function adminDeleteTimesheet(id: number) {
   try {
     await prisma.timeSheet.delete({
       where: { id },
@@ -263,7 +263,7 @@ export async function adminDeleteTimesheet(id: string) {
 }
 
 export async function adminUpdateTimesheetStatus(
-  id: string,
+  id: number,
   status: "APPROVED" | "REJECTED",
 ) {
   try {
@@ -291,15 +291,38 @@ export async function adminUpdateTimesheetStatus(
  * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
  */
 export async function adminUpdateTimesheet(formData: FormData) {
-  const id = formData.get("id") as string;
+  const id = Number(formData.get("id"));
   const dataJson = formData.get("data") as string;
+  const editorId = formData.get("editorId") as string;
+  const changesJson = formData.get("changes") as string;
+  const changeReason = formData.get("changeReason") as string;
+
   if (!id || !dataJson) {
     throw new Error("Timesheet ID and data are required for update.");
   }
+
+  if (!editorId) {
+    throw new Error("Editor ID is required for tracking changes.");
+  }
+
+  // Parse the changes and data
+  const changes = changesJson ? JSON.parse(changesJson) : {};
   const data: TimesheetData = JSON.parse(dataJson);
 
   await prisma.$transaction(async (tx) => {
-    // Update main timesheet fields
+    // First, record the changes if there are any
+    if (Object.keys(changes).length > 0) {
+      await tx.timeSheetChangeLog.create({
+        data: {
+          timeSheetId: id,
+          changedBy: editorId,
+          changes: changes,
+          changeReason: changeReason || "No reason provided",
+        },
+      });
+    }
+
+    // Then update main timesheet fields
     await tx.timeSheet.update({
       where: { id },
       data: {

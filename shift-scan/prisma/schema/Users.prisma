@@ -1,9 +1,7 @@
 model User {
   id                   String               @id @default(uuid())
   firstName            String
-  middleName           String?
   lastName             String
-  secondLastName       String?
   username             String               @unique
   email                String?              @unique
   password             String
@@ -22,8 +20,10 @@ model User {
   companyId            String
   passwordResetTokenId String?
   workTypeId           String?
+  middleName           String?
+  secondLastName       String?
+  lastSeen             DateTime? // user Activity for notifications
   accountSetupToken    AccountSetupToken?
-  Client               Client[]
   Contact              Contacts?
   Equipment            Equipment[]
   FormApprovals        FormApproval[]
@@ -32,9 +32,14 @@ model User {
   MaintenanceLogs      MaintenanceLog[]
   PasswordResetTokens  PasswordResetToken[]
   TimeSheets           TimeSheet[]
+  TimeSheetChanges     TimeSheetChangeLog[] @relation("ChangedByUser")
   Company              Company              @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
+  pushSubscriptions    PushSubscription[]
+  topicSubscriptions   TopicSubscription[]
+
+  notifications Notification[]
 
   @@unique([firstName, lastName, username])
   @@index([email])
@@ -49,8 +54,8 @@ model UserSettings {
   cameraAccess      Boolean  @default(false)
   locationAccess    Boolean  @default(false)
   cookiesAccess     Boolean  @default(false)
-  lastUpdated       DateTime @default(now())
   createdAt         DateTime @default(now())
+  lastUpdated       DateTime @default(now())
   User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

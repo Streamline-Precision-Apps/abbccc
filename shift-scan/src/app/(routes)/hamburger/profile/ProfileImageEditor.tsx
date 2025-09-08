@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Employee } from "@/lib/types";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -16,6 +15,16 @@ import { set } from "date-fns";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/(animations)/spinner";
 import { usePermissions } from "@/app/context/PermissionsContext";
+
+type Employee = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  signature?: string | null;
+  image: string | null;
+  imageUrl?: string | null;
+};
 
 export default function ProfileImageEditor({
   employee,

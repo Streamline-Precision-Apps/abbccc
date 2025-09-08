@@ -38,6 +38,7 @@ export default function RenderSearchPersonField({
   error,
   userOptions,
   formData,
+  disabled,
 }: {
   field: {
     id: string;
@@ -71,6 +72,7 @@ export default function RenderSearchPersonField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   if (field.multiple) {
     const selectedPeople: Person[] = Array.isArray(formData[field.id])
@@ -121,6 +123,7 @@ export default function RenderSearchPersonField({
           }}
           placeholder="Select people..."
           filterKeys={["value", "label"]}
+          disabled={disabled}
         />
         {/* Display selected people as tags */}
         {selectedPeople.length > 0 && (

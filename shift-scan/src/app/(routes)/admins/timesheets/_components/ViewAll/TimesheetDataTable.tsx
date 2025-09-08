@@ -36,15 +36,15 @@ interface TimesheetDataTableProps {
   pageSizeOptions: number[];
   onPageSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onPageChange: (page: number) => void;
-  onDeleteClick?: (id: string) => void;
-  deletingId?: string | null;
+  onDeleteClick?: (id: number) => void;
+  deletingId?: number | null;
   isDeleting?: boolean;
-  onEditClick?: (id: string) => void;
-  editingId?: string | null;
+  onEditClick?: (id: number) => void;
+  editingId?: number | null;
   isEditing?: boolean;
   showPendingOnly: boolean;
-  onApprovalAction?: (id: string, action: "APPROVED" | "REJECTED") => void;
-  statusLoading?: Record<string, "APPROVED" | "REJECTED" | undefined>;
+  onApprovalAction?: (id: number, action: "APPROVED" | "REJECTED") => void;
+  statusLoading?: Record<number, "APPROVED" | "REJECTED" | undefined>;
   searchTerm: string;
   setPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
@@ -148,6 +148,9 @@ export function TimesheetDataTable({
     },
     manualPagination: true, // Tell TanStack Table we're handling pagination manually
     pageCount: totalPages, // Important for proper page count display
+    meta: {
+      searchTerm, // Pass the search term to the table meta
+    },
     onPaginationChange: (updater) => {
       const newState =
         typeof updater === "function"

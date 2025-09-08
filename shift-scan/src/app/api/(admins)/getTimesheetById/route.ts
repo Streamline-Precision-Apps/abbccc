@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     console.error("Error during authentication:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -31,13 +31,13 @@ export async function GET(req: Request) {
   if (!id) {
     return NextResponse.json(
       { error: "Missing timesheet id" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   try {
     const timesheet = await prisma.timeSheet.findUnique({
-      where: { id },
+      where: { id: Number(id) },
       select: {
         id: true,
         date: true,
@@ -161,7 +161,7 @@ export async function GET(req: Request) {
     if (!timesheet) {
       return NextResponse.json(
         { error: "Timesheet not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     return NextResponse.json(timesheet);
@@ -170,7 +170,7 @@ export async function GET(req: Request) {
     console.error("Error fetching timesheet by id:", error);
     return NextResponse.json(
       { error: "Failed to fetch timesheet" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

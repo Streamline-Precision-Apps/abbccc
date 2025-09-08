@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
-import { PrismaClient } from "@prisma/client";
+
 import { auth } from "@/auth";
+import { PrismaClient } from "../../../../../../prisma/generated/prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authenticate the user
@@ -23,7 +24,7 @@ export async function GET(
     if (!formId) {
       return NextResponse.json(
         { error: "Invalid or missing form ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

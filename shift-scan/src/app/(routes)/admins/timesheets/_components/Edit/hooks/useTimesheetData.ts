@@ -6,9 +6,8 @@
  */
 import { useEffect, useState } from "react";
 import { ApprovalStatus } from "@/lib/enums";
-
 export interface EditTimesheetModalProps {
-  timesheetId: string;
+  timesheetId: number;
   isOpen: boolean;
   onClose: () => void;
   onUpdated?: () => void; // Optional callback for parent to refetch
@@ -106,7 +105,7 @@ export type TascoNestedTypeMap = {
 };
 
 export interface TimesheetData {
-  id: string;
+  id: number;
   date: Date | string;
   User: { id: string; firstName: string; lastName: string };
   Jobsite: { id: string; name: string };
@@ -175,17 +174,17 @@ export function useTimesheetData(form: TimesheetData | null) {
       const equipment = await equipmentRes.json();
       const filteredJobsites = jobsite
         .filter(
-          (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED"
+          (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED",
         )
         .map((j: { id: string; name: string }) => ({ id: j.id, name: j.name }));
       setUsers(users);
       setJobsites(filteredJobsites);
 
       const filteredTrucks = equipment.filter(
-        (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK"
+        (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
       );
       const filteredTrailers = equipment.filter(
-        (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER"
+        (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER",
       );
 
       setTrucks(filteredTrucks as TruckOption[]);
@@ -204,7 +203,7 @@ export function useTimesheetData(form: TimesheetData | null) {
       }
       try {
         const res = await fetch(
-          `/api/getAllCostCodesByJobSites?jobsiteId=${form.Jobsite.id}`
+          `/api/getAllCostCodesByJobSites?jobsiteId=${form.Jobsite.id}`,
         );
         if (!res.ok) {
           setCostCodes([]);

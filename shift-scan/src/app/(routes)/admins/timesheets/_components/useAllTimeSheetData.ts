@@ -7,12 +7,14 @@ import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
+import { EXPORT_FIELDS } from "@/app/(routes)/admins/timesheets/_components/Export/ExportModal";
+
 /**
  * Timesheet domain entity.
  * @property equipmentUsages - Array of equipment usage records for this timesheet.
  */
 export type Timesheet = {
-  id: string;
+  id: number;
   date: Date | string;
   User: {
     id: string;
@@ -56,6 +58,13 @@ export type Timesheet = {
       milesAtFueling: number | null;
     }[];
   }[];
+  TascoLogs: {
+    shiftType: string;
+    LoadQuantity: number | null;
+  }[];
+  _count?: {
+    ChangeLogs: number;
+  };
 };
 
 export type timesheetPending = {
@@ -78,11 +87,11 @@ export default function AdminTimesheets() {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
     null,
   );
@@ -199,7 +208,7 @@ export default function AdminTimesheets() {
     // Each term must match at least one field
     const matches = terms.every(
       (term) =>
-        id.toLowerCase().includes(term) ||
+        id.toString().includes(term) ||
         firstName.toLowerCase().includes(term) ||
         lastName.toLowerCase().includes(term) ||
         jobsite.toLowerCase().includes(term) ||
@@ -216,7 +225,7 @@ export default function AdminTimesheets() {
 
   // Approve or deny a timesheet (no modal)
   const handleApprovalAction = async (
-    id: string,
+    id: number,
     action: "APPROVED" | "REJECTED",
   ) => {
     setStatusLoading((prev) => ({ ...prev, [id]: action }));
@@ -245,7 +254,7 @@ export default function AdminTimesheets() {
     }
   };
 
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: number) => {
     setDeletingId(id);
     setIsDeleting(true);
   };
@@ -302,7 +311,7 @@ export default function AdminTimesheets() {
       if (!d) return "";
       const dateObj = typeof d === "string" ? new Date(d) : d;
       if (isNaN(dateObj.getTime())) return "";
-      return format(dateObj, "MM-dd-yyyy");
+      return format(dateObj, "MM/dd/yyyy");
     };
     const formatTimeVal = (d: Date | string | undefined | null) => {
       if (!d) return "";
@@ -315,13 +324,12 @@ export default function AdminTimesheets() {
      * Field mapping for export. Includes EquipmentId and EquipmentUsage aggregation.
      */
     const allFields: Record<string, (ts: Timesheet) => string> = {
-      Id: (ts) => ts.id,
-      WorkType: (ts) => String(ts.workType),
+      Id: (ts) => String(ts.id),
       Date: (ts) => formatDateVal(ts.date),
       Employee: (ts) =>
         ts.User ? `${ts.User.firstName} ${ts.User.lastName}` : "",
-      Jobsite: (ts) => ts.Jobsite?.code || "",
-      CostCode: (ts) => ts.CostCode?.code || "",
+      Jobsite: (ts) => `'${(ts.Jobsite?.code || "").trim()}'`, // Force text format to preserve leading zeros
+      CostCode: (ts) => `'${(ts.CostCode?.code || "").trim()}'`, // Force text format to preserve leading zeros
       NU: () => "NU",
       FP: () => "FP",
       Start: (ts) => formatTimeVal(ts.startTime),
@@ -331,11 +339,8 @@ export default function AdminTimesheets() {
         const start = new Date(ts.startTime);
         const end = new Date(ts.endTime);
         const durationMs = end.getTime() - start.getTime();
-        const hours = Math.floor(durationMs / (1000 * 60 * 60));
-        const minutes = Math.floor(
-          (durationMs % (1000 * 60 * 60)) / (1000 * 60),
-        );
-        return `${hours} hr ${minutes} min`;
+        const hours = durationMs / (1000 * 60 * 60);
+        return hours.toFixed(1); // Return just the decimal number
       },
       Comment: (ts) => ts.comment,
       EquipmentId: (ts) =>
@@ -356,13 +361,9 @@ export default function AdminTimesheets() {
             }
           }
         });
-        if (totalMs <= 0) return "0 min";
-        const totalMinutes = Math.round(totalMs / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60);
-        const mins = totalMinutes % 60;
-        if (hours > 0 && mins > 0) return `${hours} hr ${mins} min`;
-        if (hours > 0) return `${hours} hr`;
-        return `${mins} min`;
+        if (totalMs <= 0) return "0.0";
+        const hours = totalMs / (1000 * 60 * 60);
+        return hours.toFixed(1); // Return decimal hours to nearest tenth
       },
       TruckNumber: (ts) =>
         ts.TruckingLogs?.[0]?.truckNumber
@@ -380,6 +381,17 @@ export default function AdminTimesheets() {
         ts.TruckingLogs?.[0]?.RefuelLogs?.[0]?.milesAtFueling != null
           ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
           : "",
+      TascoABCDELoads: (ts) =>
+        ts.TascoLogs?.filter(
+          (log) =>
+            log.shiftType === "ABCD Shift" || log.shiftType === "E Shift",
+        )
+          .map((log) => log.LoadQuantity)
+          .join(", ") || "",
+      TascoFLoads: (ts) =>
+        ts.TascoLogs?.filter((log) => log.shiftType === "F Shift")
+          .map((log) => log.LoadQuantity)
+          .join(", ") || "",
     };
 
     // Remove 'Status' from selectedFields if present
@@ -396,14 +408,25 @@ export default function AdminTimesheets() {
       return row;
     });
     if (exportFormat === "csv") {
-      const header = filteredFields.join(",");
+      // Get the field labels mapping from the ExportModal's EXPORT_FIELDS
+      const fieldLabels = Object.fromEntries(
+        EXPORT_FIELDS.map((field) => [field.key, field.label]),
+      );
+
+      // Use labels in header instead of keys
+      const header = filteredFields.map((f) => fieldLabels[f] || f).join(",");
       const rows = exportData
         .map((row) =>
           filteredFields
-            .map((f) => `"${String(row[f] ?? "").replace(/"/g, '""')}"`)
+            .map((f) => {
+              const value = String(row[f] ?? "");
+              // Always use text qualifier to preserve formatting
+              return `"${value.replace(/"/g, '""')}"`;
+            })
             .join(","),
         )
         .join("\n");
+
       const csv = `${header}\n${rows}`;
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.csv`);

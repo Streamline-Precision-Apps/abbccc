@@ -10,6 +10,7 @@ export default function RenderRadioField({
   touchedFields,
   error,
   options,
+  disabled,
 }: {
   field: {
     id: string;
@@ -25,6 +26,7 @@ export default function RenderRadioField({
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -37,6 +39,7 @@ export default function RenderRadioField({
         onValueChange={(val) => handleFieldChange(field.id, val)}
         onBlur={() => handleFieldTouch(field.id)}
         className="flex flex-row gap-2"
+        disabled={disabled}
       >
         {options.map((opt) => (
           <Label

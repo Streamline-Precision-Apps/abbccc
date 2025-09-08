@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { PayPeriodTimesheets } from "@/lib/types";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
+
+type PayPeriodTimesheets = {
+  startTime: Date; // Correct field name
+  endTime: Date;
+};
 
 const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
@@ -15,11 +19,11 @@ const PayPeriodSheetsArraySchema = z.array(PayPeriodTimesheetsSchema);
 
 export const usePayPeriodData = (
   setPayPeriodTimeSheets: (
-    payPeriodTimeSheets: PayPeriodTimesheets[] | null
-  ) => void
+    payPeriodTimeSheets: PayPeriodTimesheets[] | null,
+  ) => void,
 ) => {
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
-    []
+    [],
   );
   const [pageView, setPageView] = useState("");
   const [loading, setLoading] = useState(true);
@@ -45,7 +49,7 @@ export const usePayPeriodData = (
 
         // Fetch page view cookie value
         const pageViewResponse = await fetch(
-          "/api/cookies?method=get&name=currentPageView"
+          "/api/cookies?method=get&name=currentPageView",
         );
         const pageViewData = await pageViewResponse.json();
         setPageView(pageViewData || "");
