@@ -6,7 +6,6 @@ import Spinner from "@/components/(animations)/spinner";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageHeaderContainer } from "./_pages/PageHeaderContainer";
-
 type DashboardData = {
   clockedInUsers: number;
   totalPendingTimesheets: number;

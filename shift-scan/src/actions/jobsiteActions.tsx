@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
-import { triggerItemApprovalRequested } from "@/lib/notifications";
 
 export async function getJobsiteForms() {
   try {
@@ -140,12 +139,7 @@ export async function createJobsite(formData: FormData) {
         });
       }
       if (createdJobsite) {
-        await triggerItemApprovalRequested({
-          itemId: createdJobsite.id,
-          requesterName: submitterName,
-          message: `New Item created and pending approval`,
-          itemType: "jobsites",
-        });
+        //todo notification trigger
       }
 
       revalidatePath("/dashboard/qr-generator");

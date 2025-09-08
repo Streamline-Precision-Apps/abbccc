@@ -1,6 +1,5 @@
 "use server";
 
-import { triggerTimecardChanged } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
 
@@ -55,12 +54,7 @@ export async function updateTimesheetServerAction(formData: FormData) {
       });
 
       if (updated) {
-        await triggerTimecardChanged({
-          timesheetId: updated.id.toString(),
-          changerName: editorId,
-          message: `Timecard updated by ${editorId}`,
-          changeType: "updated",
-        });
+        // trigger time sheet change notification
       }
 
       return updated;
