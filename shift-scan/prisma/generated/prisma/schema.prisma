@@ -65,6 +65,7 @@ model DocumentTag {
 }
 
 model Equipment {
+<<<<<<< HEAD
   id                String         @id @default(uuid())
   qrId              String         @unique
   code              String?
@@ -107,12 +108,71 @@ model Equipment {
   UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
   UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
+=======
+  id                     String                 @id @default(uuid())
+  qrId                   String                 @unique
+  name                   String
+  description            String?
+  creationReason         String?
+  equipmentTag           EquipmentTags          @default(EQUIPMENT)
+  state                  EquipmentState         @default(AVAILABLE)
+  isDisabledByAdmin      Boolean                @default(false)
+  approvalStatus         ApprovalStatus         @default(PENDING)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  overWeight             Boolean?               @default(false)
+  currentWeight          Float?                 @default(0)
+  createdById            String?
+  createdVia             CreatedVia             @default(MOBILE)
+  acquiredDate           DateTime?
+  code                   String?
+  color                  String?
+  licensePlate           String?
+  licenseState           String?
+  make                   String?
+  memo                   String?
+  model                  String?
+  ownershipType          OwnershipType?
+  registrationExpiration DateTime?
+  serialNumber           String?
+  year                   String?
+  acquiredCondition      Condition?
+  EmployeeEquipmentLogs  EmployeeEquipmentLog[]
+  createdBy              User?                  @relation(fields: [createdById], references: [id])
+  EquipmentHauled        EquipmentHauled[]
+  Maintenances           Maintenance[]
+  TascoLogs              TascoLog[]
+  HauledInLogs           TruckingLog[]          @relation("HauledEquipment")
+  UsedAsTrailer          TruckingLog[]          @relation("TrailerEquipment")
+  UsedAsTruck            TruckingLog[]          @relation("TruckEquipment")
+  DocumentTags           DocumentTag[]          @relation("DocumentTagToEquipment")
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
   @@index([approvalStatus])
 }
 
+<<<<<<< HEAD
+=======
+model EmployeeEquipmentLog {
+  id            String       @id @default(uuid())
+  equipmentId   String?
+  maintenanceId String?
+  startTime     DateTime     @default(now())
+  endTime       DateTime?
+  comment       String?
+  timeSheetId   Int
+  rental        Boolean      @default(false)
+  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
+  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  RefuelLog     RefuelLog?
+
+  @@index([timeSheetId, equipmentId, maintenanceId])
+}
+
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 enum Condition {
   NEW
   USED
@@ -138,6 +198,7 @@ enum OwnershipType {
   LEASED
 }
 
+<<<<<<< HEAD
 // purpose is to show all employee interactions with the equipment
 model EmployeeEquipmentLog {
   id            String    @id @default(uuid())
@@ -157,6 +218,8 @@ model EmployeeEquipmentLog {
   @@index([timeSheetId, equipmentId, maintenanceId])
 }
 
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 model FormTemplate {
   id                  String               @id @default(uuid())
   companyId           String
@@ -205,7 +268,10 @@ model FormFieldOption {
 }
 
 model FormSubmission {
+<<<<<<< HEAD
   id             Int            @id @default(autoincrement())
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   title          String?
   formTemplateId String
   userId         String
@@ -215,6 +281,10 @@ model FormSubmission {
   updatedAt      DateTime       @updatedAt
   submittedAt    DateTime?
   status         FormStatus     @default(DRAFT)
+<<<<<<< HEAD
+=======
+  id             Int            @id @default(autoincrement())
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   Approvals      FormApproval[]
   FormTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
   User           User           @relation(fields: [userId], references: [id])
@@ -222,12 +292,19 @@ model FormSubmission {
 
 model FormApproval {
   id               String         @id @default(uuid())
+<<<<<<< HEAD
   formSubmissionId Int
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   signedBy         String?
   submittedAt      DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   signature        String?
   comment          String?
+<<<<<<< HEAD
+=======
+  formSubmissionId Int
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   Approver         User?          @relation(fields: [signedBy], references: [id])
 }
@@ -260,7 +337,10 @@ model Jobsite {
 }
 
 model Report {
+<<<<<<< HEAD
   id          Int              @id
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   name        String           @unique
   description String
   companyId   String
@@ -270,13 +350,20 @@ model Report {
   parameters  Json?
   visibility  ReportVisibility @default(PRIVATE)
   tags        String[]
+<<<<<<< HEAD
+=======
+  id          Int              @id
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   Company     Company          @relation(fields: [companyId], references: [id])
   ReportRuns  ReportRun[]
 }
 
 model ReportRun {
   id             String       @id @default(uuid())
+<<<<<<< HEAD
   reportId       Int
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   runAt          DateTime     @default(now())
   status         ReportStatus
   results        Json?
@@ -286,11 +373,18 @@ model ReportRun {
   customParams   Json?
   exportFormats  String[]
   lastExportedAt DateTime?
+<<<<<<< HEAD
+=======
+  reportId       Int
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   Report         Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }
 
 model TimeSheet {
+<<<<<<< HEAD
   id                    Int                    @id @default(autoincrement())
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   date                  DateTime
   userId                String
   jobsiteId             String
@@ -316,24 +410,40 @@ model TimeSheet {
   withinFenceIn         Boolean?
   withinFenceOut        Boolean?
   wasInjured            Boolean?               @default(false)
+<<<<<<< HEAD
+=======
+  id                    Int                    @id @default(autoincrement())
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+<<<<<<< HEAD
   TruckingLogs          TruckingLog[]
   ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
+=======
+  ChangeLogs            TimeSheetChangeLog[]
+  TruckingLogs          TruckingLog[]
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 }
 
 model MaintenanceLog {
   id            String      @id @default(uuid())
+<<<<<<< HEAD
   timeSheetId   Int
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   userId        String
   maintenanceId String
   startTime     DateTime
   endTime       DateTime?
   comment       String?
+<<<<<<< HEAD
+=======
+  timeSheetId   Int
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   Maintenance   Maintenance @relation(fields: [maintenanceId], references: [id])
   TimeSheet     TimeSheet   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
   User          User        @relation(fields: [userId], references: [id])
@@ -364,13 +474,20 @@ model Maintenance {
 
 model TascoLog {
   id                 String              @id @default(uuid())
+<<<<<<< HEAD
   timeSheetId        Int
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   shiftType          String
   equipmentId        String?
   laborType          String?
   materialType       String?
   LoadQuantity       Int                 @default(0)
   screenType         LoadType?
+<<<<<<< HEAD
+=======
+  timeSheetId        Int
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   RefuelLogs         RefuelLog[]
   Equipment          Equipment?          @relation(fields: [equipmentId], references: [id])
   TascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [name], onDelete: Cascade)
@@ -385,7 +502,10 @@ model TascoMaterialTypes {
 
 model TruckingLog {
   id              String            @id @default(uuid())
+<<<<<<< HEAD
   timeSheetId     Int
+=======
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   laborType       String
   taskName        String?
   equipmentId     String?
@@ -394,6 +514,10 @@ model TruckingLog {
   truckLaborLogId String?
   trailerNumber   String?
   truckNumber     String?
+<<<<<<< HEAD
+=======
+  timeSheetId     Int
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   EquipmentHauled EquipmentHauled[]
   Materials       Material[]
   RefuelLogs      RefuelLog[]
@@ -450,6 +574,7 @@ model EquipmentHauled {
   TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
 
+<<<<<<< HEAD
 enum materialUnit {
   TONS
   YARDS
@@ -467,12 +592,31 @@ model TimeSheetChangeLog {
   // Relations
   TimeSheet TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
   User      User      @relation("ChangedByUser", fields: [changedBy], references: [id])
+=======
+model TimeSheetChangeLog {
+  id           String    @id @default(uuid())
+  timeSheetId  Int
+  changedBy    String
+  changedAt    DateTime  @default(now())
+  changeReason String?
+  changes      Json
+  User         User      @relation("ChangedByUser", fields: [changedBy], references: [id])
+  TimeSheet    TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 
   @@index([timeSheetId])
   @@index([changedBy])
   @@index([changedAt])
 }
 
+<<<<<<< HEAD
+=======
+enum materialUnit {
+  TONS
+  YARDS
+}
+
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 model User {
   id                   String               @id @default(uuid())
   firstName            String
@@ -497,7 +641,11 @@ model User {
   workTypeId           String?
   middleName           String?
   secondLastName       String?
+<<<<<<< HEAD
   lastSeen             DateTime? // user Activity for notifications
+=======
+  lastSeen             DateTime?
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   accountSetupToken    AccountSetupToken?
   Contact              Contacts?
   Equipment            Equipment[]
@@ -505,6 +653,7 @@ model User {
   FormSubmissions      FormSubmission[]
   Jobsite              Jobsite[]
   MaintenanceLogs      MaintenanceLog[]
+<<<<<<< HEAD
   PasswordResetTokens  PasswordResetToken[]
   TimeSheets           TimeSheet[]
   TimeSheetChanges     TimeSheetChangeLog[] @relation("ChangedByUser")
@@ -513,6 +662,17 @@ model User {
   Crews                Crew[]               @relation("CrewToUser")
   topicSubscriptions   TopicSubscription[]
   FCMToken             FCMToken[]
+=======
+  notifications        Notification[]
+  PasswordResetTokens  PasswordResetToken[]
+  pushSubscriptions    PushSubscription[]
+  TimeSheets           TimeSheet[]
+  TimeSheetChanges     TimeSheetChangeLog[] @relation("ChangedByUser")
+  topicSubscriptions   TopicSubscription[]
+  Company              Company              @relation(fields: [companyId], references: [id])
+  UserSettings         UserSettings?
+  Crews                Crew[]               @relation("CrewToUser")
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 
   @@unique([firstName, lastName, username])
   @@index([email])
@@ -688,6 +848,7 @@ enum CreatedVia {
   MOBILE
 }
 
+<<<<<<< HEAD
 model FCMToken {
   id         String    @id @default(cuid())
   token      String    @unique // The FCM registration token provided by the client SDK
@@ -709,12 +870,40 @@ model TopicSubscription {
   user      User     @relation(fields: [userId], references: [id])
   topic     String // e.g., "timecardSubmissions"
   createdAt DateTime @default(now())
+=======
+model PushSubscription {
+  id            String    @id @default(cuid())
+  endpoint      String    @unique
+  auth          String
+  p256dh        String
+  userId        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastSuccessAt DateTime?
+  lastFailureAt DateTime?
+  failedCount   Int       @default(0)
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model TopicSubscription {
+  id        String    @id @default(cuid())
+  topic     String
+  createdAt DateTime  @default(now())
+  inApp     Boolean   @default(true)
+  push      Boolean   @default(true)
+  userId    String
+  frequency Frequency @default(immediate)
+  user      User      @relation(fields: [userId], references: [id])
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 
   @@unique([userId, topic])
   @@index([topic])
 }
 
 model Notification {
+<<<<<<< HEAD
   id        String   @id @default(cuid())
   topic     String
   title     String
@@ -733,6 +922,31 @@ model Notification {
   @@index([topic, createdAt])
 }
 
+=======
+  id           String    @id @default(cuid())
+  userId       String
+  topic        String
+  title        String
+  body         String?
+  url          String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  pushedAt     DateTime?
+  pushAttempts Int       @default(0)
+  readAt       DateTime?
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([topic, createdAt])
+}
+
+enum Frequency {
+  immediate
+  hourly
+  daily
+}
+
+>>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
