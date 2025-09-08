@@ -72,7 +72,7 @@ export async function createJobsite(formData: FormData) {
         throw new Error("A jobsite with the same name already exists.");
       }
 
-      const data: Prisma.JobsiteCreate = {
+      const data: Prisma.JobsiteCreateInput = {
         name,
         code,
         qrId,

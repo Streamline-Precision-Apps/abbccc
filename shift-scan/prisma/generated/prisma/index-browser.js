@@ -174,7 +174,6 @@ exports.Prisma.DocumentTagScalarFieldEnum = {
 exports.Prisma.EquipmentScalarFieldEnum = {
   id: 'id',
   qrId: 'qrId',
-<<<<<<< HEAD
   code: 'code',
   name: 'name',
   description: 'description',
@@ -201,51 +200,16 @@ exports.Prisma.EquipmentScalarFieldEnum = {
   updatedAt: 'updatedAt',
   createdVia: 'createdVia',
   createdById: 'createdById'
-=======
-  name: 'name',
-  description: 'description',
-  creationReason: 'creationReason',
-  equipmentTag: 'equipmentTag',
-  state: 'state',
-  isDisabledByAdmin: 'isDisabledByAdmin',
-  approvalStatus: 'approvalStatus',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  overWeight: 'overWeight',
-  currentWeight: 'currentWeight',
-  createdById: 'createdById',
-  createdVia: 'createdVia',
-  acquiredDate: 'acquiredDate',
-  code: 'code',
-  color: 'color',
-  licensePlate: 'licensePlate',
-  licenseState: 'licenseState',
-  make: 'make',
-  memo: 'memo',
-  model: 'model',
-  ownershipType: 'ownershipType',
-  registrationExpiration: 'registrationExpiration',
-  serialNumber: 'serialNumber',
-  year: 'year',
-  acquiredCondition: 'acquiredCondition'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.EmployeeEquipmentLogScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   timeSheetId: 'timeSheetId',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   equipmentId: 'equipmentId',
   maintenanceId: 'maintenanceId',
   startTime: 'startTime',
   endTime: 'endTime',
   comment: 'comment',
-<<<<<<< HEAD
-=======
-  timeSheetId: 'timeSheetId',
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   rental: 'rental'
 };
 
@@ -289,10 +253,7 @@ exports.Prisma.FormFieldOptionScalarFieldEnum = {
 };
 
 exports.Prisma.FormSubmissionScalarFieldEnum = {
-<<<<<<< HEAD
   id: 'id',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   title: 'title',
   formTemplateId: 'formTemplateId',
   userId: 'userId',
@@ -301,30 +262,17 @@ exports.Prisma.FormSubmissionScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   submittedAt: 'submittedAt',
-<<<<<<< HEAD
   status: 'status'
-=======
-  status: 'status',
-  id: 'id'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.FormApprovalScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   formSubmissionId: 'formSubmissionId',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   signedBy: 'signedBy',
   submittedAt: 'submittedAt',
   updatedAt: 'updatedAt',
   signature: 'signature',
-<<<<<<< HEAD
   comment: 'comment'
-=======
-  comment: 'comment',
-  formSubmissionId: 'formSubmissionId'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.JobsiteScalarFieldEnum = {
@@ -349,10 +297,7 @@ exports.Prisma.JobsiteScalarFieldEnum = {
 };
 
 exports.Prisma.ReportScalarFieldEnum = {
-<<<<<<< HEAD
   id: 'id',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   name: 'name',
   description: 'description',
   companyId: 'companyId',
@@ -361,20 +306,12 @@ exports.Prisma.ReportScalarFieldEnum = {
   updatedAt: 'updatedAt',
   parameters: 'parameters',
   visibility: 'visibility',
-<<<<<<< HEAD
   tags: 'tags'
-=======
-  tags: 'tags',
-  id: 'id'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.ReportRunScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   reportId: 'reportId',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   runAt: 'runAt',
   status: 'status',
   results: 'results',
@@ -383,19 +320,11 @@ exports.Prisma.ReportRunScalarFieldEnum = {
   endDate: 'endDate',
   customParams: 'customParams',
   exportFormats: 'exportFormats',
-<<<<<<< HEAD
   lastExportedAt: 'lastExportedAt'
 };
 
 exports.Prisma.TimeSheetScalarFieldEnum = {
   id: 'id',
-=======
-  lastExportedAt: 'lastExportedAt',
-  reportId: 'reportId'
-};
-
-exports.Prisma.TimeSheetScalarFieldEnum = {
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   date: 'date',
   userId: 'userId',
   jobsiteId: 'jobsiteId',
@@ -420,30 +349,17 @@ exports.Prisma.TimeSheetScalarFieldEnum = {
   clockOutLng: 'clockOutLng',
   withinFenceIn: 'withinFenceIn',
   withinFenceOut: 'withinFenceOut',
-<<<<<<< HEAD
   wasInjured: 'wasInjured'
-=======
-  wasInjured: 'wasInjured',
-  id: 'id'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.MaintenanceLogScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   timeSheetId: 'timeSheetId',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   userId: 'userId',
   maintenanceId: 'maintenanceId',
   startTime: 'startTime',
   endTime: 'endTime',
-<<<<<<< HEAD
   comment: 'comment'
-=======
-  comment: 'comment',
-  timeSheetId: 'timeSheetId'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.MaintenanceScalarFieldEnum = {
@@ -468,21 +384,13 @@ exports.Prisma.MaintenanceScalarFieldEnum = {
 
 exports.Prisma.TascoLogScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   timeSheetId: 'timeSheetId',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   shiftType: 'shiftType',
   equipmentId: 'equipmentId',
   laborType: 'laborType',
   materialType: 'materialType',
   LoadQuantity: 'LoadQuantity',
-<<<<<<< HEAD
   screenType: 'screenType'
-=======
-  screenType: 'screenType',
-  timeSheetId: 'timeSheetId'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.TascoMaterialTypesScalarFieldEnum = {
@@ -492,10 +400,7 @@ exports.Prisma.TascoMaterialTypesScalarFieldEnum = {
 
 exports.Prisma.TruckingLogScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   timeSheetId: 'timeSheetId',
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   laborType: 'laborType',
   taskName: 'taskName',
   equipmentId: 'equipmentId',
@@ -503,12 +408,7 @@ exports.Prisma.TruckingLogScalarFieldEnum = {
   endingMileage: 'endingMileage',
   truckLaborLogId: 'truckLaborLogId',
   trailerNumber: 'trailerNumber',
-<<<<<<< HEAD
   truckNumber: 'truckNumber'
-=======
-  truckNumber: 'truckNumber',
-  timeSheetId: 'timeSheetId'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.StateMileageScalarFieldEnum = {
@@ -555,13 +455,8 @@ exports.Prisma.TimeSheetChangeLogScalarFieldEnum = {
   timeSheetId: 'timeSheetId',
   changedBy: 'changedBy',
   changedAt: 'changedAt',
-<<<<<<< HEAD
   changes: 'changes',
   changeReason: 'changeReason'
-=======
-  changeReason: 'changeReason',
-  changes: 'changes'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -638,7 +533,6 @@ exports.Prisma.AddressScalarFieldEnum = {
   country: 'country'
 };
 
-<<<<<<< HEAD
 exports.Prisma.FCMTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -648,43 +542,17 @@ exports.Prisma.FCMTokenScalarFieldEnum = {
   isValid: 'isValid',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-=======
-exports.Prisma.PushSubscriptionScalarFieldEnum = {
-  id: 'id',
-  endpoint: 'endpoint',
-  auth: 'auth',
-  p256dh: 'p256dh',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  lastSuccessAt: 'lastSuccessAt',
-  lastFailureAt: 'lastFailureAt',
-  failedCount: 'failedCount'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.TopicSubscriptionScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
   userId: 'userId',
   topic: 'topic',
   createdAt: 'createdAt'
-=======
-  topic: 'topic',
-  createdAt: 'createdAt',
-  inApp: 'inApp',
-  push: 'push',
-  userId: 'userId',
-  frequency: 'frequency'
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 };
 
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
-<<<<<<< HEAD
-=======
-  userId: 'userId',
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   topic: 'topic',
   title: 'title',
   body: 'body',
@@ -732,7 +600,6 @@ exports.WorkType = exports.$Enums.WorkType = {
   TASCO: 'TASCO'
 };
 
-<<<<<<< HEAD
 exports.OwnershipType = exports.$Enums.OwnershipType = {
   OWNED: 'OWNED',
   LEASED: 'LEASED'
@@ -743,8 +610,6 @@ exports.Condition = exports.$Enums.Condition = {
   USED: 'USED'
 };
 
-=======
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 exports.EquipmentTags = exports.$Enums.EquipmentTags = {
   TRUCK: 'TRUCK',
   TRAILER: 'TRAILER',
@@ -772,19 +637,6 @@ exports.CreatedVia = exports.$Enums.CreatedVia = {
   MOBILE: 'MOBILE'
 };
 
-<<<<<<< HEAD
-=======
-exports.OwnershipType = exports.$Enums.OwnershipType = {
-  OWNED: 'OWNED',
-  LEASED: 'LEASED'
-};
-
-exports.Condition = exports.$Enums.Condition = {
-  NEW: 'NEW',
-  USED: 'USED'
-};
-
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 exports.FormTemplateStatus = exports.$Enums.FormTemplateStatus = {
   DRAFT: 'DRAFT',
   ACTIVE: 'ACTIVE',
@@ -864,15 +716,6 @@ exports.Permission = exports.$Enums.Permission = {
   SUPERADMIN: 'SUPERADMIN'
 };
 
-<<<<<<< HEAD
-=======
-exports.Frequency = exports.$Enums.Frequency = {
-  immediate: 'immediate',
-  hourly: 'hourly',
-  daily: 'daily'
-};
-
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
 exports.Prisma.ModelName = {
   Company: 'Company',
   CostCode: 'CostCode',
@@ -908,11 +751,7 @@ exports.Prisma.ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   AccountSetupToken: 'AccountSetupToken',
   Address: 'Address',
-<<<<<<< HEAD
   FCMToken: 'FCMToken',
-=======
-  PushSubscription: 'PushSubscription',
->>>>>>> 1841e28e7008c5eb2df41ead371455bd5faeda48
   TopicSubscription: 'TopicSubscription',
   Notification: 'Notification'
 };
