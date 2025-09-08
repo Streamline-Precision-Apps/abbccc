@@ -4974,16 +4974,16 @@ export namespace Prisma {
     EmployeeEquipmentLogs: number
     MaintenanceLogs: number
     TascoLogs: number
-    TruckingLogs: number
     ChangeLogs: number
+    TruckingLogs: number
   }
 
   export type TimeSheetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     EmployeeEquipmentLogs?: boolean | TimeSheetCountOutputTypeCountEmployeeEquipmentLogsArgs
     MaintenanceLogs?: boolean | TimeSheetCountOutputTypeCountMaintenanceLogsArgs
     TascoLogs?: boolean | TimeSheetCountOutputTypeCountTascoLogsArgs
-    TruckingLogs?: boolean | TimeSheetCountOutputTypeCountTruckingLogsArgs
     ChangeLogs?: boolean | TimeSheetCountOutputTypeCountChangeLogsArgs
+    TruckingLogs?: boolean | TimeSheetCountOutputTypeCountTruckingLogsArgs
   }
 
   // Custom InputTypes
@@ -5021,15 +5021,15 @@ export namespace Prisma {
   /**
    * TimeSheetCountOutputType without action
    */
-  export type TimeSheetCountOutputTypeCountTruckingLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TruckingLogWhereInput
+  export type TimeSheetCountOutputTypeCountChangeLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TimeSheetChangeLogWhereInput
   }
 
   /**
    * TimeSheetCountOutputType without action
    */
-  export type TimeSheetCountOutputTypeCountChangeLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TimeSheetChangeLogWhereInput
+  export type TimeSheetCountOutputTypeCountTruckingLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TruckingLogWhereInput
   }
 
 
@@ -5203,13 +5203,13 @@ export namespace Prisma {
     FormSubmissions: number
     Jobsite: number
     MaintenanceLogs: number
+    notifications: number
     PasswordResetTokens: number
+    pushSubscriptions: number
     TimeSheets: number
     TimeSheetChanges: number
-    Crews: number
-    pushSubscriptions: number
     topicSubscriptions: number
-    notifications: number
+    Crews: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5218,13 +5218,13 @@ export namespace Prisma {
     FormSubmissions?: boolean | UserCountOutputTypeCountFormSubmissionsArgs
     Jobsite?: boolean | UserCountOutputTypeCountJobsiteArgs
     MaintenanceLogs?: boolean | UserCountOutputTypeCountMaintenanceLogsArgs
+    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     PasswordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
+    pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
     TimeSheets?: boolean | UserCountOutputTypeCountTimeSheetsArgs
     TimeSheetChanges?: boolean | UserCountOutputTypeCountTimeSheetChangesArgs
-    Crews?: boolean | UserCountOutputTypeCountCrewsArgs
-    pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
     topicSubscriptions?: boolean | UserCountOutputTypeCountTopicSubscriptionsArgs
-    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    Crews?: boolean | UserCountOutputTypeCountCrewsArgs
   }
 
   // Custom InputTypes
@@ -5276,8 +5276,22 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountPasswordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PasswordResetTokenWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PushSubscriptionWhereInput
   }
 
   /**
@@ -5297,20 +5311,6 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountCrewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CrewWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PushSubscriptionWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountTopicSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TopicSubscriptionWhereInput
   }
@@ -5318,8 +5318,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
+  export type UserCountOutputTypeCountCrewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CrewWhereInput
   }
 
 
@@ -12060,94 +12060,94 @@ export namespace Prisma {
   export type EquipmentMinAggregateOutputType = {
     id: string | null
     qrId: string | null
-    code: string | null
     name: string | null
     description: string | null
-    memo: string | null
-    ownershipType: $Enums.OwnershipType | null
-    make: string | null
-    model: string | null
-    year: string | null
-    color: string | null
-    serialNumber: string | null
-    acquiredDate: Date | null
-    acquiredCondition: $Enums.Condition | null
-    licensePlate: string | null
-    licenseState: string | null
-    registrationExpiration: Date | null
+    creationReason: string | null
     equipmentTag: $Enums.EquipmentTags | null
-    overWeight: boolean | null
-    currentWeight: number | null
     state: $Enums.EquipmentState | null
     isDisabledByAdmin: boolean | null
-    creationReason: string | null
     approvalStatus: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
-    createdVia: $Enums.CreatedVia | null
+    overWeight: boolean | null
+    currentWeight: number | null
     createdById: string | null
+    createdVia: $Enums.CreatedVia | null
+    acquiredDate: Date | null
+    code: string | null
+    color: string | null
+    licensePlate: string | null
+    licenseState: string | null
+    make: string | null
+    memo: string | null
+    model: string | null
+    ownershipType: $Enums.OwnershipType | null
+    registrationExpiration: Date | null
+    serialNumber: string | null
+    year: string | null
+    acquiredCondition: $Enums.Condition | null
   }
 
   export type EquipmentMaxAggregateOutputType = {
     id: string | null
     qrId: string | null
-    code: string | null
     name: string | null
     description: string | null
-    memo: string | null
-    ownershipType: $Enums.OwnershipType | null
-    make: string | null
-    model: string | null
-    year: string | null
-    color: string | null
-    serialNumber: string | null
-    acquiredDate: Date | null
-    acquiredCondition: $Enums.Condition | null
-    licensePlate: string | null
-    licenseState: string | null
-    registrationExpiration: Date | null
+    creationReason: string | null
     equipmentTag: $Enums.EquipmentTags | null
-    overWeight: boolean | null
-    currentWeight: number | null
     state: $Enums.EquipmentState | null
     isDisabledByAdmin: boolean | null
-    creationReason: string | null
     approvalStatus: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
-    createdVia: $Enums.CreatedVia | null
+    overWeight: boolean | null
+    currentWeight: number | null
     createdById: string | null
+    createdVia: $Enums.CreatedVia | null
+    acquiredDate: Date | null
+    code: string | null
+    color: string | null
+    licensePlate: string | null
+    licenseState: string | null
+    make: string | null
+    memo: string | null
+    model: string | null
+    ownershipType: $Enums.OwnershipType | null
+    registrationExpiration: Date | null
+    serialNumber: string | null
+    year: string | null
+    acquiredCondition: $Enums.Condition | null
   }
 
   export type EquipmentCountAggregateOutputType = {
     id: number
     qrId: number
-    code: number
     name: number
     description: number
-    memo: number
-    ownershipType: number
-    make: number
-    model: number
-    year: number
-    color: number
-    serialNumber: number
-    acquiredDate: number
-    acquiredCondition: number
-    licensePlate: number
-    licenseState: number
-    registrationExpiration: number
+    creationReason: number
     equipmentTag: number
-    overWeight: number
-    currentWeight: number
     state: number
     isDisabledByAdmin: number
-    creationReason: number
     approvalStatus: number
     createdAt: number
     updatedAt: number
-    createdVia: number
+    overWeight: number
+    currentWeight: number
     createdById: number
+    createdVia: number
+    acquiredDate: number
+    code: number
+    color: number
+    licensePlate: number
+    licenseState: number
+    make: number
+    memo: number
+    model: number
+    ownershipType: number
+    registrationExpiration: number
+    serialNumber: number
+    year: number
+    acquiredCondition: number
     _all: number
   }
 
@@ -12163,94 +12163,94 @@ export namespace Prisma {
   export type EquipmentMinAggregateInputType = {
     id?: true
     qrId?: true
-    code?: true
     name?: true
     description?: true
-    memo?: true
-    ownershipType?: true
-    make?: true
-    model?: true
-    year?: true
-    color?: true
-    serialNumber?: true
-    acquiredDate?: true
-    acquiredCondition?: true
-    licensePlate?: true
-    licenseState?: true
-    registrationExpiration?: true
+    creationReason?: true
     equipmentTag?: true
-    overWeight?: true
-    currentWeight?: true
     state?: true
     isDisabledByAdmin?: true
-    creationReason?: true
     approvalStatus?: true
     createdAt?: true
     updatedAt?: true
-    createdVia?: true
+    overWeight?: true
+    currentWeight?: true
     createdById?: true
+    createdVia?: true
+    acquiredDate?: true
+    code?: true
+    color?: true
+    licensePlate?: true
+    licenseState?: true
+    make?: true
+    memo?: true
+    model?: true
+    ownershipType?: true
+    registrationExpiration?: true
+    serialNumber?: true
+    year?: true
+    acquiredCondition?: true
   }
 
   export type EquipmentMaxAggregateInputType = {
     id?: true
     qrId?: true
-    code?: true
     name?: true
     description?: true
-    memo?: true
-    ownershipType?: true
-    make?: true
-    model?: true
-    year?: true
-    color?: true
-    serialNumber?: true
-    acquiredDate?: true
-    acquiredCondition?: true
-    licensePlate?: true
-    licenseState?: true
-    registrationExpiration?: true
+    creationReason?: true
     equipmentTag?: true
-    overWeight?: true
-    currentWeight?: true
     state?: true
     isDisabledByAdmin?: true
-    creationReason?: true
     approvalStatus?: true
     createdAt?: true
     updatedAt?: true
-    createdVia?: true
+    overWeight?: true
+    currentWeight?: true
     createdById?: true
+    createdVia?: true
+    acquiredDate?: true
+    code?: true
+    color?: true
+    licensePlate?: true
+    licenseState?: true
+    make?: true
+    memo?: true
+    model?: true
+    ownershipType?: true
+    registrationExpiration?: true
+    serialNumber?: true
+    year?: true
+    acquiredCondition?: true
   }
 
   export type EquipmentCountAggregateInputType = {
     id?: true
     qrId?: true
-    code?: true
     name?: true
     description?: true
-    memo?: true
-    ownershipType?: true
-    make?: true
-    model?: true
-    year?: true
-    color?: true
-    serialNumber?: true
-    acquiredDate?: true
-    acquiredCondition?: true
-    licensePlate?: true
-    licenseState?: true
-    registrationExpiration?: true
+    creationReason?: true
     equipmentTag?: true
-    overWeight?: true
-    currentWeight?: true
     state?: true
     isDisabledByAdmin?: true
-    creationReason?: true
     approvalStatus?: true
     createdAt?: true
     updatedAt?: true
-    createdVia?: true
+    overWeight?: true
+    currentWeight?: true
     createdById?: true
+    createdVia?: true
+    acquiredDate?: true
+    code?: true
+    color?: true
+    licensePlate?: true
+    licenseState?: true
+    make?: true
+    memo?: true
+    model?: true
+    ownershipType?: true
+    registrationExpiration?: true
+    serialNumber?: true
+    year?: true
+    acquiredCondition?: true
     _all?: true
   }
 
@@ -12343,32 +12343,32 @@ export namespace Prisma {
   export type EquipmentGroupByOutputType = {
     id: string
     qrId: string
-    code: string | null
     name: string
     description: string | null
-    memo: string | null
-    ownershipType: $Enums.OwnershipType | null
-    make: string | null
-    model: string | null
-    year: string | null
-    color: string | null
-    serialNumber: string | null
-    acquiredDate: Date | null
-    acquiredCondition: $Enums.Condition | null
-    licensePlate: string | null
-    licenseState: string | null
-    registrationExpiration: Date | null
+    creationReason: string | null
     equipmentTag: $Enums.EquipmentTags
-    overWeight: boolean | null
-    currentWeight: number | null
     state: $Enums.EquipmentState
     isDisabledByAdmin: boolean
-    creationReason: string | null
     approvalStatus: $Enums.ApprovalStatus
     createdAt: Date
     updatedAt: Date
-    createdVia: $Enums.CreatedVia
+    overWeight: boolean | null
+    currentWeight: number | null
     createdById: string | null
+    createdVia: $Enums.CreatedVia
+    acquiredDate: Date | null
+    code: string | null
+    color: string | null
+    licensePlate: string | null
+    licenseState: string | null
+    make: string | null
+    memo: string | null
+    model: string | null
+    ownershipType: $Enums.OwnershipType | null
+    registrationExpiration: Date | null
+    serialNumber: string | null
+    year: string | null
+    acquiredCondition: $Enums.Condition | null
     _count: EquipmentCountAggregateOutputType | null
     _avg: EquipmentAvgAggregateOutputType | null
     _sum: EquipmentSumAggregateOutputType | null
@@ -12393,34 +12393,34 @@ export namespace Prisma {
   export type EquipmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     qrId?: boolean
-    code?: boolean
     name?: boolean
     description?: boolean
-    memo?: boolean
-    ownershipType?: boolean
-    make?: boolean
-    model?: boolean
-    year?: boolean
-    color?: boolean
-    serialNumber?: boolean
-    acquiredDate?: boolean
-    acquiredCondition?: boolean
-    licensePlate?: boolean
-    licenseState?: boolean
-    registrationExpiration?: boolean
+    creationReason?: boolean
     equipmentTag?: boolean
-    overWeight?: boolean
-    currentWeight?: boolean
     state?: boolean
     isDisabledByAdmin?: boolean
-    creationReason?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    createdVia?: boolean
+    overWeight?: boolean
+    currentWeight?: boolean
     createdById?: boolean
-    createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
+    createdVia?: boolean
+    acquiredDate?: boolean
+    code?: boolean
+    color?: boolean
+    licensePlate?: boolean
+    licenseState?: boolean
+    make?: boolean
+    memo?: boolean
+    model?: boolean
+    ownershipType?: boolean
+    registrationExpiration?: boolean
+    serialNumber?: boolean
+    year?: boolean
+    acquiredCondition?: boolean
     EmployeeEquipmentLogs?: boolean | Equipment$EmployeeEquipmentLogsArgs<ExtArgs>
+    createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
     EquipmentHauled?: boolean | Equipment$EquipmentHauledArgs<ExtArgs>
     Maintenances?: boolean | Equipment$MaintenancesArgs<ExtArgs>
     TascoLogs?: boolean | Equipment$TascoLogsArgs<ExtArgs>
@@ -12434,102 +12434,102 @@ export namespace Prisma {
   export type EquipmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     qrId?: boolean
-    code?: boolean
     name?: boolean
     description?: boolean
-    memo?: boolean
-    ownershipType?: boolean
-    make?: boolean
-    model?: boolean
-    year?: boolean
-    color?: boolean
-    serialNumber?: boolean
-    acquiredDate?: boolean
-    acquiredCondition?: boolean
-    licensePlate?: boolean
-    licenseState?: boolean
-    registrationExpiration?: boolean
+    creationReason?: boolean
     equipmentTag?: boolean
-    overWeight?: boolean
-    currentWeight?: boolean
     state?: boolean
     isDisabledByAdmin?: boolean
-    creationReason?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    createdVia?: boolean
+    overWeight?: boolean
+    currentWeight?: boolean
     createdById?: boolean
+    createdVia?: boolean
+    acquiredDate?: boolean
+    code?: boolean
+    color?: boolean
+    licensePlate?: boolean
+    licenseState?: boolean
+    make?: boolean
+    memo?: boolean
+    model?: boolean
+    ownershipType?: boolean
+    registrationExpiration?: boolean
+    serialNumber?: boolean
+    year?: boolean
+    acquiredCondition?: boolean
     createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["equipment"]>
 
   export type EquipmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     qrId?: boolean
-    code?: boolean
     name?: boolean
     description?: boolean
-    memo?: boolean
-    ownershipType?: boolean
-    make?: boolean
-    model?: boolean
-    year?: boolean
-    color?: boolean
-    serialNumber?: boolean
-    acquiredDate?: boolean
-    acquiredCondition?: boolean
-    licensePlate?: boolean
-    licenseState?: boolean
-    registrationExpiration?: boolean
+    creationReason?: boolean
     equipmentTag?: boolean
-    overWeight?: boolean
-    currentWeight?: boolean
     state?: boolean
     isDisabledByAdmin?: boolean
-    creationReason?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    createdVia?: boolean
+    overWeight?: boolean
+    currentWeight?: boolean
     createdById?: boolean
+    createdVia?: boolean
+    acquiredDate?: boolean
+    code?: boolean
+    color?: boolean
+    licensePlate?: boolean
+    licenseState?: boolean
+    make?: boolean
+    memo?: boolean
+    model?: boolean
+    ownershipType?: boolean
+    registrationExpiration?: boolean
+    serialNumber?: boolean
+    year?: boolean
+    acquiredCondition?: boolean
     createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["equipment"]>
 
   export type EquipmentSelectScalar = {
     id?: boolean
     qrId?: boolean
-    code?: boolean
     name?: boolean
     description?: boolean
-    memo?: boolean
-    ownershipType?: boolean
-    make?: boolean
-    model?: boolean
-    year?: boolean
-    color?: boolean
-    serialNumber?: boolean
-    acquiredDate?: boolean
-    acquiredCondition?: boolean
-    licensePlate?: boolean
-    licenseState?: boolean
-    registrationExpiration?: boolean
+    creationReason?: boolean
     equipmentTag?: boolean
-    overWeight?: boolean
-    currentWeight?: boolean
     state?: boolean
     isDisabledByAdmin?: boolean
-    creationReason?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    createdVia?: boolean
+    overWeight?: boolean
+    currentWeight?: boolean
     createdById?: boolean
+    createdVia?: boolean
+    acquiredDate?: boolean
+    code?: boolean
+    color?: boolean
+    licensePlate?: boolean
+    licenseState?: boolean
+    make?: boolean
+    memo?: boolean
+    model?: boolean
+    ownershipType?: boolean
+    registrationExpiration?: boolean
+    serialNumber?: boolean
+    year?: boolean
+    acquiredCondition?: boolean
   }
 
-  export type EquipmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrId" | "code" | "name" | "description" | "memo" | "ownershipType" | "make" | "model" | "year" | "color" | "serialNumber" | "acquiredDate" | "acquiredCondition" | "licensePlate" | "licenseState" | "registrationExpiration" | "equipmentTag" | "overWeight" | "currentWeight" | "state" | "isDisabledByAdmin" | "creationReason" | "approvalStatus" | "createdAt" | "updatedAt" | "createdVia" | "createdById", ExtArgs["result"]["equipment"]>
+  export type EquipmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrId" | "name" | "description" | "creationReason" | "equipmentTag" | "state" | "isDisabledByAdmin" | "approvalStatus" | "createdAt" | "updatedAt" | "overWeight" | "currentWeight" | "createdById" | "createdVia" | "acquiredDate" | "code" | "color" | "licensePlate" | "licenseState" | "make" | "memo" | "model" | "ownershipType" | "registrationExpiration" | "serialNumber" | "year" | "acquiredCondition", ExtArgs["result"]["equipment"]>
   export type EquipmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
     EmployeeEquipmentLogs?: boolean | Equipment$EmployeeEquipmentLogsArgs<ExtArgs>
+    createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
     EquipmentHauled?: boolean | Equipment$EquipmentHauledArgs<ExtArgs>
     Maintenances?: boolean | Equipment$MaintenancesArgs<ExtArgs>
     TascoLogs?: boolean | Equipment$TascoLogsArgs<ExtArgs>
@@ -12549,8 +12549,8 @@ export namespace Prisma {
   export type $EquipmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Equipment"
     objects: {
-      createdBy: Prisma.$UserPayload<ExtArgs> | null
       EmployeeEquipmentLogs: Prisma.$EmployeeEquipmentLogPayload<ExtArgs>[]
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
       EquipmentHauled: Prisma.$EquipmentHauledPayload<ExtArgs>[]
       Maintenances: Prisma.$MaintenancePayload<ExtArgs>[]
       TascoLogs: Prisma.$TascoLogPayload<ExtArgs>[]
@@ -12562,32 +12562,32 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       qrId: string
-      code: string | null
       name: string
       description: string | null
-      memo: string | null
-      ownershipType: $Enums.OwnershipType | null
-      make: string | null
-      model: string | null
-      year: string | null
-      color: string | null
-      serialNumber: string | null
-      acquiredDate: Date | null
-      acquiredCondition: $Enums.Condition | null
-      licensePlate: string | null
-      licenseState: string | null
-      registrationExpiration: Date | null
+      creationReason: string | null
       equipmentTag: $Enums.EquipmentTags
-      overWeight: boolean | null
-      currentWeight: number | null
       state: $Enums.EquipmentState
       isDisabledByAdmin: boolean
-      creationReason: string | null
       approvalStatus: $Enums.ApprovalStatus
       createdAt: Date
       updatedAt: Date
-      createdVia: $Enums.CreatedVia
+      overWeight: boolean | null
+      currentWeight: number | null
       createdById: string | null
+      createdVia: $Enums.CreatedVia
+      acquiredDate: Date | null
+      code: string | null
+      color: string | null
+      licensePlate: string | null
+      licenseState: string | null
+      make: string | null
+      memo: string | null
+      model: string | null
+      ownershipType: $Enums.OwnershipType | null
+      registrationExpiration: Date | null
+      serialNumber: string | null
+      year: string | null
+      acquiredCondition: $Enums.Condition | null
     }, ExtArgs["result"]["equipment"]>
     composites: {}
   }
@@ -12982,8 +12982,8 @@ export namespace Prisma {
    */
   export interface Prisma__EquipmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    createdBy<T extends Equipment$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     EmployeeEquipmentLogs<T extends Equipment$EmployeeEquipmentLogsArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$EmployeeEquipmentLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeEquipmentLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdBy<T extends Equipment$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     EquipmentHauled<T extends Equipment$EquipmentHauledArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$EquipmentHauledArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EquipmentHauledPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Maintenances<T extends Equipment$MaintenancesArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$MaintenancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TascoLogs<T extends Equipment$TascoLogsArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$TascoLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TascoLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -13022,32 +13022,32 @@ export namespace Prisma {
   interface EquipmentFieldRefs {
     readonly id: FieldRef<"Equipment", 'String'>
     readonly qrId: FieldRef<"Equipment", 'String'>
-    readonly code: FieldRef<"Equipment", 'String'>
     readonly name: FieldRef<"Equipment", 'String'>
     readonly description: FieldRef<"Equipment", 'String'>
-    readonly memo: FieldRef<"Equipment", 'String'>
-    readonly ownershipType: FieldRef<"Equipment", 'OwnershipType'>
-    readonly make: FieldRef<"Equipment", 'String'>
-    readonly model: FieldRef<"Equipment", 'String'>
-    readonly year: FieldRef<"Equipment", 'String'>
-    readonly color: FieldRef<"Equipment", 'String'>
-    readonly serialNumber: FieldRef<"Equipment", 'String'>
-    readonly acquiredDate: FieldRef<"Equipment", 'DateTime'>
-    readonly acquiredCondition: FieldRef<"Equipment", 'Condition'>
-    readonly licensePlate: FieldRef<"Equipment", 'String'>
-    readonly licenseState: FieldRef<"Equipment", 'String'>
-    readonly registrationExpiration: FieldRef<"Equipment", 'DateTime'>
+    readonly creationReason: FieldRef<"Equipment", 'String'>
     readonly equipmentTag: FieldRef<"Equipment", 'EquipmentTags'>
-    readonly overWeight: FieldRef<"Equipment", 'Boolean'>
-    readonly currentWeight: FieldRef<"Equipment", 'Float'>
     readonly state: FieldRef<"Equipment", 'EquipmentState'>
     readonly isDisabledByAdmin: FieldRef<"Equipment", 'Boolean'>
-    readonly creationReason: FieldRef<"Equipment", 'String'>
     readonly approvalStatus: FieldRef<"Equipment", 'ApprovalStatus'>
     readonly createdAt: FieldRef<"Equipment", 'DateTime'>
     readonly updatedAt: FieldRef<"Equipment", 'DateTime'>
-    readonly createdVia: FieldRef<"Equipment", 'CreatedVia'>
+    readonly overWeight: FieldRef<"Equipment", 'Boolean'>
+    readonly currentWeight: FieldRef<"Equipment", 'Float'>
     readonly createdById: FieldRef<"Equipment", 'String'>
+    readonly createdVia: FieldRef<"Equipment", 'CreatedVia'>
+    readonly acquiredDate: FieldRef<"Equipment", 'DateTime'>
+    readonly code: FieldRef<"Equipment", 'String'>
+    readonly color: FieldRef<"Equipment", 'String'>
+    readonly licensePlate: FieldRef<"Equipment", 'String'>
+    readonly licenseState: FieldRef<"Equipment", 'String'>
+    readonly make: FieldRef<"Equipment", 'String'>
+    readonly memo: FieldRef<"Equipment", 'String'>
+    readonly model: FieldRef<"Equipment", 'String'>
+    readonly ownershipType: FieldRef<"Equipment", 'OwnershipType'>
+    readonly registrationExpiration: FieldRef<"Equipment", 'DateTime'>
+    readonly serialNumber: FieldRef<"Equipment", 'String'>
+    readonly year: FieldRef<"Equipment", 'String'>
+    readonly acquiredCondition: FieldRef<"Equipment", 'Condition'>
   }
     
 
@@ -13444,25 +13444,6 @@ export namespace Prisma {
   }
 
   /**
-   * Equipment.createdBy
-   */
-  export type Equipment$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the User
-     */
-    select?: UserSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the User
-     */
-    omit?: UserOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-  }
-
-  /**
    * Equipment.EmployeeEquipmentLogs
    */
   export type Equipment$EmployeeEquipmentLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13484,6 +13465,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EmployeeEquipmentLogScalarFieldEnum | EmployeeEquipmentLogScalarFieldEnum[]
+  }
+
+  /**
+   * Equipment.createdBy
+   */
+  export type Equipment$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -13695,34 +13695,34 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogMinAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     equipmentId: string | null
     maintenanceId: string | null
     startTime: Date | null
     endTime: Date | null
     comment: string | null
+    timeSheetId: number | null
     rental: boolean | null
   }
 
   export type EmployeeEquipmentLogMaxAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     equipmentId: string | null
     maintenanceId: string | null
     startTime: Date | null
     endTime: Date | null
     comment: string | null
+    timeSheetId: number | null
     rental: boolean | null
   }
 
   export type EmployeeEquipmentLogCountAggregateOutputType = {
     id: number
-    timeSheetId: number
     equipmentId: number
     maintenanceId: number
     startTime: number
     endTime: number
     comment: number
+    timeSheetId: number
     rental: number
     _all: number
   }
@@ -13738,34 +13738,34 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogMinAggregateInputType = {
     id?: true
-    timeSheetId?: true
     equipmentId?: true
     maintenanceId?: true
     startTime?: true
     endTime?: true
     comment?: true
+    timeSheetId?: true
     rental?: true
   }
 
   export type EmployeeEquipmentLogMaxAggregateInputType = {
     id?: true
-    timeSheetId?: true
     equipmentId?: true
     maintenanceId?: true
     startTime?: true
     endTime?: true
     comment?: true
+    timeSheetId?: true
     rental?: true
   }
 
   export type EmployeeEquipmentLogCountAggregateInputType = {
     id?: true
-    timeSheetId?: true
     equipmentId?: true
     maintenanceId?: true
     startTime?: true
     endTime?: true
     comment?: true
+    timeSheetId?: true
     rental?: true
     _all?: true
   }
@@ -13858,12 +13858,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogGroupByOutputType = {
     id: string
-    timeSheetId: number
     equipmentId: string | null
     maintenanceId: string | null
     startTime: Date
     endTime: Date | null
     comment: string | null
+    timeSheetId: number
     rental: boolean
     _count: EmployeeEquipmentLogCountAggregateOutputType | null
     _avg: EmployeeEquipmentLogAvgAggregateOutputType | null
@@ -13888,12 +13888,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     equipmentId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     rental?: boolean
     Equipment?: boolean | EmployeeEquipmentLog$EquipmentArgs<ExtArgs>
     Maintenance?: boolean | EmployeeEquipmentLog$MaintenanceArgs<ExtArgs>
@@ -13903,12 +13903,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     equipmentId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     rental?: boolean
     Equipment?: boolean | EmployeeEquipmentLog$EquipmentArgs<ExtArgs>
     Maintenance?: boolean | EmployeeEquipmentLog$MaintenanceArgs<ExtArgs>
@@ -13917,12 +13917,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     equipmentId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     rental?: boolean
     Equipment?: boolean | EmployeeEquipmentLog$EquipmentArgs<ExtArgs>
     Maintenance?: boolean | EmployeeEquipmentLog$MaintenanceArgs<ExtArgs>
@@ -13931,16 +13931,16 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogSelectScalar = {
     id?: boolean
-    timeSheetId?: boolean
     equipmentId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     rental?: boolean
   }
 
-  export type EmployeeEquipmentLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "equipmentId" | "maintenanceId" | "startTime" | "endTime" | "comment" | "rental", ExtArgs["result"]["employeeEquipmentLog"]>
+  export type EmployeeEquipmentLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "equipmentId" | "maintenanceId" | "startTime" | "endTime" | "comment" | "timeSheetId" | "rental", ExtArgs["result"]["employeeEquipmentLog"]>
   export type EmployeeEquipmentLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Equipment?: boolean | EmployeeEquipmentLog$EquipmentArgs<ExtArgs>
     Maintenance?: boolean | EmployeeEquipmentLog$MaintenanceArgs<ExtArgs>
@@ -13968,12 +13968,12 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      timeSheetId: number
       equipmentId: string | null
       maintenanceId: string | null
       startTime: Date
       endTime: Date | null
       comment: string | null
+      timeSheetId: number
       rental: boolean
     }, ExtArgs["result"]["employeeEquipmentLog"]>
     composites: {}
@@ -14403,12 +14403,12 @@ export namespace Prisma {
    */
   interface EmployeeEquipmentLogFieldRefs {
     readonly id: FieldRef<"EmployeeEquipmentLog", 'String'>
-    readonly timeSheetId: FieldRef<"EmployeeEquipmentLog", 'Int'>
     readonly equipmentId: FieldRef<"EmployeeEquipmentLog", 'String'>
     readonly maintenanceId: FieldRef<"EmployeeEquipmentLog", 'String'>
     readonly startTime: FieldRef<"EmployeeEquipmentLog", 'DateTime'>
     readonly endTime: FieldRef<"EmployeeEquipmentLog", 'DateTime'>
     readonly comment: FieldRef<"EmployeeEquipmentLog", 'String'>
+    readonly timeSheetId: FieldRef<"EmployeeEquipmentLog", 'Int'>
     readonly rental: FieldRef<"EmployeeEquipmentLog", 'Boolean'>
   }
     
@@ -19429,7 +19429,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionMinAggregateOutputType = {
-    id: number | null
     title: string | null
     formTemplateId: string | null
     userId: string | null
@@ -19438,10 +19437,10 @@ export namespace Prisma {
     updatedAt: Date | null
     submittedAt: Date | null
     status: $Enums.FormStatus | null
+    id: number | null
   }
 
   export type FormSubmissionMaxAggregateOutputType = {
-    id: number | null
     title: string | null
     formTemplateId: string | null
     userId: string | null
@@ -19450,10 +19449,10 @@ export namespace Prisma {
     updatedAt: Date | null
     submittedAt: Date | null
     status: $Enums.FormStatus | null
+    id: number | null
   }
 
   export type FormSubmissionCountAggregateOutputType = {
-    id: number
     title: number
     formTemplateId: number
     userId: number
@@ -19463,6 +19462,7 @@ export namespace Prisma {
     updatedAt: number
     submittedAt: number
     status: number
+    id: number
     _all: number
   }
 
@@ -19476,7 +19476,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionMinAggregateInputType = {
-    id?: true
     title?: true
     formTemplateId?: true
     userId?: true
@@ -19485,10 +19484,10 @@ export namespace Prisma {
     updatedAt?: true
     submittedAt?: true
     status?: true
+    id?: true
   }
 
   export type FormSubmissionMaxAggregateInputType = {
-    id?: true
     title?: true
     formTemplateId?: true
     userId?: true
@@ -19497,10 +19496,10 @@ export namespace Prisma {
     updatedAt?: true
     submittedAt?: true
     status?: true
+    id?: true
   }
 
   export type FormSubmissionCountAggregateInputType = {
-    id?: true
     title?: true
     formTemplateId?: true
     userId?: true
@@ -19510,6 +19509,7 @@ export namespace Prisma {
     updatedAt?: true
     submittedAt?: true
     status?: true
+    id?: true
     _all?: true
   }
 
@@ -19600,7 +19600,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionGroupByOutputType = {
-    id: number
     title: string | null
     formTemplateId: string
     userId: string
@@ -19610,6 +19609,7 @@ export namespace Prisma {
     updatedAt: Date
     submittedAt: Date | null
     status: $Enums.FormStatus
+    id: number
     _count: FormSubmissionCountAggregateOutputType | null
     _avg: FormSubmissionAvgAggregateOutputType | null
     _sum: FormSubmissionSumAggregateOutputType | null
@@ -19632,7 +19632,6 @@ export namespace Prisma {
 
 
   export type FormSubmissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     title?: boolean
     formTemplateId?: boolean
     userId?: boolean
@@ -19642,6 +19641,7 @@ export namespace Prisma {
     updatedAt?: boolean
     submittedAt?: boolean
     status?: boolean
+    id?: boolean
     Approvals?: boolean | FormSubmission$ApprovalsArgs<ExtArgs>
     FormTemplate?: boolean | FormTemplateDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
@@ -19649,7 +19649,6 @@ export namespace Prisma {
   }, ExtArgs["result"]["formSubmission"]>
 
   export type FormSubmissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     title?: boolean
     formTemplateId?: boolean
     userId?: boolean
@@ -19659,12 +19658,12 @@ export namespace Prisma {
     updatedAt?: boolean
     submittedAt?: boolean
     status?: boolean
+    id?: boolean
     FormTemplate?: boolean | FormTemplateDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["formSubmission"]>
 
   export type FormSubmissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     title?: boolean
     formTemplateId?: boolean
     userId?: boolean
@@ -19674,12 +19673,12 @@ export namespace Prisma {
     updatedAt?: boolean
     submittedAt?: boolean
     status?: boolean
+    id?: boolean
     FormTemplate?: boolean | FormTemplateDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["formSubmission"]>
 
   export type FormSubmissionSelectScalar = {
-    id?: boolean
     title?: boolean
     formTemplateId?: boolean
     userId?: boolean
@@ -19689,9 +19688,10 @@ export namespace Prisma {
     updatedAt?: boolean
     submittedAt?: boolean
     status?: boolean
+    id?: boolean
   }
 
-  export type FormSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "formTemplateId" | "userId" | "formType" | "data" | "createdAt" | "updatedAt" | "submittedAt" | "status", ExtArgs["result"]["formSubmission"]>
+  export type FormSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"title" | "formTemplateId" | "userId" | "formType" | "data" | "createdAt" | "updatedAt" | "submittedAt" | "status" | "id", ExtArgs["result"]["formSubmission"]>
   export type FormSubmissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Approvals?: boolean | FormSubmission$ApprovalsArgs<ExtArgs>
     FormTemplate?: boolean | FormTemplateDefaultArgs<ExtArgs>
@@ -19715,7 +19715,6 @@ export namespace Prisma {
       User: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
       title: string | null
       formTemplateId: string
       userId: string
@@ -19725,6 +19724,7 @@ export namespace Prisma {
       updatedAt: Date
       submittedAt: Date | null
       status: $Enums.FormStatus
+      id: number
     }, ExtArgs["result"]["formSubmission"]>
     composites: {}
   }
@@ -19808,8 +19808,8 @@ export namespace Prisma {
      * // Get first 10 FormSubmissions
      * const formSubmissions = await prisma.formSubmission.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const formSubmissionWithIdOnly = await prisma.formSubmission.findMany({ select: { id: true } })
+     * // Only select the `title`
+     * const formSubmissionWithTitleOnly = await prisma.formSubmission.findMany({ select: { title: true } })
      * 
      */
     findMany<T extends FormSubmissionFindManyArgs>(args?: SelectSubset<T, FormSubmissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -19853,9 +19853,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many FormSubmissions and only return the `id`
-     * const formSubmissionWithIdOnly = await prisma.formSubmission.createManyAndReturn({
-     *   select: { id: true },
+     * // Create many FormSubmissions and only return the `title`
+     * const formSubmissionWithTitleOnly = await prisma.formSubmission.createManyAndReturn({
+     *   select: { title: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -19944,9 +19944,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more FormSubmissions and only return the `id`
-     * const formSubmissionWithIdOnly = await prisma.formSubmission.updateManyAndReturn({
-     *   select: { id: true },
+     * // Update zero or more FormSubmissions and only return the `title`
+     * const formSubmissionWithTitleOnly = await prisma.formSubmission.updateManyAndReturn({
+     *   select: { title: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -20151,7 +20151,6 @@ export namespace Prisma {
    * Fields of the FormSubmission model
    */
   interface FormSubmissionFieldRefs {
-    readonly id: FieldRef<"FormSubmission", 'Int'>
     readonly title: FieldRef<"FormSubmission", 'String'>
     readonly formTemplateId: FieldRef<"FormSubmission", 'String'>
     readonly userId: FieldRef<"FormSubmission", 'String'>
@@ -20161,6 +20160,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"FormSubmission", 'DateTime'>
     readonly submittedAt: FieldRef<"FormSubmission", 'DateTime'>
     readonly status: FieldRef<"FormSubmission", 'FormStatus'>
+    readonly id: FieldRef<"FormSubmission", 'Int'>
   }
     
 
@@ -20621,32 +20621,32 @@ export namespace Prisma {
 
   export type FormApprovalMinAggregateOutputType = {
     id: string | null
-    formSubmissionId: number | null
     signedBy: string | null
     submittedAt: Date | null
     updatedAt: Date | null
     signature: string | null
     comment: string | null
+    formSubmissionId: number | null
   }
 
   export type FormApprovalMaxAggregateOutputType = {
     id: string | null
-    formSubmissionId: number | null
     signedBy: string | null
     submittedAt: Date | null
     updatedAt: Date | null
     signature: string | null
     comment: string | null
+    formSubmissionId: number | null
   }
 
   export type FormApprovalCountAggregateOutputType = {
     id: number
-    formSubmissionId: number
     signedBy: number
     submittedAt: number
     updatedAt: number
     signature: number
     comment: number
+    formSubmissionId: number
     _all: number
   }
 
@@ -20661,32 +20661,32 @@ export namespace Prisma {
 
   export type FormApprovalMinAggregateInputType = {
     id?: true
-    formSubmissionId?: true
     signedBy?: true
     submittedAt?: true
     updatedAt?: true
     signature?: true
     comment?: true
+    formSubmissionId?: true
   }
 
   export type FormApprovalMaxAggregateInputType = {
     id?: true
-    formSubmissionId?: true
     signedBy?: true
     submittedAt?: true
     updatedAt?: true
     signature?: true
     comment?: true
+    formSubmissionId?: true
   }
 
   export type FormApprovalCountAggregateInputType = {
     id?: true
-    formSubmissionId?: true
     signedBy?: true
     submittedAt?: true
     updatedAt?: true
     signature?: true
     comment?: true
+    formSubmissionId?: true
     _all?: true
   }
 
@@ -20778,12 +20778,12 @@ export namespace Prisma {
 
   export type FormApprovalGroupByOutputType = {
     id: string
-    formSubmissionId: number
     signedBy: string | null
     submittedAt: Date
     updatedAt: Date
     signature: string | null
     comment: string | null
+    formSubmissionId: number
     _count: FormApprovalCountAggregateOutputType | null
     _avg: FormApprovalAvgAggregateOutputType | null
     _sum: FormApprovalSumAggregateOutputType | null
@@ -20807,51 +20807,51 @@ export namespace Prisma {
 
   export type FormApprovalSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    formSubmissionId?: boolean
     signedBy?: boolean
     submittedAt?: boolean
     updatedAt?: boolean
     signature?: boolean
     comment?: boolean
+    formSubmissionId?: boolean
     FormSubmission?: boolean | FormSubmissionDefaultArgs<ExtArgs>
     Approver?: boolean | FormApproval$ApproverArgs<ExtArgs>
   }, ExtArgs["result"]["formApproval"]>
 
   export type FormApprovalSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    formSubmissionId?: boolean
     signedBy?: boolean
     submittedAt?: boolean
     updatedAt?: boolean
     signature?: boolean
     comment?: boolean
+    formSubmissionId?: boolean
     FormSubmission?: boolean | FormSubmissionDefaultArgs<ExtArgs>
     Approver?: boolean | FormApproval$ApproverArgs<ExtArgs>
   }, ExtArgs["result"]["formApproval"]>
 
   export type FormApprovalSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    formSubmissionId?: boolean
     signedBy?: boolean
     submittedAt?: boolean
     updatedAt?: boolean
     signature?: boolean
     comment?: boolean
+    formSubmissionId?: boolean
     FormSubmission?: boolean | FormSubmissionDefaultArgs<ExtArgs>
     Approver?: boolean | FormApproval$ApproverArgs<ExtArgs>
   }, ExtArgs["result"]["formApproval"]>
 
   export type FormApprovalSelectScalar = {
     id?: boolean
-    formSubmissionId?: boolean
     signedBy?: boolean
     submittedAt?: boolean
     updatedAt?: boolean
     signature?: boolean
     comment?: boolean
+    formSubmissionId?: boolean
   }
 
-  export type FormApprovalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "formSubmissionId" | "signedBy" | "submittedAt" | "updatedAt" | "signature" | "comment", ExtArgs["result"]["formApproval"]>
+  export type FormApprovalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "signedBy" | "submittedAt" | "updatedAt" | "signature" | "comment" | "formSubmissionId", ExtArgs["result"]["formApproval"]>
   export type FormApprovalInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     FormSubmission?: boolean | FormSubmissionDefaultArgs<ExtArgs>
     Approver?: boolean | FormApproval$ApproverArgs<ExtArgs>
@@ -20873,12 +20873,12 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      formSubmissionId: number
       signedBy: string | null
       submittedAt: Date
       updatedAt: Date
       signature: string | null
       comment: string | null
+      formSubmissionId: number
     }, ExtArgs["result"]["formApproval"]>
     composites: {}
   }
@@ -21305,12 +21305,12 @@ export namespace Prisma {
    */
   interface FormApprovalFieldRefs {
     readonly id: FieldRef<"FormApproval", 'String'>
-    readonly formSubmissionId: FieldRef<"FormApproval", 'Int'>
     readonly signedBy: FieldRef<"FormApproval", 'String'>
     readonly submittedAt: FieldRef<"FormApproval", 'DateTime'>
     readonly updatedAt: FieldRef<"FormApproval", 'DateTime'>
     readonly signature: FieldRef<"FormApproval", 'String'>
     readonly comment: FieldRef<"FormApproval", 'String'>
+    readonly formSubmissionId: FieldRef<"FormApproval", 'Int'>
   }
     
 
@@ -23138,7 +23138,6 @@ export namespace Prisma {
   }
 
   export type ReportMinAggregateOutputType = {
-    id: number | null
     name: string | null
     description: string | null
     companyId: string | null
@@ -23146,10 +23145,10 @@ export namespace Prisma {
     createdBy: string | null
     updatedAt: Date | null
     visibility: $Enums.ReportVisibility | null
+    id: number | null
   }
 
   export type ReportMaxAggregateOutputType = {
-    id: number | null
     name: string | null
     description: string | null
     companyId: string | null
@@ -23157,10 +23156,10 @@ export namespace Prisma {
     createdBy: string | null
     updatedAt: Date | null
     visibility: $Enums.ReportVisibility | null
+    id: number | null
   }
 
   export type ReportCountAggregateOutputType = {
-    id: number
     name: number
     description: number
     companyId: number
@@ -23170,6 +23169,7 @@ export namespace Prisma {
     parameters: number
     visibility: number
     tags: number
+    id: number
     _all: number
   }
 
@@ -23183,7 +23183,6 @@ export namespace Prisma {
   }
 
   export type ReportMinAggregateInputType = {
-    id?: true
     name?: true
     description?: true
     companyId?: true
@@ -23191,10 +23190,10 @@ export namespace Prisma {
     createdBy?: true
     updatedAt?: true
     visibility?: true
+    id?: true
   }
 
   export type ReportMaxAggregateInputType = {
-    id?: true
     name?: true
     description?: true
     companyId?: true
@@ -23202,10 +23201,10 @@ export namespace Prisma {
     createdBy?: true
     updatedAt?: true
     visibility?: true
+    id?: true
   }
 
   export type ReportCountAggregateInputType = {
-    id?: true
     name?: true
     description?: true
     companyId?: true
@@ -23215,6 +23214,7 @@ export namespace Prisma {
     parameters?: true
     visibility?: true
     tags?: true
+    id?: true
     _all?: true
   }
 
@@ -23305,7 +23305,6 @@ export namespace Prisma {
   }
 
   export type ReportGroupByOutputType = {
-    id: number
     name: string
     description: string
     companyId: string
@@ -23315,6 +23314,7 @@ export namespace Prisma {
     parameters: JsonValue | null
     visibility: $Enums.ReportVisibility
     tags: string[]
+    id: number
     _count: ReportCountAggregateOutputType | null
     _avg: ReportAvgAggregateOutputType | null
     _sum: ReportSumAggregateOutputType | null
@@ -23337,7 +23337,6 @@ export namespace Prisma {
 
 
   export type ReportSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     name?: boolean
     description?: boolean
     companyId?: boolean
@@ -23347,13 +23346,13 @@ export namespace Prisma {
     parameters?: boolean
     visibility?: boolean
     tags?: boolean
+    id?: boolean
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
     ReportRuns?: boolean | Report$ReportRunsArgs<ExtArgs>
     _count?: boolean | ReportCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["report"]>
 
   export type ReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     name?: boolean
     description?: boolean
     companyId?: boolean
@@ -23363,11 +23362,11 @@ export namespace Prisma {
     parameters?: boolean
     visibility?: boolean
     tags?: boolean
+    id?: boolean
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["report"]>
 
   export type ReportSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     name?: boolean
     description?: boolean
     companyId?: boolean
@@ -23377,11 +23376,11 @@ export namespace Prisma {
     parameters?: boolean
     visibility?: boolean
     tags?: boolean
+    id?: boolean
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["report"]>
 
   export type ReportSelectScalar = {
-    id?: boolean
     name?: boolean
     description?: boolean
     companyId?: boolean
@@ -23391,9 +23390,10 @@ export namespace Prisma {
     parameters?: boolean
     visibility?: boolean
     tags?: boolean
+    id?: boolean
   }
 
-  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "companyId" | "createdAt" | "createdBy" | "updatedAt" | "parameters" | "visibility" | "tags", ExtArgs["result"]["report"]>
+  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"name" | "description" | "companyId" | "createdAt" | "createdBy" | "updatedAt" | "parameters" | "visibility" | "tags" | "id", ExtArgs["result"]["report"]>
   export type ReportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
     ReportRuns?: boolean | Report$ReportRunsArgs<ExtArgs>
@@ -23413,7 +23413,6 @@ export namespace Prisma {
       ReportRuns: Prisma.$ReportRunPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
       name: string
       description: string
       companyId: string
@@ -23423,6 +23422,7 @@ export namespace Prisma {
       parameters: Prisma.JsonValue | null
       visibility: $Enums.ReportVisibility
       tags: string[]
+      id: number
     }, ExtArgs["result"]["report"]>
     composites: {}
   }
@@ -23506,8 +23506,8 @@ export namespace Prisma {
      * // Get first 10 Reports
      * const reports = await prisma.report.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const reportWithIdOnly = await prisma.report.findMany({ select: { id: true } })
+     * // Only select the `name`
+     * const reportWithNameOnly = await prisma.report.findMany({ select: { name: true } })
      * 
      */
     findMany<T extends ReportFindManyArgs>(args?: SelectSubset<T, ReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -23551,9 +23551,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many Reports and only return the `id`
-     * const reportWithIdOnly = await prisma.report.createManyAndReturn({
-     *   select: { id: true },
+     * // Create many Reports and only return the `name`
+     * const reportWithNameOnly = await prisma.report.createManyAndReturn({
+     *   select: { name: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -23642,9 +23642,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more Reports and only return the `id`
-     * const reportWithIdOnly = await prisma.report.updateManyAndReturn({
-     *   select: { id: true },
+     * // Update zero or more Reports and only return the `name`
+     * const reportWithNameOnly = await prisma.report.updateManyAndReturn({
+     *   select: { name: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -23848,7 +23848,6 @@ export namespace Prisma {
    * Fields of the Report model
    */
   interface ReportFieldRefs {
-    readonly id: FieldRef<"Report", 'Int'>
     readonly name: FieldRef<"Report", 'String'>
     readonly description: FieldRef<"Report", 'String'>
     readonly companyId: FieldRef<"Report", 'String'>
@@ -23858,6 +23857,7 @@ export namespace Prisma {
     readonly parameters: FieldRef<"Report", 'Json'>
     readonly visibility: FieldRef<"Report", 'ReportVisibility'>
     readonly tags: FieldRef<"Report", 'String[]'>
+    readonly id: FieldRef<"Report", 'Int'>
   }
     
 
@@ -24309,40 +24309,39 @@ export namespace Prisma {
   }
 
   export type ReportRunAvgAggregateOutputType = {
-    reportId: number | null
     duration: number | null
+    reportId: number | null
   }
 
   export type ReportRunSumAggregateOutputType = {
-    reportId: number | null
     duration: number | null
+    reportId: number | null
   }
 
   export type ReportRunMinAggregateOutputType = {
     id: string | null
-    reportId: number | null
     runAt: Date | null
     status: $Enums.ReportStatus | null
     duration: number | null
     startDate: Date | null
     endDate: Date | null
     lastExportedAt: Date | null
+    reportId: number | null
   }
 
   export type ReportRunMaxAggregateOutputType = {
     id: string | null
-    reportId: number | null
     runAt: Date | null
     status: $Enums.ReportStatus | null
     duration: number | null
     startDate: Date | null
     endDate: Date | null
     lastExportedAt: Date | null
+    reportId: number | null
   }
 
   export type ReportRunCountAggregateOutputType = {
     id: number
-    reportId: number
     runAt: number
     status: number
     results: number
@@ -24352,45 +24351,45 @@ export namespace Prisma {
     customParams: number
     exportFormats: number
     lastExportedAt: number
+    reportId: number
     _all: number
   }
 
 
   export type ReportRunAvgAggregateInputType = {
-    reportId?: true
     duration?: true
+    reportId?: true
   }
 
   export type ReportRunSumAggregateInputType = {
-    reportId?: true
     duration?: true
+    reportId?: true
   }
 
   export type ReportRunMinAggregateInputType = {
     id?: true
-    reportId?: true
     runAt?: true
     status?: true
     duration?: true
     startDate?: true
     endDate?: true
     lastExportedAt?: true
+    reportId?: true
   }
 
   export type ReportRunMaxAggregateInputType = {
     id?: true
-    reportId?: true
     runAt?: true
     status?: true
     duration?: true
     startDate?: true
     endDate?: true
     lastExportedAt?: true
+    reportId?: true
   }
 
   export type ReportRunCountAggregateInputType = {
     id?: true
-    reportId?: true
     runAt?: true
     status?: true
     results?: true
@@ -24400,6 +24399,7 @@ export namespace Prisma {
     customParams?: true
     exportFormats?: true
     lastExportedAt?: true
+    reportId?: true
     _all?: true
   }
 
@@ -24491,7 +24491,6 @@ export namespace Prisma {
 
   export type ReportRunGroupByOutputType = {
     id: string
-    reportId: number
     runAt: Date
     status: $Enums.ReportStatus
     results: JsonValue | null
@@ -24501,6 +24500,7 @@ export namespace Prisma {
     customParams: JsonValue | null
     exportFormats: string[]
     lastExportedAt: Date | null
+    reportId: number
     _count: ReportRunCountAggregateOutputType | null
     _avg: ReportRunAvgAggregateOutputType | null
     _sum: ReportRunSumAggregateOutputType | null
@@ -24524,7 +24524,6 @@ export namespace Prisma {
 
   export type ReportRunSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    reportId?: boolean
     runAt?: boolean
     status?: boolean
     results?: boolean
@@ -24534,12 +24533,12 @@ export namespace Prisma {
     customParams?: boolean
     exportFormats?: boolean
     lastExportedAt?: boolean
+    reportId?: boolean
     Report?: boolean | ReportDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reportRun"]>
 
   export type ReportRunSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    reportId?: boolean
     runAt?: boolean
     status?: boolean
     results?: boolean
@@ -24549,12 +24548,12 @@ export namespace Prisma {
     customParams?: boolean
     exportFormats?: boolean
     lastExportedAt?: boolean
+    reportId?: boolean
     Report?: boolean | ReportDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reportRun"]>
 
   export type ReportRunSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    reportId?: boolean
     runAt?: boolean
     status?: boolean
     results?: boolean
@@ -24564,12 +24563,12 @@ export namespace Prisma {
     customParams?: boolean
     exportFormats?: boolean
     lastExportedAt?: boolean
+    reportId?: boolean
     Report?: boolean | ReportDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reportRun"]>
 
   export type ReportRunSelectScalar = {
     id?: boolean
-    reportId?: boolean
     runAt?: boolean
     status?: boolean
     results?: boolean
@@ -24579,9 +24578,10 @@ export namespace Prisma {
     customParams?: boolean
     exportFormats?: boolean
     lastExportedAt?: boolean
+    reportId?: boolean
   }
 
-  export type ReportRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reportId" | "runAt" | "status" | "results" | "duration" | "startDate" | "endDate" | "customParams" | "exportFormats" | "lastExportedAt", ExtArgs["result"]["reportRun"]>
+  export type ReportRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "runAt" | "status" | "results" | "duration" | "startDate" | "endDate" | "customParams" | "exportFormats" | "lastExportedAt" | "reportId", ExtArgs["result"]["reportRun"]>
   export type ReportRunInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Report?: boolean | ReportDefaultArgs<ExtArgs>
   }
@@ -24599,7 +24599,6 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      reportId: number
       runAt: Date
       status: $Enums.ReportStatus
       results: Prisma.JsonValue | null
@@ -24609,6 +24608,7 @@ export namespace Prisma {
       customParams: Prisma.JsonValue | null
       exportFormats: string[]
       lastExportedAt: Date | null
+      reportId: number
     }, ExtArgs["result"]["reportRun"]>
     composites: {}
   }
@@ -25034,7 +25034,6 @@ export namespace Prisma {
    */
   interface ReportRunFieldRefs {
     readonly id: FieldRef<"ReportRun", 'String'>
-    readonly reportId: FieldRef<"ReportRun", 'Int'>
     readonly runAt: FieldRef<"ReportRun", 'DateTime'>
     readonly status: FieldRef<"ReportRun", 'ReportStatus'>
     readonly results: FieldRef<"ReportRun", 'Json'>
@@ -25044,6 +25043,7 @@ export namespace Prisma {
     readonly customParams: FieldRef<"ReportRun", 'Json'>
     readonly exportFormats: FieldRef<"ReportRun", 'String[]'>
     readonly lastExportedAt: FieldRef<"ReportRun", 'DateTime'>
+    readonly reportId: FieldRef<"ReportRun", 'Int'>
   }
     
 
@@ -25471,23 +25471,22 @@ export namespace Prisma {
   }
 
   export type TimeSheetAvgAggregateOutputType = {
-    id: number | null
     clockInLat: number | null
     clockInLng: number | null
     clockOutLat: number | null
     clockOutLng: number | null
+    id: number | null
   }
 
   export type TimeSheetSumAggregateOutputType = {
-    id: number | null
     clockInLat: number | null
     clockInLng: number | null
     clockOutLat: number | null
     clockOutLng: number | null
+    id: number | null
   }
 
   export type TimeSheetMinAggregateOutputType = {
-    id: number | null
     date: Date | null
     userId: string | null
     jobsiteId: string | null
@@ -25513,10 +25512,10 @@ export namespace Prisma {
     withinFenceIn: boolean | null
     withinFenceOut: boolean | null
     wasInjured: boolean | null
+    id: number | null
   }
 
   export type TimeSheetMaxAggregateOutputType = {
-    id: number | null
     date: Date | null
     userId: string | null
     jobsiteId: string | null
@@ -25542,10 +25541,10 @@ export namespace Prisma {
     withinFenceIn: boolean | null
     withinFenceOut: boolean | null
     wasInjured: boolean | null
+    id: number | null
   }
 
   export type TimeSheetCountAggregateOutputType = {
-    id: number
     date: number
     userId: number
     jobsiteId: number
@@ -25571,28 +25570,28 @@ export namespace Prisma {
     withinFenceIn: number
     withinFenceOut: number
     wasInjured: number
+    id: number
     _all: number
   }
 
 
   export type TimeSheetAvgAggregateInputType = {
-    id?: true
     clockInLat?: true
     clockInLng?: true
     clockOutLat?: true
     clockOutLng?: true
+    id?: true
   }
 
   export type TimeSheetSumAggregateInputType = {
-    id?: true
     clockInLat?: true
     clockInLng?: true
     clockOutLat?: true
     clockOutLng?: true
+    id?: true
   }
 
   export type TimeSheetMinAggregateInputType = {
-    id?: true
     date?: true
     userId?: true
     jobsiteId?: true
@@ -25618,10 +25617,10 @@ export namespace Prisma {
     withinFenceIn?: true
     withinFenceOut?: true
     wasInjured?: true
+    id?: true
   }
 
   export type TimeSheetMaxAggregateInputType = {
-    id?: true
     date?: true
     userId?: true
     jobsiteId?: true
@@ -25647,10 +25646,10 @@ export namespace Prisma {
     withinFenceIn?: true
     withinFenceOut?: true
     wasInjured?: true
+    id?: true
   }
 
   export type TimeSheetCountAggregateInputType = {
-    id?: true
     date?: true
     userId?: true
     jobsiteId?: true
@@ -25676,6 +25675,7 @@ export namespace Prisma {
     withinFenceIn?: true
     withinFenceOut?: true
     wasInjured?: true
+    id?: true
     _all?: true
   }
 
@@ -25766,7 +25766,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetGroupByOutputType = {
-    id: number
     date: Date
     userId: string
     jobsiteId: string
@@ -25792,6 +25791,7 @@ export namespace Prisma {
     withinFenceIn: boolean | null
     withinFenceOut: boolean | null
     wasInjured: boolean | null
+    id: number
     _count: TimeSheetCountAggregateOutputType | null
     _avg: TimeSheetAvgAggregateOutputType | null
     _sum: TimeSheetSumAggregateOutputType | null
@@ -25814,7 +25814,6 @@ export namespace Prisma {
 
 
   export type TimeSheetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     date?: boolean
     userId?: boolean
     jobsiteId?: boolean
@@ -25840,19 +25839,19 @@ export namespace Prisma {
     withinFenceIn?: boolean
     withinFenceOut?: boolean
     wasInjured?: boolean
+    id?: boolean
     EmployeeEquipmentLogs?: boolean | TimeSheet$EmployeeEquipmentLogsArgs<ExtArgs>
     MaintenanceLogs?: boolean | TimeSheet$MaintenanceLogsArgs<ExtArgs>
     TascoLogs?: boolean | TimeSheet$TascoLogsArgs<ExtArgs>
     CostCode?: boolean | CostCodeDefaultArgs<ExtArgs>
     Jobsite?: boolean | JobsiteDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
-    TruckingLogs?: boolean | TimeSheet$TruckingLogsArgs<ExtArgs>
     ChangeLogs?: boolean | TimeSheet$ChangeLogsArgs<ExtArgs>
+    TruckingLogs?: boolean | TimeSheet$TruckingLogsArgs<ExtArgs>
     _count?: boolean | TimeSheetCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheet"]>
 
   export type TimeSheetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     date?: boolean
     userId?: boolean
     jobsiteId?: boolean
@@ -25878,13 +25877,13 @@ export namespace Prisma {
     withinFenceIn?: boolean
     withinFenceOut?: boolean
     wasInjured?: boolean
+    id?: boolean
     CostCode?: boolean | CostCodeDefaultArgs<ExtArgs>
     Jobsite?: boolean | JobsiteDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheet"]>
 
   export type TimeSheetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
     date?: boolean
     userId?: boolean
     jobsiteId?: boolean
@@ -25910,13 +25909,13 @@ export namespace Prisma {
     withinFenceIn?: boolean
     withinFenceOut?: boolean
     wasInjured?: boolean
+    id?: boolean
     CostCode?: boolean | CostCodeDefaultArgs<ExtArgs>
     Jobsite?: boolean | JobsiteDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheet"]>
 
   export type TimeSheetSelectScalar = {
-    id?: boolean
     date?: boolean
     userId?: boolean
     jobsiteId?: boolean
@@ -25942,9 +25941,10 @@ export namespace Prisma {
     withinFenceIn?: boolean
     withinFenceOut?: boolean
     wasInjured?: boolean
+    id?: boolean
   }
 
-  export type TimeSheetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "userId" | "jobsiteId" | "costcode" | "nu" | "Fp" | "startTime" | "endTime" | "comment" | "statusComment" | "location" | "status" | "workType" | "editedByUserId" | "newTimeSheetId" | "createdByAdmin" | "createdAt" | "updatedAt" | "clockInLat" | "clockInLng" | "clockOutLat" | "clockOutLng" | "withinFenceIn" | "withinFenceOut" | "wasInjured", ExtArgs["result"]["timeSheet"]>
+  export type TimeSheetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "userId" | "jobsiteId" | "costcode" | "nu" | "Fp" | "startTime" | "endTime" | "comment" | "statusComment" | "location" | "status" | "workType" | "editedByUserId" | "newTimeSheetId" | "createdByAdmin" | "createdAt" | "updatedAt" | "clockInLat" | "clockInLng" | "clockOutLat" | "clockOutLng" | "withinFenceIn" | "withinFenceOut" | "wasInjured" | "id", ExtArgs["result"]["timeSheet"]>
   export type TimeSheetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     EmployeeEquipmentLogs?: boolean | TimeSheet$EmployeeEquipmentLogsArgs<ExtArgs>
     MaintenanceLogs?: boolean | TimeSheet$MaintenanceLogsArgs<ExtArgs>
@@ -25952,8 +25952,8 @@ export namespace Prisma {
     CostCode?: boolean | CostCodeDefaultArgs<ExtArgs>
     Jobsite?: boolean | JobsiteDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
-    TruckingLogs?: boolean | TimeSheet$TruckingLogsArgs<ExtArgs>
     ChangeLogs?: boolean | TimeSheet$ChangeLogsArgs<ExtArgs>
+    TruckingLogs?: boolean | TimeSheet$TruckingLogsArgs<ExtArgs>
     _count?: boolean | TimeSheetCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TimeSheetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -25976,11 +25976,10 @@ export namespace Prisma {
       CostCode: Prisma.$CostCodePayload<ExtArgs>
       Jobsite: Prisma.$JobsitePayload<ExtArgs>
       User: Prisma.$UserPayload<ExtArgs>
-      TruckingLogs: Prisma.$TruckingLogPayload<ExtArgs>[]
       ChangeLogs: Prisma.$TimeSheetChangeLogPayload<ExtArgs>[]
+      TruckingLogs: Prisma.$TruckingLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
       date: Date
       userId: string
       jobsiteId: string
@@ -26006,6 +26005,7 @@ export namespace Prisma {
       withinFenceIn: boolean | null
       withinFenceOut: boolean | null
       wasInjured: boolean | null
+      id: number
     }, ExtArgs["result"]["timeSheet"]>
     composites: {}
   }
@@ -26089,8 +26089,8 @@ export namespace Prisma {
      * // Get first 10 TimeSheets
      * const timeSheets = await prisma.timeSheet.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const timeSheetWithIdOnly = await prisma.timeSheet.findMany({ select: { id: true } })
+     * // Only select the `date`
+     * const timeSheetWithDateOnly = await prisma.timeSheet.findMany({ select: { date: true } })
      * 
      */
     findMany<T extends TimeSheetFindManyArgs>(args?: SelectSubset<T, TimeSheetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeSheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -26134,9 +26134,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many TimeSheets and only return the `id`
-     * const timeSheetWithIdOnly = await prisma.timeSheet.createManyAndReturn({
-     *   select: { id: true },
+     * // Create many TimeSheets and only return the `date`
+     * const timeSheetWithDateOnly = await prisma.timeSheet.createManyAndReturn({
+     *   select: { date: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -26225,9 +26225,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more TimeSheets and only return the `id`
-     * const timeSheetWithIdOnly = await prisma.timeSheet.updateManyAndReturn({
-     *   select: { id: true },
+     * // Update zero or more TimeSheets and only return the `date`
+     * const timeSheetWithDateOnly = await prisma.timeSheet.updateManyAndReturn({
+     *   select: { date: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -26406,8 +26406,8 @@ export namespace Prisma {
     CostCode<T extends CostCodeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CostCodeDefaultArgs<ExtArgs>>): Prisma__CostCodeClient<$Result.GetResult<Prisma.$CostCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     Jobsite<T extends JobsiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, JobsiteDefaultArgs<ExtArgs>>): Prisma__JobsiteClient<$Result.GetResult<Prisma.$JobsitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     User<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    TruckingLogs<T extends TimeSheet$TruckingLogsArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$TruckingLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckingLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ChangeLogs<T extends TimeSheet$ChangeLogsArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$ChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeSheetChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    TruckingLogs<T extends TimeSheet$TruckingLogsArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$TruckingLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckingLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -26437,7 +26437,6 @@ export namespace Prisma {
    * Fields of the TimeSheet model
    */
   interface TimeSheetFieldRefs {
-    readonly id: FieldRef<"TimeSheet", 'Int'>
     readonly date: FieldRef<"TimeSheet", 'DateTime'>
     readonly userId: FieldRef<"TimeSheet", 'String'>
     readonly jobsiteId: FieldRef<"TimeSheet", 'String'>
@@ -26463,6 +26462,7 @@ export namespace Prisma {
     readonly withinFenceIn: FieldRef<"TimeSheet", 'Boolean'>
     readonly withinFenceOut: FieldRef<"TimeSheet", 'Boolean'>
     readonly wasInjured: FieldRef<"TimeSheet", 'Boolean'>
+    readonly id: FieldRef<"TimeSheet", 'Int'>
   }
     
 
@@ -26931,30 +26931,6 @@ export namespace Prisma {
   }
 
   /**
-   * TimeSheet.TruckingLogs
-   */
-  export type TimeSheet$TruckingLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TruckingLog
-     */
-    select?: TruckingLogSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TruckingLog
-     */
-    omit?: TruckingLogOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TruckingLogInclude<ExtArgs> | null
-    where?: TruckingLogWhereInput
-    orderBy?: TruckingLogOrderByWithRelationInput | TruckingLogOrderByWithRelationInput[]
-    cursor?: TruckingLogWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TruckingLogScalarFieldEnum | TruckingLogScalarFieldEnum[]
-  }
-
-  /**
    * TimeSheet.ChangeLogs
    */
   export type TimeSheet$ChangeLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -26976,6 +26952,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TimeSheetChangeLogScalarFieldEnum | TimeSheetChangeLogScalarFieldEnum[]
+  }
+
+  /**
+   * TimeSheet.TruckingLogs
+   */
+  export type TimeSheet$TruckingLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckingLog
+     */
+    select?: TruckingLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckingLog
+     */
+    omit?: TruckingLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckingLogInclude<ExtArgs> | null
+    where?: TruckingLogWhereInput
+    orderBy?: TruckingLogOrderByWithRelationInput | TruckingLogOrderByWithRelationInput[]
+    cursor?: TruckingLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TruckingLogScalarFieldEnum | TruckingLogScalarFieldEnum[]
   }
 
   /**
@@ -27019,32 +27019,32 @@ export namespace Prisma {
 
   export type MaintenanceLogMinAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     userId: string | null
     maintenanceId: string | null
     startTime: Date | null
     endTime: Date | null
     comment: string | null
+    timeSheetId: number | null
   }
 
   export type MaintenanceLogMaxAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     userId: string | null
     maintenanceId: string | null
     startTime: Date | null
     endTime: Date | null
     comment: string | null
+    timeSheetId: number | null
   }
 
   export type MaintenanceLogCountAggregateOutputType = {
     id: number
-    timeSheetId: number
     userId: number
     maintenanceId: number
     startTime: number
     endTime: number
     comment: number
+    timeSheetId: number
     _all: number
   }
 
@@ -27059,32 +27059,32 @@ export namespace Prisma {
 
   export type MaintenanceLogMinAggregateInputType = {
     id?: true
-    timeSheetId?: true
     userId?: true
     maintenanceId?: true
     startTime?: true
     endTime?: true
     comment?: true
+    timeSheetId?: true
   }
 
   export type MaintenanceLogMaxAggregateInputType = {
     id?: true
-    timeSheetId?: true
     userId?: true
     maintenanceId?: true
     startTime?: true
     endTime?: true
     comment?: true
+    timeSheetId?: true
   }
 
   export type MaintenanceLogCountAggregateInputType = {
     id?: true
-    timeSheetId?: true
     userId?: true
     maintenanceId?: true
     startTime?: true
     endTime?: true
     comment?: true
+    timeSheetId?: true
     _all?: true
   }
 
@@ -27176,12 +27176,12 @@ export namespace Prisma {
 
   export type MaintenanceLogGroupByOutputType = {
     id: string
-    timeSheetId: number
     userId: string
     maintenanceId: string
     startTime: Date
     endTime: Date | null
     comment: string | null
+    timeSheetId: number
     _count: MaintenanceLogCountAggregateOutputType | null
     _avg: MaintenanceLogAvgAggregateOutputType | null
     _sum: MaintenanceLogSumAggregateOutputType | null
@@ -27205,12 +27205,12 @@ export namespace Prisma {
 
   export type MaintenanceLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     userId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     Maintenance?: boolean | MaintenanceDefaultArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
@@ -27218,12 +27218,12 @@ export namespace Prisma {
 
   export type MaintenanceLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     userId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     Maintenance?: boolean | MaintenanceDefaultArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
@@ -27231,12 +27231,12 @@ export namespace Prisma {
 
   export type MaintenanceLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     userId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
     Maintenance?: boolean | MaintenanceDefaultArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
@@ -27244,15 +27244,15 @@ export namespace Prisma {
 
   export type MaintenanceLogSelectScalar = {
     id?: boolean
-    timeSheetId?: boolean
     userId?: boolean
     maintenanceId?: boolean
     startTime?: boolean
     endTime?: boolean
     comment?: boolean
+    timeSheetId?: boolean
   }
 
-  export type MaintenanceLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "userId" | "maintenanceId" | "startTime" | "endTime" | "comment", ExtArgs["result"]["maintenanceLog"]>
+  export type MaintenanceLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "maintenanceId" | "startTime" | "endTime" | "comment" | "timeSheetId", ExtArgs["result"]["maintenanceLog"]>
   export type MaintenanceLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Maintenance?: boolean | MaintenanceDefaultArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
@@ -27278,12 +27278,12 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      timeSheetId: number
       userId: string
       maintenanceId: string
       startTime: Date
       endTime: Date | null
       comment: string | null
+      timeSheetId: number
     }, ExtArgs["result"]["maintenanceLog"]>
     composites: {}
   }
@@ -27711,12 +27711,12 @@ export namespace Prisma {
    */
   interface MaintenanceLogFieldRefs {
     readonly id: FieldRef<"MaintenanceLog", 'String'>
-    readonly timeSheetId: FieldRef<"MaintenanceLog", 'Int'>
     readonly userId: FieldRef<"MaintenanceLog", 'String'>
     readonly maintenanceId: FieldRef<"MaintenanceLog", 'String'>
     readonly startTime: FieldRef<"MaintenanceLog", 'DateTime'>
     readonly endTime: FieldRef<"MaintenanceLog", 'DateTime'>
     readonly comment: FieldRef<"MaintenanceLog", 'String'>
+    readonly timeSheetId: FieldRef<"MaintenanceLog", 'Int'>
   }
     
 
@@ -29450,91 +29450,91 @@ export namespace Prisma {
   }
 
   export type TascoLogAvgAggregateOutputType = {
-    timeSheetId: number | null
     LoadQuantity: number | null
+    timeSheetId: number | null
   }
 
   export type TascoLogSumAggregateOutputType = {
-    timeSheetId: number | null
     LoadQuantity: number | null
+    timeSheetId: number | null
   }
 
   export type TascoLogMinAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     shiftType: string | null
     equipmentId: string | null
     laborType: string | null
     materialType: string | null
     LoadQuantity: number | null
     screenType: $Enums.LoadType | null
+    timeSheetId: number | null
   }
 
   export type TascoLogMaxAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     shiftType: string | null
     equipmentId: string | null
     laborType: string | null
     materialType: string | null
     LoadQuantity: number | null
     screenType: $Enums.LoadType | null
+    timeSheetId: number | null
   }
 
   export type TascoLogCountAggregateOutputType = {
     id: number
-    timeSheetId: number
     shiftType: number
     equipmentId: number
     laborType: number
     materialType: number
     LoadQuantity: number
     screenType: number
+    timeSheetId: number
     _all: number
   }
 
 
   export type TascoLogAvgAggregateInputType = {
-    timeSheetId?: true
     LoadQuantity?: true
+    timeSheetId?: true
   }
 
   export type TascoLogSumAggregateInputType = {
-    timeSheetId?: true
     LoadQuantity?: true
+    timeSheetId?: true
   }
 
   export type TascoLogMinAggregateInputType = {
     id?: true
-    timeSheetId?: true
     shiftType?: true
     equipmentId?: true
     laborType?: true
     materialType?: true
     LoadQuantity?: true
     screenType?: true
+    timeSheetId?: true
   }
 
   export type TascoLogMaxAggregateInputType = {
     id?: true
-    timeSheetId?: true
     shiftType?: true
     equipmentId?: true
     laborType?: true
     materialType?: true
     LoadQuantity?: true
     screenType?: true
+    timeSheetId?: true
   }
 
   export type TascoLogCountAggregateInputType = {
     id?: true
-    timeSheetId?: true
     shiftType?: true
     equipmentId?: true
     laborType?: true
     materialType?: true
     LoadQuantity?: true
     screenType?: true
+    timeSheetId?: true
     _all?: true
   }
 
@@ -29626,13 +29626,13 @@ export namespace Prisma {
 
   export type TascoLogGroupByOutputType = {
     id: string
-    timeSheetId: number
     shiftType: string
     equipmentId: string | null
     laborType: string | null
     materialType: string | null
     LoadQuantity: number
     screenType: $Enums.LoadType | null
+    timeSheetId: number
     _count: TascoLogCountAggregateOutputType | null
     _avg: TascoLogAvgAggregateOutputType | null
     _sum: TascoLogSumAggregateOutputType | null
@@ -29656,13 +29656,13 @@ export namespace Prisma {
 
   export type TascoLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     shiftType?: boolean
     equipmentId?: boolean
     laborType?: boolean
     materialType?: boolean
     LoadQuantity?: boolean
     screenType?: boolean
+    timeSheetId?: boolean
     RefuelLogs?: boolean | TascoLog$RefuelLogsArgs<ExtArgs>
     Equipment?: boolean | TascoLog$EquipmentArgs<ExtArgs>
     TascoMaterialTypes?: boolean | TascoLog$TascoMaterialTypesArgs<ExtArgs>
@@ -29672,13 +29672,13 @@ export namespace Prisma {
 
   export type TascoLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     shiftType?: boolean
     equipmentId?: boolean
     laborType?: boolean
     materialType?: boolean
     LoadQuantity?: boolean
     screenType?: boolean
+    timeSheetId?: boolean
     Equipment?: boolean | TascoLog$EquipmentArgs<ExtArgs>
     TascoMaterialTypes?: boolean | TascoLog$TascoMaterialTypesArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
@@ -29686,13 +29686,13 @@ export namespace Prisma {
 
   export type TascoLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     shiftType?: boolean
     equipmentId?: boolean
     laborType?: boolean
     materialType?: boolean
     LoadQuantity?: boolean
     screenType?: boolean
+    timeSheetId?: boolean
     Equipment?: boolean | TascoLog$EquipmentArgs<ExtArgs>
     TascoMaterialTypes?: boolean | TascoLog$TascoMaterialTypesArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
@@ -29700,16 +29700,16 @@ export namespace Prisma {
 
   export type TascoLogSelectScalar = {
     id?: boolean
-    timeSheetId?: boolean
     shiftType?: boolean
     equipmentId?: boolean
     laborType?: boolean
     materialType?: boolean
     LoadQuantity?: boolean
     screenType?: boolean
+    timeSheetId?: boolean
   }
 
-  export type TascoLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "shiftType" | "equipmentId" | "laborType" | "materialType" | "LoadQuantity" | "screenType", ExtArgs["result"]["tascoLog"]>
+  export type TascoLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shiftType" | "equipmentId" | "laborType" | "materialType" | "LoadQuantity" | "screenType" | "timeSheetId", ExtArgs["result"]["tascoLog"]>
   export type TascoLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     RefuelLogs?: boolean | TascoLog$RefuelLogsArgs<ExtArgs>
     Equipment?: boolean | TascoLog$EquipmentArgs<ExtArgs>
@@ -29738,13 +29738,13 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      timeSheetId: number
       shiftType: string
       equipmentId: string | null
       laborType: string | null
       materialType: string | null
       LoadQuantity: number
       screenType: $Enums.LoadType | null
+      timeSheetId: number
     }, ExtArgs["result"]["tascoLog"]>
     composites: {}
   }
@@ -30173,13 +30173,13 @@ export namespace Prisma {
    */
   interface TascoLogFieldRefs {
     readonly id: FieldRef<"TascoLog", 'String'>
-    readonly timeSheetId: FieldRef<"TascoLog", 'Int'>
     readonly shiftType: FieldRef<"TascoLog", 'String'>
     readonly equipmentId: FieldRef<"TascoLog", 'String'>
     readonly laborType: FieldRef<"TascoLog", 'String'>
     readonly materialType: FieldRef<"TascoLog", 'String'>
     readonly LoadQuantity: FieldRef<"TascoLog", 'Int'>
     readonly screenType: FieldRef<"TascoLog", 'LoadType'>
+    readonly timeSheetId: FieldRef<"TascoLog", 'Int'>
   }
     
 
@@ -31700,20 +31700,19 @@ export namespace Prisma {
   }
 
   export type TruckingLogAvgAggregateOutputType = {
-    timeSheetId: number | null
     startingMileage: number | null
     endingMileage: number | null
+    timeSheetId: number | null
   }
 
   export type TruckingLogSumAggregateOutputType = {
-    timeSheetId: number | null
     startingMileage: number | null
     endingMileage: number | null
+    timeSheetId: number | null
   }
 
   export type TruckingLogMinAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     laborType: string | null
     taskName: string | null
     equipmentId: string | null
@@ -31722,11 +31721,11 @@ export namespace Prisma {
     truckLaborLogId: string | null
     trailerNumber: string | null
     truckNumber: string | null
+    timeSheetId: number | null
   }
 
   export type TruckingLogMaxAggregateOutputType = {
     id: string | null
-    timeSheetId: number | null
     laborType: string | null
     taskName: string | null
     equipmentId: string | null
@@ -31735,11 +31734,11 @@ export namespace Prisma {
     truckLaborLogId: string | null
     trailerNumber: string | null
     truckNumber: string | null
+    timeSheetId: number | null
   }
 
   export type TruckingLogCountAggregateOutputType = {
     id: number
-    timeSheetId: number
     laborType: number
     taskName: number
     equipmentId: number
@@ -31748,25 +31747,25 @@ export namespace Prisma {
     truckLaborLogId: number
     trailerNumber: number
     truckNumber: number
+    timeSheetId: number
     _all: number
   }
 
 
   export type TruckingLogAvgAggregateInputType = {
-    timeSheetId?: true
     startingMileage?: true
     endingMileage?: true
+    timeSheetId?: true
   }
 
   export type TruckingLogSumAggregateInputType = {
-    timeSheetId?: true
     startingMileage?: true
     endingMileage?: true
+    timeSheetId?: true
   }
 
   export type TruckingLogMinAggregateInputType = {
     id?: true
-    timeSheetId?: true
     laborType?: true
     taskName?: true
     equipmentId?: true
@@ -31775,11 +31774,11 @@ export namespace Prisma {
     truckLaborLogId?: true
     trailerNumber?: true
     truckNumber?: true
+    timeSheetId?: true
   }
 
   export type TruckingLogMaxAggregateInputType = {
     id?: true
-    timeSheetId?: true
     laborType?: true
     taskName?: true
     equipmentId?: true
@@ -31788,11 +31787,11 @@ export namespace Prisma {
     truckLaborLogId?: true
     trailerNumber?: true
     truckNumber?: true
+    timeSheetId?: true
   }
 
   export type TruckingLogCountAggregateInputType = {
     id?: true
-    timeSheetId?: true
     laborType?: true
     taskName?: true
     equipmentId?: true
@@ -31801,6 +31800,7 @@ export namespace Prisma {
     truckLaborLogId?: true
     trailerNumber?: true
     truckNumber?: true
+    timeSheetId?: true
     _all?: true
   }
 
@@ -31892,7 +31892,6 @@ export namespace Prisma {
 
   export type TruckingLogGroupByOutputType = {
     id: string
-    timeSheetId: number
     laborType: string
     taskName: string | null
     equipmentId: string | null
@@ -31901,6 +31900,7 @@ export namespace Prisma {
     truckLaborLogId: string | null
     trailerNumber: string | null
     truckNumber: string | null
+    timeSheetId: number
     _count: TruckingLogCountAggregateOutputType | null
     _avg: TruckingLogAvgAggregateOutputType | null
     _sum: TruckingLogSumAggregateOutputType | null
@@ -31924,7 +31924,6 @@ export namespace Prisma {
 
   export type TruckingLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     laborType?: boolean
     taskName?: boolean
     equipmentId?: boolean
@@ -31933,6 +31932,7 @@ export namespace Prisma {
     truckLaborLogId?: boolean
     trailerNumber?: boolean
     truckNumber?: boolean
+    timeSheetId?: boolean
     EquipmentHauled?: boolean | TruckingLog$EquipmentHauledArgs<ExtArgs>
     Materials?: boolean | TruckingLog$MaterialsArgs<ExtArgs>
     RefuelLogs?: boolean | TruckingLog$RefuelLogsArgs<ExtArgs>
@@ -31946,7 +31946,6 @@ export namespace Prisma {
 
   export type TruckingLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     laborType?: boolean
     taskName?: boolean
     equipmentId?: boolean
@@ -31955,6 +31954,7 @@ export namespace Prisma {
     truckLaborLogId?: boolean
     trailerNumber?: boolean
     truckNumber?: boolean
+    timeSheetId?: boolean
     Equipment?: boolean | TruckingLog$EquipmentArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     Trailer?: boolean | TruckingLog$TrailerArgs<ExtArgs>
@@ -31963,7 +31963,6 @@ export namespace Prisma {
 
   export type TruckingLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    timeSheetId?: boolean
     laborType?: boolean
     taskName?: boolean
     equipmentId?: boolean
@@ -31972,6 +31971,7 @@ export namespace Prisma {
     truckLaborLogId?: boolean
     trailerNumber?: boolean
     truckNumber?: boolean
+    timeSheetId?: boolean
     Equipment?: boolean | TruckingLog$EquipmentArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     Trailer?: boolean | TruckingLog$TrailerArgs<ExtArgs>
@@ -31980,7 +31980,6 @@ export namespace Prisma {
 
   export type TruckingLogSelectScalar = {
     id?: boolean
-    timeSheetId?: boolean
     laborType?: boolean
     taskName?: boolean
     equipmentId?: boolean
@@ -31989,9 +31988,10 @@ export namespace Prisma {
     truckLaborLogId?: boolean
     trailerNumber?: boolean
     truckNumber?: boolean
+    timeSheetId?: boolean
   }
 
-  export type TruckingLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "laborType" | "taskName" | "equipmentId" | "startingMileage" | "endingMileage" | "truckLaborLogId" | "trailerNumber" | "truckNumber", ExtArgs["result"]["truckingLog"]>
+  export type TruckingLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "laborType" | "taskName" | "equipmentId" | "startingMileage" | "endingMileage" | "truckLaborLogId" | "trailerNumber" | "truckNumber" | "timeSheetId", ExtArgs["result"]["truckingLog"]>
   export type TruckingLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     EquipmentHauled?: boolean | TruckingLog$EquipmentHauledArgs<ExtArgs>
     Materials?: boolean | TruckingLog$MaterialsArgs<ExtArgs>
@@ -32030,7 +32030,6 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      timeSheetId: number
       laborType: string
       taskName: string | null
       equipmentId: string | null
@@ -32039,6 +32038,7 @@ export namespace Prisma {
       truckLaborLogId: string | null
       trailerNumber: string | null
       truckNumber: string | null
+      timeSheetId: number
     }, ExtArgs["result"]["truckingLog"]>
     composites: {}
   }
@@ -32471,7 +32471,6 @@ export namespace Prisma {
    */
   interface TruckingLogFieldRefs {
     readonly id: FieldRef<"TruckingLog", 'String'>
-    readonly timeSheetId: FieldRef<"TruckingLog", 'Int'>
     readonly laborType: FieldRef<"TruckingLog", 'String'>
     readonly taskName: FieldRef<"TruckingLog", 'String'>
     readonly equipmentId: FieldRef<"TruckingLog", 'String'>
@@ -32480,6 +32479,7 @@ export namespace Prisma {
     readonly truckLaborLogId: FieldRef<"TruckingLog", 'String'>
     readonly trailerNumber: FieldRef<"TruckingLog", 'String'>
     readonly truckNumber: FieldRef<"TruckingLog", 'String'>
+    readonly timeSheetId: FieldRef<"TruckingLog", 'Int'>
   }
     
 
@@ -37678,8 +37678,8 @@ export namespace Prisma {
     timeSheetId: number
     changedBy: number
     changedAt: number
-    changes: number
     changeReason: number
+    changes: number
     _all: number
   }
 
@@ -37713,8 +37713,8 @@ export namespace Prisma {
     timeSheetId?: true
     changedBy?: true
     changedAt?: true
-    changes?: true
     changeReason?: true
+    changes?: true
     _all?: true
   }
 
@@ -37809,8 +37809,8 @@ export namespace Prisma {
     timeSheetId: number
     changedBy: string
     changedAt: Date
-    changes: JsonValue
     changeReason: string | null
+    changes: JsonValue
     _count: TimeSheetChangeLogCountAggregateOutputType | null
     _avg: TimeSheetChangeLogAvgAggregateOutputType | null
     _sum: TimeSheetChangeLogSumAggregateOutputType | null
@@ -37837,10 +37837,10 @@ export namespace Prisma {
     timeSheetId?: boolean
     changedBy?: boolean
     changedAt?: boolean
-    changes?: boolean
     changeReason?: boolean
-    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    changes?: boolean
     User?: boolean | UserDefaultArgs<ExtArgs>
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheetChangeLog"]>
 
   export type TimeSheetChangeLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -37848,10 +37848,10 @@ export namespace Prisma {
     timeSheetId?: boolean
     changedBy?: boolean
     changedAt?: boolean
-    changes?: boolean
     changeReason?: boolean
-    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    changes?: boolean
     User?: boolean | UserDefaultArgs<ExtArgs>
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheetChangeLog"]>
 
   export type TimeSheetChangeLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -37859,10 +37859,10 @@ export namespace Prisma {
     timeSheetId?: boolean
     changedBy?: boolean
     changedAt?: boolean
-    changes?: boolean
     changeReason?: boolean
-    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    changes?: boolean
     User?: boolean | UserDefaultArgs<ExtArgs>
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheetChangeLog"]>
 
   export type TimeSheetChangeLogSelectScalar = {
@@ -37870,37 +37870,37 @@ export namespace Prisma {
     timeSheetId?: boolean
     changedBy?: boolean
     changedAt?: boolean
-    changes?: boolean
     changeReason?: boolean
+    changes?: boolean
   }
 
-  export type TimeSheetChangeLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "changedBy" | "changedAt" | "changes" | "changeReason", ExtArgs["result"]["timeSheetChangeLog"]>
+  export type TimeSheetChangeLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "changedBy" | "changedAt" | "changeReason" | "changes", ExtArgs["result"]["timeSheetChangeLog"]>
   export type TimeSheetChangeLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
   }
   export type TimeSheetChangeLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
   }
   export type TimeSheetChangeLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
   }
 
   export type $TimeSheetChangeLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TimeSheetChangeLog"
     objects: {
-      TimeSheet: Prisma.$TimeSheetPayload<ExtArgs>
       User: Prisma.$UserPayload<ExtArgs>
+      TimeSheet: Prisma.$TimeSheetPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       timeSheetId: number
       changedBy: string
       changedAt: Date
-      changes: Prisma.JsonValue
       changeReason: string | null
+      changes: Prisma.JsonValue
     }, ExtArgs["result"]["timeSheetChangeLog"]>
     composites: {}
   }
@@ -38295,8 +38295,8 @@ export namespace Prisma {
    */
   export interface Prisma__TimeSheetChangeLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    TimeSheet<T extends TimeSheetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheetDefaultArgs<ExtArgs>>): Prisma__TimeSheetClient<$Result.GetResult<Prisma.$TimeSheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     User<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    TimeSheet<T extends TimeSheetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheetDefaultArgs<ExtArgs>>): Prisma__TimeSheetClient<$Result.GetResult<Prisma.$TimeSheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -38330,8 +38330,8 @@ export namespace Prisma {
     readonly timeSheetId: FieldRef<"TimeSheetChangeLog", 'Int'>
     readonly changedBy: FieldRef<"TimeSheetChangeLog", 'String'>
     readonly changedAt: FieldRef<"TimeSheetChangeLog", 'DateTime'>
-    readonly changes: FieldRef<"TimeSheetChangeLog", 'Json'>
     readonly changeReason: FieldRef<"TimeSheetChangeLog", 'String'>
+    readonly changes: FieldRef<"TimeSheetChangeLog", 'Json'>
   }
     
 
@@ -39069,15 +39069,15 @@ export namespace Prisma {
     FormSubmissions?: boolean | User$FormSubmissionsArgs<ExtArgs>
     Jobsite?: boolean | User$JobsiteArgs<ExtArgs>
     MaintenanceLogs?: boolean | User$MaintenanceLogsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
     PasswordResetTokens?: boolean | User$PasswordResetTokensArgs<ExtArgs>
+    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     TimeSheets?: boolean | User$TimeSheetsArgs<ExtArgs>
     TimeSheetChanges?: boolean | User$TimeSheetChangesArgs<ExtArgs>
+    topicSubscriptions?: boolean | User$topicSubscriptionsArgs<ExtArgs>
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
     UserSettings?: boolean | User$UserSettingsArgs<ExtArgs>
     Crews?: boolean | User$CrewsArgs<ExtArgs>
-    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
-    topicSubscriptions?: boolean | User$topicSubscriptionsArgs<ExtArgs>
-    notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -39173,15 +39173,15 @@ export namespace Prisma {
     FormSubmissions?: boolean | User$FormSubmissionsArgs<ExtArgs>
     Jobsite?: boolean | User$JobsiteArgs<ExtArgs>
     MaintenanceLogs?: boolean | User$MaintenanceLogsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
     PasswordResetTokens?: boolean | User$PasswordResetTokensArgs<ExtArgs>
+    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     TimeSheets?: boolean | User$TimeSheetsArgs<ExtArgs>
     TimeSheetChanges?: boolean | User$TimeSheetChangesArgs<ExtArgs>
+    topicSubscriptions?: boolean | User$topicSubscriptionsArgs<ExtArgs>
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
     UserSettings?: boolean | User$UserSettingsArgs<ExtArgs>
     Crews?: boolean | User$CrewsArgs<ExtArgs>
-    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
-    topicSubscriptions?: boolean | User$topicSubscriptionsArgs<ExtArgs>
-    notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -39201,15 +39201,15 @@ export namespace Prisma {
       FormSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
       Jobsite: Prisma.$JobsitePayload<ExtArgs>[]
       MaintenanceLogs: Prisma.$MaintenanceLogPayload<ExtArgs>[]
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
       PasswordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
+      pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
       TimeSheets: Prisma.$TimeSheetPayload<ExtArgs>[]
       TimeSheetChanges: Prisma.$TimeSheetChangeLogPayload<ExtArgs>[]
+      topicSubscriptions: Prisma.$TopicSubscriptionPayload<ExtArgs>[]
       Company: Prisma.$CompanyPayload<ExtArgs>
       UserSettings: Prisma.$UserSettingsPayload<ExtArgs> | null
       Crews: Prisma.$CrewPayload<ExtArgs>[]
-      pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
-      topicSubscriptions: Prisma.$TopicSubscriptionPayload<ExtArgs>[]
-      notifications: Prisma.$NotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -39637,15 +39637,15 @@ export namespace Prisma {
     FormSubmissions<T extends User$FormSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$FormSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Jobsite<T extends User$JobsiteArgs<ExtArgs> = {}>(args?: Subset<T, User$JobsiteArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobsitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     MaintenanceLogs<T extends User$MaintenanceLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$MaintenanceLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     PasswordResetTokens<T extends User$PasswordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$PasswordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TimeSheets<T extends User$TimeSheetsArgs<ExtArgs> = {}>(args?: Subset<T, User$TimeSheetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeSheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TimeSheetChanges<T extends User$TimeSheetChangesArgs<ExtArgs> = {}>(args?: Subset<T, User$TimeSheetChangesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeSheetChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    topicSubscriptions<T extends User$topicSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$topicSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TopicSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     UserSettings<T extends User$UserSettingsArgs<ExtArgs> = {}>(args?: Subset<T, User$UserSettingsArgs<ExtArgs>>): Prisma__UserSettingsClient<$Result.GetResult<Prisma.$UserSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     Crews<T extends User$CrewsArgs<ExtArgs> = {}>(args?: Subset<T, User$CrewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    topicSubscriptions<T extends User$topicSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$topicSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TopicSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -40253,6 +40253,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.notifications
+   */
+  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
    * User.PasswordResetTokens
    */
   export type User$PasswordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40274,6 +40298,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PasswordResetTokenScalarFieldEnum | PasswordResetTokenScalarFieldEnum[]
+  }
+
+  /**
+   * User.pushSubscriptions
+   */
+  export type User$pushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    where?: PushSubscriptionWhereInput
+    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    cursor?: PushSubscriptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
   }
 
   /**
@@ -40325,6 +40373,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.topicSubscriptions
+   */
+  export type User$topicSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TopicSubscription
+     */
+    select?: TopicSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TopicSubscription
+     */
+    omit?: TopicSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TopicSubscriptionInclude<ExtArgs> | null
+    where?: TopicSubscriptionWhereInput
+    orderBy?: TopicSubscriptionOrderByWithRelationInput | TopicSubscriptionOrderByWithRelationInput[]
+    cursor?: TopicSubscriptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TopicSubscriptionScalarFieldEnum | TopicSubscriptionScalarFieldEnum[]
+  }
+
+  /**
    * User.UserSettings
    */
   export type User$UserSettingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40365,78 +40437,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CrewScalarFieldEnum | CrewScalarFieldEnum[]
-  }
-
-  /**
-   * User.pushSubscriptions
-   */
-  export type User$pushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PushSubscription
-     */
-    select?: PushSubscriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PushSubscription
-     */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PushSubscriptionInclude<ExtArgs> | null
-    where?: PushSubscriptionWhereInput
-    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
-    cursor?: PushSubscriptionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
-  }
-
-  /**
-   * User.topicSubscriptions
-   */
-  export type User$topicSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TopicSubscription
-     */
-    select?: TopicSubscriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TopicSubscription
-     */
-    omit?: TopicSubscriptionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TopicSubscriptionInclude<ExtArgs> | null
-    where?: TopicSubscriptionWhereInput
-    orderBy?: TopicSubscriptionOrderByWithRelationInput | TopicSubscriptionOrderByWithRelationInput[]
-    cursor?: TopicSubscriptionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TopicSubscriptionScalarFieldEnum | TopicSubscriptionScalarFieldEnum[]
-  }
-
-  /**
-   * User.notifications
-   */
-  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    cursor?: NotificationWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
   }
 
   /**
@@ -47067,64 +47067,64 @@ export namespace Prisma {
 
   export type TopicSubscriptionMinAggregateOutputType = {
     id: string | null
-    userId: string | null
     topic: string | null
+    createdAt: Date | null
     inApp: boolean | null
     push: boolean | null
+    userId: string | null
     frequency: $Enums.Frequency | null
-    createdAt: Date | null
   }
 
   export type TopicSubscriptionMaxAggregateOutputType = {
     id: string | null
-    userId: string | null
     topic: string | null
+    createdAt: Date | null
     inApp: boolean | null
     push: boolean | null
+    userId: string | null
     frequency: $Enums.Frequency | null
-    createdAt: Date | null
   }
 
   export type TopicSubscriptionCountAggregateOutputType = {
     id: number
-    userId: number
     topic: number
+    createdAt: number
     inApp: number
     push: number
+    userId: number
     frequency: number
-    createdAt: number
     _all: number
   }
 
 
   export type TopicSubscriptionMinAggregateInputType = {
     id?: true
-    userId?: true
     topic?: true
+    createdAt?: true
     inApp?: true
     push?: true
+    userId?: true
     frequency?: true
-    createdAt?: true
   }
 
   export type TopicSubscriptionMaxAggregateInputType = {
     id?: true
-    userId?: true
     topic?: true
+    createdAt?: true
     inApp?: true
     push?: true
+    userId?: true
     frequency?: true
-    createdAt?: true
   }
 
   export type TopicSubscriptionCountAggregateInputType = {
     id?: true
-    userId?: true
     topic?: true
+    createdAt?: true
     inApp?: true
     push?: true
+    userId?: true
     frequency?: true
-    createdAt?: true
     _all?: true
   }
 
@@ -47202,12 +47202,12 @@ export namespace Prisma {
 
   export type TopicSubscriptionGroupByOutputType = {
     id: string
-    userId: string
     topic: string
+    createdAt: Date
     inApp: boolean
     push: boolean
+    userId: string
     frequency: $Enums.Frequency
-    createdAt: Date
     _count: TopicSubscriptionCountAggregateOutputType | null
     _min: TopicSubscriptionMinAggregateOutputType | null
     _max: TopicSubscriptionMaxAggregateOutputType | null
@@ -47229,48 +47229,48 @@ export namespace Prisma {
 
   export type TopicSubscriptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     topic?: boolean
+    createdAt?: boolean
     inApp?: boolean
     push?: boolean
+    userId?: boolean
     frequency?: boolean
-    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topicSubscription"]>
 
   export type TopicSubscriptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     topic?: boolean
+    createdAt?: boolean
     inApp?: boolean
     push?: boolean
+    userId?: boolean
     frequency?: boolean
-    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topicSubscription"]>
 
   export type TopicSubscriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     topic?: boolean
+    createdAt?: boolean
     inApp?: boolean
     push?: boolean
+    userId?: boolean
     frequency?: boolean
-    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topicSubscription"]>
 
   export type TopicSubscriptionSelectScalar = {
     id?: boolean
-    userId?: boolean
     topic?: boolean
+    createdAt?: boolean
     inApp?: boolean
     push?: boolean
+    userId?: boolean
     frequency?: boolean
-    createdAt?: boolean
   }
 
-  export type TopicSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "topic" | "inApp" | "push" | "frequency" | "createdAt", ExtArgs["result"]["topicSubscription"]>
+  export type TopicSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "createdAt" | "inApp" | "push" | "userId" | "frequency", ExtArgs["result"]["topicSubscription"]>
   export type TopicSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -47288,12 +47288,12 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: string
       topic: string
+      createdAt: Date
       inApp: boolean
       push: boolean
+      userId: string
       frequency: $Enums.Frequency
-      createdAt: Date
     }, ExtArgs["result"]["topicSubscription"]>
     composites: {}
   }
@@ -47719,12 +47719,12 @@ export namespace Prisma {
    */
   interface TopicSubscriptionFieldRefs {
     readonly id: FieldRef<"TopicSubscription", 'String'>
-    readonly userId: FieldRef<"TopicSubscription", 'String'>
     readonly topic: FieldRef<"TopicSubscription", 'String'>
+    readonly createdAt: FieldRef<"TopicSubscription", 'DateTime'>
     readonly inApp: FieldRef<"TopicSubscription", 'Boolean'>
     readonly push: FieldRef<"TopicSubscription", 'Boolean'>
+    readonly userId: FieldRef<"TopicSubscription", 'String'>
     readonly frequency: FieldRef<"TopicSubscription", 'Frequency'>
-    readonly createdAt: FieldRef<"TopicSubscription", 'DateTime'>
   }
     
 
@@ -49391,32 +49391,32 @@ export namespace Prisma {
   export const EquipmentScalarFieldEnum: {
     id: 'id',
     qrId: 'qrId',
-    code: 'code',
     name: 'name',
     description: 'description',
-    memo: 'memo',
-    ownershipType: 'ownershipType',
-    make: 'make',
-    model: 'model',
-    year: 'year',
-    color: 'color',
-    serialNumber: 'serialNumber',
-    acquiredDate: 'acquiredDate',
-    acquiredCondition: 'acquiredCondition',
-    licensePlate: 'licensePlate',
-    licenseState: 'licenseState',
-    registrationExpiration: 'registrationExpiration',
+    creationReason: 'creationReason',
     equipmentTag: 'equipmentTag',
-    overWeight: 'overWeight',
-    currentWeight: 'currentWeight',
     state: 'state',
     isDisabledByAdmin: 'isDisabledByAdmin',
-    creationReason: 'creationReason',
     approvalStatus: 'approvalStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    overWeight: 'overWeight',
+    currentWeight: 'currentWeight',
+    createdById: 'createdById',
     createdVia: 'createdVia',
-    createdById: 'createdById'
+    acquiredDate: 'acquiredDate',
+    code: 'code',
+    color: 'color',
+    licensePlate: 'licensePlate',
+    licenseState: 'licenseState',
+    make: 'make',
+    memo: 'memo',
+    model: 'model',
+    ownershipType: 'ownershipType',
+    registrationExpiration: 'registrationExpiration',
+    serialNumber: 'serialNumber',
+    year: 'year',
+    acquiredCondition: 'acquiredCondition'
   };
 
   export type EquipmentScalarFieldEnum = (typeof EquipmentScalarFieldEnum)[keyof typeof EquipmentScalarFieldEnum]
@@ -49424,12 +49424,12 @@ export namespace Prisma {
 
   export const EmployeeEquipmentLogScalarFieldEnum: {
     id: 'id',
-    timeSheetId: 'timeSheetId',
     equipmentId: 'equipmentId',
     maintenanceId: 'maintenanceId',
     startTime: 'startTime',
     endTime: 'endTime',
     comment: 'comment',
+    timeSheetId: 'timeSheetId',
     rental: 'rental'
   };
 
@@ -49488,7 +49488,6 @@ export namespace Prisma {
 
 
   export const FormSubmissionScalarFieldEnum: {
-    id: 'id',
     title: 'title',
     formTemplateId: 'formTemplateId',
     userId: 'userId',
@@ -49497,7 +49496,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     submittedAt: 'submittedAt',
-    status: 'status'
+    status: 'status',
+    id: 'id'
   };
 
   export type FormSubmissionScalarFieldEnum = (typeof FormSubmissionScalarFieldEnum)[keyof typeof FormSubmissionScalarFieldEnum]
@@ -49505,12 +49505,12 @@ export namespace Prisma {
 
   export const FormApprovalScalarFieldEnum: {
     id: 'id',
-    formSubmissionId: 'formSubmissionId',
     signedBy: 'signedBy',
     submittedAt: 'submittedAt',
     updatedAt: 'updatedAt',
     signature: 'signature',
-    comment: 'comment'
+    comment: 'comment',
+    formSubmissionId: 'formSubmissionId'
   };
 
   export type FormApprovalScalarFieldEnum = (typeof FormApprovalScalarFieldEnum)[keyof typeof FormApprovalScalarFieldEnum]
@@ -49541,7 +49541,6 @@ export namespace Prisma {
 
 
   export const ReportScalarFieldEnum: {
-    id: 'id',
     name: 'name',
     description: 'description',
     companyId: 'companyId',
@@ -49550,7 +49549,8 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     parameters: 'parameters',
     visibility: 'visibility',
-    tags: 'tags'
+    tags: 'tags',
+    id: 'id'
   };
 
   export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
@@ -49558,7 +49558,6 @@ export namespace Prisma {
 
   export const ReportRunScalarFieldEnum: {
     id: 'id',
-    reportId: 'reportId',
     runAt: 'runAt',
     status: 'status',
     results: 'results',
@@ -49567,14 +49566,14 @@ export namespace Prisma {
     endDate: 'endDate',
     customParams: 'customParams',
     exportFormats: 'exportFormats',
-    lastExportedAt: 'lastExportedAt'
+    lastExportedAt: 'lastExportedAt',
+    reportId: 'reportId'
   };
 
   export type ReportRunScalarFieldEnum = (typeof ReportRunScalarFieldEnum)[keyof typeof ReportRunScalarFieldEnum]
 
 
   export const TimeSheetScalarFieldEnum: {
-    id: 'id',
     date: 'date',
     userId: 'userId',
     jobsiteId: 'jobsiteId',
@@ -49599,7 +49598,8 @@ export namespace Prisma {
     clockOutLng: 'clockOutLng',
     withinFenceIn: 'withinFenceIn',
     withinFenceOut: 'withinFenceOut',
-    wasInjured: 'wasInjured'
+    wasInjured: 'wasInjured',
+    id: 'id'
   };
 
   export type TimeSheetScalarFieldEnum = (typeof TimeSheetScalarFieldEnum)[keyof typeof TimeSheetScalarFieldEnum]
@@ -49607,12 +49607,12 @@ export namespace Prisma {
 
   export const MaintenanceLogScalarFieldEnum: {
     id: 'id',
-    timeSheetId: 'timeSheetId',
     userId: 'userId',
     maintenanceId: 'maintenanceId',
     startTime: 'startTime',
     endTime: 'endTime',
-    comment: 'comment'
+    comment: 'comment',
+    timeSheetId: 'timeSheetId'
   };
 
   export type MaintenanceLogScalarFieldEnum = (typeof MaintenanceLogScalarFieldEnum)[keyof typeof MaintenanceLogScalarFieldEnum]
@@ -49643,13 +49643,13 @@ export namespace Prisma {
 
   export const TascoLogScalarFieldEnum: {
     id: 'id',
-    timeSheetId: 'timeSheetId',
     shiftType: 'shiftType',
     equipmentId: 'equipmentId',
     laborType: 'laborType',
     materialType: 'materialType',
     LoadQuantity: 'LoadQuantity',
-    screenType: 'screenType'
+    screenType: 'screenType',
+    timeSheetId: 'timeSheetId'
   };
 
   export type TascoLogScalarFieldEnum = (typeof TascoLogScalarFieldEnum)[keyof typeof TascoLogScalarFieldEnum]
@@ -49665,7 +49665,6 @@ export namespace Prisma {
 
   export const TruckingLogScalarFieldEnum: {
     id: 'id',
-    timeSheetId: 'timeSheetId',
     laborType: 'laborType',
     taskName: 'taskName',
     equipmentId: 'equipmentId',
@@ -49673,7 +49672,8 @@ export namespace Prisma {
     endingMileage: 'endingMileage',
     truckLaborLogId: 'truckLaborLogId',
     trailerNumber: 'trailerNumber',
-    truckNumber: 'truckNumber'
+    truckNumber: 'truckNumber',
+    timeSheetId: 'timeSheetId'
   };
 
   export type TruckingLogScalarFieldEnum = (typeof TruckingLogScalarFieldEnum)[keyof typeof TruckingLogScalarFieldEnum]
@@ -49735,8 +49735,8 @@ export namespace Prisma {
     timeSheetId: 'timeSheetId',
     changedBy: 'changedBy',
     changedAt: 'changedAt',
-    changes: 'changes',
-    changeReason: 'changeReason'
+    changeReason: 'changeReason',
+    changes: 'changes'
   };
 
   export type TimeSheetChangeLogScalarFieldEnum = (typeof TimeSheetChangeLogScalarFieldEnum)[keyof typeof TimeSheetChangeLogScalarFieldEnum]
@@ -49852,12 +49852,12 @@ export namespace Prisma {
 
   export const TopicSubscriptionScalarFieldEnum: {
     id: 'id',
-    userId: 'userId',
     topic: 'topic',
+    createdAt: 'createdAt',
     inApp: 'inApp',
     push: 'push',
-    frequency: 'frequency',
-    createdAt: 'createdAt'
+    userId: 'userId',
+    frequency: 'frequency'
   };
 
   export type TopicSubscriptionScalarFieldEnum = (typeof TopicSubscriptionScalarFieldEnum)[keyof typeof TopicSubscriptionScalarFieldEnum]
@@ -50011,34 +50011,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'OwnershipType'
-   */
-  export type EnumOwnershipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipType'>
-    
-
-
-  /**
-   * Reference to a field of type 'OwnershipType[]'
-   */
-  export type ListEnumOwnershipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Condition'
-   */
-  export type EnumConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Condition'>
-    
-
-
-  /**
-   * Reference to a field of type 'Condition[]'
-   */
-  export type ListEnumConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Condition[]'>
-    
-
-
-  /**
    * Reference to a field of type 'EquipmentTags'
    */
   export type EnumEquipmentTagsFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EquipmentTags'>
@@ -50049,20 +50021,6 @@ export namespace Prisma {
    * Reference to a field of type 'EquipmentTags[]'
    */
   export type ListEnumEquipmentTagsFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EquipmentTags[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 
@@ -50095,6 +50053,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'CreatedVia'
    */
   export type EnumCreatedViaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CreatedVia'>
@@ -50105,6 +50077,34 @@ export namespace Prisma {
    * Reference to a field of type 'CreatedVia[]'
    */
   export type ListEnumCreatedViaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CreatedVia[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'OwnershipType'
+   */
+  export type EnumOwnershipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipType'>
+    
+
+
+  /**
+   * Reference to a field of type 'OwnershipType[]'
+   */
+  export type ListEnumOwnershipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Condition'
+   */
+  export type EnumConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Condition'>
+    
+
+
+  /**
+   * Reference to a field of type 'Condition[]'
+   */
+  export type ListEnumConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Condition[]'>
     
 
 
@@ -50650,34 +50650,34 @@ export namespace Prisma {
     NOT?: EquipmentWhereInput | EquipmentWhereInput[]
     id?: StringFilter<"Equipment"> | string
     qrId?: StringFilter<"Equipment"> | string
-    code?: StringNullableFilter<"Equipment"> | string | null
     name?: StringFilter<"Equipment"> | string
     description?: StringNullableFilter<"Equipment"> | string | null
-    memo?: StringNullableFilter<"Equipment"> | string | null
-    ownershipType?: EnumOwnershipTypeNullableFilter<"Equipment"> | $Enums.OwnershipType | null
-    make?: StringNullableFilter<"Equipment"> | string | null
-    model?: StringNullableFilter<"Equipment"> | string | null
-    year?: StringNullableFilter<"Equipment"> | string | null
-    color?: StringNullableFilter<"Equipment"> | string | null
-    serialNumber?: StringNullableFilter<"Equipment"> | string | null
-    acquiredDate?: DateTimeNullableFilter<"Equipment"> | Date | string | null
-    acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
-    licensePlate?: StringNullableFilter<"Equipment"> | string | null
-    licenseState?: StringNullableFilter<"Equipment"> | string | null
-    registrationExpiration?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    creationReason?: StringNullableFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsFilter<"Equipment"> | $Enums.EquipmentTags
-    overWeight?: BoolNullableFilter<"Equipment"> | boolean | null
-    currentWeight?: FloatNullableFilter<"Equipment"> | number | null
     state?: EnumEquipmentStateFilter<"Equipment"> | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFilter<"Equipment"> | boolean
-    creationReason?: StringNullableFilter<"Equipment"> | string | null
     approvalStatus?: EnumApprovalStatusFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeFilter<"Equipment"> | Date | string
-    createdVia?: EnumCreatedViaFilter<"Equipment"> | $Enums.CreatedVia
+    overWeight?: BoolNullableFilter<"Equipment"> | boolean | null
+    currentWeight?: FloatNullableFilter<"Equipment"> | number | null
     createdById?: StringNullableFilter<"Equipment"> | string | null
-    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    createdVia?: EnumCreatedViaFilter<"Equipment"> | $Enums.CreatedVia
+    acquiredDate?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    code?: StringNullableFilter<"Equipment"> | string | null
+    color?: StringNullableFilter<"Equipment"> | string | null
+    licensePlate?: StringNullableFilter<"Equipment"> | string | null
+    licenseState?: StringNullableFilter<"Equipment"> | string | null
+    make?: StringNullableFilter<"Equipment"> | string | null
+    memo?: StringNullableFilter<"Equipment"> | string | null
+    model?: StringNullableFilter<"Equipment"> | string | null
+    ownershipType?: EnumOwnershipTypeNullableFilter<"Equipment"> | $Enums.OwnershipType | null
+    registrationExpiration?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    serialNumber?: StringNullableFilter<"Equipment"> | string | null
+    year?: StringNullableFilter<"Equipment"> | string | null
+    acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     EquipmentHauled?: EquipmentHauledListRelationFilter
     Maintenances?: MaintenanceListRelationFilter
     TascoLogs?: TascoLogListRelationFilter
@@ -50690,34 +50690,34 @@ export namespace Prisma {
   export type EquipmentOrderByWithRelationInput = {
     id?: SortOrder
     qrId?: SortOrder
-    code?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
-    memo?: SortOrderInput | SortOrder
-    ownershipType?: SortOrderInput | SortOrder
-    make?: SortOrderInput | SortOrder
-    model?: SortOrderInput | SortOrder
-    year?: SortOrderInput | SortOrder
-    color?: SortOrderInput | SortOrder
-    serialNumber?: SortOrderInput | SortOrder
-    acquiredDate?: SortOrderInput | SortOrder
-    acquiredCondition?: SortOrderInput | SortOrder
-    licensePlate?: SortOrderInput | SortOrder
-    licenseState?: SortOrderInput | SortOrder
-    registrationExpiration?: SortOrderInput | SortOrder
+    creationReason?: SortOrderInput | SortOrder
     equipmentTag?: SortOrder
-    overWeight?: SortOrderInput | SortOrder
-    currentWeight?: SortOrderInput | SortOrder
     state?: SortOrder
     isDisabledByAdmin?: SortOrder
-    creationReason?: SortOrderInput | SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    createdVia?: SortOrder
+    overWeight?: SortOrderInput | SortOrder
+    currentWeight?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
-    createdBy?: UserOrderByWithRelationInput
+    createdVia?: SortOrder
+    acquiredDate?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    color?: SortOrderInput | SortOrder
+    licensePlate?: SortOrderInput | SortOrder
+    licenseState?: SortOrderInput | SortOrder
+    make?: SortOrderInput | SortOrder
+    memo?: SortOrderInput | SortOrder
+    model?: SortOrderInput | SortOrder
+    ownershipType?: SortOrderInput | SortOrder
+    registrationExpiration?: SortOrderInput | SortOrder
+    serialNumber?: SortOrderInput | SortOrder
+    year?: SortOrderInput | SortOrder
+    acquiredCondition?: SortOrderInput | SortOrder
     EmployeeEquipmentLogs?: EmployeeEquipmentLogOrderByRelationAggregateInput
+    createdBy?: UserOrderByWithRelationInput
     EquipmentHauled?: EquipmentHauledOrderByRelationAggregateInput
     Maintenances?: MaintenanceOrderByRelationAggregateInput
     TascoLogs?: TascoLogOrderByRelationAggregateInput
@@ -50733,34 +50733,34 @@ export namespace Prisma {
     AND?: EquipmentWhereInput | EquipmentWhereInput[]
     OR?: EquipmentWhereInput[]
     NOT?: EquipmentWhereInput | EquipmentWhereInput[]
-    code?: StringNullableFilter<"Equipment"> | string | null
     name?: StringFilter<"Equipment"> | string
     description?: StringNullableFilter<"Equipment"> | string | null
-    memo?: StringNullableFilter<"Equipment"> | string | null
-    ownershipType?: EnumOwnershipTypeNullableFilter<"Equipment"> | $Enums.OwnershipType | null
-    make?: StringNullableFilter<"Equipment"> | string | null
-    model?: StringNullableFilter<"Equipment"> | string | null
-    year?: StringNullableFilter<"Equipment"> | string | null
-    color?: StringNullableFilter<"Equipment"> | string | null
-    serialNumber?: StringNullableFilter<"Equipment"> | string | null
-    acquiredDate?: DateTimeNullableFilter<"Equipment"> | Date | string | null
-    acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
-    licensePlate?: StringNullableFilter<"Equipment"> | string | null
-    licenseState?: StringNullableFilter<"Equipment"> | string | null
-    registrationExpiration?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    creationReason?: StringNullableFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsFilter<"Equipment"> | $Enums.EquipmentTags
-    overWeight?: BoolNullableFilter<"Equipment"> | boolean | null
-    currentWeight?: FloatNullableFilter<"Equipment"> | number | null
     state?: EnumEquipmentStateFilter<"Equipment"> | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFilter<"Equipment"> | boolean
-    creationReason?: StringNullableFilter<"Equipment"> | string | null
     approvalStatus?: EnumApprovalStatusFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeFilter<"Equipment"> | Date | string
-    createdVia?: EnumCreatedViaFilter<"Equipment"> | $Enums.CreatedVia
+    overWeight?: BoolNullableFilter<"Equipment"> | boolean | null
+    currentWeight?: FloatNullableFilter<"Equipment"> | number | null
     createdById?: StringNullableFilter<"Equipment"> | string | null
-    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    createdVia?: EnumCreatedViaFilter<"Equipment"> | $Enums.CreatedVia
+    acquiredDate?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    code?: StringNullableFilter<"Equipment"> | string | null
+    color?: StringNullableFilter<"Equipment"> | string | null
+    licensePlate?: StringNullableFilter<"Equipment"> | string | null
+    licenseState?: StringNullableFilter<"Equipment"> | string | null
+    make?: StringNullableFilter<"Equipment"> | string | null
+    memo?: StringNullableFilter<"Equipment"> | string | null
+    model?: StringNullableFilter<"Equipment"> | string | null
+    ownershipType?: EnumOwnershipTypeNullableFilter<"Equipment"> | $Enums.OwnershipType | null
+    registrationExpiration?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    serialNumber?: StringNullableFilter<"Equipment"> | string | null
+    year?: StringNullableFilter<"Equipment"> | string | null
+    acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     EquipmentHauled?: EquipmentHauledListRelationFilter
     Maintenances?: MaintenanceListRelationFilter
     TascoLogs?: TascoLogListRelationFilter
@@ -50773,32 +50773,32 @@ export namespace Prisma {
   export type EquipmentOrderByWithAggregationInput = {
     id?: SortOrder
     qrId?: SortOrder
-    code?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
-    memo?: SortOrderInput | SortOrder
-    ownershipType?: SortOrderInput | SortOrder
-    make?: SortOrderInput | SortOrder
-    model?: SortOrderInput | SortOrder
-    year?: SortOrderInput | SortOrder
-    color?: SortOrderInput | SortOrder
-    serialNumber?: SortOrderInput | SortOrder
-    acquiredDate?: SortOrderInput | SortOrder
-    acquiredCondition?: SortOrderInput | SortOrder
-    licensePlate?: SortOrderInput | SortOrder
-    licenseState?: SortOrderInput | SortOrder
-    registrationExpiration?: SortOrderInput | SortOrder
+    creationReason?: SortOrderInput | SortOrder
     equipmentTag?: SortOrder
-    overWeight?: SortOrderInput | SortOrder
-    currentWeight?: SortOrderInput | SortOrder
     state?: SortOrder
     isDisabledByAdmin?: SortOrder
-    creationReason?: SortOrderInput | SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    createdVia?: SortOrder
+    overWeight?: SortOrderInput | SortOrder
+    currentWeight?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
+    createdVia?: SortOrder
+    acquiredDate?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    color?: SortOrderInput | SortOrder
+    licensePlate?: SortOrderInput | SortOrder
+    licenseState?: SortOrderInput | SortOrder
+    make?: SortOrderInput | SortOrder
+    memo?: SortOrderInput | SortOrder
+    model?: SortOrderInput | SortOrder
+    ownershipType?: SortOrderInput | SortOrder
+    registrationExpiration?: SortOrderInput | SortOrder
+    serialNumber?: SortOrderInput | SortOrder
+    year?: SortOrderInput | SortOrder
+    acquiredCondition?: SortOrderInput | SortOrder
     _count?: EquipmentCountOrderByAggregateInput
     _avg?: EquipmentAvgOrderByAggregateInput
     _max?: EquipmentMaxOrderByAggregateInput
@@ -50812,32 +50812,32 @@ export namespace Prisma {
     NOT?: EquipmentScalarWhereWithAggregatesInput | EquipmentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Equipment"> | string
     qrId?: StringWithAggregatesFilter<"Equipment"> | string
-    code?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
     name?: StringWithAggregatesFilter<"Equipment"> | string
     description?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    memo?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    ownershipType?: EnumOwnershipTypeNullableWithAggregatesFilter<"Equipment"> | $Enums.OwnershipType | null
-    make?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    model?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    year?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    color?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    serialNumber?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    acquiredDate?: DateTimeNullableWithAggregatesFilter<"Equipment"> | Date | string | null
-    acquiredCondition?: EnumConditionNullableWithAggregatesFilter<"Equipment"> | $Enums.Condition | null
-    licensePlate?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    licenseState?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
-    registrationExpiration?: DateTimeNullableWithAggregatesFilter<"Equipment"> | Date | string | null
+    creationReason?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsWithAggregatesFilter<"Equipment"> | $Enums.EquipmentTags
-    overWeight?: BoolNullableWithAggregatesFilter<"Equipment"> | boolean | null
-    currentWeight?: FloatNullableWithAggregatesFilter<"Equipment"> | number | null
     state?: EnumEquipmentStateWithAggregatesFilter<"Equipment"> | $Enums.EquipmentState
     isDisabledByAdmin?: BoolWithAggregatesFilter<"Equipment"> | boolean
-    creationReason?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
     approvalStatus?: EnumApprovalStatusWithAggregatesFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Equipment"> | Date | string
-    createdVia?: EnumCreatedViaWithAggregatesFilter<"Equipment"> | $Enums.CreatedVia
+    overWeight?: BoolNullableWithAggregatesFilter<"Equipment"> | boolean | null
+    currentWeight?: FloatNullableWithAggregatesFilter<"Equipment"> | number | null
     createdById?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    createdVia?: EnumCreatedViaWithAggregatesFilter<"Equipment"> | $Enums.CreatedVia
+    acquiredDate?: DateTimeNullableWithAggregatesFilter<"Equipment"> | Date | string | null
+    code?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    color?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    licensePlate?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    licenseState?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    make?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    memo?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    model?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    ownershipType?: EnumOwnershipTypeNullableWithAggregatesFilter<"Equipment"> | $Enums.OwnershipType | null
+    registrationExpiration?: DateTimeNullableWithAggregatesFilter<"Equipment"> | Date | string | null
+    serialNumber?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    year?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
+    acquiredCondition?: EnumConditionNullableWithAggregatesFilter<"Equipment"> | $Enums.Condition | null
   }
 
   export type EmployeeEquipmentLogWhereInput = {
@@ -50845,12 +50845,12 @@ export namespace Prisma {
     OR?: EmployeeEquipmentLogWhereInput[]
     NOT?: EmployeeEquipmentLogWhereInput | EmployeeEquipmentLogWhereInput[]
     id?: StringFilter<"EmployeeEquipmentLog"> | string
-    timeSheetId?: IntFilter<"EmployeeEquipmentLog"> | number
     equipmentId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
     maintenanceId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
     startTime?: DateTimeFilter<"EmployeeEquipmentLog"> | Date | string
     endTime?: DateTimeNullableFilter<"EmployeeEquipmentLog"> | Date | string | null
     comment?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
+    timeSheetId?: IntFilter<"EmployeeEquipmentLog"> | number
     rental?: BoolFilter<"EmployeeEquipmentLog"> | boolean
     Equipment?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
     Maintenance?: XOR<MaintenanceNullableScalarRelationFilter, MaintenanceWhereInput> | null
@@ -50860,12 +50860,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogOrderByWithRelationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     equipmentId?: SortOrderInput | SortOrder
     maintenanceId?: SortOrderInput | SortOrder
     startTime?: SortOrder
     endTime?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     rental?: SortOrder
     Equipment?: EquipmentOrderByWithRelationInput
     Maintenance?: MaintenanceOrderByWithRelationInput
@@ -50878,12 +50878,12 @@ export namespace Prisma {
     AND?: EmployeeEquipmentLogWhereInput | EmployeeEquipmentLogWhereInput[]
     OR?: EmployeeEquipmentLogWhereInput[]
     NOT?: EmployeeEquipmentLogWhereInput | EmployeeEquipmentLogWhereInput[]
-    timeSheetId?: IntFilter<"EmployeeEquipmentLog"> | number
     equipmentId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
     maintenanceId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
     startTime?: DateTimeFilter<"EmployeeEquipmentLog"> | Date | string
     endTime?: DateTimeNullableFilter<"EmployeeEquipmentLog"> | Date | string | null
     comment?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
+    timeSheetId?: IntFilter<"EmployeeEquipmentLog"> | number
     rental?: BoolFilter<"EmployeeEquipmentLog"> | boolean
     Equipment?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
     Maintenance?: XOR<MaintenanceNullableScalarRelationFilter, MaintenanceWhereInput> | null
@@ -50893,12 +50893,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogOrderByWithAggregationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     equipmentId?: SortOrderInput | SortOrder
     maintenanceId?: SortOrderInput | SortOrder
     startTime?: SortOrder
     endTime?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     rental?: SortOrder
     _count?: EmployeeEquipmentLogCountOrderByAggregateInput
     _avg?: EmployeeEquipmentLogAvgOrderByAggregateInput
@@ -50912,12 +50912,12 @@ export namespace Prisma {
     OR?: EmployeeEquipmentLogScalarWhereWithAggregatesInput[]
     NOT?: EmployeeEquipmentLogScalarWhereWithAggregatesInput | EmployeeEquipmentLogScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"EmployeeEquipmentLog"> | string
-    timeSheetId?: IntWithAggregatesFilter<"EmployeeEquipmentLog"> | number
     equipmentId?: StringNullableWithAggregatesFilter<"EmployeeEquipmentLog"> | string | null
     maintenanceId?: StringNullableWithAggregatesFilter<"EmployeeEquipmentLog"> | string | null
     startTime?: DateTimeWithAggregatesFilter<"EmployeeEquipmentLog"> | Date | string
     endTime?: DateTimeNullableWithAggregatesFilter<"EmployeeEquipmentLog"> | Date | string | null
     comment?: StringNullableWithAggregatesFilter<"EmployeeEquipmentLog"> | string | null
+    timeSheetId?: IntWithAggregatesFilter<"EmployeeEquipmentLog"> | number
     rental?: BoolWithAggregatesFilter<"EmployeeEquipmentLog"> | boolean
   }
 
@@ -51196,7 +51196,6 @@ export namespace Prisma {
     AND?: FormSubmissionWhereInput | FormSubmissionWhereInput[]
     OR?: FormSubmissionWhereInput[]
     NOT?: FormSubmissionWhereInput | FormSubmissionWhereInput[]
-    id?: IntFilter<"FormSubmission"> | number
     title?: StringNullableFilter<"FormSubmission"> | string | null
     formTemplateId?: StringFilter<"FormSubmission"> | string
     userId?: StringFilter<"FormSubmission"> | string
@@ -51206,13 +51205,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"FormSubmission"> | Date | string
     submittedAt?: DateTimeNullableFilter<"FormSubmission"> | Date | string | null
     status?: EnumFormStatusFilter<"FormSubmission"> | $Enums.FormStatus
+    id?: IntFilter<"FormSubmission"> | number
     Approvals?: FormApprovalListRelationFilter
     FormTemplate?: XOR<FormTemplateScalarRelationFilter, FormTemplateWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type FormSubmissionOrderByWithRelationInput = {
-    id?: SortOrder
     title?: SortOrderInput | SortOrder
     formTemplateId?: SortOrder
     userId?: SortOrder
@@ -51222,6 +51221,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     submittedAt?: SortOrderInput | SortOrder
     status?: SortOrder
+    id?: SortOrder
     Approvals?: FormApprovalOrderByRelationAggregateInput
     FormTemplate?: FormTemplateOrderByWithRelationInput
     User?: UserOrderByWithRelationInput
@@ -51247,7 +51247,6 @@ export namespace Prisma {
   }, "id">
 
   export type FormSubmissionOrderByWithAggregationInput = {
-    id?: SortOrder
     title?: SortOrderInput | SortOrder
     formTemplateId?: SortOrder
     userId?: SortOrder
@@ -51257,6 +51256,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     submittedAt?: SortOrderInput | SortOrder
     status?: SortOrder
+    id?: SortOrder
     _count?: FormSubmissionCountOrderByAggregateInput
     _avg?: FormSubmissionAvgOrderByAggregateInput
     _max?: FormSubmissionMaxOrderByAggregateInput
@@ -51268,7 +51268,6 @@ export namespace Prisma {
     AND?: FormSubmissionScalarWhereWithAggregatesInput | FormSubmissionScalarWhereWithAggregatesInput[]
     OR?: FormSubmissionScalarWhereWithAggregatesInput[]
     NOT?: FormSubmissionScalarWhereWithAggregatesInput | FormSubmissionScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"FormSubmission"> | number
     title?: StringNullableWithAggregatesFilter<"FormSubmission"> | string | null
     formTemplateId?: StringWithAggregatesFilter<"FormSubmission"> | string
     userId?: StringWithAggregatesFilter<"FormSubmission"> | string
@@ -51278,6 +51277,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"FormSubmission"> | Date | string
     submittedAt?: DateTimeNullableWithAggregatesFilter<"FormSubmission"> | Date | string | null
     status?: EnumFormStatusWithAggregatesFilter<"FormSubmission"> | $Enums.FormStatus
+    id?: IntWithAggregatesFilter<"FormSubmission"> | number
   }
 
   export type FormApprovalWhereInput = {
@@ -51285,24 +51285,24 @@ export namespace Prisma {
     OR?: FormApprovalWhereInput[]
     NOT?: FormApprovalWhereInput | FormApprovalWhereInput[]
     id?: StringFilter<"FormApproval"> | string
-    formSubmissionId?: IntFilter<"FormApproval"> | number
     signedBy?: StringNullableFilter<"FormApproval"> | string | null
     submittedAt?: DateTimeFilter<"FormApproval"> | Date | string
     updatedAt?: DateTimeFilter<"FormApproval"> | Date | string
     signature?: StringNullableFilter<"FormApproval"> | string | null
     comment?: StringNullableFilter<"FormApproval"> | string | null
+    formSubmissionId?: IntFilter<"FormApproval"> | number
     FormSubmission?: XOR<FormSubmissionScalarRelationFilter, FormSubmissionWhereInput>
     Approver?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type FormApprovalOrderByWithRelationInput = {
     id?: SortOrder
-    formSubmissionId?: SortOrder
     signedBy?: SortOrderInput | SortOrder
     submittedAt?: SortOrder
     updatedAt?: SortOrder
     signature?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    formSubmissionId?: SortOrder
     FormSubmission?: FormSubmissionOrderByWithRelationInput
     Approver?: UserOrderByWithRelationInput
   }
@@ -51312,24 +51312,24 @@ export namespace Prisma {
     AND?: FormApprovalWhereInput | FormApprovalWhereInput[]
     OR?: FormApprovalWhereInput[]
     NOT?: FormApprovalWhereInput | FormApprovalWhereInput[]
-    formSubmissionId?: IntFilter<"FormApproval"> | number
     signedBy?: StringNullableFilter<"FormApproval"> | string | null
     submittedAt?: DateTimeFilter<"FormApproval"> | Date | string
     updatedAt?: DateTimeFilter<"FormApproval"> | Date | string
     signature?: StringNullableFilter<"FormApproval"> | string | null
     comment?: StringNullableFilter<"FormApproval"> | string | null
+    formSubmissionId?: IntFilter<"FormApproval"> | number
     FormSubmission?: XOR<FormSubmissionScalarRelationFilter, FormSubmissionWhereInput>
     Approver?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type FormApprovalOrderByWithAggregationInput = {
     id?: SortOrder
-    formSubmissionId?: SortOrder
     signedBy?: SortOrderInput | SortOrder
     submittedAt?: SortOrder
     updatedAt?: SortOrder
     signature?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    formSubmissionId?: SortOrder
     _count?: FormApprovalCountOrderByAggregateInput
     _avg?: FormApprovalAvgOrderByAggregateInput
     _max?: FormApprovalMaxOrderByAggregateInput
@@ -51342,12 +51342,12 @@ export namespace Prisma {
     OR?: FormApprovalScalarWhereWithAggregatesInput[]
     NOT?: FormApprovalScalarWhereWithAggregatesInput | FormApprovalScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"FormApproval"> | string
-    formSubmissionId?: IntWithAggregatesFilter<"FormApproval"> | number
     signedBy?: StringNullableWithAggregatesFilter<"FormApproval"> | string | null
     submittedAt?: DateTimeWithAggregatesFilter<"FormApproval"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"FormApproval"> | Date | string
     signature?: StringNullableWithAggregatesFilter<"FormApproval"> | string | null
     comment?: StringNullableWithAggregatesFilter<"FormApproval"> | string | null
+    formSubmissionId?: IntWithAggregatesFilter<"FormApproval"> | number
   }
 
   export type JobsiteWhereInput = {
@@ -51485,7 +51485,6 @@ export namespace Prisma {
     AND?: ReportWhereInput | ReportWhereInput[]
     OR?: ReportWhereInput[]
     NOT?: ReportWhereInput | ReportWhereInput[]
-    id?: IntFilter<"Report"> | number
     name?: StringFilter<"Report"> | string
     description?: StringFilter<"Report"> | string
     companyId?: StringFilter<"Report"> | string
@@ -51495,12 +51494,12 @@ export namespace Prisma {
     parameters?: JsonNullableFilter<"Report">
     visibility?: EnumReportVisibilityFilter<"Report"> | $Enums.ReportVisibility
     tags?: StringNullableListFilter<"Report">
+    id?: IntFilter<"Report"> | number
     Company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     ReportRuns?: ReportRunListRelationFilter
   }
 
   export type ReportOrderByWithRelationInput = {
-    id?: SortOrder
     name?: SortOrder
     description?: SortOrder
     companyId?: SortOrder
@@ -51510,13 +51509,14 @@ export namespace Prisma {
     parameters?: SortOrderInput | SortOrder
     visibility?: SortOrder
     tags?: SortOrder
+    id?: SortOrder
     Company?: CompanyOrderByWithRelationInput
     ReportRuns?: ReportRunOrderByRelationAggregateInput
   }
 
   export type ReportWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
     name?: string
+    id?: number
     AND?: ReportWhereInput | ReportWhereInput[]
     OR?: ReportWhereInput[]
     NOT?: ReportWhereInput | ReportWhereInput[]
@@ -51533,7 +51533,6 @@ export namespace Prisma {
   }, "id" | "name">
 
   export type ReportOrderByWithAggregationInput = {
-    id?: SortOrder
     name?: SortOrder
     description?: SortOrder
     companyId?: SortOrder
@@ -51543,6 +51542,7 @@ export namespace Prisma {
     parameters?: SortOrderInput | SortOrder
     visibility?: SortOrder
     tags?: SortOrder
+    id?: SortOrder
     _count?: ReportCountOrderByAggregateInput
     _avg?: ReportAvgOrderByAggregateInput
     _max?: ReportMaxOrderByAggregateInput
@@ -51554,7 +51554,6 @@ export namespace Prisma {
     AND?: ReportScalarWhereWithAggregatesInput | ReportScalarWhereWithAggregatesInput[]
     OR?: ReportScalarWhereWithAggregatesInput[]
     NOT?: ReportScalarWhereWithAggregatesInput | ReportScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Report"> | number
     name?: StringWithAggregatesFilter<"Report"> | string
     description?: StringWithAggregatesFilter<"Report"> | string
     companyId?: StringWithAggregatesFilter<"Report"> | string
@@ -51564,6 +51563,7 @@ export namespace Prisma {
     parameters?: JsonNullableWithAggregatesFilter<"Report">
     visibility?: EnumReportVisibilityWithAggregatesFilter<"Report"> | $Enums.ReportVisibility
     tags?: StringNullableListFilter<"Report">
+    id?: IntWithAggregatesFilter<"Report"> | number
   }
 
   export type ReportRunWhereInput = {
@@ -51571,7 +51571,6 @@ export namespace Prisma {
     OR?: ReportRunWhereInput[]
     NOT?: ReportRunWhereInput | ReportRunWhereInput[]
     id?: StringFilter<"ReportRun"> | string
-    reportId?: IntFilter<"ReportRun"> | number
     runAt?: DateTimeFilter<"ReportRun"> | Date | string
     status?: EnumReportStatusFilter<"ReportRun"> | $Enums.ReportStatus
     results?: JsonNullableFilter<"ReportRun">
@@ -51581,12 +51580,12 @@ export namespace Prisma {
     customParams?: JsonNullableFilter<"ReportRun">
     exportFormats?: StringNullableListFilter<"ReportRun">
     lastExportedAt?: DateTimeNullableFilter<"ReportRun"> | Date | string | null
+    reportId?: IntFilter<"ReportRun"> | number
     Report?: XOR<ReportScalarRelationFilter, ReportWhereInput>
   }
 
   export type ReportRunOrderByWithRelationInput = {
     id?: SortOrder
-    reportId?: SortOrder
     runAt?: SortOrder
     status?: SortOrder
     results?: SortOrderInput | SortOrder
@@ -51596,6 +51595,7 @@ export namespace Prisma {
     customParams?: SortOrderInput | SortOrder
     exportFormats?: SortOrder
     lastExportedAt?: SortOrderInput | SortOrder
+    reportId?: SortOrder
     Report?: ReportOrderByWithRelationInput
   }
 
@@ -51604,7 +51604,6 @@ export namespace Prisma {
     AND?: ReportRunWhereInput | ReportRunWhereInput[]
     OR?: ReportRunWhereInput[]
     NOT?: ReportRunWhereInput | ReportRunWhereInput[]
-    reportId?: IntFilter<"ReportRun"> | number
     runAt?: DateTimeFilter<"ReportRun"> | Date | string
     status?: EnumReportStatusFilter<"ReportRun"> | $Enums.ReportStatus
     results?: JsonNullableFilter<"ReportRun">
@@ -51614,12 +51613,12 @@ export namespace Prisma {
     customParams?: JsonNullableFilter<"ReportRun">
     exportFormats?: StringNullableListFilter<"ReportRun">
     lastExportedAt?: DateTimeNullableFilter<"ReportRun"> | Date | string | null
+    reportId?: IntFilter<"ReportRun"> | number
     Report?: XOR<ReportScalarRelationFilter, ReportWhereInput>
   }, "id">
 
   export type ReportRunOrderByWithAggregationInput = {
     id?: SortOrder
-    reportId?: SortOrder
     runAt?: SortOrder
     status?: SortOrder
     results?: SortOrderInput | SortOrder
@@ -51629,6 +51628,7 @@ export namespace Prisma {
     customParams?: SortOrderInput | SortOrder
     exportFormats?: SortOrder
     lastExportedAt?: SortOrderInput | SortOrder
+    reportId?: SortOrder
     _count?: ReportRunCountOrderByAggregateInput
     _avg?: ReportRunAvgOrderByAggregateInput
     _max?: ReportRunMaxOrderByAggregateInput
@@ -51641,7 +51641,6 @@ export namespace Prisma {
     OR?: ReportRunScalarWhereWithAggregatesInput[]
     NOT?: ReportRunScalarWhereWithAggregatesInput | ReportRunScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ReportRun"> | string
-    reportId?: IntWithAggregatesFilter<"ReportRun"> | number
     runAt?: DateTimeWithAggregatesFilter<"ReportRun"> | Date | string
     status?: EnumReportStatusWithAggregatesFilter<"ReportRun"> | $Enums.ReportStatus
     results?: JsonNullableWithAggregatesFilter<"ReportRun">
@@ -51651,13 +51650,13 @@ export namespace Prisma {
     customParams?: JsonNullableWithAggregatesFilter<"ReportRun">
     exportFormats?: StringNullableListFilter<"ReportRun">
     lastExportedAt?: DateTimeNullableWithAggregatesFilter<"ReportRun"> | Date | string | null
+    reportId?: IntWithAggregatesFilter<"ReportRun"> | number
   }
 
   export type TimeSheetWhereInput = {
     AND?: TimeSheetWhereInput | TimeSheetWhereInput[]
     OR?: TimeSheetWhereInput[]
     NOT?: TimeSheetWhereInput | TimeSheetWhereInput[]
-    id?: IntFilter<"TimeSheet"> | number
     date?: DateTimeFilter<"TimeSheet"> | Date | string
     userId?: StringFilter<"TimeSheet"> | string
     jobsiteId?: StringFilter<"TimeSheet"> | string
@@ -51683,18 +51682,18 @@ export namespace Prisma {
     withinFenceIn?: BoolNullableFilter<"TimeSheet"> | boolean | null
     withinFenceOut?: BoolNullableFilter<"TimeSheet"> | boolean | null
     wasInjured?: BoolNullableFilter<"TimeSheet"> | boolean | null
+    id?: IntFilter<"TimeSheet"> | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
     MaintenanceLogs?: MaintenanceLogListRelationFilter
     TascoLogs?: TascoLogListRelationFilter
     CostCode?: XOR<CostCodeScalarRelationFilter, CostCodeWhereInput>
     Jobsite?: XOR<JobsiteScalarRelationFilter, JobsiteWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
-    TruckingLogs?: TruckingLogListRelationFilter
     ChangeLogs?: TimeSheetChangeLogListRelationFilter
+    TruckingLogs?: TruckingLogListRelationFilter
   }
 
   export type TimeSheetOrderByWithRelationInput = {
-    id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
     jobsiteId?: SortOrder
@@ -51720,14 +51719,15 @@ export namespace Prisma {
     withinFenceIn?: SortOrderInput | SortOrder
     withinFenceOut?: SortOrderInput | SortOrder
     wasInjured?: SortOrderInput | SortOrder
+    id?: SortOrder
     EmployeeEquipmentLogs?: EmployeeEquipmentLogOrderByRelationAggregateInput
     MaintenanceLogs?: MaintenanceLogOrderByRelationAggregateInput
     TascoLogs?: TascoLogOrderByRelationAggregateInput
     CostCode?: CostCodeOrderByWithRelationInput
     Jobsite?: JobsiteOrderByWithRelationInput
     User?: UserOrderByWithRelationInput
-    TruckingLogs?: TruckingLogOrderByRelationAggregateInput
     ChangeLogs?: TimeSheetChangeLogOrderByRelationAggregateInput
+    TruckingLogs?: TruckingLogOrderByRelationAggregateInput
   }
 
   export type TimeSheetWhereUniqueInput = Prisma.AtLeast<{
@@ -51766,12 +51766,11 @@ export namespace Prisma {
     CostCode?: XOR<CostCodeScalarRelationFilter, CostCodeWhereInput>
     Jobsite?: XOR<JobsiteScalarRelationFilter, JobsiteWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
-    TruckingLogs?: TruckingLogListRelationFilter
     ChangeLogs?: TimeSheetChangeLogListRelationFilter
+    TruckingLogs?: TruckingLogListRelationFilter
   }, "id">
 
   export type TimeSheetOrderByWithAggregationInput = {
-    id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
     jobsiteId?: SortOrder
@@ -51797,6 +51796,7 @@ export namespace Prisma {
     withinFenceIn?: SortOrderInput | SortOrder
     withinFenceOut?: SortOrderInput | SortOrder
     wasInjured?: SortOrderInput | SortOrder
+    id?: SortOrder
     _count?: TimeSheetCountOrderByAggregateInput
     _avg?: TimeSheetAvgOrderByAggregateInput
     _max?: TimeSheetMaxOrderByAggregateInput
@@ -51808,7 +51808,6 @@ export namespace Prisma {
     AND?: TimeSheetScalarWhereWithAggregatesInput | TimeSheetScalarWhereWithAggregatesInput[]
     OR?: TimeSheetScalarWhereWithAggregatesInput[]
     NOT?: TimeSheetScalarWhereWithAggregatesInput | TimeSheetScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"TimeSheet"> | number
     date?: DateTimeWithAggregatesFilter<"TimeSheet"> | Date | string
     userId?: StringWithAggregatesFilter<"TimeSheet"> | string
     jobsiteId?: StringWithAggregatesFilter<"TimeSheet"> | string
@@ -51834,6 +51833,7 @@ export namespace Prisma {
     withinFenceIn?: BoolNullableWithAggregatesFilter<"TimeSheet"> | boolean | null
     withinFenceOut?: BoolNullableWithAggregatesFilter<"TimeSheet"> | boolean | null
     wasInjured?: BoolNullableWithAggregatesFilter<"TimeSheet"> | boolean | null
+    id?: IntWithAggregatesFilter<"TimeSheet"> | number
   }
 
   export type MaintenanceLogWhereInput = {
@@ -51841,12 +51841,12 @@ export namespace Prisma {
     OR?: MaintenanceLogWhereInput[]
     NOT?: MaintenanceLogWhereInput | MaintenanceLogWhereInput[]
     id?: StringFilter<"MaintenanceLog"> | string
-    timeSheetId?: IntFilter<"MaintenanceLog"> | number
     userId?: StringFilter<"MaintenanceLog"> | string
     maintenanceId?: StringFilter<"MaintenanceLog"> | string
     startTime?: DateTimeFilter<"MaintenanceLog"> | Date | string
     endTime?: DateTimeNullableFilter<"MaintenanceLog"> | Date | string | null
     comment?: StringNullableFilter<"MaintenanceLog"> | string | null
+    timeSheetId?: IntFilter<"MaintenanceLog"> | number
     Maintenance?: XOR<MaintenanceScalarRelationFilter, MaintenanceWhereInput>
     TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -51854,12 +51854,12 @@ export namespace Prisma {
 
   export type MaintenanceLogOrderByWithRelationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     userId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     Maintenance?: MaintenanceOrderByWithRelationInput
     TimeSheet?: TimeSheetOrderByWithRelationInput
     User?: UserOrderByWithRelationInput
@@ -51870,12 +51870,12 @@ export namespace Prisma {
     AND?: MaintenanceLogWhereInput | MaintenanceLogWhereInput[]
     OR?: MaintenanceLogWhereInput[]
     NOT?: MaintenanceLogWhereInput | MaintenanceLogWhereInput[]
-    timeSheetId?: IntFilter<"MaintenanceLog"> | number
     userId?: StringFilter<"MaintenanceLog"> | string
     maintenanceId?: StringFilter<"MaintenanceLog"> | string
     startTime?: DateTimeFilter<"MaintenanceLog"> | Date | string
     endTime?: DateTimeNullableFilter<"MaintenanceLog"> | Date | string | null
     comment?: StringNullableFilter<"MaintenanceLog"> | string | null
+    timeSheetId?: IntFilter<"MaintenanceLog"> | number
     Maintenance?: XOR<MaintenanceScalarRelationFilter, MaintenanceWhereInput>
     TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -51883,12 +51883,12 @@ export namespace Prisma {
 
   export type MaintenanceLogOrderByWithAggregationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     userId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     _count?: MaintenanceLogCountOrderByAggregateInput
     _avg?: MaintenanceLogAvgOrderByAggregateInput
     _max?: MaintenanceLogMaxOrderByAggregateInput
@@ -51901,12 +51901,12 @@ export namespace Prisma {
     OR?: MaintenanceLogScalarWhereWithAggregatesInput[]
     NOT?: MaintenanceLogScalarWhereWithAggregatesInput | MaintenanceLogScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"MaintenanceLog"> | string
-    timeSheetId?: IntWithAggregatesFilter<"MaintenanceLog"> | number
     userId?: StringWithAggregatesFilter<"MaintenanceLog"> | string
     maintenanceId?: StringWithAggregatesFilter<"MaintenanceLog"> | string
     startTime?: DateTimeWithAggregatesFilter<"MaintenanceLog"> | Date | string
     endTime?: DateTimeNullableWithAggregatesFilter<"MaintenanceLog"> | Date | string | null
     comment?: StringNullableWithAggregatesFilter<"MaintenanceLog"> | string | null
+    timeSheetId?: IntWithAggregatesFilter<"MaintenanceLog"> | number
   }
 
   export type MaintenanceWhereInput = {
@@ -52037,13 +52037,13 @@ export namespace Prisma {
     OR?: TascoLogWhereInput[]
     NOT?: TascoLogWhereInput | TascoLogWhereInput[]
     id?: StringFilter<"TascoLog"> | string
-    timeSheetId?: IntFilter<"TascoLog"> | number
     shiftType?: StringFilter<"TascoLog"> | string
     equipmentId?: StringNullableFilter<"TascoLog"> | string | null
     laborType?: StringNullableFilter<"TascoLog"> | string | null
     materialType?: StringNullableFilter<"TascoLog"> | string | null
     LoadQuantity?: IntFilter<"TascoLog"> | number
     screenType?: EnumLoadTypeNullableFilter<"TascoLog"> | $Enums.LoadType | null
+    timeSheetId?: IntFilter<"TascoLog"> | number
     RefuelLogs?: RefuelLogListRelationFilter
     Equipment?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
     TascoMaterialTypes?: XOR<TascoMaterialTypesNullableScalarRelationFilter, TascoMaterialTypesWhereInput> | null
@@ -52052,13 +52052,13 @@ export namespace Prisma {
 
   export type TascoLogOrderByWithRelationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     shiftType?: SortOrder
     equipmentId?: SortOrderInput | SortOrder
     laborType?: SortOrderInput | SortOrder
     materialType?: SortOrderInput | SortOrder
     LoadQuantity?: SortOrder
     screenType?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     RefuelLogs?: RefuelLogOrderByRelationAggregateInput
     Equipment?: EquipmentOrderByWithRelationInput
     TascoMaterialTypes?: TascoMaterialTypesOrderByWithRelationInput
@@ -52070,13 +52070,13 @@ export namespace Prisma {
     AND?: TascoLogWhereInput | TascoLogWhereInput[]
     OR?: TascoLogWhereInput[]
     NOT?: TascoLogWhereInput | TascoLogWhereInput[]
-    timeSheetId?: IntFilter<"TascoLog"> | number
     shiftType?: StringFilter<"TascoLog"> | string
     equipmentId?: StringNullableFilter<"TascoLog"> | string | null
     laborType?: StringNullableFilter<"TascoLog"> | string | null
     materialType?: StringNullableFilter<"TascoLog"> | string | null
     LoadQuantity?: IntFilter<"TascoLog"> | number
     screenType?: EnumLoadTypeNullableFilter<"TascoLog"> | $Enums.LoadType | null
+    timeSheetId?: IntFilter<"TascoLog"> | number
     RefuelLogs?: RefuelLogListRelationFilter
     Equipment?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
     TascoMaterialTypes?: XOR<TascoMaterialTypesNullableScalarRelationFilter, TascoMaterialTypesWhereInput> | null
@@ -52085,13 +52085,13 @@ export namespace Prisma {
 
   export type TascoLogOrderByWithAggregationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     shiftType?: SortOrder
     equipmentId?: SortOrderInput | SortOrder
     laborType?: SortOrderInput | SortOrder
     materialType?: SortOrderInput | SortOrder
     LoadQuantity?: SortOrder
     screenType?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     _count?: TascoLogCountOrderByAggregateInput
     _avg?: TascoLogAvgOrderByAggregateInput
     _max?: TascoLogMaxOrderByAggregateInput
@@ -52104,13 +52104,13 @@ export namespace Prisma {
     OR?: TascoLogScalarWhereWithAggregatesInput[]
     NOT?: TascoLogScalarWhereWithAggregatesInput | TascoLogScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"TascoLog"> | string
-    timeSheetId?: IntWithAggregatesFilter<"TascoLog"> | number
     shiftType?: StringWithAggregatesFilter<"TascoLog"> | string
     equipmentId?: StringNullableWithAggregatesFilter<"TascoLog"> | string | null
     laborType?: StringNullableWithAggregatesFilter<"TascoLog"> | string | null
     materialType?: StringNullableWithAggregatesFilter<"TascoLog"> | string | null
     LoadQuantity?: IntWithAggregatesFilter<"TascoLog"> | number
     screenType?: EnumLoadTypeNullableWithAggregatesFilter<"TascoLog"> | $Enums.LoadType | null
+    timeSheetId?: IntWithAggregatesFilter<"TascoLog"> | number
   }
 
   export type TascoMaterialTypesWhereInput = {
@@ -52158,7 +52158,6 @@ export namespace Prisma {
     OR?: TruckingLogWhereInput[]
     NOT?: TruckingLogWhereInput | TruckingLogWhereInput[]
     id?: StringFilter<"TruckingLog"> | string
-    timeSheetId?: IntFilter<"TruckingLog"> | number
     laborType?: StringFilter<"TruckingLog"> | string
     taskName?: StringNullableFilter<"TruckingLog"> | string | null
     equipmentId?: StringNullableFilter<"TruckingLog"> | string | null
@@ -52167,6 +52166,7 @@ export namespace Prisma {
     truckLaborLogId?: StringNullableFilter<"TruckingLog"> | string | null
     trailerNumber?: StringNullableFilter<"TruckingLog"> | string | null
     truckNumber?: StringNullableFilter<"TruckingLog"> | string | null
+    timeSheetId?: IntFilter<"TruckingLog"> | number
     EquipmentHauled?: EquipmentHauledListRelationFilter
     Materials?: MaterialListRelationFilter
     RefuelLogs?: RefuelLogListRelationFilter
@@ -52179,7 +52179,6 @@ export namespace Prisma {
 
   export type TruckingLogOrderByWithRelationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     laborType?: SortOrder
     taskName?: SortOrderInput | SortOrder
     equipmentId?: SortOrderInput | SortOrder
@@ -52188,6 +52187,7 @@ export namespace Prisma {
     truckLaborLogId?: SortOrderInput | SortOrder
     trailerNumber?: SortOrderInput | SortOrder
     truckNumber?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     EquipmentHauled?: EquipmentHauledOrderByRelationAggregateInput
     Materials?: MaterialOrderByRelationAggregateInput
     RefuelLogs?: RefuelLogOrderByRelationAggregateInput
@@ -52203,7 +52203,6 @@ export namespace Prisma {
     AND?: TruckingLogWhereInput | TruckingLogWhereInput[]
     OR?: TruckingLogWhereInput[]
     NOT?: TruckingLogWhereInput | TruckingLogWhereInput[]
-    timeSheetId?: IntFilter<"TruckingLog"> | number
     laborType?: StringFilter<"TruckingLog"> | string
     taskName?: StringNullableFilter<"TruckingLog"> | string | null
     equipmentId?: StringNullableFilter<"TruckingLog"> | string | null
@@ -52212,6 +52211,7 @@ export namespace Prisma {
     truckLaborLogId?: StringNullableFilter<"TruckingLog"> | string | null
     trailerNumber?: StringNullableFilter<"TruckingLog"> | string | null
     truckNumber?: StringNullableFilter<"TruckingLog"> | string | null
+    timeSheetId?: IntFilter<"TruckingLog"> | number
     EquipmentHauled?: EquipmentHauledListRelationFilter
     Materials?: MaterialListRelationFilter
     RefuelLogs?: RefuelLogListRelationFilter
@@ -52224,7 +52224,6 @@ export namespace Prisma {
 
   export type TruckingLogOrderByWithAggregationInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     laborType?: SortOrder
     taskName?: SortOrderInput | SortOrder
     equipmentId?: SortOrderInput | SortOrder
@@ -52233,6 +52232,7 @@ export namespace Prisma {
     truckLaborLogId?: SortOrderInput | SortOrder
     trailerNumber?: SortOrderInput | SortOrder
     truckNumber?: SortOrderInput | SortOrder
+    timeSheetId?: SortOrder
     _count?: TruckingLogCountOrderByAggregateInput
     _avg?: TruckingLogAvgOrderByAggregateInput
     _max?: TruckingLogMaxOrderByAggregateInput
@@ -52245,7 +52245,6 @@ export namespace Prisma {
     OR?: TruckingLogScalarWhereWithAggregatesInput[]
     NOT?: TruckingLogScalarWhereWithAggregatesInput | TruckingLogScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"TruckingLog"> | string
-    timeSheetId?: IntWithAggregatesFilter<"TruckingLog"> | number
     laborType?: StringWithAggregatesFilter<"TruckingLog"> | string
     taskName?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
     equipmentId?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
@@ -52254,6 +52253,7 @@ export namespace Prisma {
     truckLaborLogId?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
     trailerNumber?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
     truckNumber?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
+    timeSheetId?: IntWithAggregatesFilter<"TruckingLog"> | number
   }
 
   export type StateMileageWhereInput = {
@@ -52536,10 +52536,10 @@ export namespace Prisma {
     timeSheetId?: IntFilter<"TimeSheetChangeLog"> | number
     changedBy?: StringFilter<"TimeSheetChangeLog"> | string
     changedAt?: DateTimeFilter<"TimeSheetChangeLog"> | Date | string
-    changes?: JsonFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableFilter<"TimeSheetChangeLog"> | string | null
-    TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
+    changes?: JsonFilter<"TimeSheetChangeLog">
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
+    TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
   }
 
   export type TimeSheetChangeLogOrderByWithRelationInput = {
@@ -52547,10 +52547,10 @@ export namespace Prisma {
     timeSheetId?: SortOrder
     changedBy?: SortOrder
     changedAt?: SortOrder
-    changes?: SortOrder
     changeReason?: SortOrderInput | SortOrder
-    TimeSheet?: TimeSheetOrderByWithRelationInput
+    changes?: SortOrder
     User?: UserOrderByWithRelationInput
+    TimeSheet?: TimeSheetOrderByWithRelationInput
   }
 
   export type TimeSheetChangeLogWhereUniqueInput = Prisma.AtLeast<{
@@ -52561,10 +52561,10 @@ export namespace Prisma {
     timeSheetId?: IntFilter<"TimeSheetChangeLog"> | number
     changedBy?: StringFilter<"TimeSheetChangeLog"> | string
     changedAt?: DateTimeFilter<"TimeSheetChangeLog"> | Date | string
-    changes?: JsonFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableFilter<"TimeSheetChangeLog"> | string | null
-    TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
+    changes?: JsonFilter<"TimeSheetChangeLog">
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
+    TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
   }, "id">
 
   export type TimeSheetChangeLogOrderByWithAggregationInput = {
@@ -52572,8 +52572,8 @@ export namespace Prisma {
     timeSheetId?: SortOrder
     changedBy?: SortOrder
     changedAt?: SortOrder
-    changes?: SortOrder
     changeReason?: SortOrderInput | SortOrder
+    changes?: SortOrder
     _count?: TimeSheetChangeLogCountOrderByAggregateInput
     _avg?: TimeSheetChangeLogAvgOrderByAggregateInput
     _max?: TimeSheetChangeLogMaxOrderByAggregateInput
@@ -52589,8 +52589,8 @@ export namespace Prisma {
     timeSheetId?: IntWithAggregatesFilter<"TimeSheetChangeLog"> | number
     changedBy?: StringWithAggregatesFilter<"TimeSheetChangeLog"> | string
     changedAt?: DateTimeWithAggregatesFilter<"TimeSheetChangeLog"> | Date | string
-    changes?: JsonWithAggregatesFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableWithAggregatesFilter<"TimeSheetChangeLog"> | string | null
+    changes?: JsonWithAggregatesFilter<"TimeSheetChangeLog">
   }
 
   export type UserWhereInput = {
@@ -52628,15 +52628,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionListRelationFilter
     Jobsite?: JobsiteListRelationFilter
     MaintenanceLogs?: MaintenanceLogListRelationFilter
+    notifications?: NotificationListRelationFilter
     PasswordResetTokens?: PasswordResetTokenListRelationFilter
+    pushSubscriptions?: PushSubscriptionListRelationFilter
     TimeSheets?: TimeSheetListRelationFilter
     TimeSheetChanges?: TimeSheetChangeLogListRelationFilter
+    topicSubscriptions?: TopicSubscriptionListRelationFilter
     Company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     UserSettings?: XOR<UserSettingsNullableScalarRelationFilter, UserSettingsWhereInput> | null
     Crews?: CrewListRelationFilter
-    pushSubscriptions?: PushSubscriptionListRelationFilter
-    topicSubscriptions?: TopicSubscriptionListRelationFilter
-    notifications?: NotificationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -52671,15 +52671,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionOrderByRelationAggregateInput
     Jobsite?: JobsiteOrderByRelationAggregateInput
     MaintenanceLogs?: MaintenanceLogOrderByRelationAggregateInput
+    notifications?: NotificationOrderByRelationAggregateInput
     PasswordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
+    pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
     TimeSheets?: TimeSheetOrderByRelationAggregateInput
     TimeSheetChanges?: TimeSheetChangeLogOrderByRelationAggregateInput
+    topicSubscriptions?: TopicSubscriptionOrderByRelationAggregateInput
     Company?: CompanyOrderByWithRelationInput
     UserSettings?: UserSettingsOrderByWithRelationInput
     Crews?: CrewOrderByRelationAggregateInput
-    pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
-    topicSubscriptions?: TopicSubscriptionOrderByRelationAggregateInput
-    notifications?: NotificationOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -52718,15 +52718,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionListRelationFilter
     Jobsite?: JobsiteListRelationFilter
     MaintenanceLogs?: MaintenanceLogListRelationFilter
+    notifications?: NotificationListRelationFilter
     PasswordResetTokens?: PasswordResetTokenListRelationFilter
+    pushSubscriptions?: PushSubscriptionListRelationFilter
     TimeSheets?: TimeSheetListRelationFilter
     TimeSheetChanges?: TimeSheetChangeLogListRelationFilter
+    topicSubscriptions?: TopicSubscriptionListRelationFilter
     Company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     UserSettings?: XOR<UserSettingsNullableScalarRelationFilter, UserSettingsWhereInput> | null
     Crews?: CrewListRelationFilter
-    pushSubscriptions?: PushSubscriptionListRelationFilter
-    topicSubscriptions?: TopicSubscriptionListRelationFilter
-    notifications?: NotificationListRelationFilter
   }, "id" | "username" | "email" | "firstName_lastName_username">
 
   export type UserOrderByWithAggregationInput = {
@@ -53191,23 +53191,23 @@ export namespace Prisma {
     OR?: TopicSubscriptionWhereInput[]
     NOT?: TopicSubscriptionWhereInput | TopicSubscriptionWhereInput[]
     id?: StringFilter<"TopicSubscription"> | string
-    userId?: StringFilter<"TopicSubscription"> | string
     topic?: StringFilter<"TopicSubscription"> | string
+    createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
     inApp?: BoolFilter<"TopicSubscription"> | boolean
     push?: BoolFilter<"TopicSubscription"> | boolean
+    userId?: StringFilter<"TopicSubscription"> | string
     frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
-    createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type TopicSubscriptionOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
+    createdAt?: SortOrder
     inApp?: SortOrder
     push?: SortOrder
+    userId?: SortOrder
     frequency?: SortOrder
-    createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -53217,23 +53217,23 @@ export namespace Prisma {
     AND?: TopicSubscriptionWhereInput | TopicSubscriptionWhereInput[]
     OR?: TopicSubscriptionWhereInput[]
     NOT?: TopicSubscriptionWhereInput | TopicSubscriptionWhereInput[]
-    userId?: StringFilter<"TopicSubscription"> | string
     topic?: StringFilter<"TopicSubscription"> | string
+    createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
     inApp?: BoolFilter<"TopicSubscription"> | boolean
     push?: BoolFilter<"TopicSubscription"> | boolean
+    userId?: StringFilter<"TopicSubscription"> | string
     frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
-    createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_topic">
 
   export type TopicSubscriptionOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
+    createdAt?: SortOrder
     inApp?: SortOrder
     push?: SortOrder
+    userId?: SortOrder
     frequency?: SortOrder
-    createdAt?: SortOrder
     _count?: TopicSubscriptionCountOrderByAggregateInput
     _max?: TopicSubscriptionMaxOrderByAggregateInput
     _min?: TopicSubscriptionMinOrderByAggregateInput
@@ -53244,12 +53244,12 @@ export namespace Prisma {
     OR?: TopicSubscriptionScalarWhereWithAggregatesInput[]
     NOT?: TopicSubscriptionScalarWhereWithAggregatesInput | TopicSubscriptionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"TopicSubscription"> | string
-    userId?: StringWithAggregatesFilter<"TopicSubscription"> | string
     topic?: StringWithAggregatesFilter<"TopicSubscription"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"TopicSubscription"> | Date | string
     inApp?: BoolWithAggregatesFilter<"TopicSubscription"> | boolean
     push?: BoolWithAggregatesFilter<"TopicSubscription"> | boolean
+    userId?: StringWithAggregatesFilter<"TopicSubscription"> | string
     frequency?: EnumFrequencyWithAggregatesFilter<"TopicSubscription"> | $Enums.Frequency
-    createdAt?: DateTimeWithAggregatesFilter<"TopicSubscription"> | Date | string
   }
 
   export type NotificationWhereInput = {
@@ -53742,33 +53742,33 @@ export namespace Prisma {
   export type EquipmentCreateInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
@@ -53781,32 +53781,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -53820,33 +53820,33 @@ export namespace Prisma {
   export type EquipmentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
@@ -53859,32 +53859,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -53898,93 +53898,93 @@ export namespace Prisma {
   export type EquipmentCreateManyInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
   }
 
   export type EquipmentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
   }
 
   export type EquipmentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
   }
 
   export type EmployeeEquipmentLogCreateInput = {
@@ -54001,12 +54001,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedCreateInput = {
     id?: string
-    timeSheetId: number
     equipmentId?: string | null
     maintenanceId?: string | null
     startTime?: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
     rental?: boolean
     RefuelLog?: RefuelLogUncheckedCreateNestedOneWithoutEmployeeEquipmentLogInput
   }
@@ -54025,24 +54025,24 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     maintenanceId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
     RefuelLog?: RefuelLogUncheckedUpdateOneWithoutEmployeeEquipmentLogNestedInput
   }
 
   export type EmployeeEquipmentLogCreateManyInput = {
     id?: string
-    timeSheetId: number
     equipmentId?: string | null
     maintenanceId?: string | null
     startTime?: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
     rental?: boolean
   }
 
@@ -54056,12 +54056,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     maintenanceId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -54369,7 +54369,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedCreateInput = {
-    id?: number
     title?: string | null
     formTemplateId: string
     userId: string
@@ -54379,6 +54378,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
     Approvals?: FormApprovalUncheckedCreateNestedManyWithoutFormSubmissionInput
   }
 
@@ -54396,7 +54396,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     formTemplateId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -54406,11 +54405,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
     Approvals?: FormApprovalUncheckedUpdateManyWithoutFormSubmissionNestedInput
   }
 
   export type FormSubmissionCreateManyInput = {
-    id?: number
     title?: string | null
     formTemplateId: string
     userId: string
@@ -54420,6 +54419,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
   }
 
   export type FormSubmissionUpdateManyMutationInput = {
@@ -54433,7 +54433,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     formTemplateId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -54443,6 +54442,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type FormApprovalCreateInput = {
@@ -54457,12 +54457,12 @@ export namespace Prisma {
 
   export type FormApprovalUncheckedCreateInput = {
     id?: string
-    formSubmissionId: number
     signedBy?: string | null
     submittedAt?: Date | string
     updatedAt?: Date | string
     signature?: string | null
     comment?: string | null
+    formSubmissionId: number
   }
 
   export type FormApprovalUpdateInput = {
@@ -54477,22 +54477,22 @@ export namespace Prisma {
 
   export type FormApprovalUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    formSubmissionId?: IntFieldUpdateOperationsInput | number
     signedBy?: NullableStringFieldUpdateOperationsInput | string | null
     submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     signature?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    formSubmissionId?: IntFieldUpdateOperationsInput | number
   }
 
   export type FormApprovalCreateManyInput = {
     id?: string
-    formSubmissionId: number
     signedBy?: string | null
     submittedAt?: Date | string
     updatedAt?: Date | string
     signature?: string | null
     comment?: string | null
+    formSubmissionId: number
   }
 
   export type FormApprovalUpdateManyMutationInput = {
@@ -54505,12 +54505,12 @@ export namespace Prisma {
 
   export type FormApprovalUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    formSubmissionId?: IntFieldUpdateOperationsInput | number
     signedBy?: NullableStringFieldUpdateOperationsInput | string | null
     submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     signature?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    formSubmissionId?: IntFieldUpdateOperationsInput | number
   }
 
   export type JobsiteCreateInput = {
@@ -54667,7 +54667,6 @@ export namespace Prisma {
   }
 
   export type ReportCreateInput = {
-    id: number
     name: string
     description: string
     createdAt?: Date | string
@@ -54676,12 +54675,12 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
     Company: CompanyCreateNestedOneWithoutReportsInput
     ReportRuns?: ReportRunCreateNestedManyWithoutReportInput
   }
 
   export type ReportUncheckedCreateInput = {
-    id: number
     name: string
     description: string
     companyId: string
@@ -54691,11 +54690,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
     ReportRuns?: ReportRunUncheckedCreateNestedManyWithoutReportInput
   }
 
   export type ReportUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54704,12 +54703,12 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
     Company?: CompanyUpdateOneRequiredWithoutReportsNestedInput
     ReportRuns?: ReportRunUpdateManyWithoutReportNestedInput
   }
 
   export type ReportUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     companyId?: StringFieldUpdateOperationsInput | string
@@ -54719,11 +54718,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
     ReportRuns?: ReportRunUncheckedUpdateManyWithoutReportNestedInput
   }
 
   export type ReportCreateManyInput = {
-    id: number
     name: string
     description: string
     companyId: string
@@ -54733,10 +54732,10 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
   }
 
   export type ReportUpdateManyMutationInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54745,10 +54744,10 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type ReportUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     companyId?: StringFieldUpdateOperationsInput | string
@@ -54758,6 +54757,7 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type ReportRunCreateInput = {
@@ -54776,7 +54776,6 @@ export namespace Prisma {
 
   export type ReportRunUncheckedCreateInput = {
     id?: string
-    reportId: number
     runAt?: Date | string
     status: $Enums.ReportStatus
     results?: NullableJsonNullValueInput | InputJsonValue
@@ -54786,6 +54785,7 @@ export namespace Prisma {
     customParams?: NullableJsonNullValueInput | InputJsonValue
     exportFormats?: ReportRunCreateexportFormatsInput | string[]
     lastExportedAt?: Date | string | null
+    reportId: number
   }
 
   export type ReportRunUpdateInput = {
@@ -54804,7 +54804,6 @@ export namespace Prisma {
 
   export type ReportRunUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    reportId?: IntFieldUpdateOperationsInput | number
     runAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
     results?: NullableJsonNullValueInput | InputJsonValue
@@ -54814,11 +54813,11 @@ export namespace Prisma {
     customParams?: NullableJsonNullValueInput | InputJsonValue
     exportFormats?: ReportRunUpdateexportFormatsInput | string[]
     lastExportedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reportId?: IntFieldUpdateOperationsInput | number
   }
 
   export type ReportRunCreateManyInput = {
     id?: string
-    reportId: number
     runAt?: Date | string
     status: $Enums.ReportStatus
     results?: NullableJsonNullValueInput | InputJsonValue
@@ -54828,6 +54827,7 @@ export namespace Prisma {
     customParams?: NullableJsonNullValueInput | InputJsonValue
     exportFormats?: ReportRunCreateexportFormatsInput | string[]
     lastExportedAt?: Date | string | null
+    reportId: number
   }
 
   export type ReportRunUpdateManyMutationInput = {
@@ -54845,7 +54845,6 @@ export namespace Prisma {
 
   export type ReportRunUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    reportId?: IntFieldUpdateOperationsInput | number
     runAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
     results?: NullableJsonNullValueInput | InputJsonValue
@@ -54855,6 +54854,7 @@ export namespace Prisma {
     customParams?: NullableJsonNullValueInput | InputJsonValue
     exportFormats?: ReportRunUpdateexportFormatsInput | string[]
     lastExportedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reportId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TimeSheetCreateInput = {
@@ -54886,12 +54886,11 @@ export namespace Prisma {
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -54917,11 +54916,12 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUpdateInput = {
@@ -54953,12 +54953,11 @@ export namespace Prisma {
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -54984,15 +54983,15 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetCreateManyInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -55018,6 +55017,7 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
   }
 
   export type TimeSheetUpdateManyMutationInput = {
@@ -55046,7 +55046,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -55072,6 +55071,7 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type MaintenanceLogCreateInput = {
@@ -55086,12 +55086,12 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedCreateInput = {
     id?: string
-    timeSheetId: number
     userId: string
     maintenanceId: string
     startTime: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
   }
 
   export type MaintenanceLogUpdateInput = {
@@ -55106,22 +55106,22 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     maintenanceId?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MaintenanceLogCreateManyInput = {
     id?: string
-    timeSheetId: number
     userId: string
     maintenanceId: string
     startTime: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
   }
 
   export type MaintenanceLogUpdateManyMutationInput = {
@@ -55133,12 +55133,12 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     maintenanceId?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MaintenanceCreateInput = {
@@ -55302,13 +55302,13 @@ export namespace Prisma {
 
   export type TascoLogUncheckedCreateInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     equipmentId?: string | null
     laborType?: string | null
     materialType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTascoLogInput
   }
 
@@ -55326,25 +55326,25 @@ export namespace Prisma {
 
   export type TascoLogUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     materialType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTascoLogNestedInput
   }
 
   export type TascoLogCreateManyInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     equipmentId?: string | null
     laborType?: string | null
     materialType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
   }
 
   export type TascoLogUpdateManyMutationInput = {
@@ -55357,13 +55357,13 @@ export namespace Prisma {
 
   export type TascoLogUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     materialType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TascoMaterialTypesCreateInput = {
@@ -55424,7 +55424,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -55433,6 +55432,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -55458,7 +55458,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55467,6 +55466,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -55475,7 +55475,6 @@ export namespace Prisma {
 
   export type TruckingLogCreateManyInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -55484,6 +55483,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
   }
 
   export type TruckingLogUpdateManyMutationInput = {
@@ -55497,7 +55497,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55506,6 +55505,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type StateMileageCreateInput = {
@@ -55777,10 +55777,10 @@ export namespace Prisma {
   export type TimeSheetChangeLogCreateInput = {
     id?: string
     changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
-    TimeSheet: TimeSheetCreateNestedOneWithoutChangeLogsInput
+    changes: JsonNullValueInput | InputJsonValue
     User: UserCreateNestedOneWithoutTimeSheetChangesInput
+    TimeSheet: TimeSheetCreateNestedOneWithoutChangeLogsInput
   }
 
   export type TimeSheetChangeLogUncheckedCreateInput = {
@@ -55788,17 +55788,17 @@ export namespace Prisma {
     timeSheetId: number
     changedBy: string
     changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
   }
 
   export type TimeSheetChangeLogUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-    TimeSheet?: TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput
+    changes?: JsonNullValueInput | InputJsonValue
     User?: UserUpdateOneRequiredWithoutTimeSheetChangesNestedInput
+    TimeSheet?: TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput
   }
 
   export type TimeSheetChangeLogUncheckedUpdateInput = {
@@ -55806,8 +55806,8 @@ export namespace Prisma {
     timeSheetId?: IntFieldUpdateOperationsInput | number
     changedBy?: StringFieldUpdateOperationsInput | string
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
   }
 
   export type TimeSheetChangeLogCreateManyInput = {
@@ -55815,15 +55815,15 @@ export namespace Prisma {
     timeSheetId: number
     changedBy: string
     changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
   }
 
   export type TimeSheetChangeLogUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
   }
 
   export type TimeSheetChangeLogUncheckedUpdateManyInput = {
@@ -55831,8 +55831,8 @@ export namespace Prisma {
     timeSheetId?: IntFieldUpdateOperationsInput | number
     changedBy?: StringFieldUpdateOperationsInput | string
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
   }
 
   export type UserCreateInput = {
@@ -55866,15 +55866,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -55909,14 +55909,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -55950,15 +55950,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -55993,14 +55993,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -56509,70 +56509,70 @@ export namespace Prisma {
   export type TopicSubscriptionCreateInput = {
     id?: string
     topic: string
+    createdAt?: Date | string
     inApp?: boolean
     push?: boolean
     frequency?: $Enums.Frequency
-    createdAt?: Date | string
     user: UserCreateNestedOneWithoutTopicSubscriptionsInput
   }
 
   export type TopicSubscriptionUncheckedCreateInput = {
     id?: string
-    userId: string
     topic: string
+    createdAt?: Date | string
     inApp?: boolean
     push?: boolean
+    userId: string
     frequency?: $Enums.Frequency
-    createdAt?: Date | string
   }
 
   export type TopicSubscriptionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inApp?: BoolFieldUpdateOperationsInput | boolean
     push?: BoolFieldUpdateOperationsInput | boolean
     frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTopicSubscriptionsNestedInput
   }
 
   export type TopicSubscriptionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inApp?: BoolFieldUpdateOperationsInput | boolean
     push?: BoolFieldUpdateOperationsInput | boolean
+    userId?: StringFieldUpdateOperationsInput | string
     frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TopicSubscriptionCreateManyInput = {
     id?: string
-    userId: string
     topic: string
+    createdAt?: Date | string
     inApp?: boolean
     push?: boolean
+    userId: string
     frequency?: $Enums.Frequency
-    createdAt?: Date | string
   }
 
   export type TopicSubscriptionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inApp?: BoolFieldUpdateOperationsInput | boolean
     push?: BoolFieldUpdateOperationsInput | boolean
     frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TopicSubscriptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inApp?: BoolFieldUpdateOperationsInput | boolean
     push?: BoolFieldUpdateOperationsInput | boolean
+    userId?: StringFieldUpdateOperationsInput | string
     frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NotificationCreateInput = {
@@ -57108,36 +57108,25 @@ export namespace Prisma {
     tagName?: SortOrder
   }
 
-  export type EnumOwnershipTypeNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel> | $Enums.OwnershipType | null
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type EnumConditionNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumConditionNullableFilter<$PrismaModel> | $Enums.Condition | null
-  }
-
   export type EnumEquipmentTagsFilter<$PrismaModel = never> = {
     equals?: $Enums.EquipmentTags | EnumEquipmentTagsFieldRefInput<$PrismaModel>
     in?: $Enums.EquipmentTags[] | ListEnumEquipmentTagsFieldRefInput<$PrismaModel>
     notIn?: $Enums.EquipmentTags[] | ListEnumEquipmentTagsFieldRefInput<$PrismaModel>
     not?: NestedEnumEquipmentTagsFilter<$PrismaModel> | $Enums.EquipmentTags
+  }
+
+  export type EnumEquipmentStateFilter<$PrismaModel = never> = {
+    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
+    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumEquipmentStateFilter<$PrismaModel> | $Enums.EquipmentState
+  }
+
+  export type EnumApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
   }
 
   export type BoolNullableFilter<$PrismaModel = never> = {
@@ -57156,20 +57145,6 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type EnumEquipmentStateFilter<$PrismaModel = never> = {
-    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
-    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    not?: NestedEnumEquipmentStateFilter<$PrismaModel> | $Enums.EquipmentState
-  }
-
-  export type EnumApprovalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
-  }
-
   export type EnumCreatedViaFilter<$PrismaModel = never> = {
     equals?: $Enums.CreatedVia | EnumCreatedViaFieldRefInput<$PrismaModel>
     in?: $Enums.CreatedVia[] | ListEnumCreatedViaFieldRefInput<$PrismaModel>
@@ -57177,15 +57152,40 @@ export namespace Prisma {
     not?: NestedEnumCreatedViaFilter<$PrismaModel> | $Enums.CreatedVia
   }
 
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type EnumOwnershipTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel> | $Enums.OwnershipType | null
+  }
+
+  export type EnumConditionNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumConditionNullableFilter<$PrismaModel> | $Enums.Condition | null
   }
 
   export type EmployeeEquipmentLogListRelationFilter = {
     every?: EmployeeEquipmentLogWhereInput
     some?: EmployeeEquipmentLogWhereInput
     none?: EmployeeEquipmentLogWhereInput
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type EquipmentHauledListRelationFilter = {
@@ -57235,32 +57235,32 @@ export namespace Prisma {
   export type EquipmentCountOrderByAggregateInput = {
     id?: SortOrder
     qrId?: SortOrder
-    code?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    memo?: SortOrder
-    ownershipType?: SortOrder
-    make?: SortOrder
-    model?: SortOrder
-    year?: SortOrder
-    color?: SortOrder
-    serialNumber?: SortOrder
-    acquiredDate?: SortOrder
-    acquiredCondition?: SortOrder
-    licensePlate?: SortOrder
-    licenseState?: SortOrder
-    registrationExpiration?: SortOrder
+    creationReason?: SortOrder
     equipmentTag?: SortOrder
-    overWeight?: SortOrder
-    currentWeight?: SortOrder
     state?: SortOrder
     isDisabledByAdmin?: SortOrder
-    creationReason?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    createdVia?: SortOrder
+    overWeight?: SortOrder
+    currentWeight?: SortOrder
     createdById?: SortOrder
+    createdVia?: SortOrder
+    acquiredDate?: SortOrder
+    code?: SortOrder
+    color?: SortOrder
+    licensePlate?: SortOrder
+    licenseState?: SortOrder
+    make?: SortOrder
+    memo?: SortOrder
+    model?: SortOrder
+    ownershipType?: SortOrder
+    registrationExpiration?: SortOrder
+    serialNumber?: SortOrder
+    year?: SortOrder
+    acquiredCondition?: SortOrder
   }
 
   export type EquipmentAvgOrderByAggregateInput = {
@@ -57270,101 +57270,67 @@ export namespace Prisma {
   export type EquipmentMaxOrderByAggregateInput = {
     id?: SortOrder
     qrId?: SortOrder
-    code?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    memo?: SortOrder
-    ownershipType?: SortOrder
-    make?: SortOrder
-    model?: SortOrder
-    year?: SortOrder
-    color?: SortOrder
-    serialNumber?: SortOrder
-    acquiredDate?: SortOrder
-    acquiredCondition?: SortOrder
-    licensePlate?: SortOrder
-    licenseState?: SortOrder
-    registrationExpiration?: SortOrder
+    creationReason?: SortOrder
     equipmentTag?: SortOrder
-    overWeight?: SortOrder
-    currentWeight?: SortOrder
     state?: SortOrder
     isDisabledByAdmin?: SortOrder
-    creationReason?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    createdVia?: SortOrder
+    overWeight?: SortOrder
+    currentWeight?: SortOrder
     createdById?: SortOrder
+    createdVia?: SortOrder
+    acquiredDate?: SortOrder
+    code?: SortOrder
+    color?: SortOrder
+    licensePlate?: SortOrder
+    licenseState?: SortOrder
+    make?: SortOrder
+    memo?: SortOrder
+    model?: SortOrder
+    ownershipType?: SortOrder
+    registrationExpiration?: SortOrder
+    serialNumber?: SortOrder
+    year?: SortOrder
+    acquiredCondition?: SortOrder
   }
 
   export type EquipmentMinOrderByAggregateInput = {
     id?: SortOrder
     qrId?: SortOrder
-    code?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    memo?: SortOrder
-    ownershipType?: SortOrder
-    make?: SortOrder
-    model?: SortOrder
-    year?: SortOrder
-    color?: SortOrder
-    serialNumber?: SortOrder
-    acquiredDate?: SortOrder
-    acquiredCondition?: SortOrder
-    licensePlate?: SortOrder
-    licenseState?: SortOrder
-    registrationExpiration?: SortOrder
+    creationReason?: SortOrder
     equipmentTag?: SortOrder
-    overWeight?: SortOrder
-    currentWeight?: SortOrder
     state?: SortOrder
     isDisabledByAdmin?: SortOrder
-    creationReason?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    createdVia?: SortOrder
+    overWeight?: SortOrder
+    currentWeight?: SortOrder
     createdById?: SortOrder
+    createdVia?: SortOrder
+    acquiredDate?: SortOrder
+    code?: SortOrder
+    color?: SortOrder
+    licensePlate?: SortOrder
+    licenseState?: SortOrder
+    make?: SortOrder
+    memo?: SortOrder
+    model?: SortOrder
+    ownershipType?: SortOrder
+    registrationExpiration?: SortOrder
+    serialNumber?: SortOrder
+    year?: SortOrder
+    acquiredCondition?: SortOrder
   }
 
   export type EquipmentSumOrderByAggregateInput = {
     currentWeight?: SortOrder
-  }
-
-  export type EnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.OwnershipType | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
-    _max?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type EnumConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.Condition | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumConditionNullableFilter<$PrismaModel>
-    _max?: NestedEnumConditionNullableFilter<$PrismaModel>
   }
 
   export type EnumEquipmentTagsWithAggregatesFilter<$PrismaModel = never> = {
@@ -57375,6 +57341,26 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumEquipmentTagsFilter<$PrismaModel>
     _max?: NestedEnumEquipmentTagsFilter<$PrismaModel>
+  }
+
+  export type EnumEquipmentStateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
+    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumEquipmentStateWithAggregatesFilter<$PrismaModel> | $Enums.EquipmentState
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEquipmentStateFilter<$PrismaModel>
+    _max?: NestedEnumEquipmentStateFilter<$PrismaModel>
+  }
+
+  export type EnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
 
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -57401,26 +57387,6 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type EnumEquipmentStateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
-    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    not?: NestedEnumEquipmentStateWithAggregatesFilter<$PrismaModel> | $Enums.EquipmentState
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumEquipmentStateFilter<$PrismaModel>
-    _max?: NestedEnumEquipmentStateFilter<$PrismaModel>
-  }
-
-  export type EnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
-    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
-  }
-
   export type EnumCreatedViaWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.CreatedVia | EnumCreatedViaFieldRefInput<$PrismaModel>
     in?: $Enums.CreatedVia[] | ListEnumCreatedViaFieldRefInput<$PrismaModel>
@@ -57429,6 +57395,40 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCreatedViaFilter<$PrismaModel>
     _max?: NestedEnumCreatedViaFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.OwnershipType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.Condition | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumConditionNullableFilter<$PrismaModel>
+    _max?: NestedEnumConditionNullableFilter<$PrismaModel>
   }
 
   export type EquipmentNullableScalarRelationFilter = {
@@ -57453,12 +57453,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogCountOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     equipmentId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     comment?: SortOrder
+    timeSheetId?: SortOrder
     rental?: SortOrder
   }
 
@@ -57468,23 +57468,23 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogMaxOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     equipmentId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     comment?: SortOrder
+    timeSheetId?: SortOrder
     rental?: SortOrder
   }
 
   export type EmployeeEquipmentLogMinOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     equipmentId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     comment?: SortOrder
+    timeSheetId?: SortOrder
     rental?: SortOrder
   }
 
@@ -57813,7 +57813,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionCountOrderByAggregateInput = {
-    id?: SortOrder
     title?: SortOrder
     formTemplateId?: SortOrder
     userId?: SortOrder
@@ -57823,6 +57822,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     submittedAt?: SortOrder
     status?: SortOrder
+    id?: SortOrder
   }
 
   export type FormSubmissionAvgOrderByAggregateInput = {
@@ -57830,7 +57830,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionMaxOrderByAggregateInput = {
-    id?: SortOrder
     title?: SortOrder
     formTemplateId?: SortOrder
     userId?: SortOrder
@@ -57839,10 +57838,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     submittedAt?: SortOrder
     status?: SortOrder
+    id?: SortOrder
   }
 
   export type FormSubmissionMinOrderByAggregateInput = {
-    id?: SortOrder
     title?: SortOrder
     formTemplateId?: SortOrder
     userId?: SortOrder
@@ -57851,6 +57850,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     submittedAt?: SortOrder
     status?: SortOrder
+    id?: SortOrder
   }
 
   export type FormSubmissionSumOrderByAggregateInput = {
@@ -57900,12 +57900,12 @@ export namespace Prisma {
 
   export type FormApprovalCountOrderByAggregateInput = {
     id?: SortOrder
-    formSubmissionId?: SortOrder
     signedBy?: SortOrder
     submittedAt?: SortOrder
     updatedAt?: SortOrder
     signature?: SortOrder
     comment?: SortOrder
+    formSubmissionId?: SortOrder
   }
 
   export type FormApprovalAvgOrderByAggregateInput = {
@@ -57914,22 +57914,22 @@ export namespace Prisma {
 
   export type FormApprovalMaxOrderByAggregateInput = {
     id?: SortOrder
-    formSubmissionId?: SortOrder
     signedBy?: SortOrder
     submittedAt?: SortOrder
     updatedAt?: SortOrder
     signature?: SortOrder
     comment?: SortOrder
+    formSubmissionId?: SortOrder
   }
 
   export type FormApprovalMinOrderByAggregateInput = {
     id?: SortOrder
-    formSubmissionId?: SortOrder
     signedBy?: SortOrder
     submittedAt?: SortOrder
     updatedAt?: SortOrder
     signature?: SortOrder
     comment?: SortOrder
+    formSubmissionId?: SortOrder
   }
 
   export type FormApprovalSumOrderByAggregateInput = {
@@ -58037,7 +58037,6 @@ export namespace Prisma {
   }
 
   export type ReportCountOrderByAggregateInput = {
-    id?: SortOrder
     name?: SortOrder
     description?: SortOrder
     companyId?: SortOrder
@@ -58047,6 +58046,7 @@ export namespace Prisma {
     parameters?: SortOrder
     visibility?: SortOrder
     tags?: SortOrder
+    id?: SortOrder
   }
 
   export type ReportAvgOrderByAggregateInput = {
@@ -58054,7 +58054,6 @@ export namespace Prisma {
   }
 
   export type ReportMaxOrderByAggregateInput = {
-    id?: SortOrder
     name?: SortOrder
     description?: SortOrder
     companyId?: SortOrder
@@ -58062,10 +58061,10 @@ export namespace Prisma {
     createdBy?: SortOrder
     updatedAt?: SortOrder
     visibility?: SortOrder
+    id?: SortOrder
   }
 
   export type ReportMinOrderByAggregateInput = {
-    id?: SortOrder
     name?: SortOrder
     description?: SortOrder
     companyId?: SortOrder
@@ -58073,6 +58072,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     updatedAt?: SortOrder
     visibility?: SortOrder
+    id?: SortOrder
   }
 
   export type ReportSumOrderByAggregateInput = {
@@ -58103,7 +58103,6 @@ export namespace Prisma {
 
   export type ReportRunCountOrderByAggregateInput = {
     id?: SortOrder
-    reportId?: SortOrder
     runAt?: SortOrder
     status?: SortOrder
     results?: SortOrder
@@ -58113,38 +58112,39 @@ export namespace Prisma {
     customParams?: SortOrder
     exportFormats?: SortOrder
     lastExportedAt?: SortOrder
+    reportId?: SortOrder
   }
 
   export type ReportRunAvgOrderByAggregateInput = {
-    reportId?: SortOrder
     duration?: SortOrder
+    reportId?: SortOrder
   }
 
   export type ReportRunMaxOrderByAggregateInput = {
     id?: SortOrder
-    reportId?: SortOrder
     runAt?: SortOrder
     status?: SortOrder
     duration?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     lastExportedAt?: SortOrder
+    reportId?: SortOrder
   }
 
   export type ReportRunMinOrderByAggregateInput = {
     id?: SortOrder
-    reportId?: SortOrder
     runAt?: SortOrder
     status?: SortOrder
     duration?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     lastExportedAt?: SortOrder
+    reportId?: SortOrder
   }
 
   export type ReportRunSumOrderByAggregateInput = {
-    reportId?: SortOrder
     duration?: SortOrder
+    reportId?: SortOrder
   }
 
   export type EnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -58188,7 +58188,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetCountOrderByAggregateInput = {
-    id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
     jobsiteId?: SortOrder
@@ -58214,18 +58213,18 @@ export namespace Prisma {
     withinFenceIn?: SortOrder
     withinFenceOut?: SortOrder
     wasInjured?: SortOrder
+    id?: SortOrder
   }
 
   export type TimeSheetAvgOrderByAggregateInput = {
-    id?: SortOrder
     clockInLat?: SortOrder
     clockInLng?: SortOrder
     clockOutLat?: SortOrder
     clockOutLng?: SortOrder
+    id?: SortOrder
   }
 
   export type TimeSheetMaxOrderByAggregateInput = {
-    id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
     jobsiteId?: SortOrder
@@ -58251,10 +58250,10 @@ export namespace Prisma {
     withinFenceIn?: SortOrder
     withinFenceOut?: SortOrder
     wasInjured?: SortOrder
+    id?: SortOrder
   }
 
   export type TimeSheetMinOrderByAggregateInput = {
-    id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
     jobsiteId?: SortOrder
@@ -58280,14 +58279,15 @@ export namespace Prisma {
     withinFenceIn?: SortOrder
     withinFenceOut?: SortOrder
     wasInjured?: SortOrder
+    id?: SortOrder
   }
 
   export type TimeSheetSumOrderByAggregateInput = {
-    id?: SortOrder
     clockInLat?: SortOrder
     clockInLng?: SortOrder
     clockOutLat?: SortOrder
     clockOutLng?: SortOrder
+    id?: SortOrder
   }
 
   export type MaintenanceScalarRelationFilter = {
@@ -58297,12 +58297,12 @@ export namespace Prisma {
 
   export type MaintenanceLogCountOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     userId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     comment?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type MaintenanceLogAvgOrderByAggregateInput = {
@@ -58311,22 +58311,22 @@ export namespace Prisma {
 
   export type MaintenanceLogMaxOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     userId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     comment?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type MaintenanceLogMinOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     userId?: SortOrder
     maintenanceId?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     comment?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type MaintenanceLogSumOrderByAggregateInput = {
@@ -58447,45 +58447,45 @@ export namespace Prisma {
 
   export type TascoLogCountOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     shiftType?: SortOrder
     equipmentId?: SortOrder
     laborType?: SortOrder
     materialType?: SortOrder
     LoadQuantity?: SortOrder
     screenType?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TascoLogAvgOrderByAggregateInput = {
-    timeSheetId?: SortOrder
     LoadQuantity?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TascoLogMaxOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     shiftType?: SortOrder
     equipmentId?: SortOrder
     laborType?: SortOrder
     materialType?: SortOrder
     LoadQuantity?: SortOrder
     screenType?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TascoLogMinOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     shiftType?: SortOrder
     equipmentId?: SortOrder
     laborType?: SortOrder
     materialType?: SortOrder
     LoadQuantity?: SortOrder
     screenType?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TascoLogSumOrderByAggregateInput = {
-    timeSheetId?: SortOrder
     LoadQuantity?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type EnumLoadTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -58535,7 +58535,6 @@ export namespace Prisma {
 
   export type TruckingLogCountOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     laborType?: SortOrder
     taskName?: SortOrder
     equipmentId?: SortOrder
@@ -58544,17 +58543,17 @@ export namespace Prisma {
     truckLaborLogId?: SortOrder
     trailerNumber?: SortOrder
     truckNumber?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TruckingLogAvgOrderByAggregateInput = {
-    timeSheetId?: SortOrder
     startingMileage?: SortOrder
     endingMileage?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TruckingLogMaxOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     laborType?: SortOrder
     taskName?: SortOrder
     equipmentId?: SortOrder
@@ -58563,11 +58562,11 @@ export namespace Prisma {
     truckLaborLogId?: SortOrder
     trailerNumber?: SortOrder
     truckNumber?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TruckingLogMinOrderByAggregateInput = {
     id?: SortOrder
-    timeSheetId?: SortOrder
     laborType?: SortOrder
     taskName?: SortOrder
     equipmentId?: SortOrder
@@ -58576,12 +58575,13 @@ export namespace Prisma {
     truckLaborLogId?: SortOrder
     trailerNumber?: SortOrder
     truckNumber?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TruckingLogSumOrderByAggregateInput = {
-    timeSheetId?: SortOrder
     startingMileage?: SortOrder
     endingMileage?: SortOrder
+    timeSheetId?: SortOrder
   }
 
   export type TruckingLogScalarRelationFilter = {
@@ -58804,8 +58804,8 @@ export namespace Prisma {
     timeSheetId?: SortOrder
     changedBy?: SortOrder
     changedAt?: SortOrder
-    changes?: SortOrder
     changeReason?: SortOrder
+    changes?: SortOrder
   }
 
   export type TimeSheetChangeLogAvgOrderByAggregateInput = {
@@ -58875,21 +58875,16 @@ export namespace Prisma {
     isNot?: ContactsWhereInput | null
   }
 
+  export type NotificationListRelationFilter = {
+    every?: NotificationWhereInput
+    some?: NotificationWhereInput
+    none?: NotificationWhereInput
+  }
+
   export type PasswordResetTokenListRelationFilter = {
     every?: PasswordResetTokenWhereInput
     some?: PasswordResetTokenWhereInput
     none?: PasswordResetTokenWhereInput
-  }
-
-  export type UserSettingsNullableScalarRelationFilter = {
-    is?: UserSettingsWhereInput | null
-    isNot?: UserSettingsWhereInput | null
-  }
-
-  export type CrewListRelationFilter = {
-    every?: CrewWhereInput
-    some?: CrewWhereInput
-    none?: CrewWhereInput
   }
 
   export type PushSubscriptionListRelationFilter = {
@@ -58904,17 +58899,22 @@ export namespace Prisma {
     none?: TopicSubscriptionWhereInput
   }
 
-  export type NotificationListRelationFilter = {
-    every?: NotificationWhereInput
-    some?: NotificationWhereInput
-    none?: NotificationWhereInput
+  export type UserSettingsNullableScalarRelationFilter = {
+    is?: UserSettingsWhereInput | null
+    isNot?: UserSettingsWhereInput | null
   }
 
-  export type PasswordResetTokenOrderByRelationAggregateInput = {
+  export type CrewListRelationFilter = {
+    every?: CrewWhereInput
+    some?: CrewWhereInput
+    none?: CrewWhereInput
+  }
+
+  export type NotificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type CrewOrderByRelationAggregateInput = {
+  export type PasswordResetTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -58926,7 +58926,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type NotificationOrderByRelationAggregateInput = {
+  export type CrewOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -59251,32 +59251,32 @@ export namespace Prisma {
 
   export type TopicSubscriptionCountOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
+    createdAt?: SortOrder
     inApp?: SortOrder
     push?: SortOrder
+    userId?: SortOrder
     frequency?: SortOrder
-    createdAt?: SortOrder
   }
 
   export type TopicSubscriptionMaxOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
+    createdAt?: SortOrder
     inApp?: SortOrder
     push?: SortOrder
+    userId?: SortOrder
     frequency?: SortOrder
-    createdAt?: SortOrder
   }
 
   export type TopicSubscriptionMinOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
+    createdAt?: SortOrder
     inApp?: SortOrder
     push?: SortOrder
+    userId?: SortOrder
     frequency?: SortOrder
-    createdAt?: SortOrder
   }
 
   export type EnumFrequencyWithAggregatesFilter<$PrismaModel = never> = {
@@ -59819,17 +59819,17 @@ export namespace Prisma {
     deleteMany?: PdfDocumentScalarWhereInput | PdfDocumentScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutEquipmentInput = {
-    create?: XOR<UserCreateWithoutEquipmentInput, UserUncheckedCreateWithoutEquipmentInput>
-    connectOrCreate?: UserCreateOrConnectWithoutEquipmentInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput = {
     create?: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput> | EmployeeEquipmentLogCreateWithoutEquipmentInput[] | EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput[]
     connectOrCreate?: EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput | EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput[]
     createMany?: EmployeeEquipmentLogCreateManyEquipmentInputEnvelope
     connect?: EmployeeEquipmentLogWhereUniqueInput | EmployeeEquipmentLogWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedOneWithoutEquipmentInput = {
+    create?: XOR<UserCreateWithoutEquipmentInput, UserUncheckedCreateWithoutEquipmentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEquipmentInput
+    connect?: UserWhereUniqueInput
   }
 
   export type EquipmentHauledCreateNestedManyWithoutEquipmentInput = {
@@ -59935,20 +59935,16 @@ export namespace Prisma {
     connect?: DocumentTagWhereUniqueInput | DocumentTagWhereUniqueInput[]
   }
 
-  export type NullableEnumOwnershipTypeFieldUpdateOperationsInput = {
-    set?: $Enums.OwnershipType | null
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
-  }
-
-  export type NullableEnumConditionFieldUpdateOperationsInput = {
-    set?: $Enums.Condition | null
-  }
-
   export type EnumEquipmentTagsFieldUpdateOperationsInput = {
     set?: $Enums.EquipmentTags
+  }
+
+  export type EnumEquipmentStateFieldUpdateOperationsInput = {
+    set?: $Enums.EquipmentState
+  }
+
+  export type EnumApprovalStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ApprovalStatus
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -59963,26 +59959,20 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type EnumEquipmentStateFieldUpdateOperationsInput = {
-    set?: $Enums.EquipmentState
-  }
-
-  export type EnumApprovalStatusFieldUpdateOperationsInput = {
-    set?: $Enums.ApprovalStatus
-  }
-
   export type EnumCreatedViaFieldUpdateOperationsInput = {
     set?: $Enums.CreatedVia
   }
 
-  export type UserUpdateOneWithoutEquipmentNestedInput = {
-    create?: XOR<UserCreateWithoutEquipmentInput, UserUncheckedCreateWithoutEquipmentInput>
-    connectOrCreate?: UserCreateOrConnectWithoutEquipmentInput
-    upsert?: UserUpsertWithoutEquipmentInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEquipmentInput, UserUpdateWithoutEquipmentInput>, UserUncheckedUpdateWithoutEquipmentInput>
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type NullableEnumOwnershipTypeFieldUpdateOperationsInput = {
+    set?: $Enums.OwnershipType | null
+  }
+
+  export type NullableEnumConditionFieldUpdateOperationsInput = {
+    set?: $Enums.Condition | null
   }
 
   export type EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput = {
@@ -59997,6 +59987,16 @@ export namespace Prisma {
     update?: EmployeeEquipmentLogUpdateWithWhereUniqueWithoutEquipmentInput | EmployeeEquipmentLogUpdateWithWhereUniqueWithoutEquipmentInput[]
     updateMany?: EmployeeEquipmentLogUpdateManyWithWhereWithoutEquipmentInput | EmployeeEquipmentLogUpdateManyWithWhereWithoutEquipmentInput[]
     deleteMany?: EmployeeEquipmentLogScalarWhereInput | EmployeeEquipmentLogScalarWhereInput[]
+  }
+
+  export type UserUpdateOneWithoutEquipmentNestedInput = {
+    create?: XOR<UserCreateWithoutEquipmentInput, UserUncheckedCreateWithoutEquipmentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEquipmentInput
+    upsert?: UserUpsertWithoutEquipmentInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEquipmentInput, UserUpdateWithoutEquipmentInput>, UserUncheckedUpdateWithoutEquipmentInput>
   }
 
   export type EquipmentHauledUpdateManyWithoutEquipmentNestedInput = {
@@ -60900,18 +60900,18 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type TruckingLogCreateNestedManyWithoutTimeSheetInput = {
-    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
-    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
-    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
-    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-  }
-
   export type TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput = {
     create?: XOR<TimeSheetChangeLogCreateWithoutTimeSheetInput, TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput> | TimeSheetChangeLogCreateWithoutTimeSheetInput[] | TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput | TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput[]
     createMany?: TimeSheetChangeLogCreateManyTimeSheetInputEnvelope
     connect?: TimeSheetChangeLogWhereUniqueInput | TimeSheetChangeLogWhereUniqueInput[]
+  }
+
+  export type TruckingLogCreateNestedManyWithoutTimeSheetInput = {
+    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
+    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
+    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
   }
 
   export type EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput = {
@@ -60935,18 +60935,18 @@ export namespace Prisma {
     connect?: TascoLogWhereUniqueInput | TascoLogWhereUniqueInput[]
   }
 
-  export type TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput = {
-    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
-    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
-    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
-    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-  }
-
   export type TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput = {
     create?: XOR<TimeSheetChangeLogCreateWithoutTimeSheetInput, TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput> | TimeSheetChangeLogCreateWithoutTimeSheetInput[] | TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput | TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput[]
     createMany?: TimeSheetChangeLogCreateManyTimeSheetInputEnvelope
     connect?: TimeSheetChangeLogWhereUniqueInput | TimeSheetChangeLogWhereUniqueInput[]
+  }
+
+  export type TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput = {
+    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
+    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
+    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
   }
 
   export type EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput = {
@@ -61015,20 +61015,6 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTimeSheetsInput, UserUpdateWithoutTimeSheetsInput>, UserUncheckedUpdateWithoutTimeSheetsInput>
   }
 
-  export type TruckingLogUpdateManyWithoutTimeSheetNestedInput = {
-    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
-    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
-    upsert?: TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput[]
-    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
-    set?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    disconnect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    delete?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    update?: TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
-    updateMany?: TruckingLogUpdateManyWithWhereWithoutTimeSheetInput | TruckingLogUpdateManyWithWhereWithoutTimeSheetInput[]
-    deleteMany?: TruckingLogScalarWhereInput | TruckingLogScalarWhereInput[]
-  }
-
   export type TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput = {
     create?: XOR<TimeSheetChangeLogCreateWithoutTimeSheetInput, TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput> | TimeSheetChangeLogCreateWithoutTimeSheetInput[] | TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput | TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput[]
@@ -61041,6 +61027,20 @@ export namespace Prisma {
     update?: TimeSheetChangeLogUpdateWithWhereUniqueWithoutTimeSheetInput | TimeSheetChangeLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
     updateMany?: TimeSheetChangeLogUpdateManyWithWhereWithoutTimeSheetInput | TimeSheetChangeLogUpdateManyWithWhereWithoutTimeSheetInput[]
     deleteMany?: TimeSheetChangeLogScalarWhereInput | TimeSheetChangeLogScalarWhereInput[]
+  }
+
+  export type TruckingLogUpdateManyWithoutTimeSheetNestedInput = {
+    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
+    upsert?: TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput[]
+    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
+    set?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    disconnect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    delete?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    update?: TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
+    updateMany?: TruckingLogUpdateManyWithWhereWithoutTimeSheetInput | TruckingLogUpdateManyWithWhereWithoutTimeSheetInput[]
+    deleteMany?: TruckingLogScalarWhereInput | TruckingLogScalarWhereInput[]
   }
 
   export type EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput = {
@@ -61085,20 +61085,6 @@ export namespace Prisma {
     deleteMany?: TascoLogScalarWhereInput | TascoLogScalarWhereInput[]
   }
 
-  export type TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput = {
-    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
-    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
-    upsert?: TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput[]
-    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
-    set?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    disconnect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    delete?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
-    update?: TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
-    updateMany?: TruckingLogUpdateManyWithWhereWithoutTimeSheetInput | TruckingLogUpdateManyWithWhereWithoutTimeSheetInput[]
-    deleteMany?: TruckingLogScalarWhereInput | TruckingLogScalarWhereInput[]
-  }
-
   export type TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput = {
     create?: XOR<TimeSheetChangeLogCreateWithoutTimeSheetInput, TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput> | TimeSheetChangeLogCreateWithoutTimeSheetInput[] | TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput | TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput[]
@@ -61111,6 +61097,20 @@ export namespace Prisma {
     update?: TimeSheetChangeLogUpdateWithWhereUniqueWithoutTimeSheetInput | TimeSheetChangeLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
     updateMany?: TimeSheetChangeLogUpdateManyWithWhereWithoutTimeSheetInput | TimeSheetChangeLogUpdateManyWithWhereWithoutTimeSheetInput[]
     deleteMany?: TimeSheetChangeLogScalarWhereInput | TimeSheetChangeLogScalarWhereInput[]
+  }
+
+  export type TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput = {
+    create?: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput> | TruckingLogCreateWithoutTimeSheetInput[] | TruckingLogUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: TruckingLogCreateOrConnectWithoutTimeSheetInput | TruckingLogCreateOrConnectWithoutTimeSheetInput[]
+    upsert?: TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput[]
+    createMany?: TruckingLogCreateManyTimeSheetInputEnvelope
+    set?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    disconnect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    delete?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    connect?: TruckingLogWhereUniqueInput | TruckingLogWhereUniqueInput[]
+    update?: TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput | TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
+    updateMany?: TruckingLogUpdateManyWithWhereWithoutTimeSheetInput | TruckingLogUpdateManyWithWhereWithoutTimeSheetInput[]
+    deleteMany?: TruckingLogScalarWhereInput | TruckingLogScalarWhereInput[]
   }
 
   export type MaintenanceCreateNestedOneWithoutMaintenanceLogsInput = {
@@ -61733,24 +61733,16 @@ export namespace Prisma {
     update?: XOR<XOR<TruckingLogUpdateToOneWithWhereWithoutEquipmentHauledInput, TruckingLogUpdateWithoutEquipmentHauledInput>, TruckingLogUncheckedUpdateWithoutEquipmentHauledInput>
   }
 
-  export type TimeSheetCreateNestedOneWithoutChangeLogsInput = {
-    create?: XOR<TimeSheetCreateWithoutChangeLogsInput, TimeSheetUncheckedCreateWithoutChangeLogsInput>
-    connectOrCreate?: TimeSheetCreateOrConnectWithoutChangeLogsInput
-    connect?: TimeSheetWhereUniqueInput
-  }
-
   export type UserCreateNestedOneWithoutTimeSheetChangesInput = {
     create?: XOR<UserCreateWithoutTimeSheetChangesInput, UserUncheckedCreateWithoutTimeSheetChangesInput>
     connectOrCreate?: UserCreateOrConnectWithoutTimeSheetChangesInput
     connect?: UserWhereUniqueInput
   }
 
-  export type TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput = {
+  export type TimeSheetCreateNestedOneWithoutChangeLogsInput = {
     create?: XOR<TimeSheetCreateWithoutChangeLogsInput, TimeSheetUncheckedCreateWithoutChangeLogsInput>
     connectOrCreate?: TimeSheetCreateOrConnectWithoutChangeLogsInput
-    upsert?: TimeSheetUpsertWithoutChangeLogsInput
     connect?: TimeSheetWhereUniqueInput
-    update?: XOR<XOR<TimeSheetUpdateToOneWithWhereWithoutChangeLogsInput, TimeSheetUpdateWithoutChangeLogsInput>, TimeSheetUncheckedUpdateWithoutChangeLogsInput>
   }
 
   export type UserUpdateOneRequiredWithoutTimeSheetChangesNestedInput = {
@@ -61759,6 +61751,14 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutTimeSheetChangesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTimeSheetChangesInput, UserUpdateWithoutTimeSheetChangesInput>, UserUncheckedUpdateWithoutTimeSheetChangesInput>
+  }
+
+  export type TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput = {
+    create?: XOR<TimeSheetCreateWithoutChangeLogsInput, TimeSheetUncheckedCreateWithoutChangeLogsInput>
+    connectOrCreate?: TimeSheetCreateOrConnectWithoutChangeLogsInput
+    upsert?: TimeSheetUpsertWithoutChangeLogsInput
+    connect?: TimeSheetWhereUniqueInput
+    update?: XOR<XOR<TimeSheetUpdateToOneWithWhereWithoutChangeLogsInput, TimeSheetUpdateWithoutChangeLogsInput>, TimeSheetUncheckedUpdateWithoutChangeLogsInput>
   }
 
   export type AccountSetupTokenCreateNestedOneWithoutUserInput = {
@@ -61808,11 +61808,25 @@ export namespace Prisma {
     connect?: MaintenanceLogWhereUniqueInput | MaintenanceLogWhereUniqueInput[]
   }
 
+  export type NotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
   export type PasswordResetTokenCreateNestedManyWithoutUserInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
     createMany?: PasswordResetTokenCreateManyUserInputEnvelope
     connect?: PasswordResetTokenWhereUniqueInput | PasswordResetTokenWhereUniqueInput[]
+  }
+
+  export type PushSubscriptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
   }
 
   export type TimeSheetCreateNestedManyWithoutUserInput = {
@@ -61827,6 +61841,13 @@ export namespace Prisma {
     connectOrCreate?: TimeSheetChangeLogCreateOrConnectWithoutUserInput | TimeSheetChangeLogCreateOrConnectWithoutUserInput[]
     createMany?: TimeSheetChangeLogCreateManyUserInputEnvelope
     connect?: TimeSheetChangeLogWhereUniqueInput | TimeSheetChangeLogWhereUniqueInput[]
+  }
+
+  export type TopicSubscriptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
+    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
   }
 
   export type CompanyCreateNestedOneWithoutUsersInput = {
@@ -61845,27 +61866,6 @@ export namespace Prisma {
     create?: XOR<CrewCreateWithoutUsersInput, CrewUncheckedCreateWithoutUsersInput> | CrewCreateWithoutUsersInput[] | CrewUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: CrewCreateOrConnectWithoutUsersInput | CrewCreateOrConnectWithoutUsersInput[]
     connect?: CrewWhereUniqueInput | CrewWhereUniqueInput[]
-  }
-
-  export type PushSubscriptionCreateNestedManyWithoutUserInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-  }
-
-  export type TopicSubscriptionCreateNestedManyWithoutUserInput = {
-    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
-    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
-    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-  }
-
-  export type NotificationCreateNestedManyWithoutUserInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type AccountSetupTokenUncheckedCreateNestedOneWithoutUserInput = {
@@ -61915,11 +61915,25 @@ export namespace Prisma {
     connect?: MaintenanceLogWhereUniqueInput | MaintenanceLogWhereUniqueInput[]
   }
 
+  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
   export type PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
     createMany?: PasswordResetTokenCreateManyUserInputEnvelope
     connect?: PasswordResetTokenWhereUniqueInput | PasswordResetTokenWhereUniqueInput[]
+  }
+
+  export type PushSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
   }
 
   export type TimeSheetUncheckedCreateNestedManyWithoutUserInput = {
@@ -61936,6 +61950,13 @@ export namespace Prisma {
     connect?: TimeSheetChangeLogWhereUniqueInput | TimeSheetChangeLogWhereUniqueInput[]
   }
 
+  export type TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
+    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+  }
+
   export type UserSettingsUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<UserSettingsCreateWithoutUserInput, UserSettingsUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserSettingsCreateOrConnectWithoutUserInput
@@ -61946,27 +61967,6 @@ export namespace Prisma {
     create?: XOR<CrewCreateWithoutUsersInput, CrewUncheckedCreateWithoutUsersInput> | CrewCreateWithoutUsersInput[] | CrewUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: CrewCreateOrConnectWithoutUsersInput | CrewCreateOrConnectWithoutUsersInput[]
     connect?: CrewWhereUniqueInput | CrewWhereUniqueInput[]
-  }
-
-  export type PushSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-  }
-
-  export type TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
-    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
-    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-  }
-
-  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type EnumPermissionFieldUpdateOperationsInput = {
@@ -62063,6 +62063,20 @@ export namespace Prisma {
     deleteMany?: MaintenanceLogScalarWhereInput | MaintenanceLogScalarWhereInput[]
   }
 
+  export type NotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type PasswordResetTokenUpdateManyWithoutUserNestedInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
@@ -62075,6 +62089,20 @@ export namespace Prisma {
     update?: PasswordResetTokenUpdateWithWhereUniqueWithoutUserInput | PasswordResetTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PasswordResetTokenUpdateManyWithWhereWithoutUserInput | PasswordResetTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PasswordResetTokenScalarWhereInput | PasswordResetTokenScalarWhereInput[]
+  }
+
+  export type PushSubscriptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
   }
 
   export type TimeSheetUpdateManyWithoutUserNestedInput = {
@@ -62103,6 +62131,20 @@ export namespace Prisma {
     update?: TimeSheetChangeLogUpdateWithWhereUniqueWithoutUserInput | TimeSheetChangeLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: TimeSheetChangeLogUpdateManyWithWhereWithoutUserInput | TimeSheetChangeLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: TimeSheetChangeLogScalarWhereInput | TimeSheetChangeLogScalarWhereInput[]
+  }
+
+  export type TopicSubscriptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput | TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
+    set?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    disconnect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    delete?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    update?: TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput | TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TopicSubscriptionUpdateManyWithWhereWithoutUserInput | TopicSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
   }
 
   export type CompanyUpdateOneRequiredWithoutUsersNestedInput = {
@@ -62134,48 +62176,6 @@ export namespace Prisma {
     update?: CrewUpdateWithWhereUniqueWithoutUsersInput | CrewUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: CrewUpdateManyWithWhereWithoutUsersInput | CrewUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: CrewScalarWhereInput | CrewScalarWhereInput[]
-  }
-
-  export type PushSubscriptionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-  }
-
-  export type TopicSubscriptionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
-    upsert?: TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput | TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
-    set?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    disconnect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    delete?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    update?: TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput | TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: TopicSubscriptionUpdateManyWithWhereWithoutUserInput | TopicSubscriptionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
-  }
-
-  export type NotificationUpdateManyWithoutUserNestedInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
   export type AccountSetupTokenUncheckedUpdateOneWithoutUserNestedInput = {
@@ -62268,6 +62268,20 @@ export namespace Prisma {
     deleteMany?: MaintenanceLogScalarWhereInput | MaintenanceLogScalarWhereInput[]
   }
 
+  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
@@ -62280,6 +62294,20 @@ export namespace Prisma {
     update?: PasswordResetTokenUpdateWithWhereUniqueWithoutUserInput | PasswordResetTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PasswordResetTokenUpdateManyWithWhereWithoutUserInput | PasswordResetTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PasswordResetTokenScalarWhereInput | PasswordResetTokenScalarWhereInput[]
+  }
+
+  export type PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
   }
 
   export type TimeSheetUncheckedUpdateManyWithoutUserNestedInput = {
@@ -62310,6 +62338,20 @@ export namespace Prisma {
     deleteMany?: TimeSheetChangeLogScalarWhereInput | TimeSheetChangeLogScalarWhereInput[]
   }
 
+  export type TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput | TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
+    set?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    disconnect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    delete?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
+    update?: TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput | TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TopicSubscriptionUpdateManyWithWhereWithoutUserInput | TopicSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
+  }
+
   export type UserSettingsUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<UserSettingsCreateWithoutUserInput, UserSettingsUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserSettingsCreateOrConnectWithoutUserInput
@@ -62331,48 +62373,6 @@ export namespace Prisma {
     update?: CrewUpdateWithWhereUniqueWithoutUsersInput | CrewUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: CrewUpdateManyWithWhereWithoutUsersInput | CrewUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: CrewScalarWhereInput | CrewScalarWhereInput[]
-  }
-
-  export type PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-  }
-
-  export type TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
-    upsert?: TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput | TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: TopicSubscriptionCreateManyUserInputEnvelope
-    set?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    disconnect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    delete?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
-    update?: TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput | TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: TopicSubscriptionUpdateManyWithWhereWithoutUserInput | TopicSubscriptionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutUserSettingsInput = {
@@ -62746,36 +62746,25 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedEnumOwnershipTypeNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel> | $Enums.OwnershipType | null
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedEnumConditionNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumConditionNullableFilter<$PrismaModel> | $Enums.Condition | null
-  }
-
   export type NestedEnumEquipmentTagsFilter<$PrismaModel = never> = {
     equals?: $Enums.EquipmentTags | EnumEquipmentTagsFieldRefInput<$PrismaModel>
     in?: $Enums.EquipmentTags[] | ListEnumEquipmentTagsFieldRefInput<$PrismaModel>
     notIn?: $Enums.EquipmentTags[] | ListEnumEquipmentTagsFieldRefInput<$PrismaModel>
     not?: NestedEnumEquipmentTagsFilter<$PrismaModel> | $Enums.EquipmentTags
+  }
+
+  export type NestedEnumEquipmentStateFilter<$PrismaModel = never> = {
+    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
+    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumEquipmentStateFilter<$PrismaModel> | $Enums.EquipmentState
+  }
+
+  export type NestedEnumApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
   }
 
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
@@ -62794,20 +62783,6 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedEnumEquipmentStateFilter<$PrismaModel = never> = {
-    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
-    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    not?: NestedEnumEquipmentStateFilter<$PrismaModel> | $Enums.EquipmentState
-  }
-
-  export type NestedEnumApprovalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusFilter<$PrismaModel> | $Enums.ApprovalStatus
-  }
-
   export type NestedEnumCreatedViaFilter<$PrismaModel = never> = {
     equals?: $Enums.CreatedVia | EnumCreatedViaFieldRefInput<$PrismaModel>
     in?: $Enums.CreatedVia[] | ListEnumCreatedViaFieldRefInput<$PrismaModel>
@@ -62815,17 +62790,7 @@ export namespace Prisma {
     not?: NestedEnumCreatedViaFilter<$PrismaModel> | $Enums.CreatedVia
   }
 
-  export type NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.OwnershipType | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
-    _max?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -62833,20 +62798,21 @@ export namespace Prisma {
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedEnumConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedEnumOwnershipTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel> | $Enums.OwnershipType | null
+  }
+
+  export type NestedEnumConditionNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
     in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
     notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.Condition | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumConditionNullableFilter<$PrismaModel>
-    _max?: NestedEnumConditionNullableFilter<$PrismaModel>
+    not?: NestedEnumConditionNullableFilter<$PrismaModel> | $Enums.Condition | null
   }
 
   export type NestedEnumEquipmentTagsWithAggregatesFilter<$PrismaModel = never> = {
@@ -62857,6 +62823,26 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumEquipmentTagsFilter<$PrismaModel>
     _max?: NestedEnumEquipmentTagsFilter<$PrismaModel>
+  }
+
+  export type NestedEnumEquipmentStateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
+    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumEquipmentStateWithAggregatesFilter<$PrismaModel> | $Enums.EquipmentState
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEquipmentStateFilter<$PrismaModel>
+    _max?: NestedEnumEquipmentStateFilter<$PrismaModel>
+  }
+
+  export type NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
   }
 
   export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -62883,26 +62869,6 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumEquipmentStateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.EquipmentState | EnumEquipmentStateFieldRefInput<$PrismaModel>
-    in?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.EquipmentState[] | ListEnumEquipmentStateFieldRefInput<$PrismaModel>
-    not?: NestedEnumEquipmentStateWithAggregatesFilter<$PrismaModel> | $Enums.EquipmentState
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumEquipmentStateFilter<$PrismaModel>
-    _max?: NestedEnumEquipmentStateFilter<$PrismaModel>
-  }
-
-  export type NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ApprovalStatus | EnumApprovalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ApprovalStatus[] | ListEnumApprovalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumApprovalStatusFilter<$PrismaModel>
-    _max?: NestedEnumApprovalStatusFilter<$PrismaModel>
-  }
-
   export type NestedEnumCreatedViaWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.CreatedVia | EnumCreatedViaFieldRefInput<$PrismaModel>
     in?: $Enums.CreatedVia[] | ListEnumCreatedViaFieldRefInput<$PrismaModel>
@@ -62911,6 +62877,40 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCreatedViaFilter<$PrismaModel>
     _max?: NestedEnumCreatedViaFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.OwnershipType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Condition | EnumConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Condition[] | ListEnumConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.Condition | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumConditionNullableFilter<$PrismaModel>
+    _max?: NestedEnumConditionNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumFormTemplateStatusFilter<$PrismaModel = never> = {
@@ -63224,7 +63224,6 @@ export namespace Prisma {
   }
 
   export type ReportCreateWithoutCompanyInput = {
-    id: number
     name: string
     description: string
     createdAt?: Date | string
@@ -63233,11 +63232,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
     ReportRuns?: ReportRunCreateNestedManyWithoutReportInput
   }
 
   export type ReportUncheckedCreateWithoutCompanyInput = {
-    id: number
     name: string
     description: string
     createdAt?: Date | string
@@ -63246,6 +63245,7 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
     ReportRuns?: ReportRunUncheckedCreateNestedManyWithoutReportInput
   }
 
@@ -63290,14 +63290,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCompanyInput = {
@@ -63331,14 +63331,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCompanyInput = {
@@ -63433,7 +63433,6 @@ export namespace Prisma {
     AND?: ReportScalarWhereInput | ReportScalarWhereInput[]
     OR?: ReportScalarWhereInput[]
     NOT?: ReportScalarWhereInput | ReportScalarWhereInput[]
-    id?: IntFilter<"Report"> | number
     name?: StringFilter<"Report"> | string
     description?: StringFilter<"Report"> | string
     companyId?: StringFilter<"Report"> | string
@@ -63443,6 +63442,7 @@ export namespace Prisma {
     parameters?: JsonNullableFilter<"Report">
     visibility?: EnumReportVisibilityFilter<"Report"> | $Enums.ReportVisibility
     tags?: StringNullableListFilter<"Report">
+    id?: IntFilter<"Report"> | number
   }
 
   export type UserUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -63519,12 +63519,11 @@ export namespace Prisma {
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateWithoutCostCodeInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -63549,11 +63548,12 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetCreateOrConnectWithoutCostCodeInput = {
@@ -63605,7 +63605,6 @@ export namespace Prisma {
     AND?: TimeSheetScalarWhereInput | TimeSheetScalarWhereInput[]
     OR?: TimeSheetScalarWhereInput[]
     NOT?: TimeSheetScalarWhereInput | TimeSheetScalarWhereInput[]
-    id?: IntFilter<"TimeSheet"> | number
     date?: DateTimeFilter<"TimeSheet"> | Date | string
     userId?: StringFilter<"TimeSheet"> | string
     jobsiteId?: StringFilter<"TimeSheet"> | string
@@ -63631,6 +63630,7 @@ export namespace Prisma {
     withinFenceIn?: BoolNullableFilter<"TimeSheet"> | boolean | null
     withinFenceOut?: BoolNullableFilter<"TimeSheet"> | boolean | null
     wasInjured?: BoolNullableFilter<"TimeSheet"> | boolean | null
+    id?: IntFilter<"TimeSheet"> | number
   }
 
   export type CCTagUpsertWithWhereUniqueWithoutCostCodesInput = {
@@ -63831,14 +63831,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCrewsInput = {
@@ -63873,13 +63873,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
-    UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCrewsInput = {
@@ -63947,33 +63947,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutDocumentTagsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
@@ -63985,32 +63985,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutDocumentTagsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -64078,32 +64078,32 @@ export namespace Prisma {
     NOT?: EquipmentScalarWhereInput | EquipmentScalarWhereInput[]
     id?: StringFilter<"Equipment"> | string
     qrId?: StringFilter<"Equipment"> | string
-    code?: StringNullableFilter<"Equipment"> | string | null
     name?: StringFilter<"Equipment"> | string
     description?: StringNullableFilter<"Equipment"> | string | null
-    memo?: StringNullableFilter<"Equipment"> | string | null
-    ownershipType?: EnumOwnershipTypeNullableFilter<"Equipment"> | $Enums.OwnershipType | null
-    make?: StringNullableFilter<"Equipment"> | string | null
-    model?: StringNullableFilter<"Equipment"> | string | null
-    year?: StringNullableFilter<"Equipment"> | string | null
-    color?: StringNullableFilter<"Equipment"> | string | null
-    serialNumber?: StringNullableFilter<"Equipment"> | string | null
-    acquiredDate?: DateTimeNullableFilter<"Equipment"> | Date | string | null
-    acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
-    licensePlate?: StringNullableFilter<"Equipment"> | string | null
-    licenseState?: StringNullableFilter<"Equipment"> | string | null
-    registrationExpiration?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    creationReason?: StringNullableFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsFilter<"Equipment"> | $Enums.EquipmentTags
-    overWeight?: BoolNullableFilter<"Equipment"> | boolean | null
-    currentWeight?: FloatNullableFilter<"Equipment"> | number | null
     state?: EnumEquipmentStateFilter<"Equipment"> | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFilter<"Equipment"> | boolean
-    creationReason?: StringNullableFilter<"Equipment"> | string | null
     approvalStatus?: EnumApprovalStatusFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeFilter<"Equipment"> | Date | string
-    createdVia?: EnumCreatedViaFilter<"Equipment"> | $Enums.CreatedVia
+    overWeight?: BoolNullableFilter<"Equipment"> | boolean | null
+    currentWeight?: FloatNullableFilter<"Equipment"> | number | null
     createdById?: StringNullableFilter<"Equipment"> | string | null
+    createdVia?: EnumCreatedViaFilter<"Equipment"> | $Enums.CreatedVia
+    acquiredDate?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    code?: StringNullableFilter<"Equipment"> | string | null
+    color?: StringNullableFilter<"Equipment"> | string | null
+    licensePlate?: StringNullableFilter<"Equipment"> | string | null
+    licenseState?: StringNullableFilter<"Equipment"> | string | null
+    make?: StringNullableFilter<"Equipment"> | string | null
+    memo?: StringNullableFilter<"Equipment"> | string | null
+    model?: StringNullableFilter<"Equipment"> | string | null
+    ownershipType?: EnumOwnershipTypeNullableFilter<"Equipment"> | $Enums.OwnershipType | null
+    registrationExpiration?: DateTimeNullableFilter<"Equipment"> | Date | string | null
+    serialNumber?: StringNullableFilter<"Equipment"> | string | null
+    year?: StringNullableFilter<"Equipment"> | string | null
+    acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
   }
 
   export type PdfDocumentUpsertWithWhereUniqueWithoutDocumentTagsInput = {
@@ -64138,6 +64138,38 @@ export namespace Prisma {
     uploadDate?: DateTimeFilter<"PdfDocument"> | Date | string
   }
 
+  export type EmployeeEquipmentLogCreateWithoutEquipmentInput = {
+    id?: string
+    startTime?: Date | string
+    endTime?: Date | string | null
+    comment?: string | null
+    rental?: boolean
+    Maintenance?: MaintenanceCreateNestedOneWithoutEmployeeEquipmentLogInput
+    TimeSheet: TimeSheetCreateNestedOneWithoutEmployeeEquipmentLogsInput
+    RefuelLog?: RefuelLogCreateNestedOneWithoutEmployeeEquipmentLogInput
+  }
+
+  export type EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput = {
+    id?: string
+    maintenanceId?: string | null
+    startTime?: Date | string
+    endTime?: Date | string | null
+    comment?: string | null
+    timeSheetId: number
+    rental?: boolean
+    RefuelLog?: RefuelLogUncheckedCreateNestedOneWithoutEmployeeEquipmentLogInput
+  }
+
+  export type EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput = {
+    where: EmployeeEquipmentLogWhereUniqueInput
+    create: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput>
+  }
+
+  export type EmployeeEquipmentLogCreateManyEquipmentInputEnvelope = {
+    data: EmployeeEquipmentLogCreateManyEquipmentInput | EmployeeEquipmentLogCreateManyEquipmentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutEquipmentInput = {
     id?: string
     firstName: string
@@ -64168,15 +64200,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEquipmentInput = {
@@ -64210,51 +64242,19 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEquipmentInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutEquipmentInput, UserUncheckedCreateWithoutEquipmentInput>
-  }
-
-  export type EmployeeEquipmentLogCreateWithoutEquipmentInput = {
-    id?: string
-    startTime?: Date | string
-    endTime?: Date | string | null
-    comment?: string | null
-    rental?: boolean
-    Maintenance?: MaintenanceCreateNestedOneWithoutEmployeeEquipmentLogInput
-    TimeSheet: TimeSheetCreateNestedOneWithoutEmployeeEquipmentLogsInput
-    RefuelLog?: RefuelLogCreateNestedOneWithoutEmployeeEquipmentLogInput
-  }
-
-  export type EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput = {
-    id?: string
-    timeSheetId: number
-    maintenanceId?: string | null
-    startTime?: Date | string
-    endTime?: Date | string | null
-    comment?: string | null
-    rental?: boolean
-    RefuelLog?: RefuelLogUncheckedCreateNestedOneWithoutEmployeeEquipmentLogInput
-  }
-
-  export type EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput = {
-    where: EmployeeEquipmentLogWhereUniqueInput
-    create: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput>
-  }
-
-  export type EmployeeEquipmentLogCreateManyEquipmentInputEnvelope = {
-    data: EmployeeEquipmentLogCreateManyEquipmentInput | EmployeeEquipmentLogCreateManyEquipmentInput[]
-    skipDuplicates?: boolean
   }
 
   export type EquipmentHauledCreateWithoutEquipmentInput = {
@@ -64352,12 +64352,12 @@ export namespace Prisma {
 
   export type TascoLogUncheckedCreateWithoutEquipmentInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     laborType?: string | null
     materialType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTascoLogInput
   }
 
@@ -64389,7 +64389,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutEquipmentInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     startingMileage?: number | null
@@ -64397,6 +64396,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -64431,7 +64431,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutTrailerInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -64439,6 +64438,7 @@ export namespace Prisma {
     endingMileage?: number | null
     truckLaborLogId?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -64473,7 +64473,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutTruckInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -64481,6 +64480,7 @@ export namespace Prisma {
     endingMileage?: number | null
     truckLaborLogId?: string | null
     trailerNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -64512,6 +64512,36 @@ export namespace Prisma {
   export type DocumentTagCreateOrConnectWithoutEquipmentInput = {
     where: DocumentTagWhereUniqueInput
     create: XOR<DocumentTagCreateWithoutEquipmentInput, DocumentTagUncheckedCreateWithoutEquipmentInput>
+  }
+
+  export type EmployeeEquipmentLogUpsertWithWhereUniqueWithoutEquipmentInput = {
+    where: EmployeeEquipmentLogWhereUniqueInput
+    update: XOR<EmployeeEquipmentLogUpdateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedUpdateWithoutEquipmentInput>
+    create: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput>
+  }
+
+  export type EmployeeEquipmentLogUpdateWithWhereUniqueWithoutEquipmentInput = {
+    where: EmployeeEquipmentLogWhereUniqueInput
+    data: XOR<EmployeeEquipmentLogUpdateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedUpdateWithoutEquipmentInput>
+  }
+
+  export type EmployeeEquipmentLogUpdateManyWithWhereWithoutEquipmentInput = {
+    where: EmployeeEquipmentLogScalarWhereInput
+    data: XOR<EmployeeEquipmentLogUpdateManyMutationInput, EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentInput>
+  }
+
+  export type EmployeeEquipmentLogScalarWhereInput = {
+    AND?: EmployeeEquipmentLogScalarWhereInput | EmployeeEquipmentLogScalarWhereInput[]
+    OR?: EmployeeEquipmentLogScalarWhereInput[]
+    NOT?: EmployeeEquipmentLogScalarWhereInput | EmployeeEquipmentLogScalarWhereInput[]
+    id?: StringFilter<"EmployeeEquipmentLog"> | string
+    equipmentId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
+    maintenanceId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
+    startTime?: DateTimeFilter<"EmployeeEquipmentLog"> | Date | string
+    endTime?: DateTimeNullableFilter<"EmployeeEquipmentLog"> | Date | string | null
+    comment?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
+    timeSheetId?: IntFilter<"EmployeeEquipmentLog"> | number
+    rental?: BoolFilter<"EmployeeEquipmentLog"> | boolean
   }
 
   export type UserUpsertWithoutEquipmentInput = {
@@ -64555,15 +64585,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEquipmentInput = {
@@ -64597,44 +64627,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type EmployeeEquipmentLogUpsertWithWhereUniqueWithoutEquipmentInput = {
-    where: EmployeeEquipmentLogWhereUniqueInput
-    update: XOR<EmployeeEquipmentLogUpdateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedUpdateWithoutEquipmentInput>
-    create: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput>
-  }
-
-  export type EmployeeEquipmentLogUpdateWithWhereUniqueWithoutEquipmentInput = {
-    where: EmployeeEquipmentLogWhereUniqueInput
-    data: XOR<EmployeeEquipmentLogUpdateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedUpdateWithoutEquipmentInput>
-  }
-
-  export type EmployeeEquipmentLogUpdateManyWithWhereWithoutEquipmentInput = {
-    where: EmployeeEquipmentLogScalarWhereInput
-    data: XOR<EmployeeEquipmentLogUpdateManyMutationInput, EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentInput>
-  }
-
-  export type EmployeeEquipmentLogScalarWhereInput = {
-    AND?: EmployeeEquipmentLogScalarWhereInput | EmployeeEquipmentLogScalarWhereInput[]
-    OR?: EmployeeEquipmentLogScalarWhereInput[]
-    NOT?: EmployeeEquipmentLogScalarWhereInput | EmployeeEquipmentLogScalarWhereInput[]
-    id?: StringFilter<"EmployeeEquipmentLog"> | string
-    timeSheetId?: IntFilter<"EmployeeEquipmentLog"> | number
-    equipmentId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
-    maintenanceId?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
-    startTime?: DateTimeFilter<"EmployeeEquipmentLog"> | Date | string
-    endTime?: DateTimeNullableFilter<"EmployeeEquipmentLog"> | Date | string | null
-    comment?: StringNullableFilter<"EmployeeEquipmentLog"> | string | null
-    rental?: BoolFilter<"EmployeeEquipmentLog"> | boolean
   }
 
   export type EquipmentHauledUpsertWithWhereUniqueWithoutEquipmentInput = {
@@ -64727,13 +64727,13 @@ export namespace Prisma {
     OR?: TascoLogScalarWhereInput[]
     NOT?: TascoLogScalarWhereInput | TascoLogScalarWhereInput[]
     id?: StringFilter<"TascoLog"> | string
-    timeSheetId?: IntFilter<"TascoLog"> | number
     shiftType?: StringFilter<"TascoLog"> | string
     equipmentId?: StringNullableFilter<"TascoLog"> | string | null
     laborType?: StringNullableFilter<"TascoLog"> | string | null
     materialType?: StringNullableFilter<"TascoLog"> | string | null
     LoadQuantity?: IntFilter<"TascoLog"> | number
     screenType?: EnumLoadTypeNullableFilter<"TascoLog"> | $Enums.LoadType | null
+    timeSheetId?: IntFilter<"TascoLog"> | number
   }
 
   export type TruckingLogUpsertWithWhereUniqueWithoutEquipmentInput = {
@@ -64757,7 +64757,6 @@ export namespace Prisma {
     OR?: TruckingLogScalarWhereInput[]
     NOT?: TruckingLogScalarWhereInput | TruckingLogScalarWhereInput[]
     id?: StringFilter<"TruckingLog"> | string
-    timeSheetId?: IntFilter<"TruckingLog"> | number
     laborType?: StringFilter<"TruckingLog"> | string
     taskName?: StringNullableFilter<"TruckingLog"> | string | null
     equipmentId?: StringNullableFilter<"TruckingLog"> | string | null
@@ -64766,6 +64765,7 @@ export namespace Prisma {
     truckLaborLogId?: StringNullableFilter<"TruckingLog"> | string | null
     trailerNumber?: StringNullableFilter<"TruckingLog"> | string | null
     truckNumber?: StringNullableFilter<"TruckingLog"> | string | null
+    timeSheetId?: IntFilter<"TruckingLog"> | number
   }
 
   export type TruckingLogUpsertWithWhereUniqueWithoutTrailerInput = {
@@ -64819,31 +64819,31 @@ export namespace Prisma {
   export type EquipmentCreateWithoutEmployeeEquipmentLogsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
@@ -64857,32 +64857,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutEmployeeEquipmentLogsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
@@ -64972,12 +64972,11 @@ export namespace Prisma {
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateWithoutEmployeeEquipmentLogsInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -65003,10 +65002,11 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetCreateOrConnectWithoutEmployeeEquipmentLogsInput = {
@@ -65049,31 +65049,31 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutEmployeeEquipmentLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
@@ -65087,32 +65087,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutEmployeeEquipmentLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -65214,12 +65214,11 @@ export namespace Prisma {
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateWithoutEmployeeEquipmentLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -65245,10 +65244,11 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type RefuelLogUpsertWithoutEmployeeEquipmentLogInput = {
@@ -65291,7 +65291,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedCreateWithoutFormTemplateInput = {
-    id?: number
     title?: string | null
     userId: string
     formType?: string | null
@@ -65300,6 +65299,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
     Approvals?: FormApprovalUncheckedCreateNestedManyWithoutFormSubmissionInput
   }
 
@@ -65379,7 +65379,6 @@ export namespace Prisma {
     AND?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
     OR?: FormSubmissionScalarWhereInput[]
     NOT?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
-    id?: IntFilter<"FormSubmission"> | number
     title?: StringNullableFilter<"FormSubmission"> | string | null
     formTemplateId?: StringFilter<"FormSubmission"> | string
     userId?: StringFilter<"FormSubmission"> | string
@@ -65389,6 +65388,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"FormSubmission"> | Date | string
     submittedAt?: DateTimeNullableFilter<"FormSubmission"> | Date | string | null
     status?: EnumFormStatusFilter<"FormSubmission"> | $Enums.FormStatus
+    id?: IntFilter<"FormSubmission"> | number
   }
 
   export type CompanyUpsertWithoutFormTemplatesInput = {
@@ -65824,15 +65824,15 @@ export namespace Prisma {
     FormApprovals?: FormApprovalCreateNestedManyWithoutApproverInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFormSubmissionsInput = {
@@ -65866,14 +65866,14 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUncheckedCreateNestedManyWithoutApproverInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFormSubmissionsInput = {
@@ -65902,12 +65902,12 @@ export namespace Prisma {
     OR?: FormApprovalScalarWhereInput[]
     NOT?: FormApprovalScalarWhereInput | FormApprovalScalarWhereInput[]
     id?: StringFilter<"FormApproval"> | string
-    formSubmissionId?: IntFilter<"FormApproval"> | number
     signedBy?: StringNullableFilter<"FormApproval"> | string | null
     submittedAt?: DateTimeFilter<"FormApproval"> | Date | string
     updatedAt?: DateTimeFilter<"FormApproval"> | Date | string
     signature?: StringNullableFilter<"FormApproval"> | string | null
     comment?: StringNullableFilter<"FormApproval"> | string | null
+    formSubmissionId?: IntFilter<"FormApproval"> | number
   }
 
   export type FormTemplateUpsertWithoutSubmissionsInput = {
@@ -65988,15 +65988,15 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUpdateManyWithoutApproverNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFormSubmissionsInput = {
@@ -66030,14 +66030,14 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUncheckedUpdateManyWithoutApproverNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FormSubmissionCreateWithoutApprovalsInput = {
@@ -66053,7 +66053,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedCreateWithoutApprovalsInput = {
-    id?: number
     title?: string | null
     formTemplateId: string
     userId: string
@@ -66063,6 +66062,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
   }
 
   export type FormSubmissionCreateOrConnectWithoutApprovalsInput = {
@@ -66100,15 +66100,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFormApprovalsInput = {
@@ -66142,14 +66142,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFormApprovalsInput = {
@@ -66181,7 +66181,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedUpdateWithoutApprovalsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     formTemplateId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -66191,6 +66190,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserUpsertWithoutFormApprovalsInput = {
@@ -66234,15 +66234,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFormApprovalsInput = {
@@ -66276,14 +66276,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AddressCreateWithoutJobsiteInput = {
@@ -66341,15 +66341,15 @@ export namespace Prisma {
     FormApprovals?: FormApprovalCreateNestedManyWithoutApproverInput
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutJobsiteInput = {
@@ -66383,14 +66383,14 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUncheckedCreateNestedManyWithoutApproverInput
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutJobsiteInput = {
@@ -66426,12 +66426,11 @@ export namespace Prisma {
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateWithoutJobsiteInput = {
-    id?: number
     date: Date | string
     userId: string
     costcode: string
@@ -66456,11 +66455,12 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetCreateOrConnectWithoutJobsiteInput = {
@@ -66564,15 +66564,15 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUpdateManyWithoutApproverNestedInput
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutJobsiteInput = {
@@ -66606,14 +66606,14 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUncheckedUpdateManyWithoutApproverNestedInput
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TimeSheetUpsertWithWhereUniqueWithoutJobsiteInput = {
@@ -66765,7 +66765,6 @@ export namespace Prisma {
     OR?: ReportRunScalarWhereInput[]
     NOT?: ReportRunScalarWhereInput | ReportRunScalarWhereInput[]
     id?: StringFilter<"ReportRun"> | string
-    reportId?: IntFilter<"ReportRun"> | number
     runAt?: DateTimeFilter<"ReportRun"> | Date | string
     status?: EnumReportStatusFilter<"ReportRun"> | $Enums.ReportStatus
     results?: JsonNullableFilter<"ReportRun">
@@ -66775,10 +66774,10 @@ export namespace Prisma {
     customParams?: JsonNullableFilter<"ReportRun">
     exportFormats?: StringNullableListFilter<"ReportRun">
     lastExportedAt?: DateTimeNullableFilter<"ReportRun"> | Date | string | null
+    reportId?: IntFilter<"ReportRun"> | number
   }
 
   export type ReportCreateWithoutReportRunsInput = {
-    id: number
     name: string
     description: string
     createdAt?: Date | string
@@ -66787,11 +66786,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
     Company: CompanyCreateNestedOneWithoutReportsInput
   }
 
   export type ReportUncheckedCreateWithoutReportRunsInput = {
-    id: number
     name: string
     description: string
     companyId: string
@@ -66801,6 +66800,7 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
   }
 
   export type ReportCreateOrConnectWithoutReportRunsInput = {
@@ -66820,7 +66820,6 @@ export namespace Prisma {
   }
 
   export type ReportUpdateWithoutReportRunsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66829,11 +66828,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
     Company?: CompanyUpdateOneRequiredWithoutReportsNestedInput
   }
 
   export type ReportUncheckedUpdateWithoutReportRunsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     companyId?: StringFieldUpdateOperationsInput | string
@@ -66843,6 +66842,7 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type EmployeeEquipmentLogCreateWithoutTimeSheetInput = {
@@ -67042,14 +67042,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTimeSheetsInput = {
@@ -67084,18 +67084,44 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTimeSheetsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutTimeSheetsInput, UserUncheckedCreateWithoutTimeSheetsInput>
+  }
+
+  export type TimeSheetChangeLogCreateWithoutTimeSheetInput = {
+    id?: string
+    changedAt?: Date | string
+    changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
+    User: UserCreateNestedOneWithoutTimeSheetChangesInput
+  }
+
+  export type TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput = {
+    id?: string
+    changedBy: string
+    changedAt?: Date | string
+    changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
+  }
+
+  export type TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput = {
+    where: TimeSheetChangeLogWhereUniqueInput
+    create: XOR<TimeSheetChangeLogCreateWithoutTimeSheetInput, TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput>
+  }
+
+  export type TimeSheetChangeLogCreateManyTimeSheetInputEnvelope = {
+    data: TimeSheetChangeLogCreateManyTimeSheetInput | TimeSheetChangeLogCreateManyTimeSheetInput[]
+    skipDuplicates?: boolean
   }
 
   export type TruckingLogCreateWithoutTimeSheetInput = {
@@ -67140,32 +67166,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type TimeSheetChangeLogCreateWithoutTimeSheetInput = {
-    id?: string
-    changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
-    changeReason?: string | null
-    User: UserCreateNestedOneWithoutTimeSheetChangesInput
-  }
-
-  export type TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput = {
-    id?: string
-    changedBy: string
-    changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
-    changeReason?: string | null
-  }
-
-  export type TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput = {
-    where: TimeSheetChangeLogWhereUniqueInput
-    create: XOR<TimeSheetChangeLogCreateWithoutTimeSheetInput, TimeSheetChangeLogUncheckedCreateWithoutTimeSheetInput>
-  }
-
-  export type TimeSheetChangeLogCreateManyTimeSheetInputEnvelope = {
-    data: TimeSheetChangeLogCreateManyTimeSheetInput | TimeSheetChangeLogCreateManyTimeSheetInput[]
-    skipDuplicates?: boolean
-  }
-
   export type EmployeeEquipmentLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
     where: EmployeeEquipmentLogWhereUniqueInput
     update: XOR<EmployeeEquipmentLogUpdateWithoutTimeSheetInput, EmployeeEquipmentLogUncheckedUpdateWithoutTimeSheetInput>
@@ -67203,12 +67203,12 @@ export namespace Prisma {
     OR?: MaintenanceLogScalarWhereInput[]
     NOT?: MaintenanceLogScalarWhereInput | MaintenanceLogScalarWhereInput[]
     id?: StringFilter<"MaintenanceLog"> | string
-    timeSheetId?: IntFilter<"MaintenanceLog"> | number
     userId?: StringFilter<"MaintenanceLog"> | string
     maintenanceId?: StringFilter<"MaintenanceLog"> | string
     startTime?: DateTimeFilter<"MaintenanceLog"> | Date | string
     endTime?: DateTimeNullableFilter<"MaintenanceLog"> | Date | string | null
     comment?: StringNullableFilter<"MaintenanceLog"> | string | null
+    timeSheetId?: IntFilter<"MaintenanceLog"> | number
   }
 
   export type TascoLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
@@ -67355,14 +67355,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSheetsInput = {
@@ -67397,29 +67397,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
-    where: TruckingLogWhereUniqueInput
-    update: XOR<TruckingLogUpdateWithoutTimeSheetInput, TruckingLogUncheckedUpdateWithoutTimeSheetInput>
-    create: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput>
-  }
-
-  export type TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput = {
-    where: TruckingLogWhereUniqueInput
-    data: XOR<TruckingLogUpdateWithoutTimeSheetInput, TruckingLogUncheckedUpdateWithoutTimeSheetInput>
-  }
-
-  export type TruckingLogUpdateManyWithWhereWithoutTimeSheetInput = {
-    where: TruckingLogScalarWhereInput
-    data: XOR<TruckingLogUpdateManyMutationInput, TruckingLogUncheckedUpdateManyWithoutTimeSheetInput>
   }
 
   export type TimeSheetChangeLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
@@ -67446,8 +67430,24 @@ export namespace Prisma {
     timeSheetId?: IntFilter<"TimeSheetChangeLog"> | number
     changedBy?: StringFilter<"TimeSheetChangeLog"> | string
     changedAt?: DateTimeFilter<"TimeSheetChangeLog"> | Date | string
-    changes?: JsonFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableFilter<"TimeSheetChangeLog"> | string | null
+    changes?: JsonFilter<"TimeSheetChangeLog">
+  }
+
+  export type TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
+    where: TruckingLogWhereUniqueInput
+    update: XOR<TruckingLogUpdateWithoutTimeSheetInput, TruckingLogUncheckedUpdateWithoutTimeSheetInput>
+    create: XOR<TruckingLogCreateWithoutTimeSheetInput, TruckingLogUncheckedCreateWithoutTimeSheetInput>
+  }
+
+  export type TruckingLogUpdateWithWhereUniqueWithoutTimeSheetInput = {
+    where: TruckingLogWhereUniqueInput
+    data: XOR<TruckingLogUpdateWithoutTimeSheetInput, TruckingLogUncheckedUpdateWithoutTimeSheetInput>
+  }
+
+  export type TruckingLogUpdateManyWithWhereWithoutTimeSheetInput = {
+    where: TruckingLogScalarWhereInput
+    data: XOR<TruckingLogUpdateManyMutationInput, TruckingLogUncheckedUpdateManyWithoutTimeSheetInput>
   }
 
   export type MaintenanceCreateWithoutMaintenanceLogsInput = {
@@ -67525,12 +67525,11 @@ export namespace Prisma {
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateWithoutMaintenanceLogsInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -67556,10 +67555,11 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetCreateOrConnectWithoutMaintenanceLogsInput = {
@@ -67597,15 +67597,15 @@ export namespace Prisma {
     FormApprovals?: FormApprovalCreateNestedManyWithoutApproverInput
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceLogsInput = {
@@ -67639,14 +67639,14 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUncheckedCreateNestedManyWithoutApproverInput
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceLogsInput = {
@@ -67746,12 +67746,11 @@ export namespace Prisma {
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateWithoutMaintenanceLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -67777,10 +67776,11 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type UserUpsertWithoutMaintenanceLogsInput = {
@@ -67824,15 +67824,15 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUpdateManyWithoutApproverNestedInput
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceLogsInput = {
@@ -67866,14 +67866,14 @@ export namespace Prisma {
     FormApprovals?: FormApprovalUncheckedUpdateManyWithoutApproverNestedInput
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeeEquipmentLogCreateWithoutMaintenanceInput = {
@@ -67889,11 +67889,11 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedCreateWithoutMaintenanceInput = {
     id?: string
-    timeSheetId: number
     equipmentId?: string | null
     startTime?: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
     rental?: boolean
     RefuelLog?: RefuelLogUncheckedCreateNestedOneWithoutEmployeeEquipmentLogInput
   }
@@ -67911,33 +67911,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutMaintenancesInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
     HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
@@ -67949,32 +67949,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutMaintenancesInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
@@ -68000,11 +68000,11 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedCreateWithoutMaintenanceInput = {
     id?: string
-    timeSheetId: number
     userId: string
     startTime: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
   }
 
   export type MaintenanceLogCreateOrConnectWithoutMaintenanceInput = {
@@ -68047,33 +68047,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutMaintenancesInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
     HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
@@ -68085,32 +68085,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutMaintenancesInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -68165,33 +68165,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutTascoLogsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
@@ -68203,32 +68203,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutTascoLogsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -68286,12 +68286,11 @@ export namespace Prisma {
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateWithoutTascoLogsInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -68317,10 +68316,11 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetCreateOrConnectWithoutTascoLogsInput = {
@@ -68370,33 +68370,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutTascoLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
@@ -68408,32 +68408,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutTascoLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -68503,12 +68503,11 @@ export namespace Prisma {
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateWithoutTascoLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -68534,10 +68533,11 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TascoLogCreateWithoutTascoMaterialTypesInput = {
@@ -68553,12 +68553,12 @@ export namespace Prisma {
 
   export type TascoLogUncheckedCreateWithoutTascoMaterialTypesInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     equipmentId?: string | null
     laborType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTascoLogInput
   }
 
@@ -68701,33 +68701,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutHauledInLogsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
@@ -68739,32 +68739,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutHauledInLogsInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -68812,7 +68812,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetUncheckedCreateWithoutTruckingLogsInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -68838,6 +68837,7 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -68852,33 +68852,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutUsedAsTrailerInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
@@ -68890,32 +68890,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutUsedAsTrailerInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -68933,33 +68933,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutUsedAsTruckInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
@@ -68971,32 +68971,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutUsedAsTruckInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -69114,33 +69114,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutHauledInLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
@@ -69152,32 +69152,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutHauledInLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -69231,7 +69231,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetUncheckedUpdateWithoutTruckingLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -69257,6 +69256,7 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
@@ -69277,33 +69277,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutUsedAsTrailerInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
@@ -69315,32 +69315,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutUsedAsTrailerInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -69364,33 +69364,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutUsedAsTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
@@ -69402,32 +69402,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutUsedAsTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -69455,7 +69455,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutStateMileagesInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -69464,6 +69463,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -69503,7 +69503,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutStateMileagesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69512,6 +69511,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -69535,7 +69535,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutMaterialsInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -69544,6 +69543,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -69583,7 +69583,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutMaterialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69592,6 +69591,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -69610,12 +69610,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedCreateWithoutRefuelLogInput = {
     id?: string
-    timeSheetId: number
     equipmentId?: string | null
     maintenanceId?: string | null
     startTime?: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
     rental?: boolean
   }
 
@@ -69637,13 +69637,13 @@ export namespace Prisma {
 
   export type TascoLogUncheckedCreateWithoutRefuelLogsInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     equipmentId?: string | null
     laborType?: string | null
     materialType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
   }
 
   export type TascoLogCreateOrConnectWithoutRefuelLogsInput = {
@@ -69669,7 +69669,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutRefuelLogsInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -69678,6 +69677,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -69712,12 +69712,12 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedUpdateWithoutRefuelLogInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     maintenanceId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -69745,13 +69745,13 @@ export namespace Prisma {
 
   export type TascoLogUncheckedUpdateWithoutRefuelLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     materialType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TruckingLogUpsertWithoutRefuelLogsInput = {
@@ -69783,7 +69783,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutRefuelLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69792,6 +69791,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -69800,33 +69800,33 @@ export namespace Prisma {
   export type EquipmentCreateWithoutEquipmentHauledInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
-    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
     HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
@@ -69838,32 +69838,32 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutEquipmentHauledInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdVia?: $Enums.CreatedVia
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdById?: string | null
+    createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
@@ -69896,7 +69896,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedCreateWithoutEquipmentHauledInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -69905,6 +69904,7 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
@@ -69929,33 +69929,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutEquipmentHauledInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
     HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
@@ -69967,32 +69967,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutEquipmentHauledInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -70031,7 +70031,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutEquipmentHauledInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70040,9 +70039,97 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+  }
+
+  export type UserCreateWithoutTimeSheetChangesInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    username: string
+    email?: string | null
+    password: string
+    signature?: string | null
+    DOB?: Date | string | null
+    truckView: boolean
+    tascoView: boolean
+    laborView: boolean
+    mechanicView: boolean
+    permission?: $Enums.Permission
+    image?: string | null
+    startDate?: Date | string | null
+    terminationDate?: Date | string | null
+    accountSetup?: boolean
+    clockedIn?: boolean
+    passwordResetTokenId?: string | null
+    workTypeId?: string | null
+    middleName?: string | null
+    secondLastName?: string | null
+    lastSeen?: Date | string | null
+    accountSetupToken?: AccountSetupTokenCreateNestedOneWithoutUserInput
+    Contact?: ContactsCreateNestedOneWithoutUserInput
+    Equipment?: EquipmentCreateNestedManyWithoutCreatedByInput
+    FormApprovals?: FormApprovalCreateNestedManyWithoutApproverInput
+    FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
+    Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
+    MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
+    Company: CompanyCreateNestedOneWithoutUsersInput
+    UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
+    Crews?: CrewCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutTimeSheetChangesInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    username: string
+    email?: string | null
+    password: string
+    signature?: string | null
+    DOB?: Date | string | null
+    truckView: boolean
+    tascoView: boolean
+    laborView: boolean
+    mechanicView: boolean
+    permission?: $Enums.Permission
+    image?: string | null
+    startDate?: Date | string | null
+    terminationDate?: Date | string | null
+    accountSetup?: boolean
+    clockedIn?: boolean
+    companyId: string
+    passwordResetTokenId?: string | null
+    workTypeId?: string | null
+    middleName?: string | null
+    secondLastName?: string | null
+    lastSeen?: Date | string | null
+    accountSetupToken?: AccountSetupTokenUncheckedCreateNestedOneWithoutUserInput
+    Contact?: ContactsUncheckedCreateNestedOneWithoutUserInput
+    Equipment?: EquipmentUncheckedCreateNestedManyWithoutCreatedByInput
+    FormApprovals?: FormApprovalUncheckedCreateNestedManyWithoutApproverInput
+    FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
+    Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
+    MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
+    Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserCreateOrConnectWithoutTimeSheetChangesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTimeSheetChangesInput, UserUncheckedCreateWithoutTimeSheetChangesInput>
   }
 
   export type TimeSheetCreateWithoutChangeLogsInput = {
@@ -70078,7 +70165,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetUncheckedCreateWithoutChangeLogsInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -70104,6 +70190,7 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -70115,91 +70202,97 @@ export namespace Prisma {
     create: XOR<TimeSheetCreateWithoutChangeLogsInput, TimeSheetUncheckedCreateWithoutChangeLogsInput>
   }
 
-  export type UserCreateWithoutTimeSheetChangesInput = {
-    id?: string
-    firstName: string
-    lastName: string
-    username: string
-    email?: string | null
-    password: string
-    signature?: string | null
-    DOB?: Date | string | null
-    truckView: boolean
-    tascoView: boolean
-    laborView: boolean
-    mechanicView: boolean
-    permission?: $Enums.Permission
-    image?: string | null
-    startDate?: Date | string | null
-    terminationDate?: Date | string | null
-    accountSetup?: boolean
-    clockedIn?: boolean
-    passwordResetTokenId?: string | null
-    workTypeId?: string | null
-    middleName?: string | null
-    secondLastName?: string | null
-    lastSeen?: Date | string | null
-    accountSetupToken?: AccountSetupTokenCreateNestedOneWithoutUserInput
-    Contact?: ContactsCreateNestedOneWithoutUserInput
-    Equipment?: EquipmentCreateNestedManyWithoutCreatedByInput
-    FormApprovals?: FormApprovalCreateNestedManyWithoutApproverInput
-    FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
-    Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
-    MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
-    PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
-    TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
-    Company: CompanyCreateNestedOneWithoutUsersInput
-    UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
-    Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutTimeSheetChangesInput = {
-    id?: string
-    firstName: string
-    lastName: string
-    username: string
-    email?: string | null
-    password: string
-    signature?: string | null
-    DOB?: Date | string | null
-    truckView: boolean
-    tascoView: boolean
-    laborView: boolean
-    mechanicView: boolean
-    permission?: $Enums.Permission
-    image?: string | null
-    startDate?: Date | string | null
-    terminationDate?: Date | string | null
-    accountSetup?: boolean
-    clockedIn?: boolean
-    companyId: string
-    passwordResetTokenId?: string | null
-    workTypeId?: string | null
-    middleName?: string | null
-    secondLastName?: string | null
-    lastSeen?: Date | string | null
-    accountSetupToken?: AccountSetupTokenUncheckedCreateNestedOneWithoutUserInput
-    Contact?: ContactsUncheckedCreateNestedOneWithoutUserInput
-    Equipment?: EquipmentUncheckedCreateNestedManyWithoutCreatedByInput
-    FormApprovals?: FormApprovalUncheckedCreateNestedManyWithoutApproverInput
-    FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
-    Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
-    MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
-    PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
-    TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
-    UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
-    Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutTimeSheetChangesInput = {
-    where: UserWhereUniqueInput
+  export type UserUpsertWithoutTimeSheetChangesInput = {
+    update: XOR<UserUpdateWithoutTimeSheetChangesInput, UserUncheckedUpdateWithoutTimeSheetChangesInput>
     create: XOR<UserCreateWithoutTimeSheetChangesInput, UserUncheckedCreateWithoutTimeSheetChangesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTimeSheetChangesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTimeSheetChangesInput, UserUncheckedUpdateWithoutTimeSheetChangesInput>
+  }
+
+  export type UserUpdateWithoutTimeSheetChangesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
+    DOB?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    truckView?: BoolFieldUpdateOperationsInput | boolean
+    tascoView?: BoolFieldUpdateOperationsInput | boolean
+    laborView?: BoolFieldUpdateOperationsInput | boolean
+    mechanicView?: BoolFieldUpdateOperationsInput | boolean
+    permission?: EnumPermissionFieldUpdateOperationsInput | $Enums.Permission
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accountSetup?: BoolFieldUpdateOperationsInput | boolean
+    clockedIn?: BoolFieldUpdateOperationsInput | boolean
+    passwordResetTokenId?: NullableStringFieldUpdateOperationsInput | string | null
+    workTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    middleName?: NullableStringFieldUpdateOperationsInput | string | null
+    secondLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSeen?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accountSetupToken?: AccountSetupTokenUpdateOneWithoutUserNestedInput
+    Contact?: ContactsUpdateOneWithoutUserNestedInput
+    Equipment?: EquipmentUpdateManyWithoutCreatedByNestedInput
+    FormApprovals?: FormApprovalUpdateManyWithoutApproverNestedInput
+    FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
+    Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
+    MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
+    Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
+    UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
+    Crews?: CrewUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTimeSheetChangesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
+    DOB?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    truckView?: BoolFieldUpdateOperationsInput | boolean
+    tascoView?: BoolFieldUpdateOperationsInput | boolean
+    laborView?: BoolFieldUpdateOperationsInput | boolean
+    mechanicView?: BoolFieldUpdateOperationsInput | boolean
+    permission?: EnumPermissionFieldUpdateOperationsInput | $Enums.Permission
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accountSetup?: BoolFieldUpdateOperationsInput | boolean
+    clockedIn?: BoolFieldUpdateOperationsInput | boolean
+    companyId?: StringFieldUpdateOperationsInput | string
+    passwordResetTokenId?: NullableStringFieldUpdateOperationsInput | string | null
+    workTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    middleName?: NullableStringFieldUpdateOperationsInput | string | null
+    secondLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSeen?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accountSetupToken?: AccountSetupTokenUncheckedUpdateOneWithoutUserNestedInput
+    Contact?: ContactsUncheckedUpdateOneWithoutUserNestedInput
+    Equipment?: EquipmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    FormApprovals?: FormApprovalUncheckedUpdateManyWithoutApproverNestedInput
+    FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
+    Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
+    MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+    Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type TimeSheetUpsertWithoutChangeLogsInput = {
@@ -70246,7 +70339,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetUncheckedUpdateWithoutChangeLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -70272,103 +70364,11 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-  }
-
-  export type UserUpsertWithoutTimeSheetChangesInput = {
-    update: XOR<UserUpdateWithoutTimeSheetChangesInput, UserUncheckedUpdateWithoutTimeSheetChangesInput>
-    create: XOR<UserCreateWithoutTimeSheetChangesInput, UserUncheckedCreateWithoutTimeSheetChangesInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutTimeSheetChangesInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutTimeSheetChangesInput, UserUncheckedUpdateWithoutTimeSheetChangesInput>
-  }
-
-  export type UserUpdateWithoutTimeSheetChangesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    signature?: NullableStringFieldUpdateOperationsInput | string | null
-    DOB?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    truckView?: BoolFieldUpdateOperationsInput | boolean
-    tascoView?: BoolFieldUpdateOperationsInput | boolean
-    laborView?: BoolFieldUpdateOperationsInput | boolean
-    mechanicView?: BoolFieldUpdateOperationsInput | boolean
-    permission?: EnumPermissionFieldUpdateOperationsInput | $Enums.Permission
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetup?: BoolFieldUpdateOperationsInput | boolean
-    clockedIn?: BoolFieldUpdateOperationsInput | boolean
-    passwordResetTokenId?: NullableStringFieldUpdateOperationsInput | string | null
-    workTypeId?: NullableStringFieldUpdateOperationsInput | string | null
-    middleName?: NullableStringFieldUpdateOperationsInput | string | null
-    secondLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    lastSeen?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetupToken?: AccountSetupTokenUpdateOneWithoutUserNestedInput
-    Contact?: ContactsUpdateOneWithoutUserNestedInput
-    Equipment?: EquipmentUpdateManyWithoutCreatedByNestedInput
-    FormApprovals?: FormApprovalUpdateManyWithoutApproverNestedInput
-    FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
-    Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
-    MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
-    PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
-    TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
-    Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
-    UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
-    Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutTimeSheetChangesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    signature?: NullableStringFieldUpdateOperationsInput | string | null
-    DOB?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    truckView?: BoolFieldUpdateOperationsInput | boolean
-    tascoView?: BoolFieldUpdateOperationsInput | boolean
-    laborView?: BoolFieldUpdateOperationsInput | boolean
-    mechanicView?: BoolFieldUpdateOperationsInput | boolean
-    permission?: EnumPermissionFieldUpdateOperationsInput | $Enums.Permission
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetup?: BoolFieldUpdateOperationsInput | boolean
-    clockedIn?: BoolFieldUpdateOperationsInput | boolean
-    companyId?: StringFieldUpdateOperationsInput | string
-    passwordResetTokenId?: NullableStringFieldUpdateOperationsInput | string | null
-    workTypeId?: NullableStringFieldUpdateOperationsInput | string | null
-    middleName?: NullableStringFieldUpdateOperationsInput | string | null
-    secondLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    lastSeen?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetupToken?: AccountSetupTokenUncheckedUpdateOneWithoutUserNestedInput
-    Contact?: ContactsUncheckedUpdateOneWithoutUserNestedInput
-    Equipment?: EquipmentUncheckedUpdateManyWithoutCreatedByNestedInput
-    FormApprovals?: FormApprovalUncheckedUpdateManyWithoutApproverNestedInput
-    FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
-    Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
-    MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
-    PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
-    TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
-    UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
-    Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountSetupTokenCreateWithoutUserInput = {
@@ -70416,31 +70416,31 @@ export namespace Prisma {
   export type EquipmentCreateWithoutCreatedByInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
@@ -70454,31 +70454,31 @@ export namespace Prisma {
   export type EquipmentUncheckedCreateWithoutCreatedByInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -70510,11 +70510,11 @@ export namespace Prisma {
 
   export type FormApprovalUncheckedCreateWithoutApproverInput = {
     id?: string
-    formSubmissionId: number
     submittedAt?: Date | string
     updatedAt?: Date | string
     signature?: string | null
     comment?: string | null
+    formSubmissionId: number
   }
 
   export type FormApprovalCreateOrConnectWithoutApproverInput = {
@@ -70540,7 +70540,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedCreateWithoutUserInput = {
-    id?: number
     title?: string | null
     formTemplateId: string
     formType?: string | null
@@ -70549,6 +70548,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
     Approvals?: FormApprovalUncheckedCreateNestedManyWithoutFormSubmissionInput
   }
 
@@ -70627,11 +70627,11 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedCreateWithoutUserInput = {
     id?: string
-    timeSheetId: number
     maintenanceId: string
     startTime: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
   }
 
   export type MaintenanceLogCreateOrConnectWithoutUserInput = {
@@ -70641,6 +70641,42 @@ export namespace Prisma {
 
   export type MaintenanceLogCreateManyUserInputEnvelope = {
     data: MaintenanceLogCreateManyUserInput | MaintenanceLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationCreateWithoutUserInput = {
+    id?: string
+    topic: string
+    title: string
+    body?: string | null
+    url?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    pushedAt?: Date | string | null
+    pushAttempts?: number
+    readAt?: Date | string | null
+  }
+
+  export type NotificationUncheckedCreateWithoutUserInput = {
+    id?: string
+    topic: string
+    title: string
+    body?: string | null
+    url?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    pushedAt?: Date | string | null
+    pushAttempts?: number
+    readAt?: Date | string | null
+  }
+
+  export type NotificationCreateOrConnectWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationCreateManyUserInputEnvelope = {
+    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -70663,6 +70699,40 @@ export namespace Prisma {
 
   export type PasswordResetTokenCreateManyUserInputEnvelope = {
     data: PasswordResetTokenCreateManyUserInput | PasswordResetTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PushSubscriptionCreateWithoutUserInput = {
+    id?: string
+    endpoint: string
+    auth: string
+    p256dh: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastSuccessAt?: Date | string | null
+    lastFailureAt?: Date | string | null
+    failedCount?: number
+  }
+
+  export type PushSubscriptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    endpoint: string
+    auth: string
+    p256dh: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastSuccessAt?: Date | string | null
+    lastFailureAt?: Date | string | null
+    failedCount?: number
+  }
+
+  export type PushSubscriptionCreateOrConnectWithoutUserInput = {
+    where: PushSubscriptionWhereUniqueInput
+    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PushSubscriptionCreateManyUserInputEnvelope = {
+    data: PushSubscriptionCreateManyUserInput | PushSubscriptionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -70694,12 +70764,11 @@ export namespace Prisma {
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
-    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetUncheckedCreateWithoutUserInput = {
-    id?: number
     date: Date | string
     jobsiteId: string
     costcode: string
@@ -70724,11 +70793,12 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
-    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
 
   export type TimeSheetCreateOrConnectWithoutUserInput = {
@@ -70744,8 +70814,8 @@ export namespace Prisma {
   export type TimeSheetChangeLogCreateWithoutUserInput = {
     id?: string
     changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
     TimeSheet: TimeSheetCreateNestedOneWithoutChangeLogsInput
   }
 
@@ -70753,8 +70823,8 @@ export namespace Prisma {
     id?: string
     timeSheetId: number
     changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
   }
 
   export type TimeSheetChangeLogCreateOrConnectWithoutUserInput = {
@@ -70764,6 +70834,34 @@ export namespace Prisma {
 
   export type TimeSheetChangeLogCreateManyUserInputEnvelope = {
     data: TimeSheetChangeLogCreateManyUserInput | TimeSheetChangeLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TopicSubscriptionCreateWithoutUserInput = {
+    id?: string
+    topic: string
+    createdAt?: Date | string
+    inApp?: boolean
+    push?: boolean
+    frequency?: $Enums.Frequency
+  }
+
+  export type TopicSubscriptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    topic: string
+    createdAt?: Date | string
+    inApp?: boolean
+    push?: boolean
+    frequency?: $Enums.Frequency
+  }
+
+  export type TopicSubscriptionCreateOrConnectWithoutUserInput = {
+    where: TopicSubscriptionWhereUniqueInput
+    create: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type TopicSubscriptionCreateManyUserInputEnvelope = {
+    data: TopicSubscriptionCreateManyUserInput | TopicSubscriptionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -70844,104 +70942,6 @@ export namespace Prisma {
   export type CrewCreateOrConnectWithoutUsersInput = {
     where: CrewWhereUniqueInput
     create: XOR<CrewCreateWithoutUsersInput, CrewUncheckedCreateWithoutUsersInput>
-  }
-
-  export type PushSubscriptionCreateWithoutUserInput = {
-    id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
-  }
-
-  export type PushSubscriptionUncheckedCreateWithoutUserInput = {
-    id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
-  }
-
-  export type PushSubscriptionCreateOrConnectWithoutUserInput = {
-    where: PushSubscriptionWhereUniqueInput
-    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
-  }
-
-  export type PushSubscriptionCreateManyUserInputEnvelope = {
-    data: PushSubscriptionCreateManyUserInput | PushSubscriptionCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type TopicSubscriptionCreateWithoutUserInput = {
-    id?: string
-    topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
-    createdAt?: Date | string
-  }
-
-  export type TopicSubscriptionUncheckedCreateWithoutUserInput = {
-    id?: string
-    topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
-    createdAt?: Date | string
-  }
-
-  export type TopicSubscriptionCreateOrConnectWithoutUserInput = {
-    where: TopicSubscriptionWhereUniqueInput
-    create: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput>
-  }
-
-  export type TopicSubscriptionCreateManyUserInputEnvelope = {
-    data: TopicSubscriptionCreateManyUserInput | TopicSubscriptionCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type NotificationCreateWithoutUserInput = {
-    id?: string
-    topic: string
-    title: string
-    body?: string | null
-    url?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    pushedAt?: Date | string | null
-    pushAttempts?: number
-    readAt?: Date | string | null
-  }
-
-  export type NotificationUncheckedCreateWithoutUserInput = {
-    id?: string
-    topic: string
-    title: string
-    body?: string | null
-    url?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    pushedAt?: Date | string | null
-    pushAttempts?: number
-    readAt?: Date | string | null
-  }
-
-  export type NotificationCreateOrConnectWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
-  }
-
-  export type NotificationCreateManyUserInputEnvelope = {
-    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type AccountSetupTokenUpsertWithoutUserInput = {
@@ -71078,6 +71078,39 @@ export namespace Prisma {
     data: XOR<MaintenanceLogUpdateManyMutationInput, MaintenanceLogUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationScalarWhereInput = {
+    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    OR?: NotificationScalarWhereInput[]
+    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    topic?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    body?: StringNullableFilter<"Notification"> | string | null
+    url?: StringNullableFilter<"Notification"> | string | null
+    metadata?: JsonNullableFilter<"Notification">
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    pushAttempts?: IntFilter<"Notification"> | number
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+  }
+
   export type PasswordResetTokenUpsertWithWhereUniqueWithoutUserInput = {
     where: PasswordResetTokenWhereUniqueInput
     update: XOR<PasswordResetTokenUpdateWithoutUserInput, PasswordResetTokenUncheckedUpdateWithoutUserInput>
@@ -71102,6 +71135,38 @@ export namespace Prisma {
     email?: StringFilter<"PasswordResetToken"> | string
     token?: StringFilter<"PasswordResetToken"> | string
     expiration?: DateTimeFilter<"PasswordResetToken"> | Date | string
+  }
+
+  export type PushSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: PushSubscriptionWhereUniqueInput
+    update: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
+    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PushSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: PushSubscriptionWhereUniqueInput
+    data: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PushSubscriptionUpdateManyWithWhereWithoutUserInput = {
+    where: PushSubscriptionScalarWhereInput
+    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PushSubscriptionScalarWhereInput = {
+    AND?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+    OR?: PushSubscriptionScalarWhereInput[]
+    NOT?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+    id?: StringFilter<"PushSubscription"> | string
+    endpoint?: StringFilter<"PushSubscription"> | string
+    auth?: StringFilter<"PushSubscription"> | string
+    p256dh?: StringFilter<"PushSubscription"> | string
+    userId?: StringNullableFilter<"PushSubscription"> | string | null
+    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
+    updatedAt?: DateTimeFilter<"PushSubscription"> | Date | string
+    lastSuccessAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
+    lastFailureAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
+    failedCount?: IntFilter<"PushSubscription"> | number
   }
 
   export type TimeSheetUpsertWithWhereUniqueWithoutUserInput = {
@@ -71134,6 +71199,35 @@ export namespace Prisma {
   export type TimeSheetChangeLogUpdateManyWithWhereWithoutUserInput = {
     where: TimeSheetChangeLogScalarWhereInput
     data: XOR<TimeSheetChangeLogUpdateManyMutationInput, TimeSheetChangeLogUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: TopicSubscriptionWhereUniqueInput
+    update: XOR<TopicSubscriptionUpdateWithoutUserInput, TopicSubscriptionUncheckedUpdateWithoutUserInput>
+    create: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: TopicSubscriptionWhereUniqueInput
+    data: XOR<TopicSubscriptionUpdateWithoutUserInput, TopicSubscriptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TopicSubscriptionUpdateManyWithWhereWithoutUserInput = {
+    where: TopicSubscriptionScalarWhereInput
+    data: XOR<TopicSubscriptionUpdateManyMutationInput, TopicSubscriptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TopicSubscriptionScalarWhereInput = {
+    AND?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
+    OR?: TopicSubscriptionScalarWhereInput[]
+    NOT?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
+    id?: StringFilter<"TopicSubscription"> | string
+    topic?: StringFilter<"TopicSubscription"> | string
+    createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
+    inApp?: BoolFilter<"TopicSubscription"> | boolean
+    push?: BoolFilter<"TopicSubscription"> | boolean
+    userId?: StringFilter<"TopicSubscription"> | string
+    frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
   }
 
   export type CompanyUpsertWithoutUsersInput = {
@@ -71232,100 +71326,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Crew"> | Date | string
   }
 
-  export type PushSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
-    where: PushSubscriptionWhereUniqueInput
-    update: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
-    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
-  }
-
-  export type PushSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
-    where: PushSubscriptionWhereUniqueInput
-    data: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
-  }
-
-  export type PushSubscriptionUpdateManyWithWhereWithoutUserInput = {
-    where: PushSubscriptionScalarWhereInput
-    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type PushSubscriptionScalarWhereInput = {
-    AND?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-    OR?: PushSubscriptionScalarWhereInput[]
-    NOT?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-    id?: StringFilter<"PushSubscription"> | string
-    endpoint?: StringFilter<"PushSubscription"> | string
-    auth?: StringFilter<"PushSubscription"> | string
-    p256dh?: StringFilter<"PushSubscription"> | string
-    userId?: StringNullableFilter<"PushSubscription"> | string | null
-    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    updatedAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    lastSuccessAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    lastFailureAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    failedCount?: IntFilter<"PushSubscription"> | number
-  }
-
-  export type TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
-    where: TopicSubscriptionWhereUniqueInput
-    update: XOR<TopicSubscriptionUpdateWithoutUserInput, TopicSubscriptionUncheckedUpdateWithoutUserInput>
-    create: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput>
-  }
-
-  export type TopicSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
-    where: TopicSubscriptionWhereUniqueInput
-    data: XOR<TopicSubscriptionUpdateWithoutUserInput, TopicSubscriptionUncheckedUpdateWithoutUserInput>
-  }
-
-  export type TopicSubscriptionUpdateManyWithWhereWithoutUserInput = {
-    where: TopicSubscriptionScalarWhereInput
-    data: XOR<TopicSubscriptionUpdateManyMutationInput, TopicSubscriptionUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type TopicSubscriptionScalarWhereInput = {
-    AND?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
-    OR?: TopicSubscriptionScalarWhereInput[]
-    NOT?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
-    id?: StringFilter<"TopicSubscription"> | string
-    userId?: StringFilter<"TopicSubscription"> | string
-    topic?: StringFilter<"TopicSubscription"> | string
-    inApp?: BoolFilter<"TopicSubscription"> | boolean
-    push?: BoolFilter<"TopicSubscription"> | boolean
-    frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
-    createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
-  }
-
-  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
-    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
-  }
-
-  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
-  }
-
-  export type NotificationUpdateManyWithWhereWithoutUserInput = {
-    where: NotificationScalarWhereInput
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type NotificationScalarWhereInput = {
-    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    OR?: NotificationScalarWhereInput[]
-    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    id?: StringFilter<"Notification"> | string
-    userId?: StringFilter<"Notification"> | string
-    topic?: StringFilter<"Notification"> | string
-    title?: StringFilter<"Notification"> | string
-    body?: StringNullableFilter<"Notification"> | string | null
-    url?: StringNullableFilter<"Notification"> | string | null
-    metadata?: JsonNullableFilter<"Notification">
-    createdAt?: DateTimeFilter<"Notification"> | Date | string
-    pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    pushAttempts?: IntFilter<"Notification"> | number
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-  }
-
   export type UserCreateWithoutUserSettingsInput = {
     id?: string
     firstName: string
@@ -71357,14 +71357,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserSettingsInput = {
@@ -71399,13 +71399,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
-    Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutUserSettingsInput = {
@@ -71455,14 +71455,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserSettingsInput = {
@@ -71497,13 +71497,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
-    Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserCreateWithoutContactInput = {
@@ -71536,15 +71536,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutContactInput = {
@@ -71578,14 +71578,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutContactInput = {
@@ -71634,15 +71634,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutContactInput = {
@@ -71676,14 +71676,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPasswordResetTokensInput = {
@@ -71717,14 +71717,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -71759,13 +71759,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -71815,14 +71815,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -71857,13 +71857,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountSetupTokenInput = {
@@ -71896,15 +71896,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountSetupTokenInput = {
@@ -71938,14 +71938,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountSetupTokenInput = {
@@ -71994,15 +71994,15 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountSetupTokenInput = {
@@ -72036,14 +72036,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CompanyCreateWithoutAddressInput = {
@@ -72207,14 +72207,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -72249,13 +72249,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -72305,14 +72305,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -72347,13 +72347,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTopicSubscriptionsInput = {
@@ -72387,14 +72387,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTopicSubscriptionsInput = {
@@ -72429,13 +72429,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTopicSubscriptionsInput = {
@@ -72485,14 +72485,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTopicSubscriptionsInput = {
@@ -72527,13 +72527,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -72568,13 +72568,13 @@ export namespace Prisma {
     Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -72610,12 +72610,12 @@ export namespace Prisma {
     Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
     PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
+    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -72666,13 +72666,13 @@ export namespace Prisma {
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -72708,12 +72708,12 @@ export namespace Prisma {
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FormTemplateCreateManyCompanyInput = {
@@ -72728,7 +72728,6 @@ export namespace Prisma {
   }
 
   export type ReportCreateManyCompanyInput = {
-    id: number
     name: string
     description: string
     createdAt?: Date | string
@@ -72737,6 +72736,7 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: $Enums.ReportVisibility
     tags?: ReportCreatetagsInput | string[]
+    id: number
   }
 
   export type UserCreateManyCompanyInput = {
@@ -72803,7 +72803,6 @@ export namespace Prisma {
   }
 
   export type ReportUpdateWithoutCompanyInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72812,11 +72811,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
     ReportRuns?: ReportRunUpdateManyWithoutReportNestedInput
   }
 
   export type ReportUncheckedUpdateWithoutCompanyInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72825,11 +72824,11 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
     ReportRuns?: ReportRunUncheckedUpdateManyWithoutReportNestedInput
   }
 
   export type ReportUncheckedUpdateManyWithoutCompanyInput = {
-    id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72838,6 +72837,7 @@ export namespace Prisma {
     parameters?: NullableJsonNullValueInput | InputJsonValue
     visibility?: EnumReportVisibilityFieldUpdateOperationsInput | $Enums.ReportVisibility
     tags?: ReportUpdatetagsInput | string[]
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserUpdateWithoutCompanyInput = {
@@ -72871,14 +72871,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -72912,14 +72912,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -72949,7 +72949,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetCreateManyCostCodeInput = {
-    id?: number
     date: Date | string
     userId: string
     jobsiteId: string
@@ -72974,6 +72973,7 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
   }
 
   export type TimeSheetUpdateWithoutCostCodeInput = {
@@ -73004,12 +73004,11 @@ export namespace Prisma {
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateWithoutCostCodeInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -73034,15 +73033,15 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateManyWithoutCostCodeInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     jobsiteId?: StringFieldUpdateOperationsInput | string
@@ -73067,6 +73066,7 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type CCTagUpdateWithoutCostCodesInput = {
@@ -73214,14 +73214,14 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
+    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCrewsInput = {
@@ -73256,13 +73256,13 @@ export namespace Prisma {
     FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
     Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
-    UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCrewsInput = {
@@ -73312,33 +73312,33 @@ export namespace Prisma {
   export type EquipmentUpdateWithoutDocumentTagsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
-    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
@@ -73350,32 +73350,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutDocumentTagsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -73388,32 +73388,32 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateManyWithoutDocumentTagsInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
   }
 
   export type PdfDocumentUpdateWithoutDocumentTagsInput = {
@@ -73457,11 +73457,11 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogCreateManyEquipmentInput = {
     id?: string
-    timeSheetId: number
     maintenanceId?: string | null
     startTime?: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
     rental?: boolean
   }
 
@@ -73496,17 +73496,16 @@ export namespace Prisma {
 
   export type TascoLogCreateManyEquipmentInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     laborType?: string | null
     materialType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
   }
 
   export type TruckingLogCreateManyEquipmentInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     startingMileage?: number | null
@@ -73514,11 +73513,11 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
+    timeSheetId: number
   }
 
   export type TruckingLogCreateManyTrailerInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -73526,11 +73525,11 @@ export namespace Prisma {
     endingMileage?: number | null
     truckLaborLogId?: string | null
     truckNumber?: string | null
+    timeSheetId: number
   }
 
   export type TruckingLogCreateManyTruckInput = {
     id?: string
-    timeSheetId: number
     laborType: string
     taskName?: string | null
     equipmentId?: string | null
@@ -73538,6 +73537,7 @@ export namespace Prisma {
     endingMileage?: number | null
     truckLaborLogId?: string | null
     trailerNumber?: string | null
+    timeSheetId: number
   }
 
   export type EmployeeEquipmentLogUpdateWithoutEquipmentInput = {
@@ -73553,22 +73553,22 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedUpdateWithoutEquipmentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     maintenanceId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
     RefuelLog?: RefuelLogUncheckedUpdateOneWithoutEmployeeEquipmentLogNestedInput
   }
 
   export type EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     maintenanceId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -73676,23 +73676,23 @@ export namespace Prisma {
 
   export type TascoLogUncheckedUpdateWithoutEquipmentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     materialType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTascoLogNestedInput
   }
 
   export type TascoLogUncheckedUpdateManyWithoutEquipmentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     materialType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TruckingLogUpdateWithoutEquipmentInput = {
@@ -73713,7 +73713,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutEquipmentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     startingMileage?: NullableIntFieldUpdateOperationsInput | number | null
@@ -73721,6 +73720,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -73729,7 +73729,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateManyWithoutEquipmentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     startingMileage?: NullableIntFieldUpdateOperationsInput | number | null
@@ -73737,6 +73736,7 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TruckingLogUpdateWithoutTrailerInput = {
@@ -73757,7 +73757,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutTrailerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73765,6 +73764,7 @@ export namespace Prisma {
     endingMileage?: NullableIntFieldUpdateOperationsInput | number | null
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -73773,7 +73773,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateManyWithoutTrailerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73781,6 +73780,7 @@ export namespace Prisma {
     endingMileage?: NullableIntFieldUpdateOperationsInput | number | null
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TruckingLogUpdateWithoutTruckInput = {
@@ -73801,7 +73801,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73809,6 +73808,7 @@ export namespace Prisma {
     endingMileage?: NullableIntFieldUpdateOperationsInput | number | null
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
@@ -73817,7 +73817,6 @@ export namespace Prisma {
 
   export type TruckingLogUncheckedUpdateManyWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     laborType?: StringFieldUpdateOperationsInput | string
     taskName?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73825,6 +73824,7 @@ export namespace Prisma {
     endingMileage?: NullableIntFieldUpdateOperationsInput | number | null
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type DocumentTagUpdateWithoutEquipmentInput = {
@@ -73845,7 +73845,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionCreateManyFormTemplateInput = {
-    id?: number
     title?: string | null
     userId: string
     formType?: string | null
@@ -73854,6 +73853,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
   }
 
   export type FormSubmissionUpdateWithoutFormTemplateInput = {
@@ -73869,7 +73869,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedUpdateWithoutFormTemplateInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     formType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73878,11 +73877,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
     Approvals?: FormApprovalUncheckedUpdateManyWithoutFormSubmissionNestedInput
   }
 
   export type FormSubmissionUncheckedUpdateManyWithoutFormTemplateInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     formType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73891,6 +73890,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type FormGroupingUpdateWithoutFormTemplateInput = {
@@ -74066,7 +74066,6 @@ export namespace Prisma {
   }
 
   export type TimeSheetCreateManyJobsiteInput = {
-    id?: number
     date: Date | string
     userId: string
     costcode: string
@@ -74091,6 +74090,7 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
   }
 
   export type TimeSheetUpdateWithoutJobsiteInput = {
@@ -74121,12 +74121,11 @@ export namespace Prisma {
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateWithoutJobsiteInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     costcode?: StringFieldUpdateOperationsInput | string
@@ -74151,15 +74150,15 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
 
   export type TimeSheetUncheckedUpdateManyWithoutJobsiteInput = {
-    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     costcode?: StringFieldUpdateOperationsInput | string
@@ -74184,6 +74183,7 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type CCTagUpdateWithoutJobsitesInput = {
@@ -74287,6 +74287,14 @@ export namespace Prisma {
     screenType?: $Enums.LoadType | null
   }
 
+  export type TimeSheetChangeLogCreateManyTimeSheetInput = {
+    id?: string
+    changedBy: string
+    changedAt?: Date | string
+    changeReason?: string | null
+    changes: JsonNullValueInput | InputJsonValue
+  }
+
   export type TruckingLogCreateManyTimeSheetInput = {
     id?: string
     laborType: string
@@ -74297,14 +74305,6 @@ export namespace Prisma {
     truckLaborLogId?: string | null
     trailerNumber?: string | null
     truckNumber?: string | null
-  }
-
-  export type TimeSheetChangeLogCreateManyTimeSheetInput = {
-    id?: string
-    changedBy: string
-    changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
-    changeReason?: string | null
   }
 
   export type EmployeeEquipmentLogUpdateWithoutTimeSheetInput = {
@@ -74398,6 +74398,30 @@ export namespace Prisma {
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
   }
 
+  export type TimeSheetChangeLogUpdateWithoutTimeSheetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
+    User?: UserUpdateOneRequiredWithoutTimeSheetChangesNestedInput
+  }
+
+  export type TimeSheetChangeLogUncheckedUpdateWithoutTimeSheetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedBy?: StringFieldUpdateOperationsInput | string
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedBy?: StringFieldUpdateOperationsInput | string
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
+  }
+
   export type TruckingLogUpdateWithoutTimeSheetInput = {
     id?: StringFieldUpdateOperationsInput | string
     laborType?: StringFieldUpdateOperationsInput | string
@@ -74442,47 +74466,23 @@ export namespace Prisma {
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type TimeSheetChangeLogUpdateWithoutTimeSheetInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
-    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-    User?: UserUpdateOneRequiredWithoutTimeSheetChangesNestedInput
-  }
-
-  export type TimeSheetChangeLogUncheckedUpdateWithoutTimeSheetInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    changedBy?: StringFieldUpdateOperationsInput | string
-    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
-    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    changedBy?: StringFieldUpdateOperationsInput | string
-    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
-    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type EmployeeEquipmentLogCreateManyMaintenanceInput = {
     id?: string
-    timeSheetId: number
     equipmentId?: string | null
     startTime?: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
     rental?: boolean
   }
 
   export type MaintenanceLogCreateManyMaintenanceInput = {
     id?: string
-    timeSheetId: number
     userId: string
     startTime: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
   }
 
   export type EmployeeEquipmentLogUpdateWithoutMaintenanceInput = {
@@ -74498,22 +74498,22 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogUncheckedUpdateWithoutMaintenanceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
     RefuelLog?: RefuelLogUncheckedUpdateOneWithoutEmployeeEquipmentLogNestedInput
   }
 
   export type EmployeeEquipmentLogUncheckedUpdateManyWithoutMaintenanceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     rental?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -74528,20 +74528,20 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedUpdateWithoutMaintenanceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MaintenanceLogUncheckedUpdateManyWithoutMaintenanceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type RefuelLogCreateManyTascoLogInput = {
@@ -74578,12 +74578,12 @@ export namespace Prisma {
 
   export type TascoLogCreateManyTascoMaterialTypesInput = {
     id?: string
-    timeSheetId: number
     shiftType: string
     equipmentId?: string | null
     laborType?: string | null
     LoadQuantity?: number
     screenType?: $Enums.LoadType | null
+    timeSheetId: number
   }
 
   export type TascoLogUpdateWithoutTascoMaterialTypesInput = {
@@ -74599,23 +74599,23 @@ export namespace Prisma {
 
   export type TascoLogUncheckedUpdateWithoutTascoMaterialTypesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTascoLogNestedInput
   }
 
   export type TascoLogUncheckedUpdateManyWithoutTascoMaterialTypesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     shiftType?: StringFieldUpdateOperationsInput | string
     equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
     laborType?: NullableStringFieldUpdateOperationsInput | string | null
     LoadQuantity?: IntFieldUpdateOperationsInput | number
     screenType?: NullableEnumLoadTypeFieldUpdateOperationsInput | $Enums.LoadType | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type EquipmentHauledCreateManyTruckingLogInput = {
@@ -74761,44 +74761,43 @@ export namespace Prisma {
   export type EquipmentCreateManyCreatedByInput = {
     id?: string
     qrId: string
-    code?: string | null
     name: string
     description?: string | null
-    memo?: string | null
-    ownershipType?: $Enums.OwnershipType | null
-    make?: string | null
-    model?: string | null
-    year?: string | null
-    color?: string | null
-    serialNumber?: string | null
-    acquiredDate?: Date | string | null
-    acquiredCondition?: $Enums.Condition | null
-    licensePlate?: string | null
-    licenseState?: string | null
-    registrationExpiration?: Date | string | null
+    creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
-    overWeight?: boolean | null
-    currentWeight?: number | null
     state?: $Enums.EquipmentState
     isDisabledByAdmin?: boolean
-    creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    overWeight?: boolean | null
+    currentWeight?: number | null
     createdVia?: $Enums.CreatedVia
+    acquiredDate?: Date | string | null
+    code?: string | null
+    color?: string | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    make?: string | null
+    memo?: string | null
+    model?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    registrationExpiration?: Date | string | null
+    serialNumber?: string | null
+    year?: string | null
+    acquiredCondition?: $Enums.Condition | null
   }
 
   export type FormApprovalCreateManyApproverInput = {
     id?: string
-    formSubmissionId: number
     submittedAt?: Date | string
     updatedAt?: Date | string
     signature?: string | null
     comment?: string | null
+    formSubmissionId: number
   }
 
   export type FormSubmissionCreateManyUserInput = {
-    id?: number
     title?: string | null
     formTemplateId: string
     formType?: string | null
@@ -74807,6 +74806,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     submittedAt?: Date | string | null
     status?: $Enums.FormStatus
+    id?: number
   }
 
   export type JobsiteCreateManyCreatedByInput = {
@@ -74831,11 +74831,24 @@ export namespace Prisma {
 
   export type MaintenanceLogCreateManyUserInput = {
     id?: string
-    timeSheetId: number
     maintenanceId: string
     startTime: Date | string
     endTime?: Date | string | null
     comment?: string | null
+    timeSheetId: number
+  }
+
+  export type NotificationCreateManyUserInput = {
+    id?: string
+    topic: string
+    title: string
+    body?: string | null
+    url?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    pushedAt?: Date | string | null
+    pushAttempts?: number
+    readAt?: Date | string | null
   }
 
   export type PasswordResetTokenCreateManyUserInput = {
@@ -74844,8 +74857,19 @@ export namespace Prisma {
     expiration: Date | string
   }
 
+  export type PushSubscriptionCreateManyUserInput = {
+    id?: string
+    endpoint: string
+    auth: string
+    p256dh: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastSuccessAt?: Date | string | null
+    lastFailureAt?: Date | string | null
+    failedCount?: number
+  }
+
   export type TimeSheetCreateManyUserInput = {
-    id?: number
     date: Date | string
     jobsiteId: string
     costcode: string
@@ -74870,78 +74894,54 @@ export namespace Prisma {
     withinFenceIn?: boolean | null
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
+    id?: number
   }
 
   export type TimeSheetChangeLogCreateManyUserInput = {
     id?: string
     timeSheetId: number
     changedAt?: Date | string
-    changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
-  }
-
-  export type PushSubscriptionCreateManyUserInput = {
-    id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
+    changes: JsonNullValueInput | InputJsonValue
   }
 
   export type TopicSubscriptionCreateManyUserInput = {
     id?: string
     topic: string
+    createdAt?: Date | string
     inApp?: boolean
     push?: boolean
     frequency?: $Enums.Frequency
-    createdAt?: Date | string
-  }
-
-  export type NotificationCreateManyUserInput = {
-    id?: string
-    topic: string
-    title: string
-    body?: string | null
-    url?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    pushedAt?: Date | string | null
-    pushAttempts?: number
-    readAt?: Date | string | null
   }
 
   export type EquipmentUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
@@ -74955,31 +74955,31 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -74993,31 +74993,31 @@ export namespace Prisma {
   export type EquipmentUncheckedUpdateManyWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     qrId?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    memo?: NullableStringFieldUpdateOperationsInput | string | null
-    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
-    make?: NullableStringFieldUpdateOperationsInput | string | null
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    year?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
-    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
-    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
-    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
-    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
     isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
     createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
   }
 
   export type FormApprovalUpdateWithoutApproverInput = {
@@ -75031,20 +75031,20 @@ export namespace Prisma {
 
   export type FormApprovalUncheckedUpdateWithoutApproverInput = {
     id?: StringFieldUpdateOperationsInput | string
-    formSubmissionId?: IntFieldUpdateOperationsInput | number
     submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     signature?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    formSubmissionId?: IntFieldUpdateOperationsInput | number
   }
 
   export type FormApprovalUncheckedUpdateManyWithoutApproverInput = {
     id?: StringFieldUpdateOperationsInput | string
-    formSubmissionId?: IntFieldUpdateOperationsInput | number
     submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     signature?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    formSubmissionId?: IntFieldUpdateOperationsInput | number
   }
 
   export type FormSubmissionUpdateWithoutUserInput = {
@@ -75060,7 +75060,6 @@ export namespace Prisma {
   }
 
   export type FormSubmissionUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     formTemplateId?: StringFieldUpdateOperationsInput | string
     formType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75069,11 +75068,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
     Approvals?: FormApprovalUncheckedUpdateManyWithoutFormSubmissionNestedInput
   }
 
   export type FormSubmissionUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
     title?: NullableStringFieldUpdateOperationsInput | string | null
     formTemplateId?: StringFieldUpdateOperationsInput | string
     formType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75082,6 +75081,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumFormStatusFieldUpdateOperationsInput | $Enums.FormStatus
+    id?: IntFieldUpdateOperationsInput | number
   }
 
   export type JobsiteUpdateWithoutCreatedByInput = {
@@ -75159,245 +75159,20 @@ export namespace Prisma {
 
   export type MaintenanceLogUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     maintenanceId?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    timeSheetId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MaintenanceLogUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
     maintenanceId?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type PasswordResetTokenUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
-    expiration?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PasswordResetTokenUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
-    expiration?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PasswordResetTokenUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
-    expiration?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TimeSheetUpdateWithoutUserInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    nu?: StringFieldUpdateOperationsInput | string
-    Fp?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    comment?: NullableStringFieldUpdateOperationsInput | string | null
-    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
-    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
-    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
-    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
-    MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
-    TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
-    CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
-    Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
-    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
-    ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
-  }
-
-  export type TimeSheetUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    jobsiteId?: StringFieldUpdateOperationsInput | string
-    costcode?: StringFieldUpdateOperationsInput | string
-    nu?: StringFieldUpdateOperationsInput | string
-    Fp?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    comment?: NullableStringFieldUpdateOperationsInput | string | null
-    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
-    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
-    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
-    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-    ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
-  }
-
-  export type TimeSheetUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    jobsiteId?: StringFieldUpdateOperationsInput | string
-    costcode?: StringFieldUpdateOperationsInput | string
-    nu?: StringFieldUpdateOperationsInput | string
-    Fp?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    comment?: NullableStringFieldUpdateOperationsInput | string | null
-    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
-    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
-    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
-    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
-    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
-  }
-
-  export type TimeSheetChangeLogUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
-    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-    TimeSheet?: TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput
-  }
-
-  export type TimeSheetChangeLogUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
     timeSheetId?: IntFieldUpdateOperationsInput | number
-    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
-    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type TimeSheetChangeLogUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    timeSheetId?: IntFieldUpdateOperationsInput | number
-    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    changes?: JsonNullValueInput | InputJsonValue
-    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type CrewUpdateWithoutUsersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    leadId?: StringFieldUpdateOperationsInput | string
-    crewType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CrewUncheckedUpdateWithoutUsersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    leadId?: StringFieldUpdateOperationsInput | string
-    crewType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CrewUncheckedUpdateManyWithoutUsersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    leadId?: StringFieldUpdateOperationsInput | string
-    crewType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PushSubscriptionUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type PushSubscriptionUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type PushSubscriptionUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type TopicSubscriptionUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TopicSubscriptionUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TopicSubscriptionUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NotificationUpdateWithoutUserInput = {
@@ -75437,6 +75212,231 @@ export namespace Prisma {
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PasswordResetTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiration?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PasswordResetTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiration?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PasswordResetTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiration?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushSubscriptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PushSubscriptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PushSubscriptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TimeSheetUpdateWithoutUserInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    nu?: StringFieldUpdateOperationsInput | string
+    Fp?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
+    MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
+    CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
+    Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
+    ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
+  }
+
+  export type TimeSheetUncheckedUpdateWithoutUserInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobsiteId?: StringFieldUpdateOperationsInput | string
+    costcode?: StringFieldUpdateOperationsInput | string
+    nu?: StringFieldUpdateOperationsInput | string
+    Fp?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+  }
+
+  export type TimeSheetUncheckedUpdateManyWithoutUserInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobsiteId?: StringFieldUpdateOperationsInput | string
+    costcode?: StringFieldUpdateOperationsInput | string
+    nu?: StringFieldUpdateOperationsInput | string
+    Fp?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TimeSheetChangeLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
+    TimeSheet?: TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput
+  }
+
+  export type TimeSheetChangeLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type TimeSheetChangeLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type TopicSubscriptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    inApp?: BoolFieldUpdateOperationsInput | boolean
+    push?: BoolFieldUpdateOperationsInput | boolean
+    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
+  }
+
+  export type TopicSubscriptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    inApp?: BoolFieldUpdateOperationsInput | boolean
+    push?: BoolFieldUpdateOperationsInput | boolean
+    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
+  }
+
+  export type TopicSubscriptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    inApp?: BoolFieldUpdateOperationsInput | boolean
+    push?: BoolFieldUpdateOperationsInput | boolean
+    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
+  }
+
+  export type CrewUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    crewType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CrewUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    crewType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CrewUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    crewType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CompanyCreateManyAddressInput = {

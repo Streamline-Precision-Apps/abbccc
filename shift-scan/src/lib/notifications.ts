@@ -3,11 +3,14 @@ import webpush from "web-push";
 import prisma from "@/lib/prisma";
 import { Prisma } from "../../prisma/generated/prisma/client";
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT || "mailto:you@example.com",
-  process.env.VAPID_PUBLIC_KEY || "",
-  process.env.VAPID_PRIVATE_KEY || "",
-);
+// Only set VAPID details if keys are provided
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT || "mailto:you@example.com",
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY,
+  );
+}
 
 const ACTIVE_WINDOW_MS =
   Number(process.env.ACTIVE_WINDOW_MINUTES || 2) * 60 * 1000;
@@ -171,6 +174,12 @@ async function deliverNotifications({
                   p256dh: string;
                 }) => {
                   try {
+                    // Skip push notifications if VAPID keys are not configured
+                    if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+                      console.log("VAPID keys not configured, skipping push notification");
+                      return;
+                    }
+
                     await webpush.sendNotification(
                       {
                         endpoint: d.endpoint,

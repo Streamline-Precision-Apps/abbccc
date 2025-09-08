@@ -465,6 +465,12 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           status: "DRAFT",
         },
       });
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          clockedIn: true,
+        },
+      });
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleGeneralTimeSheet] Created new timesheet as DRAFT:",
@@ -718,6 +724,12 @@ export async function handleTascoTimeSheet(formData: FormData) {
           },
         },
       });
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          clockedIn: true,
+        },
+      });
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleTascoTimeSheet] Created new timesheet as DRAFT:",
@@ -849,6 +861,12 @@ export async function handleTruckTimeSheet(formData: FormData) {
                 trailerNumber: trailerNumber,
               },
             },
+          },
+        });
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            clockedIn: true,
           },
         });
         newTimeSheet = createdTimeSheet.id;
@@ -1007,6 +1025,8 @@ export async function updateTimeSheet(formData: FormData) {
       throw new Error("Invalid timesheet ID");
     }
 
+    const userId = formData.get("userId") as string;
+
     // Fetch the startTime from the database to ensure correct calculations
     const start = await prisma.timeSheet.findUnique({
       where: { id },
@@ -1037,6 +1057,13 @@ export async function updateTimeSheet(formData: FormData) {
         comment: (formData.get("timeSheetComments") as string) || null,
         status: "PENDING", // Set status to PENDING
         wasInjured: formData.get("wasInjured") === "true",
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        clockedIn: false,
       },
     });
 
@@ -1082,6 +1109,7 @@ export async function updateTimeSheet(formData: FormData) {
 export async function returnToPrevWork(formData: FormData) {
   try {
     console.log("formData:", formData);
+    const userId = formData.get("userId") as string;
 
     const id = Number(formData.get("id"));
     const PrevTimeSheet = await prisma.timeSheet.findUnique({
@@ -1128,6 +1156,13 @@ export async function returnToPrevWork(formData: FormData) {
             startingMileage: true,
           },
         },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        clockedIn: true,
       },
     });
     console.log(PrevTimeSheet);

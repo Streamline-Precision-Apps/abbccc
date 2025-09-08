@@ -30,6 +30,97 @@ export default async function Home() {
 
   const isTerminate = terminationDate?.terminationDate !== null ? true : false;
 
+  // Check for incomplete timesheets (no endTime)
+  const incompleteTimesheet = await prisma.timeSheet.findFirst({
+    where: {
+      userId: session.user.id,
+      endTime: null, // No end time means still clocked in
+    },
+    include: {
+      Jobsite: {
+        select: {
+          id: true,
+          qrId: true,
+          name: true,
+        },
+      },
+      CostCode: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      TascoLogs: {
+        select: {
+          shiftType: true,
+          laborType: true,
+          materialType: true,
+          Equipment: {
+            select: {
+              qrId: true,
+              name: true,
+            },
+          },
+        },
+      },
+      TruckingLogs: {
+        select: {
+          laborType: true,
+          truckNumber: true,
+          startingMileage: true,
+          Equipment: {
+            select: {
+              qrId: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      startTime: "desc", // Get the most recent incomplete timesheet
+    },
+  });
+
+  // If there's an incomplete timesheet, redirect to continue-timesheet page with URL parameters
+  if (incompleteTimesheet) {
+    const params = new URLSearchParams({
+      timesheetId: incompleteTimesheet.id.toString(),
+      workType: incompleteTimesheet.workType,
+      jobsiteCode: incompleteTimesheet.Jobsite.qrId,
+      jobsiteName: incompleteTimesheet.Jobsite.name,
+      costCode: incompleteTimesheet.CostCode.name,
+    });
+
+    // Add TASCO-specific parameters
+    if (incompleteTimesheet.TascoLogs?.[0]) {
+      const tascoLog = incompleteTimesheet.TascoLogs[0];
+      if (tascoLog.laborType) {
+        params.append('tascoLaborType', tascoLog.laborType);
+      }
+      if (tascoLog.Equipment?.qrId) {
+        params.append('tascoEquipmentQrId', tascoLog.Equipment.qrId);
+      }
+    }
+
+    // Add Trucking-specific parameters
+    if (incompleteTimesheet.TruckingLogs?.[0]) {
+      const truckingLog = incompleteTimesheet.TruckingLogs[0];
+      if (truckingLog.laborType) {
+        params.append('truckingLaborType', truckingLog.laborType);
+      }
+      if (truckingLog.Equipment?.qrId) {
+        params.append('truckingEquipmentQrId', truckingLog.Equipment.qrId);
+      }
+      if (truckingLog.startingMileage) {
+        params.append('truckingStartingMileage', truckingLog.startingMileage.toString());
+      }
+    }
+
+    // Redirect to the continue-timesheet page with parameters
+    redirect(`/continue-timesheet?${params.toString()}`);
+  }
+
   // Get the current language from cookies
   const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en";

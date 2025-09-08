@@ -12,6 +12,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -50,7 +51,7 @@ export const LaborClockOut = ({
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-
+  const { data: session } = useSession();
   const awaitAllProcesses = async () => {
     // Fetch data for a form submit and process them concurrently
     setLoading(true);
@@ -75,6 +76,7 @@ export const LaborClockOut = ({
 
       const formData = new FormData();
       formData.append("id", timeSheetId);
+      formData.append("userId", session?.user.id?.toString() || "");
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
       formData.append("wasInjured", wasInjured.toString());
