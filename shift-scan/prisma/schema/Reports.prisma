@@ -1,4 +1,5 @@
 model Report {
+  id          Int              @id
   name        String           @unique
   description String
   companyId   String
@@ -8,13 +9,13 @@ model Report {
   parameters  Json?
   visibility  ReportVisibility @default(PRIVATE)
   tags        String[]
-  id          Int              @id
   Company     Company          @relation(fields: [companyId], references: [id])
   ReportRuns  ReportRun[]
 }
 
 model ReportRun {
   id             String       @id @default(uuid())
+  reportId       Int
   runAt          DateTime     @default(now())
   status         ReportStatus
   results        Json?
@@ -24,6 +25,5 @@ model ReportRun {
   customParams   Json?
   exportFormats  String[]
   lastExportedAt DateTime?
-  reportId       Int
   Report         Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }

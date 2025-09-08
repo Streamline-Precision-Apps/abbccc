@@ -4,9 +4,8 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
-import { formatInTimeZone } from "date-fns-tz";
 import { formatISO } from "date-fns";
-import { triggerTimesheetSubmitted } from "@/lib/notifications";
+import { sendNotificationToTopic } from "./notificationSender";
 // Get all TimeSheets
 type TimesheetUpdate = {
   id: number;
@@ -465,12 +464,6 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           status: "DRAFT",
         },
       });
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          clockedIn: true,
-        },
-      });
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleGeneralTimeSheet] Created new timesheet as DRAFT:",
@@ -508,20 +501,12 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           include: { User: true },
         });
-
-        if (prevTimesheet) {
-          await triggerTimesheetSubmitted({
-            timesheetId: previousTimeSheetId.toString(),
-            submitterName: prevTimesheet.User
-              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
-              : undefined,
-            message: `Timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
-          });
-          console.log(
-            "[handleGeneralTimeSheet] Notification triggered for timesheet:",
-            previousTimeSheetId,
-          );
-        }
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -627,19 +612,12 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           include: { User: true },
         });
 
-        if (prevTimesheet) {
-          await triggerTimesheetSubmitted({
-            timesheetId: previousTimeSheetId.toString(),
-            submitterName: prevTimesheet.User
-              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
-              : undefined,
-            message: `Mechanic timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
-          });
-          console.log(
-            "[handleMechanicTimeSheet] Notification triggered for timesheet:",
-            previousTimeSheetId,
-          );
-        }
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -724,12 +702,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
           },
         },
       });
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          clockedIn: true,
-        },
-      });
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleTascoTimeSheet] Created new timesheet as DRAFT:",
@@ -767,20 +739,12 @@ export async function handleTascoTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           include: { User: true },
         });
-
-        if (prevTimesheet) {
-          await triggerTimesheetSubmitted({
-            timesheetId: previousTimeSheetId.toString(),
-            submitterName: prevTimesheet.User
-              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
-              : undefined,
-            message: `Tasco timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
-          });
-          console.log(
-            "[handleTascoTimeSheet] Notification triggered for timesheet:",
-            previousTimeSheetId,
-          );
-        }
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -863,12 +827,6 @@ export async function handleTruckTimeSheet(formData: FormData) {
             },
           },
         });
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            clockedIn: true,
-          },
-        });
         newTimeSheet = createdTimeSheet.id;
         console.log(
           "[handleTruckTimeSheet] Created new timesheet as DRAFT:",
@@ -934,20 +892,12 @@ export async function handleTruckTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           include: { User: true },
         });
-
-        if (prevTimesheet) {
-          await triggerTimesheetSubmitted({
-            timesheetId: previousTimeSheetId.toString(),
-            submitterName: prevTimesheet.User
-              ? `${prevTimesheet.User.firstName} ${prevTimesheet.User.lastName}`
-              : undefined,
-            message: `Truck driver timesheet ${previousTimeSheetId} has been submitted and is pending approval.`,
-          });
-          console.log(
-            "[handleTruckTimeSheet] Notification triggered for timesheet:",
-            previousTimeSheetId,
-          );
-        }
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -1025,8 +975,6 @@ export async function updateTimeSheet(formData: FormData) {
       throw new Error("Invalid timesheet ID");
     }
 
-    const userId = formData.get("userId") as string;
-
     // Fetch the startTime from the database to ensure correct calculations
     const start = await prisma.timeSheet.findUnique({
       where: { id },
@@ -1060,13 +1008,6 @@ export async function updateTimeSheet(formData: FormData) {
       },
     });
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        clockedIn: false,
-      },
-    });
-
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
@@ -1078,17 +1019,12 @@ export async function updateTimeSheet(formData: FormData) {
         include: { User: true },
       });
 
-      if (timesheet && timesheet.User) {
-        await triggerTimesheetSubmitted({
-          timesheetId: id.toString(),
-          submitterName: `${timesheet.User.firstName} ${timesheet.User.lastName}`,
-          message: `Timesheet ${id} has been submitted and is pending approval.`,
-        });
-        console.log(
-          "[updateTimeSheet] Notification triggered for timesheet:",
-          id,
-        );
-      }
+      sendNotificationToTopic({
+        topic: "timecard-submission",
+        title: "Timecard Submission Pending",
+        message: `A timecard submission is pending for ${timesheet?.User?.firstName} ${timesheet?.User?.lastName}`,
+        link: `/admins/timesheets`,
+      });
     } catch (notifyError) {
       // Log but don't fail the whole operation if notification fails
       console.error(
@@ -1109,7 +1045,6 @@ export async function updateTimeSheet(formData: FormData) {
 export async function returnToPrevWork(formData: FormData) {
   try {
     console.log("formData:", formData);
-    const userId = formData.get("userId") as string;
 
     const id = Number(formData.get("id"));
     const PrevTimeSheet = await prisma.timeSheet.findUnique({
@@ -1156,13 +1091,6 @@ export async function returnToPrevWork(formData: FormData) {
             startingMileage: true,
           },
         },
-      },
-    });
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        clockedIn: true,
       },
     });
     console.log(PrevTimeSheet);

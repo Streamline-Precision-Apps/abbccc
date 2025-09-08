@@ -22,7 +22,7 @@ model User {
   workTypeId           String?
   middleName           String?
   secondLastName       String?
-  lastSeen             DateTime?
+  lastSeen             DateTime? // user Activity for notifications
   accountSetupToken    AccountSetupToken?
   Contact              Contacts?
   Equipment            Equipment[]
@@ -30,15 +30,14 @@ model User {
   FormSubmissions      FormSubmission[]
   Jobsite              Jobsite[]
   MaintenanceLogs      MaintenanceLog[]
-  notifications        Notification[]
   PasswordResetTokens  PasswordResetToken[]
-  pushSubscriptions    PushSubscription[]
   TimeSheets           TimeSheet[]
   TimeSheetChanges     TimeSheetChangeLog[] @relation("ChangedByUser")
-  topicSubscriptions   TopicSubscription[]
   Company              Company              @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
+  topicSubscriptions   TopicSubscription[]
+  FCMToken             FCMToken[]
 
   @@unique([firstName, lastName, username])
   @@index([email])

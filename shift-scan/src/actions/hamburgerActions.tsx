@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { triggerFormSubmitted } from "@/lib/notifications";
+import { sendNotificationToTopic } from "./notificationSender";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -289,18 +289,17 @@ export async function saveDraftToPending(
         });
 
         // Get the form template for form type
-        const template = await prisma.formTemplate.findUnique({
+        await prisma.formTemplate.findUnique({
           where: { id: formTemplateId },
           select: { name: true },
         });
 
-        await triggerFormSubmitted({
-          formId: updatedSubmission.formTemplateId,
-          submitterName: user
-            ? `${user.firstName} ${user.lastName}`
-            : undefined,
-          formType: template?.name || formType || "new",
-          message: `A form has been submitted.`,
+        // Send notification for form submission
+        await sendNotificationToTopic({
+          topic: "form-submissions",
+          title: "New Form Submission",
+          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
+          link: `/admins/forms/${formTemplateId}`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
@@ -333,18 +332,17 @@ export async function saveDraftToPending(
         });
 
         // Get the form template for form type
-        const template = await prisma.formTemplate.findUnique({
+        await prisma.formTemplate.findUnique({
           where: { id: formTemplateId },
           select: { name: true },
         });
 
-        await triggerFormSubmitted({
-          formId: newSubmission.formTemplateId,
-          submitterName: user
-            ? `${user.firstName} ${user.lastName}`
-            : undefined,
-          formType: template?.name || formType || "new",
-          message: `A form has been submitted.`,
+        // Send notification for form submission
+        await sendNotificationToTopic({
+          topic: "form-submissions",
+          title: "New Form Submission",
+          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
+          link: `/admins/forms/${formTemplateId}`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
@@ -418,18 +416,9 @@ export async function savePending(
         });
 
         // Get the form template for form type
-        const template = await prisma.formTemplate.findUnique({
+        await prisma.formTemplate.findUnique({
           where: { id: formTemplateId },
           select: { name: true },
-        });
-
-        await triggerFormSubmitted({
-          formId: updatedSubmission.formTemplateId,
-          submitterName: user
-            ? `${user.firstName} ${user.lastName}`
-            : undefined,
-          formType: template?.name || formType || "new",
-          message: `A form has been submitted.`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
@@ -461,18 +450,9 @@ export async function savePending(
         });
 
         // Get the form template for form type
-        const template = await prisma.formTemplate.findUnique({
+        await prisma.formTemplate.findUnique({
           where: { id: formTemplateId },
           select: { name: true },
-        });
-
-        await triggerFormSubmitted({
-          formId: newSubmission.formTemplateId,
-          submitterName: user
-            ? `${user.firstName} ${user.lastName}`
-            : undefined,
-          formType: template?.name || formType || "new",
-          message: `A Form has been submitted.`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails

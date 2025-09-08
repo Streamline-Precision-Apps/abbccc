@@ -1,4 +1,5 @@
 model TimeSheet {
+  id                    Int                    @id @default(autoincrement())
   date                  DateTime
   userId                String
   jobsiteId             String
@@ -24,25 +25,24 @@ model TimeSheet {
   withinFenceIn         Boolean?
   withinFenceOut        Boolean?
   wasInjured            Boolean?               @default(false)
-  id                    Int                    @id @default(autoincrement())
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ChangeLogs            TimeSheetChangeLog[]
   TruckingLogs          TruckingLog[]
+  ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
 }
 
 model MaintenanceLog {
   id            String      @id @default(uuid())
+  timeSheetId   Int
   userId        String
   maintenanceId String
   startTime     DateTime
   endTime       DateTime?
   comment       String?
-  timeSheetId   Int
   Maintenance   Maintenance @relation(fields: [maintenanceId], references: [id])
   TimeSheet     TimeSheet   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
   User          User        @relation(fields: [userId], references: [id])
@@ -73,13 +73,13 @@ model Maintenance {
 
 model TascoLog {
   id                 String              @id @default(uuid())
+  timeSheetId        Int
   shiftType          String
   equipmentId        String?
   laborType          String?
   materialType       String?
   LoadQuantity       Int                 @default(0)
   screenType         LoadType?
-  timeSheetId        Int
   RefuelLogs         RefuelLog[]
   Equipment          Equipment?          @relation(fields: [equipmentId], references: [id])
   TascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [name], onDelete: Cascade)
@@ -94,6 +94,7 @@ model TascoMaterialTypes {
 
 model TruckingLog {
   id              String            @id @default(uuid())
+  timeSheetId     Int
   laborType       String
   taskName        String?
   equipmentId     String?
@@ -102,7 +103,6 @@ model TruckingLog {
   truckLaborLogId String?
   trailerNumber   String?
   truckNumber     String?
-  timeSheetId     Int
   EquipmentHauled EquipmentHauled[]
   Materials       Material[]
   RefuelLogs      RefuelLog[]
@@ -159,22 +159,25 @@ model EquipmentHauled {
   TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
 
+enum materialUnit {
+  TONS
+  YARDS
+}
+
+// New model for tracking TimeSheet changes
 model TimeSheetChangeLog {
-  id           String    @id @default(uuid())
+  id           String   @id @default(uuid())
   timeSheetId  Int
-  changedBy    String
-  changedAt    DateTime  @default(now())
-  changeReason String?
-  changes      Json
-  User         User      @relation("ChangedByUser", fields: [changedBy], references: [id])
-  TimeSheet    TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  changedBy    String // User ID who made the change
+  changedAt    DateTime @default(now())
+  changes      Json // JSON object containing all changes: {fieldName1: {old: value, new: value}, fieldName2: {old: value, new: value}}
+  changeReason String? // Optional reason for the change
+
+  // Relations
+  TimeSheet TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  User      User      @relation("ChangedByUser", fields: [changedBy], references: [id])
 
   @@index([timeSheetId])
   @@index([changedBy])
   @@index([changedAt])
-}
-
-enum materialUnit {
-  TONS
-  YARDS
 }

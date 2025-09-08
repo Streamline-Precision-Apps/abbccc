@@ -22,9 +22,15 @@ export default async function ContinueTimesheetPage({
   try {
     // Await the searchParams Promise
     const params = await searchParams;
-    
+
     // Validate required parameters
-    if (!params.timesheetId || !params.workType || !params.jobsiteCode || !params.jobsiteName || !params.costCode) {
+    if (
+      !params.timesheetId ||
+      !params.workType ||
+      !params.jobsiteCode ||
+      !params.jobsiteName ||
+      !params.costCode
+    ) {
       console.error("Missing required timesheet parameters");
       redirect("/dashboard");
     }
@@ -38,15 +44,21 @@ export default async function ContinueTimesheetPage({
         name: params.jobsiteName,
       },
       costCode: params.costCode,
-      tascoLog: params.tascoLaborType ? {
-        laborType: params.tascoLaborType,
-        equipmentQrId: params.tascoEquipmentQrId,
-      } : undefined,
-      truckingLog: params.truckingLaborType ? {
-        laborType: params.truckingLaborType,
-        equipmentQrId: params.truckingEquipmentQrId,
-        startingMileage: params.truckingStartingMileage ? Number(params.truckingStartingMileage) : undefined,
-      } : undefined,
+      tascoLog: params.tascoLaborType
+        ? {
+            laborType: params.tascoLaborType,
+            equipmentQrId: params.tascoEquipmentQrId,
+          }
+        : undefined,
+      truckingLog: params.truckingLaborType
+        ? {
+            laborType: params.truckingLaborType,
+            equipmentQrId: params.truckingEquipmentQrId,
+            startingMileage: params.truckingStartingMileage
+              ? Number(params.truckingStartingMileage)
+              : undefined,
+          }
+        : undefined,
     };
 
     // Return the client component that will handle the API call and redirect

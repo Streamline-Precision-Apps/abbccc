@@ -29,6 +29,9 @@ yarn-error.log*
 .env
 shift-scan/.env
 
+# Firebase service account
+src/service_key.json
+
 # vercel
 .vercel
 

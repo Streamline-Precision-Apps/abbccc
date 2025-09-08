@@ -46,6 +46,7 @@ model FormFieldOption {
 }
 
 model FormSubmission {
+  id             Int            @id @default(autoincrement())
   title          String?
   formTemplateId String
   userId         String
@@ -55,7 +56,6 @@ model FormSubmission {
   updatedAt      DateTime       @updatedAt
   submittedAt    DateTime?
   status         FormStatus     @default(DRAFT)
-  id             Int            @id @default(autoincrement())
   Approvals      FormApproval[]
   FormTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
   User           User           @relation(fields: [userId], references: [id])
@@ -63,12 +63,12 @@ model FormSubmission {
 
 model FormApproval {
   id               String         @id @default(uuid())
+  formSubmissionId Int
   signedBy         String?
   submittedAt      DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   signature        String?
   comment          String?
-  formSubmissionId Int
   FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   Approver         User?          @relation(fields: [signedBy], references: [id])
 }

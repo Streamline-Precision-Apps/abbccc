@@ -42,7 +42,10 @@ export default async function Dashboard() {
         <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
           {/* Clock-out check component - invisible but runs in background */}
-          <ClockOutCheck userId={session.user.id} timesheetId={prevTimeSheetId} />
+          <ClockOutCheck
+            userId={session.user.id}
+            timesheetId={prevTimeSheetId}
+          />
           <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
             <BannerRotating />
           </Holds>

@@ -96,10 +96,10 @@ export default async function Home() {
     if (incompleteTimesheet.TascoLogs?.[0]) {
       const tascoLog = incompleteTimesheet.TascoLogs[0];
       if (tascoLog.laborType) {
-        params.append('tascoLaborType', tascoLog.laborType);
+        params.append("tascoLaborType", tascoLog.laborType);
       }
       if (tascoLog.Equipment?.qrId) {
-        params.append('tascoEquipmentQrId', tascoLog.Equipment.qrId);
+        params.append("tascoEquipmentQrId", tascoLog.Equipment.qrId);
       }
     }
 
@@ -107,13 +107,16 @@ export default async function Home() {
     if (incompleteTimesheet.TruckingLogs?.[0]) {
       const truckingLog = incompleteTimesheet.TruckingLogs[0];
       if (truckingLog.laborType) {
-        params.append('truckingLaborType', truckingLog.laborType);
+        params.append("truckingLaborType", truckingLog.laborType);
       }
       if (truckingLog.Equipment?.qrId) {
-        params.append('truckingEquipmentQrId', truckingLog.Equipment.qrId);
+        params.append("truckingEquipmentQrId", truckingLog.Equipment.qrId);
       }
       if (truckingLog.startingMileage) {
-        params.append('truckingStartingMileage', truckingLog.startingMileage.toString());
+        params.append(
+          "truckingStartingMileage",
+          truckingLog.startingMileage.toString(),
+        );
       }
     }
 

@@ -174,42 +174,42 @@ exports.Prisma.DocumentTagScalarFieldEnum = {
 exports.Prisma.EquipmentScalarFieldEnum = {
   id: 'id',
   qrId: 'qrId',
+  code: 'code',
   name: 'name',
   description: 'description',
-  creationReason: 'creationReason',
+  memo: 'memo',
+  ownershipType: 'ownershipType',
+  make: 'make',
+  model: 'model',
+  year: 'year',
+  color: 'color',
+  serialNumber: 'serialNumber',
+  acquiredDate: 'acquiredDate',
+  acquiredCondition: 'acquiredCondition',
+  licensePlate: 'licensePlate',
+  licenseState: 'licenseState',
+  registrationExpiration: 'registrationExpiration',
   equipmentTag: 'equipmentTag',
+  overWeight: 'overWeight',
+  currentWeight: 'currentWeight',
   state: 'state',
   isDisabledByAdmin: 'isDisabledByAdmin',
+  creationReason: 'creationReason',
   approvalStatus: 'approvalStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  overWeight: 'overWeight',
-  currentWeight: 'currentWeight',
-  createdById: 'createdById',
   createdVia: 'createdVia',
-  acquiredDate: 'acquiredDate',
-  code: 'code',
-  color: 'color',
-  licensePlate: 'licensePlate',
-  licenseState: 'licenseState',
-  make: 'make',
-  memo: 'memo',
-  model: 'model',
-  ownershipType: 'ownershipType',
-  registrationExpiration: 'registrationExpiration',
-  serialNumber: 'serialNumber',
-  year: 'year',
-  acquiredCondition: 'acquiredCondition'
+  createdById: 'createdById'
 };
 
 exports.Prisma.EmployeeEquipmentLogScalarFieldEnum = {
   id: 'id',
+  timeSheetId: 'timeSheetId',
   equipmentId: 'equipmentId',
   maintenanceId: 'maintenanceId',
   startTime: 'startTime',
   endTime: 'endTime',
   comment: 'comment',
-  timeSheetId: 'timeSheetId',
   rental: 'rental'
 };
 
@@ -253,6 +253,7 @@ exports.Prisma.FormFieldOptionScalarFieldEnum = {
 };
 
 exports.Prisma.FormSubmissionScalarFieldEnum = {
+  id: 'id',
   title: 'title',
   formTemplateId: 'formTemplateId',
   userId: 'userId',
@@ -261,18 +262,17 @@ exports.Prisma.FormSubmissionScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   submittedAt: 'submittedAt',
-  status: 'status',
-  id: 'id'
+  status: 'status'
 };
 
 exports.Prisma.FormApprovalScalarFieldEnum = {
   id: 'id',
+  formSubmissionId: 'formSubmissionId',
   signedBy: 'signedBy',
   submittedAt: 'submittedAt',
   updatedAt: 'updatedAt',
   signature: 'signature',
-  comment: 'comment',
-  formSubmissionId: 'formSubmissionId'
+  comment: 'comment'
 };
 
 exports.Prisma.JobsiteScalarFieldEnum = {
@@ -297,6 +297,7 @@ exports.Prisma.JobsiteScalarFieldEnum = {
 };
 
 exports.Prisma.ReportScalarFieldEnum = {
+  id: 'id',
   name: 'name',
   description: 'description',
   companyId: 'companyId',
@@ -305,12 +306,12 @@ exports.Prisma.ReportScalarFieldEnum = {
   updatedAt: 'updatedAt',
   parameters: 'parameters',
   visibility: 'visibility',
-  tags: 'tags',
-  id: 'id'
+  tags: 'tags'
 };
 
 exports.Prisma.ReportRunScalarFieldEnum = {
   id: 'id',
+  reportId: 'reportId',
   runAt: 'runAt',
   status: 'status',
   results: 'results',
@@ -319,11 +320,11 @@ exports.Prisma.ReportRunScalarFieldEnum = {
   endDate: 'endDate',
   customParams: 'customParams',
   exportFormats: 'exportFormats',
-  lastExportedAt: 'lastExportedAt',
-  reportId: 'reportId'
+  lastExportedAt: 'lastExportedAt'
 };
 
 exports.Prisma.TimeSheetScalarFieldEnum = {
+  id: 'id',
   date: 'date',
   userId: 'userId',
   jobsiteId: 'jobsiteId',
@@ -348,18 +349,17 @@ exports.Prisma.TimeSheetScalarFieldEnum = {
   clockOutLng: 'clockOutLng',
   withinFenceIn: 'withinFenceIn',
   withinFenceOut: 'withinFenceOut',
-  wasInjured: 'wasInjured',
-  id: 'id'
+  wasInjured: 'wasInjured'
 };
 
 exports.Prisma.MaintenanceLogScalarFieldEnum = {
   id: 'id',
+  timeSheetId: 'timeSheetId',
   userId: 'userId',
   maintenanceId: 'maintenanceId',
   startTime: 'startTime',
   endTime: 'endTime',
-  comment: 'comment',
-  timeSheetId: 'timeSheetId'
+  comment: 'comment'
 };
 
 exports.Prisma.MaintenanceScalarFieldEnum = {
@@ -384,13 +384,13 @@ exports.Prisma.MaintenanceScalarFieldEnum = {
 
 exports.Prisma.TascoLogScalarFieldEnum = {
   id: 'id',
+  timeSheetId: 'timeSheetId',
   shiftType: 'shiftType',
   equipmentId: 'equipmentId',
   laborType: 'laborType',
   materialType: 'materialType',
   LoadQuantity: 'LoadQuantity',
-  screenType: 'screenType',
-  timeSheetId: 'timeSheetId'
+  screenType: 'screenType'
 };
 
 exports.Prisma.TascoMaterialTypesScalarFieldEnum = {
@@ -400,6 +400,7 @@ exports.Prisma.TascoMaterialTypesScalarFieldEnum = {
 
 exports.Prisma.TruckingLogScalarFieldEnum = {
   id: 'id',
+  timeSheetId: 'timeSheetId',
   laborType: 'laborType',
   taskName: 'taskName',
   equipmentId: 'equipmentId',
@@ -407,8 +408,7 @@ exports.Prisma.TruckingLogScalarFieldEnum = {
   endingMileage: 'endingMileage',
   truckLaborLogId: 'truckLaborLogId',
   trailerNumber: 'trailerNumber',
-  truckNumber: 'truckNumber',
-  timeSheetId: 'timeSheetId'
+  truckNumber: 'truckNumber'
 };
 
 exports.Prisma.StateMileageScalarFieldEnum = {
@@ -455,8 +455,8 @@ exports.Prisma.TimeSheetChangeLogScalarFieldEnum = {
   timeSheetId: 'timeSheetId',
   changedBy: 'changedBy',
   changedAt: 'changedAt',
-  changeReason: 'changeReason',
-  changes: 'changes'
+  changes: 'changes',
+  changeReason: 'changeReason'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -533,32 +533,26 @@ exports.Prisma.AddressScalarFieldEnum = {
   country: 'country'
 };
 
-exports.Prisma.PushSubscriptionScalarFieldEnum = {
+exports.Prisma.FCMTokenScalarFieldEnum = {
   id: 'id',
-  endpoint: 'endpoint',
-  auth: 'auth',
-  p256dh: 'p256dh',
+  token: 'token',
   userId: 'userId',
+  platform: 'platform',
+  lastUsedAt: 'lastUsedAt',
+  isValid: 'isValid',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  lastSuccessAt: 'lastSuccessAt',
-  lastFailureAt: 'lastFailureAt',
-  failedCount: 'failedCount'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.TopicSubscriptionScalarFieldEnum = {
   id: 'id',
-  topic: 'topic',
-  createdAt: 'createdAt',
-  inApp: 'inApp',
-  push: 'push',
   userId: 'userId',
-  frequency: 'frequency'
+  topic: 'topic',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
   topic: 'topic',
   title: 'title',
   body: 'body',
@@ -606,6 +600,16 @@ exports.WorkType = exports.$Enums.WorkType = {
   TASCO: 'TASCO'
 };
 
+exports.OwnershipType = exports.$Enums.OwnershipType = {
+  OWNED: 'OWNED',
+  LEASED: 'LEASED'
+};
+
+exports.Condition = exports.$Enums.Condition = {
+  NEW: 'NEW',
+  USED: 'USED'
+};
+
 exports.EquipmentTags = exports.$Enums.EquipmentTags = {
   TRUCK: 'TRUCK',
   TRAILER: 'TRAILER',
@@ -631,16 +635,6 @@ exports.ApprovalStatus = exports.$Enums.ApprovalStatus = {
 exports.CreatedVia = exports.$Enums.CreatedVia = {
   ADMIN: 'ADMIN',
   MOBILE: 'MOBILE'
-};
-
-exports.OwnershipType = exports.$Enums.OwnershipType = {
-  OWNED: 'OWNED',
-  LEASED: 'LEASED'
-};
-
-exports.Condition = exports.$Enums.Condition = {
-  NEW: 'NEW',
-  USED: 'USED'
 };
 
 exports.FormTemplateStatus = exports.$Enums.FormTemplateStatus = {
@@ -722,12 +716,6 @@ exports.Permission = exports.$Enums.Permission = {
   SUPERADMIN: 'SUPERADMIN'
 };
 
-exports.Frequency = exports.$Enums.Frequency = {
-  immediate: 'immediate',
-  hourly: 'hourly',
-  daily: 'daily'
-};
-
 exports.Prisma.ModelName = {
   Company: 'Company',
   CostCode: 'CostCode',
@@ -763,7 +751,7 @@ exports.Prisma.ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   AccountSetupToken: 'AccountSetupToken',
   Address: 'Address',
-  PushSubscription: 'PushSubscription',
+  FCMToken: 'FCMToken',
   TopicSubscription: 'TopicSubscription',
   Notification: 'Notification'
 };
