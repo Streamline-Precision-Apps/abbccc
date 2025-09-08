@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatISO } from "date-fns";
+import { sendNotificationToTopic } from "./notificationSender";
 // Get all TimeSheets
 type TimesheetUpdate = {
   id: number;
@@ -500,6 +501,12 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           include: { User: true },
         });
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -603,6 +610,13 @@ export async function handleMechanicTimeSheet(formData: FormData) {
         const prevTimesheet = await prisma.timeSheet.findUnique({
           where: { id: previousTimeSheetId },
           include: { User: true },
+        });
+
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
@@ -724,6 +738,12 @@ export async function handleTascoTimeSheet(formData: FormData) {
         const prevTimesheet = await prisma.timeSheet.findUnique({
           where: { id: previousTimeSheetId },
           include: { User: true },
+        });
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
@@ -872,6 +892,12 @@ export async function handleTruckTimeSheet(formData: FormData) {
           where: { id: previousTimeSheetId },
           include: { User: true },
         });
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -991,6 +1017,13 @@ export async function updateTimeSheet(formData: FormData) {
       const timesheet = await prisma.timeSheet.findUnique({
         where: { id },
         include: { User: true },
+      });
+
+      sendNotificationToTopic({
+        topic: "timecard-submission",
+        title: "Timecard Submission Pending",
+        message: `A timecard submission is pending for ${timesheet?.User?.firstName} ${timesheet?.User?.lastName}`,
+        link: `/admins/timesheets`,
       });
     } catch (notifyError) {
       // Log but don't fail the whole operation if notification fails

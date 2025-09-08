@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
+import { sendNotificationToTopic } from "./notificationSender";
 
 export async function getJobsiteForms() {
   try {
@@ -139,7 +140,12 @@ export async function createJobsite(formData: FormData) {
         });
       }
       if (createdJobsite) {
-        //todo notification trigger
+        await sendNotificationToTopic({
+          topic: "items",
+          title: "New Jobsite Created",
+          message: `A new jobsite has been created: ${createdJobsite.name}`,
+          link: `/admins/jobsites`,
+        });
       }
 
       revalidatePath("/dashboard/qr-generator");

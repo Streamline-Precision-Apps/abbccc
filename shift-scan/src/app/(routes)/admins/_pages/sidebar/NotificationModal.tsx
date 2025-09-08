@@ -32,13 +32,13 @@ type Props = {
 // Define available notification topics with user-friendly names and icons
 const AVAILABLE_TOPICS = [
   {
-    id: "timecards",
+    id: "timecard-submission",
     title: "Pending Timecard Approvals",
     desc: "Get notified when team members submit timecards that require your approval.",
     icon: <Clock className="w-4 h-4" />,
   },
   {
-    id: "forms",
+    id: "form-submissions",
     title: "Pending Form Submissions",
     desc: "Be alerted when forms are submitted and waiting for review.",
     icon: <FileText className="w-4 h-4" />,
@@ -50,14 +50,8 @@ const AVAILABLE_TOPICS = [
     icon: <Box className="w-4 h-4" />,
   },
   {
-    id: "equipment",
-    title: "Equipment Changes",
-    desc: "Get notified about equipment updates and modifications.",
-    icon: <Box className="w-4 h-4" />,
-  },
-  {
     id: "timecards-changes",
-    title: "Timecard Changes",
+    title: "A Timecard was Modified",
     desc: "Be alerted when timecards are modified and require your attention.",
     icon: <Clock className="w-4 h-4" />,
   },
@@ -85,14 +79,14 @@ export default function NotificationModal({ open, setOpen }: Props) {
 
       // Customize notification content based on topic
       switch (topicId) {
-        case "timecards":
+        case "timecard-submission":
           testData.title = "Timecard Approval Needed";
           testData.message =
-            "John Doe has submitted a timecard for your approval";
+            "A user has submitted a timecard for your approval";
           testData.link = "/admins/timesheets";
           testData.topicId = "admins";
           break;
-        case "forms":
+        case "form-submissions":
           testData.title = "Form Submission";
           testData.message = "A new safety form has been submitted for review";
           testData.link = "/admins/forms";

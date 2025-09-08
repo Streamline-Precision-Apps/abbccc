@@ -16,7 +16,8 @@ export async function sendNotificationToTopic({
   link?: string;
 }) {
   try {
-    const response = await fetch(`http://localhost:3000/send-notification`, {
+    // Use a relative URL that works in both development and production
+    const response = await fetch(`/send-notification`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +54,8 @@ export async function sendNotificationToDevice({
   link?: string;
 }) {
   try {
-    const response = await fetch(`http://localhost:3000/send-notification`, {
+    // Use a relative URL that works in both development and production
+    const response = await fetch(`/send-notification`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { sendNotificationToTopic } from "./notificationSender";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -292,6 +293,14 @@ export async function saveDraftToPending(
           where: { id: formTemplateId },
           select: { name: true },
         });
+
+        // Send notification for form submission
+        await sendNotificationToTopic({
+          topic: "form-submissions",
+          title: "New Form Submission",
+          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
+          link: `/admins/forms/${formTemplateId}`,
+        });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -326,6 +335,14 @@ export async function saveDraftToPending(
         await prisma.formTemplate.findUnique({
           where: { id: formTemplateId },
           select: { name: true },
+        });
+
+        // Send notification for form submission
+        await sendNotificationToTopic({
+          topic: "form-submissions",
+          title: "New Form Submission",
+          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
+          link: `/admins/forms/${formTemplateId}`,
         });
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails

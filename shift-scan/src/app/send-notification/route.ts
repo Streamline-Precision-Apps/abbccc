@@ -96,11 +96,11 @@ export async function POST(request: NextRequest) {
       message: "Notification sent!",
       response,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error sending message:", error);
     // Provide a more specific error message if available
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to send notification" },
+      { success: false, error: "Failed to send notification" },
       { status: 500 },
     );
   }
