@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import TimesheetContinueClient from "@/components/TimesheetContinueClient";
-
+export const dynamic = "force-dynamic";
 type SearchParams = {
   timesheetId: string;
   workType: string;
