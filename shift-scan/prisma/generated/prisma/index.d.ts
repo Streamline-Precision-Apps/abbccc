@@ -48164,7 +48164,7 @@ export namespace Prisma {
 
   export type NotificationGroupByOutputType = {
     id: string
-    topic: string
+    topic: string | null
     title: string
     body: string | null
     url: string | null
@@ -48253,7 +48253,7 @@ export namespace Prisma {
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      topic: string
+      topic: string | null
       title: string
       body: string | null
       url: string | null
@@ -52963,7 +52963,7 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: StringFilter<"Notification"> | string
-    topic?: StringFilter<"Notification"> | string
+    topic?: StringNullableFilter<"Notification"> | string | null
     title?: StringFilter<"Notification"> | string
     body?: StringNullableFilter<"Notification"> | string | null
     url?: StringNullableFilter<"Notification"> | string | null
@@ -52976,7 +52976,7 @@ export namespace Prisma {
 
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
-    topic?: SortOrder
+    topic?: SortOrderInput | SortOrder
     title?: SortOrder
     body?: SortOrderInput | SortOrder
     url?: SortOrderInput | SortOrder
@@ -52992,7 +52992,7 @@ export namespace Prisma {
     AND?: NotificationWhereInput | NotificationWhereInput[]
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
-    topic?: StringFilter<"Notification"> | string
+    topic?: StringNullableFilter<"Notification"> | string | null
     title?: StringFilter<"Notification"> | string
     body?: StringNullableFilter<"Notification"> | string | null
     url?: StringNullableFilter<"Notification"> | string | null
@@ -53005,7 +53005,7 @@ export namespace Prisma {
 
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
-    topic?: SortOrder
+    topic?: SortOrderInput | SortOrder
     title?: SortOrder
     body?: SortOrderInput | SortOrder
     url?: SortOrderInput | SortOrder
@@ -53026,7 +53026,7 @@ export namespace Prisma {
     OR?: NotificationScalarWhereWithAggregatesInput[]
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Notification"> | string
-    topic?: StringWithAggregatesFilter<"Notification"> | string
+    topic?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     title?: StringWithAggregatesFilter<"Notification"> | string
     body?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     url?: StringNullableWithAggregatesFilter<"Notification"> | string | null
@@ -56236,7 +56236,7 @@ export namespace Prisma {
 
   export type NotificationCreateInput = {
     id?: string
-    topic: string
+    topic?: string | null
     title: string
     body?: string | null
     url?: string | null
@@ -56249,7 +56249,7 @@ export namespace Prisma {
 
   export type NotificationUncheckedCreateInput = {
     id?: string
-    topic: string
+    topic?: string | null
     title: string
     body?: string | null
     url?: string | null
@@ -56262,7 +56262,7 @@ export namespace Prisma {
 
   export type NotificationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     body?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56275,7 +56275,7 @@ export namespace Prisma {
 
   export type NotificationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     body?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56288,7 +56288,7 @@ export namespace Prisma {
 
   export type NotificationCreateManyInput = {
     id?: string
-    topic: string
+    topic?: string | null
     title: string
     body?: string | null
     url?: string | null
@@ -56301,7 +56301,7 @@ export namespace Prisma {
 
   export type NotificationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     body?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56314,7 +56314,7 @@ export namespace Prisma {
 
   export type NotificationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     body?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null

@@ -716,7 +716,7 @@ model TopicSubscription {
 
 model Notification {
   id        String   @id @default(cuid())
-  topic     String
+  topic     String?
   title     String
   body      String?
   url       String?
