@@ -70,85 +70,6 @@ export default function NotificationModal({ open, setOpen }: Props) {
     "needed",
   );
 
-  // Test notification function for specific topic
-  const handleTestNotification = async (topicId: string) => {
-    try {
-      setSendingTest(topicId);
-
-      // Create topic-specific test data
-      const testData = {
-        topicId,
-        title: "",
-        message: "",
-        link: "",
-      };
-
-      // Customize notification content based on topic
-      switch (topicId) {
-        case "timecard-submission":
-          testData.title = "Timecard Approval Needed";
-          testData.message =
-            "A user has submitted a timecard for your approval";
-          testData.link = "/admins/timesheets";
-          testData.topicId = "admins";
-          break;
-        case "form-submissions":
-          testData.title = "Form Submission";
-          testData.message = "A new safety form has been submitted for review";
-          testData.link = "/admins/forms";
-          testData.topicId = "admins";
-          break;
-        case "items":
-          testData.title = "Jobsite Approval Request";
-          testData.message = "New jobsite item needs your approval";
-          testData.link = "/admins/jobsites";
-          testData.topicId = "admins";
-          break;
-        case "equipment":
-          testData.title = "Equipment Approval Request";
-          testData.message = "Excavator #5 maintenance status has been updated";
-          testData.link = "/admins/equipment";
-          testData.topicId = "admins";
-          break;
-        case "timecards-changes":
-          testData.title = "Timecard Modified";
-          testData.message = "A timecard has been modified and needs review";
-          testData.link = "/admins/timesheets";
-          testData.topicId = "admins";
-          break;
-        default:
-          testData.title = "Test Notification";
-          testData.message = "This is a test notification";
-          testData.link = "/admins";
-          testData.topicId = "admins";
-      }
-
-      // Send the test notification
-      const response = await fetch("/send-notification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: token,
-          title: testData.title,
-          message: testData.message,
-          link: testData.link,
-          topic: topicId,
-        }),
-      });
-
-      const data = await response.json();
-
-      console.log(data);
-    } catch (error) {
-      console.error("Error sending test notification:", error);
-      toast.error("Failed to send test notification");
-    } finally {
-      setSendingTest(null);
-    }
-  };
-
   // Load current preferences
   useEffect(() => {
     // Skip effect if modal is not open
@@ -251,21 +172,56 @@ export default function NotificationModal({ open, setOpen }: Props) {
     try {
       setIsLoading(true);
 
-      // Make API call to save preferences
-      const response = await fetch("/api/notifications/preferences", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          preferences: Object.entries(preferences)
-            .filter(([_, enabled]) => enabled)
-            .map(([topic]) => ({ topic })),
-        }),
-      });
+      // Get topics to subscribe to (enabled preferences)
+      const topicsToSubscribe = Object.entries(preferences)
+        .filter(([_, enabled]) => enabled)
+        .map(([topic]) => topic);
 
-      if (!response.ok) {
-        throw new Error("Failed to save preferences");
+      // Get topics to unsubscribe from (disabled preferences)
+      const userPrefs = await getUserTopicPreferences();
+      const currentTopics = userPrefs.map((pref) => pref.topic);
+      const topicsToUnsubscribe = currentTopics.filter(
+        (topic) => !topicsToSubscribe.includes(topic),
+      );
+
+      // First, handle subscriptions if there are any
+      if (topicsToSubscribe.length > 0) {
+        const subscribeResponse = await fetch("/api/notifications/topics", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "subscribe",
+            topics: topicsToSubscribe,
+            token,
+            userId: "session-user", // The API will get the actual userId from the session
+          }),
+        });
+
+        if (!subscribeResponse.ok) {
+          throw new Error("Failed to subscribe to topics");
+        }
+      }
+
+      // Then, handle un-subscriptions if there are any
+      if (topicsToUnsubscribe.length > 0) {
+        const unsubscribeResponse = await fetch("/api/notifications/topics", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "unsubscribe",
+            topics: topicsToUnsubscribe,
+            token,
+            userId: "session-user", // The API will get the actual userId from the session
+          }),
+        });
+
+        if (!unsubscribeResponse.ok) {
+          throw new Error("Failed to unsubscribe from topics");
+        }
       }
 
       toast.success("Notification preferences saved");
@@ -462,17 +418,6 @@ export default function NotificationModal({ open, setOpen }: Props) {
             </div>
           ))}
         </div>
-        {/* 
-        {token && !isDataLoading && (
-          <div className="mt-4 p-3 bg-muted rounded-md text-sm">
-            <p className="font-medium mb-1">Testing Notifications</p>
-            <p className="text-muted-foreground">
-              Use the &quot;Test&quot; button next to each notification type to
-              send a sample notification. This helps verify your notification
-              setup is working correctly.
-            </p>
-          </div>
-        )} */}
 
         <DialogFooter className="flex items-center justify-end gap-3 mt-4">
           <Button
