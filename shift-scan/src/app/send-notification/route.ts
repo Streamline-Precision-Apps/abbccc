@@ -1,26 +1,32 @@
 import admin from "firebase-admin";
 import type { ServiceAccount } from "firebase-admin";
-import { Message, MulticastMessage } from "firebase-admin/messaging";
+import { Message } from "firebase-admin/messaging";
 import { NextRequest, NextResponse } from "next/server";
-import serviceAccountJson from "@/service_key.json";
-import prisma from "@/lib/prisma";
 
 // Get the service account from environment variable
 let serviceAccount: ServiceAccount;
 
-if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-  // Parse the environment variable string to get the service account
-  serviceAccount = JSON.parse(
-    process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
-  ) as ServiceAccount;
-} else {
-  // Fallback to local import for development (if needed)
-  try {
-    serviceAccount = serviceAccountJson as ServiceAccount;
-  } catch (error) {
-    console.error("Failed to load Firebase service account:", error);
-    throw new Error("Firebase service account is not available");
-  }
+try {
+  // Get the service account from environment variable
+  const serviceAccountJson = {
+    type: process.env.FIREBASE_SERVICE_JSON_TYPE,
+    project_id: process.env.FIREBASE_SERVICE_JSON_PROJECT_ID,
+    private_key_id: process.env.FIREBASE_SERVICE_JSON_PRIVATE_KEY_ID,
+    private_key: process.env.FIREBASE_SERVICE_JSON_PRIVATE_KEY,
+    client_email: process.env.FIREBASE_SERVICE_JSON_CLIENT_EMAIL,
+    client_id: process.env.FIREBASE_SERVICE_JSON_CLIENT_ID,
+    auth_uri: process.env.FIREBASE_SERVICE_JSON_AUTH_URI,
+    token_uri: process.env.FIREBASE_SERVICE_JSON_TOKEN_URI,
+    auth_provider_x509_cert_url:
+      process.env.FIREBASE_SERVICE_JSON_AUTH_PROVIDER_X509_CERT_URL,
+    client_x509_cert_url:
+      process.env.FIREBASE_SERVICE_JSON_CLIENT_X509_CERT_URL,
+    universe_domain: process.env.FIREBASE_SERVICE_JSON_UNIVERSE_DOMAIN,
+  };
+  serviceAccount = serviceAccountJson as ServiceAccount;
+} catch (error) {
+  console.error("Failed to load Firebase service account:", error);
+  throw new Error("Firebase service account is not available");
 }
 
 export async function POST(request: NextRequest) {
