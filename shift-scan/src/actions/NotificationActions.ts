@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { fetchToken as getFCMToken } from "@/firebase";
 
 /**
  * Upserts (updates or inserts) an FCM token in the database
@@ -121,25 +122,37 @@ export async function subscribeToTopic(topic: string): Promise<boolean> {
   }
 
   try {
-    // Check if already subscribed
-    const existing = await prisma.topicSubscription.findFirst({
-      where: {
-        userId,
-        topic,
-      },
-    });
-
-    if (existing) {
-      return true; // Already subscribed
+    // Get the current FCM token
+    const token = await getFCMToken();
+    if (!token) {
+      console.warn("No FCM token available to subscribe to topic");
+      return false;
     }
 
-    // Create new subscription
-    await prisma.topicSubscription.create({
-      data: {
-        userId,
-        topic,
+    // Call the server API to handle the FCM topic subscription
+    const response = await fetch("/api/notifications/topic", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        action: "subscribe",
+        topic,
+        token,
+        userId,
+      }),
     });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      console.error(
+        `Server error subscribing to topic ${topic}:`,
+        result.error,
+      );
+      return false;
+    }
+
     return true;
   } catch (error) {
     console.error(`Error subscribing to topic ${topic}:`, error);
@@ -157,15 +170,146 @@ export async function unsubscribeFromTopic(topic: string): Promise<boolean> {
   }
 
   try {
-    await prisma.topicSubscription.deleteMany({
-      where: {
-        userId,
-        topic,
+    // Get the current FCM token
+    const token = await getFCMToken();
+    if (!token) {
+      console.warn("No FCM token available to unsubscribe from topic");
+      return false;
+    }
+
+    // Call the server API to handle the FCM topic unsubscription
+    const response = await fetch("/api/notifications/topic", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        action: "unsubscribe",
+        topic,
+        token,
+        userId,
+      }),
     });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      console.error(
+        `Server error unsubscribing from topic ${topic}:`,
+        result.error,
+      );
+      return false;
+    }
+
     return true;
   } catch (error) {
     console.error(`Error unsubscribing from topic ${topic}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Subscribe to multiple topics at once
+ * @param topics Array of topic names to subscribe to
+ * @returns Boolean indicating success
+ */
+export async function subscribeToTopics(topics: string[]): Promise<boolean> {
+  if (!topics.length) return true; // No topics to subscribe to
+
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    console.warn("Attempted to subscribe unauthenticated user to topics.");
+    return false;
+  }
+
+  try {
+    // Get the current FCM token
+    const token = await getFCMToken();
+    if (!token) {
+      console.warn("No FCM token available to subscribe to topics");
+      return false;
+    }
+
+    // Call the server API to handle the FCM topic subscriptions
+    const response = await fetch("/api/notifications/topics", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "subscribe",
+        topics,
+        token,
+        userId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      console.error(`Server error subscribing to topics:`, result.error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error subscribing to topics:`, error);
+    return false;
+  }
+}
+
+/**
+ * Unsubscribe from multiple topics at once
+ * @param topics Array of topic names to unsubscribe from
+ * @returns Boolean indicating success
+ */
+export async function unsubscribeFromTopics(
+  topics: string[],
+): Promise<boolean> {
+  if (!topics.length) return true; // No topics to unsubscribe from
+
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    console.warn("Attempted to unsubscribe unauthenticated user from topics.");
+    return false;
+  }
+
+  try {
+    // Get the current FCM token
+    const token = await getFCMToken();
+    if (!token) {
+      console.warn("No FCM token available to unsubscribe from topics");
+      return false;
+    }
+
+    // Call the server API to handle the FCM topic unsubscriptions
+    const response = await fetch("/api/notifications/topics", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "unsubscribe",
+        topics,
+        token,
+        userId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      console.error(`Server error unsubscribing from topics:`, result.error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error unsubscribing from topics:`, error);
     return false;
   }
 }
