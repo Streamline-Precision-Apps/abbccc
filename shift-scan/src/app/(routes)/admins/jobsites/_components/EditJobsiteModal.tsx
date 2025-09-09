@@ -50,7 +50,7 @@ export default function EditJobsiteModal({
 
   const handleSaveChanges = async () => {
     if (!formData) {
-      toast.error("No form data to save.");
+      toast.error("No form data to save.", { duration: 3000 });
       return;
     }
     try {
@@ -70,14 +70,16 @@ export default function EditJobsiteModal({
       const result = await updateJobsiteAdmin(fd);
 
       if (result?.success) {
-        toast.success("Jobsite updated successfully.");
+        toast.success("Jobsite updated successfully.", { duration: 3000 });
         cancel();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update jobsite.");
       }
     } catch (err) {
-      toast.error("Error updating jobsite. Please try again.");
+      toast.error("Error updating jobsite. Please try again.", {
+        duration: 3000,
+      });
       console.error(err);
     }
   };

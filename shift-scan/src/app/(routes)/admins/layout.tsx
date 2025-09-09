@@ -14,7 +14,7 @@ export default function RootLayout({
   const { token, notificationPermissionStatus } = useFcmToken();
   return (
     <>
-      <Toaster position="top-right" richColors closeButton duration={3000} />
+      <Toaster position="top-right" richColors closeButton />
       <DashboardDataProvider>
         <UserProfileProvider>
           <SidebarProvider>

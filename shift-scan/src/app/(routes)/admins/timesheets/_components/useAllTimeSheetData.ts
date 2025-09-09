@@ -238,12 +238,14 @@ export default function AdminTimesheets() {
       );
       toast.success(
         `Timesheet ${action === "APPROVED" ? "approved" : "denied"}!`,
+        { duration: 3000 },
       );
       // Only update approval inbox count after approval/denial
       fetchTimesheetsPending();
     } catch (e) {
       toast.error(
         `Failed to ${action === "APPROVED" ? "approve" : "deny"} timesheet.`,
+        { duration: 3000 },
       );
     } finally {
       setStatusLoading((prev) => {
@@ -270,11 +272,13 @@ export default function AdminTimesheets() {
       await adminDeleteTimesheet(deletingId);
       setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
       setDeletingId(null);
-      toast.success("Timesheet deleted successfully!");
+      toast.success("Timesheet deleted successfully!", { duration: 3000 });
     } catch (e) {
       // Optionally show error
       console.error("Error deleting timesheet:", e);
-      toast.error("Failed to delete timesheet. Please try again.");
+      toast.error("Failed to delete timesheet. Please try again.", {
+        duration: 3000,
+      });
     } finally {
       setIsDeleting(false);
     }

@@ -88,7 +88,7 @@ export default function CreateJobsiteModal({
     try {
       // Basic validation
       if (!formData.name.trim()) {
-        toast.error("Jobsite name is required");
+        toast.error("Jobsite name is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -116,14 +116,14 @@ export default function CreateJobsiteModal({
 
       const result = await createJobsiteAdmin({ payload });
       if (result.success) {
-        toast.success("Jobsite created successfully!");
+        toast.success("Jobsite created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error("Failed to create jobsite");
+        toast.error("Failed to create jobsite", { duration: 3000 });
       }
     } catch (error) {
-      toast.error("Failed to create jobsite");
+      toast.error("Failed to create jobsite", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }

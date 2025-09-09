@@ -206,15 +206,19 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   const handleSubmit = async () => {
     setSubmittedByTouched(true);
     if (!submittedBy) {
-      toast.error("'Submitted By' is required");
+      toast.error("'Submitted By' is required", { duration: 3000 });
       return;
     }
     if (formTemplate.isSignatureRequired && !signatureChecked) {
-      toast.error("You must electronically sign this submission.");
+      toast.error("You must electronically sign this submission.", {
+        duration: 3000,
+      });
       return;
     }
     if (!managerSignature) {
-      toast.error("You must sign the submission as a manager to approve it.");
+      toast.error("You must sign the submission as a manager to approve it.", {
+        duration: 3000,
+      });
       return;
     }
 
@@ -250,10 +254,12 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
         closeModal();
         onSuccess?.();
       } else {
-        toast.error(res.error || "Failed to create submission");
+        toast.error(res.error || "Failed to create submission", {
+          duration: 3000,
+        });
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred", { duration: 3000 });
     } finally {
       setLoading(false);
     }

@@ -257,7 +257,7 @@ export default function FormEditor({
         });
       } catch (error) {
         console.error("Error fetching form:", error);
-        toast.error("Failed to fetch form data");
+        toast.error("Failed to fetch form data", { duration: 3000 });
       } finally {
         setLoading(false);
       }
@@ -341,7 +341,7 @@ export default function FormEditor({
    */
   const editForm = async () => {
     if (!formSettings.name.trim()) {
-      toast.error("Please enter a form name");
+      toast.error("Please enter a form name", { duration: 3000 });
       return;
     }
     setLoadingSave(true);
@@ -377,13 +377,13 @@ export default function FormEditor({
       const result = await updateFormTemplate(payload);
 
       if (result.success) {
-        toast.success("Form saved successfully!");
+        toast.success("Form saved successfully!", { duration: 3000 });
       } else {
-        toast.error(`Failed to save form: ${result.error}`);
+        toast.error(`Failed to save form: ${result.error}`, { duration: 3000 });
       }
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Error saving form");
+      toast.error("Error saving form", { duration: 3000 });
     } finally {
       setLoadingSave(false);
     }

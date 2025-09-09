@@ -119,12 +119,12 @@ export default function Forms() {
       const isDeleted = await deleteFormTemplate(submissionId);
       if (isDeleted) {
         // Optionally, you can show a success message or update the UI
-        toast.success("Form template deleted successfully");
+        toast.success("Form template deleted successfully", { duration: 3000 });
         router.push("/admins/forms");
       }
     } catch (error) {
       console.error("Error deleting form template:", error);
-      toast.error("Failed to delete form template");
+      toast.error("Failed to delete form template", { duration: 3000 });
     }
   };
 
@@ -163,7 +163,9 @@ export default function Forms() {
         });
 
         if (!template || !template.FormGrouping) {
-          toast.error("Form template or groupings not found");
+          toast.error("Form template or groupings not found", {
+            duration: 3000,
+          });
           return;
         }
         const groupings = template.FormGrouping;
@@ -267,10 +269,10 @@ export default function Forms() {
           );
         }
 
-        toast.success("Export completed successfully");
+        toast.success("Export completed successfully", { duration: 3000 });
       } catch (error) {
         console.error("Error exporting form template:", error);
-        toast.error("Failed to export form template");
+        toast.error("Failed to export form template", { duration: 3000 });
       } finally {
         setShowExportModal(false);
         setExportingFormId(null);

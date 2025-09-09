@@ -51,11 +51,11 @@ export default function EditUserModal({
     });
     setSubmitting(false);
     if (result.success) {
-      toast.success("User updated successfully");
+      toast.success("User updated successfully", { duration: 3000 });
       rerender();
       cancel();
     } else {
-      toast.error("Failed to update user");
+      toast.error("Failed to update user", { duration: 3000 });
     }
   };
 

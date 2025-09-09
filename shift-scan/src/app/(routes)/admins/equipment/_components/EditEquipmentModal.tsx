@@ -245,18 +245,22 @@ export default function EditEquipmentModal({
       console.log("Submitting changes:", changedFields);
 
       // Display changed fields in toast for debugging
-      toast.info(`Updating ${Object.keys(changedFields).length - 1} fields`); // -1 for the ID field
+      toast.info(`Updating ${Object.keys(changedFields).length - 1} fields`, {
+        duration: 3000,
+      }); // -1 for the ID field
 
       const result = await updateEquipmentAsset(fd);
       if (result?.success) {
-        toast.success("Equipment updated successfully.");
+        toast.success("Equipment updated successfully.", { duration: 3000 });
         cancel();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update equipment.");
       }
     } catch (err) {
-      toast.error("Error updating equipment. Please try again.");
+      toast.error("Error updating equipment. Please try again.", {
+        duration: 3000,
+      });
       console.error(err);
     }
   };

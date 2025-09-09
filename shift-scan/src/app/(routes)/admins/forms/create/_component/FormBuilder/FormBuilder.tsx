@@ -250,7 +250,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   // Save form to database
   const saveForm = async () => {
     if (!formSettings.name.trim()) {
-      toast.error("Please enter a form name");
+      toast.error("Please enter a form name", { duration: 3000 });
       return;
     }
 
@@ -278,7 +278,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
       const result = await saveFormTemplate(payload);
 
       if (result.success) {
-        toast.success("Form saved successfully!");
+        toast.success("Form saved successfully!", { duration: 3000 });
         console.log("Saved form:", result);
         setFormSettings({
           id: "",
@@ -297,11 +297,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
         setFormFields([]);
         setSelectedField(null);
       } else {
-        toast.error("Error saving form");
+        toast.error("Error saving form", { duration: 3000 });
       }
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Error saving form");
+      toast.error("Error saving form", { duration: 3000 });
     } finally {
       setLoadingSave(false);
     }

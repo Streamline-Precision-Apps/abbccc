@@ -82,7 +82,7 @@ export default function CreateCrewModal({
         !formData.crewType.trim() ||
         formData.Users.length === 0
       ) {
-        toast.error("Please fill in all required fields.");
+        toast.error("Please fill in all required fields.", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -99,14 +99,14 @@ export default function CreateCrewModal({
       // TODO: Replace with correct personnel creation action if available
       const result = await createCrew(formD);
       if (result.success) {
-        toast.success("Personnel created successfully!");
+        toast.success("Personnel created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error("Failed to create personnel");
+        toast.error("Failed to create personnel", { duration: 3000 });
       }
     } catch (error) {
-      toast.error("Failed to create personnel");
+      toast.error("Failed to create personnel", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }

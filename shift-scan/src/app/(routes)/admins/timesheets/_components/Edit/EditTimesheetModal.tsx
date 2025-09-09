@@ -117,7 +117,9 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
 
     // Validate that a change reason is provided
     if (!changeReason.trim()) {
-      toast.error("Please provide a reason for the changes");
+      toast.error("Please provide a reason for the changes", {
+        duration: 3000,
+      });
       return;
     }
 
@@ -199,7 +201,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
 
       // If no changes were made, inform the user
       if (Object.keys(changes).length === 0) {
-        toast.info("No changes were made to the timesheet");
+        toast.info("No changes were made to the timesheet", { duration: 3000 });
         setLoading(false);
         return;
       }
@@ -218,9 +220,9 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
 
       if (onUpdated) onUpdated();
       onClose();
-      toast.success("Timesheet updated successfully");
+      toast.success("Timesheet updated successfully", { duration: 3000 });
     } catch (error) {
-      toast.error(`Failed to update timesheet ${form.id}`);
+      toast.error(`Failed to update timesheet ${form.id}`, { duration: 3000 });
       setError("Failed to update timesheet in admin records.");
     } finally {
       setLoading(false);

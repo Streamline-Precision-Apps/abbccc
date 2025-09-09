@@ -55,7 +55,7 @@ export default function CreateTagModal({
               id: string;
               name: string;
               approvalStatus: ApprovalStatus;
-            }) => jobsite.approvalStatus !== ApprovalStatus.REJECTED
+            }) => jobsite.approvalStatus !== ApprovalStatus.REJECTED,
           )
           .map((jobsite: { id: string; name: string }) => ({
             id: jobsite.id,
@@ -78,7 +78,7 @@ export default function CreateTagModal({
         const filteredCostCodes = data
           .filter(
             (costCode: { id: string; name: string; isActive: boolean }) =>
-              costCode.isActive === true
+              costCode.isActive === true,
           )
           .map((costCode: { id: string; name: string }) => ({
             id: costCode.id,
@@ -98,13 +98,13 @@ export default function CreateTagModal({
     setSubmitting(true);
     try {
       if (!formData.name.trim()) {
-        toast.error("Tag name is required");
+        toast.error("Tag name is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
 
       if (!formData.description.trim()) {
-        toast.error("Tag description is required");
+        toast.error("Tag description is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -125,15 +125,17 @@ export default function CreateTagModal({
 
       const result = await createTag(payload);
       if (result.success) {
-        toast.success("Tag created successfully!");
+        toast.success("Tag created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error("Failed to create Tag");
+        toast.error("Failed to create Tag", { duration: 3000 });
       }
     } catch (error) {
       console.error("Error creating tag:", error);
-      toast.error("Failed to create Tag. Please try again.");
+      toast.error("Failed to create Tag. Please try again.", {
+        duration: 3000,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -204,7 +206,7 @@ export default function CreateTagModal({
                     setFormData((prev) => ({
                       ...prev,
                       Jobsites: jobsite.filter((j) =>
-                        selectedIds.includes(j.id)
+                        selectedIds.includes(j.id),
                       ),
                     }));
                   }}
@@ -225,7 +227,7 @@ export default function CreateTagModal({
                             setFormData((prev) => ({
                               ...prev,
                               Jobsites: prev.Jobsites.filter(
-                                (j) => j.id !== js.id
+                                (j) => j.id !== js.id,
                               ),
                             }));
                           }}
@@ -253,7 +255,7 @@ export default function CreateTagModal({
                     setFormData((prev) => ({
                       ...prev,
                       CostCodes: costCode.filter((c) =>
-                        selectedIds.includes(c.id)
+                        selectedIds.includes(c.id),
                       ),
                     }));
                   }}
@@ -274,7 +276,7 @@ export default function CreateTagModal({
                             setFormData((prev) => ({
                               ...prev,
                               CostCodes: prev.CostCodes.filter(
-                                (c) => c.id !== cc.id
+                                (c) => c.id !== cc.id,
                               ),
                             }));
                           }}

@@ -33,7 +33,7 @@ export default function EditCostCodeModal({
 
   const handleSaveChanges = async () => {
     if (!formData) {
-      toast.error("No form data to save.");
+      toast.error("No form data to save.", { duration: 3000 });
       return;
     }
     try {
@@ -47,14 +47,16 @@ export default function EditCostCodeModal({
       const result = await updateCostCodeAdmin(fd);
 
       if (result?.success) {
-        toast.success("CostCode updated successfully.");
+        toast.success("CostCode updated successfully.", { duration: 3000 });
         cancel();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update CostCode.");
       }
     } catch (err) {
-      toast.error("Error updating CostCode. Please try again.");
+      toast.error("Error updating CostCode. Please try again.", {
+        duration: 3000,
+      });
       console.error(err);
     }
   };
@@ -108,7 +110,7 @@ export default function EditCostCodeModal({
   const allTags = [
     ...safeTagSummaries,
     ...formData.CCTags.filter(
-      (tag) => !safeTagSummaries.some((t) => t.id === tag.id)
+      (tag) => !safeTagSummaries.some((t) => t.id === tag.id),
     ),
   ];
 
@@ -193,10 +195,10 @@ export default function EditCostCodeModal({
                         ? {
                             ...prev,
                             CCTags: safeTagSummaries.filter((tag) =>
-                              selectedIds.includes(tag.id)
+                              selectedIds.includes(tag.id),
                             ),
                           }
-                        : prev
+                        : prev,
                     );
                   }}
                 />
