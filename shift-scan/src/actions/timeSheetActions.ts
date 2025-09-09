@@ -507,6 +507,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
           link: `/admins/timesheets`,
         });
+        console.log("Sent Notification To Topic");
       } catch (notifyError) {
         // Log but don't fail the whole operation if notification fails
         console.error(
@@ -1013,18 +1014,45 @@ export async function updateTimeSheet(formData: FormData) {
 
     // Trigger notification for submitted timesheet
     try {
+      console.log(
+        "[updateTimeSheet] Preparing to send notification for timesheet ID:",
+        id,
+      );
+
       // Get the user information for the notification
       const timesheet = await prisma.timeSheet.findUnique({
         where: { id },
         include: { User: true },
       });
 
-      sendNotificationToTopic({
+      if (!timesheet) {
+        console.error(
+          "[updateTimeSheet] Cannot find timesheet for notification:",
+          id,
+        );
+        return;
+      }
+
+      console.log(
+        `[updateTimeSheet] Found timesheet for user: ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
+        { timesheetId: timesheet.id, userId: timesheet.User?.id },
+      );
+
+      // Send the notification
+      console.log(
+        "[updateTimeSheet] Sending notification to topic: timecard-submission",
+      );
+      const notificationResult = await sendNotificationToTopic({
         topic: "timecard-submission",
         title: "Timecard Submission Pending",
-        message: `A timecard submission is pending for ${timesheet?.User?.firstName} ${timesheet?.User?.lastName}`,
+        message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
         link: `/admins/timesheets`,
       });
+
+      console.log(
+        "[updateTimeSheet] Notification send result:",
+        notificationResult,
+      );
     } catch (notifyError) {
       // Log but don't fail the whole operation if notification fails
       console.error(

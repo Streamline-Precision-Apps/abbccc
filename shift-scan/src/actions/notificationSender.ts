@@ -20,6 +20,13 @@ export async function sendNotificationToTopic({
   message: string;
   link?: string;
 }) {
+  console.log(
+    `[sendNotificationToTopic] Starting notification to topic: "${topic}"`,
+  );
+  console.log(`[sendNotificationToTopic] Title: "${title}"`);
+  console.log(`[sendNotificationToTopic] Message: "${message}"`);
+  console.log(`[sendNotificationToTopic] Link: ${link || "none"}`);
+
   try {
     // Prepare payload for the multicast endpoint
     const payload = {
@@ -29,7 +36,12 @@ export async function sendNotificationToTopic({
       ...(link && { link }),
     };
 
+    console.log(`[sendNotificationToTopic] Prepared payload:`, payload);
+
     // Use the correct API endpoint for topic-based notifications
+    console.log(
+      `[sendNotificationToTopic] Sending request to /api/notifications/send-multicast`,
+    );
     const response = await fetch(`/api/notifications/send-multicast`, {
       method: "POST",
       headers: {
@@ -38,15 +50,24 @@ export async function sendNotificationToTopic({
       body: JSON.stringify(payload),
     });
 
+    console.log(
+      `[sendNotificationToTopic] Response status: ${response.status}`,
+    );
+
     if (!response.ok) {
       const error = await response.json();
-      console.error("Error sending notification:", error);
+      console.error(
+        "[sendNotificationToTopic] Error sending notification:",
+        error,
+      );
       return { success: false, error };
     }
 
-    return { success: true };
+    const result = await response.json();
+    console.log(`[sendNotificationToTopic] Success! Response:`, result);
+    return { success: true, result };
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error("[sendNotificationToTopic] Exception caught:", error);
     return { success: false, error };
   }
 }
@@ -66,30 +87,57 @@ export async function sendNotificationToDevice({
   message: string;
   link?: string;
 }) {
+  console.log(
+    `[sendNotificationToDevice] Starting notification to device token: "${token.substring(0, 10)}..."`,
+  );
+  console.log(`[sendNotificationToDevice] Title: "${title}"`);
+  console.log(`[sendNotificationToDevice] Message: "${message}"`);
+  console.log(`[sendNotificationToDevice] Link: ${link || "none"}`);
+
   try {
+    // Prepare payload for the device notification
+    const payload = {
+      tokens: [token], // Send as an array of one token
+      title,
+      body: message, // API expects 'body', not 'message'
+      link,
+    };
+
+    console.log(`[sendNotificationToDevice] Prepared payload:`, {
+      ...payload,
+      tokens: [`${token.substring(0, 10)}...`], // Truncate token for logging
+    });
+
     // Use the correct API endpoint for device-specific notifications
+    console.log(
+      `[sendNotificationToDevice] Sending request to /api/notifications/send-multicast`,
+    );
     const response = await fetch(`/api/notifications/send-multicast`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        tokens: [token], // Send as an array of one token
-        title,
-        body: message, // API expects 'body', not 'message'
-        link,
-      }),
+      body: JSON.stringify(payload),
     });
+
+    console.log(
+      `[sendNotificationToDevice] Response status: ${response.status}`,
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      console.error("Error sending notification:", error);
+      console.error(
+        "[sendNotificationToDevice] Error sending notification:",
+        error,
+      );
       return { success: false, error };
     }
 
-    return { success: true };
+    const result = await response.json();
+    console.log(`[sendNotificationToDevice] Success! Response:`, result);
+    return { success: true, result };
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error("[sendNotificationToDevice] Exception caught:", error);
     return { success: false, error };
   }
 }
