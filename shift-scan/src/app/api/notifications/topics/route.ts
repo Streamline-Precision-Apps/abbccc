@@ -1,43 +1,11 @@
-import admin from "firebase-admin";
-import type { ServiceAccount } from "firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-
-// Get the service account from environment variable
-let serviceAccount: ServiceAccount;
-
-try {
-  // Get the service account from environment variable
-  const serviceAccountJson = {
-    type: process.env.FIREBASE_SERVICE_JSON_TYPE,
-    project_id: process.env.FIREBASE_SERVICE_JSON_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_SERVICE_JSON_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_SERVICE_JSON_PRIVATE_KEY,
-    client_email: process.env.FIREBASE_SERVICE_JSON_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_SERVICE_JSON_CLIENT_ID,
-    auth_uri: process.env.FIREBASE_SERVICE_JSON_AUTH_URI,
-    token_uri: process.env.FIREBASE_SERVICE_JSON_TOKEN_URI,
-    auth_provider_x509_cert_url:
-      process.env.FIREBASE_SERVICE_JSON_AUTH_PROVIDER_X509_CERT_URL,
-    client_x509_cert_url:
-      process.env.FIREBASE_SERVICE_JSON_CLIENT_X509_CERT_URL,
-    universe_domain: process.env.FIREBASE_SERVICE_JSON_UNIVERSE_DOMAIN,
-  };
-  serviceAccount = serviceAccountJson as ServiceAccount;
-  // Initialize the app if it hasn't been initialized yet
-  if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-  }
-} catch (error) {
-  console.error("Failed to load Firebase service account:", error);
-  throw new Error("Firebase service account is not available");
-}
+import getFirebaseAdmin from "@/lib/firebase-admin";
 
 export async function POST(request: NextRequest) {
   try {
+    const admin = getFirebaseAdmin();
     const { action, topics, token } = await request.json();
 
     // Get the current user session
