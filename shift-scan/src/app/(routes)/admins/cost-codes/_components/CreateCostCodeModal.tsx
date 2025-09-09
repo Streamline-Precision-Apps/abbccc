@@ -48,13 +48,13 @@ export default function CreateCostCodeModal({
     setSubmitting(true);
     try {
       if (!formData.code.trim()) {
-        toast.error("Cost code number is required");
+        toast.error("Cost code number is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
 
       if (!formData.name.trim()) {
-        toast.error("Cost code name is required");
+        toast.error("Cost code name is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -74,15 +74,17 @@ export default function CreateCostCodeModal({
 
       const result = await createCostCode(payload);
       if (result.success) {
-        toast.success("Cost Code created successfully!");
+        toast.success("Cost Code created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error("Failed to create Cost Code");
+        toast.error("Failed to create Cost Code", { duration: 3000 });
       }
     } catch (error) {
       console.error("Error creating cost code:", error);
-      toast.error("An error occurred while creating the Cost Code");
+      toast.error("An error occurred while creating the Cost Code", {
+        duration: 3000,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -154,7 +156,7 @@ export default function CreateCostCodeModal({
                     setFormData((prev) => ({
                       ...prev,
                       CCTags: tagSummaries.filter((tag) =>
-                        selectedIds.includes(tag.id)
+                        selectedIds.includes(tag.id),
                       ),
                     }));
                   }}

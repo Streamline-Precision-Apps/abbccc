@@ -69,7 +69,7 @@ export default function EditCrewModal({
         !crewData?.crewType.trim() ||
         crewData?.Users.length === 0
       ) {
-        toast.error("Please fill in all required fields.");
+        toast.error("Please fill in all required fields.", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -91,15 +91,15 @@ export default function EditCrewModal({
 
       const result = await editCrew(formD);
       if (result.success) {
-        toast.success("Crew updated successfully!");
+        toast.success("Crew updated successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error("Failed to update crew");
+        toast.error("Failed to update crew", { duration: 3000 });
       }
     } catch (error) {
       console.error("Error updating crew:", error);
-      toast.error("Failed to update crew");
+      toast.error("Failed to update crew", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }

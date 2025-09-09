@@ -246,7 +246,9 @@ export default function EditFormSubmissionModal({
       !editData.signature &&
       !signatureChecked
     ) {
-      toast.error("You must electronically sign this submission.");
+      toast.error("You must electronically sign this submission.", {
+        duration: 3000,
+      });
       return;
     }
     try {
@@ -280,13 +282,15 @@ export default function EditFormSubmissionModal({
       });
 
       if (res.success) {
-        toast.success("Submission updated successfully");
+        toast.success("Submission updated successfully", { duration: 3000 });
         onSuccess();
       } else {
-        toast.error(res.error || "Failed to update submission");
+        toast.error(res.error || "Failed to update submission", {
+          duration: 3000,
+        });
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred", { duration: 3000 });
     }
   };
 

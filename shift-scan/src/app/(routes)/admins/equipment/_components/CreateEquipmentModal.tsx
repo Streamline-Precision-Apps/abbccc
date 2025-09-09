@@ -97,12 +97,12 @@ export default function CreateEquipmentModal({
     try {
       // Basic validation
       if (!formData.name.trim()) {
-        toast.error("Equipment name is required");
+        toast.error("Equipment name is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
       if (!formData.equipmentTag) {
-        toast.error("Equipment type is required");
+        toast.error("Equipment type is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -133,21 +133,25 @@ export default function CreateEquipmentModal({
       };
       const createdById = session?.user.id;
       if (!createdById) {
-        toast.error("You must be logged in to create equipment.");
+        toast.error("You must be logged in to create equipment.", {
+          duration: 3000,
+        });
         setSubmitting(false);
         return;
       }
       const result = await registerEquipment(payload, createdById);
       if (result.success) {
-        toast.success("Equipment created successfully!");
+        toast.success("Equipment created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error(result.error || "Failed to create equipment");
+        toast.error(result.error || "Failed to create equipment", {
+          duration: 3000,
+        });
       }
     } catch (error) {
       console.error("Error creating equipment:", error);
-      toast.error("Failed to create equipment");
+      toast.error("Failed to create equipment", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }

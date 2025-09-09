@@ -117,35 +117,39 @@ const useFcmToken = () => {
                   }
                 },
               },
+              duration: 10000,
             },
           );
         } else {
           toast.info(
             `${payload.notification?.title}: ${payload.notification?.body}`,
+            {
+              duration: 10000,
+            },
           );
         }
 
         // --------------------------------------------
         // Disable this if you only want toast notifications.
-        const n = new Notification(
-          payload.notification?.title || "New message",
-          {
-            body: payload.notification?.body || "This is a new message",
-            data: link ? { url: link } : undefined,
-          },
-        );
+        // const n = new Notification(
+        //   payload.notification?.title || "New message",
+        //   {
+        //     body: payload.notification?.body || "This is a new message",
+        //     data: link ? { url: link } : undefined,
+        //   },
+        // );
 
-        // Step 10: Handle notification click event to navigate to a link if present.
-        n.onclick = (event) => {
-          event.preventDefault();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const link = (event.target as any)?.data?.url;
-          if (link) {
-            router.push(link);
-          } else {
-            console.log("No link found in the notification payload");
-          }
-        };
+        // // Step 10: Handle notification click event to navigate to a link if present.
+        // n.onclick = (event) => {
+        //   event.preventDefault();
+        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        //   const link = (event.target as any)?.data?.url;
+        //   if (link) {
+        //     router.push(link);
+        //   } else {
+        //     console.log("No link found in the notification payload");
+        //   }
+        // };
         // --------------------------------------------
       });
 

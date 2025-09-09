@@ -363,12 +363,12 @@ export function CreateTimesheetModal({
         laborLogs,
       };
       await adminCreateTimesheet(data);
-      toast.success("Timesheet created successfully!");
+      toast.success("Timesheet created successfully!", { duration: 3000 });
       onCreated(); // Notify parent to refetch
       onClose();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create timesheet.");
+      toast.error("Failed to create timesheet.", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }

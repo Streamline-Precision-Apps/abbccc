@@ -139,12 +139,12 @@ export default function useSubmissionDataById(id: string) {
       const isDeleted = await deleteFormTemplate(submissionId);
       if (isDeleted) {
         // Optionally, you can show a success message or update the UI
-        toast.success("Form template deleted successfully");
+        toast.success("Form template deleted successfully", { duration: 3000 });
         router.push("/admins/forms");
       }
     } catch (error) {
       console.error("Error deleting form template:", error);
-      toast.error("Failed to delete form template");
+      toast.error("Failed to delete form template", { duration: 3000 });
     }
   };
 
@@ -176,12 +176,14 @@ export default function useSubmissionDataById(id: string) {
     if (pendingSubmissionDeleteId) {
       const isDeleted = await deleteFormSubmission(pendingSubmissionDeleteId);
       if (isDeleted) {
-        toast.success("Form submission deleted successfully");
+        toast.success("Form submission deleted successfully", {
+          duration: 3000,
+        });
         setShowDeleteSubmissionDialog(false);
         setPendingSubmissionDeleteId(null);
         setRefreshKey((prev) => prev + 1);
       } else {
-        toast.error("Failed to delete form submission");
+        toast.error("Failed to delete form submission", { duration: 3000 });
       }
     }
   };
@@ -209,7 +211,9 @@ export default function useSubmissionDataById(id: string) {
       if (status === "ACTIVE") {
         const isPublished = await publishFormTemplate(formTemplate.id);
         if (isPublished) {
-          toast.success("Form template published successfully");
+          toast.success("Form template published successfully", {
+            duration: 3000,
+          });
           setFormTemplate((prev) =>
             prev ? { ...prev, isActive: "ACTIVE" } : prev,
           );
@@ -217,7 +221,9 @@ export default function useSubmissionDataById(id: string) {
       } else if (status === "ARCHIVED") {
         const isArchived = await archiveFormTemplate(formTemplate.id);
         if (isArchived) {
-          toast.success("Form template archived successfully");
+          toast.success("Form template archived successfully", {
+            duration: 3000,
+          });
           setFormTemplate((prev) =>
             prev ? { ...prev, isActive: "ARCHIVED" } : prev,
           );
@@ -226,14 +232,16 @@ export default function useSubmissionDataById(id: string) {
         // Optionally implement draft logic if needed
         const isDrafted = await draftFormTemplate(formTemplate.id);
         if (isDrafted) {
-          toast.success("Form template drafted successfully");
+          toast.success("Form template drafted successfully", {
+            duration: 3000,
+          });
           setFormTemplate((prev) =>
             prev ? { ...prev, isActive: "DRAFT" } : prev,
           );
         }
       }
     } catch (error) {
-      toast.error("Failed to update form template status");
+      toast.error("Failed to update form template status", { duration: 3000 });
     } finally {
       setActionLoading(null);
       setStatusPopoverOpen(false);
@@ -250,7 +258,9 @@ export default function useSubmissionDataById(id: string) {
         });
 
         if (!template || !template.FormGrouping) {
-          toast.error("Form template or groupings not found");
+          toast.error("Form template or groupings not found", {
+            duration: 3000,
+          });
           return;
         }
         const groupings = template.FormGrouping;
@@ -373,10 +383,10 @@ export default function useSubmissionDataById(id: string) {
           );
         }
 
-        toast.success("Export completed successfully");
+        toast.success("Export completed successfully", { duration: 3000 });
       } catch (error) {
         console.error("Error exporting form template:", error);
-        toast.error("Failed to export form template");
+        toast.error("Failed to export form template", { duration: 3000 });
       } finally {
         setShowExportModal(false);
       }
