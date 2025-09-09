@@ -24,6 +24,12 @@ try {
     universe_domain: process.env.FIREBASE_SERVICE_JSON_UNIVERSE_DOMAIN,
   };
   serviceAccount = serviceAccountJson as ServiceAccount;
+  // Initialize the app if it hasn't been initialized yet
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  }
 } catch (error) {
   console.error("Failed to load Firebase service account:", error);
   throw new Error("Firebase service account is not available");
@@ -116,7 +122,11 @@ export async function POST(request: NextRequest) {
     console.error("Error sending message:", error);
     // Provide a more specific error message if available
     return NextResponse.json(
-      { success: false, error: "Failed to send notification" },
+      {
+        success: false,
+        error: "Failed to send notification",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }
