@@ -177,6 +177,7 @@ export default function NewClockProcess({
       const tId = fetchRecentTimeSheetId.id;
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
+      formData.append("userId", session?.user.id?.toString() || "");
       const response = await returnToPrevWork(formData);
       console.log("response:", response);
 

@@ -36,10 +36,8 @@ model User {
   Company              Company              @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
-  pushSubscriptions    PushSubscription[]
   topicSubscriptions   TopicSubscription[]
-
-  notifications Notification[]
+  FCMToken             FCMToken[]
 
   @@unique([firstName, lastName, username])
   @@index([email])

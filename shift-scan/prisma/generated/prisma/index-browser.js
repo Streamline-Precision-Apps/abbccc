@@ -533,32 +533,26 @@ exports.Prisma.AddressScalarFieldEnum = {
   country: 'country'
 };
 
-exports.Prisma.PushSubscriptionScalarFieldEnum = {
+exports.Prisma.FCMTokenScalarFieldEnum = {
   id: 'id',
-  endpoint: 'endpoint',
-  auth: 'auth',
-  p256dh: 'p256dh',
+  token: 'token',
   userId: 'userId',
+  platform: 'platform',
+  lastUsedAt: 'lastUsedAt',
+  isValid: 'isValid',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  lastSuccessAt: 'lastSuccessAt',
-  lastFailureAt: 'lastFailureAt',
-  failedCount: 'failedCount'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.TopicSubscriptionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   topic: 'topic',
-  inApp: 'inApp',
-  push: 'push',
-  frequency: 'frequency',
   createdAt: 'createdAt'
 };
 
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
   topic: 'topic',
   title: 'title',
   body: 'body',
@@ -722,12 +716,6 @@ exports.Permission = exports.$Enums.Permission = {
   SUPERADMIN: 'SUPERADMIN'
 };
 
-exports.Frequency = exports.$Enums.Frequency = {
-  immediate: 'immediate',
-  hourly: 'hourly',
-  daily: 'daily'
-};
-
 exports.Prisma.ModelName = {
   Company: 'Company',
   CostCode: 'CostCode',
@@ -763,7 +751,7 @@ exports.Prisma.ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   AccountSetupToken: 'AccountSetupToken',
   Address: 'Address',
-  PushSubscription: 'PushSubscription',
+  FCMToken: 'FCMToken',
   TopicSubscription: 'TopicSubscription',
   Notification: 'Notification'
 };

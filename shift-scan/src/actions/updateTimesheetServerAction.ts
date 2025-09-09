@@ -1,8 +1,8 @@
 "use server";
 
-import { triggerTimecardChanged } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
+import { sendNotificationToTopic } from "./notificationSender";
 
 export async function updateTimesheetServerAction(formData: FormData) {
   console.log(formData);
@@ -55,11 +55,17 @@ export async function updateTimesheetServerAction(formData: FormData) {
       });
 
       if (updated) {
-        await triggerTimecardChanged({
-          timesheetId: updated.id.toString(),
-          changerName: editorId,
-          message: `Timecard updated by ${editorId}`,
-          changeType: "updated",
+        // trigger time sheet change notification
+        const editor = await tx.user.findUnique({
+          where: { id: editorId },
+          select: { firstName: true, lastName: true },
+        });
+
+        sendNotificationToTopic({
+          topic: "timecards-changes",
+          title: "A Timecard was Modified",
+          message: `Timecard was modified by ${editor?.firstName} ${editor?.lastName}`,
+          link: `/admins/timesheets`,
         });
       }
 

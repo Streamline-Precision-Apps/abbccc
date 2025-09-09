@@ -184,10 +184,10 @@ export type AccountSetupToken = $Result.DefaultSelection<Prisma.$AccountSetupTok
  */
 export type Address = $Result.DefaultSelection<Prisma.$AddressPayload>
 /**
- * Model PushSubscription
+ * Model FCMToken
  * 
  */
-export type PushSubscription = $Result.DefaultSelection<Prisma.$PushSubscriptionPayload>
+export type FCMToken = $Result.DefaultSelection<Prisma.$FCMTokenPayload>
 /**
  * Model TopicSubscription
  * 
@@ -405,15 +405,6 @@ export const CreatedVia: {
 
 export type CreatedVia = (typeof CreatedVia)[keyof typeof CreatedVia]
 
-
-export const Frequency: {
-  immediate: 'immediate',
-  hourly: 'hourly',
-  daily: 'daily'
-};
-
-export type Frequency = (typeof Frequency)[keyof typeof Frequency]
-
 }
 
 export type Condition = $Enums.Condition
@@ -495,10 +486,6 @@ export const FormTemplateCategory: typeof $Enums.FormTemplateCategory
 export type CreatedVia = $Enums.CreatedVia
 
 export const CreatedVia: typeof $Enums.CreatedVia
-
-export type Frequency = $Enums.Frequency
-
-export const Frequency: typeof $Enums.Frequency
 
 /**
  * ##  Prisma Client ʲˢ
@@ -959,14 +946,14 @@ export class PrismaClient<
   get address(): Prisma.AddressDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.pushSubscription`: Exposes CRUD operations for the **PushSubscription** model.
+   * `prisma.fCMToken`: Exposes CRUD operations for the **FCMToken** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more PushSubscriptions
-    * const pushSubscriptions = await prisma.pushSubscription.findMany()
+    * // Fetch zero or more FCMTokens
+    * const fCMTokens = await prisma.fCMToken.findMany()
     * ```
     */
-  get pushSubscription(): Prisma.PushSubscriptionDelegate<ExtArgs, ClientOptions>;
+  get fCMToken(): Prisma.FCMTokenDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.topicSubscription`: Exposes CRUD operations for the **TopicSubscription** model.
@@ -1461,7 +1448,7 @@ export namespace Prisma {
     PasswordResetToken: 'PasswordResetToken',
     AccountSetupToken: 'AccountSetupToken',
     Address: 'Address',
-    PushSubscription: 'PushSubscription',
+    FCMToken: 'FCMToken',
     TopicSubscription: 'TopicSubscription',
     Notification: 'Notification'
   };
@@ -1482,7 +1469,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "company" | "costCode" | "cCTag" | "crew" | "pdfDocument" | "documentTag" | "equipment" | "employeeEquipmentLog" | "formTemplate" | "formGrouping" | "formField" | "formFieldOption" | "formSubmission" | "formApproval" | "jobsite" | "report" | "reportRun" | "timeSheet" | "maintenanceLog" | "maintenance" | "tascoLog" | "tascoMaterialTypes" | "truckingLog" | "stateMileage" | "material" | "refuelLog" | "equipmentHauled" | "timeSheetChangeLog" | "user" | "userSettings" | "contacts" | "passwordResetToken" | "accountSetupToken" | "address" | "pushSubscription" | "topicSubscription" | "notification"
+      modelProps: "company" | "costCode" | "cCTag" | "crew" | "pdfDocument" | "documentTag" | "equipment" | "employeeEquipmentLog" | "formTemplate" | "formGrouping" | "formField" | "formFieldOption" | "formSubmission" | "formApproval" | "jobsite" | "report" | "reportRun" | "timeSheet" | "maintenanceLog" | "maintenance" | "tascoLog" | "tascoMaterialTypes" | "truckingLog" | "stateMileage" | "material" | "refuelLog" | "equipmentHauled" | "timeSheetChangeLog" | "user" | "userSettings" | "contacts" | "passwordResetToken" | "accountSetupToken" | "address" | "fCMToken" | "topicSubscription" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4002,77 +3989,77 @@ export namespace Prisma {
           }
         }
       }
-      PushSubscription: {
-        payload: Prisma.$PushSubscriptionPayload<ExtArgs>
-        fields: Prisma.PushSubscriptionFieldRefs
+      FCMToken: {
+        payload: Prisma.$FCMTokenPayload<ExtArgs>
+        fields: Prisma.FCMTokenFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.PushSubscriptionFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload> | null
+            args: Prisma.FCMTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.PushSubscriptionFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+            args: Prisma.FCMTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>
           }
           findFirst: {
-            args: Prisma.PushSubscriptionFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload> | null
+            args: Prisma.FCMTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.PushSubscriptionFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+            args: Prisma.FCMTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>
           }
           findMany: {
-            args: Prisma.PushSubscriptionFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>[]
+            args: Prisma.FCMTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>[]
           }
           create: {
-            args: Prisma.PushSubscriptionCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+            args: Prisma.FCMTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>
           }
           createMany: {
-            args: Prisma.PushSubscriptionCreateManyArgs<ExtArgs>
+            args: Prisma.FCMTokenCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.PushSubscriptionCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>[]
+            args: Prisma.FCMTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>[]
           }
           delete: {
-            args: Prisma.PushSubscriptionDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+            args: Prisma.FCMTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>
           }
           update: {
-            args: Prisma.PushSubscriptionUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+            args: Prisma.FCMTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>
           }
           deleteMany: {
-            args: Prisma.PushSubscriptionDeleteManyArgs<ExtArgs>
+            args: Prisma.FCMTokenDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.PushSubscriptionUpdateManyArgs<ExtArgs>
+            args: Prisma.FCMTokenUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.PushSubscriptionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>[]
+            args: Prisma.FCMTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>[]
           }
           upsert: {
-            args: Prisma.PushSubscriptionUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+            args: Prisma.FCMTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FCMTokenPayload>
           }
           aggregate: {
-            args: Prisma.PushSubscriptionAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregatePushSubscription>
+            args: Prisma.FCMTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFCMToken>
           }
           groupBy: {
-            args: Prisma.PushSubscriptionGroupByArgs<ExtArgs>
-            result: $Utils.Optional<PushSubscriptionGroupByOutputType>[]
+            args: Prisma.FCMTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FCMTokenGroupByOutputType>[]
           }
           count: {
-            args: Prisma.PushSubscriptionCountArgs<ExtArgs>
-            result: $Utils.Optional<PushSubscriptionCountAggregateOutputType> | number
+            args: Prisma.FCMTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<FCMTokenCountAggregateOutputType> | number
           }
         }
       }
@@ -4350,7 +4337,7 @@ export namespace Prisma {
     passwordResetToken?: PasswordResetTokenOmit
     accountSetupToken?: AccountSetupTokenOmit
     address?: AddressOmit
-    pushSubscription?: PushSubscriptionOmit
+    fCMToken?: FCMTokenOmit
     topicSubscription?: TopicSubscriptionOmit
     notification?: NotificationOmit
   }
@@ -5207,9 +5194,8 @@ export namespace Prisma {
     TimeSheets: number
     TimeSheetChanges: number
     Crews: number
-    pushSubscriptions: number
     topicSubscriptions: number
-    notifications: number
+    FCMToken: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5222,9 +5208,8 @@ export namespace Prisma {
     TimeSheets?: boolean | UserCountOutputTypeCountTimeSheetsArgs
     TimeSheetChanges?: boolean | UserCountOutputTypeCountTimeSheetChangesArgs
     Crews?: boolean | UserCountOutputTypeCountCrewsArgs
-    pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
     topicSubscriptions?: boolean | UserCountOutputTypeCountTopicSubscriptionsArgs
-    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    FCMToken?: boolean | UserCountOutputTypeCountFCMTokenArgs
   }
 
   // Custom InputTypes
@@ -5304,13 +5289,6 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PushSubscriptionWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountTopicSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TopicSubscriptionWhereInput
   }
@@ -5318,8 +5296,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
+  export type UserCountOutputTypeCountFCMTokenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FCMTokenWhereInput
   }
 
 
@@ -39075,9 +39053,8 @@ export namespace Prisma {
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
     UserSettings?: boolean | User$UserSettingsArgs<ExtArgs>
     Crews?: boolean | User$CrewsArgs<ExtArgs>
-    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     topicSubscriptions?: boolean | User$topicSubscriptionsArgs<ExtArgs>
-    notifications?: boolean | User$notificationsArgs<ExtArgs>
+    FCMToken?: boolean | User$FCMTokenArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -39179,9 +39156,8 @@ export namespace Prisma {
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
     UserSettings?: boolean | User$UserSettingsArgs<ExtArgs>
     Crews?: boolean | User$CrewsArgs<ExtArgs>
-    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     topicSubscriptions?: boolean | User$topicSubscriptionsArgs<ExtArgs>
-    notifications?: boolean | User$notificationsArgs<ExtArgs>
+    FCMToken?: boolean | User$FCMTokenArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -39207,9 +39183,8 @@ export namespace Prisma {
       Company: Prisma.$CompanyPayload<ExtArgs>
       UserSettings: Prisma.$UserSettingsPayload<ExtArgs> | null
       Crews: Prisma.$CrewPayload<ExtArgs>[]
-      pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
       topicSubscriptions: Prisma.$TopicSubscriptionPayload<ExtArgs>[]
-      notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      FCMToken: Prisma.$FCMTokenPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -39643,9 +39618,8 @@ export namespace Prisma {
     Company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     UserSettings<T extends User$UserSettingsArgs<ExtArgs> = {}>(args?: Subset<T, User$UserSettingsArgs<ExtArgs>>): Prisma__UserSettingsClient<$Result.GetResult<Prisma.$UserSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     Crews<T extends User$CrewsArgs<ExtArgs> = {}>(args?: Subset<T, User$CrewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CrewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     topicSubscriptions<T extends User$topicSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$topicSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TopicSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    FCMToken<T extends User$FCMTokenArgs<ExtArgs> = {}>(args?: Subset<T, User$FCMTokenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -40368,30 +40342,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.pushSubscriptions
-   */
-  export type User$pushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PushSubscription
-     */
-    select?: PushSubscriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PushSubscription
-     */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PushSubscriptionInclude<ExtArgs> | null
-    where?: PushSubscriptionWhereInput
-    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
-    cursor?: PushSubscriptionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
-  }
-
-  /**
    * User.topicSubscriptions
    */
   export type User$topicSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40416,27 +40366,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.notifications
+   * User.FCMToken
    */
-  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$FCMTokenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Notification
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: NotificationSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Notification
+     * Omit specific fields from the FCMToken
      */
-    omit?: NotificationOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    cursor?: NotificationWhereUniqueInput
+    include?: FCMTokenInclude<ExtArgs> | null
+    where?: FCMTokenWhereInput
+    orderBy?: FCMTokenOrderByWithRelationInput | FCMTokenOrderByWithRelationInput[]
+    cursor?: FCMTokenWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+    distinct?: FCMTokenScalarFieldEnum | FCMTokenScalarFieldEnum[]
   }
 
   /**
@@ -45880,444 +45830,386 @@ export namespace Prisma {
 
 
   /**
-   * Model PushSubscription
+   * Model FCMToken
    */
 
-  export type AggregatePushSubscription = {
-    _count: PushSubscriptionCountAggregateOutputType | null
-    _avg: PushSubscriptionAvgAggregateOutputType | null
-    _sum: PushSubscriptionSumAggregateOutputType | null
-    _min: PushSubscriptionMinAggregateOutputType | null
-    _max: PushSubscriptionMaxAggregateOutputType | null
+  export type AggregateFCMToken = {
+    _count: FCMTokenCountAggregateOutputType | null
+    _min: FCMTokenMinAggregateOutputType | null
+    _max: FCMTokenMaxAggregateOutputType | null
   }
 
-  export type PushSubscriptionAvgAggregateOutputType = {
-    failedCount: number | null
-  }
-
-  export type PushSubscriptionSumAggregateOutputType = {
-    failedCount: number | null
-  }
-
-  export type PushSubscriptionMinAggregateOutputType = {
+  export type FCMTokenMinAggregateOutputType = {
     id: string | null
-    endpoint: string | null
-    auth: string | null
-    p256dh: string | null
+    token: string | null
     userId: string | null
+    platform: string | null
+    lastUsedAt: Date | null
+    isValid: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    lastSuccessAt: Date | null
-    lastFailureAt: Date | null
-    failedCount: number | null
   }
 
-  export type PushSubscriptionMaxAggregateOutputType = {
+  export type FCMTokenMaxAggregateOutputType = {
     id: string | null
-    endpoint: string | null
-    auth: string | null
-    p256dh: string | null
+    token: string | null
     userId: string | null
+    platform: string | null
+    lastUsedAt: Date | null
+    isValid: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    lastSuccessAt: Date | null
-    lastFailureAt: Date | null
-    failedCount: number | null
   }
 
-  export type PushSubscriptionCountAggregateOutputType = {
+  export type FCMTokenCountAggregateOutputType = {
     id: number
-    endpoint: number
-    auth: number
-    p256dh: number
+    token: number
     userId: number
+    platform: number
+    lastUsedAt: number
+    isValid: number
     createdAt: number
     updatedAt: number
-    lastSuccessAt: number
-    lastFailureAt: number
-    failedCount: number
     _all: number
   }
 
 
-  export type PushSubscriptionAvgAggregateInputType = {
-    failedCount?: true
-  }
-
-  export type PushSubscriptionSumAggregateInputType = {
-    failedCount?: true
-  }
-
-  export type PushSubscriptionMinAggregateInputType = {
+  export type FCMTokenMinAggregateInputType = {
     id?: true
-    endpoint?: true
-    auth?: true
-    p256dh?: true
+    token?: true
     userId?: true
+    platform?: true
+    lastUsedAt?: true
+    isValid?: true
     createdAt?: true
     updatedAt?: true
-    lastSuccessAt?: true
-    lastFailureAt?: true
-    failedCount?: true
   }
 
-  export type PushSubscriptionMaxAggregateInputType = {
+  export type FCMTokenMaxAggregateInputType = {
     id?: true
-    endpoint?: true
-    auth?: true
-    p256dh?: true
+    token?: true
     userId?: true
+    platform?: true
+    lastUsedAt?: true
+    isValid?: true
     createdAt?: true
     updatedAt?: true
-    lastSuccessAt?: true
-    lastFailureAt?: true
-    failedCount?: true
   }
 
-  export type PushSubscriptionCountAggregateInputType = {
+  export type FCMTokenCountAggregateInputType = {
     id?: true
-    endpoint?: true
-    auth?: true
-    p256dh?: true
+    token?: true
     userId?: true
+    platform?: true
+    lastUsedAt?: true
+    isValid?: true
     createdAt?: true
     updatedAt?: true
-    lastSuccessAt?: true
-    lastFailureAt?: true
-    failedCount?: true
     _all?: true
   }
 
-  export type PushSubscriptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which PushSubscription to aggregate.
+     * Filter which FCMToken to aggregate.
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of PushSubscriptions to fetch.
+     * Determine the order of FCMTokens to fetch.
      */
-    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    orderBy?: FCMTokenOrderByWithRelationInput | FCMTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: PushSubscriptionWhereUniqueInput
+    cursor?: FCMTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` PushSubscriptions from the position of the cursor.
+     * Take `±n` FCMTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` PushSubscriptions.
+     * Skip the first `n` FCMTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned PushSubscriptions
+     * Count returned FCMTokens
     **/
-    _count?: true | PushSubscriptionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: PushSubscriptionAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: PushSubscriptionSumAggregateInputType
+    _count?: true | FCMTokenCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: PushSubscriptionMinAggregateInputType
+    _min?: FCMTokenMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: PushSubscriptionMaxAggregateInputType
+    _max?: FCMTokenMaxAggregateInputType
   }
 
-  export type GetPushSubscriptionAggregateType<T extends PushSubscriptionAggregateArgs> = {
-        [P in keyof T & keyof AggregatePushSubscription]: P extends '_count' | 'count'
+  export type GetFCMTokenAggregateType<T extends FCMTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateFCMToken]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregatePushSubscription[P]>
-      : GetScalarType<T[P], AggregatePushSubscription[P]>
+        : GetScalarType<T[P], AggregateFCMToken[P]>
+      : GetScalarType<T[P], AggregateFCMToken[P]>
   }
 
 
 
 
-  export type PushSubscriptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PushSubscriptionWhereInput
-    orderBy?: PushSubscriptionOrderByWithAggregationInput | PushSubscriptionOrderByWithAggregationInput[]
-    by: PushSubscriptionScalarFieldEnum[] | PushSubscriptionScalarFieldEnum
-    having?: PushSubscriptionScalarWhereWithAggregatesInput
+  export type FCMTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FCMTokenWhereInput
+    orderBy?: FCMTokenOrderByWithAggregationInput | FCMTokenOrderByWithAggregationInput[]
+    by: FCMTokenScalarFieldEnum[] | FCMTokenScalarFieldEnum
+    having?: FCMTokenScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: PushSubscriptionCountAggregateInputType | true
-    _avg?: PushSubscriptionAvgAggregateInputType
-    _sum?: PushSubscriptionSumAggregateInputType
-    _min?: PushSubscriptionMinAggregateInputType
-    _max?: PushSubscriptionMaxAggregateInputType
+    _count?: FCMTokenCountAggregateInputType | true
+    _min?: FCMTokenMinAggregateInputType
+    _max?: FCMTokenMaxAggregateInputType
   }
 
-  export type PushSubscriptionGroupByOutputType = {
+  export type FCMTokenGroupByOutputType = {
     id: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    userId: string | null
+    token: string
+    userId: string
+    platform: string | null
+    lastUsedAt: Date | null
+    isValid: boolean
     createdAt: Date
     updatedAt: Date
-    lastSuccessAt: Date | null
-    lastFailureAt: Date | null
-    failedCount: number
-    _count: PushSubscriptionCountAggregateOutputType | null
-    _avg: PushSubscriptionAvgAggregateOutputType | null
-    _sum: PushSubscriptionSumAggregateOutputType | null
-    _min: PushSubscriptionMinAggregateOutputType | null
-    _max: PushSubscriptionMaxAggregateOutputType | null
+    _count: FCMTokenCountAggregateOutputType | null
+    _min: FCMTokenMinAggregateOutputType | null
+    _max: FCMTokenMaxAggregateOutputType | null
   }
 
-  type GetPushSubscriptionGroupByPayload<T extends PushSubscriptionGroupByArgs> = Prisma.PrismaPromise<
+  type GetFCMTokenGroupByPayload<T extends FCMTokenGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<PushSubscriptionGroupByOutputType, T['by']> &
+      PickEnumerable<FCMTokenGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof PushSubscriptionGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof FCMTokenGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], PushSubscriptionGroupByOutputType[P]>
-            : GetScalarType<T[P], PushSubscriptionGroupByOutputType[P]>
+              : GetScalarType<T[P], FCMTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], FCMTokenGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type PushSubscriptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type FCMTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    endpoint?: boolean
-    auth?: boolean
-    p256dh?: boolean
+    token?: boolean
     userId?: boolean
+    platform?: boolean
+    lastUsedAt?: boolean
+    isValid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    lastSuccessAt?: boolean
-    lastFailureAt?: boolean
-    failedCount?: boolean
-    user?: boolean | PushSubscription$userArgs<ExtArgs>
-  }, ExtArgs["result"]["pushSubscription"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["fCMToken"]>
 
-  export type PushSubscriptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type FCMTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    endpoint?: boolean
-    auth?: boolean
-    p256dh?: boolean
+    token?: boolean
     userId?: boolean
+    platform?: boolean
+    lastUsedAt?: boolean
+    isValid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    lastSuccessAt?: boolean
-    lastFailureAt?: boolean
-    failedCount?: boolean
-    user?: boolean | PushSubscription$userArgs<ExtArgs>
-  }, ExtArgs["result"]["pushSubscription"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["fCMToken"]>
 
-  export type PushSubscriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type FCMTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    endpoint?: boolean
-    auth?: boolean
-    p256dh?: boolean
+    token?: boolean
     userId?: boolean
+    platform?: boolean
+    lastUsedAt?: boolean
+    isValid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    lastSuccessAt?: boolean
-    lastFailureAt?: boolean
-    failedCount?: boolean
-    user?: boolean | PushSubscription$userArgs<ExtArgs>
-  }, ExtArgs["result"]["pushSubscription"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["fCMToken"]>
 
-  export type PushSubscriptionSelectScalar = {
+  export type FCMTokenSelectScalar = {
     id?: boolean
-    endpoint?: boolean
-    auth?: boolean
-    p256dh?: boolean
+    token?: boolean
     userId?: boolean
+    platform?: boolean
+    lastUsedAt?: boolean
+    isValid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    lastSuccessAt?: boolean
-    lastFailureAt?: boolean
-    failedCount?: boolean
   }
 
-  export type PushSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "endpoint" | "auth" | "p256dh" | "userId" | "createdAt" | "updatedAt" | "lastSuccessAt" | "lastFailureAt" | "failedCount", ExtArgs["result"]["pushSubscription"]>
-  export type PushSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | PushSubscription$userArgs<ExtArgs>
+  export type FCMTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "token" | "userId" | "platform" | "lastUsedAt" | "isValid" | "createdAt" | "updatedAt", ExtArgs["result"]["fCMToken"]>
+  export type FCMTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type PushSubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | PushSubscription$userArgs<ExtArgs>
+  export type FCMTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type PushSubscriptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | PushSubscription$userArgs<ExtArgs>
+  export type FCMTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $PushSubscriptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "PushSubscription"
+  export type $FCMTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FCMToken"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs> | null
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      endpoint: string
-      auth: string
-      p256dh: string
-      userId: string | null
+      token: string
+      userId: string
+      platform: string | null
+      lastUsedAt: Date | null
+      isValid: boolean
       createdAt: Date
       updatedAt: Date
-      lastSuccessAt: Date | null
-      lastFailureAt: Date | null
-      failedCount: number
-    }, ExtArgs["result"]["pushSubscription"]>
+    }, ExtArgs["result"]["fCMToken"]>
     composites: {}
   }
 
-  type PushSubscriptionGetPayload<S extends boolean | null | undefined | PushSubscriptionDefaultArgs> = $Result.GetResult<Prisma.$PushSubscriptionPayload, S>
+  type FCMTokenGetPayload<S extends boolean | null | undefined | FCMTokenDefaultArgs> = $Result.GetResult<Prisma.$FCMTokenPayload, S>
 
-  type PushSubscriptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<PushSubscriptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: PushSubscriptionCountAggregateInputType | true
+  type FCMTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FCMTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FCMTokenCountAggregateInputType | true
     }
 
-  export interface PushSubscriptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PushSubscription'], meta: { name: 'PushSubscription' } }
+  export interface FCMTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FCMToken'], meta: { name: 'FCMToken' } }
     /**
-     * Find zero or one PushSubscription that matches the filter.
-     * @param {PushSubscriptionFindUniqueArgs} args - Arguments to find a PushSubscription
+     * Find zero or one FCMToken that matches the filter.
+     * @param {FCMTokenFindUniqueArgs} args - Arguments to find a FCMToken
      * @example
-     * // Get one PushSubscription
-     * const pushSubscription = await prisma.pushSubscription.findUnique({
+     * // Get one FCMToken
+     * const fCMToken = await prisma.fCMToken.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends PushSubscriptionFindUniqueArgs>(args: SelectSubset<T, PushSubscriptionFindUniqueArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends FCMTokenFindUniqueArgs>(args: SelectSubset<T, FCMTokenFindUniqueArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one PushSubscription that matches the filter or throw an error with `error.code='P2025'`
+     * Find one FCMToken that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {PushSubscriptionFindUniqueOrThrowArgs} args - Arguments to find a PushSubscription
+     * @param {FCMTokenFindUniqueOrThrowArgs} args - Arguments to find a FCMToken
      * @example
-     * // Get one PushSubscription
-     * const pushSubscription = await prisma.pushSubscription.findUniqueOrThrow({
+     * // Get one FCMToken
+     * const fCMToken = await prisma.fCMToken.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends PushSubscriptionFindUniqueOrThrowArgs>(args: SelectSubset<T, PushSubscriptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends FCMTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, FCMTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first PushSubscription that matches the filter.
+     * Find the first FCMToken that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionFindFirstArgs} args - Arguments to find a PushSubscription
+     * @param {FCMTokenFindFirstArgs} args - Arguments to find a FCMToken
      * @example
-     * // Get one PushSubscription
-     * const pushSubscription = await prisma.pushSubscription.findFirst({
+     * // Get one FCMToken
+     * const fCMToken = await prisma.fCMToken.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends PushSubscriptionFindFirstArgs>(args?: SelectSubset<T, PushSubscriptionFindFirstArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends FCMTokenFindFirstArgs>(args?: SelectSubset<T, FCMTokenFindFirstArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first PushSubscription that matches the filter or
+     * Find the first FCMToken that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionFindFirstOrThrowArgs} args - Arguments to find a PushSubscription
+     * @param {FCMTokenFindFirstOrThrowArgs} args - Arguments to find a FCMToken
      * @example
-     * // Get one PushSubscription
-     * const pushSubscription = await prisma.pushSubscription.findFirstOrThrow({
+     * // Get one FCMToken
+     * const fCMToken = await prisma.fCMToken.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends PushSubscriptionFindFirstOrThrowArgs>(args?: SelectSubset<T, PushSubscriptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends FCMTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, FCMTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more PushSubscriptions that matches the filter.
+     * Find zero or more FCMTokens that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {FCMTokenFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all PushSubscriptions
-     * const pushSubscriptions = await prisma.pushSubscription.findMany()
+     * // Get all FCMTokens
+     * const fCMTokens = await prisma.fCMToken.findMany()
      * 
-     * // Get first 10 PushSubscriptions
-     * const pushSubscriptions = await prisma.pushSubscription.findMany({ take: 10 })
+     * // Get first 10 FCMTokens
+     * const fCMTokens = await prisma.fCMToken.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const pushSubscriptionWithIdOnly = await prisma.pushSubscription.findMany({ select: { id: true } })
+     * const fCMTokenWithIdOnly = await prisma.fCMToken.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends PushSubscriptionFindManyArgs>(args?: SelectSubset<T, PushSubscriptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends FCMTokenFindManyArgs>(args?: SelectSubset<T, FCMTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a PushSubscription.
-     * @param {PushSubscriptionCreateArgs} args - Arguments to create a PushSubscription.
+     * Create a FCMToken.
+     * @param {FCMTokenCreateArgs} args - Arguments to create a FCMToken.
      * @example
-     * // Create one PushSubscription
-     * const PushSubscription = await prisma.pushSubscription.create({
+     * // Create one FCMToken
+     * const FCMToken = await prisma.fCMToken.create({
      *   data: {
-     *     // ... data to create a PushSubscription
+     *     // ... data to create a FCMToken
      *   }
      * })
      * 
      */
-    create<T extends PushSubscriptionCreateArgs>(args: SelectSubset<T, PushSubscriptionCreateArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends FCMTokenCreateArgs>(args: SelectSubset<T, FCMTokenCreateArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many PushSubscriptions.
-     * @param {PushSubscriptionCreateManyArgs} args - Arguments to create many PushSubscriptions.
+     * Create many FCMTokens.
+     * @param {FCMTokenCreateManyArgs} args - Arguments to create many FCMTokens.
      * @example
-     * // Create many PushSubscriptions
-     * const pushSubscription = await prisma.pushSubscription.createMany({
+     * // Create many FCMTokens
+     * const fCMToken = await prisma.fCMToken.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends PushSubscriptionCreateManyArgs>(args?: SelectSubset<T, PushSubscriptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends FCMTokenCreateManyArgs>(args?: SelectSubset<T, FCMTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many PushSubscriptions and returns the data saved in the database.
-     * @param {PushSubscriptionCreateManyAndReturnArgs} args - Arguments to create many PushSubscriptions.
+     * Create many FCMTokens and returns the data saved in the database.
+     * @param {FCMTokenCreateManyAndReturnArgs} args - Arguments to create many FCMTokens.
      * @example
-     * // Create many PushSubscriptions
-     * const pushSubscription = await prisma.pushSubscription.createManyAndReturn({
+     * // Create many FCMTokens
+     * const fCMToken = await prisma.fCMToken.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many PushSubscriptions and only return the `id`
-     * const pushSubscriptionWithIdOnly = await prisma.pushSubscription.createManyAndReturn({
+     * // Create many FCMTokens and only return the `id`
+     * const fCMTokenWithIdOnly = await prisma.fCMToken.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -46327,28 +46219,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends PushSubscriptionCreateManyAndReturnArgs>(args?: SelectSubset<T, PushSubscriptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends FCMTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, FCMTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a PushSubscription.
-     * @param {PushSubscriptionDeleteArgs} args - Arguments to delete one PushSubscription.
+     * Delete a FCMToken.
+     * @param {FCMTokenDeleteArgs} args - Arguments to delete one FCMToken.
      * @example
-     * // Delete one PushSubscription
-     * const PushSubscription = await prisma.pushSubscription.delete({
+     * // Delete one FCMToken
+     * const FCMToken = await prisma.fCMToken.delete({
      *   where: {
-     *     // ... filter to delete one PushSubscription
+     *     // ... filter to delete one FCMToken
      *   }
      * })
      * 
      */
-    delete<T extends PushSubscriptionDeleteArgs>(args: SelectSubset<T, PushSubscriptionDeleteArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends FCMTokenDeleteArgs>(args: SelectSubset<T, FCMTokenDeleteArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one PushSubscription.
-     * @param {PushSubscriptionUpdateArgs} args - Arguments to update one PushSubscription.
+     * Update one FCMToken.
+     * @param {FCMTokenUpdateArgs} args - Arguments to update one FCMToken.
      * @example
-     * // Update one PushSubscription
-     * const pushSubscription = await prisma.pushSubscription.update({
+     * // Update one FCMToken
+     * const fCMToken = await prisma.fCMToken.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -46358,30 +46250,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends PushSubscriptionUpdateArgs>(args: SelectSubset<T, PushSubscriptionUpdateArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends FCMTokenUpdateArgs>(args: SelectSubset<T, FCMTokenUpdateArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more PushSubscriptions.
-     * @param {PushSubscriptionDeleteManyArgs} args - Arguments to filter PushSubscriptions to delete.
+     * Delete zero or more FCMTokens.
+     * @param {FCMTokenDeleteManyArgs} args - Arguments to filter FCMTokens to delete.
      * @example
-     * // Delete a few PushSubscriptions
-     * const { count } = await prisma.pushSubscription.deleteMany({
+     * // Delete a few FCMTokens
+     * const { count } = await prisma.fCMToken.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends PushSubscriptionDeleteManyArgs>(args?: SelectSubset<T, PushSubscriptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends FCMTokenDeleteManyArgs>(args?: SelectSubset<T, FCMTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more PushSubscriptions.
+     * Update zero or more FCMTokens.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {FCMTokenUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many PushSubscriptions
-     * const pushSubscription = await prisma.pushSubscription.updateMany({
+     * // Update many FCMTokens
+     * const fCMToken = await prisma.fCMToken.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -46391,14 +46283,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends PushSubscriptionUpdateManyArgs>(args: SelectSubset<T, PushSubscriptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends FCMTokenUpdateManyArgs>(args: SelectSubset<T, FCMTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more PushSubscriptions and returns the data updated in the database.
-     * @param {PushSubscriptionUpdateManyAndReturnArgs} args - Arguments to update many PushSubscriptions.
+     * Update zero or more FCMTokens and returns the data updated in the database.
+     * @param {FCMTokenUpdateManyAndReturnArgs} args - Arguments to update many FCMTokens.
      * @example
-     * // Update many PushSubscriptions
-     * const pushSubscription = await prisma.pushSubscription.updateManyAndReturn({
+     * // Update many FCMTokens
+     * const fCMToken = await prisma.fCMToken.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -46407,8 +46299,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more PushSubscriptions and only return the `id`
-     * const pushSubscriptionWithIdOnly = await prisma.pushSubscription.updateManyAndReturn({
+     * // Update zero or more FCMTokens and only return the `id`
+     * const fCMTokenWithIdOnly = await prisma.fCMToken.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -46421,56 +46313,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends PushSubscriptionUpdateManyAndReturnArgs>(args: SelectSubset<T, PushSubscriptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends FCMTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, FCMTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one PushSubscription.
-     * @param {PushSubscriptionUpsertArgs} args - Arguments to update or create a PushSubscription.
+     * Create or update one FCMToken.
+     * @param {FCMTokenUpsertArgs} args - Arguments to update or create a FCMToken.
      * @example
-     * // Update or create a PushSubscription
-     * const pushSubscription = await prisma.pushSubscription.upsert({
+     * // Update or create a FCMToken
+     * const fCMToken = await prisma.fCMToken.upsert({
      *   create: {
-     *     // ... data to create a PushSubscription
+     *     // ... data to create a FCMToken
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the PushSubscription we want to update
+     *     // ... the filter for the FCMToken we want to update
      *   }
      * })
      */
-    upsert<T extends PushSubscriptionUpsertArgs>(args: SelectSubset<T, PushSubscriptionUpsertArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends FCMTokenUpsertArgs>(args: SelectSubset<T, FCMTokenUpsertArgs<ExtArgs>>): Prisma__FCMTokenClient<$Result.GetResult<Prisma.$FCMTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of PushSubscriptions.
+     * Count the number of FCMTokens.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionCountArgs} args - Arguments to filter PushSubscriptions to count.
+     * @param {FCMTokenCountArgs} args - Arguments to filter FCMTokens to count.
      * @example
-     * // Count the number of PushSubscriptions
-     * const count = await prisma.pushSubscription.count({
+     * // Count the number of FCMTokens
+     * const count = await prisma.fCMToken.count({
      *   where: {
-     *     // ... the filter for the PushSubscriptions we want to count
+     *     // ... the filter for the FCMTokens we want to count
      *   }
      * })
     **/
-    count<T extends PushSubscriptionCountArgs>(
-      args?: Subset<T, PushSubscriptionCountArgs>,
+    count<T extends FCMTokenCountArgs>(
+      args?: Subset<T, FCMTokenCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], PushSubscriptionCountAggregateOutputType>
+          : GetScalarType<T['select'], FCMTokenCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a PushSubscription.
+     * Allows you to perform aggregations operations on a FCMToken.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {FCMTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -46490,13 +46382,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends PushSubscriptionAggregateArgs>(args: Subset<T, PushSubscriptionAggregateArgs>): Prisma.PrismaPromise<GetPushSubscriptionAggregateType<T>>
+    aggregate<T extends FCMTokenAggregateArgs>(args: Subset<T, FCMTokenAggregateArgs>): Prisma.PrismaPromise<GetFCMTokenAggregateType<T>>
 
     /**
-     * Group by PushSubscription.
+     * Group by FCMToken.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {PushSubscriptionGroupByArgs} args - Group by arguments.
+     * @param {FCMTokenGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -46511,14 +46403,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends PushSubscriptionGroupByArgs,
+      T extends FCMTokenGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: PushSubscriptionGroupByArgs['orderBy'] }
-        : { orderBy?: PushSubscriptionGroupByArgs['orderBy'] },
+        ? { orderBy: FCMTokenGroupByArgs['orderBy'] }
+        : { orderBy?: FCMTokenGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -46567,22 +46459,22 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, PushSubscriptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPushSubscriptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, FCMTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFCMTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the PushSubscription model
+   * Fields of the FCMToken model
    */
-  readonly fields: PushSubscriptionFieldRefs;
+  readonly fields: FCMTokenFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for PushSubscription.
+   * The delegate class that acts as a "Promise-like" for FCMToken.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__PushSubscriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__FCMTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends PushSubscription$userArgs<ExtArgs> = {}>(args?: Subset<T, PushSubscription$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -46609,449 +46501,428 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the PushSubscription model
+   * Fields of the FCMToken model
    */
-  interface PushSubscriptionFieldRefs {
-    readonly id: FieldRef<"PushSubscription", 'String'>
-    readonly endpoint: FieldRef<"PushSubscription", 'String'>
-    readonly auth: FieldRef<"PushSubscription", 'String'>
-    readonly p256dh: FieldRef<"PushSubscription", 'String'>
-    readonly userId: FieldRef<"PushSubscription", 'String'>
-    readonly createdAt: FieldRef<"PushSubscription", 'DateTime'>
-    readonly updatedAt: FieldRef<"PushSubscription", 'DateTime'>
-    readonly lastSuccessAt: FieldRef<"PushSubscription", 'DateTime'>
-    readonly lastFailureAt: FieldRef<"PushSubscription", 'DateTime'>
-    readonly failedCount: FieldRef<"PushSubscription", 'Int'>
+  interface FCMTokenFieldRefs {
+    readonly id: FieldRef<"FCMToken", 'String'>
+    readonly token: FieldRef<"FCMToken", 'String'>
+    readonly userId: FieldRef<"FCMToken", 'String'>
+    readonly platform: FieldRef<"FCMToken", 'String'>
+    readonly lastUsedAt: FieldRef<"FCMToken", 'DateTime'>
+    readonly isValid: FieldRef<"FCMToken", 'Boolean'>
+    readonly createdAt: FieldRef<"FCMToken", 'DateTime'>
+    readonly updatedAt: FieldRef<"FCMToken", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * PushSubscription findUnique
+   * FCMToken findUnique
    */
-  export type PushSubscriptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * Filter, which PushSubscription to fetch.
+     * Filter, which FCMToken to fetch.
      */
-    where: PushSubscriptionWhereUniqueInput
+    where: FCMTokenWhereUniqueInput
   }
 
   /**
-   * PushSubscription findUniqueOrThrow
+   * FCMToken findUniqueOrThrow
    */
-  export type PushSubscriptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * Filter, which PushSubscription to fetch.
+     * Filter, which FCMToken to fetch.
      */
-    where: PushSubscriptionWhereUniqueInput
+    where: FCMTokenWhereUniqueInput
   }
 
   /**
-   * PushSubscription findFirst
+   * FCMToken findFirst
    */
-  export type PushSubscriptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * Filter, which PushSubscription to fetch.
+     * Filter, which FCMToken to fetch.
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of PushSubscriptions to fetch.
+     * Determine the order of FCMTokens to fetch.
      */
-    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    orderBy?: FCMTokenOrderByWithRelationInput | FCMTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for PushSubscriptions.
+     * Sets the position for searching for FCMTokens.
      */
-    cursor?: PushSubscriptionWhereUniqueInput
+    cursor?: FCMTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` PushSubscriptions from the position of the cursor.
+     * Take `±n` FCMTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` PushSubscriptions.
+     * Skip the first `n` FCMTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of PushSubscriptions.
+     * Filter by unique combinations of FCMTokens.
      */
-    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+    distinct?: FCMTokenScalarFieldEnum | FCMTokenScalarFieldEnum[]
   }
 
   /**
-   * PushSubscription findFirstOrThrow
+   * FCMToken findFirstOrThrow
    */
-  export type PushSubscriptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * Filter, which PushSubscription to fetch.
+     * Filter, which FCMToken to fetch.
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of PushSubscriptions to fetch.
+     * Determine the order of FCMTokens to fetch.
      */
-    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    orderBy?: FCMTokenOrderByWithRelationInput | FCMTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for PushSubscriptions.
+     * Sets the position for searching for FCMTokens.
      */
-    cursor?: PushSubscriptionWhereUniqueInput
+    cursor?: FCMTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` PushSubscriptions from the position of the cursor.
+     * Take `±n` FCMTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` PushSubscriptions.
+     * Skip the first `n` FCMTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of PushSubscriptions.
+     * Filter by unique combinations of FCMTokens.
      */
-    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+    distinct?: FCMTokenScalarFieldEnum | FCMTokenScalarFieldEnum[]
   }
 
   /**
-   * PushSubscription findMany
+   * FCMToken findMany
    */
-  export type PushSubscriptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * Filter, which PushSubscriptions to fetch.
+     * Filter, which FCMTokens to fetch.
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of PushSubscriptions to fetch.
+     * Determine the order of FCMTokens to fetch.
      */
-    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    orderBy?: FCMTokenOrderByWithRelationInput | FCMTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing PushSubscriptions.
+     * Sets the position for listing FCMTokens.
      */
-    cursor?: PushSubscriptionWhereUniqueInput
+    cursor?: FCMTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` PushSubscriptions from the position of the cursor.
+     * Take `±n` FCMTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` PushSubscriptions.
+     * Skip the first `n` FCMTokens.
      */
     skip?: number
-    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+    distinct?: FCMTokenScalarFieldEnum | FCMTokenScalarFieldEnum[]
   }
 
   /**
-   * PushSubscription create
+   * FCMToken create
    */
-  export type PushSubscriptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * The data needed to create a PushSubscription.
+     * The data needed to create a FCMToken.
      */
-    data: XOR<PushSubscriptionCreateInput, PushSubscriptionUncheckedCreateInput>
+    data: XOR<FCMTokenCreateInput, FCMTokenUncheckedCreateInput>
   }
 
   /**
-   * PushSubscription createMany
+   * FCMToken createMany
    */
-  export type PushSubscriptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many PushSubscriptions.
+     * The data used to create many FCMTokens.
      */
-    data: PushSubscriptionCreateManyInput | PushSubscriptionCreateManyInput[]
+    data: FCMTokenCreateManyInput | FCMTokenCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * PushSubscription createManyAndReturn
+   * FCMToken createManyAndReturn
    */
-  export type PushSubscriptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelectCreateManyAndReturn<ExtArgs> | null
+    select?: FCMTokenSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
-     * The data used to create many PushSubscriptions.
+     * The data used to create many FCMTokens.
      */
-    data: PushSubscriptionCreateManyInput | PushSubscriptionCreateManyInput[]
+    data: FCMTokenCreateManyInput | FCMTokenCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: FCMTokenIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * PushSubscription update
+   * FCMToken update
    */
-  export type PushSubscriptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * The data needed to update a PushSubscription.
+     * The data needed to update a FCMToken.
      */
-    data: XOR<PushSubscriptionUpdateInput, PushSubscriptionUncheckedUpdateInput>
+    data: XOR<FCMTokenUpdateInput, FCMTokenUncheckedUpdateInput>
     /**
-     * Choose, which PushSubscription to update.
+     * Choose, which FCMToken to update.
      */
-    where: PushSubscriptionWhereUniqueInput
+    where: FCMTokenWhereUniqueInput
   }
 
   /**
-   * PushSubscription updateMany
+   * FCMToken updateMany
    */
-  export type PushSubscriptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update PushSubscriptions.
+     * The data used to update FCMTokens.
      */
-    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyInput>
+    data: XOR<FCMTokenUpdateManyMutationInput, FCMTokenUncheckedUpdateManyInput>
     /**
-     * Filter which PushSubscriptions to update
+     * Filter which FCMTokens to update
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
-     * Limit how many PushSubscriptions to update.
+     * Limit how many FCMTokens to update.
      */
     limit?: number
   }
 
   /**
-   * PushSubscription updateManyAndReturn
+   * FCMToken updateManyAndReturn
    */
-  export type PushSubscriptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: FCMTokenSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
-     * The data used to update PushSubscriptions.
+     * The data used to update FCMTokens.
      */
-    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyInput>
+    data: XOR<FCMTokenUpdateManyMutationInput, FCMTokenUncheckedUpdateManyInput>
     /**
-     * Filter which PushSubscriptions to update
+     * Filter which FCMTokens to update
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
-     * Limit how many PushSubscriptions to update.
+     * Limit how many FCMTokens to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: FCMTokenIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * PushSubscription upsert
+   * FCMToken upsert
    */
-  export type PushSubscriptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * The filter to search for the PushSubscription to update in case it exists.
+     * The filter to search for the FCMToken to update in case it exists.
      */
-    where: PushSubscriptionWhereUniqueInput
+    where: FCMTokenWhereUniqueInput
     /**
-     * In case the PushSubscription found by the `where` argument doesn't exist, create a new PushSubscription with this data.
+     * In case the FCMToken found by the `where` argument doesn't exist, create a new FCMToken with this data.
      */
-    create: XOR<PushSubscriptionCreateInput, PushSubscriptionUncheckedCreateInput>
+    create: XOR<FCMTokenCreateInput, FCMTokenUncheckedCreateInput>
     /**
-     * In case the PushSubscription was found with the provided `where` argument, update it with this data.
+     * In case the FCMToken was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<PushSubscriptionUpdateInput, PushSubscriptionUncheckedUpdateInput>
+    update: XOR<FCMTokenUpdateInput, FCMTokenUncheckedUpdateInput>
   }
 
   /**
-   * PushSubscription delete
+   * FCMToken delete
    */
-  export type PushSubscriptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the PushSubscription
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: PushSubscriptionSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the PushSubscription
+     * Omit specific fields from the FCMToken
      */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
     /**
-     * Filter which PushSubscription to delete.
+     * Filter which FCMToken to delete.
      */
-    where: PushSubscriptionWhereUniqueInput
+    where: FCMTokenWhereUniqueInput
   }
 
   /**
-   * PushSubscription deleteMany
+   * FCMToken deleteMany
    */
-  export type PushSubscriptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which PushSubscriptions to delete
+     * Filter which FCMTokens to delete
      */
-    where?: PushSubscriptionWhereInput
+    where?: FCMTokenWhereInput
     /**
-     * Limit how many PushSubscriptions to delete.
+     * Limit how many FCMTokens to delete.
      */
     limit?: number
   }
 
   /**
-   * PushSubscription.user
+   * FCMToken without action
    */
-  export type PushSubscription$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FCMTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the FCMToken
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: FCMTokenSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the User
+     * Omit specific fields from the FCMToken
      */
-    omit?: UserOmit<ExtArgs> | null
+    omit?: FCMTokenOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-  }
-
-  /**
-   * PushSubscription without action
-   */
-  export type PushSubscriptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PushSubscription
-     */
-    select?: PushSubscriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PushSubscription
-     */
-    omit?: PushSubscriptionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PushSubscriptionInclude<ExtArgs> | null
+    include?: FCMTokenInclude<ExtArgs> | null
   }
 
 
@@ -47069,9 +46940,6 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     topic: string | null
-    inApp: boolean | null
-    push: boolean | null
-    frequency: $Enums.Frequency | null
     createdAt: Date | null
   }
 
@@ -47079,9 +46947,6 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     topic: string | null
-    inApp: boolean | null
-    push: boolean | null
-    frequency: $Enums.Frequency | null
     createdAt: Date | null
   }
 
@@ -47089,9 +46954,6 @@ export namespace Prisma {
     id: number
     userId: number
     topic: number
-    inApp: number
-    push: number
-    frequency: number
     createdAt: number
     _all: number
   }
@@ -47101,9 +46963,6 @@ export namespace Prisma {
     id?: true
     userId?: true
     topic?: true
-    inApp?: true
-    push?: true
-    frequency?: true
     createdAt?: true
   }
 
@@ -47111,9 +46970,6 @@ export namespace Prisma {
     id?: true
     userId?: true
     topic?: true
-    inApp?: true
-    push?: true
-    frequency?: true
     createdAt?: true
   }
 
@@ -47121,9 +46977,6 @@ export namespace Prisma {
     id?: true
     userId?: true
     topic?: true
-    inApp?: true
-    push?: true
-    frequency?: true
     createdAt?: true
     _all?: true
   }
@@ -47204,9 +47057,6 @@ export namespace Prisma {
     id: string
     userId: string
     topic: string
-    inApp: boolean
-    push: boolean
-    frequency: $Enums.Frequency
     createdAt: Date
     _count: TopicSubscriptionCountAggregateOutputType | null
     _min: TopicSubscriptionMinAggregateOutputType | null
@@ -47231,9 +47081,6 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     topic?: boolean
-    inApp?: boolean
-    push?: boolean
-    frequency?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topicSubscription"]>
@@ -47242,9 +47089,6 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     topic?: boolean
-    inApp?: boolean
-    push?: boolean
-    frequency?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topicSubscription"]>
@@ -47253,9 +47097,6 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     topic?: boolean
-    inApp?: boolean
-    push?: boolean
-    frequency?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topicSubscription"]>
@@ -47264,13 +47105,10 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     topic?: boolean
-    inApp?: boolean
-    push?: boolean
-    frequency?: boolean
     createdAt?: boolean
   }
 
-  export type TopicSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "topic" | "inApp" | "push" | "frequency" | "createdAt", ExtArgs["result"]["topicSubscription"]>
+  export type TopicSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "topic" | "createdAt", ExtArgs["result"]["topicSubscription"]>
   export type TopicSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -47290,9 +47128,6 @@ export namespace Prisma {
       id: string
       userId: string
       topic: string
-      inApp: boolean
-      push: boolean
-      frequency: $Enums.Frequency
       createdAt: Date
     }, ExtArgs["result"]["topicSubscription"]>
     composites: {}
@@ -47721,9 +47556,6 @@ export namespace Prisma {
     readonly id: FieldRef<"TopicSubscription", 'String'>
     readonly userId: FieldRef<"TopicSubscription", 'String'>
     readonly topic: FieldRef<"TopicSubscription", 'String'>
-    readonly inApp: FieldRef<"TopicSubscription", 'Boolean'>
-    readonly push: FieldRef<"TopicSubscription", 'Boolean'>
-    readonly frequency: FieldRef<"TopicSubscription", 'Frequency'>
     readonly createdAt: FieldRef<"TopicSubscription", 'DateTime'>
   }
     
@@ -48161,7 +47993,6 @@ export namespace Prisma {
 
   export type NotificationMinAggregateOutputType = {
     id: string | null
-    userId: string | null
     topic: string | null
     title: string | null
     body: string | null
@@ -48174,7 +48005,6 @@ export namespace Prisma {
 
   export type NotificationMaxAggregateOutputType = {
     id: string | null
-    userId: string | null
     topic: string | null
     title: string | null
     body: string | null
@@ -48187,7 +48017,6 @@ export namespace Prisma {
 
   export type NotificationCountAggregateOutputType = {
     id: number
-    userId: number
     topic: number
     title: number
     body: number
@@ -48211,7 +48040,6 @@ export namespace Prisma {
 
   export type NotificationMinAggregateInputType = {
     id?: true
-    userId?: true
     topic?: true
     title?: true
     body?: true
@@ -48224,7 +48052,6 @@ export namespace Prisma {
 
   export type NotificationMaxAggregateInputType = {
     id?: true
-    userId?: true
     topic?: true
     title?: true
     body?: true
@@ -48237,7 +48064,6 @@ export namespace Prisma {
 
   export type NotificationCountAggregateInputType = {
     id?: true
-    userId?: true
     topic?: true
     title?: true
     body?: true
@@ -48338,7 +48164,6 @@ export namespace Prisma {
 
   export type NotificationGroupByOutputType = {
     id: string
-    userId: string
     topic: string
     title: string
     body: string | null
@@ -48371,7 +48196,6 @@ export namespace Prisma {
 
   export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     topic?: boolean
     title?: boolean
     body?: boolean
@@ -48381,12 +48205,10 @@ export namespace Prisma {
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     topic?: boolean
     title?: boolean
     body?: boolean
@@ -48396,12 +48218,10 @@ export namespace Prisma {
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     topic?: boolean
     title?: boolean
     body?: boolean
@@ -48411,12 +48231,10 @@ export namespace Prisma {
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectScalar = {
     id?: boolean
-    userId?: boolean
     topic?: boolean
     title?: boolean
     body?: boolean
@@ -48428,25 +48246,13 @@ export namespace Prisma {
     readAt?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "topic" | "title" | "body" | "url" | "metadata" | "createdAt" | "pushedAt" | "pushAttempts" | "readAt", ExtArgs["result"]["notification"]>
-  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "title" | "body" | "url" | "metadata" | "createdAt" | "pushedAt" | "pushAttempts" | "readAt", ExtArgs["result"]["notification"]>
 
   export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Notification"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: string
       topic: string
       title: string
       body: string | null
@@ -48850,7 +48656,6 @@ export namespace Prisma {
    */
   export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -48881,7 +48686,6 @@ export namespace Prisma {
    */
   interface NotificationFieldRefs {
     readonly id: FieldRef<"Notification", 'String'>
-    readonly userId: FieldRef<"Notification", 'String'>
     readonly topic: FieldRef<"Notification", 'String'>
     readonly title: FieldRef<"Notification", 'String'>
     readonly body: FieldRef<"Notification", 'String'>
@@ -48908,10 +48712,6 @@ export namespace Prisma {
      */
     omit?: NotificationOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notification to fetch.
      */
     where: NotificationWhereUniqueInput
@@ -48930,10 +48730,6 @@ export namespace Prisma {
      */
     omit?: NotificationOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notification to fetch.
      */
     where: NotificationWhereUniqueInput
@@ -48951,10 +48747,6 @@ export namespace Prisma {
      * Omit specific fields from the Notification
      */
     omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * Filter, which Notification to fetch.
      */
@@ -49004,10 +48796,6 @@ export namespace Prisma {
      */
     omit?: NotificationOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notification to fetch.
      */
     where?: NotificationWhereInput
@@ -49056,10 +48844,6 @@ export namespace Prisma {
      */
     omit?: NotificationOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notifications to fetch.
      */
     where?: NotificationWhereInput
@@ -49103,10 +48887,6 @@ export namespace Prisma {
      */
     omit?: NotificationOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * The data needed to create a Notification.
      */
     data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
@@ -49140,10 +48920,6 @@ export namespace Prisma {
      */
     data: NotificationCreateManyInput | NotificationCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -49158,10 +48934,6 @@ export namespace Prisma {
      * Omit specific fields from the Notification
      */
     omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * The data needed to update a Notification.
      */
@@ -49214,10 +48986,6 @@ export namespace Prisma {
      * Limit how many Notifications to update.
      */
     limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -49232,10 +49000,6 @@ export namespace Prisma {
      * Omit specific fields from the Notification
      */
     omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * The filter to search for the Notification to update in case it exists.
      */
@@ -49262,10 +49026,6 @@ export namespace Prisma {
      * Omit specific fields from the Notification
      */
     omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * Filter which Notification to delete.
      */
@@ -49298,10 +49058,6 @@ export namespace Prisma {
      * Omit specific fields from the Notification
      */
     omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
   }
 
 
@@ -49834,29 +49590,24 @@ export namespace Prisma {
   export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
-  export const PushSubscriptionScalarFieldEnum: {
+  export const FCMTokenScalarFieldEnum: {
     id: 'id',
-    endpoint: 'endpoint',
-    auth: 'auth',
-    p256dh: 'p256dh',
+    token: 'token',
     userId: 'userId',
+    platform: 'platform',
+    lastUsedAt: 'lastUsedAt',
+    isValid: 'isValid',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    lastSuccessAt: 'lastSuccessAt',
-    lastFailureAt: 'lastFailureAt',
-    failedCount: 'failedCount'
+    updatedAt: 'updatedAt'
   };
 
-  export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
+  export type FCMTokenScalarFieldEnum = (typeof FCMTokenScalarFieldEnum)[keyof typeof FCMTokenScalarFieldEnum]
 
 
   export const TopicSubscriptionScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
     topic: 'topic',
-    inApp: 'inApp',
-    push: 'push',
-    frequency: 'frequency',
     createdAt: 'createdAt'
   };
 
@@ -49865,7 +49616,6 @@ export namespace Prisma {
 
   export const NotificationScalarFieldEnum: {
     id: 'id',
-    userId: 'userId',
     topic: 'topic',
     title: 'title',
     body: 'body',
@@ -50259,20 +50009,6 @@ export namespace Prisma {
    * Reference to a field of type 'Permission[]'
    */
   export type ListEnumPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Permission[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Frequency'
-   */
-  export type EnumFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Frequency'>
-    
-
-
-  /**
-   * Reference to a field of type 'Frequency[]'
-   */
-  export type ListEnumFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Frequency[]'>
     
   /**
    * Deep Input Types
@@ -52634,9 +52370,8 @@ export namespace Prisma {
     Company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     UserSettings?: XOR<UserSettingsNullableScalarRelationFilter, UserSettingsWhereInput> | null
     Crews?: CrewListRelationFilter
-    pushSubscriptions?: PushSubscriptionListRelationFilter
     topicSubscriptions?: TopicSubscriptionListRelationFilter
-    notifications?: NotificationListRelationFilter
+    FCMToken?: FCMTokenListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -52677,9 +52412,8 @@ export namespace Prisma {
     Company?: CompanyOrderByWithRelationInput
     UserSettings?: UserSettingsOrderByWithRelationInput
     Crews?: CrewOrderByRelationAggregateInput
-    pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
     topicSubscriptions?: TopicSubscriptionOrderByRelationAggregateInput
-    notifications?: NotificationOrderByRelationAggregateInput
+    FCMToken?: FCMTokenOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -52724,9 +52458,8 @@ export namespace Prisma {
     Company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     UserSettings?: XOR<UserSettingsNullableScalarRelationFilter, UserSettingsWhereInput> | null
     Crews?: CrewListRelationFilter
-    pushSubscriptions?: PushSubscriptionListRelationFilter
     topicSubscriptions?: TopicSubscriptionListRelationFilter
-    notifications?: NotificationListRelationFilter
+    FCMToken?: FCMTokenListRelationFilter
   }, "id" | "username" | "email" | "firstName_lastName_username">
 
   export type UserOrderByWithAggregationInput = {
@@ -53104,86 +52837,74 @@ export namespace Prisma {
     country?: StringWithAggregatesFilter<"Address"> | string
   }
 
-  export type PushSubscriptionWhereInput = {
-    AND?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
-    OR?: PushSubscriptionWhereInput[]
-    NOT?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
-    id?: StringFilter<"PushSubscription"> | string
-    endpoint?: StringFilter<"PushSubscription"> | string
-    auth?: StringFilter<"PushSubscription"> | string
-    p256dh?: StringFilter<"PushSubscription"> | string
-    userId?: StringNullableFilter<"PushSubscription"> | string | null
-    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    updatedAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    lastSuccessAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    lastFailureAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    failedCount?: IntFilter<"PushSubscription"> | number
-    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  export type FCMTokenWhereInput = {
+    AND?: FCMTokenWhereInput | FCMTokenWhereInput[]
+    OR?: FCMTokenWhereInput[]
+    NOT?: FCMTokenWhereInput | FCMTokenWhereInput[]
+    id?: StringFilter<"FCMToken"> | string
+    token?: StringFilter<"FCMToken"> | string
+    userId?: StringFilter<"FCMToken"> | string
+    platform?: StringNullableFilter<"FCMToken"> | string | null
+    lastUsedAt?: DateTimeNullableFilter<"FCMToken"> | Date | string | null
+    isValid?: BoolFilter<"FCMToken"> | boolean
+    createdAt?: DateTimeFilter<"FCMToken"> | Date | string
+    updatedAt?: DateTimeFilter<"FCMToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
-  export type PushSubscriptionOrderByWithRelationInput = {
+  export type FCMTokenOrderByWithRelationInput = {
     id?: SortOrder
-    endpoint?: SortOrder
-    auth?: SortOrder
-    p256dh?: SortOrder
-    userId?: SortOrderInput | SortOrder
+    token?: SortOrder
+    userId?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    isValid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    lastSuccessAt?: SortOrderInput | SortOrder
-    lastFailureAt?: SortOrderInput | SortOrder
-    failedCount?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
-  export type PushSubscriptionWhereUniqueInput = Prisma.AtLeast<{
+  export type FCMTokenWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    endpoint?: string
-    AND?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
-    OR?: PushSubscriptionWhereInput[]
-    NOT?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
-    auth?: StringFilter<"PushSubscription"> | string
-    p256dh?: StringFilter<"PushSubscription"> | string
-    userId?: StringNullableFilter<"PushSubscription"> | string | null
-    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    updatedAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    lastSuccessAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    lastFailureAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    failedCount?: IntFilter<"PushSubscription"> | number
-    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-  }, "id" | "endpoint">
+    token?: string
+    AND?: FCMTokenWhereInput | FCMTokenWhereInput[]
+    OR?: FCMTokenWhereInput[]
+    NOT?: FCMTokenWhereInput | FCMTokenWhereInput[]
+    userId?: StringFilter<"FCMToken"> | string
+    platform?: StringNullableFilter<"FCMToken"> | string | null
+    lastUsedAt?: DateTimeNullableFilter<"FCMToken"> | Date | string | null
+    isValid?: BoolFilter<"FCMToken"> | boolean
+    createdAt?: DateTimeFilter<"FCMToken"> | Date | string
+    updatedAt?: DateTimeFilter<"FCMToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "token">
 
-  export type PushSubscriptionOrderByWithAggregationInput = {
+  export type FCMTokenOrderByWithAggregationInput = {
     id?: SortOrder
-    endpoint?: SortOrder
-    auth?: SortOrder
-    p256dh?: SortOrder
-    userId?: SortOrderInput | SortOrder
+    token?: SortOrder
+    userId?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    isValid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    lastSuccessAt?: SortOrderInput | SortOrder
-    lastFailureAt?: SortOrderInput | SortOrder
-    failedCount?: SortOrder
-    _count?: PushSubscriptionCountOrderByAggregateInput
-    _avg?: PushSubscriptionAvgOrderByAggregateInput
-    _max?: PushSubscriptionMaxOrderByAggregateInput
-    _min?: PushSubscriptionMinOrderByAggregateInput
-    _sum?: PushSubscriptionSumOrderByAggregateInput
+    _count?: FCMTokenCountOrderByAggregateInput
+    _max?: FCMTokenMaxOrderByAggregateInput
+    _min?: FCMTokenMinOrderByAggregateInput
   }
 
-  export type PushSubscriptionScalarWhereWithAggregatesInput = {
-    AND?: PushSubscriptionScalarWhereWithAggregatesInput | PushSubscriptionScalarWhereWithAggregatesInput[]
-    OR?: PushSubscriptionScalarWhereWithAggregatesInput[]
-    NOT?: PushSubscriptionScalarWhereWithAggregatesInput | PushSubscriptionScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"PushSubscription"> | string
-    endpoint?: StringWithAggregatesFilter<"PushSubscription"> | string
-    auth?: StringWithAggregatesFilter<"PushSubscription"> | string
-    p256dh?: StringWithAggregatesFilter<"PushSubscription"> | string
-    userId?: StringNullableWithAggregatesFilter<"PushSubscription"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"PushSubscription"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"PushSubscription"> | Date | string
-    lastSuccessAt?: DateTimeNullableWithAggregatesFilter<"PushSubscription"> | Date | string | null
-    lastFailureAt?: DateTimeNullableWithAggregatesFilter<"PushSubscription"> | Date | string | null
-    failedCount?: IntWithAggregatesFilter<"PushSubscription"> | number
+  export type FCMTokenScalarWhereWithAggregatesInput = {
+    AND?: FCMTokenScalarWhereWithAggregatesInput | FCMTokenScalarWhereWithAggregatesInput[]
+    OR?: FCMTokenScalarWhereWithAggregatesInput[]
+    NOT?: FCMTokenScalarWhereWithAggregatesInput | FCMTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FCMToken"> | string
+    token?: StringWithAggregatesFilter<"FCMToken"> | string
+    userId?: StringWithAggregatesFilter<"FCMToken"> | string
+    platform?: StringNullableWithAggregatesFilter<"FCMToken"> | string | null
+    lastUsedAt?: DateTimeNullableWithAggregatesFilter<"FCMToken"> | Date | string | null
+    isValid?: BoolWithAggregatesFilter<"FCMToken"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"FCMToken"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FCMToken"> | Date | string
   }
 
   export type TopicSubscriptionWhereInput = {
@@ -53193,9 +52914,6 @@ export namespace Prisma {
     id?: StringFilter<"TopicSubscription"> | string
     userId?: StringFilter<"TopicSubscription"> | string
     topic?: StringFilter<"TopicSubscription"> | string
-    inApp?: BoolFilter<"TopicSubscription"> | boolean
-    push?: BoolFilter<"TopicSubscription"> | boolean
-    frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
     createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -53204,9 +52922,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     topic?: SortOrder
-    inApp?: SortOrder
-    push?: SortOrder
-    frequency?: SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
   }
@@ -53219,9 +52934,6 @@ export namespace Prisma {
     NOT?: TopicSubscriptionWhereInput | TopicSubscriptionWhereInput[]
     userId?: StringFilter<"TopicSubscription"> | string
     topic?: StringFilter<"TopicSubscription"> | string
-    inApp?: BoolFilter<"TopicSubscription"> | boolean
-    push?: BoolFilter<"TopicSubscription"> | boolean
-    frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
     createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_topic">
@@ -53230,9 +52942,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     topic?: SortOrder
-    inApp?: SortOrder
-    push?: SortOrder
-    frequency?: SortOrder
     createdAt?: SortOrder
     _count?: TopicSubscriptionCountOrderByAggregateInput
     _max?: TopicSubscriptionMaxOrderByAggregateInput
@@ -53246,9 +52955,6 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"TopicSubscription"> | string
     userId?: StringWithAggregatesFilter<"TopicSubscription"> | string
     topic?: StringWithAggregatesFilter<"TopicSubscription"> | string
-    inApp?: BoolWithAggregatesFilter<"TopicSubscription"> | boolean
-    push?: BoolWithAggregatesFilter<"TopicSubscription"> | boolean
-    frequency?: EnumFrequencyWithAggregatesFilter<"TopicSubscription"> | $Enums.Frequency
     createdAt?: DateTimeWithAggregatesFilter<"TopicSubscription"> | Date | string
   }
 
@@ -53257,7 +52963,6 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: StringFilter<"Notification"> | string
-    userId?: StringFilter<"Notification"> | string
     topic?: StringFilter<"Notification"> | string
     title?: StringFilter<"Notification"> | string
     body?: StringNullableFilter<"Notification"> | string | null
@@ -53267,12 +52972,10 @@ export namespace Prisma {
     pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     pushAttempts?: IntFilter<"Notification"> | number
     readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
     title?: SortOrder
     body?: SortOrderInput | SortOrder
@@ -53282,7 +52985,6 @@ export namespace Prisma {
     pushedAt?: SortOrderInput | SortOrder
     pushAttempts?: SortOrder
     readAt?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
   }
 
   export type NotificationWhereUniqueInput = Prisma.AtLeast<{
@@ -53290,7 +52992,6 @@ export namespace Prisma {
     AND?: NotificationWhereInput | NotificationWhereInput[]
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
-    userId?: StringFilter<"Notification"> | string
     topic?: StringFilter<"Notification"> | string
     title?: StringFilter<"Notification"> | string
     body?: StringNullableFilter<"Notification"> | string | null
@@ -53300,12 +53001,10 @@ export namespace Prisma {
     pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     pushAttempts?: IntFilter<"Notification"> | number
     readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
     title?: SortOrder
     body?: SortOrderInput | SortOrder
@@ -53327,7 +53026,6 @@ export namespace Prisma {
     OR?: NotificationScalarWhereWithAggregatesInput[]
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Notification"> | string
-    userId?: StringWithAggregatesFilter<"Notification"> | string
     topic?: StringWithAggregatesFilter<"Notification"> | string
     title?: StringWithAggregatesFilter<"Notification"> | string
     body?: StringNullableWithAggregatesFilter<"Notification"> | string | null
@@ -55872,9 +55570,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -55914,9 +55611,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -55956,9 +55652,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -55998,9 +55693,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -56416,102 +56110,85 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
   }
 
-  export type PushSubscriptionCreateInput = {
+  export type FCMTokenCreateInput = {
     id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
+    token: string
+    platform?: string | null
+    lastUsedAt?: Date | string | null
+    isValid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
-    user?: UserCreateNestedOneWithoutPushSubscriptionsInput
+    user: UserCreateNestedOneWithoutFCMTokenInput
   }
 
-  export type PushSubscriptionUncheckedCreateInput = {
+  export type FCMTokenUncheckedCreateInput = {
     id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    userId?: string | null
+    token: string
+    userId: string
+    platform?: string | null
+    lastUsedAt?: Date | string | null
+    isValid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
   }
 
-  export type PushSubscriptionUpdateInput = {
+  export type FCMTokenUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneWithoutPushSubscriptionsNestedInput
+    user?: UserUpdateOneRequiredWithoutFCMTokenNestedInput
   }
 
-  export type PushSubscriptionUncheckedUpdateInput = {
+  export type FCMTokenUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    token?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
   }
 
-  export type PushSubscriptionCreateManyInput = {
+  export type FCMTokenCreateManyInput = {
     id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    userId?: string | null
+    token: string
+    userId: string
+    platform?: string | null
+    lastUsedAt?: Date | string | null
+    isValid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
   }
 
-  export type PushSubscriptionUpdateManyMutationInput = {
+  export type FCMTokenUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
   }
 
-  export type PushSubscriptionUncheckedUpdateManyInput = {
+  export type FCMTokenUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    token?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type TopicSubscriptionCreateInput = {
     id?: string
     topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutTopicSubscriptionsInput
   }
@@ -56520,18 +56197,12 @@ export namespace Prisma {
     id?: string
     userId: string
     topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
     createdAt?: Date | string
   }
 
   export type TopicSubscriptionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTopicSubscriptionsNestedInput
   }
@@ -56540,9 +56211,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -56550,18 +56218,12 @@ export namespace Prisma {
     id?: string
     userId: string
     topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
     createdAt?: Date | string
   }
 
   export type TopicSubscriptionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -56569,9 +56231,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -56586,12 +56245,10 @@ export namespace Prisma {
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
-    user: UserCreateNestedOneWithoutNotificationsInput
   }
 
   export type NotificationUncheckedCreateInput = {
     id?: string
-    userId: string
     topic: string
     title: string
     body?: string | null
@@ -56614,12 +56271,10 @@ export namespace Prisma {
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
   }
 
   export type NotificationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     body?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56633,7 +56288,6 @@ export namespace Prisma {
 
   export type NotificationCreateManyInput = {
     id?: string
-    userId: string
     topic: string
     title: string
     body?: string | null
@@ -56660,7 +56314,6 @@ export namespace Prisma {
 
   export type NotificationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     body?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58892,22 +58545,16 @@ export namespace Prisma {
     none?: CrewWhereInput
   }
 
-  export type PushSubscriptionListRelationFilter = {
-    every?: PushSubscriptionWhereInput
-    some?: PushSubscriptionWhereInput
-    none?: PushSubscriptionWhereInput
-  }
-
   export type TopicSubscriptionListRelationFilter = {
     every?: TopicSubscriptionWhereInput
     some?: TopicSubscriptionWhereInput
     none?: TopicSubscriptionWhereInput
   }
 
-  export type NotificationListRelationFilter = {
-    every?: NotificationWhereInput
-    some?: NotificationWhereInput
-    none?: NotificationWhereInput
+  export type FCMTokenListRelationFilter = {
+    every?: FCMTokenWhereInput
+    some?: FCMTokenWhereInput
+    none?: FCMTokenWhereInput
   }
 
   export type PasswordResetTokenOrderByRelationAggregateInput = {
@@ -58918,15 +58565,11 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type PushSubscriptionOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type TopicSubscriptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type NotificationOrderByRelationAggregateInput = {
+  export type FCMTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -59190,58 +58833,37 @@ export namespace Prisma {
     country?: SortOrder
   }
 
-  export type PushSubscriptionCountOrderByAggregateInput = {
+  export type FCMTokenCountOrderByAggregateInput = {
     id?: SortOrder
-    endpoint?: SortOrder
-    auth?: SortOrder
-    p256dh?: SortOrder
+    token?: SortOrder
     userId?: SortOrder
+    platform?: SortOrder
+    lastUsedAt?: SortOrder
+    isValid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    lastSuccessAt?: SortOrder
-    lastFailureAt?: SortOrder
-    failedCount?: SortOrder
   }
 
-  export type PushSubscriptionAvgOrderByAggregateInput = {
-    failedCount?: SortOrder
-  }
-
-  export type PushSubscriptionMaxOrderByAggregateInput = {
+  export type FCMTokenMaxOrderByAggregateInput = {
     id?: SortOrder
-    endpoint?: SortOrder
-    auth?: SortOrder
-    p256dh?: SortOrder
+    token?: SortOrder
     userId?: SortOrder
+    platform?: SortOrder
+    lastUsedAt?: SortOrder
+    isValid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    lastSuccessAt?: SortOrder
-    lastFailureAt?: SortOrder
-    failedCount?: SortOrder
   }
 
-  export type PushSubscriptionMinOrderByAggregateInput = {
+  export type FCMTokenMinOrderByAggregateInput = {
     id?: SortOrder
-    endpoint?: SortOrder
-    auth?: SortOrder
-    p256dh?: SortOrder
+    token?: SortOrder
     userId?: SortOrder
+    platform?: SortOrder
+    lastUsedAt?: SortOrder
+    isValid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    lastSuccessAt?: SortOrder
-    lastFailureAt?: SortOrder
-    failedCount?: SortOrder
-  }
-
-  export type PushSubscriptionSumOrderByAggregateInput = {
-    failedCount?: SortOrder
-  }
-
-  export type EnumFrequencyFilter<$PrismaModel = never> = {
-    equals?: $Enums.Frequency | EnumFrequencyFieldRefInput<$PrismaModel>
-    in?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    not?: NestedEnumFrequencyFilter<$PrismaModel> | $Enums.Frequency
   }
 
   export type TopicSubscriptionUserIdTopicCompoundUniqueInput = {
@@ -59253,9 +58875,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     topic?: SortOrder
-    inApp?: SortOrder
-    push?: SortOrder
-    frequency?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -59263,9 +58882,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     topic?: SortOrder
-    inApp?: SortOrder
-    push?: SortOrder
-    frequency?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -59273,25 +58889,11 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     topic?: SortOrder
-    inApp?: SortOrder
-    push?: SortOrder
-    frequency?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type EnumFrequencyWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Frequency | EnumFrequencyFieldRefInput<$PrismaModel>
-    in?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    not?: NestedEnumFrequencyWithAggregatesFilter<$PrismaModel> | $Enums.Frequency
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumFrequencyFilter<$PrismaModel>
-    _max?: NestedEnumFrequencyFilter<$PrismaModel>
   }
 
   export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
     title?: SortOrder
     body?: SortOrder
@@ -59309,7 +58911,6 @@ export namespace Prisma {
 
   export type NotificationMaxOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
     title?: SortOrder
     body?: SortOrder
@@ -59322,7 +58923,6 @@ export namespace Prisma {
 
   export type NotificationMinOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     topic?: SortOrder
     title?: SortOrder
     body?: SortOrder
@@ -61847,13 +61447,6 @@ export namespace Prisma {
     connect?: CrewWhereUniqueInput | CrewWhereUniqueInput[]
   }
 
-  export type PushSubscriptionCreateNestedManyWithoutUserInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-  }
-
   export type TopicSubscriptionCreateNestedManyWithoutUserInput = {
     create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
@@ -61861,11 +61454,11 @@ export namespace Prisma {
     connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
   }
 
-  export type NotificationCreateNestedManyWithoutUserInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  export type FCMTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<FCMTokenCreateWithoutUserInput, FCMTokenUncheckedCreateWithoutUserInput> | FCMTokenCreateWithoutUserInput[] | FCMTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FCMTokenCreateOrConnectWithoutUserInput | FCMTokenCreateOrConnectWithoutUserInput[]
+    createMany?: FCMTokenCreateManyUserInputEnvelope
+    connect?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
   }
 
   export type AccountSetupTokenUncheckedCreateNestedOneWithoutUserInput = {
@@ -61948,13 +61541,6 @@ export namespace Prisma {
     connect?: CrewWhereUniqueInput | CrewWhereUniqueInput[]
   }
 
-  export type PushSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-  }
-
   export type TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
@@ -61962,11 +61548,11 @@ export namespace Prisma {
     connect?: TopicSubscriptionWhereUniqueInput | TopicSubscriptionWhereUniqueInput[]
   }
 
-  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  export type FCMTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FCMTokenCreateWithoutUserInput, FCMTokenUncheckedCreateWithoutUserInput> | FCMTokenCreateWithoutUserInput[] | FCMTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FCMTokenCreateOrConnectWithoutUserInput | FCMTokenCreateOrConnectWithoutUserInput[]
+    createMany?: FCMTokenCreateManyUserInputEnvelope
+    connect?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
   }
 
   export type EnumPermissionFieldUpdateOperationsInput = {
@@ -62136,20 +61722,6 @@ export namespace Prisma {
     deleteMany?: CrewScalarWhereInput | CrewScalarWhereInput[]
   }
 
-  export type PushSubscriptionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-  }
-
   export type TopicSubscriptionUpdateManyWithoutUserNestedInput = {
     create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
@@ -62164,18 +61736,18 @@ export namespace Prisma {
     deleteMany?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
   }
 
-  export type NotificationUpdateManyWithoutUserNestedInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  export type FCMTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FCMTokenCreateWithoutUserInput, FCMTokenUncheckedCreateWithoutUserInput> | FCMTokenCreateWithoutUserInput[] | FCMTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FCMTokenCreateOrConnectWithoutUserInput | FCMTokenCreateOrConnectWithoutUserInput[]
+    upsert?: FCMTokenUpsertWithWhereUniqueWithoutUserInput | FCMTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FCMTokenCreateManyUserInputEnvelope
+    set?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    disconnect?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    delete?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    connect?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    update?: FCMTokenUpdateWithWhereUniqueWithoutUserInput | FCMTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FCMTokenUpdateManyWithWhereWithoutUserInput | FCMTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FCMTokenScalarWhereInput | FCMTokenScalarWhereInput[]
   }
 
   export type AccountSetupTokenUncheckedUpdateOneWithoutUserNestedInput = {
@@ -62333,20 +61905,6 @@ export namespace Prisma {
     deleteMany?: CrewScalarWhereInput | CrewScalarWhereInput[]
   }
 
-  export type PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
-    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: PushSubscriptionCreateManyUserInputEnvelope
-    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
-    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-  }
-
   export type TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<TopicSubscriptionCreateWithoutUserInput, TopicSubscriptionUncheckedCreateWithoutUserInput> | TopicSubscriptionCreateWithoutUserInput[] | TopicSubscriptionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TopicSubscriptionCreateOrConnectWithoutUserInput | TopicSubscriptionCreateOrConnectWithoutUserInput[]
@@ -62361,18 +61919,18 @@ export namespace Prisma {
     deleteMany?: TopicSubscriptionScalarWhereInput | TopicSubscriptionScalarWhereInput[]
   }
 
-  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  export type FCMTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FCMTokenCreateWithoutUserInput, FCMTokenUncheckedCreateWithoutUserInput> | FCMTokenCreateWithoutUserInput[] | FCMTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FCMTokenCreateOrConnectWithoutUserInput | FCMTokenCreateOrConnectWithoutUserInput[]
+    upsert?: FCMTokenUpsertWithWhereUniqueWithoutUserInput | FCMTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FCMTokenCreateManyUserInputEnvelope
+    set?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    disconnect?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    delete?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    connect?: FCMTokenWhereUniqueInput | FCMTokenWhereUniqueInput[]
+    update?: FCMTokenUpdateWithWhereUniqueWithoutUserInput | FCMTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FCMTokenUpdateManyWithWhereWithoutUserInput | FCMTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FCMTokenScalarWhereInput | FCMTokenScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutUserSettingsInput = {
@@ -62515,20 +62073,18 @@ export namespace Prisma {
     deleteMany?: JobsiteScalarWhereInput | JobsiteScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutPushSubscriptionsInput = {
-    create?: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPushSubscriptionsInput
+  export type UserCreateNestedOneWithoutFCMTokenInput = {
+    create?: XOR<UserCreateWithoutFCMTokenInput, UserUncheckedCreateWithoutFCMTokenInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFCMTokenInput
     connect?: UserWhereUniqueInput
   }
 
-  export type UserUpdateOneWithoutPushSubscriptionsNestedInput = {
-    create?: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPushSubscriptionsInput
-    upsert?: UserUpsertWithoutPushSubscriptionsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
+  export type UserUpdateOneRequiredWithoutFCMTokenNestedInput = {
+    create?: XOR<UserCreateWithoutFCMTokenInput, UserUncheckedCreateWithoutFCMTokenInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFCMTokenInput
+    upsert?: UserUpsertWithoutFCMTokenInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, UserUpdateWithoutPushSubscriptionsInput>, UserUncheckedUpdateWithoutPushSubscriptionsInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFCMTokenInput, UserUpdateWithoutFCMTokenInput>, UserUncheckedUpdateWithoutFCMTokenInput>
   }
 
   export type UserCreateNestedOneWithoutTopicSubscriptionsInput = {
@@ -62537,30 +62093,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type EnumFrequencyFieldUpdateOperationsInput = {
-    set?: $Enums.Frequency
-  }
-
   export type UserUpdateOneRequiredWithoutTopicSubscriptionsNestedInput = {
     create?: XOR<UserCreateWithoutTopicSubscriptionsInput, UserUncheckedCreateWithoutTopicSubscriptionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutTopicSubscriptionsInput
     upsert?: UserUpsertWithoutTopicSubscriptionsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTopicSubscriptionsInput, UserUpdateWithoutTopicSubscriptionsInput>, UserUncheckedUpdateWithoutTopicSubscriptionsInput>
-  }
-
-  export type UserCreateNestedOneWithoutNotificationsInput = {
-    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
-    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
-    upsert?: UserUpsertWithoutNotificationsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -63145,23 +62683,6 @@ export namespace Prisma {
     _max?: NestedEnumPermissionFilter<$PrismaModel>
   }
 
-  export type NestedEnumFrequencyFilter<$PrismaModel = never> = {
-    equals?: $Enums.Frequency | EnumFrequencyFieldRefInput<$PrismaModel>
-    in?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    not?: NestedEnumFrequencyFilter<$PrismaModel> | $Enums.Frequency
-  }
-
-  export type NestedEnumFrequencyWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Frequency | EnumFrequencyFieldRefInput<$PrismaModel>
-    in?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Frequency[] | ListEnumFrequencyFieldRefInput<$PrismaModel>
-    not?: NestedEnumFrequencyWithAggregatesFilter<$PrismaModel> | $Enums.Frequency
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumFrequencyFilter<$PrismaModel>
-    _max?: NestedEnumFrequencyFilter<$PrismaModel>
-  }
-
   export type AddressCreateWithoutCompanyInput = {
     id?: string
     street: string
@@ -63295,9 +62816,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCompanyInput = {
@@ -63336,9 +62856,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCompanyInput = {
@@ -63836,9 +63355,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCrewsInput = {
@@ -63877,9 +63395,8 @@ export namespace Prisma {
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCrewsInput = {
@@ -64174,9 +63691,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEquipmentInput = {
@@ -64215,9 +63731,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEquipmentInput = {
@@ -64561,9 +64076,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEquipmentInput = {
@@ -64602,9 +64116,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeeEquipmentLogUpsertWithWhereUniqueWithoutEquipmentInput = {
@@ -65830,9 +65343,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFormSubmissionsInput = {
@@ -65871,9 +65383,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFormSubmissionsInput = {
@@ -65994,9 +65505,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFormSubmissionsInput = {
@@ -66035,9 +65545,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FormSubmissionCreateWithoutApprovalsInput = {
@@ -66106,9 +65615,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFormApprovalsInput = {
@@ -66147,9 +65655,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFormApprovalsInput = {
@@ -66240,9 +65747,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFormApprovalsInput = {
@@ -66281,9 +65787,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AddressCreateWithoutJobsiteInput = {
@@ -66347,9 +65852,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutJobsiteInput = {
@@ -66388,9 +65892,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutJobsiteInput = {
@@ -66570,9 +66073,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutJobsiteInput = {
@@ -66611,9 +66113,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TimeSheetUpsertWithWhereUniqueWithoutJobsiteInput = {
@@ -67047,9 +66548,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTimeSheetsInput = {
@@ -67088,9 +66588,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTimeSheetsInput = {
@@ -67360,9 +66859,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSheetsInput = {
@@ -67401,9 +66899,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckingLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
@@ -67603,9 +67100,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceLogsInput = {
@@ -67644,9 +67140,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceLogsInput = {
@@ -67830,9 +67325,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceLogsInput = {
@@ -67871,9 +67365,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeeEquipmentLogCreateWithoutMaintenanceInput = {
@@ -70151,9 +69644,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTimeSheetChangesInput = {
@@ -70192,9 +69684,8 @@ export namespace Prisma {
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTimeSheetChangesInput = {
@@ -70325,9 +69816,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeSheetChangesInput = {
@@ -70366,9 +69856,8 @@ export namespace Prisma {
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountSetupTokenCreateWithoutUserInput = {
@@ -70846,55 +70335,15 @@ export namespace Prisma {
     create: XOR<CrewCreateWithoutUsersInput, CrewUncheckedCreateWithoutUsersInput>
   }
 
-  export type PushSubscriptionCreateWithoutUserInput = {
-    id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
-  }
-
-  export type PushSubscriptionUncheckedCreateWithoutUserInput = {
-    id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
-  }
-
-  export type PushSubscriptionCreateOrConnectWithoutUserInput = {
-    where: PushSubscriptionWhereUniqueInput
-    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
-  }
-
-  export type PushSubscriptionCreateManyUserInputEnvelope = {
-    data: PushSubscriptionCreateManyUserInput | PushSubscriptionCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
   export type TopicSubscriptionCreateWithoutUserInput = {
     id?: string
     topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
     createdAt?: Date | string
   }
 
   export type TopicSubscriptionUncheckedCreateWithoutUserInput = {
     id?: string
     topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
     createdAt?: Date | string
   }
 
@@ -70908,39 +70357,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type NotificationCreateWithoutUserInput = {
+  export type FCMTokenCreateWithoutUserInput = {
     id?: string
-    topic: string
-    title: string
-    body?: string | null
-    url?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+    token: string
+    platform?: string | null
+    lastUsedAt?: Date | string | null
+    isValid?: boolean
     createdAt?: Date | string
-    pushedAt?: Date | string | null
-    pushAttempts?: number
-    readAt?: Date | string | null
+    updatedAt?: Date | string
   }
 
-  export type NotificationUncheckedCreateWithoutUserInput = {
+  export type FCMTokenUncheckedCreateWithoutUserInput = {
     id?: string
-    topic: string
-    title: string
-    body?: string | null
-    url?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+    token: string
+    platform?: string | null
+    lastUsedAt?: Date | string | null
+    isValid?: boolean
     createdAt?: Date | string
-    pushedAt?: Date | string | null
-    pushAttempts?: number
-    readAt?: Date | string | null
+    updatedAt?: Date | string
   }
 
-  export type NotificationCreateOrConnectWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  export type FCMTokenCreateOrConnectWithoutUserInput = {
+    where: FCMTokenWhereUniqueInput
+    create: XOR<FCMTokenCreateWithoutUserInput, FCMTokenUncheckedCreateWithoutUserInput>
   }
 
-  export type NotificationCreateManyUserInputEnvelope = {
-    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
+  export type FCMTokenCreateManyUserInputEnvelope = {
+    data: FCMTokenCreateManyUserInput | FCMTokenCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -71232,38 +70675,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Crew"> | Date | string
   }
 
-  export type PushSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
-    where: PushSubscriptionWhereUniqueInput
-    update: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
-    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
-  }
-
-  export type PushSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
-    where: PushSubscriptionWhereUniqueInput
-    data: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
-  }
-
-  export type PushSubscriptionUpdateManyWithWhereWithoutUserInput = {
-    where: PushSubscriptionScalarWhereInput
-    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type PushSubscriptionScalarWhereInput = {
-    AND?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-    OR?: PushSubscriptionScalarWhereInput[]
-    NOT?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-    id?: StringFilter<"PushSubscription"> | string
-    endpoint?: StringFilter<"PushSubscription"> | string
-    auth?: StringFilter<"PushSubscription"> | string
-    p256dh?: StringFilter<"PushSubscription"> | string
-    userId?: StringNullableFilter<"PushSubscription"> | string | null
-    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    updatedAt?: DateTimeFilter<"PushSubscription"> | Date | string
-    lastSuccessAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    lastFailureAt?: DateTimeNullableFilter<"PushSubscription"> | Date | string | null
-    failedCount?: IntFilter<"PushSubscription"> | number
-  }
-
   export type TopicSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
     where: TopicSubscriptionWhereUniqueInput
     update: XOR<TopicSubscriptionUpdateWithoutUserInput, TopicSubscriptionUncheckedUpdateWithoutUserInput>
@@ -71287,43 +70698,37 @@ export namespace Prisma {
     id?: StringFilter<"TopicSubscription"> | string
     userId?: StringFilter<"TopicSubscription"> | string
     topic?: StringFilter<"TopicSubscription"> | string
-    inApp?: BoolFilter<"TopicSubscription"> | boolean
-    push?: BoolFilter<"TopicSubscription"> | boolean
-    frequency?: EnumFrequencyFilter<"TopicSubscription"> | $Enums.Frequency
     createdAt?: DateTimeFilter<"TopicSubscription"> | Date | string
   }
 
-  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
-    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  export type FCMTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: FCMTokenWhereUniqueInput
+    update: XOR<FCMTokenUpdateWithoutUserInput, FCMTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<FCMTokenCreateWithoutUserInput, FCMTokenUncheckedCreateWithoutUserInput>
   }
 
-  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+  export type FCMTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: FCMTokenWhereUniqueInput
+    data: XOR<FCMTokenUpdateWithoutUserInput, FCMTokenUncheckedUpdateWithoutUserInput>
   }
 
-  export type NotificationUpdateManyWithWhereWithoutUserInput = {
-    where: NotificationScalarWhereInput
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
+  export type FCMTokenUpdateManyWithWhereWithoutUserInput = {
+    where: FCMTokenScalarWhereInput
+    data: XOR<FCMTokenUpdateManyMutationInput, FCMTokenUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type NotificationScalarWhereInput = {
-    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    OR?: NotificationScalarWhereInput[]
-    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    id?: StringFilter<"Notification"> | string
-    userId?: StringFilter<"Notification"> | string
-    topic?: StringFilter<"Notification"> | string
-    title?: StringFilter<"Notification"> | string
-    body?: StringNullableFilter<"Notification"> | string | null
-    url?: StringNullableFilter<"Notification"> | string | null
-    metadata?: JsonNullableFilter<"Notification">
-    createdAt?: DateTimeFilter<"Notification"> | Date | string
-    pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    pushAttempts?: IntFilter<"Notification"> | number
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+  export type FCMTokenScalarWhereInput = {
+    AND?: FCMTokenScalarWhereInput | FCMTokenScalarWhereInput[]
+    OR?: FCMTokenScalarWhereInput[]
+    NOT?: FCMTokenScalarWhereInput | FCMTokenScalarWhereInput[]
+    id?: StringFilter<"FCMToken"> | string
+    token?: StringFilter<"FCMToken"> | string
+    userId?: StringFilter<"FCMToken"> | string
+    platform?: StringNullableFilter<"FCMToken"> | string | null
+    lastUsedAt?: DateTimeNullableFilter<"FCMToken"> | Date | string | null
+    isValid?: BoolFilter<"FCMToken"> | boolean
+    createdAt?: DateTimeFilter<"FCMToken"> | Date | string
+    updatedAt?: DateTimeFilter<"FCMToken"> | Date | string
   }
 
   export type UserCreateWithoutUserSettingsInput = {
@@ -71362,9 +70767,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
     Company: CompanyCreateNestedOneWithoutUsersInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserSettingsInput = {
@@ -71403,9 +70807,8 @@ export namespace Prisma {
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserSettingsInput = {
@@ -71460,9 +70863,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserSettingsInput = {
@@ -71501,9 +70903,8 @@ export namespace Prisma {
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutContactInput = {
@@ -71542,9 +70943,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutContactInput = {
@@ -71583,9 +70983,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutContactInput = {
@@ -71640,9 +71039,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutContactInput = {
@@ -71681,9 +71079,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPasswordResetTokensInput = {
@@ -71722,9 +71119,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -71763,9 +71159,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -71820,9 +71215,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -71861,9 +71255,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountSetupTokenInput = {
@@ -71902,9 +71295,8 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountSetupTokenInput = {
@@ -71943,9 +71335,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountSetupTokenInput = {
@@ -72000,9 +71391,8 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountSetupTokenInput = {
@@ -72041,9 +71431,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CompanyCreateWithoutAddressInput = {
@@ -72176,7 +71565,7 @@ export namespace Prisma {
     data: XOR<JobsiteUpdateManyMutationInput, JobsiteUncheckedUpdateManyWithoutAddressInput>
   }
 
-  export type UserCreateWithoutPushSubscriptionsInput = {
+  export type UserCreateWithoutFCMTokenInput = {
     id?: string
     firstName: string
     lastName: string
@@ -72214,10 +71603,9 @@ export namespace Prisma {
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
     topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
+  export type UserUncheckedCreateWithoutFCMTokenInput = {
     id?: string
     firstName: string
     lastName: string
@@ -72255,26 +71643,25 @@ export namespace Prisma {
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
     topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
+  export type UserCreateOrConnectWithoutFCMTokenInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
+    create: XOR<UserCreateWithoutFCMTokenInput, UserUncheckedCreateWithoutFCMTokenInput>
   }
 
-  export type UserUpsertWithoutPushSubscriptionsInput = {
-    update: XOR<UserUpdateWithoutPushSubscriptionsInput, UserUncheckedUpdateWithoutPushSubscriptionsInput>
-    create: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
+  export type UserUpsertWithoutFCMTokenInput = {
+    update: XOR<UserUpdateWithoutFCMTokenInput, UserUncheckedUpdateWithoutFCMTokenInput>
+    create: XOR<UserCreateWithoutFCMTokenInput, UserUncheckedCreateWithoutFCMTokenInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutPushSubscriptionsInput = {
+  export type UserUpdateToOneWithWhereWithoutFCMTokenInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutPushSubscriptionsInput, UserUncheckedUpdateWithoutPushSubscriptionsInput>
+    data: XOR<UserUpdateWithoutFCMTokenInput, UserUncheckedUpdateWithoutFCMTokenInput>
   }
 
-  export type UserUpdateWithoutPushSubscriptionsInput = {
+  export type UserUpdateWithoutFCMTokenInput = {
     id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
@@ -72312,10 +71699,9 @@ export namespace Prisma {
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
+  export type UserUncheckedUpdateWithoutFCMTokenInput = {
     id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
@@ -72353,7 +71739,6 @@ export namespace Prisma {
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTopicSubscriptionsInput = {
@@ -72393,8 +71778,7 @@ export namespace Prisma {
     Company: CompanyCreateNestedOneWithoutUsersInput
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
     Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTopicSubscriptionsInput = {
@@ -72434,8 +71818,7 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
     Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    FCMToken?: FCMTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTopicSubscriptionsInput = {
@@ -72491,8 +71874,7 @@ export namespace Prisma {
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTopicSubscriptionsInput = {
@@ -72532,188 +71914,7 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserCreateWithoutNotificationsInput = {
-    id?: string
-    firstName: string
-    lastName: string
-    username: string
-    email?: string | null
-    password: string
-    signature?: string | null
-    DOB?: Date | string | null
-    truckView: boolean
-    tascoView: boolean
-    laborView: boolean
-    mechanicView: boolean
-    permission?: $Enums.Permission
-    image?: string | null
-    startDate?: Date | string | null
-    terminationDate?: Date | string | null
-    accountSetup?: boolean
-    clockedIn?: boolean
-    passwordResetTokenId?: string | null
-    workTypeId?: string | null
-    middleName?: string | null
-    secondLastName?: string | null
-    lastSeen?: Date | string | null
-    accountSetupToken?: AccountSetupTokenCreateNestedOneWithoutUserInput
-    Contact?: ContactsCreateNestedOneWithoutUserInput
-    Equipment?: EquipmentCreateNestedManyWithoutCreatedByInput
-    FormApprovals?: FormApprovalCreateNestedManyWithoutApproverInput
-    FormSubmissions?: FormSubmissionCreateNestedManyWithoutUserInput
-    Jobsite?: JobsiteCreateNestedManyWithoutCreatedByInput
-    MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutUserInput
-    PasswordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
-    TimeSheets?: TimeSheetCreateNestedManyWithoutUserInput
-    TimeSheetChanges?: TimeSheetChangeLogCreateNestedManyWithoutUserInput
-    Company: CompanyCreateNestedOneWithoutUsersInput
-    UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
-    Crews?: CrewCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutNotificationsInput = {
-    id?: string
-    firstName: string
-    lastName: string
-    username: string
-    email?: string | null
-    password: string
-    signature?: string | null
-    DOB?: Date | string | null
-    truckView: boolean
-    tascoView: boolean
-    laborView: boolean
-    mechanicView: boolean
-    permission?: $Enums.Permission
-    image?: string | null
-    startDate?: Date | string | null
-    terminationDate?: Date | string | null
-    accountSetup?: boolean
-    clockedIn?: boolean
-    companyId: string
-    passwordResetTokenId?: string | null
-    workTypeId?: string | null
-    middleName?: string | null
-    secondLastName?: string | null
-    lastSeen?: Date | string | null
-    accountSetupToken?: AccountSetupTokenUncheckedCreateNestedOneWithoutUserInput
-    Contact?: ContactsUncheckedCreateNestedOneWithoutUserInput
-    Equipment?: EquipmentUncheckedCreateNestedManyWithoutCreatedByInput
-    FormApprovals?: FormApprovalUncheckedCreateNestedManyWithoutApproverInput
-    FormSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutUserInput
-    Jobsite?: JobsiteUncheckedCreateNestedManyWithoutCreatedByInput
-    MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutUserInput
-    PasswordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
-    TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutUserInput
-    TimeSheetChanges?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutUserInput
-    UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
-    Crews?: CrewUncheckedCreateNestedManyWithoutUsersInput
-    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
-    topicSubscriptions?: TopicSubscriptionUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutNotificationsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-  }
-
-  export type UserUpsertWithoutNotificationsInput = {
-    update: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
-    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
-  }
-
-  export type UserUpdateWithoutNotificationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    signature?: NullableStringFieldUpdateOperationsInput | string | null
-    DOB?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    truckView?: BoolFieldUpdateOperationsInput | boolean
-    tascoView?: BoolFieldUpdateOperationsInput | boolean
-    laborView?: BoolFieldUpdateOperationsInput | boolean
-    mechanicView?: BoolFieldUpdateOperationsInput | boolean
-    permission?: EnumPermissionFieldUpdateOperationsInput | $Enums.Permission
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetup?: BoolFieldUpdateOperationsInput | boolean
-    clockedIn?: BoolFieldUpdateOperationsInput | boolean
-    passwordResetTokenId?: NullableStringFieldUpdateOperationsInput | string | null
-    workTypeId?: NullableStringFieldUpdateOperationsInput | string | null
-    middleName?: NullableStringFieldUpdateOperationsInput | string | null
-    secondLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    lastSeen?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetupToken?: AccountSetupTokenUpdateOneWithoutUserNestedInput
-    Contact?: ContactsUpdateOneWithoutUserNestedInput
-    Equipment?: EquipmentUpdateManyWithoutCreatedByNestedInput
-    FormApprovals?: FormApprovalUpdateManyWithoutApproverNestedInput
-    FormSubmissions?: FormSubmissionUpdateManyWithoutUserNestedInput
-    Jobsite?: JobsiteUpdateManyWithoutCreatedByNestedInput
-    MaintenanceLogs?: MaintenanceLogUpdateManyWithoutUserNestedInput
-    PasswordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
-    TimeSheets?: TimeSheetUpdateManyWithoutUserNestedInput
-    TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
-    Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
-    UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
-    Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutNotificationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    signature?: NullableStringFieldUpdateOperationsInput | string | null
-    DOB?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    truckView?: BoolFieldUpdateOperationsInput | boolean
-    tascoView?: BoolFieldUpdateOperationsInput | boolean
-    laborView?: BoolFieldUpdateOperationsInput | boolean
-    mechanicView?: BoolFieldUpdateOperationsInput | boolean
-    permission?: EnumPermissionFieldUpdateOperationsInput | $Enums.Permission
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetup?: BoolFieldUpdateOperationsInput | boolean
-    clockedIn?: BoolFieldUpdateOperationsInput | boolean
-    companyId?: StringFieldUpdateOperationsInput | string
-    passwordResetTokenId?: NullableStringFieldUpdateOperationsInput | string | null
-    workTypeId?: NullableStringFieldUpdateOperationsInput | string | null
-    middleName?: NullableStringFieldUpdateOperationsInput | string | null
-    secondLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    lastSeen?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    accountSetupToken?: AccountSetupTokenUncheckedUpdateOneWithoutUserNestedInput
-    Contact?: ContactsUncheckedUpdateOneWithoutUserNestedInput
-    Equipment?: EquipmentUncheckedUpdateManyWithoutCreatedByNestedInput
-    FormApprovals?: FormApprovalUncheckedUpdateManyWithoutApproverNestedInput
-    FormSubmissions?: FormSubmissionUncheckedUpdateManyWithoutUserNestedInput
-    Jobsite?: JobsiteUncheckedUpdateManyWithoutCreatedByNestedInput
-    MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutUserNestedInput
-    PasswordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
-    TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
-    TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
-    UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
-    Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FormTemplateCreateManyCompanyInput = {
@@ -72876,9 +72077,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
     Crews?: CrewUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -72917,9 +72117,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
     Crews?: CrewUncheckedUpdateManyWithoutUsersNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -73219,9 +72418,8 @@ export namespace Prisma {
     TimeSheetChanges?: TimeSheetChangeLogUpdateManyWithoutUserNestedInput
     Company?: CompanyUpdateOneRequiredWithoutUsersNestedInput
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
-    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCrewsInput = {
@@ -73260,9 +72458,8 @@ export namespace Prisma {
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutUserNestedInput
     TimeSheetChanges?: TimeSheetChangeLogUncheckedUpdateManyWithoutUserNestedInput
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
-    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     topicSubscriptions?: TopicSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    FCMToken?: FCMTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCrewsInput = {
@@ -74880,38 +74077,20 @@ export namespace Prisma {
     changeReason?: string | null
   }
 
-  export type PushSubscriptionCreateManyUserInput = {
-    id?: string
-    endpoint: string
-    auth: string
-    p256dh: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSuccessAt?: Date | string | null
-    lastFailureAt?: Date | string | null
-    failedCount?: number
-  }
-
   export type TopicSubscriptionCreateManyUserInput = {
     id?: string
     topic: string
-    inApp?: boolean
-    push?: boolean
-    frequency?: $Enums.Frequency
     createdAt?: Date | string
   }
 
-  export type NotificationCreateManyUserInput = {
+  export type FCMTokenCreateManyUserInput = {
     id?: string
-    topic: string
-    title: string
-    body?: string | null
-    url?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+    token: string
+    platform?: string | null
+    lastUsedAt?: Date | string | null
+    isValid?: boolean
     createdAt?: Date | string
-    pushedAt?: Date | string | null
-    pushAttempts?: number
-    readAt?: Date | string | null
+    updatedAt?: Date | string
   }
 
   export type EquipmentUpdateWithoutCreatedByInput = {
@@ -75337,106 +74516,52 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type PushSubscriptionUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type PushSubscriptionUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type PushSubscriptionUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    endpoint?: StringFieldUpdateOperationsInput | string
-    auth?: StringFieldUpdateOperationsInput | string
-    p256dh?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSuccessAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastFailureAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    failedCount?: IntFieldUpdateOperationsInput | number
-  }
-
   export type TopicSubscriptionUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TopicSubscriptionUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TopicSubscriptionUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     topic?: StringFieldUpdateOperationsInput | string
-    inApp?: BoolFieldUpdateOperationsInput | boolean
-    push?: BoolFieldUpdateOperationsInput | boolean
-    frequency?: EnumFrequencyFieldUpdateOperationsInput | $Enums.Frequency
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationUpdateWithoutUserInput = {
+  export type FCMTokenUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    pushAttempts?: IntFieldUpdateOperationsInput | number
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationUncheckedUpdateWithoutUserInput = {
+  export type FCMTokenUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    pushAttempts?: IntFieldUpdateOperationsInput | number
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationUncheckedUpdateManyWithoutUserInput = {
+  export type FCMTokenUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    topic?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isValid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    pushAttempts?: IntFieldUpdateOperationsInput | number
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CompanyCreateManyAddressInput = {
