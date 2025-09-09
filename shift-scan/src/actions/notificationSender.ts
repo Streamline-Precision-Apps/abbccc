@@ -21,16 +21,16 @@ export async function sendNotificationToTopic({
   link?: string;
 }) {
   try {
-    // Simple payload with the topic as is
+    // Prepare payload for the multicast endpoint
     const payload = {
       topic,
       title,
-      message,
+      body: message, // Note: the API expects 'body', not 'message'
       ...(link && { link }),
     };
 
-    // Use a relative URL that works in both development and production
-    const response = await fetch(`/send-notification`, {
+    // Use the correct API endpoint for topic-based notifications
+    const response = await fetch(`/api/notifications/send-multicast`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,13 +67,18 @@ export async function sendNotificationToDevice({
   link?: string;
 }) {
   try {
-    // Use a relative URL that works in both development and production
-    const response = await fetch(`/send-notification`, {
+    // Use the correct API endpoint for device-specific notifications
+    const response = await fetch(`/api/notifications/send-multicast`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ token, title, message, link }),
+      body: JSON.stringify({
+        tokens: [token], // Send as an array of one token
+        title,
+        body: message, // API expects 'body', not 'message'
+        link,
+      }),
     });
 
     if (!response.ok) {
