@@ -1,9 +1,7 @@
 "use client";
 
-"use client";
-
 import { useEffect, useRef, useState } from "react";
-import { getToken, onMessage, Unsubscribe } from "firebase/messaging";
+import { onMessage, Unsubscribe } from "firebase/messaging";
 import { fetchToken, messaging } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
