@@ -20,6 +20,8 @@ import { TimeSheetCommentsProvider } from "./context/TimeSheetCommentsContext";
 import { CommentDataProvider } from "./context/CommentContext";
 import { EquipmentIdProvider } from "./context/operatorContext";
 import { PermissionsProvider } from "./context/PermissionsContext";
+import { DashboardDataProvider } from "./(routes)/admins/_pages/sidebar/DashboardDataContext";
+import { UserProfileProvider } from "./(routes)/admins/_pages/sidebar/UserImageContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -42,7 +44,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                     <NotificationProvider>
                                       <CommentDataProvider>
                                         <EquipmentIdProvider>
-                                          {children}
+                                          <DashboardDataProvider>
+                                            <UserProfileProvider>
+                                              {children}
+                                            </UserProfileProvider>
+                                          </DashboardDataProvider>
                                         </EquipmentIdProvider>
                                       </CommentDataProvider>
                                     </NotificationProvider>

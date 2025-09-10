@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { deleteEquipment } from "@/actions/AssetActions";
 import { useSidebar } from "@/components/ui/sidebar";
 import { FilterOptions } from "./FilterPopover";
+import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
@@ -43,6 +44,7 @@ export interface EquipmentSummary {
   };
 }
 export const useEquipmentData = () => {
+  const { refresh } = useDashboardData();
   const [equipmentDetails, setEquipmentDetails] = useState<EquipmentSummary[]>(
     [],
   );
@@ -126,6 +128,7 @@ export const useEquipmentData = () => {
       await deleteEquipment(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
+      refresh();
       rerender();
     }
   };

@@ -49,6 +49,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [changeReason, setChangeReason] = useState("");
   const { data: session } = useSession();
   const { refresh } = useDashboardData();
+
   const editor = session?.user?.id;
 
   // Fetch dropdown and related data

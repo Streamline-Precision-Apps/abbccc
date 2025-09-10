@@ -2,6 +2,7 @@ import { NextResponse, userAgent } from "next/server";
 import { NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/auth";
+import is from "zod/v4/locales/is.cjs";
 
 /**
  * Array of paths that don't require authentication
@@ -20,6 +21,18 @@ const PUBLIC_PATHS = [
 // Paths that require ADMIN or SUPERADMIN permissions
 const ADMIN_PATHS = ["/admins"];
 
+const MOBILE_ALLOWED_PATHS = [
+  "/dashboard",
+  "/break",
+  "/clock",
+  "/forms",
+  "/hamburger",
+  "/signin",
+  "/timesheets",
+  "/continue-timesheet",
+  "/",
+];
+
 /**
  * Middleware function that runs before each request
  * Checks if the user is authenticated and redirects to signin if not
@@ -27,7 +40,9 @@ const ADMIN_PATHS = ["/admins"];
 export async function middleware(request: NextRequest) {
   try {
     const pathname = request.nextUrl.pathname;
-    const { isBot } = userAgent(request);
+    const { isBot, device } = userAgent(request);
+
+    const isMobile = device.type === "mobile" || device.type === "tablet";
 
     // adds bot detection to app
     if (isBot) {
@@ -48,12 +63,50 @@ export async function middleware(request: NextRequest) {
     }
 
     const userPermission = session.user?.permission;
+    const isAdmin =
+      userPermission === "ADMIN" || userPermission === "SUPERADMIN";
 
-    const isAdminPath = ADMIN_PATHS.some((path) => pathname.startsWith(path));
+    if (isMobile) {
+      // On mobile, check if the current path starts with any allowed mobile path
+      const isMobileAllowedPath = MOBILE_ALLOWED_PATHS.some((path) => {
+        // For root path, only exact match is allowed
+        if (path === "/") {
+          return pathname === "/";
+        }
+        // For other paths, allow the exact path or any subpath
+        return pathname === path || pathname.startsWith(`${path}/`);
+      });
 
-    if (isAdminPath) {
-      if (userPermission !== "ADMIN" && userPermission !== "SUPERADMIN") {
+      if (!isMobileAllowedPath) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    } else {
+      const isAdminPath = ADMIN_PATHS.some((path) => pathname.startsWith(path));
+
+      if (isAdminPath && !isAdmin) {
         return NextResponse.redirect(new URL("/not-authorized", request.url));
+      }
+      // If the user is an admin and trying to access mobile-only paths, redirect to admin section
+      if (isAdmin) {
+        // Only apply mobile path restrictions if not in development
+        if (process.env.NODE_ENV !== "development") {
+          const isMobilePath = MOBILE_ALLOWED_PATHS.some((path) => {
+            // Skip the check for paths that are allowed on both mobile and desktop
+            if (path === "/signin") {
+              return false;
+            }
+
+            // Check if the current path matches a mobile-only path
+            if (path === "/") {
+              return pathname === "/";
+            }
+            return pathname === path || pathname.startsWith(`${path}/`);
+          });
+
+          if (isMobilePath) {
+            return NextResponse.redirect(new URL("/admins", request.url));
+          }
+        }
       }
     }
 
