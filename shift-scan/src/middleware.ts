@@ -88,21 +88,24 @@ export async function middleware(request: NextRequest) {
       }
       // If the user is an admin and trying to access mobile-only paths, redirect to admin section
       if (isAdmin) {
-        const isMobilePath = MOBILE_ALLOWED_PATHS.some((path) => {
-          // Skip the check for paths that are allowed on both mobile and desktop
-          if (path === "/signin") {
-            return false;
-          }
+        // Only apply mobile path restrictions if not in development
+        if (process.env.NODE_ENV !== "development") {
+          const isMobilePath = MOBILE_ALLOWED_PATHS.some((path) => {
+            // Skip the check for paths that are allowed on both mobile and desktop
+            if (path === "/signin") {
+              return false;
+            }
 
-          // Check if the current path matches a mobile-only path
-          if (path === "/") {
-            return pathname === "/";
-          }
-          return pathname === path || pathname.startsWith(`${path}/`);
-        });
+            // Check if the current path matches a mobile-only path
+            if (path === "/") {
+              return pathname === "/";
+            }
+            return pathname === path || pathname.startsWith(`${path}/`);
+          });
 
-        if (isMobilePath) {
-          return NextResponse.redirect(new URL("/admins", request.url));
+          if (isMobilePath) {
+            return NextResponse.redirect(new URL("/admins", request.url));
+          }
         }
       }
     }
