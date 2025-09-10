@@ -8,6 +8,8 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { EXPORT_FIELDS } from "@/app/(routes)/admins/timesheets/_components/Export/ExportModal";
+import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { ref } from "process";
 
 /**
  * Timesheet domain entity.
@@ -72,6 +74,7 @@ export type timesheetPending = {
 };
 
 export default function AdminTimesheets() {
+  const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([]);
@@ -273,6 +276,7 @@ export default function AdminTimesheets() {
       setAllTimesheets((prev) => prev.filter((t) => t.id !== deletingId));
       setDeletingId(null);
       toast.success("Timesheet deleted successfully!", { duration: 3000 });
+      refresh();
     } catch (e) {
       // Optionally show error
       console.error("Error deleting timesheet:", e);

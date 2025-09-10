@@ -11,6 +11,7 @@ import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
 import { Switch } from "@/components/ui/switch";
+import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 
 export default function EditJobsiteModal({
   cancel,
@@ -23,6 +24,7 @@ export default function EditJobsiteModal({
 }) {
   const { jobSiteDetails, tagSummaries, loading } =
     useJobsiteDataById(pendingEditId);
+  const { refresh } = useDashboardData();
   const [formData, setFormData] = useState<Jobsite>();
   const [originalForm, setOriginalForm] = useState<Jobsite | null>(null);
 
@@ -72,6 +74,7 @@ export default function EditJobsiteModal({
       if (result?.success) {
         toast.success("Jobsite updated successfully.", { duration: 3000 });
         cancel();
+        refresh();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update jobsite.");
