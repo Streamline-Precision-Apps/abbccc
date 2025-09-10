@@ -38,6 +38,7 @@ model User {
   Crews                Crew[]               @relation("CrewToUser")
   topicSubscriptions   TopicSubscription[]
   FCMToken             FCMToken[]
+  
 
   @@unique([firstName, lastName, username])
   @@index([email])
@@ -86,3 +87,4 @@ model AccountSetupToken {
   used      Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id])
 }
+

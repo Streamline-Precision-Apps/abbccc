@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
-import { sendNotificationToTopic } from "./notificationSender";
 
 export async function updateTimesheetServerAction(formData: FormData) {
   console.log(formData);
@@ -27,14 +26,23 @@ export async function updateTimesheetServerAction(formData: FormData) {
 
     const changes = changesJson ? JSON.parse(changesJson) : {};
 
-    const updated = await prisma.$transaction(async (tx) => {
+    const transactionResult = await prisma.$transaction(async (tx) => {
+      let editorLog = null;
       if (Object.keys(changes).length > 0) {
-        await tx.timeSheetChangeLog.create({
+        editorLog = await tx.timeSheetChangeLog.create({
           data: {
             timeSheetId: id,
             changedBy: editorId,
             changes: changes,
             changeReason: changeReason || "No reason provided",
+          },
+          include: {
+            User: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         });
       }
@@ -51,31 +59,19 @@ export async function updateTimesheetServerAction(formData: FormData) {
         include: {
           Jobsite: true,
           CostCode: true,
+          ChangeLogs: true,
         },
       });
 
-      if (updated) {
-        // trigger time sheet change notification
-        const editor = await tx.user.findUnique({
-          where: { id: editorId },
-          select: { firstName: true, lastName: true },
-        });
-
-        sendNotificationToTopic({
-          topic: "timecards-changes",
-          title: "A Timecard was Modified",
-          message: `Timecard was modified by ${editor?.firstName} ${editor?.lastName}`,
-          link: `/admins/timesheets`,
-        });
-      }
-
-      return updated;
+      return { updated, editorLog };
     });
 
-    // Fetch the current timesheet from DB for comparison if original is not provided
-
     revalidateTag("timesheet");
-    return { success: true, timesheet: updated };
+    return {
+      success: true,
+      timesheet: transactionResult.updated,
+      editorLog: transactionResult.editorLog,
+    };
   } catch (error) {
     let message = "Failed to update timesheet.";
     if (error instanceof Error) {

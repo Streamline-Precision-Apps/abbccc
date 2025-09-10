@@ -305,6 +305,15 @@ export async function adminUpdateTimesheet(formData: FormData) {
     throw new Error("Editor ID is required for tracking changes.");
   }
 
+  const editorFullName = await prisma.user.findUnique({
+    where: { id: editorId },
+    select: { firstName: true, lastName: true },
+  });
+
+  if (!editorFullName) {
+    throw new Error("You are not permitted to edit");
+  }
+
   // Parse the changes and data
   const changes = changesJson ? JSON.parse(changesJson) : {};
   const data: TimesheetData = JSON.parse(dataJson);
@@ -478,5 +487,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
   });
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
-  return true;
+  return {
+    success: true,
+    editorLog: editorFullName,
+  };
 }

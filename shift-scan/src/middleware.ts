@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, userAgent } from "next/server";
 import { NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/auth";
@@ -27,12 +27,17 @@ const ADMIN_PATHS = ["/admins"];
 export async function middleware(request: NextRequest) {
   try {
     const pathname = request.nextUrl.pathname;
+    const { isBot } = userAgent(request);
+
+    // adds bot detection to app
+    if (isBot) {
+      return NextResponse.redirect(new URL("/not-authorized", request.url));
+    }
 
     // Allow public paths without authentication
     if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
       return NextResponse.next();
     }
-
     // Get the session
     const session = await auth();
 

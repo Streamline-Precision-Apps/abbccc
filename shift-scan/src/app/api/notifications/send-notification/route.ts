@@ -15,17 +15,9 @@ export async function POST(request: NextRequest) {
   }
 
   const payload: Message = {
+    notification: { title, body: message },
     token,
-    topic,
-    notification: {
-      title: title,
-      body: message,
-    },
-    webpush: link && {
-      fcmOptions: {
-        link,
-      },
-    },
+    webpush: link ? { fcmOptions: { link } } : undefined,
   };
 
   try {

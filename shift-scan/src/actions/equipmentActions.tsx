@@ -4,7 +4,6 @@ import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
-import { sendNotificationToTopic } from "@/actions/notificationSender";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -83,18 +82,18 @@ export async function createEquipment(formData: FormData) {
           },
         });
       }
-      if (newEquipment) {
-        // Import at the top of the file:
-        // import { sendNotificationToTopic } from "@/actions/notificationSender";
+      // if (newEquipment) {
+      //   // Import at the top of the file:
+      //   // import { sendNotificationToTopic } from "@/actions/notificationSender";
 
-        // Send notification to the "items" topic
-        await sendNotificationToTopic({
-          topic: "items",
-          title: "New Equipment Created",
-          message: `A new ${equipmentTag.toLowerCase()} has been created: ${newEquipment.name}`,
-          link: `/admins/equipment`,
-        });
-      }
+      //   // Send notification to the "items" topic
+      //   await sendNotificationToTopic({
+      //     topic: "items",
+      //     title: "New Equipment Created",
+      //     message: `A new ${equipmentTag.toLowerCase()} has been created: ${newEquipment.name}`,
+      //     link: `/admins/equipment`,
+      //   });
+      // }
 
       return newEquipment;
     });

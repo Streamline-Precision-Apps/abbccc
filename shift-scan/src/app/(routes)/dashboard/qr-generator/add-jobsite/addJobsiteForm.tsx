@@ -97,8 +97,21 @@ export default function AddJobsiteForm() {
       formDataToSend.append("submitterName", submitterName);
       const response = await createJobsite(formDataToSend);
       if (response) {
-        router.push("/dashboard/qr-generator");
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "items",
+            title: "New Jobsite Submission",
+            message: `A new jobsite has been created and is pending approval.`,
+            link: `/admins/jobsites`,
+          }),
+        });
+        await response.json();
       }
+      router.push("/dashboard/qr-generator");
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {

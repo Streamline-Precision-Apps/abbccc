@@ -19,10 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  getUserTopicPreferences,
-  UserTopicPreference,
-} from "@/actions/NotificationActions";
+import { getUserTopicPreferences } from "@/actions/NotificationActions";
 import useFcmToken from "@/hooks/useFcmToken";
 
 type Props = {

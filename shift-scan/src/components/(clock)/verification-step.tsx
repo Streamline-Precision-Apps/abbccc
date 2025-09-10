@@ -110,6 +110,21 @@ export default function VerificationStep({
 
       // Use the new transaction-based function
       const response = await handleGeneralTimeSheet(formData);
+      if (response) {
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecard-submission",
+            title: "New Timesheet Submission",
+            message: `A new submission has been created and is pending approval.`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        await response.json();
+      }
 
       // Update state and redirect
       setCommentData(null);

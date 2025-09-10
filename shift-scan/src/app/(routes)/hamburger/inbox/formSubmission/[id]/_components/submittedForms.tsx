@@ -3,20 +3,17 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { useEffect, useState } from "react";
 import { deleteFormSubmission, savePending } from "@/actions/hamburgerActions";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
 import { Images } from "@/components/(reusable)/images";
-import { Texts } from "@/components/(reusable)/texts";
 import { format } from "date-fns";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
-import { Label } from "@/components/ui/label";
 
 interface FormField {
   id: string;
