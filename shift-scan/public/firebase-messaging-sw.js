@@ -4,13 +4,13 @@ importScripts(
 );
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyBUBdLoaUHXzX2vR9x7vlrsGoQscf3ua8g",
+  authDomain: "fcm-shift-scan.firebaseapp.com",
+  projectId: "fcm-shift-scan",
+  storageBucket: "fcm-shift-scan.firebasestorage.app",
+  messagingSenderId: "897456891133",
+  appId: "1:897456891133:web:fee26fb80b6f4f021e0a94",
+  measurementId: "G-TZHBBHJ7J7",
 };
 
 firebase.initializeApp(firebaseConfig);

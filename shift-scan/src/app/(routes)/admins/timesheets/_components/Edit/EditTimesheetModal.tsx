@@ -214,7 +214,20 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       formData.append("changeReason", changeReason);
 
       const result = await adminUpdateTimesheet(formData);
-      if (result) {
+      if (result.success) {
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecards-changes",
+            title: "A Timecard was Modified",
+            message: `Timecard was modified by ${result.editorLog.firstName} ${result.editorLog.lastName}`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        await response.json();
         refresh();
       }
 

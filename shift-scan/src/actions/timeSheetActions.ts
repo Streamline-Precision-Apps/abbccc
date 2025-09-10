@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { formatISO } from "date-fns";
-import { sendNotificationToTopic } from "./notificationSender";
+
 // Get all TimeSheets
 type TimesheetUpdate = {
   id: number;
@@ -493,35 +493,6 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       console.log("[handleGeneralTimeSheet] Confirmed new timesheet:", created);
     }
 
-    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
-    if (type === "switchJobs" && previousTimeSheetId) {
-      try {
-        // Get user information for the notification
-        const prevTimesheet = await prisma.timeSheet.findUnique({
-          where: { id: previousTimeSheetId },
-          include: { User: true },
-        });
-
-        const notificationResult = await sendNotificationToTopic({
-          topic: "timecard-submission",
-          title: "Timecard Submission Pending",
-          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
-          link: `/admins/timesheets`,
-        });
-
-        console.log(
-          "[handleGeneralTimeSheet] Notification result:",
-          notificationResult,
-        );
-      } catch (notifyError) {
-        // Log but don't fail the whole operation if notification fails
-        console.error(
-          "[handleGeneralTimeSheet] Error triggering notification:",
-          notifyError,
-        );
-      }
-    }
-
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -607,44 +578,6 @@ export async function handleMechanicTimeSheet(formData: FormData) {
         "[handleMechanicTimeSheet] Confirmed new timesheet:",
         created,
       );
-    }
-
-    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
-    if (type === "switchJobs" && previousTimeSheetId) {
-      try {
-        // Get user information for the notification
-        const prevTimesheet = await prisma.timeSheet.findUnique({
-          where: { id: previousTimeSheetId },
-          include: { User: true },
-        });
-
-        const notificationResult = await sendNotificationToTopic({
-          topic: "timecard-submission",
-          title: "Timecard Submission Pending",
-          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
-          link: `/admins/timesheets`,
-        });
-
-        if (notificationResult.success) {
-          console.log(
-            "[updateTimeSheet] ✅ Notification sent successfully:",
-            notificationResult.response,
-          );
-        } else {
-          console.error(
-            "[updateTimeSheet] ❌ Failed to send notification:",
-            notificationResult.error,
-            "Status:",
-            notificationResult.success,
-          );
-        }
-      } catch (notifyError) {
-        // Log but don't fail the whole operation if notification fails
-        console.error(
-          "[handleMechanicTimeSheet] Error triggering notification:",
-          notifyError,
-        );
-      }
     }
 
     // Revalidate paths after transaction
@@ -749,29 +682,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
         where: { id: newTimeSheet },
       });
       console.log("[handleTascoTimeSheet] Confirmed new timesheet:", created);
-    }
-
-    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
-    if (type === "switchJobs" && previousTimeSheetId) {
-      try {
-        // Get user information for the notification
-        const prevTimesheet = await prisma.timeSheet.findUnique({
-          where: { id: previousTimeSheetId },
-          include: { User: true },
-        });
-        sendNotificationToTopic({
-          topic: "timecard-submission",
-          title: "Timecard Submission Pending",
-          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
-          link: `/admins/timesheets`,
-        });
-      } catch (notifyError) {
-        // Log but don't fail the whole operation if notification fails
-        console.error(
-          "[handleTascoTimeSheet] Error triggering notification:",
-          notifyError,
-        );
-      }
     }
 
     // Revalidate paths after transaction
@@ -904,29 +814,6 @@ export async function handleTruckTimeSheet(formData: FormData) {
       console.log("[handleTruckTimeSheet] Confirmed new timesheet:", created);
     }
 
-    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
-    if (type === "switchJobs" && previousTimeSheetId) {
-      try {
-        // Get user information for the notification
-        const prevTimesheet = await prisma.timeSheet.findUnique({
-          where: { id: previousTimeSheetId },
-          include: { User: true },
-        });
-        sendNotificationToTopic({
-          topic: "timecard-submission",
-          title: "Timecard Submission Pending",
-          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
-          link: `/admins/timesheets`,
-        });
-      } catch (notifyError) {
-        // Log but don't fail the whole operation if notification fails
-        console.error(
-          "[handleTruckTimeSheet] Error triggering notification:",
-          notifyError,
-        );
-      }
-    }
-
     // Revalidate paths after DB ops
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -1031,75 +918,12 @@ export async function updateTimeSheet(formData: FormData) {
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
-    // Trigger notification for submitted timesheet
-
-    console.log(
-      "[updateTimeSheet] Preparing to send notification for timesheet ID:",
-      id,
-    );
-
-    // Get the user information for the notification
-    const timesheet = await prisma.timeSheet.findUnique({
-      where: { id },
-      include: { User: true },
-    });
-
-    if (!timesheet) {
-      console.error(
-        "[updateTimeSheet] Cannot find timesheet for notification:",
-        id,
-      );
-      return;
-    }
-
-    console.log(
-      `[updateTimeSheet] Found timesheet for user: ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
-      { timesheetId: timesheet.id, userId: timesheet.User?.id },
-    );
-
-    // Send the notification
-    console.log(
-      "[updateTimeSheet] Sending notification to topic: timecard-submission",
-    );
-
-    const response = await fetch("/api/notifications/send-multicast", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        topic: "timecard-submission",
-        title: "Timecard Submission Pending",
-        message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
-        link: `/admins/timesheets`,
-      }),
-    });
-
-    // const notificationResult = await sendNotificationToTopic({
-    //   topic: "timecard-submission",
-    //   title: "Timecard Submission Pending",
-    //   message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
-    //   link: `/admins/timesheets`,
-    // });
-
-    // if (notificationResult.success) {
-    //   console.log(
-    //     "[updateTimeSheet] ✅ Notification sent successfully:",
-    //     notificationResult.response,
-    //   );
-    // } else {
-    //   console.error(
-    //     "[updateTimeSheet] ❌ Failed to send notification:",
-    //     notificationResult.error,
-    //     "Status:",
-    //     notificationResult.success,
-    //   );
-    // }
-
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);
+    return true;
   } catch (error) {
     console.error("Error updating timesheet:", error);
+    return false;
   }
 }
 //---------

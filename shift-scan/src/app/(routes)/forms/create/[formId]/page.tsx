@@ -233,9 +233,19 @@ export default function FormCreationPage({ params }: FormCreationPageProps) {
       );
 
       if (result) {
-        // Show success message
-        alert("Form submitted successfully!");
-
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "form-submissions",
+            title: "New Form Submission",
+            message: `A form submission has been made and is awaiting approval`,
+            link: `/admins/forms/${result.formTemplateId}`,
+          }),
+        });
+        await response.json();
         // Navigate back to forms page
         router.push("/forms");
       } else {

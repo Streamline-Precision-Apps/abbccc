@@ -47,6 +47,7 @@ export const LaborClockOut = ({
   pendingTimeSheets: TimeSheet | undefined;
   wasInjured: boolean;
 }) => {
+  // const { token, notificationPermissionStatus } = useFcmToken();
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
@@ -94,8 +95,22 @@ export const LaborClockOut = ({
       });
 
       const result = await updateTimeSheet(formData);
-      console.log("🔶 updateTimeSheet completed with result:", result);
-      console.log("🔶🔶🔶 PROCESS ONE COMPLETED 🔶🔶🔶");
+      if (result) {
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecard-submission",
+            title: "New Timesheet Submission",
+            message: `A new submission has been created and is pending approval.`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        const data = await response.json();
+        console.log("Time Card response", data);
+      }
     } catch (error) {
       console.error("🔴 Failed to process the time sheet:", error);
     }
@@ -103,22 +118,8 @@ export const LaborClockOut = ({
 
   async function processTwo() {
     try {
-      console.log("🟦🟦🟦 PROCESS TWO STARTING 🟦🟦🟦");
-
-      // Step 1: Delete cookies
-      console.log("🟦 Deleting cookies");
-      const cookieResponse = await fetch("/api/cookies?method=deleteAll");
-      console.log("🟦 Cookie deletion response status:", cookieResponse.status);
-
-      // Step 2: Clear localStorage
-      console.log("🟦 Clearing localStorage");
-      const localStorageKeys = Object.keys(localStorage);
-      console.log(
-        `🟦 Clearing ${localStorageKeys.length} items from localStorage`,
-      );
+      await fetch("/api/cookies?method=deleteAll");
       localStorage.clear();
-      console.log("🟦 localStorage cleared");
-
       console.log("🟦🟦🟦 PROCESS TWO COMPLETED 🟦🟦🟦");
     } catch (error) {
       console.error("🔴 Failed in process two:", error);

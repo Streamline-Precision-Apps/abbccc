@@ -3,10 +3,10 @@ import getFirebaseAdmin from "@/lib/firebase-admin";
 import prisma from "@/lib/prisma";
 import { Message } from "firebase-admin/messaging";
 
+export const runtime = "nodejs"; // Ensure this runs in a Node.js environment
+
 export async function POST(request: NextRequest) {
-  console.log("[send-multicast] 📨 Starting notification processing");
   const admin = getFirebaseAdmin();
-  console.log("[send-multicast] 🔥 Firebase Admin initialized");
   const { topic, title, message, link } = await request.json();
   if (!topic) {
     console.error("[send-multicast] ❌ No topic provided for notification");
@@ -29,18 +29,9 @@ export async function POST(request: NextRequest) {
   try {
     // Prepare message payload for topic messaging
     const payload: Message = {
-      notification: {
-        title,
-        body: message,
-      },
-      ...(link && {
-        webpush: {
-          fcmOptions: {
-            link,
-          },
-        },
-      }),
-      topic, // Topic to send to
+      notification: { title, body: message },
+      topic,
+      webpush: link ? { fcmOptions: { link } } : undefined,
     };
 
     console.log("[send-multicast] 📦 Topic message payload:", payload);
@@ -58,7 +49,7 @@ export async function POST(request: NextRequest) {
         topic,
         title,
         body: message,
-        url: link,
+        url: link ?? null,
         pushedAt: new Date(),
         pushAttempts: 1,
       },
@@ -83,7 +74,7 @@ export async function POST(request: NextRequest) {
           topic,
           title,
           body: message,
-          url: link,
+          url: link ?? null,
           pushedAt: new Date(),
           pushAttempts: 1,
         },

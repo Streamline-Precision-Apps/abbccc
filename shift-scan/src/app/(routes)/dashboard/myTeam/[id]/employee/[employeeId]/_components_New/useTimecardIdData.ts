@@ -230,6 +230,20 @@ export function useTimecardIdData(id: string) {
       // Update the original record with the saved changes
       if (result?.success) {
         setOriginal(edited);
+
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecards-changes",
+            title: "A Timecard was Modified",
+            message: `Timecard was modified by ${result.editorLog?.User?.firstName} ${result.editorLog?.User?.lastName}`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        await response.json();
       }
 
       return result;

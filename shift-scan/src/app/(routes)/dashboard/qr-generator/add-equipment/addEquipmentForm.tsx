@@ -167,11 +167,27 @@ export default function AddEquipmentForm() {
       formDataToSend.append("submitterName", submitterName || "");
 
       const response = await createEquipment(formDataToSend);
-      if (!response.success) {
-        return;
+      if (response.success) {
+        // send notification to subscribers
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "items",
+            title: "New Equipment Submission",
+            message:
+              "An equipment item has been created and is pending approval.",
+            link: "/admins/equipment",
+          }),
+        });
+        await response.json();
+
+        router.push("/dashboard/qr-generator");
       }
 
-      router.push("/dashboard/qr-generator");
+      return;
     } catch (error) {
       console.error(`${t("CreateError")}`, error);
     } finally {
