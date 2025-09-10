@@ -1061,26 +1061,40 @@ export async function updateTimeSheet(formData: FormData) {
     console.log(
       "[updateTimeSheet] Sending notification to topic: timecard-submission",
     );
-    const notificationResult = await sendNotificationToTopic({
-      topic: "timecard-submission",
-      title: "Timecard Submission Pending",
-      message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
-      link: `/admins/timesheets`,
+
+    const response = await fetch("/api/notifications/send-multicast", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        topic: "timecard-submission",
+        title: "Timecard Submission Pending",
+        message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
+        link: `/admins/timesheets`,
+      }),
     });
 
-    if (notificationResult.success) {
-      console.log(
-        "[updateTimeSheet] ✅ Notification sent successfully:",
-        notificationResult.response,
-      );
-    } else {
-      console.error(
-        "[updateTimeSheet] ❌ Failed to send notification:",
-        notificationResult.error,
-        "Status:",
-        notificationResult.success,
-      );
-    }
+    // const notificationResult = await sendNotificationToTopic({
+    //   topic: "timecard-submission",
+    //   title: "Timecard Submission Pending",
+    //   message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
+    //   link: `/admins/timesheets`,
+    // });
+
+    // if (notificationResult.success) {
+    //   console.log(
+    //     "[updateTimeSheet] ✅ Notification sent successfully:",
+    //     notificationResult.response,
+    //   );
+    // } else {
+    //   console.error(
+    //     "[updateTimeSheet] ❌ Failed to send notification:",
+    //     notificationResult.error,
+    //     "Status:",
+    //     notificationResult.success,
+    //   );
+    // }
 
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);
