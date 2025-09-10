@@ -1,8 +1,10 @@
 "use client";
 
+"use client";
+
 import { useEffect, useRef, useState } from "react";
-import { onMessage, Unsubscribe } from "firebase/messaging";
-import { fetchToken, messaging } from "../firebase";
+import { getToken, onMessage, Unsubscribe } from "firebase/messaging";
+import { fetchToken, messaging } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -142,7 +144,6 @@ const useFcmToken = () => {
         // // Step 10: Handle notification click event to navigate to a link if present.
         // n.onclick = (event) => {
         //   event.preventDefault();
-        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
         //   const link = (event.target as any)?.data?.url;
         //   if (link) {
         //     router.push(link);

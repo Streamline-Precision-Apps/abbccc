@@ -1,19 +1,16 @@
+importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js",
-);
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.19.1/firebase-messaging-compat.js",
+  "https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js",
 );
 
-// Firebase config with hardcoded values (service workers can't access process.env)
 const firebaseConfig = {
-  apiKey: "AIzaSyBUBdLoaUHXzX2vR9x7vlrsGoQscf3ua8g",
-  authDomain: "fcm-shift-scan.firebaseapp.com",
-  projectId: "fcm-shift-scan",
-  storageBucket: "fcm-shift-scan.firebasestorage.app",
-  messagingSenderId: "897456891133",
-  appId: "1:897456891133:web:fee26fb80b6f4f021e0a94",
-  measurementId: "G-TZHBBHJ7J7",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -60,7 +57,7 @@ self.addEventListener("notificationclick", function (event) {
             return client.focus();
           }
         }
-        // open a new window if the client does not have the app opened
+
         if (clients.openWindow) {
           console.log("OPENWINDOW ON CLIENT");
           return clients.openWindow(url);

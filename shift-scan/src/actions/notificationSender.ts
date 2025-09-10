@@ -21,51 +21,35 @@ export async function sendNotificationToTopic({
   link?: string;
 }) {
   console.log(
-    `[sendNotificationToTopic] Starting notification to topic: "${topic}"`,
+    `[sendNotificationToTopic] Received : topic: "${topic}, title: "${title}, message: "${message}, link: ${link || "none"}`,
   );
-  console.log(`[sendNotificationToTopic] Title: "${title}"`);
-  console.log(`[sendNotificationToTopic] Message: "${message}"`);
-  console.log(`[sendNotificationToTopic] Link: ${link || "none"}`);
 
   try {
-    // Prepare payload for the multicast endpoint
-    const payload = {
+    const payload = JSON.stringify({
       topic,
       title,
-      body: message, // Note: the API expects 'body', not 'message'
-      ...(link && { link }),
-    };
-
-    console.log(`[sendNotificationToTopic] Prepared payload:`, payload);
+      message,
+      link,
+    });
 
     // Use the correct API endpoint for topic-based notifications
     console.log(
       `[sendNotificationToTopic] Sending request to /api/notifications/send-multicast`,
     );
-    const response = await fetch(`/api/notifications/send-multicast`, {
+
+    const response = await fetch("/api/notifications/send-multicast", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: payload,
     });
 
-    console.log(
-      `[sendNotificationToTopic] Response status: ${response.status}`,
-    );
-
     if (!response.ok) {
-      const error = await response.json();
-      console.error(
-        "[sendNotificationToTopic] Error sending notification:",
-        error,
-      );
-      return { success: false, error };
+      throw new Error(`HTTP error: ${response.status}`);
     }
 
-    const result = await response.json();
-    console.log(`[sendNotificationToTopic] Success! Response:`, result);
-    return { success: true, result };
+    return { success: true, response: "Successfully sent notification" };
   } catch (error) {
     console.error("[sendNotificationToTopic] Exception caught:", error);
     return { success: false, error };
@@ -88,36 +72,29 @@ export async function sendNotificationToDevice({
   link?: string;
 }) {
   console.log(
-    `[sendNotificationToDevice] Starting notification to device token: "${token.substring(0, 10)}..."`,
+    `[sendNotificationToDevice] Starting notification to device token: "${token.substring(0, 10)}...", Title: ${title}, Message: ${message}, Link: ${link || "none"}`,
   );
-  console.log(`[sendNotificationToDevice] Title: "${title}"`);
-  console.log(`[sendNotificationToDevice] Message: "${message}"`);
-  console.log(`[sendNotificationToDevice] Link: ${link || "none"}`);
 
   try {
     // Prepare payload for the device notification
-    const payload = {
+    const payload = JSON.stringify({
       tokens: [token], // Send as an array of one token
       title,
       body: message, // API expects 'body', not 'message'
       link,
-    };
-
-    console.log(`[sendNotificationToDevice] Prepared payload:`, {
-      ...payload,
-      tokens: [`${token.substring(0, 10)}...`], // Truncate token for logging
     });
 
     // Use the correct API endpoint for device-specific notifications
     console.log(
       `[sendNotificationToDevice] Sending request to /api/notifications/send-multicast`,
     );
-    const response = await fetch(`/api/notifications/send-multicast`, {
+
+    const response = await fetch("/api/notifications/send-message", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: payload,
     });
 
     console.log(
@@ -125,17 +102,56 @@ export async function sendNotificationToDevice({
     );
 
     if (!response.ok) {
-      const error = await response.json();
       console.error(
-        "[sendNotificationToDevice] Error sending notification:",
-        error,
+        `[sendNotificationToDevice] Error response status: ${response.status}`,
       );
-      return { success: false, error };
+
+      // Try to get error details if available
+      try {
+        const error = await response.json();
+        console.error("[sendNotificationToDevice] Error details:", error);
+        return { success: false, error, status: response.status };
+      } catch (parseError) {
+        // If we can't parse the error as JSON, just return the status
+        return {
+          success: false,
+          error: `HTTP error: ${response.status}`,
+          status: response.status,
+        };
+      }
     }
 
-    const result = await response.json();
-    console.log(`[sendNotificationToDevice] Success! Response:`, result);
-    return { success: true, result };
+    // Try to handle non-JSON responses gracefully
+    try {
+      const result = await response.json();
+      console.log(`[sendNotificationToDevice] Success! Response:`, result);
+      return { success: true, result };
+    } catch (jsonError) {
+      console.error(
+        "[sendNotificationToDevice] Failed to parse response as JSON:",
+        jsonError,
+      );
+
+      // Try to get the response text for debugging
+      try {
+        const responseText = await response.text();
+        console.error(
+          "[sendNotificationToDevice] Response text (first 100 chars):",
+          responseText.substring(0, 100),
+        );
+      } catch (textError) {
+        console.error(
+          "[sendNotificationToDevice] Failed to get response text:",
+          textError,
+        );
+      }
+
+      return {
+        success: false,
+        error: "Failed to parse server response as JSON",
+        status: response.status,
+      };
+    }
   } catch (error) {
     console.error("[sendNotificationToDevice] Exception caught:", error);
     return { success: false, error };
