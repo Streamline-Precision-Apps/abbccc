@@ -6,7 +6,6 @@ import {
   useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -154,6 +153,9 @@ export function EquipmentDataTable({
         pageIndex: page - 1, // TanStack Table uses 0-indexed pages
         pageSize,
       },
+    },
+    meta: {
+      searchTerm, // Pass the search term to the table meta
     },
     manualPagination: true, // Tell TanStack Table we're handling pagination manually
     pageCount: totalPages, // Important for proper page count display

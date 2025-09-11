@@ -6,7 +6,7 @@ import {
 
 export function formatDuration(
   startDate: Date | string,
-  endDate: Date = new Date()
+  endDate: Date = new Date(),
 ) {
   const start = typeof startDate === "string" ? new Date(startDate) : startDate;
 

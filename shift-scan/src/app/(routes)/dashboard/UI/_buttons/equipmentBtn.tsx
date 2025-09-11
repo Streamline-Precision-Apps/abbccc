@@ -7,6 +7,7 @@ export default function EquipmentBtn({ permission }: { permission: string }) {
   const t = useTranslations("Widgets");
   return permission !== "USER" ? (
     <WidgetContainer
+      textSize={"h6"}
       titleImg="/equipment.svg"
       titleImgAlt="Equipment Icon"
       text={"Equipment"}
@@ -17,6 +18,7 @@ export default function EquipmentBtn({ permission }: { permission: string }) {
   ) : (
     <Holds className="h-full w-full col-span-2">
       <WidgetContainer
+        textSize={"h6"}
         titleImg="/equipment.svg"
         titleImgAlt="Equipment Icon"
         text={t("Equipment")}

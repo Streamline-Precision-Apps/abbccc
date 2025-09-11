@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
 import { auth } from "@/auth";
+import { OwnershipType } from "../../prisma/generated/prisma";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -23,13 +24,9 @@ export async function equipmentTagExists(id: string) {
 // Create equipment
 export async function createEquipment(formData: FormData) {
   try {
-    const submitterName = formData.get("submitterName") as string;
+    const ownershipType = formData.get("ownershipType") as OwnershipType;
+    const createdById = formData.get("createdById") as string;
     const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
-    const make = formData.get("make") as string;
-    const model = formData.get("model") as string;
-    const year = formData.get("year") as string;
-    const licensePlate = formData.get("licensePlate") as string;
-    const mileage = Number(formData.get("mileage") as string);
     const name = formData.get("temporaryEquipmentName") as string;
     const creationReason = formData.get("creationReasoning") as string;
     const destination = formData.get("destination") as string;
@@ -42,37 +39,17 @@ export async function createEquipment(formData: FormData) {
     }
 
     const result = await prisma.$transaction(async (prisma) => {
-      let newEquipment;
-      if (equipmentTag === "EQUIPMENT") {
-        newEquipment = await prisma.equipment.create({
-          data: {
-            qrId,
-            name,
-            description,
-            creationReason,
-            equipmentTag,
-          },
-        });
-      } else {
-        // Validate vehicle-specific fields
-        if (!make || !model || !year || !licensePlate || !mileage) {
-          throw new Error("All vehicle fields are required");
-        }
-
-        newEquipment = await prisma.equipment.create({
-          data: {
-            qrId,
-            name,
-            description,
-            creationReason,
-            make,
-            model,
-            year,
-            licensePlate,
-            equipmentTag,
-          },
-        });
-      }
+      const newEquipment = await prisma.equipment.create({
+        data: {
+          qrId,
+          name,
+          description,
+          creationReason,
+          equipmentTag,
+          createdById,
+          ownershipType,
+        },
+      });
 
       if (destination) {
         await prisma.equipmentHauled.create({
@@ -82,18 +59,6 @@ export async function createEquipment(formData: FormData) {
           },
         });
       }
-      // if (newEquipment) {
-      //   // Import at the top of the file:
-      //   // import { sendNotificationToTopic } from "@/actions/notificationSender";
-
-      //   // Send notification to the "items" topic
-      //   await sendNotificationToTopic({
-      //     topic: "items",
-      //     title: "New Equipment Created",
-      //     message: `A new ${equipmentTag.toLowerCase()} has been created: ${newEquipment.name}`,
-      //     link: `/admins/equipment`,
-      //   });
-      // }
 
       return newEquipment;
     });

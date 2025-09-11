@@ -18,6 +18,7 @@ export async function GET() {
     const equipment = await prisma.equipment.findMany({
       select: {
         id: true,
+        code: true,
         qrId: true,
         name: true,
         equipmentTag: true,
@@ -27,7 +28,7 @@ export async function GET() {
     if (!equipment || equipment.length === 0) {
       return NextResponse.json(
         { message: "No equipment found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

@@ -8,17 +8,22 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { highlight } from "@/app/(routes)/admins/_pages/higlight";
 
 // Define the column configuration
 export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
   {
     accessorKey: "code",
     header: "ID",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const equipment = row.original;
+      // Get searchTerm from table options (passed as meta)
+      const searchTerm = table.options.meta?.searchTerm || "";
       return (
-        <div className="text-xs text-center min-w-[50px]">
-          {equipment.code || " "}
+        <div
+          className={`text-xs text-center min-w-[50px] ${equipment.code ? "" : "italic text-red-400"}`}
+        >
+          {highlight(equipment.code || "Pending Registration", searchTerm)}
         </div>
       );
     },
@@ -26,14 +31,17 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
   {
     accessorKey: "name",
     header: "Name & Description",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const equipment = row.original;
       const tag = equipment.equipmentTag;
       const os = equipment.ownershipType;
       const condition = equipment.acquiredCondition;
+      const searchTerm = table.options.meta?.searchTerm || "";
       return (
         <div className="flex flex-col gap-1 text-left">
-          <p className="text-xs">{equipment.name || " "}</p>
+          <p className="text-xs">
+            {highlight(equipment.name || " ", searchTerm)}
+          </p>
           <div className="flex flex-row gap-2 pt-2">
             <div className="text-xs text-left justify-start">
               <span
@@ -41,10 +49,12 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
                   tag === "VEHICLE"
                     ? "text-sky-600 bg-sky-100"
                     : tag === "TRUCK"
-                      ? "bg-blue-100 text-blue-600"
+                      ? "text-blue-600 bg-blue-100"
                       : tag === "TRAILER"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-orange-100 text-orange-600"
+                        ? "text-green-600 bg-green-100"
+                        : tag === "EQUIPMENT"
+                          ? "text-orange-600 bg-orange-100"
+                          : ""
                 } px-2 py-1 text-[10px] rounded-xl`}
               >
                 {tag ? tag.charAt(0) + tag.slice(1).toLowerCase() : " "}
@@ -74,7 +84,9 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
                     ? "bg-indigo-100 text-indigo-600"
                     : os === "LEASED"
                       ? "bg-purple-100 text-purple-600"
-                      : ""
+                      : os === "RENTAL"
+                        ? "bg-cyan-100 text-cyan-600"
+                        : ""
                 }`}
               >
                 {os ? os.charAt(0) + os.slice(1).toLowerCase() : " "}

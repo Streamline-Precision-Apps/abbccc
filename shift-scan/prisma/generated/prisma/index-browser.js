@@ -602,7 +602,8 @@ exports.WorkType = exports.$Enums.WorkType = {
 
 exports.OwnershipType = exports.$Enums.OwnershipType = {
   OWNED: 'OWNED',
-  LEASED: 'LEASED'
+  LEASED: 'LEASED',
+  RENTAL: 'RENTAL'
 };
 
 exports.Condition = exports.$Enums.Condition = {

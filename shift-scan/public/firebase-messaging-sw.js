@@ -53,6 +53,7 @@ self.addEventListener("notificationclick", function (event) {
 
         // If relative URL is passed in firebase console or API route handler, it may open a new window as the client.url is the full URL i.e. https://example.com/ and the url is /about whereas if we passed in the full URL, it will focus on the existing tab i.e. https://example.com/about
         for (const client of clientList) {
+          client.postMessage({ type: "REFRESH_ADMINS" });
           if (client.url === url && "focus" in client) {
             return client.focus();
           }

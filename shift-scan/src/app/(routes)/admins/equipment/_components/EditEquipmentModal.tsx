@@ -27,7 +27,7 @@ type Equipment = {
   name: string;
   description: string;
   memo?: string;
-  ownershipType?: "OWNED" | "LEASED";
+  ownershipType?: "OWNED" | "LEASED" | "RENTAL";
   equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
