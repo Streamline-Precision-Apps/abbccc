@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { LoadType } from "@prisma/client";
+import { LoadType } from "../../../../../../prisma/generated/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     console.error("Error during authentication:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
 
     // Filter out timesheets with empty TascoLogs arrays
     const filteredReport = report.filter(
-      (item) => Array.isArray(item.TascoLogs) && item.TascoLogs.length > 0
+      (item) => Array.isArray(item.TascoLogs) && item.TascoLogs.length > 0,
     );
 
     const tascoReport = filteredReport.map((log) => ({
@@ -88,7 +88,7 @@ export async function GET(req: Request) {
     if (!tascoReport.length) {
       return NextResponse.json(
         { error: "No timesheets with TascoLogs found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     return NextResponse.json(tascoReport);
@@ -97,7 +97,7 @@ export async function GET(req: Request) {
     console.error("Error fetching timesheet by id:", error);
     return NextResponse.json(
       { error: "Failed to fetch timesheet" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

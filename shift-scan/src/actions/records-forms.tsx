@@ -6,6 +6,7 @@ import {
   FormTemplateStatus,
 } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
+import { FormStatus } from "../../prisma/generated/prisma/client";
 
 // ============================================================================
 // Types for form builder
@@ -550,10 +551,6 @@ export interface UpdateFormSubmissionInput {
   signature?: string;
   updateStatus?: string;
 }
-
-// Create a new form submission
-import { FormStatus } from "@prisma/client";
-import { n } from "framer-motion/dist/types.d-Cjd591yU";
 
 export interface CreateFormSubmissionInput {
   formTemplateId: string;
