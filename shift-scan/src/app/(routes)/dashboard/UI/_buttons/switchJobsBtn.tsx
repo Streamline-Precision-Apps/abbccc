@@ -37,6 +37,7 @@ export default function SwitchJobsBtn({
           {laborType === "truckLabor" ? (
             <VerticalLayout
               text={"Switch"}
+              textSize={"h6"}
               titleImg={"/jobsite.svg"}
               titleImgAlt={"Job site Icon"}
               color={"orange"}
@@ -53,6 +54,7 @@ export default function SwitchJobsBtn({
           ) : (
             <HorizontalLayout
               text={"Switch"}
+              textSize={"h6"}
               titleImg={"/jobsite.svg"}
               titleImgAlt={"Job site Icon"}
               color={"orange"}
@@ -72,6 +74,7 @@ export default function SwitchJobsBtn({
       {permission !== "USER" && (
         <VerticalLayout
           text={"Switch"}
+          textSize={"h6"}
           titleImg={"/jobsite.svg"}
           titleImgAlt={"Job site Icon"}
           color={"orange"}
@@ -129,21 +132,21 @@ export default function SwitchJobsBtn({
                           type === "equipment"
                             ? "/dashboard/equipment"
                             : type === "mechanic"
-                            ? `/dashboard/mechanic/projects/${
-                                logs.find((log) => log.type === type)
-                                  ?.maintenanceId
-                              }`
-                            : type === "Trucking Assistant"
-                            ? "/dashboard/truckingAssistant"
-                            : type === "tasco"
-                            ? "/dashboard/tasco"
-                            : undefined
+                              ? `/dashboard/mechanic/projects/${
+                                  logs.find((log) => log.type === type)
+                                    ?.maintenanceId
+                                }`
+                              : type === "Trucking Assistant"
+                                ? "/dashboard/truckingAssistant"
+                                : type === "tasco"
+                                  ? "/dashboard/tasco"
+                                  : undefined
                         }
                         className="w-full py-3"
                       >
                         <Texts size="p3">{type} </Texts>
                       </Buttons>
-                    )
+                    ),
                   )}
                 </Holds>
               </Holds>

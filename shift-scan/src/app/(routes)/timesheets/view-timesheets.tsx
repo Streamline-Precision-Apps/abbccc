@@ -15,6 +15,9 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import TimesheetList from "./timesheetList";
 import { FormStatus, WorkType } from "@/lib/enums";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export type TimeSheet = {
   id: number;
@@ -71,7 +74,9 @@ export default function ViewTimesheets({ user }: Props) {
       const end = new Date(endTime).getTime();
       const durationInMilliseconds = end - start;
       const durationInHours = durationInMilliseconds / (1000 * 60 * 60);
-      return durationInHours.toFixed(2); // Format as hours with two decimals
+      const rounded = Math.round(durationInHours * 10) / 10;
+      if (rounded === 0) return "< 1 hr";
+      return `${rounded.toFixed(1)} hrs`;
     }
     return "N/A";
   };
@@ -131,7 +136,7 @@ export default function ViewTimesheets({ user }: Props) {
             position={"row"}
             className="w-full justify-center items-center gap-x-2"
           >
-            <Titles size={"h2"}>{t("MyTimecards")}</Titles>
+            <Titles size={"lg"}>{t("MyTimecards")}</Titles>
             <Images
               titleImg={"/timecards.svg"}
               titleImgAlt={t("MyTimecards")}
@@ -140,91 +145,79 @@ export default function ViewTimesheets({ user }: Props) {
           </Holds>
         </TitleBoxes>
       </Holds>
-      <Holds className="row-start-2 row-end-8 h-full">
-        <Grids rows={"7"} gap={"5"} className="h-full">
+      <Holds className="row-start-2 row-end-8 h-full bg-app-dark-blue rounded-[10px]">
+        <Holds
+          background={"darkBlue"}
+          className={`px-4 h-20 row-start-1 row-end-2 rounded-b-none`}
+        >
+          <Forms onSubmit={handleSubmit} className=" h-full">
+            <Inputs type="hidden" name="id" value={user} readOnly />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="date" className="text-white">
+                {t("EnterDate")}
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                name="date"
+                defaultValue={currentDate}
+                className="text-center w-full bg-white"
+                onChange={(e) => fetchTimesheets(e.target.value)}
+              />
+            </div>
+          </Forms>
+        </Holds>
+        {!showTimesheets && !loading && (
+          <Holds
+            background={"lightGray"}
+            size={"full"}
+            className="h-full row-start-2 row-end-8 border-8 border-app-dark-blue"
+          />
+        )}
+
+        {loading ? (
           <Holds
             background={"white"}
-            className={`py-2 px-4 h-full row-start-1 row-end-3`}
+            size={"full"}
+            className="h-full animate-pulse border-8 border-app-dark-blue"
           >
-            <Forms onSubmit={handleSubmit} className=" h-full">
-              <Grids rows={"2"} className="h-full">
-                <Holds className="row-start-1 row-end-2">
-                  <Inputs type="hidden" name="id" value={user} readOnly />
-                  <Labels size={"p4"}>{t("EnterDate")}</Labels>
-                  <Inputs
-                    type="date"
-                    name="date"
-                    defaultValue={currentDate}
-                    className="text-center"
-                  />
-                </Holds>
-                <Holds>
-                  <Buttons
-                    type="submit"
-                    background={"lightBlue"}
-                    className="py-2"
-                  >
-                    <Titles size={"h5"}>{t("ViewTimecards")}</Titles>
-                  </Buttons>
-                </Holds>
-              </Grids>
-            </Forms>
-          </Holds>
-          {!showTimesheets && !loading && (
             <Holds
-              background={"lightGray"}
-              size={"full"}
-              className="h-full row-start-3 row-end-8"
-            />
-          )}
-
-          {loading ? (
+              position={"center"}
+              size={"50"}
+              className="h-full flex flex-col justify-center items-center "
+            >
+              <Spinner />
+              <Texts size={"sm"} className="mt-4">
+                {t("LoadingTimecards")}
+              </Texts>
+            </Holds>
+          </Holds>
+        ) : (
+          showTimesheets && (
             <Holds
               background={"white"}
               size={"full"}
-              className="h-full row-start-3 row-end-8 animate-pulse"
+              className="h-full overflow-auto no-scrollbar p-2  border-8 border-app-dark-blue "
             >
-              <Holds
-                position={"center"}
-                size={"50"}
-                className="h-full flex flex-col justify-center items-center "
-              >
-                <Spinner />
-                <Texts size={"p3"} className="mt-4">
-                  {t("LoadingTimecards")}
-                </Texts>
-              </Holds>
+              {timesheetData.length > 0 ? (
+                timesheetData.map((timesheet) => (
+                  <TimesheetList
+                    key={timesheet.id}
+                    timesheet={timesheet}
+                    calculateDuration={calculateDuration}
+                    copyToClipboard={copyToClipboard}
+                  />
+                ))
+              ) : (
+                <Holds size={"full"} className="h-full justify-center">
+                  <Texts size={"sm"} className="text-gray-500 italic">
+                    {t("NoTimecardsFoundForTheDaySelected")}
+                  </Texts>
+                </Holds>
+              )}
             </Holds>
-          ) : (
-            showTimesheets && (
-              <Holds
-                background={"white"}
-                size={"full"}
-                className="h-full row-start-3 row-end-8 overflow-auto no-scrollbar p-2 "
-              >
-                {timesheetData.length > 0 ? (
-                  timesheetData.map((timesheet) => (
-                    <TimesheetList
-                      key={timesheet.id}
-                      timesheet={timesheet}
-                      calculateDuration={calculateDuration}
-                      copyToClipboard={copyToClipboard}
-                    />
-                  ))
-                ) : (
-                  <Holds
-                    size={"full"}
-                    className="h-full justify-center items-center"
-                  >
-                    <Texts size={"p3"} className="text-gray-500 italic">
-                      {t("NoTimecardsFoundForTheDaySelected")}
-                    </Texts>
-                  </Holds>
-                )}
-              </Holds>
-            )
-          )}
-        </Grids>
+          )
+        )}
       </Holds>
     </>
   );

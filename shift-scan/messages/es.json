@@ -199,7 +199,10 @@
     "ClockInIcon": "Icono Clockin"
   },
   "TimeSheet": {
-    "EnterDate": "Ingrese la fecha",
+    "TimecardId": "ID: #",
+    "Duration": "Duración",
+    "WorkHours": "Horas",
+    "EnterDate": "Buscar registros de horas por fecha",
     "MyTimecards": "Mis tarjeta de tiempo",
     "ViewTimecards": "Ver las tarjetas de tiempo",
     "LoadingTimecards": "Cargando tarjetas de tiempo ...",
@@ -379,6 +382,7 @@
     "Truck": "Camión",
     "Equipment": "Equipo general",
     "Vehicle": "Vehículo",
+    "Trailer": "Tráiler",
     "EquipmentTitle": "Equipo",
     "Name": "Nombre",
     "NamePlaceholder": "Ingrese el nombre del equipo",

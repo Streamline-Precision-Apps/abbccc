@@ -82,18 +82,6 @@ export async function createEquipment(formData: FormData) {
           },
         });
       }
-      // if (newEquipment) {
-      //   // Import at the top of the file:
-      //   // import { sendNotificationToTopic } from "@/actions/notificationSender";
-
-      //   // Send notification to the "items" topic
-      //   await sendNotificationToTopic({
-      //     topic: "items",
-      //     title: "New Equipment Created",
-      //     message: `A new ${equipmentTag.toLowerCase()} has been created: ${newEquipment.name}`,
-      //     link: `/admins/equipment`,
-      //   });
-      // }
 
       return newEquipment;
     });

@@ -52,15 +52,9 @@ export default function AddEquipmentForm() {
 
   const [formData, setFormData] = useState({
     equipmentTag: "",
-    make: "",
-    model: "",
-    year: "",
-    licensePlate: "",
-    licenseState: "",
     temporaryEquipmentName: "",
-    creationComment: "",
-    creationReasoning: "",
     destination: "",
+    creationReasoning: "",
   });
 
   // Modal state for jobsite selector
@@ -72,45 +66,26 @@ export default function AddEquipmentForm() {
 
   // Replace your current validation constants with this function
   const validateForm = () => {
-    if (formData.equipmentTag === "EQUIPMENT") {
-      return formData.equipmentTag.trim() !== "" &&
-        formData.temporaryEquipmentName.trim() !== "" &&
-        formData.creationReasoning.trim() !== "" &&
-        formData.destination.trim() !== "" &&
-        eqCode.trim() !== "" &&
-        userId
-        ? true
-        : false;
-    } else if (
-      formData.equipmentTag === "TRUCK" ||
-      formData.equipmentTag === "VEHICLE"
-    ) {
-      return formData.equipmentTag.trim() !== "" &&
-        formData.make.trim() !== "" &&
-        formData.model.trim() !== "" &&
-        formData.year.trim() !== "" &&
-        formData.licensePlate.trim() !== "" &&
-        formData.temporaryEquipmentName.trim() !== "" &&
-        formData.creationReasoning.trim() !== "" &&
-        formData.destination.trim() !== "" &&
-        eqCode.trim() !== "" &&
-        userId
-        ? true
-        : false;
-    }
-    return false;
+    return (
+      formData.equipmentTag.trim() !== "" &&
+      formData.temporaryEquipmentName.trim() !== "" &&
+      formData.creationReasoning.trim() !== "" &&
+      formData.destination.trim() !== "" &&
+      eqCode.trim() !== "" &&
+      userId
+    );
   };
 
   // Update validation whenever form data changes
   useEffect(() => {
-    setFormValidation(validateForm());
+    setFormValidation(Boolean(validateForm()));
   }, [formData, eqCode, userId]);
 
   useEffect(() => {
     async function generateQrCode() {
       try {
         const result = uuidv4();
-        setEQCode(result);
+        setEQCode(`EQ-${result}`);
         const response = await equipmentTagExists(result);
         if (response) {
           setEQCode("");
@@ -121,20 +96,6 @@ export default function AddEquipmentForm() {
       }
     }
     generateQrCode();
-  }, [t]);
-
-  useEffect(() => {
-    const fetchJobsites = async () => {
-      try {
-        const jobsitesRes = await fetch("/api/getAllJobsites");
-        const jobsites = await jobsitesRes.json();
-        setJobsites(jobsites as JobCode[]);
-        setFilteredJobsites(jobsites);
-      } catch (error) {
-        console.error(`${t("CreateError")}`, error);
-      }
-    };
-    fetchJobsites();
   }, [t]);
 
   const handleSelectChange = (name: string, value: string) => {
@@ -207,142 +168,53 @@ export default function AddEquipmentForm() {
     }));
   };
 
-  const handleRegistrationClick = () => {
-    if (dateInputRef.current) {
-      dateInputRef.current.showPicker();
-    }
-  };
-
   return (
     <>
       <Holds background="white" className="row-start-1 row-end-2 h-full">
         <TitleBoxes onClick={() => router.back()}>
-          <Titles size={"h2"}>{t("NewEquipmentForm")}</Titles>
+          <Titles size={"lg"}>{t("NewEquipmentForm")}</Titles>
         </TitleBoxes>
       </Holds>
       <Holds background="white" className="row-start-2 row-end-8 h-full">
         <form onSubmit={handleSubmit} className="h-full w-full">
           <Contents width={"section"}>
-            <Grids rows={"8"} gap={"5"} className="h-full w-full pb-5">
-              {/* Address Section */}
-              <Holds className="row-start-1 row-end-5 h-full">
+            <Grids rows={"6"} gap={"5"} className="h-full w-full pb-5">
+              <Holds className="row-start-1 row-end-5 h-full py-3">
+                <Titles position={"center"} size={"lg"}>
+                  {t("EquipmentInfo")}
+                </Titles>
                 <Holds className="py-3">
-                  <Holds className="pb-3">
-                    <Titles position={"left"} size={"h3"}>
-                      {t("EquipmentInfo")}
-                    </Titles>
-                  </Holds>
-                  <Holds className="pb-3">
-                    <Selects
-                      value={formData.equipmentTag}
-                      onChange={handleInputChange}
-                      name="equipmentTag"
-                      className={`text-xs text-center h-full py-2 ${
-                        formData.equipmentTag === "" && "text-app-dark-gray"
-                      }`}
-                    >
-                      <option value="" disabled>
-                        {t("SelectEquipmentType")}
-                      </option>
-                      <option value="VEHICLE">{t("Vehicle")}</option>
-                      <option value="TRUCK">{t("Truck")}</option>
-                      <option value="EQUIPMENT">{t("Equipment")}</option>
-                    </Selects>
-                  </Holds>
-                  {(formData.equipmentTag === "TRUCK" ||
-                    formData.equipmentTag === "VEHICLE") && (
-                    <>
-                      <Holds position={"row"} className="pb-3 gap-x-2">
-                        <Holds className="w-1/2">
-                          <Inputs
-                            type="text"
-                            name="make"
-                            value={formData.make}
-                            placeholder={t("Make")}
-                            className="text-xs pl-3 py-2"
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </Holds>
-                        <Holds className="w-1/2">
-                          <Inputs
-                            type="text"
-                            name="model"
-                            value={formData.model}
-                            placeholder={t("Model")}
-                            className="text-xs pl-3 py-2"
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </Holds>
-                      </Holds>
-                      <Holds position={"row"} className="pb-3 gap-x-2">
-                        <Holds className="w-1/2">
-                          <Inputs
-                            type="number"
-                            name="year"
-                            min="1900"
-                            max={new Date().getFullYear()}
-                            value={formData.year}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value.length <= 4) {
-                                handleInputChange(e);
-                              }
-                            }}
-                            placeholder={t("Year")}
-                            className="text-xs pl-3 py-2"
-                            required
-                          />
-                        </Holds>
-                        <Holds className="w-1/2">
-                          <Inputs
-                            type="text"
-                            name="licensePlate"
-                            value={formData.licensePlate}
-                            placeholder={t("LicensePlate")}
-                            className="text-xs pl-3 py-2"
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </Holds>
-                      </Holds>
-                      <Holds position={"row"} className="w-full gap-x-2">
-                        <Holds className="w-1/2 h-full relative">
-                          {/* license State */}
-                          <Select
-                            name="licenseState"
-                            value={formData.licenseState}
-                            onValueChange={(value) =>
-                              handleSelectChange("licenseState", value)
-                            }
-                          >
-                            <SelectTrigger className="text-xs">
-                              <SelectValue placeholder="Select State" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {US_STATES.map((state) => (
-                                <SelectItem key={state.name} value={state.code}>
-                                  {state.code}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </Holds>
-                      </Holds>
-                    </>
-                  )}
-                </Holds>
-              </Holds>
-
-              {/* Creation Details Section */}
-              <Holds className="row-start-5 row-end-8 h-full">
-                <Holds className="pb-3">
-                  <Titles position={"left"} size={"h3"}>
-                    {t("CreationDetails")}
+                  <Titles
+                    size={"sm"}
+                    position={"left"}
+                    className="mb-1 text-black"
+                  >
+                    {t("EquipmentTypeLabel") || "Equipment Type"}
                   </Titles>
+                  <Selects
+                    value={formData.equipmentTag}
+                    onChange={handleInputChange}
+                    name="equipmentTag"
+                    className={`text-xs text-center h-full py-2 ${formData.equipmentTag === "" && "text-app-dark-gray"}`}
+                  >
+                    <option value="" disabled>
+                      {t("SelectEquipmentType")}
+                    </option>
+                    <option value="VEHICLE">{t("Vehicle")}</option>
+                    <option value="TRUCK">{t("Truck")}</option>
+                    <option value="EQUIPMENT">{t("Equipment")}</option>
+                    <option value="TRAILER">{t("Trailer")}</option>
+                  </Selects>
                 </Holds>
                 <Holds className="pb-3">
+                  <Titles
+                    size={"sm"}
+                    position={"left"}
+                    className="mb-1 text-black"
+                  >
+                    {t("TemporaryEquipmentNameLabel") ||
+                      "Temporary Equipment Name"}
+                  </Titles>
                   <Inputs
                     type="text"
                     name="temporaryEquipmentName"
@@ -353,8 +225,14 @@ export default function AddEquipmentForm() {
                     required
                   />
                 </Holds>
-
                 <Holds className="pb-3">
+                  <Titles
+                    size={"sm"}
+                    position={"left"}
+                    className="mb-1 text-black"
+                  >
+                    {t("CurrentLocationLabel") || "Current Location"}
+                  </Titles>
                   <Inputs
                     type="text"
                     name="destination"
@@ -365,8 +243,14 @@ export default function AddEquipmentForm() {
                     required
                   />
                 </Holds>
-
-                <Holds className="h-full pb-3">
+                <Holds className="pb-3">
+                  <Titles
+                    size={"sm"}
+                    position={"left"}
+                    className="mb-1 text-black"
+                  >
+                    {t("ReasonForCreatingLabel") || "Reason for Creating"}
+                  </Titles>
                   <TextAreas
                     name="creationReasoning"
                     value={formData.creationReasoning}
@@ -377,15 +261,14 @@ export default function AddEquipmentForm() {
                   />
                 </Holds>
               </Holds>
-
-              {/* Submit Button */}
-              <Holds className="row-start-8 row-end-9 h-full">
+              <Holds className="row-start-6 row-end-7">
                 <Buttons
                   background={formValidation ? "green" : "darkGray"}
                   type="submit"
+                  className="py-2"
                   disabled={!formValidation || isSubmitting}
                 >
-                  <Titles size={"h2"}>
+                  <Titles size={"lg"}>
                     {isSubmitting ? t("Submitting") : t("CreateEquipment")}
                   </Titles>
                 </Buttons>

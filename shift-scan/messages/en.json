@@ -204,7 +204,10 @@
     "ClockInIcon": "ClockIn Icon"
   },
   "TimeSheet": {
-    "EnterDate": "Enter Date",
+    "TimecardId": "ID: #",
+    "WorkHours": "Hours",
+    "Duration": "Duration",
+    "EnterDate": "Find Timecards by Date",
     "MyTimecards": "My Timecards",
     "ViewTimecards": "View Timecards",
     "LoadingTimecards": "Loading Timecards...",
@@ -326,6 +329,10 @@
     "Notes": "Additional notes"
   },
   "Generator": {
+    "EquipmentTypeLabel": "Equipment Type",
+    "TemporaryEquipmentNameLabel": "Temporary Equipment Name",
+    "CurrentLocationLabel": "Current Location",
+    "ReasonForCreatingLabel": "Reason for Creating",
     "SelectDestination": "Enter Current Location...",
     "CreateEquipment": "Create Equipment",
     "EquipmentInfo": "Equipment Info",
@@ -380,6 +387,7 @@
     "GenerateError": "Failed to generate QR code.",
     "Banner-Text": "Added Temporary Equipment Successfully",
     "Tag": "Equipment Tag",
+    "Trailer": "Trailer",
     "Truck": "Truck",
     "Equipment": "General Equipment",
     "Vehicle": "Vehicle",

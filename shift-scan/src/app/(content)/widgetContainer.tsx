@@ -31,7 +31,7 @@ export default function WidgetContainer({
   titleImg,
   titleImgAlt,
   text,
-  textSize = "h3",
+  textSize = "h5",
   background,
   translation,
   disabled = false,
@@ -42,13 +42,13 @@ export default function WidgetContainer({
     <Buttons
       background={disabled ? "darkGray" : background}
       href={href}
-      className="h-full w-full flex flex-col justify-center items-center gap-2"
+      className="h-full w-full flex flex-col justify-center items-center space-y-1 "
       disabled={disabled}
     >
       <img
         src={titleImg}
         alt={titleImgAlt}
-        className="h-full w-full max-h-[50px] max-w-[50px] object-contain"
+        className="h-full w-full max-h-[40px] max-w-[40px] object-contain"
       />
       <Titles size={textSize}>{t(text)}</Titles>
     </Buttons>

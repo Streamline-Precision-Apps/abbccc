@@ -33,7 +33,7 @@ export default function HamburgerMenuNew() {
     <Holds
       position={"row"}
       background={"white"}
-      className="row-start-1 row-end-2 h-full p-2"
+      className="row-start-1 row-end-2 h-full p-2 py-3"
     >
       <Holds className="w-24 h-full flex flex-col items-center justify-center relative">
         <Buttons
@@ -57,13 +57,8 @@ export default function HamburgerMenuNew() {
         </div>
       </Holds>
 
-      <Holds className="w-full h-full justify-center">
-        <Images
-          titleImg="/logo.svg"
-          titleImgAlt="logo"
-          position={"left"}
-          className="relative h-full w-full mx-auto"
-        />
+      <Holds className="w-full h-full justify-center items-center">
+        <img src={"/logo.svg"} alt="logo" className="max-w-16" />
       </Holds>
 
       <Holds className="w-24 h-full justify-center">

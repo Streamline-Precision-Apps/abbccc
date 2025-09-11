@@ -20,10 +20,14 @@ type Option = {
 
 type QrEquipmentContentProps = {
   generatedList: Option[];
+  refresh: () => Promise<void>;
+  loading: boolean;
 };
 
 export default function QrEquipmentContent({
   generatedList,
+  refresh,
+  loading,
 }: QrEquipmentContentProps) {
   const router = useRouter();
   const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
@@ -68,6 +72,8 @@ export default function QrEquipmentContent({
     <Grids rows={"7"} cols={"3"} gap={"5"} className="h-full w-full">
       <Holds className="row-start-1 row-end-7 col-span-3 h-full">
         <NewCodeFinder
+          isLoading={loading}
+          onRefresh={refresh}
           options={generatedList}
           selectedOption={selectedEquipment}
           onSelect={handleSearchSelectChange}
@@ -86,7 +92,7 @@ export default function QrEquipmentContent({
           <Images
             src="/qrCode.svg"
             alt="Team"
-            className="w-8 h-8 mx-auto"
+            className="w-6 h-6 mx-auto"
             titleImg={""}
             titleImgAlt={""}
           />
@@ -97,7 +103,7 @@ export default function QrEquipmentContent({
         className="row-start-7 row-end-8 col-start-2 col-end-4 h-full"
       >
         <Buttons background={"green"} onClick={handleNew}>
-          <Titles size={"h4"}>{t("CreateNewEquipment")}</Titles>
+          <Titles size={"sm"}>{t("CreateNewEquipment")}</Titles>
         </Buttons>
       </Holds>
 
