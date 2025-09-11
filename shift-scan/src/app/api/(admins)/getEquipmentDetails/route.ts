@@ -193,6 +193,11 @@ export async function GET(req: Request) {
         },
       });
     }
+    const pendingEquipment = await prisma.equipment.count({
+      where: {
+        approvalStatus: "PENDING",
+      },
+    });
 
     return NextResponse.json({
       equipment: equipmentSummary,
@@ -200,6 +205,7 @@ export async function GET(req: Request) {
       page,
       pageSize,
       totalPages,
+      pendingEquipment,
     });
   } catch (error) {
     Sentry.captureException(error);

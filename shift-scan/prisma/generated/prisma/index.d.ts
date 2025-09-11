@@ -234,7 +234,8 @@ export type EquipmentTags = (typeof EquipmentTags)[keyof typeof EquipmentTags]
 
 export const OwnershipType: {
   OWNED: 'OWNED',
-  LEASED: 'LEASED'
+  LEASED: 'LEASED',
+  RENTAL: 'RENTAL'
 };
 
 export type OwnershipType = (typeof OwnershipType)[keyof typeof OwnershipType]

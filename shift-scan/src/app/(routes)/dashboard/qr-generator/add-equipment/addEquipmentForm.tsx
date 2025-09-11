@@ -28,6 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { US_STATES } from "@/data/stateValues";
+import { useDashboardData } from "@/app/(routes)/admins/_pages/sidebar/DashboardDataContext";
+import { Texts } from "@/components/(reusable)/texts";
 
 export type JobCode = {
   id: string;
@@ -35,18 +37,14 @@ export type JobCode = {
   name: string;
 };
 
-export default function AddEquipmentForm() {
+export default function AddEquipmentForm({}) {
   const t = useTranslations("Generator");
   const { data: session } = useSession();
   const router = useRouter();
   const userId = session?.user.id;
   const submitterName = session?.user.firstName + " " + session?.user.lastName;
   const [eqCode, setEQCode] = useState("");
-  const dateInputRef = useRef<HTMLInputElement>(null);
-
-  // Always initialize as arrays
-  const [jobsites, setJobsites] = useState<JobCode[]>([]);
-  const [filteredJobsites, setFilteredJobsites] = useState<JobCode[]>([]);
+  const { refresh } = useDashboardData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formValidation, setFormValidation] = useState<boolean>(false);
 
@@ -55,14 +53,8 @@ export default function AddEquipmentForm() {
     temporaryEquipmentName: "",
     destination: "",
     creationReasoning: "",
+    ownershipType: "",
   });
-
-  // Modal state for jobsite selector
-  const [jobsiteModalOpen, setJobsiteModalOpen] = useState(false);
-  const [selectedJobsite, setSelectedJobsite] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
 
   // Replace your current validation constants with this function
   const validateForm = () => {
@@ -71,6 +63,7 @@ export default function AddEquipmentForm() {
       formData.temporaryEquipmentName.trim() !== "" &&
       formData.creationReasoning.trim() !== "" &&
       formData.destination.trim() !== "" &&
+      formData.ownershipType.trim() !== "" &&
       eqCode.trim() !== "" &&
       userId
     );
@@ -130,20 +123,26 @@ export default function AddEquipmentForm() {
       const response = await createEquipment(formDataToSend);
       if (response.success) {
         // send notification to subscribers
-        const response = await fetch("/api/notifications/send-multicast", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const notificationResponse = await fetch(
+          "/api/notifications/send-multicast",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              topic: "items",
+              title: "New Equipment Submission",
+              message:
+                "An equipment item has been created and is pending approval.",
+              link: "/admins/equipment",
+            }),
           },
-          body: JSON.stringify({
-            topic: "items",
-            title: "New Equipment Submission",
-            message:
-              "An equipment item has been created and is pending approval.",
-            link: "/admins/equipment",
-          }),
-        });
-        await response.json();
+        );
+        await notificationResponse.json();
+        if (notificationResponse.ok) {
+          refresh();
+        }
 
         router.push("/dashboard/qr-generator");
       }
@@ -180,17 +179,14 @@ export default function AddEquipmentForm() {
           <Contents width={"section"}>
             <Grids rows={"6"} gap={"5"} className="h-full w-full pb-5">
               <Holds className="row-start-1 row-end-5 h-full py-3">
-                <Titles position={"center"} size={"lg"}>
-                  {t("EquipmentInfo")}
-                </Titles>
                 <Holds className="py-3">
-                  <Titles
-                    size={"sm"}
+                  <Texts
+                    size={"xs"}
                     position={"left"}
-                    className="mb-1 text-black"
+                    className="text-black pb-1"
                   >
                     {t("EquipmentTypeLabel") || "Equipment Type"}
-                  </Titles>
+                  </Texts>
                   <Selects
                     value={formData.equipmentTag}
                     onChange={handleInputChange}
@@ -207,14 +203,36 @@ export default function AddEquipmentForm() {
                   </Selects>
                 </Holds>
                 <Holds className="pb-3">
-                  <Titles
-                    size={"sm"}
+                  <Texts
+                    size={"xs"}
                     position={"left"}
-                    className="mb-1 text-black"
+                    className="text-black pb-1"
+                  >
+                    Ownership Type
+                  </Texts>
+                  <Selects
+                    value={formData.ownershipType}
+                    onChange={handleInputChange}
+                    name="ownershipType"
+                    className={`text-xs text-center h-full py-2 ${formData.ownershipType === "" && "text-app-dark-gray"}`}
+                  >
+                    <option value="" disabled>
+                      Select Ownership Type
+                    </option>
+                    <option value="OWNED">OWNED</option>
+                    <option value="LEASED">LEASED</option>
+                    <option value="RENTAL">RENTAL</option>
+                  </Selects>
+                </Holds>
+                <Holds className="pb-3">
+                  <Texts
+                    size={"xs"}
+                    position={"left"}
+                    className="text-black pb-1"
                   >
                     {t("TemporaryEquipmentNameLabel") ||
                       "Temporary Equipment Name"}
-                  </Titles>
+                  </Texts>
                   <Inputs
                     type="text"
                     name="temporaryEquipmentName"
@@ -226,13 +244,13 @@ export default function AddEquipmentForm() {
                   />
                 </Holds>
                 <Holds className="pb-3">
-                  <Titles
-                    size={"sm"}
+                  <Texts
+                    size={"xs"}
                     position={"left"}
-                    className="mb-1 text-black"
+                    className="text-black pb-1"
                   >
                     {t("CurrentLocationLabel") || "Current Location"}
-                  </Titles>
+                  </Texts>
                   <Inputs
                     type="text"
                     name="destination"
@@ -244,13 +262,13 @@ export default function AddEquipmentForm() {
                   />
                 </Holds>
                 <Holds className="pb-3">
-                  <Titles
-                    size={"sm"}
+                  <Texts
+                    size={"xs"}
                     position={"left"}
-                    className="mb-1 text-black"
+                    className="text-black pb-1"
                   >
                     {t("ReasonForCreatingLabel") || "Reason for Creating"}
-                  </Titles>
+                  </Texts>
                   <TextAreas
                     name="creationReasoning"
                     value={formData.creationReasoning}
