@@ -51,20 +51,6 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
     refresh();
   }, [refresh]);
 
-  // Listen for service worker messages
-  React.useEffect(() => {
-    function handleSWMessage(event: MessageEvent) {
-      if (event.data?.type === "REFRESH_ADMINS") {
-        refresh();
-      }
-    }
-
-    navigator.serviceWorker?.addEventListener("message", handleSWMessage);
-    return () => {
-      navigator.serviceWorker?.removeEventListener("message", handleSWMessage);
-    };
-  }, [refresh]);
-
   return (
     <DashboardDataContext.Provider value={{ data, refresh, loading }}>
       {children}

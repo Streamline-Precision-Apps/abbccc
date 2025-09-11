@@ -2,7 +2,6 @@ import { NextResponse, userAgent } from "next/server";
 import { NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/auth";
-import is from "zod/v4/locales/is.cjs";
 
 /**
  * Array of paths that don't require authentication
