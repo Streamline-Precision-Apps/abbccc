@@ -67,6 +67,10 @@ export async function middleware(request: NextRequest) {
       userPermission === "ADMIN" || userPermission === "SUPERADMIN";
 
     if (isMobile) {
+      // Allow API routes for mobile
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.next();
+      }
       // On mobile, check if the current path starts with any allowed mobile path
       const isMobileAllowedPath = MOBILE_ALLOWED_PATHS.some((path) => {
         // For root path, only exact match is allowed
@@ -85,6 +89,10 @@ export async function middleware(request: NextRequest) {
 
       if (isAdminPath && !isAdmin) {
         return NextResponse.redirect(new URL("/not-authorized", request.url));
+      }
+      //they have access to API routes
+      if (isAdmin && pathname.startsWith("/api/")) {
+        return NextResponse.next();
       }
       // If the user is an admin and trying to access mobile-only paths, redirect to admin section
       if (isAdmin) {
