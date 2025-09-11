@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { EquipmentState, EquipmentTags } from "@prisma/client";
+import {
+  EquipmentState,
+  EquipmentTags,
+} from "../../../../../prisma/generated/prisma";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
