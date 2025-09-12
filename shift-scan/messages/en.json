@@ -328,7 +328,23 @@
     "scanError": "QR code does not exist. Please try again.",
     "Notes": "Additional notes"
   },
+  "CodeFinder": {
+    "PullToRefresh": "Pull to refresh",
+    "ReleaseToRefresh": "Release to refresh",
+    "Refreshing": "Refreshing..."
+  },
   "Generator": {
+    "JobsiteDetails": "Jobsite Details",
+    "OwnershipTypeLabel": "Ownership Type",
+    "SelectOwnershipType": "Select Ownership Type",
+    "EquipmentDetails": "Equipment Details",
+    "Street": "Street",
+    "CityLabel": "City",
+    "SelectState": "Select State",
+    "ZipCodeLabel": "Zip Code",
+    "TemporaryJobsiteCodeLabel": "Temporary Jobsite Code",
+    "TemporaryJobsiteNameLabel": "Temporary Jobsite Name",
+    "JobsiteDescription": "Jobsite Description",
     "EquipmentTypeLabel": "Equipment Type",
     "TemporaryEquipmentNameLabel": "Temporary Equipment Name",
     "CurrentLocationLabel": "Current Location",
@@ -371,7 +387,7 @@
     "IsActive": "Is Site Active?",
     "Temporary": "Temporary",
     "NameExample": "Enter a name for the site",
-    "Address": "New Address",
+    "Address": "Address Info",
     "NewAddress": "New Address?",
     "ClientName": "Client Name",
     "AddressInformation": "Enter Street address here...",

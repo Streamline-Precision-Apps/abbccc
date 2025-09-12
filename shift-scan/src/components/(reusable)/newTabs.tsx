@@ -123,20 +123,18 @@ export const NewTab: FC<TabProps> = ({
         .join(" ")}
     >
       <div
-        className={`${
-          isActive
-            ? "w-full flex flex-row justify-between items-center"
-            : "w-full"
-        } `}
+        className={`w-full flex ${isActive ? "flex-row px-2 items-center gap-2 justify-between" : ""}`}
       >
-        <div className="w-3/4 h-full">{isActive && children}</div>
-        <div className={`${isActive ? "w-1/4 h-full" : "w-full "} `}>
-          <img
-            src={titleImage}
-            alt={titleImageAlt}
-            className={isActive ? " w-8 h-8" : "w-10 h-10 "}
-          />
-        </div>
+        {isActive ? (
+          <>
+            <div className="w-full flex items-end gap-2 justify-between">
+              {children}
+              <img src={titleImage} alt={titleImageAlt} className="w-8 h-8" />
+            </div>
+          </>
+        ) : (
+          <img src={titleImage} alt={titleImageAlt} className="w-10 h-10" />
+        )}
         {!isComplete && !isLoading && (
           <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
         )}

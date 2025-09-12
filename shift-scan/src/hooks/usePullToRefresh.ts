@@ -37,7 +37,7 @@ interface UsePullToRefreshReturn {
 export function usePullToRefresh({
   onRefresh,
   threshold = 30, // Reduced from 70 to 50 for easier triggering
-  maxDistance = 150,
+  maxDistance = 30,
   resistanceFactor = 0.4,
   scrollCheckDelay = 150,
 }: UsePullToRefreshProps): UsePullToRefreshReturn {
@@ -77,8 +77,8 @@ export function usePullToRefresh({
       lastTimestampRef.current = timestamp;
 
       // Spring physics parameters
-      const springStrength = 0.08;
-      const damping = 0.7;
+      const springStrength = 0.04;
+      const damping = 0.75;
 
       // Apply spring force (proportional to displacement)
       const springForce = -springStrength * pullDistance;
@@ -202,10 +202,8 @@ export function usePullToRefresh({
     if (releaseState && pullDistance >= threshold) {
       // Trigger refresh
       setIsRefreshing(true);
-
-      // Smoothly animate to the refreshing position
-      setPullDistance(threshold);
-      setPullProgress(1);
+      setPullDistance(0);
+      setPullProgress(0);
 
       try {
         await onRefresh();

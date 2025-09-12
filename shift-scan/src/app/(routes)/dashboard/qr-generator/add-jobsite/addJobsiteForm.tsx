@@ -50,7 +50,8 @@ export default function AddJobsiteForm() {
     formData.code.trim() !== "" &&
     formData.city.trim() !== "" &&
     formData.state.trim() !== "" &&
-    formData.zipCode.trim() !== "";
+    formData.zipCode.trim().length >= 5 &&
+    formData.zipCode.trim().length <= 9;
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -123,152 +124,218 @@ export default function AddJobsiteForm() {
     <>
       <Holds background={"white"} className="row-start-1 row-end-2 h-full">
         <TitleBoxes position={"row"} onClick={() => router.back()}>
-          <Titles size={"h2"}>{t("NewJobsiteForm")}</Titles>
+          <Titles size={"lg"} className="">
+            {t("NewJobsiteForm")}
+          </Titles>
         </TitleBoxes>
       </Holds>
-      <Holds background={"white"} className="row-start-2 row-end-8 h-full">
+      <Holds
+        background={"white"}
+        className="row-start-2 row-end-8 overflow-auto no-scrollbar h-full"
+      >
         <form onSubmit={handleSubmit} className="h-full w-full">
           <Contents width={"section"}>
-            <Grids rows={"8"} gap={"5"} className="h-full w-full pb-5">
-              {/* New Address Title and Checkbox */}
-
-              {/* Address Section (conditionally rendered) */}
-
-              <Holds className="row-start-1 row-end-3 h-full mt-4">
-                {/* Client Name Input */}
-                <Holds className="pb-3">
-                  <Titles position={"left"} size={"h3"}>
-                    {t("AddressInformation")}
-                  </Titles>
-                </Holds>
-
-                <Holds className="pb-3">
-                  <Inputs
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    placeholder={t("AddressInformation")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-
-                <Holds className="pb-3">
-                  <Inputs
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    placeholder={t("City")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-
-                <Holds position={"row"} className="w-full pb-3 gap-x-3">
-                  <Holds className="w-1/2">
-                    <Selects
-                      name="state"
-                      value={formData.state}
-                      className="text-xs py-2 text-center"
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="">Select State</option>
-                      {StateOptions.map((state) => (
-                        <option key={state.value} value={state.value}>
-                          {state.label}
-                        </option>
-                      ))}
-                    </Selects>
-                  </Holds>
-
-                  <Holds className="w-1/2">
-                    <Inputs
-                      type="text"
-                      name="zipCode"
-                      value={formData.zipCode}
-                      placeholder={t("ZipCode")}
-                      className="text-xs py-2 text-center"
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </Holds>
-                </Holds>
-              </Holds>
-
-              {/* Creation Details Section */}
-              <Holds
-                background={"white"}
-                className="row-start-4 row-end-6 h-full"
+            {/* Address Section */}
+            <Holds className="h-full my-4">
+              <Titles
+                position={"left"}
+                size={"md"}
+                className=" mb-2 border-b pb-2 text-gray-800"
               >
-                <Holds className="pb-3">
-                  <Titles position={"left"} size={"h3"}>
-                    {t("CreationDetails")}
-                  </Titles>
-                </Holds>
-
-                <Holds className="pb-3">
-                  <Inputs
-                    type="text"
-                    name="code"
-                    value={formData.code}
-                    placeholder={t("TemporaryJobsiteCode")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-
-                <Holds className="pb-3">
-                  <Inputs
-                    type="text"
-                    name="temporaryJobsiteName"
-                    value={formData.temporaryJobsiteName}
-                    placeholder={t("TemporaryJobsiteName")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-
-                <Holds className="h-full pb-3">
-                  <TextAreas
-                    name="creationComment"
-                    value={formData.creationComment}
-                    placeholder={t("TemporaryJobsiteDescription")}
-                    className="text-xs pl-3 h-full"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-
-                <Holds className="h-full pb-3">
-                  <TextAreas
-                    name="creationReasoning"
-                    value={formData.creationReasoning}
-                    placeholder={t("CreationReasoning")}
-                    className="text-xs pl-3 h-full"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-              </Holds>
-
-              {/* Submit Button */}
-              <Holds className="row-start-10 row-end-11 h-full">
-                <Buttons
-                  background={isFormValid ? "green" : "darkGray"}
-                  type="submit"
-                  disabled={!isFormValid || isSubmitting}
+                {t("JobsiteDetails")}
+              </Titles>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="code"
+                  className="block text-xs font-medium mb-1 text-gray-700"
                 >
-                  <Titles size={"h2"}>
-                    {isSubmitting ? t("Submitting") : t("SubmitJobsite")}
-                  </Titles>
-                </Buttons>
+                  {t("TemporaryJobsiteCodeLabel")}
+                </label>
+                <Inputs
+                  id="code"
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  placeholder={t("TemporaryJobsiteCode")}
+                  className="text-sm p-2"
+                  onChange={handleInputChange}
+                  required
+                />
               </Holds>
-            </Grids>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="temporaryJobsiteName"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("TemporaryJobsiteNameLabel")}
+                </label>
+                <Inputs
+                  id="temporaryJobsiteName"
+                  type="text"
+                  name="temporaryJobsiteName"
+                  value={formData.temporaryJobsiteName}
+                  placeholder={t("TemporaryJobsiteName")}
+                  className="text-sm p-2"
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="creationComment"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("JobsiteDescription")}
+                </label>
+                <TextAreas
+                  id="creationComment"
+                  name="creationComment"
+                  value={formData.creationComment}
+                  placeholder={t("TemporaryJobsiteDescription")}
+                  className="text-sm p-2"
+                  rows={5}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+            </Holds>
+            <div className="border-t mb-2" />
+            {/* Address info */}
+            <Holds className="h-full mb-2">
+              <Titles
+                position={"left"}
+                size={"md"}
+                className=" mb-2 border-b pb-2 text-gray-800"
+              >
+                {t("Address")}
+              </Titles>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="address"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("Street")}
+                </label>
+                <Inputs
+                  id="address"
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  placeholder={t("AddressInformation")}
+                  className="text-sm p-2"
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="city"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("CityLabel")}
+                </label>
+                <Inputs
+                  id="city"
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  placeholder={t("City")}
+                  className="text-sm p-2"
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="state"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("State")}
+                </label>
+                <Selects
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  className="text-sm p-2"
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">{t("SelectState")}</option>
+                  {StateOptions.map((state) => (
+                    <option key={state.value} value={state.value}>
+                      {state.label}
+                    </option>
+                  ))}
+                </Selects>
+              </Holds>
+
+              <Holds className="w-full pb-3">
+                <label
+                  htmlFor="zipCode"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("ZipCodeLabel")}
+                </label>
+                <Inputs
+                  id="zipCode"
+                  type="text"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  placeholder={t("ZipCode")}
+                  className="text-sm p-2"
+                  onChange={handleInputChange}
+                  required
+                  minLength={5}
+                  maxLength={9}
+                />
+              </Holds>
+            </Holds>
+            <div className="border-t mb-2" />
+            {/* Creation Details Section */}
+            <Holds
+              background={"white"}
+              className="row-start-4 row-end-6 h-full"
+            >
+              <Titles
+                position={"left"}
+                size={"md"}
+                className="mb-2 border-b pb-2 text-gray-800"
+              >
+                {t("CreationDetails")}
+              </Titles>
+
+              <Holds className="h-full pb-3">
+                <label
+                  htmlFor="creationReasoning"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("ReasonForCreatingLabel")}
+                </label>
+                <TextAreas
+                  id="creationReasoning"
+                  name="creationReasoning"
+                  value={formData.creationReasoning}
+                  placeholder={t("CreationReasoning")}
+                  rows={5}
+                  className="text-sm"
+                  required
+                />
+              </Holds>
+            </Holds>
+            <div className="border-t my-3" />
+            {/* Submit Button */}
+            <Holds className="flex items-center justify-center pb-3">
+              <Buttons
+                background={isFormValid ? "green" : "darkGray"}
+                type="submit"
+                disabled={!isFormValid || isSubmitting}
+                className="w-full py-2 transition-colors duration-200"
+              >
+                <Titles size={"lg"}>
+                  {isSubmitting ? t("Submitting") : t("SubmitJobsite")}
+                </Titles>
+              </Buttons>
+            </Holds>
           </Contents>
         </form>
       </Holds>

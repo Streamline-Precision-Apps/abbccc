@@ -16,7 +16,6 @@ import { useEffect } from "react";
 import { z } from "zod";
 import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { set } from "lodash";
 
 const JobCodesSchema = z.object({
   id: z.string(),
@@ -54,7 +53,7 @@ export default function QRGeneratorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("returnUrl") || "/dashboard";
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingJobsite, setLoadingJobsite] = useState<boolean>(false);
   const [loadingEquipment, setLoadingEquipment] = useState<boolean>(false);
   const [generatedJobsiteList, setGeneratedJobsiteList] = useState<Option[]>(
@@ -66,8 +65,14 @@ export default function QRGeneratorContent() {
   const [jobsiteRefreshKey, setJobsiteRefreshKey] = useState<number>(0);
   const [equipmentRefreshKey, setEquipmentRefreshKey] = useState<number>(0);
 
-  const refreshEquipment = async () => setEquipmentRefreshKey((k) => k + 1);
-  const refreshJobsites = async () => setJobsiteRefreshKey((k) => k + 1);
+  const refreshEquipment = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setEquipmentRefreshKey((k) => k + 1);
+  };
+  const refreshJobsites = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setJobsiteRefreshKey((k) => k + 1);
+  };
 
   const fetchEquipment = async () => {
     try {
@@ -141,9 +146,12 @@ export default function QRGeneratorContent() {
 
   useEffect(() => {
     setLoading(true);
-    fetchEquipment();
-    fetchJobsites();
-    setLoading(false);
+    setLoadingEquipment(true);
+    setLoadingJobsite(true);
+
+    Promise.all([fetchEquipment(), fetchJobsites()]).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -167,14 +175,7 @@ export default function QRGeneratorContent() {
         }`}
       >
         <TitleBoxes position={"row"} onClick={() => router.push(url)}>
-          <Titles size={"h2"}>{t("QrGenerator")}</Titles>
-          <Images
-            src="/qrCode.svg"
-            alt="Team"
-            className="w-8 h-8"
-            titleImg={""}
-            titleImgAlt={""}
-          />
+          <Titles size={"xl"}>{t("QrGenerator")}</Titles>
         </TitleBoxes>
       </Holds>
       <Holds className="row-start-2 row-end-8 h-full">
@@ -188,7 +189,9 @@ export default function QRGeneratorContent() {
               titleImageAlt=""
               animatePulse={loading}
             >
-              <Titles size={"h2"}>{t("Jobsite")}</Titles>
+              <Titles size={"lg"} className="w-full">
+                {t("Jobsite")}
+              </Titles>
             </NewTab>
             <NewTab
               onClick={() => setActiveTab(2)}
@@ -198,7 +201,7 @@ export default function QRGeneratorContent() {
               titleImageAlt=""
               animatePulse={loading}
             >
-              <Titles size={"h3"}>{t("EquipmentTitle")}</Titles>
+              <Titles size={"lg"}>{t("EquipmentTitle")}</Titles>
             </NewTab>
           </Holds>
           <Holds
