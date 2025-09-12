@@ -177,7 +177,7 @@ export default function NewClockProcess({
       // setting the cookies below to fetch the prev TimeSheet
       const fetchRecentTimeSheetId = await fetchWithOfflineCache(
         "recentTimecardReturn",
-        () => fetch("/api/getRecentTimecardReturn").then((res) => res.json())
+        () => fetch("/api/getRecentTimecardReturn").then((res) => res.json()),
       );
       const tId = fetchRecentTimeSheetId.id;
       const formData = new FormData();
@@ -186,7 +186,7 @@ export default function NewClockProcess({
       const response = await execute(
         "returnToPrevWork",
         returnToPrevWork,
-        formData
+        formData,
       );
       console.log("response:", response);
 

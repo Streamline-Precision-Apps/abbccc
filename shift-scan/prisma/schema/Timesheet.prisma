@@ -93,25 +93,25 @@ model TascoMaterialTypes {
 }
 
 model TruckingLog {
-  id              String            @id @default(uuid())
-  timeSheetId     Int
-  laborType       String
-  taskName        String?
-  equipmentId     String?
-  startingMileage Int?
-  endingMileage   Int?
-  truckLaborLogId String?
-  trailerNumber   String?
-  truckNumber     String?
-  EquipmentHauled EquipmentHauled[]
-  Materials       Material[]
-  RefuelLogs      RefuelLog[]
-  StateMileages   StateMileage[]
+  id                String            @id @default(uuid())
+  timeSheetId       Int
+  laborType         String
+  taskName          String?
+  equipmentId       String?
+  startingMileage   Int?
+  endingMileage     Int?
+  truckLaborLogId   String?
+  trailerNumber     String?
+  truckNumber       String?
+  EquipmentHauled   EquipmentHauled[]
+  Materials         Material[]
+  RefuelLogs        RefuelLog[]
+  StateMileages     StateMileage[]
   TruckingLaborLogs TruckLaborLogs[]
-  Equipment       Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
-  TimeSheet       TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  Trailer         Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
-  Truck           Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+  Equipment         Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
+  TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Trailer           Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
+  Truck             Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
 }
 
 model TruckLaborLogs {
