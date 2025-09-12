@@ -29,8 +29,6 @@ export default function TeamMemberLayout() {
   );
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [activeTab, setActiveTab] = useState(1);
-  const [date, setDate] = useState<string>(today);
-  const [edit, setEdit] = useState(false);
 
   const {
     employee,
@@ -55,7 +53,7 @@ export default function TeamMemberLayout() {
               )
             }
           >
-            <Titles size={"h2"}>
+            <Titles size={"lg"}>
               {loading
                 ? t("Loading")
                 : `${employee?.firstName} ${employee?.lastName}`}
@@ -79,8 +77,9 @@ export default function TeamMemberLayout() {
                 isComplete={true}
                 titleImage="/information.svg"
                 titleImageAlt={""}
+                titleImageSize={"6"}
               >
-                {t("ContactInfo")}
+                <Titles size={"lg"}>{t("ContactInfo")}</Titles>
               </NewTab>
               <NewTab
                 onClick={() => setActiveTab(2)}
@@ -88,11 +87,12 @@ export default function TeamMemberLayout() {
                 isComplete={true}
                 titleImage="/form.svg"
                 titleImageAlt={""}
+                titleImageSize={"8"}
               >
-                {t("TimeCards")}
+                <Titles size={"lg"}> {t("TimeCards")}</Titles>
               </NewTab>
             </Holds>
-            <Holds className="h-full w-full row-start-2 row-end-13">
+            <Holds className="h-full w-full row-start-2 row-end-13 bg-white rounded-b-xl">
               {activeTab === 1 && (
                 <EmployeeInfo
                   employee={employee}

@@ -59,6 +59,7 @@ interface TabProps extends VariantProps<typeof tabStyles> {
   children?: ReactNode; // Accepts any child elements
   titleImage: string;
   titleImageAlt: string;
+  titleImageSize?: "4" | "6" | "8";
   isComplete?: boolean;
   isLoading?: boolean;
   animatePulse?: boolean;
@@ -98,6 +99,7 @@ export const NewTab: FC<TabProps> = ({
   children,
   titleImage,
   titleImageAlt,
+  titleImageSize = "8",
   isComplete,
   isLoading,
   animatePulse,
@@ -129,11 +131,15 @@ export const NewTab: FC<TabProps> = ({
           <>
             <div className="w-full flex items-end gap-2 justify-between">
               {children}
-              <img src={titleImage} alt={titleImageAlt} className="w-8 h-8" />
+              <img
+                src={titleImage}
+                alt={titleImageAlt}
+                className={`w-${titleImageSize} h-${titleImageSize}`}
+              />
             </div>
           </>
         ) : (
-          <img src={titleImage} alt={titleImageAlt} className="w-10 h-10" />
+          <img src={titleImage} alt={titleImageAlt} className="w-10 h-10 p-1" />
         )}
         {!isComplete && !isLoading && (
           <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
