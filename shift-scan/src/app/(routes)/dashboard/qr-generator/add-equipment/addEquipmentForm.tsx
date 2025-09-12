@@ -169,129 +169,154 @@ export default function AddEquipmentForm({}) {
 
   return (
     <>
-      <Holds background="white" className="row-start-1 row-end-2 h-full">
-        <TitleBoxes onClick={() => router.back()}>
+      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
+        <TitleBoxes position={"row"} onClick={() => router.back()}>
           <Titles size={"lg"}>{t("NewEquipmentForm")}</Titles>
         </TitleBoxes>
       </Holds>
-      <Holds background="white" className="row-start-2 row-end-8 h-full">
+      <Holds
+        background={"white"}
+        className="row-start-2 row-end-8 overflow-auto no-scrollbar h-full"
+      >
         <form onSubmit={handleSubmit} className="h-full w-full">
           <Contents width={"section"}>
-            <Grids rows={"6"} gap={"5"} className="h-full w-full pb-5">
-              <Holds className="row-start-1 row-end-5 h-full py-3">
-                <Holds className="py-3">
-                  <Texts
-                    size={"xs"}
-                    position={"left"}
-                    className="text-black pb-1"
-                  >
-                    {t("EquipmentTypeLabel") || "Equipment Type"}
-                  </Texts>
-                  <Selects
-                    value={formData.equipmentTag}
-                    onChange={handleInputChange}
-                    name="equipmentTag"
-                    className={`text-xs text-center h-full py-2 ${formData.equipmentTag === "" && "text-app-dark-gray"}`}
-                  >
-                    <option value="" disabled>
-                      {t("SelectEquipmentType")}
-                    </option>
-                    <option value="VEHICLE">{t("Vehicle")}</option>
-                    <option value="TRUCK">{t("Truck")}</option>
-                    <option value="EQUIPMENT">{t("Equipment")}</option>
-                    <option value="TRAILER">{t("Trailer")}</option>
-                  </Selects>
-                </Holds>
-                <Holds className="pb-3">
-                  <Texts
-                    size={"xs"}
-                    position={"left"}
-                    className="text-black pb-1"
-                  >
-                    Ownership Type
-                  </Texts>
-                  <Selects
-                    value={formData.ownershipType}
-                    onChange={handleInputChange}
-                    name="ownershipType"
-                    className={`text-xs text-center h-full py-2 ${formData.ownershipType === "" && "text-app-dark-gray"}`}
-                  >
-                    <option value="" disabled>
-                      Select Ownership Type
-                    </option>
-                    <option value="OWNED">OWNED</option>
-                    <option value="LEASED">LEASED</option>
-                    <option value="RENTAL">RENTAL</option>
-                  </Selects>
-                </Holds>
-                <Holds className="pb-3">
-                  <Texts
-                    size={"xs"}
-                    position={"left"}
-                    className="text-black pb-1"
-                  >
-                    {t("TemporaryEquipmentNameLabel") ||
-                      "Temporary Equipment Name"}
-                  </Texts>
-                  <Inputs
-                    type="text"
-                    name="temporaryEquipmentName"
-                    value={formData.temporaryEquipmentName}
-                    placeholder={t("TemporaryEquipmentName")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-                <Holds className="pb-3">
-                  <Texts
-                    size={"xs"}
-                    position={"left"}
-                    className="text-black pb-1"
-                  >
-                    {t("CurrentLocationLabel") || "Current Location"}
-                  </Texts>
-                  <Inputs
-                    type="text"
-                    name="destination"
-                    value={formData.destination}
-                    placeholder={t("SelectDestination")}
-                    className="text-xs pl-3 py-2"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-                <Holds className="pb-3">
-                  <Texts
-                    size={"xs"}
-                    position={"left"}
-                    className="text-black pb-1"
-                  >
-                    {t("ReasonForCreatingLabel") || "Reason for Creating"}
-                  </Texts>
-                  <TextAreas
-                    name="creationReasoning"
-                    value={formData.creationReasoning}
-                    placeholder={t("EQCreationReasoning")}
-                    className="text-xs pl-3 h-full"
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Holds>
-              </Holds>
-              <Holds className="row-start-6 row-end-7">
-                <Buttons
-                  background={formValidation ? "green" : "darkGray"}
-                  type="submit"
-                  className="py-2"
-                  disabled={!formValidation || isSubmitting}
+            {/* Equipment Details Section */}
+            <Holds className="h-full mt-4">
+              <Titles
+                position={"left"}
+                size={"md"}
+                className="mb-2 border-b pb-2 text-gray-800"
+              >
+                {t("EquipmentDetails") || "Equipment Details"}
+              </Titles>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="equipmentTag"
+                  className="block text-xs font-medium mb-1 text-gray-700"
                 >
-                  <Titles size={"lg"}>
-                    {isSubmitting ? t("Submitting") : t("CreateEquipment")}
-                  </Titles>
-                </Buttons>
+                  {t("EquipmentTypeLabel") || "Equipment Type"}
+                </label>
+                <Selects
+                  id="equipmentTag"
+                  value={formData.equipmentTag}
+                  onChange={handleInputChange}
+                  name="equipmentTag"
+                  className={`text-xs text-center h-full py-2 ${formData.equipmentTag === "" && "text-app-dark-gray"}`}
+                  required
+                >
+                  <option value="" disabled>
+                    {t("SelectEquipmentType")}
+                  </option>
+                  <option value="VEHICLE">{t("Vehicle")}</option>
+                  <option value="TRUCK">{t("Truck")}</option>
+                  <option value="EQUIPMENT">{t("Equipment")}</option>
+                  <option value="TRAILER">{t("Trailer")}</option>
+                </Selects>
               </Holds>
-            </Grids>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="ownershipType"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("OwnershipTypeLabel") || "Ownership Type"}
+                </label>
+                <Selects
+                  id="ownershipType"
+                  value={formData.ownershipType}
+                  onChange={handleInputChange}
+                  name="ownershipType"
+                  className={`text-xs text-center h-full py-2 ${formData.ownershipType === "" && "text-app-dark-gray"}`}
+                  required
+                >
+                  <option value="" disabled>
+                    {t("SelectOwnershipType") || "Select Ownership Type"}
+                  </option>
+                  <option value="OWNED">OWNED</option>
+                  <option value="LEASED">LEASED</option>
+                  <option value="RENTAL">RENTAL</option>
+                </Selects>
+              </Holds>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="temporaryEquipmentName"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("TemporaryEquipmentNameLabel") ||
+                    "Temporary Equipment Name"}
+                </label>
+                <Inputs
+                  id="temporaryEquipmentName"
+                  type="text"
+                  name="temporaryEquipmentName"
+                  value={formData.temporaryEquipmentName}
+                  placeholder={t("TemporaryEquipmentName")}
+                  className="text-xs pl-3 py-2"
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+              <Holds className="pb-3">
+                <label
+                  htmlFor="destination"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("CurrentLocationLabel") || "Current Location"}
+                </label>
+                <Inputs
+                  id="destination"
+                  type="text"
+                  name="destination"
+                  value={formData.destination}
+                  placeholder={t("SelectDestination")}
+                  className="text-xs pl-3 py-2"
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+            </Holds>
+            <div className="border-t my-3" />
+            {/* Creation Details Section */}
+            <Holds background={"white"} className="h-full">
+              <Titles
+                position={"left"}
+                size={"md"}
+                className="mb-2 border-b pb-2 text-gray-800"
+              >
+                {t("CreationDetails") || "Creation Details"}
+              </Titles>
+              <Holds className="h-full pb-3">
+                <label
+                  htmlFor="creationReasoning"
+                  className="block text-xs font-medium mb-1 text-gray-700"
+                >
+                  {t("ReasonForCreatingLabel") || "Reason for Creating"}
+                </label>
+                <TextAreas
+                  id="creationReasoning"
+                  name="creationReasoning"
+                  value={formData.creationReasoning}
+                  placeholder={t("EQCreationReasoning")}
+                  className="text-xs pl-3 h-full"
+                  rows={5}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Holds>
+            </Holds>
+            <div className="border-t my-3" />
+            {/* Submit Button */}
+            <Holds className=" flex items-center justify-center pb-3">
+              <Buttons
+                background={formValidation ? "green" : "darkGray"}
+                type="submit"
+                disabled={!formValidation || isSubmitting}
+                className="w-full py-2 transition-colors duration-200"
+              >
+                <Titles size={"lg"}>
+                  {isSubmitting ? t("Submitting") : t("CreateEquipment")}
+                </Titles>
+              </Buttons>
+            </Holds>
           </Contents>
         </form>
       </Holds>

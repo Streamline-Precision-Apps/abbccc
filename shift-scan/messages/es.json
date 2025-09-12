@@ -324,7 +324,23 @@
     "scanError": "El código QR no existe. ",
     "Notes": "Notas adicionales"
   },
+  "CodeFinder": {
+    "PullToRefresh": "Tirar para actualizar",
+    "ReleaseToRefresh": "Suelte para actualizar",
+    "Refreshing": "Actualizando..."
+  },
   "Generator": {
+    "JobsiteDetails": "Detalles del sitio ",
+    "OwnershipTypeLabel": "Tipo de propiedad",
+    "SelectOwnershipType": "Seleccione el tipo de propiedad",
+    "EquipmentDetails": "Detalles del equipo",
+    "Street": "Calle",
+    "CityLabel": "Ciudad",
+    "SelectState": "Seleccionar Estado",
+    "ZipCodeLabel": "Código postal",
+    "TemporaryJobsiteCodeLabel": "Código del sitio de trabajo temporal",
+    "TemporaryJobsiteNameLabel": "Nombre del sitio de trabajo temporal",
+    "JobsiteDescription": "Descripción del sitio de trabajo",
     "SelectDestination": "Ingrese la ubicación actual...",
     "CreateEquipment": "Crear equipos",
     "EquipmentInfo": "Información del equipo",
@@ -363,7 +379,7 @@
     "IsActive": "¿Está activo el sitio?",
     "Temporary": "Temporario",
     "NameExample": "Ingrese un nombre para el sitio",
-    "Address": "Nueva dirección",
+    "Address": "Información de dirección",
     "NewAddress": "¿Nueva dirección?",
     "ClientName": "Nombre del cliente",
     "AddressInformation": "Ingrese la dirección de la calle aquí ...",
@@ -606,7 +622,7 @@
     "TascoLabor": "Tasco Labor",
     "UsageTime": "Tiempo de uso",
     "NA": "N / A",
-    "PullToRefresh": "(Tire para refrescar)"
+    "PullToRefresh": "(Tirar para actualizar)"
   },
   "Clock": {
     "NoResultsFound": "No se encontraron resultados",

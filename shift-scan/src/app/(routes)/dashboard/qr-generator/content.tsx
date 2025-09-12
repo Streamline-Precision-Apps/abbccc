@@ -54,7 +54,7 @@ export default function QRGeneratorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("returnUrl") || "/dashboard";
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingJobsite, setLoadingJobsite] = useState<boolean>(false);
   const [loadingEquipment, setLoadingEquipment] = useState<boolean>(false);
   const [generatedJobsiteList, setGeneratedJobsiteList] = useState<Option[]>(
@@ -66,8 +66,14 @@ export default function QRGeneratorContent() {
   const [jobsiteRefreshKey, setJobsiteRefreshKey] = useState<number>(0);
   const [equipmentRefreshKey, setEquipmentRefreshKey] = useState<number>(0);
 
-  const refreshEquipment = async () => setEquipmentRefreshKey((k) => k + 1);
-  const refreshJobsites = async () => setJobsiteRefreshKey((k) => k + 1);
+  const refreshEquipment = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setEquipmentRefreshKey((k) => k + 1);
+  };
+  const refreshJobsites = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setJobsiteRefreshKey((k) => k + 1);
+  };
 
   const fetchEquipment = async () => {
     try {
@@ -141,9 +147,12 @@ export default function QRGeneratorContent() {
 
   useEffect(() => {
     setLoading(true);
-    fetchEquipment();
-    fetchJobsites();
-    setLoading(false);
+    setLoadingEquipment(true);
+    setLoadingJobsite(true);
+
+    Promise.all([fetchEquipment(), fetchJobsites()]).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {

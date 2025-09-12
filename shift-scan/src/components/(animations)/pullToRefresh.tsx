@@ -25,14 +25,14 @@ interface PullToRefreshProps {
 export function PullToRefresh({
   children,
   onRefresh,
-  maxPullDistance = 150,
+  maxPullDistance = 30,
   threshold = 30, // Reduced from 70 to 50 to match hook default
   resistanceFactor = 0.4,
   containerClassName = "",
   loadingIndicatorClassName = "",
   pullIndicatorClassName = "",
   contentClassName = "",
-  refreshingText = "Refreshing...",
+  refreshingText = "Loading...",
   pullText = "Pull to refresh",
   releaseText = "Release to refresh",
   bgColor = "bg-darkBlue/70",
@@ -55,7 +55,7 @@ export function PullToRefresh({
       {/* Loading indicator - visible only when refreshing */}
       {isRefreshing && (
         <div
-          className={`sticky top-0 left-0 right-0 flex items-center justify-center z-10 h-14 ${bgColor} backdrop-blur-sm ${loadingIndicatorClassName}`}
+          className={`sticky top-0 left-0 right-0 flex items-center justify-center z-10 h-8 ${bgColor} backdrop-blur-sm ${loadingIndicatorClassName}`}
         >
           <span className={`${textColor} flex items-center gap-2`}>
             <svg
@@ -70,7 +70,7 @@ export function PullToRefresh({
                 cy="12"
                 r="10"
                 stroke="currentColor"
-                strokeWidth="4"
+                strokeWidth="3"
               ></circle>
               <path
                 className="opacity-75"
@@ -99,7 +99,7 @@ export function PullToRefresh({
         {pullDistance > 10 &&
           !isRefreshing && ( // Show indicator earlier (reduced from > 0)
             <div
-              className={`flex items-center justify-center h-12 ${textColor} opacity-80 mb-1 ${pullIndicatorClassName}`}
+              className={`flex items-center justify-center h-8 ${textColor} opacity-80 mb-1 ${pullIndicatorClassName}`}
             >
               <div className="flex items-center gap-2">
                 <svg

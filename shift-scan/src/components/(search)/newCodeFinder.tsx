@@ -5,7 +5,6 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { Buttons } from "../(reusable)/buttons";
-import { Texts } from "../(reusable)/texts";
 import { Images } from "../(reusable)/images";
 import { PullToRefresh } from "../(animations)/pullToRefresh";
 
@@ -37,7 +36,7 @@ export default function CodeFinder({
   isLoading,
 }: CodeFinderProps) {
   const [searchTerm, setSearchTerm] = useState("");
-
+  const t = useTranslations("CodeFinder");
   const filteredOptions = useMemo(() => {
     if (!searchTerm) return options;
     return options
@@ -91,9 +90,9 @@ export default function CodeFinder({
             onRefresh={onRefresh}
             bgColor="bg-darkBlue/70"
             textColor="text-white"
-            pullText="Pull to refresh"
-            releaseText="Release to refresh"
-            refreshingText="Refreshing..."
+            pullText={t("PullToRefresh")}
+            releaseText={t("ReleaseToRefresh")}
+            refreshingText=""
             containerClassName="h-full"
           >
             <OptionsList
@@ -101,6 +100,7 @@ export default function CodeFinder({
               selectedOption={selectedOption}
               onSelect={onSelect}
               clearSelection={clearSelection}
+              isLoading={isLoading}
             />
           </PullToRefresh>
         ) : (
@@ -110,6 +110,7 @@ export default function CodeFinder({
               selectedOption={selectedOption}
               onSelect={onSelect}
               clearSelection={clearSelection}
+              isLoading={isLoading}
             />
           </div>
         )}
@@ -124,15 +125,17 @@ const OptionsList = ({
   selectedOption,
   onSelect,
   clearSelection,
+  isLoading,
 }: {
   filteredOptions: Option[];
   selectedOption: Option | null;
   onSelect: (option: Option | null) => void;
   clearSelection: () => void;
+  isLoading?: boolean;
 }) => {
   const t = useTranslations("Clock");
-  return filteredOptions.length > 0 ? (
-    filteredOptions.map((option) => (
+  if (filteredOptions.length > 0) {
+    return filteredOptions.map((option) => (
       <Holds key={option.code} className="p-2">
         <Buttons
           shadow={"none"}
@@ -152,17 +155,47 @@ const OptionsList = ({
           </Titles>
         </Buttons>
       </Holds>
-    ))
-  ) : (
-    <Holds className="h-full w-full p-1.5">
-      <Holds
-        background={"white"}
-        className="flex justify-center items-center h-full w-full bg-opacity-10 relative"
-      >
-        <p className="text-neutral-100 text-lg">{t("NoResultsFound")}</p>
+    ));
+  } else if (isLoading) {
+    return (
+      <Holds className="h-full w-full flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <svg
+            className="animate-spin h-6 w-6 text-white mb-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <p className="text-white text-lg">{t("Loading")}</p>
+        </div>
       </Holds>
-    </Holds>
-  );
+    );
+  } else {
+    return (
+      <Holds className="h-full w-full p-1.5">
+        <Holds
+          background={"white"}
+          className="flex justify-center items-center h-full w-full bg-opacity-10 relative"
+        >
+          <p className="text-neutral-100 text-lg">{t("NoResultsFound")}</p>
+        </Holds>
+      </Holds>
+    );
+  }
 };
 
 // Simplified SearchBar component
