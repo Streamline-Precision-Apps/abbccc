@@ -16,7 +16,6 @@ import { useEffect } from "react";
 import { z } from "zod";
 import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { set } from "lodash";
 
 const JobCodesSchema = z.object({
   id: z.string(),
@@ -176,14 +175,7 @@ export default function QRGeneratorContent() {
         }`}
       >
         <TitleBoxes position={"row"} onClick={() => router.push(url)}>
-          <Titles size={"h2"}>{t("QrGenerator")}</Titles>
-          <Images
-            src="/qrCode.svg"
-            alt="Team"
-            className="w-8 h-8"
-            titleImg={""}
-            titleImgAlt={""}
-          />
+          <Titles size={"xl"}>{t("QrGenerator")}</Titles>
         </TitleBoxes>
       </Holds>
       <Holds className="row-start-2 row-end-8 h-full">
@@ -197,7 +189,9 @@ export default function QRGeneratorContent() {
               titleImageAlt=""
               animatePulse={loading}
             >
-              <Titles size={"h2"}>{t("Jobsite")}</Titles>
+              <Titles size={"lg"} className="w-full">
+                {t("Jobsite")}
+              </Titles>
             </NewTab>
             <NewTab
               onClick={() => setActiveTab(2)}
@@ -207,7 +201,7 @@ export default function QRGeneratorContent() {
               titleImageAlt=""
               animatePulse={loading}
             >
-              <Titles size={"h3"}>{t("EquipmentTitle")}</Titles>
+              <Titles size={"lg"}>{t("EquipmentTitle")}</Titles>
             </NewTab>
           </Holds>
           <Holds

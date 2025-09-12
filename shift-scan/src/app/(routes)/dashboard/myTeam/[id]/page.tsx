@@ -10,7 +10,7 @@ import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { z } from "zod";
 
 // Zod schema for CrewMember type
@@ -30,7 +30,11 @@ const CrewApiResponseSchema = z.tuple([
 
 type CrewMember = z.infer<typeof CrewMemberSchema>;
 
-export default function Content() {
+export default function Content({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const [crewMembers, setCrewMembers] = useState<CrewMember[]>([]);
   const [crewType, setCrewType] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -39,9 +43,8 @@ export default function Content() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("rPath");
-  const timeCard = searchParams.get("timecard");
-  const params = useParams();
-  const { id } = params;
+
+  const { id } = use(params);
 
   useEffect(() => {
     const fetchCrewData = async () => {
@@ -94,7 +97,7 @@ export default function Content() {
             <TitleBoxes
               onClick={() => router.push(`/dashboard/myTeam?rPath=${url}`)}
             >
-              <Titles size={"h2"}>{titles}</Titles>
+              <Titles size={"lg"}>{titles}</Titles>
             </TitleBoxes>
           </Holds>
 
@@ -153,7 +156,7 @@ export default function Content() {
                                 />
                               </Holds>
                               <Holds size={"80"}>
-                                <Titles position={"left"} size="h4">
+                                <Titles position={"left"} size="lg">
                                   {member.firstName} {member.lastName}
                                 </Titles>
                               </Holds>

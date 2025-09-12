@@ -94,13 +94,13 @@ export default function Content() {
               position={"row"}
               className="w-full h-full justify-center items-center"
             >
-              <Titles position="right" size={"h2"}>
+              <Titles position="right" size={"xl"}>
                 {t("Teams-Title")}
               </Titles>
               <img
                 src={"/team.svg"}
                 alt={`${t("Teams-Logo-Title")}`}
-                className="h-8 w-fit object-contain "
+                className="h-7 w-7 object-contain "
               />
             </TitleBoxes>
           </Holds>
@@ -129,11 +129,11 @@ export default function Content() {
                         <Buttons
                           background="lightBlue"
                           href={`/dashboard/myTeam/${teams.id}?rPath=${url}`}
-                          className="py-4 w-full relative"
+                          className="py-3 w-full relative"
                         >
-                          <Titles size="h2">{teams.name}</Titles>
+                          <Titles size="lg">{teams.name}</Titles>
                           <Texts
-                            size="p4"
+                            size="md"
                             className="absolute top-1/2 transform -translate-y-1/2 right-2"
                           >
                             ({teams._count.Users})
@@ -148,7 +148,7 @@ export default function Content() {
                       href={`/dashboard/myTeam/timecards?rPath=${url}`}
                       className=" w-full py-3"
                     >
-                      <Titles size="h2">{t("TimeCards")}</Titles>
+                      <Titles size="lg">{t("TimeCards")}</Titles>
                     </Buttons>
                   </Holds>
                 </Grids>
