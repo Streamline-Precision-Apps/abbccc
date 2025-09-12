@@ -3,11 +3,24 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { materialUnit } from "@/lib/enums";
-import { TimesheetUpdate, TruckingEquipmentHaulUpdate } from "@/lib/types";
 import { revalidatePath } from "next/cache";
+type TimesheetUpdate = {
+  id: number;
+  startTime?: string;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
+
+interface TruckingEquipmentHaulUpdate {
+  id: string;
+  equipmentId?: string | null;
+  jobSiteId?: string | null;
+  editedByUserId?: string | null;
+}
 
 export async function updateTimesheetHighlights(
-  updatedTimesheets: TimesheetUpdate[]
+  updatedTimesheets: TimesheetUpdate[],
 ) {
   try {
     console.log("[SERVER] Updating timesheets:", updatedTimesheets);
@@ -27,7 +40,7 @@ export async function updateTimesheetHighlights(
           editedByUserId: session.user.id,
           updatedAt: new Date(),
         },
-      })
+      }),
     );
 
     await Promise.all(updatePromises);
@@ -52,7 +65,7 @@ export async function updateTruckingMileage(
           startingMileage?: number;
           endingMileage?: number;
         }>;
-      }>
+      }>,
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating trucking mileage:", data);
@@ -87,7 +100,7 @@ export async function updateTruckingMileage(
       if (!mileage.id) {
         console.error("[SERVER] Missing ID in mileage update:", mileage);
         throw new Error(
-          `Missing ID in mileage update: ${JSON.stringify(mileage)}`
+          `Missing ID in mileage update: ${JSON.stringify(mileage)}`,
         );
       }
       // Extract startingMileage and endingMileage from the first TruckingLogs entry
@@ -133,7 +146,7 @@ export async function updateTruckingMileage(
 }
 
 export async function updateTruckingHaulLogs(
-  updates: TruckingEquipmentHaulUpdate[]
+  updates: TruckingEquipmentHaulUpdate[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Received haul log updates:", updates);
@@ -155,7 +168,7 @@ export async function updateTruckingHaulLogs(
       })
       .filter(
         (update, index, self) =>
-          self.findIndex((u) => u.id === update.id) === index
+          self.findIndex((u) => u.id === update.id) === index,
       );
 
     if (validUpdates.length === 0) {
@@ -187,11 +200,11 @@ export async function updateTruckingHaulLogs(
           } catch (error) {
             console.error(
               `[SERVER] Failed to update haul log ${update.id}:`,
-              error
+              error,
             );
             throw error;
           }
-        })
+        }),
       );
 
       return updateResults;
@@ -229,7 +242,7 @@ export async function updateTruckingMaterialLogs(
     materialWeight?: number | null;
     quantity?: number;
     unit?: materialUnit;
-  }>
+  }>,
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating trucking material logs:", updates);
@@ -238,7 +251,7 @@ export async function updateTruckingMaterialLogs(
 
     // Validate updates
     const validUpdates = updates.filter(
-      (update) => !!update.id && typeof update.id === "string"
+      (update) => !!update.id && typeof update.id === "string",
     );
     if (validUpdates.length === 0) {
       return { success: false, error: "No valid updates provided" };
@@ -258,7 +271,7 @@ export async function updateTruckingMaterialLogs(
             quantity: update.quantity || 0,
             unit: (update.unit as materialUnit) || "lbs",
           },
-        })
+        }),
       );
       return await Promise.all(updatePromises);
     });
@@ -266,7 +279,7 @@ export async function updateTruckingMaterialLogs(
     console.log(
       "[SERVER] Successfully updated",
       result.length,
-      "material logs"
+      "material logs",
     );
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -289,7 +302,7 @@ export async function updateTruckingRefuelLogs(
     id: string;
     gallonsRefueled?: number | null;
     milesAtFueling?: number | null;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating trucking refuel logs:", updates);
@@ -304,7 +317,7 @@ export async function updateTruckingRefuelLogs(
             gallonsRefueled: update.gallonsRefueled,
             milesAtFueling: update.milesAtFueling,
           },
-        })
+        }),
       );
 
       return await Promise.all(updatePromises);
@@ -334,7 +347,7 @@ export async function updateTruckingStateLogs(
     id: string;
     state?: string;
     stateLineMileage?: number;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating trucking state logs:", updates);
@@ -349,7 +362,7 @@ export async function updateTruckingStateLogs(
             state: update.state,
             stateLineMileage: update.stateLineMileage,
           },
-        })
+        }),
       );
 
       return await Promise.all(updatePromises);
@@ -358,7 +371,7 @@ export async function updateTruckingStateLogs(
     console.log(
       "[SERVER] Successfully updated",
       result.length,
-      "trucking state logs"
+      "trucking state logs",
     );
 
     revalidatePath("/dashboard/myTeam");
@@ -385,7 +398,7 @@ export async function updateTascoHaulLogs(
     equipmentId?: string | null;
     materialType?: string;
     LoadQuantity?: number | null;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating tasco haul logs:", updates);
@@ -402,7 +415,7 @@ export async function updateTascoHaulLogs(
             materialType: update.materialType,
             LoadQuantity: update.LoadQuantity || 0,
           },
-        })
+        }),
       );
 
       return await Promise.all(updatePromises);
@@ -411,7 +424,7 @@ export async function updateTascoHaulLogs(
     console.log(
       "[SERVER] Successfully updated",
       result.length,
-      "tasco haul logs"
+      "tasco haul logs",
     );
 
     revalidatePath("/dashboard/myTeam");
@@ -435,7 +448,7 @@ export async function updateTascoRefuelLogs(
   updates: {
     id: string;
     gallonsRefueled?: number | null;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating tasco refuel logs:", updates);
@@ -449,7 +462,7 @@ export async function updateTascoRefuelLogs(
           data: {
             gallonsRefueled: update.gallonsRefueled,
           },
-        })
+        }),
       );
 
       return await Promise.all(updatePromises);
@@ -479,7 +492,7 @@ export async function updateEquipmentLogs(
     id: string;
     startTime?: Date;
     endTime?: Date;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating equipment logs:", updates);
@@ -488,7 +501,7 @@ export async function updateEquipmentLogs(
     if (
       !updates.every(
         (update) =>
-          update.startTime instanceof Date || update.startTime === undefined
+          update.startTime instanceof Date || update.startTime === undefined,
       )
     ) {
       throw new Error("Invalid startTime format");
@@ -497,7 +510,7 @@ export async function updateEquipmentLogs(
     if (
       !updates.every(
         (update) =>
-          update.endTime instanceof Date || update.endTime === undefined
+          update.endTime instanceof Date || update.endTime === undefined,
       )
     ) {
       throw new Error("Invalid endTime format");
@@ -514,7 +527,7 @@ export async function updateEquipmentLogs(
             startTime: update.startTime,
             endTime: update.endTime,
           },
-        })
+        }),
       );
 
       return await Promise.all(updatePromises);
@@ -523,7 +536,7 @@ export async function updateEquipmentLogs(
     console.log(
       "[SERVER] Successfully updated",
       result.length,
-      "equipment logs"
+      "equipment logs",
     );
 
     revalidatePath("/dashboard/myTeam");
@@ -547,7 +560,7 @@ export async function updateEquipmentRefuelLogs(
   updates: {
     id: string;
     gallonsRefueled?: number | null;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating equipment refuel logs:", updates);
@@ -561,7 +574,7 @@ export async function updateEquipmentRefuelLogs(
           data: {
             gallonsRefueled: update.gallonsRefueled || 0,
           },
-        })
+        }),
       );
 
       return await Promise.all(updatePromises);
@@ -591,7 +604,7 @@ export async function updateMaintenanceLogs(
     id: string;
     startTime?: Date;
     endTime?: Date;
-  }[]
+  }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
     console.log("[SERVER] Updating maintenance logs:", updates);
@@ -599,7 +612,7 @@ export async function updateMaintenanceLogs(
     if (!session) throw new Error("Unauthorized");
 
     const validUpdates = updates.filter(
-      (update) => update.id && (update.startTime || update.endTime)
+      (update) => update.id && (update.startTime || update.endTime),
     );
 
     if (validUpdates.length === 0) {
@@ -636,7 +649,7 @@ export async function updateMaintenanceLogs(
     console.log(
       "[SERVER] Successfully updated",
       result.length,
-      "maintenance logs"
+      "maintenance logs",
     );
 
     revalidatePath("/dashboard/myTeam");

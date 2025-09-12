@@ -106,6 +106,8 @@ export default function GeneralReviewSection({
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString([], {
+      day: "2-digit",
+      month: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -114,15 +116,11 @@ export default function GeneralReviewSection({
   return (
     <>
       <Holds background={"white"} className="h-full border-[3px] border-black ">
-        <Holds
-          position={"row"}
-          className="border-b-[3px] border-black py-1 px-2"
-        >
+        <Holds position={"row"} className="border-b-[3px] border-black py-1">
           <Holds className="max-w-7"></Holds>
-          <Grids cols={"3"} gap={"2"} className="w-full">
-            <Titles size={"h6"}>{t("StartEnd")}</Titles>
-            <Titles size={"h6"}>{t("Jobs")}</Titles>
-            <Titles size={"h6"}>{t("CostCode")}</Titles>
+          <Grids cols={"2"} gap={"3"} className="w-full">
+            <Titles size={"sm"}>{t("StartEnd")}</Titles>
+            <Titles size={"sm"}>{`${t("Jobs")} & ${t("CostCode")}`}</Titles>
           </Grids>
         </Holds>
         <Holds
@@ -143,29 +141,29 @@ export default function GeneralReviewSection({
                     <Images
                       titleImg="/trucking.svg"
                       titleImgAlt="Trucking Icon"
-                      className="w-7 h-7 "
+                      className="w-4 h-4 "
                     />
                   ) : timesheet.workType === "MECHANIC" ? (
                     <Images
                       titleImg="/mechanic.svg"
                       titleImgAlt="Mechanic Icon"
-                      className="w-7 h-7 "
+                      className="w-4 h-4 "
                     />
                   ) : timesheet.workType === "TASCO" ? (
                     <Images
                       titleImg="/tasco.svg"
                       titleImgAlt="Tasco Icon"
-                      className="w-7 h-7 "
+                      className="w-4 h-4 "
                     />
                   ) : (
                     <Images
                       titleImg="/equipment.svg"
                       titleImgAlt="General Icon"
-                      className="w-7 h-7 "
+                      className="w-4 h-4 "
                     />
                   )}
                 </Holds>
-                <Grids cols={"3"} gap={"1"} className="w-full h-full">
+                <Grids cols={"2"} gap={"3"} className="w-full h-full">
                   <Holds className="col-span-1">
                     <Holds>
                       <Texts size={"p7"}>
@@ -177,14 +175,12 @@ export default function GeneralReviewSection({
                     </Holds>
                   </Holds>
 
-                  <Holds className="col-span-1">
-                    <Texts size={"p7"}>
-                      {`${timesheet.Jobsite.name.slice(0, 9)}` || "-"}
+                  <Holds className="col-span-1 flex flex-col ">
+                    <Texts position={"left"} size={"xs"}>
+                      {`Js: ${timesheet.Jobsite.name.slice(0, 9)}` || "-"}
                     </Texts>
-                  </Holds>
-                  <Holds className="col-span-1">
-                    <Texts size={"p7"}>
-                      {`${timesheet.CostCode.name.split(" ")[0]}` || "-"}
+                    <Texts position={"left"} size={"xs"}>
+                      {`Cc: ${timesheet.CostCode.name.split(" ")[0]}` || "-"}
                     </Texts>
                   </Holds>
                 </Grids>

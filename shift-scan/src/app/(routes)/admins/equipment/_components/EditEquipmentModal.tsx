@@ -22,25 +22,36 @@ import { toast } from "sonner";
 type Equipment = {
   id: string;
   qrId: string;
+  code?: string;
   name: string;
-  description?: string;
-  equipmentTag: string;
+  description: string;
+  memo?: string;
+  ownershipType?: "OWNED" | "LEASED";
+  equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
-  isDisabledByAdmin: boolean;
-  overWeight: boolean;
-  currentWeight: number | null;
-  createdById: string;
-  createdVia: string;
-  updatedAt: Date;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  // Direct vehicle/equipment properties
+  make?: string;
+  model?: string;
+  year?: string;
+  color?: string;
+  serialNumber?: string;
+  acquiredDate?: string | Date;
+  acquiredCondition?: "NEW" | "USED";
+  licensePlate?: string;
+  licenseState?: string;
+  registrationExpiration?: string | Date;
+  isDisabledByAdmin?: boolean;
+  createdVia?: "MOBILE" | "WEB" | "IMPORT";
+  overWeight?: boolean;
+  currentWeight?: number;
   creationReason?: string;
-  equipmentVehicleInfo?: {
-    make: string | null;
-    model: string | null;
-    year: string | null;
-    licensePlate: string | null;
-    registrationExpiration: Date | null;
-    mileage: number | null;
+  createdById?: string;
+  createdBy: {
+    firstName?: string;
+    lastName?: string;
   };
 };
 
@@ -59,13 +70,13 @@ export default function EditEquipmentModal({
 
   useEffect(() => {
     if (equipmentDetails) {
-      setFormData(equipmentDetails);
-      setOriginalForm(equipmentDetails);
+      setFormData(equipmentDetails as unknown as Equipment);
+      setOriginalForm(equipmentDetails as unknown as Equipment);
     }
   }, [equipmentDetails]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) =>
@@ -75,94 +86,181 @@ export default function EditEquipmentModal({
             [name]:
               type === "number" ? (value === "" ? null : Number(value)) : value,
           }
-        : prev
+        : prev,
     );
   };
 
-  const handleVehicleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => {
       if (!prev) return prev;
-      const prevInfo = prev.equipmentVehicleInfo ?? {
-        make: null,
-        model: null,
-        year: null,
-        licensePlate: null,
-        registrationExpiration: null,
-        mileage: null,
-      };
       return {
         ...prev,
-        equipmentVehicleInfo: {
-          ...prevInfo,
-          [name]:
-            type === "number" ? (value === "" ? null : Number(value)) : value,
-        },
+        [name]: value,
       };
     });
   };
 
-  const hasVehicleInfo = !!formData?.equipmentVehicleInfo;
-
   const handleSaveChanges = async () => {
-    if (!formData) return;
+    if (!formData || !originalForm) return;
 
     try {
       const fd = new FormData();
+      const changedFields: Record<string, unknown> = {};
 
       // Required ID
       fd.append("id", formData.id);
+      changedFields["id"] = formData.id;
 
-      // Conditionally append fields if they are set
-      if (formData.name) fd.append("name", formData.name);
-      if (formData.description) fd.append("description", formData.description);
-      if (formData.equipmentTag)
+      // Only append fields that have changed
+      if (formData.name !== originalForm.name) {
+        fd.append("name", formData.name);
+        changedFields["name"] = formData.name;
+      }
+
+      if (formData.code !== originalForm.code) {
+        fd.append("code", formData.code || "");
+        changedFields["code"] = formData.code;
+      }
+
+      if (formData.description !== originalForm.description) {
+        fd.append("description", formData.description || "");
+        changedFields["description"] = formData.description;
+      }
+
+      if (formData.memo !== originalForm.memo) {
+        fd.append("memo", formData.memo || "");
+        changedFields["memo"] = formData.memo;
+      }
+
+      if (formData.equipmentTag !== originalForm.equipmentTag) {
         fd.append("equipmentTag", formData.equipmentTag);
-      if (formData.currentWeight !== undefined) {
-        fd.append("currentWeight", String(formData.currentWeight));
-      }
-      if (formData.overWeight !== undefined) {
-        fd.append("overWeight", String(formData.overWeight));
-      }
-      if (formData.approvalStatus) {
-        fd.append("approvalStatus", formData.approvalStatus);
-      }
-      if (formData.isDisabledByAdmin !== undefined) {
-        fd.append("isDisabledByAdmin", String(formData.isDisabledByAdmin));
-      }
-      if (formData.creationReason) {
-        fd.append("creationReason", formData.creationReason);
+        changedFields["equipmentTag"] = formData.equipmentTag;
       }
 
-      // Conditionally append vehicle info only if it's applicable
-      const tag = formData.equipmentTag;
-      const v = formData.equipmentVehicleInfo;
-      if ((tag === "VEHICLE" || tag === "TRUCK") && v) {
-        if (v.make) fd.append("make", v.make);
-        if (v.model) fd.append("model", v.model);
-        if (v.year) fd.append("year", v.year);
-        if (v.licensePlate) fd.append("licensePlate", v.licensePlate);
-        if (v.registrationExpiration) {
+      if (formData.ownershipType !== originalForm.ownershipType) {
+        fd.append("ownershipType", formData.ownershipType || "");
+        changedFields["ownershipType"] = formData.ownershipType;
+      }
+
+      if (formData.make !== originalForm.make) {
+        fd.append("make", formData.make || "");
+        changedFields["make"] = formData.make;
+      }
+
+      if (formData.model !== originalForm.model) {
+        fd.append("model", formData.model || "");
+        changedFields["model"] = formData.model;
+      }
+
+      if (formData.year !== originalForm.year) {
+        fd.append("year", formData.year || "");
+        changedFields["year"] = formData.year;
+      }
+
+      if (formData.color !== originalForm.color) {
+        fd.append("color", formData.color || "");
+        changedFields["color"] = formData.color;
+      }
+
+      if (formData.serialNumber !== originalForm.serialNumber) {
+        fd.append("serialNumber", formData.serialNumber || "");
+        changedFields["serialNumber"] = formData.serialNumber;
+      }
+
+      if (String(formData.acquiredDate) !== String(originalForm.acquiredDate)) {
+        if (formData.acquiredDate) {
+          fd.append(
+            "acquiredDate",
+            new Date(formData.acquiredDate).toISOString(),
+          );
+          changedFields["acquiredDate"] = new Date(
+            formData.acquiredDate,
+          ).toISOString();
+        } else {
+          fd.append("acquiredDate", "");
+          changedFields["acquiredDate"] = "";
+        }
+      }
+
+      if (formData.acquiredCondition !== originalForm.acquiredCondition) {
+        fd.append("acquiredCondition", formData.acquiredCondition || "");
+        changedFields["acquiredCondition"] = formData.acquiredCondition;
+      }
+
+      if (formData.licensePlate !== originalForm.licensePlate) {
+        fd.append("licensePlate", formData.licensePlate || "");
+        changedFields["licensePlate"] = formData.licensePlate;
+      }
+
+      if (formData.licenseState !== originalForm.licenseState) {
+        fd.append("licenseState", formData.licenseState || "");
+        changedFields["licenseState"] = formData.licenseState;
+      }
+
+      // Registration expiration is still in the API even if we removed it from UI
+      if (
+        String(formData.registrationExpiration) !==
+        String(originalForm.registrationExpiration)
+      ) {
+        if (formData.registrationExpiration) {
           fd.append(
             "registrationExpiration",
-            new Date(v.registrationExpiration).toISOString()
+            new Date(formData.registrationExpiration).toISOString(),
           );
-        }
-        if (v.mileage !== undefined && v.mileage !== null) {
-          fd.append("mileage", String(v.mileage));
+          changedFields["registrationExpiration"] = new Date(
+            formData.registrationExpiration,
+          ).toISOString();
+        } else {
+          fd.append("registrationExpiration", "");
+          changedFields["registrationExpiration"] = "";
         }
       }
+
+      if (formData.currentWeight !== originalForm.currentWeight) {
+        fd.append("currentWeight", String(formData.currentWeight || 0));
+        changedFields["currentWeight"] = formData.currentWeight;
+      }
+
+      if (formData.overWeight !== originalForm.overWeight) {
+        fd.append("overWeight", String(formData.overWeight || false));
+        changedFields["overWeight"] = formData.overWeight;
+      }
+
+      if (formData.approvalStatus !== originalForm.approvalStatus) {
+        fd.append("approvalStatus", formData.approvalStatus);
+        changedFields["approvalStatus"] = formData.approvalStatus;
+      }
+
+      if (formData.isDisabledByAdmin !== originalForm.isDisabledByAdmin) {
+        fd.append("isDisabledByAdmin", String(formData.isDisabledByAdmin));
+        changedFields["isDisabledByAdmin"] = formData.isDisabledByAdmin;
+      }
+
+      if (formData.creationReason !== originalForm.creationReason) {
+        fd.append("creationReason", formData.creationReason || "");
+        changedFields["creationReason"] = formData.creationReason;
+      }
+
+      // Log the changed fields for debugging
+      console.log("Submitting changes:", changedFields);
+
+      // Display changed fields in toast for debugging
+      toast.info(`Updating ${Object.keys(changedFields).length - 1} fields`, {
+        duration: 3000,
+      }); // -1 for the ID field
 
       const result = await updateEquipmentAsset(fd);
       if (result?.success) {
-        toast.success("Equipment updated successfully.");
+        toast.success("Equipment updated successfully.", { duration: 3000 });
         cancel();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update equipment.");
       }
     } catch (err) {
-      toast.error("Error updating equipment. Please try again.");
+      toast.error("Error updating equipment. Please try again.", {
+        duration: 3000,
+      });
       console.error(err);
     }
   };
@@ -206,8 +304,10 @@ export default function EditEquipmentModal({
               <div>
                 <p className="text-sm text-gray-600">
                   {`Created via: ${
-                    formData.createdVia.toLowerCase() || "Admin"
-                  } by ${formData.createdById || "System"}`}
+                    formData.createdVia
+                      ? formData.createdVia.toLowerCase()
+                      : "Admin"
+                  } by ${formData.createdBy.firstName + " " + formData.createdBy.lastName || "System"}`}
                 </p>
                 <p className="text-xs text-gray-600">
                   {`Status: `}
@@ -216,8 +316,8 @@ export default function EditEquipmentModal({
                       originalForm.approvalStatus === "APPROVED"
                         ? "text-green-600"
                         : originalForm.approvalStatus === "PENDING"
-                        ? "text-sky-600"
-                        : "text-red-600"
+                          ? "text-sky-600"
+                          : "text-red-600"
                     }`}
                   >
                     {originalForm.approvalStatus
@@ -231,9 +331,9 @@ export default function EditEquipmentModal({
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 mb-4">
+          <div className="flex flex-col gap-6 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-4">
                 <Label htmlFor="creationReason" className="text-sm">
                   Creation Reason
                 </Label>
@@ -245,109 +345,315 @@ export default function EditEquipmentModal({
                 />
               </div>
             )}
-            <div>
-              <Label htmlFor="name" className="text-sm">
-                Equipment Name
-              </Label>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full text-xs"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="description" className="text-sm font-medium">
-                Equipment Description
-              </Label>
-              <Textarea
-                name="description"
-                value={formData.description || ""}
-                onChange={handleInputChange}
-                className="w-full text-xs"
-              />
-            </div>
-            <div>
-              <Label htmlFor="currentWeight" className="text-sm">
-                Overweight Equipment
-              </Label>
-              <Select
-                name="overWeight"
-                value={formData.overWeight ? "true" : "false"}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev!,
-                    overWeight: value === "true",
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full text-xs">
-                  <SelectValue placeholder="Select Overweight Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="true">Yes</SelectItem>
-                  <SelectItem value="false">No</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="currentWeight" className="text-sm">
-                Overweight amount (lbs)
-              </Label>
-              <Input
-                type="number"
-                name="currentWeight"
-                value={formData.currentWeight ?? ""}
-                onChange={handleInputChange}
-                className="text-xs"
-                required
-                disabled={formData.overWeight === false}
-              />
+
+            {/* Section: General Information */}
+            <div className="border rounded-md p-4">
+              <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                General Information
+              </h3>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="code" className="text-sm">
+                    ID <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    name="code"
+                    value={formData.code || ""}
+                    onChange={handleInputChange}
+                    className="w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="name" className="text-sm">
+                    Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description" className="text-sm font-medium">
+                    Description
+                  </Label>
+                  <Textarea
+                    name="description"
+                    value={formData.description || ""}
+                    onChange={handleInputChange}
+                    className="w-full text-xs min-h-[80px]"
+                    style={{ resize: "none" }}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="memo" className="text-sm font-medium">
+                    Memo
+                  </Label>
+                  <Textarea
+                    name="memo"
+                    value={formData.memo || ""}
+                    onChange={handleInputChange}
+                    className="w-full text-xs min-h-[60px]"
+                    placeholder="Enter any additional notes..."
+                    style={{ resize: "none" }}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="equipmentTag" className="text-sm font-medium">
+                    Equipment Type <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    name="equipmentTag"
+                    value={formData.equipmentTag}
+                    onValueChange={(value) =>
+                      handleSelectChange(
+                        "equipmentTag",
+                        value as "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT",
+                      )
+                    }
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue placeholder="Select Equipment Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TRUCK">Truck</SelectItem>
+                      <SelectItem value="TRAILER">Trailer</SelectItem>
+                      <SelectItem value="VEHICLE">Vehicle</SelectItem>
+                      <SelectItem value="EQUIPMENT">Equipment</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
 
-            {/* Add more fields as needed */}
-            {hasVehicleInfo && (
-              <>
+            {/* Section: Ownership Information */}
+            <div className="border rounded-md p-4">
+              <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                Ownership Information
+              </h3>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label
+                    htmlFor="ownershipType"
+                    className="text-sm font-medium"
+                  >
+                    Ownership Type
+                  </Label>
+                  <Select
+                    name="ownershipType"
+                    value={formData.ownershipType || ""}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev!,
+                        ownershipType: value as "OWNED" | "LEASED",
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue placeholder="Select Ownership Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="OWNED">Owned</SelectItem>
+                      <SelectItem value="LEASED">Leased</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="acquiredDate" className="text-sm font-medium">
+                    Acquired Date
+                  </Label>
+                  <Input
+                    type="date"
+                    name="acquiredDate"
+                    value={
+                      formData.acquiredDate
+                        ? new Date(formData.acquiredDate)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    onChange={handleInputChange}
+                    className="w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="acquiredCondition"
+                    className="text-sm font-medium"
+                  >
+                    Acquired Condition
+                  </Label>
+                  <Select
+                    name="acquiredCondition"
+                    value={formData.acquiredCondition || ""}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev!,
+                        acquiredCondition: value as "NEW" | "USED",
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue placeholder="Select Condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="NEW">New</SelectItem>
+                      <SelectItem value="USED">Used</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Section: Equipment Specifications */}
+            <div className="border rounded-md p-4">
+              <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                Equipment Specifications
+              </h3>
+              <div className="flex flex-col gap-3">
                 <div>
                   <Label htmlFor="make" className="text-sm font-medium">
-                    Vehicle Make
+                    Make
                   </Label>
                   <Input
                     type="text"
                     name="make"
-                    value={formData.equipmentVehicleInfo?.make || ""}
-                    onChange={handleVehicleInfoChange}
+                    value={formData.make || ""}
+                    onChange={handleInputChange}
                     className="text-xs"
                   />
                 </div>
                 <div>
                   <Label htmlFor="model" className="text-sm font-medium">
-                    Vehicle Model
+                    Model
                   </Label>
                   <Input
                     type="text"
                     name="model"
-                    value={formData.equipmentVehicleInfo?.model || ""}
-                    onChange={handleVehicleInfoChange}
+                    value={formData.model || ""}
+                    onChange={handleInputChange}
                     className="text-xs"
                   />
                 </div>
                 <div>
                   <Label htmlFor="year" className="text-sm font-medium">
-                    Vehicle Year
+                    Year
                   </Label>
                   <Input
                     type="text"
                     name="year"
-                    value={formData.equipmentVehicleInfo?.year || ""}
-                    onChange={handleVehicleInfoChange}
+                    value={formData.year || ""}
+                    onChange={handleInputChange}
                     className="text-xs"
                   />
                 </div>
-              </>
-            )}
+                <div>
+                  <Label htmlFor="color" className="text-sm font-medium">
+                    Color
+                  </Label>
+                  <Input
+                    type="text"
+                    name="color"
+                    value={formData.color || ""}
+                    onChange={handleInputChange}
+                    className="text-xs"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="serialNumber" className="text-sm font-medium">
+                    Serial Number
+                  </Label>
+                  <Input
+                    type="text"
+                    name="serialNumber"
+                    value={formData.serialNumber || ""}
+                    onChange={handleInputChange}
+                    className="text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section: License Information */}
+            <div className="border rounded-md p-4">
+              <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                License Information
+              </h3>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="licensePlate" className="text-sm font-medium">
+                    License Number
+                  </Label>
+                  <Input
+                    type="text"
+                    name="licensePlate"
+                    value={formData.licensePlate || ""}
+                    onChange={handleInputChange}
+                    className="text-xs"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="licenseState" className="text-sm font-medium">
+                    License State
+                  </Label>
+                  <Input
+                    type="text"
+                    name="licenseState"
+                    value={formData.licenseState || ""}
+                    onChange={handleInputChange}
+                    className="text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section: Weight Information */}
+            <div className="border rounded-md p-4">
+              <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                Weight Information
+              </h3>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="overWeight" className="text-sm">
+                    Overweight Equipment
+                  </Label>
+                  <Select
+                    name="overWeight"
+                    value={formData.overWeight ? "true" : "false"}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev!,
+                        overWeight: value === "true",
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full text-xs">
+                      <SelectValue placeholder="Select Overweight Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="currentWeight" className="text-sm">
+                    Current Weight (lbs)
+                  </Label>
+                  <Input
+                    type="number"
+                    name="currentWeight"
+                    value={formData.currentWeight ?? ""}
+                    onChange={handleInputChange}
+                    className="text-xs"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           <div className="flex flex-row justify-end gap-2 w-full">
             {originalForm && originalForm.approvalStatus === "PENDING" && (

@@ -19,7 +19,7 @@ import {
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
-import { DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { TimesheetData } from "./hooks/useTimesheetData";
 
 export interface EditGeneralSectionProps {
@@ -35,7 +35,7 @@ export interface EditGeneralSectionProps {
   handleChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => void;
   workTypeOptions: {
     value: string;
@@ -57,32 +57,35 @@ export default function EditGeneralSection({
 }: EditGeneralSectionProps) {
   return (
     <>
-      <div className="flex flex-row items-end col-span-2 gap-2  ">
-        <div className="w-fit">
+      <div className="w-full flex flex-row items-end gap-2  ">
+        <div className="w-full">
           <Popover>
-            <label className="block text-xs font-semibold mb-1">
-              Created On
-            </label>
             <PopoverTrigger asChild>
-              <Button
-                disabled
-                type="button"
-                variant="outline"
-                className="w-[160px] justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {form.date ? (
-                  format(form.date, "PPP")
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </Button>
+              <div className="w-full flex flex-col">
+                <label className="w-full text-xs font-semibold mb-1">
+                  Created On
+                </label>
+
+                <Button
+                  disabled
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {form.date ? (
+                    format(form.date, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </div>
             </PopoverTrigger>
           </Popover>
         </div>
       </div>
       <div className="flex flex-row items-end col-span-2">
-        <div className="w-fit">
+        <div className="w-full">
           {/* Single value combobox for User */}
           <SingleCombobox
             label="User"
@@ -112,7 +115,7 @@ export default function EditGeneralSection({
         </div>
       </div>
       {/* Jobsite */}
-      <div className="w-1/2">
+      <div className="w-full">
         <SingleCombobox
           label="Project"
           options={jobsiteOptions}
@@ -130,7 +133,7 @@ export default function EditGeneralSection({
         />
       </div>
       {/* Costcode */}
-      <div className="w-1/2">
+      <div className="w-full">
         <SingleCombobox
           label="Cost Code"
           options={costCodeOptions}
@@ -147,7 +150,7 @@ export default function EditGeneralSection({
           filterKeys={["value", "label"]}
         />
       </div>
-      <div className="flex flex-row items-end">
+      <div className="w-full flex flex-row items-end">
         <DateTimePicker
           label="Start Time"
           value={form.startTime}
@@ -186,8 +189,16 @@ export default function EditGeneralSection({
         </div>
       </div>
 
+      <div className="col-span-1 w-full pt-2  flex flex-row flex-wrap items-end">
+        <p className="text-xs text-red-500 break-words">
+          <span className="font-semibold">Warning: </span>
+          Modifying the work type will erase all existing logs tied to the the
+          section below. <br /> Only proceed if you are certain about this
+          update.
+        </p>
+      </div>
       <div className="flex flex-row items-end">
-        <div className="w-1/2">
+        <div className="w-full">
           <label className="block text-xs font-semibold mb-1">Work Type</label>
           <Select
             name="workType"
@@ -222,14 +233,6 @@ export default function EditGeneralSection({
             </Button>
           )}
         </div>
-      </div>
-      <div className="col-span-1 max-w-[350px] flex flex-row flex-wrap items-end">
-        <p className="text-xs text-red-500 break-words">
-          <span className="font-semibold">Warning: </span>
-          Modifying the work type will erase all existing logs tied to the
-          previous selection.
-          <br />
-        </p>
       </div>
     </>
   );

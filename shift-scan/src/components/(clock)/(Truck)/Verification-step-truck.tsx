@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleTruckTimeSheet } from "@/actions/timeSheetActions";
 
@@ -66,7 +64,6 @@ export default function TruckVerificationStep({
   cc,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
@@ -76,7 +73,7 @@ export default function TruckVerificationStep({
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
+  const fetchRecentTimeSheetId = async (): Promise<number | null> => {
     try {
       const res = await fetch("/api/getRecentTimecard");
       const data = await res.json();
@@ -113,11 +110,11 @@ export default function TruckVerificationStep({
       if (type === "switchJobs") {
         const timeSheetId = await fetchRecentTimeSheetId();
         if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-        formData.append("id", timeSheetId);
+        formData.append("id", timeSheetId.toString());
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
-          savedCommentData?.id.toString() || ""
+          savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
       }
@@ -125,8 +122,6 @@ export default function TruckVerificationStep({
       // Use the new transaction-based function
       const response = await handleTruckTimeSheet(formData);
 
-      // Update state and redirect
-      setTimeSheetData({ id: response || "" });
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 
@@ -217,8 +212,8 @@ export default function TruckVerificationStep({
                             clockInRoleTypes === "truckDriver"
                               ? t("TruckDriver")
                               : clockInRoleTypes === "truckEquipmentOperator"
-                              ? t("TruckEquipmentOperator")
-                              : t("TruckLabor")
+                                ? t("TruckEquipmentOperator")
+                                : t("TruckLabor")
                           }
                           className={"pl-2 text-base text-center"}
                         />

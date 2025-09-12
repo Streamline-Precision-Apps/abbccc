@@ -14,7 +14,6 @@ import { Titles } from "@/components/(reusable)/titles";
 import "@/app/globals.css";
 import { Texts } from "@/components/(reusable)/texts";
 import { Contents } from "@/components/(reusable)/contents";
-import { UserSettings } from "@/lib/types";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
@@ -22,7 +21,15 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import LanguageModal from "@/app/(routes)/admins/_pages/sidebar/LanguageModal";
 import { Selects } from "@/components/(reusable)/selects";
 import { setLocale } from "@/actions/cookieActions";
-
+type UserSettings = {
+  userId: string;
+  language?: string;
+  personalReminders?: boolean;
+  generalReminders?: boolean;
+  cameraAccess?: boolean;
+  locationAccess?: boolean;
+  cookiesAccess?: boolean;
+};
 type Props = {
   id: string;
   setData: Dispatch<SetStateAction<UserSettings | null>>;

@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import { updateFormTemplate } from "@/actions/records-forms";
 import { FormEditorPanelLeft } from "./FormEditorPanelLeft";
 import Spinner from "@/components/(animations)/spinner";
-import { is } from "date-fns/locale";
 
 // Types for form building
 export interface FormField {
@@ -212,7 +211,7 @@ export default function FormEditor({
   const [loadingSave, setLoadingSave] = useState(false);
   const [loading, setLoading] = useState(false);
   const [popoverOpenFieldId, setPopoverOpenFieldId] = useState<string | null>(
-    null
+    null,
   );
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formSections, setFormSections] = useState<FormGrouping[]>([]);
@@ -240,7 +239,7 @@ export default function FormEditor({
         }));
 
         setFormFields(
-          formGrouping.flatMap((group: FormGrouping) => group.Fields)
+          formGrouping.flatMap((group: FormGrouping) => group.Fields),
         );
         setFormSections(formGrouping);
         setFormSettings({
@@ -258,7 +257,7 @@ export default function FormEditor({
         });
       } catch (error) {
         console.error("Error fetching form:", error);
-        toast.error("Failed to fetch form data");
+        toast.error("Failed to fetch form data", { duration: 3000 });
       } finally {
         setLoading(false);
       }
@@ -272,12 +271,12 @@ export default function FormEditor({
   // Updated logic to handle the new `Options` property in the API response
   const updateField = (
     fieldId: string,
-    updatedProperties: Partial<FormField>
+    updatedProperties: Partial<FormField>,
   ) => {
     setFormFields((prevFields) =>
       prevFields.map((field) =>
-        field.id === fieldId ? { ...field, ...updatedProperties } : field
-      )
+        field.id === fieldId ? { ...field, ...updatedProperties } : field,
+      ),
     );
   };
 
@@ -330,7 +329,7 @@ export default function FormEditor({
   // Update form settings
   const updateFormSettings = (
     key: keyof FormSettings,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setFormSettings({ ...formSettings, [key]: value });
   };
@@ -342,7 +341,7 @@ export default function FormEditor({
    */
   const editForm = async () => {
     if (!formSettings.name.trim()) {
-      toast.error("Please enter a form name");
+      toast.error("Please enter a form name", { duration: 3000 });
       return;
     }
     setLoadingSave(true);
@@ -378,13 +377,13 @@ export default function FormEditor({
       const result = await updateFormTemplate(payload);
 
       if (result.success) {
-        toast.success("Form saved successfully!");
+        toast.success("Form saved successfully!", { duration: 3000 });
       } else {
-        toast.error(`Failed to save form: ${result.error}`);
+        toast.error(`Failed to save form: ${result.error}`, { duration: 3000 });
       }
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Error saving form");
+      toast.error("Error saving form", { duration: 3000 });
     } finally {
       setLoadingSave(false);
     }
@@ -516,7 +515,7 @@ export default function FormEditor({
                                   className={`w-fit h-full justify-center items-center rounded-md gap-0  ${
                                     fieldTypes.find(
                                       (fieldType) =>
-                                        fieldType.name === field.type
+                                        fieldType.name === field.type,
                                     )?.color || "bg-white"
                                   } `}
                                 >
@@ -524,7 +523,7 @@ export default function FormEditor({
                                     src={
                                       fieldTypes.find(
                                         (fieldType) =>
-                                          fieldType.name === field.type
+                                          fieldType.name === field.type,
                                       )?.icon || "/default-icon.svg"
                                     }
                                     alt={field.type}
@@ -544,7 +543,7 @@ export default function FormEditor({
                                   </p>
                                   {[...fieldTypes]
                                     .sort((a, b) =>
-                                      a.label.localeCompare(b.label)
+                                      a.label.localeCompare(b.label),
                                     )
                                     .map((fieldType) => (
                                       <button
@@ -690,7 +689,6 @@ export default function FormEditor({
                                           "Equipment",
                                           "Jobsites",
                                           "Cost Codes",
-                                          "Clients",
                                         ].map((type) => (
                                           <div
                                             key={type}
@@ -703,7 +701,7 @@ export default function FormEditor({
                                               type="radio"
                                               className="w-fit"
                                               checked={field.filter?.includes(
-                                                type
+                                                type,
                                               )}
                                               onChange={() => {
                                                 updateField(field.id, {
@@ -856,11 +854,11 @@ export default function FormEditor({
                                         const newOptions = [
                                           ...(field.Options || []).filter(
                                             (
-                                              opt
+                                              opt,
                                             ): opt is {
                                               id: string;
                                               value: string;
-                                            } => typeof opt !== "string"
+                                            } => typeof opt !== "string",
                                           ),
                                           {
                                             id: Date.now().toString(),
@@ -887,11 +885,11 @@ export default function FormEditor({
                                         {(field.Options || [])
                                           .filter(
                                             (
-                                              opt
+                                              opt,
                                             ): opt is {
                                               id: string;
                                               value: string;
-                                            } => typeof opt !== "string"
+                                            } => typeof opt !== "string",
                                           )
                                           .map((option, optionIndex) => (
                                             <div
@@ -909,12 +907,12 @@ export default function FormEditor({
                                                   )
                                                     .filter(
                                                       (
-                                                        opt
+                                                        opt,
                                                       ): opt is {
                                                         id: string;
                                                         value: string;
                                                       } =>
-                                                        typeof opt !== "string"
+                                                        typeof opt !== "string",
                                                     )
                                                     .map((opt, idx) =>
                                                       idx === optionIndex
@@ -923,7 +921,7 @@ export default function FormEditor({
                                                             value:
                                                               e.target.value,
                                                           }
-                                                        : opt
+                                                        : opt,
                                                     );
                                                   updateField(field.id, {
                                                     Options: newOptions,
@@ -943,16 +941,16 @@ export default function FormEditor({
                                                   )
                                                     .filter(
                                                       (
-                                                        opt
+                                                        opt,
                                                       ): opt is {
                                                         id: string;
                                                         value: string;
                                                       } =>
-                                                        typeof opt !== "string"
+                                                        typeof opt !== "string",
                                                     )
                                                     .filter(
                                                       (_, i) =>
-                                                        i !== optionIndex
+                                                        i !== optionIndex,
                                                     );
                                                   updateField(field.id, {
                                                     Options: newOptions,
@@ -1032,11 +1030,11 @@ export default function FormEditor({
                                         const newOptions = [
                                           ...(field.Options || []).filter(
                                             (
-                                              opt
+                                              opt,
                                             ): opt is {
                                               id: string;
                                               value: string;
-                                            } => typeof opt !== "string"
+                                            } => typeof opt !== "string",
                                           ),
                                           {
                                             id: Date.now().toString(),
@@ -1061,11 +1059,11 @@ export default function FormEditor({
                                     {(field.Options || [])
                                       .filter(
                                         (
-                                          opt
+                                          opt,
                                         ): opt is {
                                           id: string;
                                           value: string;
-                                        } => typeof opt !== "string"
+                                        } => typeof opt !== "string",
                                       )
                                       .map((option, optionIndex) => (
                                         <div
@@ -1083,11 +1081,11 @@ export default function FormEditor({
                                               )
                                                 .filter(
                                                   (
-                                                    opt
+                                                    opt,
                                                   ): opt is {
                                                     id: string;
                                                     value: string;
-                                                  } => typeof opt !== "string"
+                                                  } => typeof opt !== "string",
                                                 )
                                                 .map((opt, idx) =>
                                                   idx === optionIndex
@@ -1095,7 +1093,7 @@ export default function FormEditor({
                                                         ...opt,
                                                         value: e.target.value,
                                                       }
-                                                    : opt
+                                                    : opt,
                                                 );
                                               updateField(field.id, {
                                                 Options: newOptions,
@@ -1115,14 +1113,14 @@ export default function FormEditor({
                                               )
                                                 .filter(
                                                   (
-                                                    opt
+                                                    opt,
                                                   ): opt is {
                                                     id: string;
                                                     value: string;
-                                                  } => typeof opt !== "string"
+                                                  } => typeof opt !== "string",
                                                 )
                                                 .filter(
-                                                  (_, i) => i !== optionIndex
+                                                  (_, i) => i !== optionIndex,
                                                 );
                                               updateField(field.id, {
                                                 Options: newOptions,
@@ -1155,11 +1153,11 @@ export default function FormEditor({
                                         const newOptions = [
                                           ...(field.Options || []).filter(
                                             (
-                                              opt
+                                              opt,
                                             ): opt is {
                                               id: string;
                                               value: string;
-                                            } => typeof opt !== "string"
+                                            } => typeof opt !== "string",
                                           ),
                                           {
                                             id: Date.now().toString(),
@@ -1184,11 +1182,11 @@ export default function FormEditor({
                                     {(field.Options || [])
                                       .filter(
                                         (
-                                          opt
+                                          opt,
                                         ): opt is {
                                           id: string;
                                           value: string;
-                                        } => typeof opt !== "string"
+                                        } => typeof opt !== "string",
                                       )
                                       .map((option, optionIndex) => (
                                         <div
@@ -1206,11 +1204,11 @@ export default function FormEditor({
                                               )
                                                 .filter(
                                                   (
-                                                    opt
+                                                    opt,
                                                   ): opt is {
                                                     id: string;
                                                     value: string;
-                                                  } => typeof opt !== "string"
+                                                  } => typeof opt !== "string",
                                                 )
                                                 .map((opt, idx) =>
                                                   idx === optionIndex
@@ -1218,7 +1216,7 @@ export default function FormEditor({
                                                         ...opt,
                                                         value: e.target.value,
                                                       }
-                                                    : opt
+                                                    : opt,
                                                 );
                                               updateField(field.id, {
                                                 Options: newOptions,
@@ -1238,14 +1236,14 @@ export default function FormEditor({
                                               )
                                                 .filter(
                                                   (
-                                                    opt
+                                                    opt,
                                                   ): opt is {
                                                     id: string;
                                                     value: string;
-                                                  } => typeof opt !== "string"
+                                                  } => typeof opt !== "string",
                                                 )
                                                 .filter(
-                                                  (_, i) => i !== optionIndex
+                                                  (_, i) => i !== optionIndex,
                                                 );
                                               updateField(field.id, {
                                                 Options: newOptions,

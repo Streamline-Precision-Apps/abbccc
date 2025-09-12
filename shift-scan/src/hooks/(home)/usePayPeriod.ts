@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { PayPeriodTimesheets } from "@/lib/types";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+
+type PayPeriodTimesheets = {
+  startTime: Date; // Correct field name
+  endTime: Date;
+};
 
 const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
@@ -17,11 +21,11 @@ const PayPeriodSheetsArraySchema = z.array(PayPeriodTimesheetsSchema);
 
 export const usePayPeriodData = (
   setPayPeriodTimeSheets: (
-    payPeriodTimeSheets: PayPeriodTimesheets[] | null
-  ) => void
+    payPeriodTimeSheets: PayPeriodTimesheets[] | null,
+  ) => void,
 ) => {
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
-    []
+    [],
   );
   const [pageView, setPageView] = useState("");
   const [loading, setLoading] = useState(true);
@@ -49,9 +53,8 @@ export const usePayPeriodData = (
         setPayPeriodTimeSheets(transformedData);
 
         // Fetch page view cookie value
-        const pageViewData = await fetchWithOfflineCache(
-          "currentPageView",
-          () => fetch("/api/cookies?method=get&name=currentPageView").then(res => res.json())
+        const pageViewResponse = await fetch(
+          "/api/cookies?method=get&name=currentPageView",
         );
         setPageView(pageViewData || "");
       } catch (error) {

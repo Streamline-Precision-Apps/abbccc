@@ -30,7 +30,7 @@ export default function EditTagModal({
   }, [tagDetails]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) =>
@@ -40,13 +40,13 @@ export default function EditTagModal({
             [name]:
               type === "number" ? (value === "" ? null : Number(value)) : value,
           }
-        : prev
+        : prev,
     );
   };
 
   const handleSaveChanges = async () => {
     if (!formData) {
-      toast.error("No form data to save.");
+      toast.error("No form data to save.", { duration: 3000 });
       return;
     }
     try {
@@ -57,20 +57,20 @@ export default function EditTagModal({
       fd.append("Jobsites", JSON.stringify(formData.Jobsites.map((j) => j.id)));
       fd.append(
         "CostCodeTags",
-        JSON.stringify(formData.CostCodes.map((c) => c.id))
+        JSON.stringify(formData.CostCodes.map((c) => c.id)),
       );
 
       const result = await updateTagAdmin(fd);
 
       if (result?.success) {
-        toast.success("Tag updated successfully.");
+        toast.success("Tag updated successfully.", { duration: 3000 });
         cancel();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update Tag.");
       }
     } catch (err) {
-      toast.error("Error updating Tag. Please try again.");
+      toast.error("Error updating Tag. Please try again.", { duration: 3000 });
       console.error(err);
     }
   };
@@ -90,7 +90,7 @@ export default function EditTagModal({
   const allJobsites = [
     ...safeJobsiteSummaries,
     ...formData.Jobsites.filter(
-      (js) => !safeJobsiteSummaries.some((j) => j.id === js.id)
+      (js) => !safeJobsiteSummaries.some((j) => j.id === js.id),
     ),
   ];
 
@@ -100,7 +100,7 @@ export default function EditTagModal({
   const allCostCodes = [
     ...safeCostCodeSummaries,
     ...formData.CostCodes.filter(
-      (cc) => !safeCostCodeSummaries.some((c) => c.id === cc.id)
+      (cc) => !safeCostCodeSummaries.some((c) => c.id === cc.id),
     ),
   ];
 
@@ -158,7 +158,7 @@ export default function EditTagModal({
                       allJobsites
                         ? allJobsites
                             .filter(
-                              (jobsite) => jobsite.name.toLowerCase() !== "all"
+                              (jobsite) => jobsite.name.toLowerCase() !== "all",
                             )
                             .map((jobsite) => ({
                               label: jobsite.name,
@@ -174,10 +174,10 @@ export default function EditTagModal({
                           ? {
                               ...prev,
                               Jobsites: allJobsites.filter((jobsite) =>
-                                selectedIds.includes(jobsite.id)
+                                selectedIds.includes(jobsite.id),
                               ),
                             }
-                          : prev
+                          : prev,
                       );
                     }}
                   />
@@ -198,10 +198,10 @@ export default function EditTagModal({
                                   ? {
                                       ...prev,
                                       Jobsites: prev.Jobsites.filter(
-                                        (j) => j.id !== js.id
+                                        (j) => j.id !== js.id,
                                       ),
                                     }
-                                  : prev
+                                  : prev,
                               );
                             }}
                             aria-label={`Remove ${js.name}`}
@@ -225,7 +225,7 @@ export default function EditTagModal({
                           ? allCostCodes
                               .filter(
                                 (costCode) =>
-                                  costCode.name.toLowerCase() !== "all"
+                                  costCode.name.toLowerCase() !== "all",
                               )
                               .map((costCode) => ({
                                 label: costCode.name,
@@ -241,10 +241,10 @@ export default function EditTagModal({
                             ? {
                                 ...prev,
                                 CostCodes: allCostCodes.filter((costCode) =>
-                                  selectedIds.includes(costCode.id)
+                                  selectedIds.includes(costCode.id),
                                 ),
                               }
-                            : prev
+                            : prev,
                         );
                       }}
                     />
@@ -265,10 +265,10 @@ export default function EditTagModal({
                                     ? {
                                         ...prev,
                                         CostCodes: prev.CostCodes.filter(
-                                          (c) => c.id !== cc.id
+                                          (c) => c.id !== cc.id,
                                         ),
                                       }
-                                    : prev
+                                    : prev,
                                 );
                               }}
                               aria-label={`Remove ${cc.name}`}

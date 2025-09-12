@@ -17,6 +17,7 @@ export async function generalFromSubmission(formData: FormData) {
         submittedAt,
       },
     });
+
     return submission;
   } catch (error) {
     console.error("Error creating form submission:", error);

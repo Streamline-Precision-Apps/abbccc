@@ -28,16 +28,10 @@ export async function GET(req: Request) {
       approvalStatus: true,
       overWeight: true,
       currentWeight: true,
-      equipmentVehicleInfo: {
-        select: {
-          make: true,
-          model: true,
-          year: true,
-          licensePlate: true,
-          registrationExpiration: true,
-          mileage: true,
-        },
-      },
+      make: true,
+      model: true,
+      year: true,
+      licensePlate: true,
     } as const;
 
     let equipment;
@@ -65,13 +59,6 @@ export async function GET(req: Request) {
       equipment = await prisma.equipment.findMany({
         select: baseSelect,
       });
-    }
-
-    if (!equipment || equipment.length === 0) {
-      return NextResponse.json(
-        { message: "No equipment found for the given filter." },
-        { status: 404 }
-      );
     }
 
     return NextResponse.json(equipment);

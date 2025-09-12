@@ -1,9 +1,7 @@
 "use client";
-import SearchBar from "../personnel/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
-import List from "./_components/List/List";
 import { FormTemplateCategory } from "@/lib/enums";
 import {
   Select,
@@ -12,7 +10,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 import {
   deleteFormTemplate,
@@ -33,15 +30,18 @@ import { ExportModal } from "./_components/List/exportModal";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import Spinner from "@/components/(animations)/spinner";
+import SearchBarPopover from "../_pages/searchBarPopover";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
+import { FooterPagination } from "../_pages/FooterPagination";
+import { FormsDataTable } from "./_components/List/FormsDataTable";
 
 // Form field definition
 interface FormField {
@@ -87,7 +87,6 @@ export interface FormItem {
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
 export default function Forms() {
-  const { setOpen, open } = useSidebar();
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -98,8 +97,8 @@ export default function Forms() {
     to: undefined,
   });
   const {
-    searchTerm,
-    setSearchTerm,
+    inputValue,
+    setInputValue,
     formType,
     setFormType,
     loading,
@@ -120,12 +119,12 @@ export default function Forms() {
       const isDeleted = await deleteFormTemplate(submissionId);
       if (isDeleted) {
         // Optionally, you can show a success message or update the UI
-        toast.success("Form template deleted successfully");
+        toast.success("Form template deleted successfully", { duration: 3000 });
         router.push("/admins/forms");
       }
     } catch (error) {
       console.error("Error deleting form template:", error);
-      toast.error("Failed to delete form template");
+      toast.error("Failed to delete form template", { duration: 3000 });
     }
   };
 
@@ -148,6 +147,12 @@ export default function Forms() {
     setPendingDeleteId(null);
   };
 
+  // Helper function to show export modal and set exportingFormId
+  const handleShowExportModal = (id: string) => {
+    setExportingFormId(id);
+    setShowExportModal(true);
+  };
+
   const handleExport = async (exportFormat = "xlsx") => {
     if (exportingFormId) {
       try {
@@ -158,7 +163,9 @@ export default function Forms() {
         });
 
         if (!template || !template.FormGrouping) {
-          toast.error("Form template or groupings not found");
+          toast.error("Form template or groupings not found", {
+            duration: 3000,
+          });
           return;
         }
         const groupings = template.FormGrouping;
@@ -242,13 +249,13 @@ export default function Forms() {
             .map((row) =>
               row
                 .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
-                .join(",")
+                .join(","),
             )
             .join("\n");
           const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.csv`,
           );
         } else {
           const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -258,14 +265,14 @@ export default function Forms() {
           const blob = new Blob([wbout], { type: "application/octet-stream" });
           saveAs(
             blob,
-            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `form_submissions_${new Date().toISOString().slice(0, 10)}.xlsx`,
           );
         }
 
-        toast.success("Export completed successfully");
+        toast.success("Export completed successfully", { duration: 3000 });
       } catch (error) {
         console.error("Error exporting form template:", error);
-        toast.error("Failed to export form template");
+        toast.error("Failed to export form template", { duration: 3000 });
       } finally {
         setShowExportModal(false);
         setExportingFormId(null);
@@ -275,176 +282,111 @@ export default function Forms() {
 
   // Main render
   return (
-    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-4">
-      <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
-        <div className="flex flex-row gap-5 ">
-          <div className="flex items-center justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 p-0 hover:bg-slate-500 hover:bg-opacity-20 ${
-                open ? "bg-slate-500 bg-opacity-20" : "bg-app-blue "
-              }`}
-              onClick={() => {
-                setOpen(!open);
-              }}
+    <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
+      <PageHeaderContainer
+        loading={loading}
+        headerText="Forms Management"
+        descriptionText="Create, manage, and track form templates and submissions"
+        refetch={() => {
+          refetch();
+        }}
+      />
+
+      <div className="h-10 w-full flex flex-row justify-between gap-4">
+        <div className="flex flex-row w-full gap-2">
+          <SearchBarPopover
+            term={inputValue}
+            handleSearchChange={(e) => setInputValue(e.target.value)}
+            placeholder={"Search by form name..."}
+            textSize="xs"
+            imageSize="10"
+          />
+          <div className="relative flex items-center">
+            <Select
+              value={formType}
+              onValueChange={(val) => setFormType(val as typeof formType)}
             >
-              <img
-                src={open ? "/condense-white.svg" : "/condense.svg"}
-                alt="logo"
-                className="w-4 h-auto object-contain "
-              />
-            </Button>
-          </div>
-          <div className="flex flex-col">
-            <p className="text-left font-bold text-base text-white">
-              Forms Management
-            </p>
-            <p className="text-left font-normal text-xs text-white">
-              Create, manage, and track form templates and submissions
-            </p>
+              <SelectTrigger className="px-2 text-xs w-full max-w-[150px] text-center h-full bg-white border rounded-lg">
+                <SelectValue placeholder="Form Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Filter By Category</SelectItem>
+                {formTemplateCategoryValues.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {formType !== "ALL" && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge
+                    variant="destructive"
+                    className="h-4 w-4 absolute -top-1 -right-1 p-0.5 cursor-pointer hover:bg-red-400 hover:bg-opacity-100"
+                    onClick={() => setFormType("ALL")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={10} side="right" align="end">
+                  <p className="text-xs">Remove</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
-        <div>
-          {" "}
-          <div className="h-fit flex flex-row ">
-            <div className="flex flex-row gap-2">
+        <div className="h-full flex flex-row gap-4 ">
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Link href={`/admins/forms/create`}>
-                <Button>
+                <Button size={"icon"} className="min-w-12">
                   <img
                     src="/plus-white.svg"
                     alt="Create New Form"
-                    className="h-4 w-4 mr-1"
+                    className="h-4 w-4 "
                   />
-                  <p>Form Template</p>
                 </Button>
               </Link>
-            </div>
-          </div>
+            </TooltipTrigger>
+            <TooltipContent>Create Form Template</TooltipContent>
+          </Tooltip>
         </div>
       </div>
-      <div className="h-fit max-h-12 w-full flex flex-row justify-between gap-4 mb-2 ">
-        <div className="flex flex-row w-full gap-4 mb-2">
-          <div className="h-full w-full p-1 bg-white max-w-[450px] rounded-lg ">
-            <SearchBar
-              term={searchTerm}
-              handleSearchChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={"Search forms by name..."}
-              textSize="xs"
-              imageSize="6"
-            />
-          </div>
-          <Select
-            value={formType}
-            onValueChange={(val) => setFormType(val as typeof formType)}
-          >
-            <SelectTrigger className="px-2 text-xs w-fit min-w-[150px] h-full bg-white border rounded-lg">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Categories</SelectItem>
-              {formTemplateCategoryValues.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="h-[85vh] rounded-lg  w-full relative bg-white">
-        {loading && (
-          <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
-            <Spinner size={20} />
-            <span className="text-lg text-gray-500">Loading...</span>
-          </div>
-        )}
-        <ScrollArea
-          alwaysVisible
-          className="h-[80vh] w-full  bg-white rounded-t-lg  border border-slate-200 relative pr-2"
-        >
-          <List
-            forms={filteredForms}
+
+      <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
+        <div className="h-full w-full overflow-auto pb-10">
+          <FormsDataTable
+            data={filteredForms}
             loading={loading}
             page={page}
-            pageSize={pageSize}
             totalPages={totalPages}
             total={total}
+            pageSize={pageSize}
+            searchTerm={inputValue}
             setPage={setPage}
             setPageSize={setPageSize}
             openHandleDelete={openHandleDelete}
-            setPendingExportId={(id) => {
-              setExportingFormId(id);
-              setShowExportModal(true);
-            }}
+            handleShowExportModal={handleShowExportModal}
           />
-          <div className="h-1 bg-slate-100 border-y border-slate-200 absolute bottom-0 right-0 left-0">
-            <ScrollBar
-              orientation="horizontal"
-              className="w-full h-3 ml-2 mr-2 rounded-full"
+          {loading && (
+            <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
+              <Spinner size={20} />
+              <span className="text-lg text-gray-500">Loading...</span>
+            </div>
+          )}
+          <div className="flex items-center justify-end space-x-2 py-4 ">
+            <FooterPagination
+              page={loading ? 1 : page}
+              totalPages={loading ? 1 : totalPages}
+              total={loading ? 0 : total}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
             />
           </div>
-        </ScrollArea>
-        {totalPages > 1 && (
-          <div className="absolute bottom-0 h-[5vh] left-0 right-0 flex flex-row justify-between items-center mt-2 px-3 bg-white border-t border-gray-200 rounded-b-lg">
-            <div className="text-xs text-gray-600">
-              Showing page {page} of {totalPages} ({total} total)
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.max(1, page - 1));
-                      }}
-                      aria-disabled={page === 1}
-                      tabIndex={page === 1 ? -1 : 0}
-                      style={{
-                        pointerEvents: page === 1 ? "none" : undefined,
-                        opacity: page === 1 ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <span className="text-xs border rounded py-1 px-2">
-                      {page}
-                    </span>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(Math.min(totalPages, page + 1));
-                      }}
-                      aria-disabled={page === totalPages}
-                      tabIndex={page === totalPages ? -1 : 0}
-                      style={{
-                        pointerEvents: page === totalPages ? "none" : undefined,
-                        opacity: page === totalPages ? 0.5 : 1,
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-              <select
-                className="ml-2 px-1 py-1 rounded text-xs border"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[25, 50, 75, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size} Rows
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

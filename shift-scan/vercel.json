@@ -1,3 +1,13 @@
 {
-    
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "master": false,
+      "dev": false,
+      "development": false,
+      "staging": false,
+      "preview": false,
+      "feature/**": false
+    }
+  }
 }

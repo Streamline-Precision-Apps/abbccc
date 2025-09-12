@@ -21,10 +21,10 @@ type TagSummary = {
   name: string;
 };
 
-type ClientsSummary = {
-  id: string;
-  name: string;
-};
+// type ClientsSummary = {
+//   id: string;
+//   name: string;
+// };
 export default function CreateJobsiteModal({
   cancel,
   rerender,
@@ -34,31 +34,7 @@ export default function CreateJobsiteModal({
 }) {
   const { data: session } = useSession();
   const [tagSummaries, setTagSummaries] = useState<TagSummary[]>([]);
-  const [clients, setClients] = useState<ClientsSummary[]>([]);
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const [tag, client] = await Promise.all([
-          fetch("/api/getTagSummary"),
-          fetch("/api/getClientsSummary"),
-        ]).then((res) => Promise.all(res.map((r) => r.json())));
-
-        const filteredTags = tag.tags.map(
-          (tag: { id: string; name: string }) => ({
-            id: tag.id,
-            name: tag.name,
-          })
-        );
-        setTagSummaries(filteredTags);
-
-        setClients(client);
-      } catch (error) {
-        console.error("Failed to fetch tags:", error);
-      }
-    };
-    fetchTags();
-  }, []);
+  // const [clients, setClients] = useState<ClientsSummary[]>([]);
 
   const [formData, setFormData] = useState({
     code: "",
@@ -84,7 +60,7 @@ export default function CreateJobsiteModal({
   const handleAddressChange = (
     e:
       | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-      | { name: string; value: string | number }
+      | { name: string; value: string | number },
   ) => {
     let name: string, value: string | number, type: string | undefined;
     if ("target" in e) {
@@ -112,7 +88,7 @@ export default function CreateJobsiteModal({
     try {
       // Basic validation
       if (!formData.name.trim()) {
-        toast.error("Jobsite name is required");
+        toast.error("Jobsite name is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
@@ -140,14 +116,14 @@ export default function CreateJobsiteModal({
 
       const result = await createJobsiteAdmin({ payload });
       if (result.success) {
-        toast.success("Jobsite created successfully!");
+        toast.success("Jobsite created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error("Failed to create jobsite");
+        toast.error("Failed to create jobsite", { duration: 3000 });
       }
     } catch (error) {
-      toast.error("Failed to create jobsite");
+      toast.error("Failed to create jobsite", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }
@@ -387,10 +363,10 @@ export default function CreateJobsiteModal({
                           ? {
                               ...prev,
                               CCTags: tagSummaries.filter((tag) =>
-                                selectedIds.includes(tag.id)
+                                selectedIds.includes(tag.id),
                               ),
                             }
-                          : prev
+                          : prev,
                       );
                     }}
                   />
@@ -412,10 +388,10 @@ export default function CreateJobsiteModal({
                                 ? {
                                     ...prev,
                                     CCTags: prev.CCTags.filter(
-                                      (j) => j.id !== js.id
+                                      (j) => j.id !== js.id,
                                     ),
                                   }
-                                : prev
+                                : prev,
                             );
                           }}
                           aria-label={`Remove ${js.name}`}

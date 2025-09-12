@@ -11,7 +11,26 @@ import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
 import ReviewYourTeam from "./(components)/reviewYourTeam";
 import EditTeamTimeSheet from "./(components)/editTeamTimeSheet";
-import { TimesheetFilter, crewUsers } from "@/lib/types";
+
+type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
+
+type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};
 
 export type TimeSheet = {
   submitDate: string;
@@ -38,7 +57,10 @@ interface ClockOutContentProps {
   permission: string;
 }
 
-export default function ClockOutContent({ userId, permission }: ClockOutContentProps) {
+export default function ClockOutContent({
+  userId,
+  permission,
+}: ClockOutContentProps) {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
@@ -54,12 +76,11 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
   const [focusIds, setFocusIds] = useState<string[]>([]);
   const [employeeId, setEmployeeId] = useState<string>("");
   const [teamUsers, setTeamUsers] = useState<crewUsers[]>([]);
+  const [wasInjured, setWasInjured] = useState<boolean>(false);
 
   useEffect(() => {
     console.log("currentStep: ", step);
   }, [step]);
-
-
 
   useEffect(() => {
     console.log("path: ", path);
@@ -86,7 +107,6 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
     setStep((prevStep) => prevStep - 1); // Increment function
   };
 
-
   // Batch fetch all clock-out details (timesheets, comment, signature)
   useEffect(() => {
     const fetchClockoutDetails = async () => {
@@ -102,7 +122,7 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
           .filter((timesheet: TimeSheet) => timesheet.endTime === null)
           .sort(
             (a: TimeSheet, b: TimeSheet) =>
-              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+              new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
           )[0];
         setPendingTimeSheets(activeTimeSheet || null);
       } catch (error) {
@@ -161,7 +181,10 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
     return (
       <Bases>
         <Contents>
-          <Holds background={"white"} className="h-full border-[3px] border-red-500">
+          <Holds
+            background={"white"}
+            className="h-full border-[3px] border-red-500"
+          >
             <Comment
               handleClick={() => setStep(1)}
               clockInRole={""}
@@ -184,7 +207,7 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
       const reviewableTimesheets = timesheets.filter(
         (ts) =>
           ts.endTime === null &&
-          (ts.status === 'DRAFT' || ts.status === 'PENDING')
+          (ts.status === "DRAFT" || ts.status === "PENDING"),
       );
       // Optionally, you can use reviewableTimesheets for debugging or future logic
       return (
@@ -225,7 +248,10 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
         setFocusIds={setFocusIds}
       />
     );
-  } else if ((step === 2 && editFilter === null) || (step === 1 && teamUsers && teamUsers.length > 0 && editFilter === null)) {
+  } else if (
+    (step === 2 && editFilter === null) ||
+    (step === 1 && teamUsers && teamUsers.length > 0 && editFilter === null)
+  ) {
     // PreInjuryReport for both managers and non-managers after review step
     return (
       <PreInjuryReport
@@ -237,22 +263,30 @@ export default function ClockOutContent({ userId, permission }: ClockOutContentP
         prevStep={prevStep}
       />
     );
-  } else if ((step === 2 && path === "Injury") || (step === 3 && path === "Injury")) {
+  } else if (
+    (step === 2 && path === "Injury") ||
+    (step === 3 && path === "Injury")
+  ) {
     // Injury Report step
     return (
       <InjuryReportContent
         base64String={base64String}
         handleNextStep={handleSubmitInjury}
         prevStep={prevStep}
+        setWasInjured={setWasInjured} // Pass setWasInjured to handle state
       />
     );
-  } else if ((step === 2 && path === "clockOut") || (step === 3 && path === "clockOut")) {
+  } else if (
+    (step === 2 && path === "clockOut") ||
+    (step === 3 && path === "clockOut")
+  ) {
     // Final Clock-Out step
     return (
       <LaborClockOut
         prevStep={prevStep}
         commentsValue={commentsValue}
         pendingTimeSheets={pendingTimeSheets}
+        wasInjured={wasInjured}
       />
     );
   } else {

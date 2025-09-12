@@ -1,13 +1,14 @@
 // only managers can view the team submission in the api and user must be signed in
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidateTag } from "next/cache";
 
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
+
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -19,14 +20,14 @@ export async function GET(
   if (permission === "USER") {
     return NextResponse.json(
       { error: "Unauthorized User Permission" },
-      { status: 401 }
+      { status: 401 },
     );
   }
   const { id } = await params;
   try {
     const formSubmission = await prisma.formSubmission.findUnique({
       where: {
-        id,
+        id: Number(id),
       },
       include: {
         User: {

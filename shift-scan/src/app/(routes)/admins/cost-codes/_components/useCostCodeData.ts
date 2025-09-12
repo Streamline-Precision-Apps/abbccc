@@ -1,7 +1,7 @@
 "use client";
 import { ApprovalStatus } from "@/lib/enums";
 import { useState, useEffect } from "react";
-
+import { deleteCostCode } from "@/actions/AssetActions";
 export type CostCodeSummary = {
   id: string;
   code: string;
@@ -23,6 +23,24 @@ export const useCostCodeData = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
+
+  // State for modals, dialogs, and pending actions
+  // Cost Codes
+  const [editCostCodeModal, setEditCostCodeModal] = useState(false);
+  const [createCostCodeModal, setCreateCostCodeModal] = useState(false);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchTerm(inputValue);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [inputValue]);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -30,8 +48,9 @@ export const useCostCodeData = () => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
+        const encodedSearch = encodeURIComponent(searchTerm.trim());
         const response = await fetch(
-          `/api/getCostCodeDetails?page=${page}&pageSize=${pageSize}`
+          `/api/getCostCodeDetails?page=${page}&pageSize=${pageSize}&search=${encodedSearch}`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
@@ -47,23 +66,61 @@ export const useCostCodeData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey, page, pageSize]);
+  }, [refreshKey, page, pageSize, searchTerm]);
+  // Cost Codes helper functions
+  const openHandleEdit = (id: string) => {
+    setPendingEditId(id);
+    setEditCostCodeModal(true);
+  };
+  const confirmDelete = async () => {
+    if (pendingDeleteId) {
+      await deleteCostCode(pendingDeleteId);
+      setShowDeleteDialog(false);
+      setPendingDeleteId(null);
+      rerender();
+    }
+  };
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setPendingDeleteId(null);
+  };
+  const openHandleDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setShowDeleteDialog(true);
+  };
+
+  const filteredCostCodes = CostCodeDetails.filter((costCode) =>
+    costCode.name.toLowerCase().includes(inputValue.toLowerCase()),
+  );
+
+  // Reset to page 1 if search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [inputValue]);
 
   return {
-    CostCodeDetails,
-    setCostCodeDetails,
     loading,
-    setLoading,
+    CostCodeDetails,
     rerender,
-    // Pagination state
     total,
     page,
     pageSize,
     totalPages,
-    // Pagination handlers
-    setTotal,
     setPage,
     setPageSize,
-    setTotalPages,
+    inputValue,
+    setInputValue,
+    editCostCodeModal,
+    setEditCostCodeModal,
+    createCostCodeModal,
+    setCreateCostCodeModal,
+    pendingEditId,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    openHandleEdit,
+    confirmDelete,
+    openHandleDelete,
+    cancelDelete,
+    filteredCostCodes,
   };
 };

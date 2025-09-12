@@ -3,11 +3,15 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import RefuelLogsList from "./RefuelLogsList";
-import { Refueled } from "@/lib/types";
 import { createRefuelLog } from "@/actions/tascoActions";
 import { useTranslations } from "next-intl";
 import { Images } from "@/components/(reusable)/images";
 
+export type Refueled = {
+  id: string;
+  tascoLogId: string;
+  gallonsRefueled: number;
+};
 export default function RefuelLayout({
   tascoLog,
   refuelLogs,

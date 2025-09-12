@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, use, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState, useMemo } from "react";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import FormDraft from "./_components/formDraft";
@@ -60,7 +60,7 @@ interface FormField {
 }
 
 type ManagerFormApprovalSchema = {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   userId: string;
@@ -77,7 +77,7 @@ type ManagerFormApprovalSchema = {
   status: FormStatus;
   Approvals: Array<{
     id: string;
-    formSubmissionId: string;
+    formSubmissionId: number;
     signedBy: string;
     submittedAt: string;
     updatedAt: string;
@@ -105,7 +105,7 @@ export default function DynamicForm({
   // Search params from URL
   const t = useTranslations("Hamburger-Inbox");
   const formSubmissions = useSearchParams();
-  const submissionId = formSubmissions.get("submissionId");
+  const submissionId = Number(formSubmissions.get("submissionId"));
   const submissionStatus = formSubmissions.get("status");
   const submissionApprovingStatus = formSubmissions.get("approvingStatus");
   const formApprover = formSubmissions.get("formApprover");
@@ -114,7 +114,7 @@ export default function DynamicForm({
   const [formData, setFormData] = useState<FormIndividualTemplate | null>(null);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formValues, setFormValues] = useState<Record<string, FormFieldValue>>(
-    {}
+    {},
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,98 +128,124 @@ export default function DynamicForm({
   const userId = session?.user.id;
   const router = useRouter();
 
-  // Fetch form template and draft data on page load
+  // Determine which API endpoints to fetch based on the current state
+  const determineApiEndpoints = () => {
+    const endpoints = {
+      form: `/api/form/${id}`,
+      submission: null as string | null,
+      managerApproval: null as string | null,
+    };
+
+    if (!submissionId) return endpoints;
+
+    // Determine submission endpoint based on status and approval status
+    if (submissionStatus === "DRAFT") {
+      endpoints.submission = `/api/formDraft/${submissionId}`;
+    } else if (submissionApprovingStatus === "true") {
+      endpoints.submission = `/api/teamSubmission/${submissionId}`;
+    } else {
+      endpoints.submission = `/api/formSubmission/${submissionId}`;
+    }
+
+    // Determine if manager approval data is needed
+    if (
+      submissionStatus === "APPROVED" ||
+      submissionStatus === "DENIED" ||
+      submissionApprovingStatus === "true"
+    ) {
+      endpoints.managerApproval = `/api/managerFormApproval/${submissionId}`;
+    }
+
+    return endpoints;
+  };
+
+  // Fetch data in parallel and process it efficiently
   useEffect(() => {
-    const fetchForm = async () => {
+    const fetchAllData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // Fetch the form template
-        const formRes = await fetch(`/api/form/` + id);
-        if (!formRes.ok) throw new Error("Failed to fetch form template");
-        const apiData = await formRes.json();
-        // Map API data to FormIndividualTemplate if needed
-        setFormData(apiData);
+        const endpoints = determineApiEndpoints();
+        const fetchOptions = {
+          // Use default caching instead of forcing no-cache
+          // This will improve performance and reduce unnecessary reloads
+        };
 
-        // If there's no submissionId, stop here and just show template
+        // Build array of fetch promises based on required endpoints
+        const fetchPromises = [fetch(endpoints.form, fetchOptions)];
+
+        if (endpoints.submission) {
+          fetchPromises.push(fetch(endpoints.submission, fetchOptions));
+        }
+
+        if (endpoints.managerApproval) {
+          fetchPromises.push(fetch(endpoints.managerApproval, fetchOptions));
+        }
+
+        // Execute all fetches in parallel
+        const responses = await Promise.all(fetchPromises);
+
+        // Check if any response failed
+        for (const response of responses) {
+          if (!response.ok) {
+            throw new Error(
+              `API request failed with status ${response.status}`,
+            );
+          }
+        }
+
+        // Parse all responses in parallel
+        const [formData, ...otherData] = await Promise.all(
+          responses.map((res) => res.json()),
+        );
+
+        // Set form data first
+        setFormData(formData);
+
+        // If no submission ID, stop here
         if (!submissionId) {
           setLoading(false);
           return;
         }
 
-        // Fetch submission data based on submissionStatus and submissionApprovingStatus
-        let submissionData, managerFormApprovalData;
+        // Extract submission data and manager approval data from otherData
+        let submissionData = null;
+        let managerApprovalData = null;
 
-        if (submissionStatus === "DRAFT") {
-          console.log("DRAFT");
-          submissionData = await fetchDraftData(submissionId);
-        } else if (submissionStatus === "PENDING") {
-          console.log("PENDING");
-          if (submissionApprovingStatus === null) {
-            console.log("no approval");
-            submissionData = await fetchSubmissionData(submissionId);
-          } else if (submissionApprovingStatus === "true") {
-            console.log("has approval");
-            submissionData = await fetchTeamSubmissionData(submissionId);
-            managerFormApprovalData = await fetchManagerApprovalData(
-              submissionId
-            );
-          }
-        } else if (
-          submissionStatus === "APPROVED" ||
-          submissionStatus === "DENIED"
-        ) {
-          console.log("APPROVED or DENIED");
-          if (submissionApprovingStatus === null) {
-            submissionData = await fetchSubmissionData(submissionId);
-            managerFormApprovalData = await fetchManagerApprovalData(
-              submissionId
-            );
-          } else if (submissionApprovingStatus === "true") {
-            submissionData = await fetchTeamSubmissionData(submissionId);
-            managerFormApprovalData = await fetchManagerApprovalData(
-              submissionId
-            );
-          }
-        } else if (
-          submissionStatus !== "PENDING" &&
-          submissionStatus !== "DRAFT" &&
-          submissionApprovingStatus === "true"
-        ) {
-          console.log("Not PENDING or DRAFT and has approval");
-          submissionData = await fetchTeamSubmissionData(submissionId);
-          managerFormApprovalData = await fetchManagerApprovalData(
-            submissionId
-          );
+        if (endpoints.submission && endpoints.managerApproval) {
+          [submissionData, managerApprovalData] = otherData;
+        } else if (endpoints.submission) {
+          [submissionData] = otherData;
+        } else if (endpoints.managerApproval) {
+          [managerApprovalData] = otherData;
         }
-        console.log(submissionData);
 
-        // Set the fetched data
+        // Process and set submission data if available
         if (submissionData) {
-          // Convert form template for mapping
-          const legacyTemplate = convertToLegacyFormTemplate(apiData);
-
-          // Convert form values from label-based to ID-based keys
+          // Do these transformations once
+          const legacyTemplate = convertToLegacyFormTemplate(formData);
           const convertedValues = convertFormValuesToIdBased(
             submissionData.data,
-            legacyTemplate
+            legacyTemplate,
           );
 
+          // Update all related state at once to minimize re-renders
           setFormValues(convertedValues);
           setFormTitle(
             submissionData.title ||
               (submissionData.user?.firstName && submissionData.user?.lastName
                 ? `${submissionData.user.firstName} ${submissionData.user.lastName}`
                 : "") ||
-              ""
+              "",
           );
           setSignature(submissionData.User?.signature || null);
           setSubmittedForm(submissionData.submittedAt || "");
         }
 
-        if (managerFormApprovalData) {
-          setManagerFormApproval(managerFormApprovalData);
+        // Set manager approval data if available
+        if (managerApprovalData) {
+          setManagerFormApproval(managerApprovalData);
         }
       } catch (error) {
         console.error("Error fetching form data:", error);
@@ -229,37 +255,14 @@ export default function DynamicForm({
       }
     };
 
-    fetchForm();
+    fetchAllData();
   }, [id, submissionId, submissionStatus, submissionApprovingStatus]);
 
-  // Helper functions for fetching data
-  const fetchDraftData = async (submissionId: string) => {
-    const draftRes = await fetch(`/api/formDraft/` + submissionId);
-    if (!draftRes.ok) throw new Error("Failed to fetch draft data");
-    return await draftRes.json();
-  };
-
-  const fetchSubmissionData = async (submissionId: string) => {
-    const submissionRes = await fetch(`/api/formSubmission/` + submissionId);
-    if (!submissionRes.ok) throw new Error("Failed to fetch submission data");
-    return await submissionRes.json();
-  };
-
-  const fetchTeamSubmissionData = async (submissionId: string) => {
-    const submissionRes = await fetch(`/api/teamSubmission/` + submissionId);
-    if (!submissionRes.ok)
-      throw new Error("Failed to fetch team submission data");
-    return await submissionRes.json();
-  };
-
-  const fetchManagerApprovalData = async (submissionId: string) => {
-    const managerFormApprovalRes = await fetch(
-      `/api/managerFormApproval/` + submissionId
-    );
-    if (!managerFormApprovalRes.ok)
-      throw new Error("Failed to fetch manager approval data");
-    return await managerFormApprovalRes.json();
-  };
+  // Remove automatic refresh mechanism to prevent excessive reloads
+  useEffect(() => {
+    // Keeping empty useEffect to replace the removed refresh mechanism
+    // This helps maintain code structure without the automatic refreshes
+  }, []);
 
   // Update form values for a single field
   const updateFormValues = (fieldId: string, value: FormFieldValue) => {
@@ -288,28 +291,33 @@ export default function DynamicForm({
 
   // Convert FormFieldValue to string for legacy components
   const convertFormValuesToString = (
-    values: Record<string, FormFieldValue>
+    values: Record<string, FormFieldValue>,
   ): Record<string, string> => {
     const stringValues: Record<string, string> = {};
 
     // Get the form template for mapping
     const template = formData ? convertToLegacyFormTemplate(formData) : null;
 
-    // Create a mapping from field IDs to field labels for saving
+    // Create mappings from field IDs to field labels and vice versa
     const idToLabelMap: Record<string, string> = {};
+    const labelToIdMap: Record<string, string> = {};
+    const allFieldIds = new Set<string>();
+
     if (template) {
       template.groupings.forEach((group) => {
         group.fields.forEach((field) => {
           idToLabelMap[field.id] = field.label;
+          labelToIdMap[field.label] = field.id;
+          allFieldIds.add(field.id);
         });
       });
     }
 
     Object.entries(values).forEach(([key, value]) => {
-      // Find the field to understand its type
+      // Find the field to understand its type - check both by ID and label
       const field = template?.groupings
         ?.flatMap((group) => group.fields || [])
-        .find((f) => f.id === key);
+        .find((f) => f.id === key || f.label === key);
 
       // Convert the value to string based on field type
       let stringValue = "";
@@ -369,10 +377,18 @@ export default function DynamicForm({
         }
       }
 
-      // Use field label as key if available, otherwise use original key
-      const fieldLabel = idToLabelMap[key];
-      const finalKey = fieldLabel || key;
-      stringValues[finalKey] = stringValue;
+      // For rendering, always use field.id as the key to match RenderFields expectations
+      // The RenderFields component will access values using field.id with field.label fallback
+      if (allFieldIds.has(key)) {
+        // Key is already a field ID
+        stringValues[key] = stringValue;
+      } else if (labelToIdMap[key]) {
+        // Key is a field label, convert to field ID
+        stringValues[labelToIdMap[key]] = stringValue;
+      } else {
+        // Unknown key, keep as-is
+        stringValues[key] = stringValue;
+      }
     });
 
     return stringValues;
@@ -380,7 +396,7 @@ export default function DynamicForm({
 
   // Convert API response to FormTemplate for legacy components
   const convertToLegacyFormTemplate = (
-    template: FormIndividualTemplate | FormTemplate
+    template: FormIndividualTemplate | FormTemplate,
   ): FormTemplate => {
     // Check if the template is already in the correct format from the API
     if ((template as FormTemplate).groupings) {
@@ -406,7 +422,7 @@ export default function DynamicForm({
                 (field): FormField => ({
                   id: field.id,
                   label: field.label,
-                  name: field.label, // Use label as name for backward compatibility
+                  name: field.id, // Use field ID as name for consistency with admin
                   type: field.type,
                   required: field.required,
                   order: field.order,
@@ -415,9 +431,9 @@ export default function DynamicForm({
                   options:
                     field.Options?.map((opt: { value: string }) => opt.value) ||
                     undefined,
-                })
+                }),
               ) || [],
-          })
+          }),
         ) || [],
     };
   };
@@ -425,26 +441,37 @@ export default function DynamicForm({
   // Convert form values from label-based keys to ID-based keys
   const convertFormValuesToIdBased = (
     values: Record<string, FormFieldValue>,
-    template: FormTemplate
+    template: FormTemplate,
   ): Record<string, FormFieldValue> => {
     const result: Record<string, FormFieldValue> = {};
 
-    // Create a mapping from field labels to field IDs
+    // Create mappings from field labels to field IDs and field IDs to field labels
     const labelToIdMap: Record<string, string> = {};
+    const idToLabelMap: Record<string, string> = {};
+    const allFieldIds = new Set<string>();
+
     template.groupings.forEach((group) => {
       group.fields.forEach((field) => {
         labelToIdMap[field.label] = field.id;
+        idToLabelMap[field.id] = field.label;
+        allFieldIds.add(field.id);
       });
     });
 
-    // Convert values using the mapping
+    // Convert values using the mapping, handling both UUID keys and label keys
     Object.entries(values).forEach(([key, value]) => {
-      const fieldId = labelToIdMap[key];
-      if (fieldId) {
-        result[fieldId] = value;
-      } else {
-        // If no mapping found, use the original key (might be ID already)
+      // Check if key is already a field ID (UUID format)
+      if (allFieldIds.has(key)) {
         result[key] = value;
+      } else {
+        // Try to find field ID by label
+        const fieldId = labelToIdMap[key];
+        if (fieldId) {
+          result[fieldId] = value;
+        } else {
+          // If no mapping found, use the original key (fallback)
+          result[key] = value;
+        }
       }
     });
 
@@ -471,20 +498,24 @@ export default function DynamicForm({
 
       console.log("Submitting form with data:", dataToSave);
 
+      // Save data and wait for completion before navigating
       const result = await saveDraftToPending(
         dataToSave,
         formData.id,
         userId,
         formData.formType,
         submissionId,
-        formTitle
+        formTitle,
       );
 
       console.log("Form submission result:", result);
 
       if (result) {
         console.log("Form submitted successfully, redirecting...");
-        router.back(); // Redirect to a success page
+        // Ensure the save is complete before navigating
+        setTimeout(() => {
+          router.back(); // Redirect after a small delay to ensure save completes
+        }, 100);
       } else {
         console.error("Form submission failed: No result returned");
       }
@@ -493,16 +524,85 @@ export default function DynamicForm({
     }
   };
 
-  // useEffect(() => {
-  //   console.log("Manager Form Approval Data:", managerFormApproval);
-  // }, [managerFormApproval]);
+  // Create a memoized function to determine which component to render
+  const getFormComponent = useMemo(() => {
+    if (!formData) return null;
+
+    const legacyTemplate = convertToLegacyFormTemplate(formData);
+    const stringFormValues = convertFormValuesToString(formValues);
+
+    // Common props for all components
+    const commonProps = {
+      formData: legacyTemplate,
+      formTitle,
+      setFormTitle,
+      formValues: stringFormValues,
+      updateFormValues: updateFormValuesLegacy,
+      userId: userId || "",
+      submissionId: submissionId || null,
+      signature,
+      submittedForm,
+      submissionStatus,
+      managerFormApproval,
+    };
+
+    // Determine which component to show based on status
+    if (submissionStatus === "DRAFT") {
+      return (
+        <FormDraft
+          {...commonProps}
+          handleSubmit={handleSubmit}
+          submissionId={submissionId}
+        />
+      );
+    }
+
+    if (submissionApprovingStatus === null && submissionStatus !== "DRAFT") {
+      if (submissionStatus === "PENDING") {
+        return <SubmittedForms {...commonProps} />;
+      }
+      return <SubmittedFormsApproval {...commonProps} />;
+    }
+
+    if (
+      submissionApprovingStatus === "true" &&
+      submissionStatus === "PENDING" &&
+      formApprover
+    ) {
+      return <ManagerFormApproval {...commonProps} />;
+    }
+
+    if (
+      submissionApprovingStatus === "true" &&
+      submissionStatus !== "PENDING" &&
+      submissionStatus !== "DRAFT" &&
+      formApprover
+    ) {
+      return <ManagerFormEditApproval {...commonProps} />;
+    }
+
+    return null;
+  }, [
+    formData,
+    formValues,
+    formTitle,
+    submissionStatus,
+    submissionApprovingStatus,
+    formApprover,
+    signature,
+    submittedForm,
+    submissionId,
+    userId,
+    managerFormApproval,
+    handleSubmit,
+  ]);
 
   // Loading state
   if (loading || !formData) {
     return (
       <Bases>
         <Contents>
-          <Grids rows={"7"} gap={"5"} className="h-full">
+          <Grids rows={"7"} gap={"5"} className="h-full no-scrollbar">
             <Holds
               background={"white"}
               className="row-span-1 h-full justify-center animate-pulse"
@@ -512,17 +612,17 @@ export default function DynamicForm({
                   router.back();
                 }}
               >
-                <Titles size={"h2"}>{t("Loading")}</Titles>
+                <Titles size={"md"}>{t("Loading")}</Titles>
               </TitleBoxes>
             </Holds>
             <Holds
               background={"white"}
               className="w-full h-full row-span-7 animate-pulse"
             >
-              <Contents width={"section"}>
+              <Contents width={"section"} className="h-full">
                 <form className="h-full">
-                  <Grids rows={"6"} gap={"3"} className="h-full w-full my-5">
-                    <Holds className="row-start-1 row-end-6 h-full w-full justify-center">
+                  <Grids rows={"6"} gap={"3"} className="h-full w-full">
+                    <Holds className="row-start-1 row-end-7 h-full w-full justify-center ">
                       <Spinner />
                     </Holds>
                   </Grids>
@@ -540,85 +640,7 @@ export default function DynamicForm({
     <Bases>
       <Contents>
         <Grids rows={"7"} gap={"5"} className="w-full h-full">
-          {submissionStatus === "DRAFT" && (
-            <FormDraft
-              formData={convertToLegacyFormTemplate(formData)}
-              handleSubmit={handleSubmit}
-              formTitle={formTitle || ""}
-              setFormTitle={setFormTitle}
-              formValues={convertFormValuesToString(formValues)}
-              updateFormValues={updateFormValuesLegacy}
-              userId={userId || ""}
-              submissionId={submissionId || ""}
-            />
-          )}
-          {submissionApprovingStatus === null &&
-            submissionStatus !== "DRAFT" && (
-              <>
-                {submissionStatus === "PENDING" ? (
-                  <SubmittedForms
-                    formData={convertToLegacyFormTemplate(formData)}
-                    formTitle={formTitle}
-                    setFormTitle={setFormTitle}
-                    formValues={convertFormValuesToString(formValues)}
-                    updateFormValues={updateFormValuesLegacy}
-                    userId={userId || ""}
-                    submissionId={submissionId || ""}
-                    signature={signature}
-                    submittedForm={submittedForm}
-                    submissionStatus={submissionStatus}
-                  />
-                ) : (
-                  <SubmittedFormsApproval
-                    formData={convertToLegacyFormTemplate(formData)}
-                    formTitle={formTitle}
-                    setFormTitle={setFormTitle}
-                    formValues={convertFormValuesToString(formValues)}
-                    updateFormValues={updateFormValuesLegacy}
-                    submissionId={submissionId || ""}
-                    signature={signature}
-                    submittedForm={submittedForm}
-                    submissionStatus={submissionStatus}
-                    managerFormApproval={managerFormApproval}
-                  />
-                )}
-              </>
-            )}
-
-          {submissionApprovingStatus === "true" &&
-            submissionStatus === "PENDING" &&
-            formApprover && (
-              <ManagerFormApproval
-                formData={convertToLegacyFormTemplate(formData)}
-                formTitle={formTitle}
-                setFormTitle={setFormTitle}
-                formValues={convertFormValuesToString(formValues)}
-                updateFormValues={updateFormValuesLegacy}
-                submissionId={submissionId || ""}
-                signature={signature}
-                submittedForm={submittedForm}
-                submissionStatus={submissionStatus}
-                managerFormApproval={managerFormApproval}
-              />
-            )}
-
-          {submissionApprovingStatus === "true" &&
-            submissionStatus !== "PENDING" &&
-            submissionStatus !== "DRAFT" &&
-            formApprover && (
-              <ManagerFormEditApproval
-                formData={convertToLegacyFormTemplate(formData)}
-                formTitle={formTitle}
-                setFormTitle={setFormTitle}
-                formValues={convertFormValuesToString(formValues)}
-                updateFormValues={updateFormValuesLegacy}
-                submissionId={submissionId || ""}
-                signature={signature}
-                submittedForm={submittedForm}
-                submissionStatus={submissionStatus}
-                managerFormApproval={managerFormApproval}
-              />
-            )}
+          {getFormComponent}
         </Grids>
       </Contents>
     </Bases>

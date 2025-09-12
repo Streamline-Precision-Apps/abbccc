@@ -66,7 +66,7 @@ export default function NewClockProcess({
   const [step, setStep] = useState<number>(0);
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
-    switchLaborType
+    switchLaborType,
   ); // use to have more selections for clock processes
   const [numberOfRoles, setNumberOfRoles] = useState(0);
   const [scanned, setScanned] = useState(false);
@@ -182,6 +182,7 @@ export default function NewClockProcess({
       const tId = fetchRecentTimeSheetId.id;
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
+      formData.append("userId", session?.user.id?.toString() || "");
       const response = await execute(
         "returnToPrevWork",
         returnToPrevWork,
@@ -207,12 +208,12 @@ export default function NewClockProcess({
           response.workType === "LABOR"
             ? "general"
             : response.workType === "MECHANIC"
-            ? "mechanic"
-            : response.workType === "TASCO"
-            ? "tasco"
-            : response.workType === "TRUCK_DRIVER"
-            ? "truck"
-            : "";
+              ? "mechanic"
+              : response.workType === "TASCO"
+                ? "tasco"
+                : response.workType === "TRUCK_DRIVER"
+                  ? "truck"
+                  : "";
 
         setClockInRole(prevWorkRole);
 
@@ -262,7 +263,7 @@ export default function NewClockProcess({
           }
 
           const workTypes = response.TruckingLogs.map(
-            (log) => log.laborType
+            (log) => log.laborType,
           ).filter(Boolean);
           setClockInRoleTypes(workTypes.toString());
         }

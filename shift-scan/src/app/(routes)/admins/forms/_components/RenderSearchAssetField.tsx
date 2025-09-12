@@ -34,17 +34,13 @@ export default function RenderSearchAssetField({
   field,
   handleFieldChange,
   formData,
-  clientOptions,
+  // clientOptions,
   equipmentOptions,
   jobsiteOptions,
   costCodeOptions,
   handleFieldTouch,
   touchedFields,
 }: {
-  clientOptions: {
-    value: string;
-    label: string;
-  }[];
   equipmentOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
   costCodeOptions: { value: string; label: string }[];
@@ -70,13 +66,13 @@ export default function RenderSearchAssetField({
   value: string;
   handleFieldChange: (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => void;
   formData: Record<string, unknown>;
   handleFieldTouch: (fieldId: string) => void;
   touchedFields: Record<string, boolean>;
 }) {
-  let assetOptions = clientOptions;
+  let assetOptions = equipmentOptions;
   let assetType = "client";
 
   if (field.filter) {
@@ -96,11 +92,6 @@ export default function RenderSearchAssetField({
         assetOptions = costCodeOptions;
         assetType = "costCode";
         break;
-      case "Clients":
-      case "CLIENTS":
-        assetOptions = clientOptions;
-        assetType = "client";
-        break;
     }
   }
 
@@ -109,8 +100,8 @@ export default function RenderSearchAssetField({
     const selectedAssets: Asset[] = Array.isArray(formData[field.id])
       ? (formData[field.id] as Asset[])
       : formData[field.id]
-      ? [formData[field.id] as Asset]
-      : [];
+        ? [formData[field.id] as Asset]
+        : [];
 
     const showError = field.required && selectedAssets.length === 0;
 
@@ -133,7 +124,7 @@ export default function RenderSearchAssetField({
             if (option) {
               // Check if asset is already selected
               const isSelected = selectedAssets.some(
-                (a: Asset) => a.id === option.value
+                (a: Asset) => a.id === option.value,
               );
 
               if (!isSelected) {
@@ -165,11 +156,11 @@ export default function RenderSearchAssetField({
                   className="text-green-800 hover:text-green-900"
                   onClick={() => {
                     const updatedAssets = selectedAssets.filter(
-                      (_: Asset, i: number) => i !== idx
+                      (_: Asset, i: number) => i !== idx,
                     );
                     handleFieldChange(
                       field.id,
-                      updatedAssets.length ? updatedAssets : null
+                      updatedAssets.length ? updatedAssets : null,
                     );
                   }}
                 >

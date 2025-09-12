@@ -1,5 +1,5 @@
 export interface Submission {
-  id: string;
+  id: number;
   title: string;
   formTemplateId: string;
   userId: string;
@@ -63,7 +63,7 @@ interface FieldOption {
 }
 
 export interface FormSubmissionWithTemplate {
-  id: string;
+  id: number;
   title: string | null;
   formTemplateId: string;
   userId: string;
@@ -78,6 +78,20 @@ export interface FormSubmissionWithTemplate {
     firstName: string;
     lastName: string;
   };
+  Approvals?: Array<{
+    id: string;
+    formSubmissionId: number;
+    signedBy: string | null;
+    submittedAt: Date;
+    updatedAt: Date;
+    signature: string | null;
+    comment: string | null;
+    Approver: {
+      id: string;
+      firstName: string;
+      lastName: string;
+    } | null;
+  }>;
   FormTemplate: {
     id: string;
     name: string;

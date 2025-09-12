@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { EditMaintenanceLogs } from "./EditMaintenanceLogs";
 import { EditTruckingLogs } from "./EditTruckingLogs";
 import { EditTascoLogs } from "./EditTascoLogs";
 import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
 import { adminUpdateTimesheet } from "@/actions/records-timesheets";
 import EditGeneralSection from "./EditGeneralSection";
-import { SquareCheck, SquareXIcon } from "lucide-react";
+import { SquareCheck, SquareXIcon, X, ClockIcon } from "lucide-react";
 import { isMaintenanceLogComplete } from "./utils/validation";
 import {
   EditTimesheetModalProps,
@@ -15,6 +16,23 @@ import {
 } from "./hooks/useTimesheetData";
 import { useTimesheetLogs } from "./hooks/useTimesheetLogs";
 import { toast } from "sonner";
+import { TimeSheetHistory } from "./TimeSheetHistory";
+import { useSession } from "next-auth/react";
+import { Textarea } from "@/components/ui/textarea";
+import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
+
+// Define types for change logs
+interface ChangeLogEntry {
+  id: string;
+  changedBy: string;
+  changedAt: string | Date;
+  changes: Record<string, { old: unknown; new: unknown }>;
+  changeReason?: string;
+  User?: {
+    firstName: string;
+    lastName: string;
+  };
+}
 
 export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   timesheetId,
@@ -26,6 +44,12 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<TimesheetData | null>(null);
   const [originalForm, setOriginalForm] = useState<TimesheetData | null>(null);
+  const [changeLogs, setChangeLogs] = useState<ChangeLogEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [changeReason, setChangeReason] = useState("");
+  const { data: session } = useSession();
+  const { refresh } = useDashboardData();
+  const editor = session?.user?.id;
 
   // Fetch dropdown and related data
   const {
@@ -46,6 +70,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     setLoading(true);
     setError(null);
 
+    // Fetch timesheet data
     fetch(`/api/getTimesheetById?id=${timesheetId}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Failed to fetch timesheet");
@@ -57,6 +82,20 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+
+    // Fetch change logs separately
+    fetch(`/api/getTimesheetChangeLogs?timeSheetId=${timesheetId}`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Failed to fetch change logs");
+        return res.json();
+      })
+      .then((json) => {
+        setChangeLogs(json);
+      })
+      .catch((e) => {
+        console.error("Error fetching change logs:", e);
+        // Don't set the error state for this, as it's not critical
+      });
   }, [isOpen, timesheetId]);
 
   // Work type options and log section mapping
@@ -74,19 +113,116 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form) return;
+    if (!form || !originalForm) return;
+
+    // Validate that a change reason is provided
+    if (!changeReason.trim()) {
+      toast.error("Please provide a reason for the changes", {
+        duration: 3000,
+      });
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
+
+      // Generate changes record by comparing original form with current form
+      const changes: Record<string, { old: unknown; new: unknown }> = {};
+
+      // Check basic fields
+      if (form.startTime !== originalForm.startTime) {
+        changes["startTime"] = {
+          old: originalForm.startTime,
+          new: form.startTime,
+        };
+      }
+
+      if (form.endTime !== originalForm.endTime) {
+        changes["endTime"] = {
+          old: originalForm.endTime,
+          new: form.endTime,
+        };
+      }
+
+      if (JSON.stringify(form.date) !== JSON.stringify(originalForm.date)) {
+        changes["date"] = {
+          old: originalForm.date,
+          new: form.date,
+        };
+      }
+
+      if (form.workType !== originalForm.workType) {
+        changes["workType"] = {
+          old: originalForm.workType,
+          new: form.workType,
+        };
+      }
+
+      if (form.comment !== originalForm.comment) {
+        changes["comment"] = {
+          old: originalForm.comment,
+          new: form.comment,
+        };
+      }
+
+      if (form.status !== originalForm.status) {
+        changes["status"] = {
+          old: originalForm.status,
+          new: form.status,
+        };
+      }
+
+      // Check relations
+      if (form.User?.id !== originalForm.User?.id) {
+        changes["User"] = {
+          old: originalForm.User
+            ? `${originalForm.User.firstName} ${originalForm.User.lastName}`
+            : null,
+          new: form.User
+            ? `${form.User.firstName} ${form.User.lastName}`
+            : null,
+        };
+      }
+
+      if (form.Jobsite?.id !== originalForm.Jobsite?.id) {
+        changes["Jobsite"] = {
+          old: originalForm.Jobsite?.name,
+          new: form.Jobsite?.name,
+        };
+      }
+
+      if (form.CostCode?.name !== originalForm.CostCode?.name) {
+        changes["CostCode"] = {
+          old: originalForm.CostCode?.name,
+          new: form.CostCode?.name,
+        };
+      }
+
+      // If no changes were made, inform the user
+      if (Object.keys(changes).length === 0) {
+        toast.info("No changes were made to the timesheet", { duration: 3000 });
+        setLoading(false);
+        return;
+      }
+
       const formData = new FormData();
-      formData.append("id", timesheetId);
-      formData.append("data", JSON.stringify(form)); // 'form' is your TimesheetData object
-      await adminUpdateTimesheet(formData);
+      formData.append("id", timesheetId.toString());
+      formData.append("data", JSON.stringify(form));
+      formData.append("changes", JSON.stringify(changes));
+      formData.append("editorId", editor || "");
+      formData.append("changeReason", changeReason);
+
+      const result = await adminUpdateTimesheet(formData);
+      if (result) {
+        refresh();
+      }
+
       if (onUpdated) onUpdated();
       onClose();
-      toast.success("Timesheet updated successfully");
+      toast.success("Timesheet updated successfully", { duration: 3000 });
     } catch (error) {
-      toast.error(`Failed to update timesheet ${form.id}`);
+      toast.error(`Failed to update timesheet ${form.id}`, { duration: 3000 });
       setError("Failed to update timesheet in admin records.");
     } finally {
       setLoading(false);
@@ -194,14 +330,74 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             <span className="font-bold">Error:</span> {error}
           </div>
         )}
-        <div className="p-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold">Edit Timesheet</h2>
-            <p className="text-xs text-gray-600">Timesheet ID: {timesheetId}</p>
+        <div className="px-6 py-4">
+          <div className="mb-6 relative">
+            <Button
+              type="button"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={onClose}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+            <div className="gap-2 flex flex-col">
+              <h2 className="text-xl font-bold">
+                {`Edit Timesheet # ${timesheetId}`}
+              </h2>
+              <p className="text-xs text-gray-600">
+                Edit any details below. Providing a reason for changes is
+                required. <br /> Your name will be recorded in the Timesheets
+                Changes History.
+              </p>
+            </div>
           </div>
           {loading && <div className="text-gray-500">Loading...</div>}
           {form && (
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <form
+              className="w-full flex flex-col gap-4"
+              onSubmit={handleSubmit}
+            >
+              {changeLogs && (
+                <div className="">
+                  <div className="flex  items-center mb-2">
+                    <div className="relative">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowHistory(!showHistory)}
+                        className="flex items-center gap-1 px-6 py-1 rounded-md hover:bg-gray-50"
+                      >
+                        <ClockIcon size={16} />
+                        {showHistory
+                          ? "Hide Changes History"
+                          : "Show Changes History"}
+                      </Button>
+                      {changeLogs.length > 0 && (
+                        <Badge
+                          variant="secondary"
+                          className="absolute rounded-full px-2 py-1 -top-2 -right-2 bg-blue-500 text-white hover:bg-blue-500"
+                        >
+                          {changeLogs.length}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {showHistory && changeLogs.length > 0 && (
+                    <div className="border rounded-lg p-3 bg-gray-50">
+                      <TimeSheetHistory changeLogs={changeLogs} users={users} />
+                    </div>
+                  )}
+
+                  {showHistory && changeLogs.length === 0 && (
+                    <div className="text-gray-500 italic p-3 border text-xs rounded-lg">
+                      No changes have been recorded for this timesheet
+                    </div>
+                  )}
+                </div>
+              )}
               <EditGeneralSection
                 form={form}
                 setForm={setForm}
@@ -230,7 +426,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   disableAdd={
                     form.MaintenanceLogs.length > 0 &&
                     !isMaintenanceLogComplete(
-                      form.MaintenanceLogs[form.MaintenanceLogs.length - 1]
+                      form.MaintenanceLogs[form.MaintenanceLogs.length - 1],
                     )
                   }
                 />
@@ -247,7 +443,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                     nestedType,
                     nestedIndex,
                     field,
-                    value
+                    value,
                   ) =>
                     logs.handleNestedLogChange(
                       "TruckingLogs",
@@ -255,7 +451,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       nestedType,
                       nestedIndex,
                       field,
-                      value
+                      value,
                     )
                   }
                   truckOptions={truckOptions}
@@ -299,7 +495,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                       "EmployeeEquipmentLogs",
                       idx,
                       field,
-                      value
+                      value,
                     )
                   }
                   onAddLog={logs.addEmployeeEquipmentLog}
@@ -307,6 +503,30 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   originalLogs={originalForm?.EmployeeEquipmentLogs || []}
                 />
               )}
+
+              {/* Change Reason Section */}
+              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+                <h3 className="font-semibold text-sm mb-2">
+                  Reason for Changes <span className="text-red-500">*</span>
+                </h3>
+                <p className="text-xs text-gray-600 mb-2">
+                  Please provide a reason for the changes you&apos;re making to
+                  this timesheet.
+                </p>
+                <Textarea
+                  value={changeReason}
+                  onChange={(e) => setChangeReason(e.target.value)}
+                  placeholder="Enter change reason (required)"
+                  className={`w-full ${!changeReason.trim() ? "border-red-300 focus:ring-red-500 focus:border-red-500" : ""}`}
+                  required
+                />
+                {!changeReason.trim() && (
+                  <p className="text-xs text-red-500 mt-1">
+                    A reason is required before saving changes
+                  </p>
+                )}
+              </div>
+
               {/* Actions */}
               <div className="col-span-2 flex justify-end gap-2 mt-4">
                 {originalForm && originalForm.status === "PENDING" && (
@@ -360,13 +580,17 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 <Button
                   type="submit"
                   className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
-                    loading ? "opacity-50 cursor-not-allowed" : ""
+                    loading || !changeReason.trim()
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
                   }`}
-                  disabled={loading}
+                  disabled={loading || !changeReason.trim()}
                   title={
                     loading
                       ? "Please complete all required fields in the logs before submitting."
-                      : ""
+                      : !changeReason.trim()
+                        ? "Please provide a reason for the changes"
+                        : ""
                   }
                 >
                   {loading
@@ -377,10 +601,10 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                         form.status === "APPROVED"
                           ? " & Approve"
                           : originalForm &&
-                            originalForm.status === "PENDING" &&
-                            form.status === "REJECTED"
-                          ? " & Reject "
-                          : ""
+                              originalForm.status === "PENDING" &&
+                              form.status === "REJECTED"
+                            ? " & Reject "
+                            : ""
                       }`}
                 </Button>
               </div>

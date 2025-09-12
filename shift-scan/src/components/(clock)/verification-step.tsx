@@ -64,9 +64,6 @@ export default function VerificationStep({
   cc,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { scanResult } = useScanData();
-  const { savedCostCode } = useSavedCostCode();
-  const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
@@ -138,6 +135,7 @@ export default function VerificationStep({
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
+          savedCommentData?.id.toString() || "",
           savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs");

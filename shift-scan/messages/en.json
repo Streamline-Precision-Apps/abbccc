@@ -124,7 +124,10 @@
     "Next": "Next",
     "Submitting": "Submitting...",
     "ProfilePictureMissingError": "Invalid Attempt. You must select a Profile Picture!",
-    "ImageAlt": "Profile Picture Image"
+    "ImageAlt": "Profile Picture Image",
+    "Cancel": "Cancel",
+    "RetakePicture": "Retake Picture",
+    "TakePicture": "Take Picture"
   },
 
   "SignUpVirtualSignature": {
@@ -323,6 +326,7 @@
     "Notes": "Additional notes"
   },
   "Generator": {
+    "SelectDestination": "Enter Current Location...",
     "CreateEquipment": "Create Equipment",
     "EquipmentInfo": "Equipment Info",
     "SubmitJobsite": "Submit Jobsite",
@@ -606,6 +610,7 @@
   },
 
   "Clock": {
+    "NoResultsFound": "No results found",
     "Equipment": "Equipment",
     "SelectMaterialTypeAndEquipment": "Select Material & Equipment",
     "StartDay": "Start Day",
@@ -1189,7 +1194,7 @@
     "ManagerComments": "Manager Comments",
     "Deny": "Deny",
     "Approve": "Approve",
-    "OriginallySubmitted": "Originally Submitted:",
+    "OriginallySubmitted": "Submitted:",
     "LastEdited": "Last Edited:",
     "ApprovalStatus": "Approval Status",
     "Manager": "Manager",

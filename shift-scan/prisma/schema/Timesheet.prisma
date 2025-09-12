@@ -1,5 +1,5 @@
 model TimeSheet {
-  id                    String                 @id @default(uuid())
+  id                    Int                    @id @default(autoincrement())
   date                  DateTime
   userId                String
   jobsiteId             String
@@ -32,11 +32,12 @@ model TimeSheet {
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
+  ChangeLogs            TimeSheetChangeLog[]   @relation("TimeSheetChanges") // Add relation to change logs
 }
 
 model MaintenanceLog {
   id            String      @id @default(uuid())
-  timeSheetId   String
+  timeSheetId   Int
   userId        String
   maintenanceId String
   startTime     DateTime
@@ -72,7 +73,7 @@ model Maintenance {
 
 model TascoLog {
   id                 String              @id @default(uuid())
-  timeSheetId        String
+  timeSheetId        Int
   shiftType          String
   equipmentId        String?
   laborType          String?
@@ -92,25 +93,25 @@ model TascoMaterialTypes {
 }
 
 model TruckingLog {
-  id                String            @id @default(uuid())
-  timeSheetId       String
-  laborType         String
-  taskName          String?
-  equipmentId       String?
-  startingMileage   Int?
-  endingMileage     Int?
-  truckLaborLogId   String?
-  trailerNumber     String?
-  truckNumber       String?
-  EquipmentHauled   EquipmentHauled[]
-  Materials         Material[]
-  RefuelLogs        RefuelLog[]
-  StateMileages     StateMileage[]
+  id              String            @id @default(uuid())
+  timeSheetId     Int
+  laborType       String
+  taskName        String?
+  equipmentId     String?
+  startingMileage Int?
+  endingMileage   Int?
+  truckLaborLogId String?
+  trailerNumber   String?
+  truckNumber     String?
+  EquipmentHauled EquipmentHauled[]
+  Materials       Material[]
+  RefuelLogs      RefuelLog[]
+  StateMileages   StateMileage[]
   TruckingLaborLogs TruckLaborLogs[]
-  Equipment         Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
-  TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  Trailer           Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
-  Truck             Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+  Equipment       Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
+  TimeSheet       TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Trailer         Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
+  Truck           Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
 }
 
 model TruckLaborLogs {
@@ -156,19 +157,37 @@ model RefuelLog {
 }
 
 model EquipmentHauled {
-  id            String      @id @default(uuid())
-  truckingLogId String
+  id            String       @id @default(uuid())
+  truckingLogId String?
   equipmentId   String?
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime     @default(now())
   endMileage    Int?
   startMileage  Int?
   destination   String?
   source        String?
-  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
-  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
+  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
+  TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
 
 enum materialUnit {
   TONS
   YARDS
+}
+
+// New model for tracking TimeSheet changes
+model TimeSheetChangeLog {
+  id           String   @id @default(uuid())
+  timeSheetId  Int
+  changedBy    String // User ID who made the change
+  changedAt    DateTime @default(now())
+  changes      Json // JSON object containing all changes: {fieldName1: {old: value, new: value}, fieldName2: {old: value, new: value}}
+  changeReason String? // Optional reason for the change
+
+  // Relations
+  TimeSheet TimeSheet @relation("TimeSheetChanges", fields: [timeSheetId], references: [id], onDelete: Cascade)
+  User      User      @relation("ChangedByUser", fields: [changedBy], references: [id])
+
+  @@index([timeSheetId])
+  @@index([changedBy])
+  @@index([changedAt])
 }

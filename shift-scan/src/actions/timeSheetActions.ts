@@ -2,104 +2,41 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TimesheetHighlights, TimesheetUpdate } from "@/lib/types";
-import { WorkType } from "@/lib/enums";
+import { FormStatus, WorkType } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
-import { formatInTimeZone } from "date-fns-tz";
 import { formatISO } from "date-fns";
+import { sendNotificationToTopic } from "./notificationSender";
 // Get all TimeSheets
+type TimesheetUpdate = {
+  id: number;
+  startTime?: string;
+  endTime?: string | null;
+  jobsiteId?: string;
+  costcode?: string;
+};
+
+type TimesheetHighlights = {
+  submitDate: string;
+  date: Date | string;
+  id: number;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: Date | string;
+  endTime: Date | string | null;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+  Jobsite: {
+    name: string;
+  };
+};
+
 export async function getTimeSheetsbyId() {
   const timesheets = prisma.timeSheet.findMany();
   console.log(timesheets);
   return timesheets;
 }
 
-export async function processTimecards() {
-  try {
-    const timecards = await prisma.timeSheet.findMany({
-      where: { endTime: null }, // Find all timecards with empty endTime
-    });
-
-    const midnight = new Date(); // Create a reference for 11:59:59 PM
-    midnight.setHours(23, 59, 59, 999);
-
-    const nextDayStart = new Date(midnight); // Start the next segment at midnight
-    nextDayStart.setMilliseconds(1);
-
-    const updatedTimecards = timecards.map((card) => ({
-      ...card,
-      endTime: midnight, // Update endTime to current time
-    }));
-    const newTimecards = timecards.map((card) => ({
-      ...card,
-      id: "",
-      endTime: nextDayStart, // Update endTime to current time
-    }));
-
-    // Batch update the timecards
-    await prisma.timeSheet.updateMany({ data: updatedTimecards });
-    await prisma.timeSheet.createMany({ data: newTimecards });
-
-    console.log(`${updatedTimecards.length} timecards processed.`);
-  } catch (error) {
-    console.error("Error processing timecards:", error);
-  }
-}
-
-// Get TimeSheet by id
-export async function fetchTimesheets(employeeId: string, date: string) {
-  console.log("Fetching timesheets for:", { employeeId, date });
-
-  // Convert the date to UTC start and end times
-  const startOfDay = new Date(date);
-  startOfDay.setUTCHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(date);
-  endOfDay.setUTCHours(23, 59, 59, 999);
-
-  try {
-    // Fetch timesheets from Prisma, include both DRAFT and PENDING for this user
-    const timeSheets = await prisma.timeSheet.findMany({
-      where: {
-        userId: employeeId,
-        status: { in: ["DRAFT", "PENDING"] },
-        date: {
-          gte: startOfDay.toISOString(), // Start of the day in UTC
-          lte: endOfDay.toISOString(), // End of the day in UTC
-        },
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-      include: {
-        TascoLogs: true,
-        TruckingLogs: true,
-        MaintenanceLogs: true,
-        EmployeeEquipmentLogs: true,
-      },
-    });
-
-    console.log("Fetched Timesheets (DRAFT & PENDING):", timeSheets);
-
-    // Convert fetched ISO times to local timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const adjustedTimeSheets = timeSheets.map((sheet) => ({
-      ...sheet,
-      startTime: sheet.startTime
-        ? formatInTimeZone(sheet.startTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-      endTime: sheet.endTime
-        ? formatInTimeZone(sheet.endTime, timeZone, "yyyy-MM-dd HH:mm:ss")
-        : "",
-    }));
-
-    console.log("Adjusted Timesheets:", adjustedTimeSheets);
-    return adjustedTimeSheets;
-  } catch (error) {
-    console.error("Error fetching timesheets:", error);
-    throw new Error("Failed to fetch timesheets");
-  }
-}
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  GENERAL CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -144,7 +81,7 @@ export async function CreateTimeSheet(formData: FormData) {
     });
     console.log(
       "[CreateTimeSheet] New timesheet after clock-in:",
-      newTimeSheet
+      newTimeSheet,
     );
 
     revalidatePath("/admins/settings");
@@ -171,10 +108,10 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
       console.log(`[updateTimeSheetBySwitch] formData entry: ${key} =`, value);
     }
     console.log(
-      "[updateTimeSheetBySwitch] switch jobsite, updating Timesheet..."
+      "[updateTimeSheetBySwitch] switch jobsite, updating Timesheet...",
     );
 
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const endTimeRaw = formData.get("endTime");
     // Support both timesheetComments and timeSheetComments for robustness
     const commentRaw =
@@ -207,19 +144,19 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     const afterUpdate = await prisma.timeSheet.findUnique({ where: { id } });
     console.log(
       "[updateTimeSheetBySwitch] Timesheet after update:",
-      afterUpdate
+      afterUpdate,
     );
 
     const forced = await forcePendingIfEnded(id);
     console.log(
       "[updateTimeSheetBySwitch] forcePendingIfEnded result:",
-      forced
+      forced,
     );
 
     if (updatedTimeSheet) {
       console.log(
         "[updateTimeSheetBySwitch] Timesheet after switching jobs or ending day, status set to PENDING:",
-        updatedTimeSheet
+        updatedTimeSheet,
       );
     }
     revalidatePath(`/`);
@@ -243,7 +180,7 @@ export async function breakOutTimeSheet(formData: FormData) {
   try {
     console.log("[breakOutTimeSheet] formData:", formData);
     console.log("[breakOutTimeSheet] break out, updating Timesheet...");
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const endTime = formatISO(formData.get("endTime") as string);
     const comment = formData.get("timesheetComments") as string;
 
@@ -263,7 +200,7 @@ export async function breakOutTimeSheet(formData: FormData) {
     if (updatedTimeSheet) {
       console.log(
         "[breakOutTimeSheet] Timesheet after starting break, status set to PENDING:",
-        updatedTimeSheet
+        updatedTimeSheet,
       );
     }
     // Revalidate the path
@@ -280,8 +217,6 @@ export async function breakOutTimeSheet(formData: FormData) {
     throw error;
   }
 }
-//-------------------------------------------------------------------------------------------------------------------------------
-//
 //
 //-------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -291,7 +226,7 @@ export async function breakOutTimeSheet(formData: FormData) {
 export async function CreateTruckDriverTimeSheet(formData: FormData) {
   try {
     console.log(
-      "[CreateTruckDriverTimeSheet] Entered CreateTruckDriverTimeSheet:"
+      "[CreateTruckDriverTimeSheet] Entered CreateTruckDriverTimeSheet:",
     );
     console.log("[CreateTruckDriverTimeSheet] formData:", formData);
 
@@ -349,7 +284,7 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
     });
     console.log(
       "[CreateTruckDriverTimeSheet] New timesheet after clock-in:",
-      createdTimeSheet
+      createdTimeSheet,
     );
 
     const truckingLog = await prisma.truckingLog.create({
@@ -361,8 +296,8 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
           laborType === "truckDriver"
             ? truck
             : laborType === "operator"
-            ? equipmentId
-            : null,
+              ? equipmentId
+              : null,
         startingMileage: startingMileage || null,
       },
     });
@@ -383,7 +318,7 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
   } catch (error) {
     console.error(
       "[CreateTruckDriverTimeSheet] Error creating timesheet:",
-      error
+      error,
     );
     throw error;
   }
@@ -397,7 +332,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
     }
     console.log("[updateTruckDriverTSBySwitch] formData:", formData);
 
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const endingMileageStr = formData.get("endingMileage");
     const endingMileage = endingMileageStr
       ? parseInt(endingMileageStr as string, 10)
@@ -411,7 +346,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
     });
     console.log(
       "[updateTruckDriverTSBySwitch] Equipment logs for timesheet:",
-      equipmentLogs
+      equipmentLogs,
     );
 
     // Update the TruckingLog for this timesheet with endingMileage if provided
@@ -426,12 +361,12 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
         });
         console.log(
           "[updateTruckDriverTSBySwitch] Updated TruckingLog endingMileage:",
-          endingMileage
+          endingMileage,
         );
       } else {
         console.warn(
           "[updateTruckDriverTSBySwitch] No TruckingLog found for timesheet:",
-          id
+          id,
         );
       }
     }
@@ -453,7 +388,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
     });
     console.log(
       "[updateTruckDriverTSBySwitch] Timesheet status set to PENDING:",
-      updatedTimesheet
+      updatedTimesheet,
     );
     return updatedTimesheet;
   } catch (error) {
@@ -466,7 +401,7 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
  * Ensures that any timesheet with an endTime is set to PENDING if it is still DRAFT.
  * This can be called after a user attempts to clock out or end day, regardless of current state.
  */
-export async function forcePendingIfEnded(id: string) {
+export async function forcePendingIfEnded(id: number) {
   const timesheet = await prisma.timeSheet.findUnique({ where: { id } });
   console.log("[forcePendingIfEnded] timesheet before check:", timesheet);
   if (timesheet && timesheet.endTime && timesheet.status === "DRAFT") {
@@ -476,14 +411,14 @@ export async function forcePendingIfEnded(id: string) {
     });
     console.log(
       "[forcePendingIfEnded] Forced status to PENDING for ended timesheet:",
-      updated
+      updated,
     );
     return updated;
   }
   if (timesheet && timesheet.endTime && timesheet.status !== "DRAFT") {
     console.log(
       "[forcePendingIfEnded] End of day called on already-ended timesheet:",
-      timesheet
+      timesheet,
     );
   }
   return timesheet;
@@ -500,8 +435,8 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleGeneralTimeSheet] formData:", formData);
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let endTime: string | null = null;
     let type: string | null = null;
@@ -512,7 +447,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
     const costCode = formData.get("costcode") as string;
     type = formData.get("type") as string;
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
@@ -532,7 +467,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleGeneralTimeSheet] Created new timesheet as DRAFT:",
-        createdTimeSheet
+        createdTimeSheet,
       );
       if (type === "switchJobs" && previousTimeSheetId && endTime) {
         const updatedPrev = await prisma.timeSheet.update({
@@ -543,9 +478,10 @@ export async function handleGeneralTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
         console.log(
           "[handleGeneralTimeSheet] Previous timesheet set to PENDING:",
-          updatedPrev
+          updatedPrev,
         );
       }
     });
@@ -556,6 +492,36 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       });
       console.log("[handleGeneralTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        const notificationResult = await sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
+
+        console.log(
+          "[handleGeneralTimeSheet] Notification result:",
+          notificationResult,
+        );
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleGeneralTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -582,8 +548,8 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleMechanicTimeSheet] formData:", formData);
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let endTime: string | null = null;
     let type: string | null = null;
@@ -594,7 +560,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
     const costCode = formData.get("costcode") as string;
     type = formData.get("type") as string;
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
@@ -614,7 +580,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleMechanicTimeSheet] Created new timesheet as DRAFT:",
-        createdTimeSheet
+        createdTimeSheet,
       );
       if (type === "switchJobs" && previousTimeSheetId && endTime) {
         const updatedPrev = await prisma.timeSheet.update({
@@ -625,9 +591,10 @@ export async function handleMechanicTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
         console.log(
           "[handleMechanicTimeSheet] Previous timesheet set to PENDING:",
-          updatedPrev
+          updatedPrev,
         );
       }
     });
@@ -638,9 +605,48 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       });
       console.log(
         "[handleMechanicTimeSheet] Confirmed new timesheet:",
-        created
+        created,
       );
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+
+        const notificationResult = await sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
+
+        if (notificationResult.success) {
+          console.log(
+            "[updateTimeSheet] ✅ Notification sent successfully:",
+            notificationResult.response,
+          );
+        } else {
+          console.error(
+            "[updateTimeSheet] ❌ Failed to send notification:",
+            notificationResult.error,
+            "Status:",
+            notificationResult.success,
+          );
+        }
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleMechanicTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -666,8 +672,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleTascoTimeSheet] formData:", formData);
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previousTimeSheetComments: string | null = null;
     let endTime: string | null = null;
     let type: string | null = null;
@@ -687,7 +693,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       materialType = undefined;
     }
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
@@ -719,7 +725,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleTascoTimeSheet] Created new timesheet as DRAFT:",
-        createdTimeSheet
+        createdTimeSheet,
       );
       if (type === "switchJobs" && previousTimeSheetId && endTime) {
         const updatedPrev = await prisma.timeSheet.update({
@@ -730,9 +736,10 @@ export async function handleTascoTimeSheet(formData: FormData) {
             status: "PENDING",
           },
         });
+
         console.log(
           "[handleTascoTimeSheet] Previous timesheet set to PENDING:",
-          updatedPrev
+          updatedPrev,
         );
       }
     });
@@ -743,6 +750,30 @@ export async function handleTascoTimeSheet(formData: FormData) {
       });
       console.log("[handleTascoTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleTascoTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after transaction
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -764,8 +795,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
 // --- Transaction to handle Truck Driver TimeSheet
 export async function handleTruckTimeSheet(formData: FormData) {
   try {
-    let newTimeSheet: string | null = null;
-    let previousTimeSheetId: string | null = null;
+    let newTimeSheet: number | null = null;
+    let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let type: string | null = null;
     // Extract all needed values before transaction
@@ -792,7 +823,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
       trailerNumber = null;
     }
     if (type === "switchJobs") {
-      previousTimeSheetId = formData.get("id") as string;
+      previousTimeSheetId = Number(formData.get("id"));
       // Only use transaction if updating two timesheets
       await prisma.$transaction(async (prisma) => {
         // Step 1: Create a new TimeSheet
@@ -819,7 +850,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
         newTimeSheet = createdTimeSheet.id;
         console.log(
           "[handleTruckTimeSheet] Created new timesheet as DRAFT:",
-          createdTimeSheet
+          createdTimeSheet,
         );
         if (previousTimeSheetId) {
           const updatedPrev = await prisma.timeSheet.update({
@@ -830,9 +861,10 @@ export async function handleTruckTimeSheet(formData: FormData) {
               status: "PENDING",
             },
           });
+
           console.log(
             "[handleTruckTimeSheet] Previous timesheet set to PENDING:",
-            updatedPrev
+            updatedPrev,
           );
         }
       });
@@ -861,7 +893,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
       newTimeSheet = createdTimeSheet.id;
       console.log(
         "[handleTruckTimeSheet] Created new timesheet as DRAFT:",
-        createdTimeSheet
+        createdTimeSheet,
       );
     }
     // Fetch and log after DB ops
@@ -871,6 +903,30 @@ export async function handleTruckTimeSheet(formData: FormData) {
       });
       console.log("[handleTruckTimeSheet] Confirmed new timesheet:", created);
     }
+
+    // Trigger notification if a timesheet was set to PENDING (switchJobs case)
+    if (type === "switchJobs" && previousTimeSheetId) {
+      try {
+        // Get user information for the notification
+        const prevTimesheet = await prisma.timeSheet.findUnique({
+          where: { id: previousTimeSheetId },
+          include: { User: true },
+        });
+        sendNotificationToTopic({
+          topic: "timecard-submission",
+          title: "Timecard Submission Pending",
+          message: `A timecard submission is pending for ${prevTimesheet?.User?.firstName} ${prevTimesheet?.User?.lastName}`,
+          link: `/admins/timesheets`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[handleTruckTimeSheet] Error triggering notification:",
+          notifyError,
+        );
+      }
+    }
+
     // Revalidate paths after DB ops
     revalidatePath("/");
     revalidatePath("/admins/settings");
@@ -892,7 +948,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
 //-- update TimeSheets - located in manager section
 export async function updateTimeSheets(
   updatedSheets: TimesheetHighlights[],
-  manager: string
+  manager: string,
 ) {
   try {
     console.log("Updating Timesheets...");
@@ -933,7 +989,8 @@ export async function updateTimeSheet(formData: FormData) {
     console.log("formData1:", formData);
 
     // Get the ID from formData
-    const id = formData.get("id") as string;
+    const idString = formData.get("id") as string;
+    const id = parseInt(idString, 10);
     if (!id) {
       throw new Error("Invalid timesheet ID");
     }
@@ -967,11 +1024,77 @@ export async function updateTimeSheet(formData: FormData) {
         endTime: endTime,
         comment: (formData.get("timeSheetComments") as string) || null,
         status: "PENDING", // Set status to PENDING
+        wasInjured: formData.get("wasInjured") === "true",
       },
     });
 
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
+
+    // Trigger notification for submitted timesheet
+
+    console.log(
+      "[updateTimeSheet] Preparing to send notification for timesheet ID:",
+      id,
+    );
+
+    // Get the user information for the notification
+    const timesheet = await prisma.timeSheet.findUnique({
+      where: { id },
+      include: { User: true },
+    });
+
+    if (!timesheet) {
+      console.error(
+        "[updateTimeSheet] Cannot find timesheet for notification:",
+        id,
+      );
+      return;
+    }
+
+    console.log(
+      `[updateTimeSheet] Found timesheet for user: ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
+      { timesheetId: timesheet.id, userId: timesheet.User?.id },
+    );
+
+    // Send the notification
+    console.log(
+      "[updateTimeSheet] Sending notification to topic: timecard-submission",
+    );
+
+    const response = await fetch("/api/notifications/send-multicast", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        topic: "timecard-submission",
+        title: "Timecard Submission Pending",
+        message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
+        link: `/admins/timesheets`,
+      }),
+    });
+
+    // const notificationResult = await sendNotificationToTopic({
+    //   topic: "timecard-submission",
+    //   title: "Timecard Submission Pending",
+    //   message: `A timecard submission is pending for ${timesheet.User?.firstName} ${timesheet.User?.lastName}`,
+    //   link: `/admins/timesheets`,
+    // });
+
+    // if (notificationResult.success) {
+    //   console.log(
+    //     "[updateTimeSheet] ✅ Notification sent successfully:",
+    //     notificationResult.response,
+    //   );
+    // } else {
+    //   console.error(
+    //     "[updateTimeSheet] ❌ Failed to send notification:",
+    //     notificationResult.error,
+    //     "Status:",
+    //     notificationResult.success,
+    //   );
+    // }
 
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);
@@ -986,7 +1109,7 @@ export async function returnToPrevWork(formData: FormData) {
   try {
     console.log("formData:", formData);
 
-    const id = formData.get("id") as string;
+    const id = Number(formData.get("id"));
     const PrevTimeSheet = await prisma.timeSheet.findUnique({
       where: { id },
       select: {
@@ -1042,7 +1165,7 @@ export async function returnToPrevWork(formData: FormData) {
 }
 
 export async function updateTimesheetHighlights(
-  updatedTimesheets: TimesheetUpdate[]
+  updatedTimesheets: TimesheetUpdate[],
 ) {
   try {
     const session = await auth();
@@ -1061,7 +1184,7 @@ export async function updateTimesheetHighlights(
           editedByUserId: session.user.id,
           updatedAt: new Date(),
         },
-      })
+      }),
     );
 
     await Promise.all(updatePromises);
@@ -1080,7 +1203,7 @@ export async function updateTimesheetHighlights(
 // Approve all pending timesheets for a user
 export async function approvePendingTimesheets(
   userId: string,
-  managerName?: string
+  managerName?: string,
 ) {
   try {
     // Find all pending timesheets for the user

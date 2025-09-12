@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
  */
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<ReturnType<typeof NextResponse.json>> => {
   try {
     const { id } = await params;
@@ -27,7 +27,9 @@ export const GET = async (
           select: {
             id: true,
             firstName: true,
+            middleName: true,
             lastName: true,
+            secondLastName: true,
           },
         },
       },

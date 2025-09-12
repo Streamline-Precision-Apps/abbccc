@@ -38,6 +38,7 @@ export default function RenderSearchPersonField({
   error,
   userOptions,
   formData,
+  disabled,
 }: {
   field: {
     id: string;
@@ -65,23 +66,24 @@ export default function RenderSearchPersonField({
   value: string;
   handleFieldChange: (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => void;
   formData: Record<string, unknown>;
   handleFieldTouch: (id: string) => void;
   touchedFields: Record<string, boolean>;
   error: string | null;
+  disabled?: boolean;
 }) {
   if (field.multiple) {
     const selectedPeople: Person[] = Array.isArray(formData[field.id])
       ? (formData[field.id] as Person[])
       : formData[field.id]
-      ? [formData[field.id] as Person]
-      : [];
+        ? [formData[field.id] as Person]
+        : [];
 
     // Filter out already selected people from userOptions
     const filteredUserOptions = userOptions.filter(
-      (option) => !selectedPeople.some((p: Person) => p.id === option.value)
+      (option) => !selectedPeople.some((p: Person) => p.id === option.value),
     );
 
     const showError = field.required && selectedPeople.length === 0;
@@ -105,7 +107,7 @@ export default function RenderSearchPersonField({
             if (option) {
               // Check if person is already selected
               const isSelected = selectedPeople.some(
-                (p: Person) => p.id === option.value
+                (p: Person) => p.id === option.value,
               );
 
               if (!isSelected) {
@@ -121,6 +123,7 @@ export default function RenderSearchPersonField({
           }}
           placeholder="Select people..."
           filterKeys={["value", "label"]}
+          disabled={disabled}
         />
         {/* Display selected people as tags */}
         {selectedPeople.length > 0 && (
@@ -129,7 +132,7 @@ export default function RenderSearchPersonField({
             {/* Increased gap and margin */}
             {selectedPeople.map((person: Person, idx: number) => (
               <div
-                key={idx}
+                key={person.id || `person-${idx}`}
                 className="bg-green-100 text-green-800 text-xl px-3 py-2 rounded-lg flex items-center gap-2"
                 /* Increased padding, rounded-lg, and gap */
               >
@@ -141,11 +144,11 @@ export default function RenderSearchPersonField({
                   /* Larger X, bold, and better vertical alignment */
                   onClick={() => {
                     const updatedPeople = selectedPeople.filter(
-                      (_: Person, i: number) => i !== idx
+                      (_: Person, i: number) => i !== idx,
                     );
                     handleFieldChange(
                       field.id,
-                      updatedPeople.length ? updatedPeople : null
+                      updatedPeople.length ? updatedPeople : null,
                     );
                   }}
                   aria-label={`Remove ${person.name}`} /* Accessibility improvement */

@@ -2,8 +2,6 @@
 import "@/app/globals.css";
 import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { Contents } from "@/components/(reusable)/contents";
-import ShiftScanIntro from "./shiftScanIntro";
 import ResetPassword from "./resetPassword";
 import ProfilePictureSetup from "./profilePictureSetup";
 import SignatureSetup from "./signatureSetup";
@@ -12,7 +10,6 @@ import NotificationSettings from "./notificationSettings";
 import { setAuthStep, getAuthStep } from "@/app/api/auth";
 import { signOut } from "next-auth/react";
 import { z } from "zod";
-import { SignUpOutro } from "./signUpOutro";
 import { finishUserSetup } from "@/actions/userActions";
 import { EnterAccountInfo } from "./EnterAccountInfo";
 import { Bases } from "../(reusable)/bases";

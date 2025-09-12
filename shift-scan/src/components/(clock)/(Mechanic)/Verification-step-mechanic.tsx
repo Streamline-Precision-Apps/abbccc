@@ -59,7 +59,6 @@ export default function MechanicVerificationStep({
   jobsite,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
@@ -124,7 +123,6 @@ export default function MechanicVerificationStep({
       );
 
       // Update state and redirect
-      setTimeSheetData({ id: response || "" });
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 

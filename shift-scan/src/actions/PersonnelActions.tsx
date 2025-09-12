@@ -2,7 +2,6 @@
 import prisma from "@/lib/prisma";
 import { Permission } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { CrewData } from "@/app/(routes)/admins/personnel/components/types/personnel";
 
 //------------------------------------------------------------------------------------------------------------------------
 // Personnel server actions
@@ -41,7 +40,7 @@ export async function editPersonnelInfo(formData: FormData) {
     >;
     const terminationDate = formData.get("terminationDate") as string | null;
     const selectedCrews = JSON.parse(
-      formData.get("selectedCrews") as string
+      formData.get("selectedCrews") as string,
     ) as string[];
 
     // Execute all updates in a transaction
@@ -147,7 +146,6 @@ export async function createJobsite(formData: FormData) {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-        Client: { connect: { id: formData.get("clientId") as string } },
       },
     });
     // Removed creation of PendingApproval as the model does not exist in Prisma schema
@@ -162,13 +160,6 @@ export async function createJobsite(formData: FormData) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------
-
-// Save (create or update) a crew
-export async function saveCrew(crew: CrewData) {
-  console.log("Saving crew...");
-  console.log(crew);
-  return;
-}
 
 // Delete a crew by id
 export async function deleteCrew(crewId: string) {

@@ -11,6 +11,7 @@ import { cookies } from "next/headers";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import OfflineIndicator from "@/components/(offline)/offline-indicator";
 import OfflineDebugger from "@/components/(offline)/offline-debugger";
+import ClockOutCheck from "@/components/ClockOutCheck";
 
 export default async function Dashboard() {
   //------------------------------------------------------------------------
@@ -30,6 +31,9 @@ export default async function Dashboard() {
   const mechanicProjectID =
     (await cookies()).get("mechanicProjectID")?.value || "";
 
+  // Get the current timesheet ID for clock-out checking
+  const prevTimeSheetId = (await cookies()).get("prevTimeSheet")?.value || null;
+
   // const user = session.user;
   const view = (await cookies()).get("workRole")?.value || "general"; // Default to general view if not set
   const laborType = (await cookies()).get("laborType")?.value || "";
@@ -41,6 +45,11 @@ export default async function Dashboard() {
       <Contents>
         <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
+          {/* Clock-out check component - invisible but runs in background */}
+          <ClockOutCheck
+            userId={session.user.id}
+            timesheetId={prevTimeSheetId}
+          />
           <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
             <BannerRotating />
           </Holds>

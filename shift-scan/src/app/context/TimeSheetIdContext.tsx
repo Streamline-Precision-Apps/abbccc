@@ -13,7 +13,7 @@ import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
 
 type TimeSheetData = {
-  id: string;
+  id: number;
 };
 
 type TimeSheetDataContextType = {

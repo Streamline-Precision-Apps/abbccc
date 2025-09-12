@@ -16,6 +16,7 @@ export type TascoLogDraft = {
   laborType: "Equipment Operator" | "Labor" | "";
   materialType: string;
   loadQuantity: string;
+  screenType: "SCREENED" | "UNSCREENED" | "";
   refuelLogs: { gallonsRefueled: string }[];
   equipment: { id: string; name: string }[];
 };
@@ -108,6 +109,22 @@ export function TascoSection({
               }}
               className="w-[300px]"
             />
+            <Select
+              value={log.screenType}
+              onValueChange={(val) => {
+                const updated = [...tascoLogs];
+                updated[idx].screenType = val as TascoLogDraft["screenType"];
+                setTascoLogs(updated);
+              }}
+            >
+              <SelectTrigger className="w-[300px]">
+                <SelectValue placeholder="Screen Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="SCREENED">Screened</SelectItem>
+                <SelectItem value="UNSCREENED">Unscreened</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           {/* Equipment selection */}
           <div className="py-4 border-b mb-2">
@@ -176,7 +193,7 @@ export function TascoSection({
                   onClick={() => {
                     const updated = [...tascoLogs];
                     updated[idx].refuelLogs = updated[idx].refuelLogs.filter(
-                      (_, i) => i !== refIdx
+                      (_, i) => i !== refIdx,
                     );
                     setTascoLogs(updated);
                   }}

@@ -20,8 +20,10 @@ model User {
   companyId            String
   passwordResetTokenId String?
   workTypeId           String?
+  middleName           String?
+  secondLastName       String?
+  lastSeen             DateTime? // user Activity for notifications
   accountSetupToken    AccountSetupToken?
-  Client               Client[]
   Contact              Contacts?
   Equipment            Equipment[]
   FormApprovals        FormApproval[]
@@ -30,9 +32,12 @@ model User {
   MaintenanceLogs      MaintenanceLog[]
   PasswordResetTokens  PasswordResetToken[]
   TimeSheets           TimeSheet[]
+  TimeSheetChanges     TimeSheetChangeLog[] @relation("ChangedByUser")
   Company              Company              @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]               @relation("CrewToUser")
+  topicSubscriptions   TopicSubscription[]
+  FCMToken             FCMToken[]
 
   @@unique([firstName, lastName, username])
   @@index([email])

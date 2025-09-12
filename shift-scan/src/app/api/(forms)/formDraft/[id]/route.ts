@@ -1,8 +1,10 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidateTag } from "next/cache";
+
+export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
+
 enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
@@ -12,7 +14,7 @@ enum FormStatus {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -23,7 +25,7 @@ export async function GET(
   const { id } = await params;
   const forms = await prisma.formSubmission.findUnique({
     where: {
-      id,
+      id: Number(id),
       userId,
       status: FormStatus.DRAFT,
     },

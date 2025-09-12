@@ -12,6 +12,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -39,16 +40,18 @@ export const LaborClockOut = ({
   prevStep,
   commentsValue,
   pendingTimeSheets,
+  wasInjured,
 }: {
   prevStep: () => void;
   commentsValue: string;
   pendingTimeSheets: TimeSheet | undefined;
+  wasInjured: boolean;
 }) => {
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-
+  const { data: session } = useSession();
   const awaitAllProcesses = async () => {
     // Fetch data for a form submit and process them concurrently
     setLoading(true);
@@ -61,34 +64,64 @@ export const LaborClockOut = ({
 
   async function processOne() {
     try {
+      console.log("🔶🔶🔶 PROCESS ONE STARTING 🔶🔶🔶");
       // Step 1: Get the recent timecard ID.
       const response = await fetch("/api/getRecentTimecard");
       const tsId = await response.json();
       const timeSheetId = tsId.id;
+      console.log("🔶 Retrieved timecard ID:", timeSheetId);
 
       if (!timeSheetId) {
         alert("No valid TimeSheet ID was found. Please try again later.");
+        console.error("🔶 No valid TimeSheet ID found");
         return;
       }
 
       const formData = new FormData();
       formData.append("id", timeSheetId);
+      formData.append("userId", session?.user.id?.toString() || "");
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
+      formData.append("wasInjured", wasInjured.toString());
 
-      await updateTimeSheet(formData);
+      console.log("🔶 FormData prepared, calling updateTimeSheet");
+      console.log("🔶 Form values:", {
+        id: timeSheetId,
+        userId: session?.user.id,
+        endTime: new Date().toISOString(),
+        comments: commentsValue,
+        wasInjured: wasInjured,
+      });
+
+      const result = await updateTimeSheet(formData);
+      console.log("🔶 updateTimeSheet completed with result:", result);
+      console.log("🔶🔶🔶 PROCESS ONE COMPLETED 🔶🔶🔶");
     } catch (error) {
-      console.error("Failed to process the time sheet:", error);
+      console.error("🔴 Failed to process the time sheet:", error);
     }
   }
 
   async function processTwo() {
     try {
-      // Step 4: Delete cookies and clear localStorage.
-      await fetch("/api/cookies?method=deleteAll");
+      console.log("🟦🟦🟦 PROCESS TWO STARTING 🟦🟦🟦");
+
+      // Step 1: Delete cookies
+      console.log("🟦 Deleting cookies");
+      const cookieResponse = await fetch("/api/cookies?method=deleteAll");
+      console.log("🟦 Cookie deletion response status:", cookieResponse.status);
+
+      // Step 2: Clear localStorage
+      console.log("🟦 Clearing localStorage");
+      const localStorageKeys = Object.keys(localStorage);
+      console.log(
+        `🟦 Clearing ${localStorageKeys.length} items from localStorage`,
+      );
       localStorage.clear();
+      console.log("🟦 localStorage cleared");
+
+      console.log("🟦🟦🟦 PROCESS TWO COMPLETED 🟦🟦🟦");
     } catch (error) {
-      console.error("Failed to process the time sheet:", error);
+      console.error("🔴 Failed in process two:", error);
     }
   }
 
@@ -173,10 +206,10 @@ export const LaborClockOut = ({
                             pendingTimeSheets?.workType === "LABOR"
                               ? t("GeneralLabor")
                               : pendingTimeSheets?.workType === "TRUCK_DRIVER"
-                              ? t("TruckDriver")
-                              : pendingTimeSheets?.workType === "MECHANIC"
-                              ? t("Mechanic")
-                              : ""
+                                ? t("TruckDriver")
+                                : pendingTimeSheets?.workType === "MECHANIC"
+                                  ? t("Mechanic")
+                                  : ""
                           }
                         />
                       )}

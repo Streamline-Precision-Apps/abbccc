@@ -1,0 +1,44 @@
+model FCMToken {
+  id         String    @id @default(cuid())
+  token      String    @unique // The FCM registration token provided by the client SDK
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  platform   String? // Optional: "web", "android", "ios", "chrome_extension" etc.
+  lastUsedAt DateTime? // Optional: Track last time this token was active
+  isValid    Boolean   @default(true) // Set to false if FCM reports "NotRegistered"
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([token]) // Useful for quick invalidation lookups
+}
+
+model TopicSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  topic     String // e.g., "timecardSubmissions"
+  createdAt DateTime @default(now())
+
+  @@unique([userId, topic])
+  @@index([topic])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  topic     String?
+  title     String
+  body      String?
+  url       String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  // push state: null = not pushed / not scheduled; timestamp when push was sent
+  pushedAt     DateTime?
+  // if push failed attempts you can bump this
+  pushAttempts Int       @default(0)
+
+  readAt DateTime?
+
+  @@index([topic, createdAt])
+}

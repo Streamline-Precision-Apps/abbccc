@@ -33,7 +33,8 @@ export default function RenderFields({
   submittedByTouched,
   formData,
   handleFieldChange,
-  clientOptions = [],
+  disabled,
+
   equipmentOptions = [],
   jobsiteOptions = [],
   costCodeOptions = [],
@@ -44,21 +45,20 @@ export default function RenderFields({
   userOptions: { value: string; label: string }[];
   submittedBy: { id: string; firstName: string; lastName: string } | null;
   setSubmittedBy: (
-    user: { id: string; firstName: string; lastName: string } | null
+    user: { id: string; firstName: string; lastName: string } | null,
   ) => void;
   submittedByTouched: boolean;
   formData: Record<string, FormFieldValue>;
   handleFieldChange: (fieldId: string, value: FormFieldValue) => void;
-  clientOptions: { value: string; label: string }[];
   equipmentOptions?: { value: string; label: string }[];
   jobsiteOptions?: { value: string; label: string }[];
   costCodeOptions?: { value: string; label: string }[];
   readOnly?: boolean;
   hideSubmittedBy?: boolean;
+  disabled?: boolean;
 }) {
-  console.log("RenderFields readOnly prop:", readOnly);
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
 
   const handleFieldTouch = (fieldId: string) => {
@@ -78,7 +78,7 @@ export default function RenderFields({
   // Helper function to get correctly typed value based on field type
   const getTypedValue = (
     field: Fields,
-    rawValue: FormFieldValue
+    rawValue: FormFieldValue,
   ): FormFieldValue => {
     if (rawValue === null || rawValue === undefined) {
       switch (field.type) {
@@ -133,7 +133,7 @@ export default function RenderFields({
             }}
             placeholder="Select user"
             filterKeys={["value", "label"]}
-            disabled={readOnly}
+            disabled={disabled}
           />
           {submittedByTouched && !submittedBy?.id.trim() && (
             <span className="text-xs text-red-500">
@@ -142,22 +142,29 @@ export default function RenderFields({
           )}
         </div>
       )}
-      {formTemplate.FormGrouping?.map((group) => (
-        <div key={group.id} className="mb-4">
+      {formTemplate.FormGrouping?.map((group, groupIndex) => (
+        <div key={group.id || `group-${groupIndex}`} className="mb-4">
           <div className="flex flex-col gap-5">
-            {group.Fields?.map((field: Fields) => {
-              // Get properly typed value based on field type
-              const rawValue = field.id in formData ? formData[field.id] : null;
+            {group.Fields?.map((field: Fields, fieldIndex) => {
+              // Get properly typed value based on field type - use same fallback pattern as admin
+              const rawValue =
+                formData[field.id] ?? formData[field.label] ?? null;
               const value = getTypedValue(field, rawValue);
               const options = field.Options || [];
               const error = handleFieldValidation(field, value);
+
+              // Ensure unique key, fallback to field position if no ID
+              const fieldKey =
+                field.id ||
+                `field-${group.id}-${fieldIndex}` ||
+                `field-${groupIndex}-${fieldIndex}`;
 
               switch (field.type) {
                 case "TEXT":
                 case "INPUT":
                   return (
                     <RenderInputField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -170,12 +177,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "TEXTAREA":
                   return (
                     <RenderTextArea
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -188,12 +196,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "NUMBER":
                   return (
                     <RenderNumberField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -206,13 +215,14 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "DATE":
                 case "DATE_TIME":
                   return (
                     <RenderDateField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -225,12 +235,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "TIME":
                   return (
                     <RenderTimeField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -243,12 +254,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "DROPDOWN":
                   return (
                     <RenderDropdownField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       options={options}
@@ -262,12 +274,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "RADIO":
                   return (
                     <RenderRadioField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       options={options}
@@ -281,12 +294,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "CHECKBOX":
                   return (
                     <RenderCheckboxField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string | boolean}
                       handleFieldChange={
@@ -299,11 +313,12 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "HEADER":
                   return (
-                    <div key={field.id} className="col-span-2">
+                    <div key={fieldKey} className="col-span-2">
                       <h2 className="text-xl font-bold my-2">{field.label}</h2>
                       <h2 className="text-xl font-bold my-2">
                         {field.content}
@@ -312,7 +327,7 @@ export default function RenderFields({
                   );
                 case "PARAGRAPH":
                   return (
-                    <div key={field.id} className="col-span-2">
+                    <div key={fieldKey} className="col-span-2">
                       <p className="text-gray-700 text-sm">{field.label}</p>
                       <p className="text-gray-700 my-2">{field.content}</p>
                     </div>
@@ -320,7 +335,7 @@ export default function RenderFields({
                 case "MULTISELECT":
                   return (
                     <RenderMultiselectField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string | string[]}
                       options={options}
@@ -334,12 +349,13 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 case "SEARCH_PERSON":
                   return (
                     <RenderSearchPersonField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       userOptions={userOptions} // Use the userOptions array
@@ -347,7 +363,7 @@ export default function RenderFields({
                         readOnly
                           ? () => {
                               console.log(
-                                "ReadOnly mode - SEARCH_PERSON handleFieldChange blocked"
+                                "ReadOnly mode - SEARCH_PERSON handleFieldChange blocked",
                               );
                             }
                           : (
@@ -359,11 +375,11 @@ export default function RenderFields({
                                 | object
                                 | boolean
                                 | number
-                                | null
+                                | null,
                             ) => {
                               console.log(
                                 "RenderFields SEARCH_PERSON handleFieldChange wrapper called with:",
-                                { id, val }
+                                { id, val },
                               );
                               handleFieldChange(id, val);
                             }
@@ -372,12 +388,13 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       formData={formData}
+                      disabled={disabled}
                     />
                   );
                 case "SEARCH_ASSET":
                   return (
                     <RenderSearchAssetField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -392,7 +409,7 @@ export default function RenderFields({
                                 | object
                                 | boolean
                                 | number
-                                | null
+                                | null,
                             ) => {
                               handleFieldChange(id, val);
                             }
@@ -400,17 +417,17 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       formData={formData}
-                      clientOptions={clientOptions || []}
                       equipmentOptions={equipmentOptions || []}
                       jobsiteOptions={jobsiteOptions || []}
                       costCodeOptions={costCodeOptions || []}
                       error={error}
+                      disabled={disabled}
                     />
                   );
                 default:
                   return (
                     <RenderInputField
-                      key={field.id}
+                      key={fieldKey}
                       field={field}
                       value={value as string}
                       handleFieldChange={
@@ -423,6 +440,7 @@ export default function RenderFields({
                       handleFieldTouch={handleFieldTouch}
                       touchedFields={touchedFields}
                       error={error}
+                      disabled={disabled}
                     />
                   );
               }

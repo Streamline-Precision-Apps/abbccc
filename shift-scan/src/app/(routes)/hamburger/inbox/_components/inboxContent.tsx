@@ -32,12 +32,12 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
             position={"row"}
             className="w-full justify-center items-center gap-x-2 "
           >
-            <Titles size={"h5"}>{t("FormsDocuments")}</Titles>
-            <Images
+            <Titles size={"md"}>{t("FormsDocuments")}</Titles>
+            {/* <Images
               titleImg="/form.svg"
               titleImgAlt="Inbox"
-              className="max-w-6 h-auto object-contain"
-            />
+              className="max-w-5 h-auto object-contain"
+            /> */}
           </Holds>
         </TitleBoxes>
       </Holds>

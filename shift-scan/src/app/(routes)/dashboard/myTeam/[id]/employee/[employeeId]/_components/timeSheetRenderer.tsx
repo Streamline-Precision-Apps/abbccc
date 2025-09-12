@@ -6,7 +6,7 @@ import TimeCardEquipmentLogs, {
   TimeCardEquipmentLogsRef,
 } from "./TimeCardEquipmentLogs";
 import TimeCardEquipmentRefuelLogs from "./TimeCardEquipmentRefuelLogs";
-import TimeCardHighlights from "./TimeCardHighlights";
+// import TimeCardHighlights from "./TimeCardHighlights";
 import TimeCardMechanicLogs, {
   MaintenanceLogData,
 } from "./TimeCardMechanicLogs";
@@ -110,7 +110,7 @@ interface TimeSheetRendererProps {
       | TascoHaulLogData
       | TascoRefuelLogData
       | EquipmentLogsData
-      | EmployeeEquipmentLogWithRefuel[]
+      | EmployeeEquipmentLogWithRefuel[],
   ) => void;
   edit: boolean;
   manager: string;
@@ -135,7 +135,7 @@ interface TimeSheetRendererProps {
 }
 
 const getTypedOnDataChange = <T,>(
-  handler: unknown
+  handler: unknown,
 ): ((data: T) => void) | undefined => {
   return typeof handler === "function"
     ? (handler as (data: T) => void)
@@ -143,7 +143,7 @@ const getTypedOnDataChange = <T,>(
 };
 
 const renderValueOrNA = (
-  value: string | number | boolean | Date | null | undefined
+  value: string | number | boolean | Date | null | undefined,
 ) => {
   if (value === null || value === undefined || value === "") {
     return "N/A";
@@ -181,8 +181,8 @@ export default function TimeSheetRenderer({
     dataLength: Array.isArray(data)
       ? data.length
       : data
-      ? Object.keys(data).length
-      : 0,
+        ? Object.keys(data).length
+        : 0,
     data,
   });
 
@@ -221,7 +221,7 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: unknown
+            item: unknown,
           ): item is { TruckingLogs: unknown[] } => {
             return (
               !!item &&
@@ -233,7 +233,7 @@ export default function TimeSheetRenderer({
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
             console.log(
-              "Found direct TruckingLogs format for hauls - using as-is"
+              "Found direct TruckingLogs format for hauls - using as-is",
             );
             // Data is already in the expected format
             return (
@@ -281,7 +281,7 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: unknown
+            item: unknown,
           ): item is { TruckingLogs: unknown[] } => {
             return (
               !!item &&
@@ -293,7 +293,7 @@ export default function TimeSheetRenderer({
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
             console.log(
-              "Found direct TruckingLogs format for material hauls - using as-is"
+              "Found direct TruckingLogs format for material hauls - using as-is",
             );
             // Data is already in the expected format
             return (
@@ -303,7 +303,7 @@ export default function TimeSheetRenderer({
                 manager={manager}
                 onDataChange={
                   getTypedOnDataChange<TruckingMaterialHaulLogData>(
-                    onDataChange
+                    onDataChange,
                   )!
                 }
                 focusIds={focusIds}
@@ -341,7 +341,7 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: unknown
+            item: unknown,
           ): item is { TruckingLogs: unknown[] } => {
             return (
               !!item &&
@@ -353,7 +353,7 @@ export default function TimeSheetRenderer({
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
             console.log(
-              "Found direct TruckingLogs format for refuel - using as-is"
+              "Found direct TruckingLogs format for refuel - using as-is",
             );
             // Data is already in the expected format
             return (
@@ -399,7 +399,7 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
           const hasDirectTruckingLogs = (
-            item: unknown
+            item: unknown,
           ): item is { TruckingLogs: unknown[] } => {
             return (
               !!item &&
@@ -411,7 +411,7 @@ export default function TimeSheetRenderer({
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
             console.log(
-              "Found direct TruckingLogs format for state logs - using as-is"
+              "Found direct TruckingLogs format for state logs - using as-is",
             );
             // Data is already in the expected format
             return (
@@ -461,7 +461,7 @@ export default function TimeSheetRenderer({
 
           // Type guard for ReviewYourTeam format (directly from API)
           const hasDirectTascoLogs = (
-            item: unknown
+            item: unknown,
           ): item is { TascoLogs: unknown[] } => {
             return (
               !!item &&
@@ -501,7 +501,7 @@ export default function TimeSheetRenderer({
 
             // Type guard for EditTeamTimeSheet format
             const hasTascoLogs = (
-              item: unknown
+              item: unknown,
             ): item is ReviewTimesheet & { TascoLogs: ReviewTascoLog[] } => {
               return (
                 !!item &&
@@ -529,7 +529,7 @@ export default function TimeSheetRenderer({
                     materialType: tl.materialType || "",
                     LoadQuantity: tl.LoadQuantity || 0,
                     Equipment: tl.Equipment || null,
-                  }))
+                  })),
                 ),
               },
             ];
@@ -581,7 +581,7 @@ export default function TimeSheetRenderer({
 
           // Type guard for ReviewYourTeam format (directly from API)
           const hasDirectTascoLogs = (
-            item: unknown
+            item: unknown,
           ): item is { TascoLogs: unknown[] } => {
             return (
               !!item &&
@@ -595,7 +595,7 @@ export default function TimeSheetRenderer({
           // Check if data is already in [{TascoLogs:[...]}] format
           if (data.length > 0 && hasDirectTascoLogs(data[0])) {
             console.log(
-              "Found direct TascoLogs format for refuel - using as-is"
+              "Found direct TascoLogs format for refuel - using as-is",
             );
             // Original API data can be used directly after filtering for refuel logs
             formattedData = [
@@ -606,7 +606,7 @@ export default function TimeSheetRenderer({
                       !!log &&
                       typeof log === "object" &&
                       Array.isArray((log as TascoLog).RefuelLogs) &&
-                      (log as TascoLog).RefuelLogs!.length > 0
+                      (log as TascoLog).RefuelLogs!.length > 0,
                   )
                   .map((tl) => {
                     const tascoLog = tl as TascoLog;
@@ -621,7 +621,7 @@ export default function TimeSheetRenderer({
                             tascoLogId: refuelLog.tascoLogId || tascoLog.id,
                             gallonsRefueled: refuelLog.gallonsRefueled || 0,
                           };
-                        }
+                        },
                       ),
                     };
                   }),
@@ -651,7 +651,7 @@ export default function TimeSheetRenderer({
 
             // Type guard to check if object has TascoLogs with RefuelLogs
             const hasTascoRefuelLogs = (
-              item: unknown
+              item: unknown,
             ): item is ReviewTimesheet & { TascoLogs: ReviewTascoLog[] } => {
               return (
                 !!item &&
@@ -664,20 +664,20 @@ export default function TimeSheetRenderer({
                   (log: ReviewTascoLog) =>
                     !!log &&
                     Array.isArray(log.RefuelLogs) &&
-                    log.RefuelLogs.length > 0
+                    log.RefuelLogs.length > 0,
                 )
               );
             };
 
             // Convert data with proper type checking
             const validTimesheets = (data as unknown[]).filter(
-              hasTascoRefuelLogs
+              hasTascoRefuelLogs,
             );
             formattedData = [
               {
                 TascoLogs: validTimesheets.flatMap((ts) =>
                   ts.TascoLogs.filter(
-                    (tl) => tl.RefuelLogs && tl.RefuelLogs.length > 0
+                    (tl) => tl.RefuelLogs && tl.RefuelLogs.length > 0,
                   ).map((tl) => ({
                     id: tl.id,
                     Equipment: tl.Equipment,
@@ -686,7 +686,7 @@ export default function TimeSheetRenderer({
                       tascoLogId: refuel.tascoLogId || tl.id,
                       gallonsRefueled: refuel.gallonsRefueled || 0,
                     })),
-                  }))
+                  })),
                 ),
               },
             ];
@@ -737,7 +737,7 @@ export default function TimeSheetRenderer({
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with EmployeeEquipmentLogs
           const hasDirectEmployeeEquipmentLogs = (
-            item: unknown
+            item: unknown,
           ): item is { EmployeeEquipmentLogs: unknown[] } => {
             return (
               !!item &&
@@ -745,7 +745,7 @@ export default function TimeSheetRenderer({
               "EmployeeEquipmentLogs" in item &&
               Array.isArray(
                 (item as { EmployeeEquipmentLogs: unknown[] })
-                  .EmployeeEquipmentLogs
+                  .EmployeeEquipmentLogs,
               )
             );
           };
@@ -755,7 +755,7 @@ export default function TimeSheetRenderer({
           // Check if data is already in [{EmployeeEquipmentLogs:[...]}] format from API
           if (data.length > 0 && hasDirectEmployeeEquipmentLogs(data[0])) {
             console.log(
-              "Found direct EmployeeEquipmentLogs format - using as-is"
+              "Found direct EmployeeEquipmentLogs format - using as-is",
             );
             formattedData = data as EquipmentLogsData;
           } else {
@@ -780,12 +780,12 @@ export default function TimeSheetRenderer({
                 EmployeeEquipmentLogs: (data as ReviewTimesheet[])
                   .filter(
                     (
-                      ts
+                      ts,
                     ): ts is ReviewTimesheet & {
                       EmployeeEquipmentLogs: ReviewEquipmentLog[];
                     } =>
                       ts.EmployeeEquipmentLogs != null &&
-                      ts.EmployeeEquipmentLogs.length > 0
+                      ts.EmployeeEquipmentLogs.length > 0,
                   )
                   .flatMap((ts) => ts.EmployeeEquipmentLogs)
                   .map((log) => ({
@@ -837,7 +837,7 @@ export default function TimeSheetRenderer({
       case "equipmentRefuelLogs": {
         // Type guard to check if an array is EquipmentRefuelLog[]
         const isEquipmentRefuelLogArray = (
-          arr: unknown[]
+          arr: unknown[],
         ): arr is EquipmentRefuelLog[] => {
           return (
             arr.length > 0 &&
@@ -852,7 +852,7 @@ export default function TimeSheetRenderer({
 
         // Type guard for the specific API format with EmployeeEquipmentLogs
         const hasEmployeeEquipmentLogs = (
-          item: unknown
+          item: unknown,
         ): item is { EmployeeEquipmentLogs: unknown[] } => {
           return (
             !!item &&
@@ -860,7 +860,7 @@ export default function TimeSheetRenderer({
             "EmployeeEquipmentLogs" in item &&
             Array.isArray(
               (item as { EmployeeEquipmentLogs: unknown[] })
-                .EmployeeEquipmentLogs
+                .EmployeeEquipmentLogs,
             )
           );
         };
@@ -915,7 +915,7 @@ export default function TimeSheetRenderer({
                       employeeEquipmentLogId: log.id,
                     };
                   }
-                }
+                },
               );
             });
           } else {
@@ -987,7 +987,7 @@ export default function TimeSheetRenderer({
                   gallonsRefueled: refuelLog.gallonsRefueled ?? null,
                   employeeEquipmentLogId: (log as EquipmentLog).id,
                 };
-              }
+              },
             );
           } else if (
             log &&
@@ -1049,30 +1049,30 @@ export default function TimeSheetRenderer({
           />
         );
       }
-      case "timesheetHighlights":
-        return (
-          <TimeCardHighlights
-            highlightTimesheet={(data as TimesheetHighlights[]).map((item) => ({
-              ...item,
-              startTime: renderValueOrNA(item.startTime),
-              endTime: renderValueOrNA(item.endTime),
-              costcode: renderValueOrNA(item.costcode),
-              Jobsite: {
-                ...item.Jobsite,
-                name: renderValueOrNA(item.Jobsite?.name),
-              },
-            }))}
-            edit={edit}
-            manager={manager}
-            onDataChange={
-              getTypedOnDataChange<TimesheetHighlights[]>(onDataChange)!
-            }
-            date={date}
-            focusIds={focusIds}
-            setFocusIds={setFocusIds}
-            isReviewYourTeam={isReviewYourTeam}
-          />
-        );
+      // case "timesheetHighlights":
+      //   return (
+      //     <TimeCardHighlights
+      //       highlightTimesheet={(data as TimesheetHighlights[]).map((item) => ({
+      //         ...item,
+      //         startTime: renderValueOrNA(item.startTime),
+      //         endTime: renderValueOrNA(item.endTime),
+      //         costcode: renderValueOrNA(item.costcode),
+      //         Jobsite: {
+      //           ...item.Jobsite,
+      //           name: renderValueOrNA(item.Jobsite?.name),
+      //         },
+      //       }))}
+      //       edit={edit}
+      //       manager={manager}
+      //       onDataChange={
+      //         getTypedOnDataChange<TimesheetHighlights[]>(onDataChange)!
+      //       }
+      //       date={date}
+      //       focusIds={focusIds}
+      //       setFocusIds={setFocusIds}
+      //       isReviewYourTeam={isReviewYourTeam}
+      //     />
+      //   );
       case "mechanicLogs":
         return (
           <TimeCardMechanicLogs

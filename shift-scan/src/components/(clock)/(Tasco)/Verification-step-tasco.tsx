@@ -64,7 +64,6 @@ export default function TascoVerificationStep({
   equipment,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
@@ -74,7 +73,7 @@ export default function TascoVerificationStep({
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
+  const fetchRecentTimeSheetId = async (): Promise<number | null> => {
     try {
       const res = await fetch("/api/getRecentTimecard");
       const data = await res.json();
@@ -122,7 +121,7 @@ export default function TascoVerificationStep({
       if (type === "switchJobs") {
         const timeSheetId = await fetchRecentTimeSheetId();
         if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-        formData.append("id", timeSheetId);
+        formData.append("id", timeSheetId.toString());
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
@@ -138,8 +137,6 @@ export default function TascoVerificationStep({
         formData,
       );
 
-      // Update state and redirect
-      setTimeSheetData({ id: response || "" });
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 

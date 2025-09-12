@@ -122,7 +122,10 @@
     "Next": "Próximo",
     "Submitting": "Sumisión...",
     "ProfilePictureMissingError": "Intento inválido. ",
-    "ImageAlt": "Imagen de imagen de perfil"
+    "ImageAlt": "Imagen de imagen de perfil",
+    "Cancel": "Cancelar",
+    "RetakePicture": "Volver a tomar la foto",
+    "TakePicture": "Tomar la foto"
   },
   "SignUpVirtualSignature": {
     "AddASignature": "Agregar una firma",
@@ -319,6 +322,7 @@
     "Notes": "Notas adicionales"
   },
   "Generator": {
+    "SelectDestination": "Ingrese la ubicación actual...",
     "CreateEquipment": "Crear equipos",
     "EquipmentInfo": "Información del equipo",
     "SubmitJobsite": "Enviar un sitio de trabajo",
@@ -601,6 +605,7 @@
     "PullToRefresh": "(Tire para refrescar)"
   },
   "Clock": {
+    "NoResultsFound": "No se encontraron resultados",
     "Equipment": "Equipo",
     "SelectMaterialTypeAndEquipment": "Seleccionar material y equipo",
     "StartDay": "Inicio Día",
@@ -1182,7 +1187,7 @@
     "ManagerComments": "Comentarios del gerente",
     "Deny": "Denegar",
     "Approve": "Aprobar",
-    "OriginallySubmitted": "Originalmente enviado:",
+    "OriginallySubmitted": "Enviado:",
     "LastEdited": "Última edición:",
     "ApprovalStatus": "Estado de aprobación",
     "Manager": "Gerente",

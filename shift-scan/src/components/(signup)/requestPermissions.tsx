@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Buttons } from "../(reusable)/buttons"; // Adjust the import path as needed
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 const RequestPermissions = ({
   handlePermissionsGranted,
@@ -12,30 +13,19 @@ const RequestPermissions = ({
     camera: false,
     cookies: false,
   });
+  const { requestCameraPermission, requestLocationPermission } =
+    usePermissions();
 
-  const requestLocationPermission = () => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        () => {
-          setPermissionsGranted((prev) => ({ ...prev, location: true }));
-        },
-        (error) => {
-          console.error("Error requesting location permission:", error);
-        }
-      );
-    } else {
-      alert("Geolocation is not available in your browser.");
-    }
+  // Use the centralized permission context for requesting location permission
+  const handleLocationPermission = async () => {
+    const granted = await requestLocationPermission();
+    setPermissionsGranted((prev) => ({ ...prev, location: granted }));
   };
 
-  const requestCameraPermission = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      setPermissionsGranted((prev) => ({ ...prev, camera: true }));
-      stream.getTracks().forEach((track) => track.stop()); // Stop the stream after getting permission
-    } catch (error) {
-      console.error("Error requesting camera permission:", error);
-    }
+  // Use the centralized permission context for requesting camera permission
+  const handleCameraPermission = async () => {
+    const granted = await requestCameraPermission();
+    setPermissionsGranted((prev) => ({ ...prev, camera: granted }));
   };
 
   const requestCookiesPermission = () => {
@@ -44,9 +34,9 @@ const RequestPermissions = ({
     setPermissionsGranted((prev) => ({ ...prev, cookies: true }));
   };
 
-  const handleRequestPermissions = () => {
-    requestLocationPermission();
-    requestCameraPermission();
+  const handleRequestPermissions = async () => {
+    await handleLocationPermission();
+    await handleCameraPermission();
     requestCookiesPermission();
   };
 

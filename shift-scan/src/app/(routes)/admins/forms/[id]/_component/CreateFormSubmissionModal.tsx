@@ -6,6 +6,10 @@ import { createFormSubmission } from "@/actions/records-forms";
 import RenderFields from "../../_components/RenderFields"; // Import the RenderFields component
 import Spinner from "@/components/(animations)/spinner";
 import { FormIndividualTemplate } from "./hooks/types";
+import { X } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface Submission {
   id: string;
@@ -65,6 +69,9 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   closeModal,
   onSuccess,
 }) => {
+  const { data: session } = useSession();
+  const adminUserId = session?.user?.id || null;
+
   console.log("Form Template:", formTemplate);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<
@@ -77,28 +84,26 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   } | null>(null);
   const [submittedByTouched, setSubmittedByTouched] = useState(false);
 
+  // State for manager approval
+  const [managerComment, setManagerComment] = useState<string>("");
+  const [managerSignature, setManagerSignature] = useState<boolean>(false);
+
   // State for different asset types
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [jobsites, setJobsites] = useState<{ id: string; name: string }[]>([]);
   const [costCodes, setCostCodes] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
 
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);
-  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 
   const userOptions = users.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
-  }));
-
-  const clientOptions = clients.map((c) => ({
-    value: c.id,
-    label: `${c.name}`,
   }));
 
   const equipmentOptions = equipment.map((e) => ({
@@ -123,15 +128,6 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
       setUsers(employees);
     };
     fetchEmployees();
-  }, []);
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      const res = await fetch("/api/getClientsSummary");
-      const clients = await res.json();
-      setClients(clients);
-    };
-    fetchClients();
   }, []);
 
   // Fetch equipment data
@@ -182,7 +178,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   const handleFieldChange = (
     fieldId: string,
-    value: string | Date | string[] | object | boolean | number | null
+    value: string | Date | string[] | object | boolean | number | null,
   ) => {
     // Convert value to a format compatible with our formData state
     let compatibleValue: string | number | boolean | null = null;
@@ -204,19 +200,28 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
     setFormData((prev) => ({ ...prev, [fieldId]: compatibleValue }));
   };
 
-  // Signature state
+  // Signature state is now tied to manager signature
   const [signatureChecked, setSignatureChecked] = useState(false);
 
   const handleSubmit = async () => {
     setSubmittedByTouched(true);
     if (!submittedBy) {
-      toast.error("'Submitted By' is required");
+      toast.error("'Submitted By' is required", { duration: 3000 });
       return;
     }
     if (formTemplate.isSignatureRequired && !signatureChecked) {
-      toast.error("You must electronically sign this submission.");
+      toast.error("You must electronically sign this submission.", {
+        duration: 3000,
+      });
       return;
     }
+    if (!managerSignature) {
+      toast.error("You must sign the submission as a manager to approve it.", {
+        duration: 3000,
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       // Process formData to ensure asset data is properly formatted
@@ -224,6 +229,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
         string,
         string | number | boolean | null
       > = { ...formData };
+
       if (formTemplate.isSignatureRequired) {
         processedFormData.signature = true;
       }
@@ -236,16 +242,24 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
           firstName: submittedBy.firstName,
           lastName: submittedBy.lastName,
         },
+        adminUserId,
+        comment: managerComment,
+        signature: `${session?.user.firstName} ${session?.user.lastName}`,
+        status: "APPROVED",
+        // Include manager approval data if signed by manager
       });
+
       if (res.success) {
-        toast.success("Submission created successfully");
+        toast.success("Submission created and approved");
         closeModal();
         onSuccess?.();
       } else {
-        toast.error(res.error || "Failed to create submission");
+        toast.error(res.error || "Failed to create submission", {
+          duration: 3000,
+        });
       }
     } catch (err) {
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred", { duration: 3000 });
     } finally {
       setLoading(false);
     }
@@ -253,8 +267,17 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center relative">
         <div className="flex flex-col gap-4 w-full items-center">
+          <Button
+            type="button"
+            variant={"ghost"}
+            size={"icon"}
+            onClick={closeModal}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
           <div className="w-full flex flex-col justify-center mb-2 ">
             <div>
               <p className="text-lg text-black font-semibold ">
@@ -277,31 +300,76 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               submittedByTouched={submittedByTouched}
               formData={formData}
               handleFieldChange={handleFieldChange}
-              clientOptions={clientOptions}
+              // clientOptions={clientOptions}
               equipmentOptions={equipmentOptions}
               jobsiteOptions={jobsiteOptions}
               costCodeOptions={costCodeOptions}
             />
           </div>
-          {formTemplate.isSignatureRequired && (
-            <div className="w-full flex flex-row items-center gap-2 mb-2 mt-2">
-              <input
-                type="checkbox"
-                id="signature-checkbox"
-                checked={signatureChecked}
-                onChange={(e) => setSignatureChecked(e.target.checked)}
-                className="accent-emerald-500 h-4 w-4"
-                disabled={loading}
-              />
-              <label
-                htmlFor="signature-checkbox"
-                className="text-xs text-gray-700 select-none cursor-pointer"
-              >
-                I electronically sign this submission.
-              </label>
+
+          {/* Manager Approval Section */}
+          {adminUserId && (
+            <div className="w-full border-t border-gray-200 pt-4 mt-4">
+              <div className="flex items-center mb-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-600 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h3 className="text-md font-semibold">Manager Approval</h3>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-4">
+                <div className="mb-4">
+                  <Label
+                    htmlFor="manager-comment"
+                    className="text-sm font-medium mb-1 block"
+                  >
+                    Comment (Optional)
+                  </Label>
+                  <Textarea
+                    id="manager-comment"
+                    placeholder="Add any comments about this submission..."
+                    value={managerComment}
+                    onChange={(e) => setManagerComment(e.target.value)}
+                    className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="manager-signature"
+                    checked={managerSignature}
+                    onChange={(e) => {
+                      setManagerSignature(e.target.checked);
+                      setSignatureChecked(e.target.checked);
+                    }}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="manager-signature"
+                    className="text-sm text-gray-700 select-none cursor-pointer"
+                  >
+                    I,{" "}
+                    <span className="font-semibold">
+                      {session?.user.firstName} {session?.user.lastName}
+                    </span>
+                    , electronically sign and approve this submission.
+                  </label>
+                </div>
+              </div>
             </div>
           )}
-          <div className="w-full flex flex-row justify-end gap-2">
+
+          <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
             <Button
               size={"sm"}
               onClick={closeModal}
@@ -315,10 +383,10 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               size={"sm"}
               onClick={handleSubmit}
               variant="outline"
-              className="bg-emerald-500 text-white hover:bg-emerald-400 hover:text-white"
-              disabled={loading}
+              className={`bg-emerald-500 text-white hover:bg-emerald-400 hover:text-white`}
+              disabled={loading || !managerSignature}
             >
-              {loading ? <Spinner size={20} /> : "Create Submission"}
+              {loading ? <Spinner size={20} /> : "Create & Approve"}
             </Button>
           </div>
         </div>

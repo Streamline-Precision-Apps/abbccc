@@ -29,6 +29,9 @@ yarn-error.log*
 .env
 shift-scan/.env
 
+# Firebase service account
+src/service_key.json
+
 # vercel
 .vercel
 
@@ -45,6 +48,8 @@ certificates
 # Sentry Config File
 .env.sentry-build-plugin
 
+# Prisma generated files
 prisma/generated/
 
+# Database backup files
 neon_backup.dump

@@ -1,5 +1,5 @@
 model Report {
-  id          String           @id @default(uuid())
+  id          Int              @id
   name        String           @unique
   description String
   companyId   String
@@ -15,7 +15,7 @@ model Report {
 
 model ReportRun {
   id             String       @id @default(uuid())
-  reportId       String
+  reportId       Int
   runAt          DateTime     @default(now())
   status         ReportStatus
   results        Json?

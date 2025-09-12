@@ -9,9 +9,26 @@ import { Bases } from "@/components/(reusable)/bases";
 import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockOut";
 import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
-import ReviewYourTeam from "./(components)/reviewYourTeam";
-import EditTeamTimeSheet from "./(components)/editTeamTimeSheet";
-import { TimesheetFilter, crewUsers } from "@/lib/types";
+
+type crewUsers = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  clockedIn: boolean;
+};
+
+type TimesheetFilter =
+  | "timesheetHighlights"
+  | "truckingMileage"
+  | "truckingEquipmentHaulLogs"
+  | "truckingMaterialHaulLogs"
+  | "truckingRefuelLogs"
+  | "truckingStateLogs"
+  | "tascoHaulLogs"
+  | "tascoRefuelLogs"
+  | "equipmentLogs"
+  | "equipmentRefuelLogs"
+  | "mechanicLogs";
 
 export type TimeSheet = {
   submitDate: string;
@@ -57,6 +74,7 @@ export default function TempClockOutContent({
   const [focusIds, setFocusIds] = useState<string[]>([]);
   const [employeeId, setEmployeeId] = useState<string>("");
   const [teamUsers, setTeamUsers] = useState<crewUsers[]>([]);
+  const [wasInjured, setWasInjured] = useState<boolean>(false);
 
   useEffect(() => {
     console.log("currentStep: ", step);
@@ -102,7 +120,7 @@ export default function TempClockOutContent({
           .filter((timesheet: TimeSheet) => timesheet.endTime === null)
           .sort(
             (a: TimeSheet, b: TimeSheet) =>
-              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+              new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
           )[0];
         setPendingTimeSheets(activeTimeSheet || null);
       } catch (error) {
@@ -211,6 +229,7 @@ export default function TempClockOutContent({
         base64String={base64String}
         handleNextStep={handleSubmitInjury}
         prevStep={prevStep}
+        setWasInjured={setWasInjured}
       />
     );
   } else if (step === 3 && path === "clockOut") {
@@ -220,6 +239,7 @@ export default function TempClockOutContent({
         prevStep={prevStep}
         commentsValue={commentsValue}
         pendingTimeSheets={pendingTimeSheets}
+        wasInjured={wasInjured}
       />
     );
   } else {

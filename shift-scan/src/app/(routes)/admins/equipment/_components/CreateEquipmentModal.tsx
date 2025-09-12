@@ -14,6 +14,8 @@ import { registerEquipment } from "@/actions/AssetActions";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { US_STATES } from "@/data/stateValues";
 
 export default function CreateEquipmentModal({
   cancel,
@@ -24,26 +26,30 @@ export default function CreateEquipmentModal({
 }) {
   const { data: session } = useSession();
   const [formData, setFormData] = useState({
+    code: "",
     name: "",
     description: "",
+    memo: "",
+    ownershipType: "",
+    make: "",
+    model: "",
+    year: "",
+    color: "",
+    serialNumber: "",
+    acquiredDate: null,
+    acquiredCondition: "",
+    licensePlate: "",
+    licenseState: "",
     equipmentTag: "",
-    status: "APPROVED",
-    IsActive: true,
-    inUse: false,
+    state: "AVAILABLE",
+    approvalStatus: "APPROVED",
+    isDisabledByAdmin: false,
     overWeight: null,
     currentWeight: null,
-    equipmentVehicleInfo: {
-      make: "",
-      model: "",
-      year: "",
-      licensePlate: "",
-      registrationExpiration: null,
-      mileage: null,
-    },
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -60,9 +66,19 @@ export default function CreateEquipmentModal({
           ? value === "true"
             ? true
             : value === "false"
-            ? false
-            : null
+              ? false
+              : null
           : value,
+    }));
+  };
+
+  const handleCheckboxChange = (
+    name: string,
+    checked: boolean | "indeterminate",
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: checked === "indeterminate" ? null : checked,
     }));
   };
 
@@ -70,18 +86,9 @@ export default function CreateEquipmentModal({
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      equipmentVehicleInfo: {
-        ...prev.equipmentVehicleInfo,
-        [name]:
-          type === "number" ? (value === "" ? null : Number(value)) : value,
-      },
+      [name]: type === "number" ? (value === "" ? null : Number(value)) : value,
     }));
   };
-
-  const hasVehicleInfo =
-    formData.equipmentTag === "TRUCK" ||
-    formData.equipmentTag === "VEHICLE" ||
-    formData.equipmentTag === "TRAILER";
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -90,53 +97,61 @@ export default function CreateEquipmentModal({
     try {
       // Basic validation
       if (!formData.name.trim()) {
-        toast.error("Equipment name is required");
+        toast.error("Equipment name is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
       if (!formData.equipmentTag) {
-        toast.error("Equipment type is required");
+        toast.error("Equipment type is required", { duration: 3000 });
         setSubmitting(false);
         return;
       }
       // Prepare payload
       const payload = {
+        code: formData.code.trim(),
         name: formData.name.trim(),
         description: formData.description?.trim() || "",
+        memo: formData.memo?.trim() || "",
+        ownershipType: formData.ownershipType || null,
+        make: formData.make || null,
+        model: formData.model || null,
+        year: formData.year || null,
+        color: formData.color || null,
+        serialNumber: formData.serialNumber || null,
+        acquiredDate: formData.acquiredDate
+          ? new Date(formData.acquiredDate)
+          : null,
+        acquiredCondition: formData.acquiredCondition || null,
+        licensePlate: formData.licensePlate || null,
+        licenseState: formData.licenseState || null,
         equipmentTag: formData.equipmentTag,
+        state: formData.state,
+        approvalStatus: formData.approvalStatus,
+        isDisabledByAdmin: formData.isDisabledByAdmin,
         overWeight: formData.overWeight,
         currentWeight: formData.currentWeight,
-        equipmentVehicleInfo: hasVehicleInfo
-          ? {
-              make: formData.equipmentVehicleInfo?.make || null,
-              model: formData.equipmentVehicleInfo?.model || null,
-              year: formData.equipmentVehicleInfo?.year || null,
-              licensePlate: formData.equipmentVehicleInfo?.licensePlate || null,
-              registrationExpiration: formData.equipmentVehicleInfo
-                ?.registrationExpiration
-                ? new Date(formData.equipmentVehicleInfo.registrationExpiration)
-                : null,
-              mileage: formData.equipmentVehicleInfo?.mileage ?? null,
-            }
-          : undefined,
       };
       const createdById = session?.user.id;
       if (!createdById) {
-        toast.error("You must be logged in to create equipment.");
+        toast.error("You must be logged in to create equipment.", {
+          duration: 3000,
+        });
         setSubmitting(false);
         return;
       }
       const result = await registerEquipment(payload, createdById);
       if (result.success) {
-        toast.success("Equipment created successfully!");
+        toast.success("Equipment created successfully!", { duration: 3000 });
         rerender();
         cancel();
       } else {
-        toast.error(result.error || "Failed to create equipment");
+        toast.error(result.error || "Failed to create equipment", {
+          duration: 3000,
+        });
       }
     } catch (error) {
       console.error("Error creating equipment:", error);
-      toast.error("Failed to create equipment");
+      toast.error("Failed to create equipment", { duration: 3000 });
     } finally {
       setSubmitting(false);
     }
@@ -153,246 +168,361 @@ export default function CreateEquipmentModal({
             </p>
           </div>
           <div>
-            <div className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="name" className={`text-sm `}>
-                  Equipment Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full text-xs"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="description" className="text-sm font-medium">
-                  Equipment Description
-                </Label>
-                <Textarea
-                  name="description" // Corresponds to formData key
-                  rows={4}
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full text-xs min-h-[96px]"
-                  placeholder="Enter equipment description..."
-                  style={{ resize: "none" }}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="currentWeight" className={`text-sm `}>
-                  {`Current Weight (lbs)`}
-                  <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  type="number"
-                  name="currentWeight" // Corresponds to formData key
-                  onChange={handleInputChange}
-                  value={
-                    formData.currentWeight === null
-                      ? ""
-                      : formData.currentWeight
-                  } // Handle null value for input
-                  placeholder="0"
-                  className="text-xs"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="overWeight" className={`text-sm `}>
-                  Overweight Equipment
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange("overWeight", value)
-                  }
-                  name="overWeight" // Corresponds to formData key
-                  value={
-                    formData.overWeight === true
-                      ? "true"
-                      : formData.overWeight === false
-                      ? "false"
-                      : ""
-                  }
-                >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Select Weight Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Yes</SelectItem>
-                    <SelectItem value="false">No</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label
-                  htmlFor="equipmentTag"
-                  className={`text-sm font-medium `}
-                >
-                  Equipment Type <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  name="equipmentTag" // Corresponds to formData key
-                  value={formData.equipmentTag}
-                  onValueChange={(value) =>
-                    handleSelectChange("equipmentTag", value)
-                  }
-                >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Select Equipment Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="TRUCK">Truck</SelectItem>
-                    <SelectItem value="TRAILER">Trailer</SelectItem>
-                    <SelectItem value="VEHICLE">Vehicle</SelectItem>
-                    <SelectItem value="EQUIPMENT">Equipment</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {/* Conditional rendering for vehicle specific fields */}
-              {hasVehicleInfo && formData.equipmentVehicleInfo && (
-                <>
+            <div className="flex flex-col gap-6">
+              {/* Section: General Information */}
+              <div className="border rounded-md p-4">
+                <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                  General Information
+                </h3>
+                <div className="flex flex-col gap-3">
                   <div>
-                    <Label htmlFor="make" className={`text-sm font-medium `}>
-                      Vehicle Make <span className="text-red-500">*</span>
+                    <Label htmlFor="code" className={`text-sm `}>
+                      ID <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       type="text"
-                      name="make" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.make || ""}
-                      onChange={handleVehicleInfoChange}
+                      name="code"
+                      value={formData.code}
+                      onChange={handleInputChange}
+                      className="w-full text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="name" className={`text-sm `}>
+                      Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full text-xs"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="description"
+                      className="text-sm font-medium"
+                    >
+                      Description
+                    </Label>
+                    <Textarea
+                      name="description"
+                      rows={3}
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      className="w-full text-xs min-h-[80px]"
+                      placeholder="Enter equipment description..."
+                      style={{ resize: "none" }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="memo" className="text-sm font-medium">
+                      Memo
+                    </Label>
+                    <Textarea
+                      name="memo"
+                      rows={2}
+                      value={formData.memo}
+                      onChange={handleInputChange}
+                      className="w-full text-xs min-h-[60px]"
+                      placeholder="Enter any additional notes..."
+                      style={{ resize: "none" }}
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="equipmentTag"
+                      className={`text-sm font-medium `}
+                    >
+                      Equipment Type <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      name="equipmentTag"
+                      value={formData.equipmentTag}
+                      onValueChange={(value) =>
+                        handleSelectChange("equipmentTag", value)
+                      }
+                    >
+                      <SelectTrigger className="text-xs">
+                        <SelectValue placeholder="Select Equipment Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="TRUCK">Truck</SelectItem>
+                        <SelectItem value="TRAILER">Trailer</SelectItem>
+                        <SelectItem value="VEHICLE">Vehicle</SelectItem>
+                        <SelectItem value="EQUIPMENT">Equipment</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section: Ownership Information */}
+              <div className="border rounded-md p-4">
+                <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                  Ownership Information
+                </h3>
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <Label htmlFor="ownershipType" className={`text-sm `}>
+                      Ownership Type
+                    </Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleSelectChange("ownershipType", value)
+                      }
+                      value={formData.ownershipType}
+                    >
+                      <SelectTrigger className="text-xs">
+                        <SelectValue placeholder="Select Ownership Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="OWNED">Owned</SelectItem>
+                        <SelectItem value="LEASED">Leased</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="acquiredDate" className={`text-sm `}>
+                      Acquired Date
+                    </Label>
+                    <Input
+                      type="date"
+                      name="acquiredDate"
+                      value={
+                        formData.acquiredDate
+                          ? new Date(formData.acquiredDate)
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
+                      }
+                      onChange={handleInputChange}
+                      className="w-full text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="acquiredCondition" className={`text-sm `}>
+                      Acquired Condition
+                    </Label>
+                    <Select
+                      name="acquiredCondition"
+                      value={formData.acquiredCondition}
+                      onValueChange={(value) =>
+                        handleSelectChange("acquiredCondition", value)
+                      }
+                    >
+                      <SelectTrigger className="text-xs">
+                        <SelectValue placeholder="Select Condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NEW">New</SelectItem>
+                        <SelectItem value="USED">Used</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section: Vehicle/Equipment Specifications */}
+              <div className="border rounded-md p-4">
+                <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                  Equipment Specifications
+                </h3>
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <Label htmlFor="make" className={`text-sm font-medium `}>
+                      Make
+                    </Label>
+                    <Input
+                      type="text"
+                      name="make"
+                      value={formData.make || ""}
+                      onChange={handleInputChange}
                       placeholder="Make"
                       className="text-xs"
-                      required
                     />
                   </div>
                   <div>
                     <Label htmlFor="model" className={`text-sm font-medium`}>
-                      Vehicle Model <span className="text-red-500">*</span>
+                      Model
                     </Label>
                     <Input
                       type="text"
-                      name="model" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.model || ""}
-                      onChange={handleVehicleInfoChange}
+                      name="model"
+                      value={formData.model || ""}
+                      onChange={handleInputChange}
                       placeholder="Model"
                       className="text-xs"
-                      required
                     />
                   </div>
-
                   <div>
                     <Label htmlFor="year" className={`text-sm font-medium `}>
-                      Vehicle Year <span className="text-red-500">*</span>
+                      Year
                     </Label>
                     <Input
-                      type="text" // Changed to text to allow YYYY, can also be number
+                      type="text"
                       inputMode="numeric"
                       pattern="[0-9]{4}"
                       maxLength={4}
-                      name="year" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.year || ""}
-                      onChange={handleVehicleInfoChange}
+                      name="year"
+                      value={formData.year || ""}
+                      onChange={handleInputChange}
                       placeholder="YYYY"
                       className="text-xs"
-                      required
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="color" className={`text-sm font-medium `}>
+                      Color
+                    </Label>
+                    <Input
+                      type="text"
+                      name="color"
+                      value={formData.color || ""}
+                      onChange={handleInputChange}
+                      placeholder="Color"
+                      className="text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="serialNumber"
+                      className={`text-sm font-medium `}
+                    >
+                      Serial Number
+                    </Label>
+                    <Input
+                      type="text"
+                      name="serialNumber"
+                      value={formData.serialNumber || ""}
+                      onChange={handleInputChange}
+                      placeholder="Serial Number"
+                      className="text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section: License Information */}
+              <div className="border rounded-md p-4">
+                <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                  License Information
+                </h3>
+                <div className="flex flex-col gap-3">
                   <div>
                     <Label
                       htmlFor="licensePlate"
                       className={`text-sm font-medium `}
                     >
-                      License Plate <span className="text-red-500">*</span>
+                      License Number
                     </Label>
                     <Input
                       type="text"
-                      name="licensePlate" // Corresponds to equipmentVehicleInfo key
-                      value={formData.equipmentVehicleInfo?.licensePlate || ""}
-                      onChange={handleVehicleInfoChange}
-                      placeholder="License Plate"
+                      name="licensePlate"
+                      value={formData.licensePlate || ""}
+                      onChange={handleInputChange}
+                      placeholder="Enter License Number"
                       className="text-xs"
-                      required
                     />
                   </div>
-
-                  {/* DatePicker for registrationExpiration - Assuming you have a DatePicker component */}
                   <div>
                     <Label
-                      htmlFor="registrationExpiration"
-                      className={`text-sm `}
+                      htmlFor="licenseState"
+                      className={`text-sm font-medium `}
                     >
-                      Registration Expiration{" "}
-                      <span className="text-red-500">*</span>
+                      License State
                     </Label>
-                    {/* Replace with your actual DatePicker component */}
-                    <Input // Placeholder for DatePicker
-                      type="date"
-                      name="registrationExpiration"
-                      value={
-                        formData.equipmentVehicleInfo?.registrationExpiration
-                          ? new Date(
-                              formData.equipmentVehicleInfo.registrationExpiration
-                            )
-                              .toISOString()
-                              .split("T")[0]
-                          : ""
-                      }
-                      onChange={handleVehicleInfoChange}
-                      className="w-full text-xs"
-                      required
-                    />
-                  </div>
 
+                    <Select
+                      name="licenseState"
+                      value={formData.licenseState}
+                      onValueChange={(value) =>
+                        handleSelectChange("licenseState", value)
+                      }
+                    >
+                      <SelectTrigger className="text-xs">
+                        <SelectValue placeholder="Select State" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {US_STATES.map((state) => (
+                          <SelectItem key={state.name} value={state.code}>
+                            {state.code}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section: Weight Information */}
+              <div className="border rounded-md p-4">
+                <h3 className="text-md font-semibold mb-3 border-b pb-2">
+                  Weight Information
+                </h3>
+                <div className="flex flex-col gap-3">
                   <div>
-                    <Label htmlFor="mileage" className={`text-sm `}>
-                      Vehicle Mileage <span className="text-red-500">*</span>
+                    <Label htmlFor="currentWeight" className={`text-sm `}>
+                      {`Current Weight (lbs)`}
                     </Label>
                     <Input
                       type="number"
-                      name="mileage" // Corresponds to equipmentVehicleInfo key
+                      name="currentWeight"
+                      onChange={handleInputChange}
                       value={
-                        formData.equipmentVehicleInfo?.mileage === null
+                        formData.currentWeight === null
                           ? ""
-                          : formData.equipmentVehicleInfo?.mileage
+                          : formData.currentWeight
                       }
-                      onChange={handleVehicleInfoChange}
-                      placeholder="Mileage"
+                      placeholder="0"
                       className="text-xs"
-                      required
                     />
                   </div>
-                </>
-              )}
-            </div>
-            <div className="flex flex-col p-1 mt-3">
-              <p className="text-base font-medium">
-                Safety Documents and Policies
-              </p>
-              <p className="text-sm text-slate-500">Coming Soon!</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="overWeight"
+                      checked={formData.overWeight === true}
+                      onCheckedChange={(checked) =>
+                        handleCheckboxChange("overWeight", checked)
+                      }
+                    />
+                    <Label
+                      htmlFor="overWeight"
+                      className={`text-sm cursor-pointer`}
+                    >
+                      Is Overweight?
+                    </Label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex flex-row justify-end gap-2 w-full">
-            <Button
-              variant="outline"
-              className="bg-emerald-400 text-white"
-              onClick={handleCreateEquipment}
-              disabled={submitting}
-            >
-              {submitting ? "Creating..." : "Create Equipment"}
-            </Button>
+        </div>
+        <div className="w-full flex flex-col p-1 mt-3">
+          <p className="text-base font-medium">Safety Documents and Policies</p>
+          <p className="text-sm text-slate-500">Coming Soon!</p>
+        </div>
 
-            <Button
-              variant="outline"
-              onClick={cancel}
-              className="bg-red-400 text-white "
-            >
-              Cancel
-            </Button>
-          </div>
+        <div className="flex flex-row justify-end gap-2 w-full">
+          <Button
+            variant="outline"
+            className="bg-emerald-400 text-white"
+            onClick={handleCreateEquipment}
+            disabled={submitting}
+          >
+            {submitting ? "Creating..." : "Create Equipment"}
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={cancel}
+            className="bg-red-400 text-white "
+          >
+            Cancel
+          </Button>
         </div>
       </div>
     </div>

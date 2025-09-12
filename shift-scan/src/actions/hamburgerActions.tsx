@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { UserSettings } from "@/lib/types";
+import { sendNotificationToTopic } from "./notificationSender";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -74,7 +74,7 @@ export async function updateSettings(data: {
     "cookiesAccess",
   ];
   const hasSettings = userSettingsFields.some(
-    (key) => settings[key] !== undefined
+    (key) => settings[key] !== undefined,
   );
   if (hasSettings) {
     await prisma.userSettings.update({
@@ -108,11 +108,11 @@ export async function createFormSubmission(formData: FormData) {
       throw new Error("Form template not found");
     }
 
-    // Initialize the data object with field.label as keys and field.content as default value
+    // Initialize the data object with field.id as keys and field.content as default value
     const initialData: Record<string, string> = {};
     for (const group of formTemplate.FormGrouping) {
       for (const field of group.Fields) {
-        initialData[field.label] = field.content || ""; // Set default values if available
+        initialData[field.id] = field.content || ""; // Use field.id instead of field.label
       }
     }
 
@@ -126,18 +126,21 @@ export async function createFormSubmission(formData: FormData) {
       },
     });
 
-    return submission.id;
+    if (submission) {
+    }
+
+    return null;
   } catch (error) {
     console.error("Error creating form submission:", error);
     throw new Error("Failed to create form submission");
   }
 }
 
-export async function deleteFormSubmission(id: string) {
+export async function deleteFormSubmission(id: number) {
   try {
     await prisma.formSubmission.delete({
       where: {
-        id,
+        id: id,
       },
     });
     revalidatePath("/hamburger/inbox");
@@ -147,25 +150,13 @@ export async function deleteFormSubmission(id: string) {
   }
 }
 
-export async function fetchDraft(submissionId: string) {
-  try {
-    const submission = await prisma.formSubmission.findUnique({
-      where: { id: submissionId },
-    });
-    return submission;
-  } catch (error) {
-    console.error("Error fetching draft:", error);
-    throw new Error("Failed to fetch draft");
-  }
-}
-
 export async function saveDraft(
   formData: Record<string, string>,
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string,
-  title?: string
+  submissionId?: number,
+  title?: string,
 ) {
   try {
     if (submissionId) {
@@ -233,8 +224,8 @@ export async function saveDraftToPending(
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string,
-  title?: string
+  submissionId?: number,
+  title?: string,
 ) {
   try {
     console.log("saveDraftToPending called with:", {
@@ -243,9 +234,9 @@ export async function saveDraftToPending(
       userId,
       formType,
       submissionId,
-      title
+      title,
     });
-    
+
     if (submissionId) {
       // Fetch the existing submission to compare with the new data
       const existingSubmission = await prisma.formSubmission.findUnique({
@@ -289,6 +280,35 @@ export async function saveDraftToPending(
       });
 
       console.log("Submission updated successfully:", updatedSubmission.id);
+
+      // Trigger form submission notification
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+
+        // Send notification for form submission
+        await sendNotificationToTopic({
+          topic: "form-submissions",
+          title: "New Form Submission",
+          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
+          link: `/admins/forms/${formTemplateId}`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[saveDraftToPending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return updatedSubmission;
     } else {
       // Create new draft
@@ -303,6 +323,35 @@ export async function saveDraftToPending(
           submittedAt: new Date().toISOString(),
         },
       });
+
+      // Trigger form submission notification for new submissions
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+
+        // Send notification for form submission
+        await sendNotificationToTopic({
+          topic: "form-submissions",
+          title: "New Form Submission",
+          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
+          link: `/admins/forms/${formTemplateId}`,
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[saveDraftToPending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return newSubmission;
     }
   } catch (error) {
@@ -316,8 +365,8 @@ export async function savePending(
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string,
-  title?: string
+  submissionId?: number,
+  title?: string,
 ) {
   try {
     if (submissionId) {
@@ -359,6 +408,26 @@ export async function savePending(
         },
       });
 
+      // Trigger form submission notification
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[savePending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return updatedSubmission;
     } else {
       // Create new submission with PENDING status
@@ -372,6 +441,27 @@ export async function savePending(
           status: "PENDING", // Ensure the status is PENDING
         },
       });
+
+      // Trigger form submission notification for new form submissions
+      try {
+        // Get the user information for the notification
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        // Get the form template for form type
+        await prisma.formTemplate.findUnique({
+          where: { id: formTemplateId },
+          select: { name: true },
+        });
+      } catch (notifyError) {
+        // Log but don't fail the whole operation if notification fails
+        console.error(
+          "[savePending] Error triggering notification:",
+          notifyError,
+        );
+      }
+
       return newSubmission;
     }
   } catch (error) {
@@ -382,11 +472,11 @@ export async function savePending(
 
 export async function createFormApproval(
   formData: FormData,
-  approval: FormStatus.APPROVED | FormStatus.DENIED
+  approval: FormStatus.APPROVED | FormStatus.DENIED,
 ) {
   try {
     console.log("Creating form approval...");
-    const formSubmissionId = formData.get("formSubmissionId") as string;
+    const formSubmissionId = Number(formData.get("formSubmissionId"));
     const signedBy = formData.get("signedBy") as string;
     const signature = formData.get("signature") as string;
     const comment = formData.get("comment") as string;
@@ -421,7 +511,7 @@ export async function updateFormApproval(formData: FormData) {
 
     // Extract data from FormData
     const id = formData.get("id") as string;
-    const formSubmissionId = formData.get("formSubmissionId") as string;
+    const formSubmissionId = Number(formData.get("formSubmissionId"));
     const comment = formData.get("comment") as string;
     const isApp = formData.get("isApproved") === "true"; // Convert string to boolean
 
