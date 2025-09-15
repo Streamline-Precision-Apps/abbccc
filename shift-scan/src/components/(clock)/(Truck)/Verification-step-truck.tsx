@@ -121,7 +121,7 @@ export default function TruckVerificationStep({
 
       // Use the new transaction-based function
       const response = await handleTruckTimeSheet(formData);
-      if (response) {
+      if (response && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {

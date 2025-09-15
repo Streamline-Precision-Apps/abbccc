@@ -116,7 +116,7 @@ export default function MechanicVerificationStep({
 
       // Use the new transaction-based function
       const response = await handleMechanicTimeSheet(formData);
-      if (response) {
+      if (response && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
