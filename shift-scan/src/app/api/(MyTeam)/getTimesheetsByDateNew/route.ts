@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (!employeeId) {
       return new Response(
         JSON.stringify({ error: "Missing required query parameters." }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,6 +33,9 @@ export async function GET(req: NextRequest) {
     const timesheetData = await prisma.timeSheet.findMany({
       where: {
         userId: employeeId,
+        status: {
+          not: "DRAFT",
+        },
         ...(dateParam ? { date: { gte: start, lte: end } } : {}),
       },
       select: {
@@ -67,7 +70,7 @@ export async function GET(req: NextRequest) {
         error: "Internal server error",
         details: String(error),
       }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

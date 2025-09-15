@@ -29,13 +29,10 @@ export async function GET(
         id: crewId,
       },
       select: {
-        crewType: true,
         Users: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
-            image: true,
+            clockedIn: true,
           },
         },
       },
@@ -45,17 +42,13 @@ export async function GET(
       return NextResponse.json({ error: "Crew not found" }, { status: 404 });
     }
 
-    // Sort crew members alphabetically by first name
-    const crewMembers = crew.Users.map((member) => member).sort((a, b) =>
-      a.firstName.localeCompare(b.firstName),
-    );
-
-    const crewType = crew.crewType;
-
-    return NextResponse.json([crewMembers, crewType], {
+    return NextResponse.json(crew, {
       headers: {
         "Cache-Control":
-          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+        "Content-Type": "application/json",
       },
     });
   } catch (error) {

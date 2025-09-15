@@ -20,15 +20,16 @@ interface UseTimesheetDataReturn {
   loading: boolean;
   error: string | null;
   updateDate: (newDate: string) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
 }
 
 export const useTimesheetDataSimple = (
   employeeId: string | undefined,
-  initialDate: string
+  initialDate: string,
 ): UseTimesheetDataReturn => {
   const [data, setData] = useState<TimesheetDataResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [reloading, setReloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(initialDate);
 
@@ -42,7 +43,7 @@ export const useTimesheetDataSimple = (
         `/api/getTimesheetsByDateNew?employeeId=${employeeId}&date=${currentDate}`,
         {
           next: { tags: ["timesheet"] },
-        }
+        },
       );
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const result: TimesheetDataResponse = await res.json();
@@ -58,12 +59,17 @@ export const useTimesheetDataSimple = (
     fetchTimesheets();
   }, [fetchTimesheets]);
 
+  const reload = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    fetchTimesheets();
+  };
+
   return {
     data,
     setData,
     loading,
     error,
     updateDate: setCurrentDate,
-    reset: fetchTimesheets,
+    reset: reload,
   };
 };

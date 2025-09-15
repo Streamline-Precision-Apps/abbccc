@@ -1,16 +1,5 @@
 // hooks/useEmployeeData.ts
 import { useState, useEffect } from "react";
-import { z } from "zod";
-
-// Zod schema for employee data (same as in your component)
-const EmployeeSchema = z.object({
-  id: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  DOB: z.string().optional(),
-  email: z.string(),
-  image: z.string().nullable().optional(),
-});
 
 type Employee = {
   id: string;
@@ -36,7 +25,7 @@ interface EmployeeDataResult {
 }
 
 export const useEmployeeData = (
-  employeeId: string | undefined
+  employeeId: string | undefined,
 ): EmployeeDataResult => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contacts, setContacts] = useState<Contact | null>(null);
@@ -59,27 +48,16 @@ export const useEmployeeData = (
         }
         const res = await response.json();
 
-        // Validate fetched data using Zod
-        try {
-          EmployeeSchema.parse(res.employeeData);
-        } catch (validationError) {
-          if (validationError instanceof z.ZodError) {
-            console.error(
-              "Validation error in employee data:",
-              validationError
-            );
-            setError("Invalid employee data format");
-            return; // Stop processing if validation fails
-          }
+        // check dynamic status
+        const statusRes = await fetch(`/api/userStatus/${employeeId}`);
+        const statusData = await statusRes.json();
+
+        if (res.employeeData) {
+          res.employeeData.clockedIn = statusData.clockedIn;
         }
 
-        if (res.error) {
-          console.error(res.error);
-          setError(res.error);
-        } else {
-          setEmployee(res.employeeData);
-          setContacts(res.contact);
-        }
+        setEmployee(res.employeeData);
+        setContacts(res.contact);
       } catch (err) {
         console.error(err);
         setError(err as string);

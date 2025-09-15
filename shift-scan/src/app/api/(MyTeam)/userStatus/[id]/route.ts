@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ crewId: string }> },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -15,47 +15,36 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { crewId } = await params;
+    const { id } = await params;
 
-    if (!crewId) {
+    if (!id) {
       return NextResponse.json(
         { error: "Missing or invalid crew ID" },
         { status: 400 },
       );
     }
 
-    const crew = await prisma.crew.findUnique({
+    const userStatus = await prisma.user.findUnique({
       where: {
-        id: crewId,
+        id,
       },
       select: {
-        crewType: true,
-        Users: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            image: true,
-          },
-        },
+        id: true,
+        clockedIn: true,
       },
     });
 
-    if (!crew) {
+    if (!userStatus) {
       return NextResponse.json({ error: "Crew not found" }, { status: 404 });
     }
 
-    // Sort crew members alphabetically by first name
-    const crewMembers = crew.Users.map((member) => member).sort((a, b) =>
-      a.firstName.localeCompare(b.firstName),
-    );
-
-    const crewType = crew.crewType;
-
-    return NextResponse.json([crewMembers, crewType], {
+    return NextResponse.json(userStatus, {
       headers: {
         "Cache-Control":
-          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+        "Content-Type": "application/json",
       },
     });
   } catch (error) {

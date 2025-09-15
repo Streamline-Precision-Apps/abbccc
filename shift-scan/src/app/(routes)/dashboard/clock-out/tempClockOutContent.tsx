@@ -75,6 +75,7 @@ export default function TempClockOutContent({
   const [employeeId, setEmployeeId] = useState<string>("");
   const [teamUsers, setTeamUsers] = useState<crewUsers[]>([]);
   const [wasInjured, setWasInjured] = useState<boolean>(false);
+  const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
 
   useEffect(() => {
     console.log("currentStep: ", step);
@@ -104,6 +105,19 @@ export default function TempClockOutContent({
   const prevStep = () => {
     setStep((prevStep) => prevStep - 1); // Increment function
   };
+
+  useEffect(() => {
+    const getRecentTimeCard = async () => {
+      try {
+        const response = await fetch("/api/getRecentTimecard");
+        const data = await response.json();
+        setCurrentTimesheetId(data.id);
+      } catch (error) {
+        console.error("Error fetching recent time card:", error);
+      }
+    };
+    getRecentTimeCard();
+  }, []);
 
   // Batch fetch all clock-out details (timesheets, comment, signature)
   useEffect(() => {
@@ -179,10 +193,7 @@ export default function TempClockOutContent({
     return (
       <Bases>
         <Contents>
-          <Holds
-            background={"white"}
-            className="h-full border-[3px] border-red-500"
-          >
+          <Holds background={"white"} className="h-full">
             <Comment
               handleClick={() => setStep(1)}
               clockInRole={""}
@@ -190,6 +201,7 @@ export default function TempClockOutContent({
               commentsValue={commentsValue}
               checked={checked}
               handleCheckboxChange={handleCheckboxChange}
+              loading={loading}
               setLoading={setLoading}
             />
           </Holds>
@@ -206,6 +218,7 @@ export default function TempClockOutContent({
         loading={loading}
         timesheets={timesheets}
         setReviewYourTeam={() => {}}
+        currentTimesheetId={currentTimesheetId}
       />
     );
   }
@@ -240,6 +253,7 @@ export default function TempClockOutContent({
         commentsValue={commentsValue}
         pendingTimeSheets={pendingTimeSheets}
         wasInjured={wasInjured}
+        timeSheetId={currentTimesheetId}
       />
     );
   } else {

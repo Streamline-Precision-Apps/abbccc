@@ -131,7 +131,7 @@ export default function TascoVerificationStep({
 
       // Use the new transaction-based function
       const response = await handleTascoTimeSheet(formData);
-      if (response) {
+      if (response && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -304,6 +304,7 @@ export default function TascoVerificationStep({
                     onClick={() => handleSubmit()}
                     background={"green"}
                     className=" py-2"
+                    disabled={loading}
                   >
                     <Titles size={"h2"}>{t("StartDay")}</Titles>
                   </Buttons>

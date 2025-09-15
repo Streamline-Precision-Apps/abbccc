@@ -42,6 +42,8 @@ export default function AppManagerEditTimesheetModal(
     setChangeReason,
   } = useTimecardIdData(timesheetId);
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const [editGeneral, setEditGeneral] = useState(false);
   const [changeReason, setLocalChangeReason] = useState("");
 
@@ -117,10 +119,12 @@ export default function AppManagerEditTimesheetModal(
 
   const onSave = async () => {
     // Save edited start/end time if changed
+    setIsSaving(true);
     await save();
     // Add a short delay for a smoother transition
     setTimeout(() => {
       setEditGeneral(false);
+      setIsSaving(false);
     }, 1000); // 1s delay for smoothness
   };
 
@@ -150,8 +154,35 @@ export default function AppManagerEditTimesheetModal(
           style={{
             background: editGeneral ? "rgba(255, 243, 207, 0.15)" : "white",
             maxWidth: "100vw",
+            opacity: isSaving ? 0.5 : 1,
+            pointerEvents: isSaving ? "none" : "auto",
           }}
         >
+          {isSaving && (
+            <div className="absolute inset-0 flex items-center justify-center z-50">
+              {/* Replace with your spinner component if available */}
+              <svg
+                className="animate-spin h-8 w-8 text-app-green"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                />
+              </svg>
+            </div>
+          )}
+
           {loading ? (
             <div className="flex flex-col gap-0 mt-2 animate-pulse">
               {/* Start Time Skeleton */}
@@ -503,7 +534,7 @@ export default function AppManagerEditTimesheetModal(
         </div>
         {/* Sticky Action Bar for Edit/Exit and Save/Cancel */}
         {!editGeneral ? (
-          <div className="fixed bottom-0 left-0 w-full max-w-md bg-gradient-to-tr from-app-dark-blue/20 to-app-blue/20 border-t flex gap-2 px-4 py-3 z-50 shadow-lg">
+          <div className="fixed bottom-0 left-0 w-full max-w-md bg-gradient-to-tr from-app-dark-blue/20 to-app-blue/20 border-t flex gap-2 px-4 pt-3 pb-8 z-50 shadow-lg">
             <Button
               variant="outline"
               className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-medium"
@@ -523,7 +554,7 @@ export default function AppManagerEditTimesheetModal(
             </Button>
           </div>
         ) : (
-          <div className="fixed bottom-0 left-0 w-full max-w-md bg-neutral-200 border-t flex gap-2 px-4 py-3 z-50 shadow-lg animate-fade-in">
+          <div className="fixed bottom-0 left-0 w-full max-w-md bg-neutral-200 border-t flex gap-2 px-4 pt-3 pb-8 z-50 shadow-lg animate-fade-in">
             <Button
               variant="outline"
               className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-medium bg-white hover:bg-gray-100 transition-colors"
@@ -535,9 +566,9 @@ export default function AppManagerEditTimesheetModal(
               Cancel
             </Button>
             <Button
-              className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-semibold bg-app-green text-white shadow-md transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-semibold bg-app-green text-white shadow-md transition-colors disabled:bg-app-green"
               onClick={onSave}
-              disabled={!editGeneral || !changeReason.trim()}
+              disabled={isSaving || !editGeneral || !changeReason.trim()}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

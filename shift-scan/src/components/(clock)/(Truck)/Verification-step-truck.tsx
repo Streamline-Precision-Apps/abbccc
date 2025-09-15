@@ -121,7 +121,7 @@ export default function TruckVerificationStep({
 
       // Use the new transaction-based function
       const response = await handleTruckTimeSheet(formData);
-      if (response) {
+      if (response && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -330,6 +330,7 @@ export default function TruckVerificationStep({
                       onClick={() => handleSubmit()}
                       background={"green"}
                       className=" w-full h-full py-2"
+                      disabled={loading}
                     >
                       <Titles size={"h2"}>{t("StartDay")}</Titles>
                     </Buttons>
