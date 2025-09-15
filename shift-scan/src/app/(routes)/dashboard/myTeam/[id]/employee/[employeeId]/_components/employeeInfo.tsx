@@ -28,6 +28,7 @@ import { formatPhoneNumber } from "@/utils/phoneNumberFormater";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { PhoneCall } from "lucide-react";
+import { useState } from "react";
 
 export default function EmployeeInfo({
   employee,
@@ -39,6 +40,7 @@ export default function EmployeeInfo({
   loading: boolean;
 }) {
   const t = useTranslations("MyTeam");
+  const [showModal, setShowModal] = useState(false);
   return (
     <Contents width={"section"} className="pt-2 pb-5">
       {loading ? (
@@ -49,27 +51,28 @@ export default function EmployeeInfo({
           <Spinner size={70} />
         </Holds>
       ) : (
-        <Holds background={"white"} className="h-full w-full">
-          <Holds className="flex justify-center items-center relative w-24 h-24 ">
-            <Images
-              titleImg={employee?.image ? employee.image : "/profileFilled.svg"}
-              titleImgAlt="Team"
-              className="rounded-full border-[3px] border-black "
+        <div className="h-full w-full bg-white">
+          <div className="flex justify-center items-center relative w-24 h-24 mx-auto">
+            <img
+              src={employee?.image ? employee.image : "/profileFilled.svg"}
+              alt="Team"
+              className="w-24 h-24 rounded-full border-[3px] border-black"
+              onClick={() => setShowModal(true)}
             />
             <Holds
               background={employee?.clockedIn ? "green" : "red"}
               className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
             />
-          </Holds>
+          </div>
           <Labels htmlFor={"phoneNumber"} size={"sm"}>
             {t("PhoneNumber")}
           </Labels>
-          <div className="w-full h-11 flex justify-center items-center gap-2 border-black border-[3px] rounded-[10px] relative ">
+          <div className="w-full h-10 flex justify-center items-center gap-2 border-black border-[3px] rounded-[10px] relative ">
             <Texts className="text-center text-sm ">
               {formatPhoneNumber(contacts?.phoneNumber)}
             </Texts>
             <Buttons
-              className="w-10 h-10 rounded-r-none rounded-l-[8px] border-none  flex justify-center items-center absolute left-0"
+              className="w-10 h-9 rounded-r-none rounded-l-[8px] border-none  flex justify-center items-center absolute -left-1"
               shadow={"none"}
               href={`tel:${contacts?.phoneNumber}`}
               background={"darkBlue"}
@@ -98,12 +101,12 @@ export default function EmployeeInfo({
           <Labels htmlFor={"emergencyContactNumber"} size={"sm"}>
             {t("EmergencyContactNumber")}
           </Labels>
-          <div className="w-full h-11  flex justify-center items-center gap-2 border-black border-[3px] rounded-[10px] relative ">
+          <div className="w-full h-10  flex justify-center items-center gap-2 border-black border-[3px] rounded-[10px] relative ">
             <Texts className="text-center text-sm ">
               {formatPhoneNumber(contacts?.emergencyContactNumber)}
             </Texts>
             <Buttons
-              className="w-10 h-10 rounded-r-none rounded-l-[8px] border-none flex justify-center items-center absolute left-0"
+              className="w-10 h-9 rounded-r-none rounded-l-[8px] border-none flex justify-center items-center absolute -left-1"
               shadow={"none"}
               href={`tel:${contacts?.emergencyContactNumber}`}
               background={"darkBlue"}
@@ -125,7 +128,28 @@ export default function EmployeeInfo({
               }
             />
           </Labels>
-        </Holds>
+        </div>
+      )}
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+          onClick={() => setShowModal(false)}
+        >
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="absolute top-2 right-2 text-white text-2xl font-bold bg-black bg-opacity-40 rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70"
+              onClick={() => setShowModal(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <img
+              src={employee?.image ? employee.image : "/profileFilled.svg"}
+              alt="Profile Large"
+              className="rounded-lg max-w-md max-h-[80vh] shadow-lg"
+            />
+          </div>
+        </div>
       )}
     </Contents>
   );

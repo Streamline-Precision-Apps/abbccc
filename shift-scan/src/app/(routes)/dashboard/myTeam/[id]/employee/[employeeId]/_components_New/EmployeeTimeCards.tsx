@@ -60,7 +60,7 @@ export default function EmployeeTimeCards() {
           />
         </div>
         {/* PullToRefresh wraps the timesheet content */}
-        <div className="row-span-6 overflow-y-auto p-2">
+        <div className="row-span-6 overflow-y-auto no-scrollbar p-2">
           <PullToRefresh
             onRefresh={reset}
             refreshingText=""

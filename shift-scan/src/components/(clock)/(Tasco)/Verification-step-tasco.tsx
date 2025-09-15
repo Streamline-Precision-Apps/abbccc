@@ -304,6 +304,7 @@ export default function TascoVerificationStep({
                     onClick={() => handleSubmit()}
                     background={"green"}
                     className=" py-2"
+                    disabled={loading}
                   >
                     <Titles size={"h2"}>{t("StartDay")}</Titles>
                   </Buttons>

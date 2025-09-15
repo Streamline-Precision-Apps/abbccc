@@ -87,128 +87,97 @@ export const InjuryReportContent = ({
           background={"white"}
           className="h-full w-full border-red-500 border-[3px]"
         >
-          <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2 ">
-              <TitleBoxes onClick={prevStep}>
-                <Holds className="h-full justify-end">
-                  <Holds
-                    position={"row"}
-                    className="w-full justify-center gap-2"
-                  >
-                    <Titles size={"h2"}>{t("InjuryVerification")}</Titles>
-                    <Images
-                      titleImg="/injury.svg"
-                      titleImgAlt="Verify"
-                      size={"full"}
-                      className="max-w-8 h-auto"
-                    />
-                  </Holds>
-                </Holds>
-              </TitleBoxes>
+          <TitleBoxes onClick={prevStep} className="h-24">
+            <Holds className="h-full justify-end">
+              <Holds position={"row"} className="w-full justify-center gap-2">
+                <Titles size={"lg"}>{t("InjuryVerification")}</Titles>
+                <Images
+                  titleImg="/injury.svg"
+                  titleImgAlt="Verify"
+                  size={"full"}
+                  className="max-w-6 h-auto"
+                />
+              </Holds>
             </Holds>
+          </TitleBoxes>
 
-            {/* Describe What Happened */}
+          {/* Describe What Happened */}
 
-            <Holds className="row-start-2 row-end-8 h-full pt-5 ">
-              <Grids rows={"7"} gap={"5"} className="h-full w-full">
-                <Holds position={"row"} className="row-start-1 row-end-2">
-                  <Contents width={"section"}>
-                    <Holds position={"row"} className="w-full">
-                      <Holds className="w-fit pr-5">
-                        <CheckBox
-                          checked={completedForm}
-                          onChange={handleCompleteFormCheckboxChange}
-                          id={"1"}
-                          name={""}
-                          size={2.5}
-                        />
-                      </Holds>
-                      <Holds size={"80"}>
-                        <Texts position={"left"} size="p4">
-                          {t("IFilledOutAnInjuryReport")}
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Contents>
-                </Holds>
-
-                <Holds position={"row"} className="row-start-2 row-end-3">
-                  <Contents width={"section"}>
-                    <Holds position={"row"} className="w-full">
-                      <Holds className="w-fit pr-5">
-                        <CheckBox
-                          checked={supervisorChecked}
-                          onChange={handleSupervisorCheckboxChange}
-                          id={"1"}
-                          name={""}
-                          size={2.5}
-                        />
-                      </Holds>
-                      <Holds size={"80"}>
-                        <Texts position={"left"} size="p4">
-                          {t("ContactedSupervisor")}
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Contents>
-                </Holds>
-
-                <Holds className="h-full row-start-3 row-end-5">
-                  <Contents width={"section"}>
-                    <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
-                      {base64String ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={base64String}
-                          alt="Loading signature"
-                          className="w-[40%] m-auto"
-                        />
-                      ) : (
-                        <p>No Signature </p>
-                      )}
-                    </Holds>
-                  </Contents>
-                </Holds>
-
-                <Holds
-                  position={"row"}
-                  className="h-full row-start-5 row-end-6 "
-                >
-                  <Contents width={"section"}>
-                    <Holds position={"row"}>
-                      <Holds size={"20"}>
-                        <CheckBox
-                          checked={signatureChecked}
-                          onChange={handleSignatureCheckboxChange}
-                          id={"2"}
-                          name={""}
-                          size={2.5}
-                        />
-                      </Holds>
-                      <Holds size={"80"}>
-                        <Texts position={"left"} size="p3">
-                          {t("SignatureVerify")}
-                        </Texts>
-                      </Holds>
-                    </Holds>
-                  </Contents>
-                </Holds>
-              </Grids>
+          <Contents width={"section"}>
+            <Holds position={"row"} className="w-full  my-5">
+              <Holds className="w-fit pr-5">
+                <CheckBox
+                  checked={completedForm}
+                  onChange={handleCompleteFormCheckboxChange}
+                  id={"1"}
+                  name={""}
+                  size={2.25}
+                />
+              </Holds>
+              <Holds size={"80"}>
+                <Texts position={"left"} size="md">
+                  {t("IFilledOutAnInjuryReport")}
+                </Texts>
+              </Holds>
             </Holds>
-            <Holds className="row-start-8 row-end-9 h-full pb-5">
-              <Contents width={"section"}>
-                <Buttons
-                  background={
-                    completedForm && signatureChecked ? "orange" : "darkGray"
-                  }
-                  disabled={completedForm && signatureChecked ? false : true}
-                  onClick={handleSubmit}
-                >
-                  <Titles>{t("Continue")}</Titles>
-                </Buttons>
-              </Contents>
+            <Holds position={"row"} className="w-full  mb-5">
+              <Holds className="w-fit pr-5">
+                <CheckBox
+                  checked={supervisorChecked}
+                  onChange={handleSupervisorCheckboxChange}
+                  id={"1"}
+                  name={""}
+                  size={2.25}
+                />
+              </Holds>
+              <Holds size={"80"}>
+                <Texts position={"left"} size="md">
+                  {t("ContactedSupervisor")}
+                </Texts>
+              </Holds>
             </Holds>
-          </Grids>
+            <Holds className="h-32 mb-5 border-[3px] border-black rounded-[10px] ">
+              {base64String ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={base64String}
+                  alt="Loading signature"
+                  className="w-[60%] m-auto"
+                />
+              ) : (
+                <p>No Signature </p>
+              )}
+            </Holds>
+            <Holds position={"row"} className="mb-4 gap-2">
+              <Holds size={"20"}>
+                <CheckBox
+                  checked={signatureChecked}
+                  onChange={handleSignatureCheckboxChange}
+                  id={"2"}
+                  name={""}
+                  size={2.25}
+                />
+              </Holds>
+              <Holds size={"80"}>
+                <Texts position={"left"} size="md">
+                  {t("SignatureVerify")}
+                </Texts>
+              </Holds>
+            </Holds>
+          </Contents>
+
+          <Contents width={"section"} className="my-5 h-[70px]">
+            <Buttons
+              background={
+                completedForm && signatureChecked ? "orange" : "darkGray"
+              }
+              disabled={completedForm && signatureChecked ? false : true}
+              onClick={handleSubmit}
+              className="h-[60px] w-full"
+            >
+              <Titles size={"lg"}>{t("Continue")}</Titles>
+            </Buttons>
+          </Contents>
         </Holds>
       </Contents>
     </Bases>

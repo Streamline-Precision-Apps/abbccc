@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     if (!id) {
       return NextResponse.json(
         { error: "Missing or invalid user ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,7 +37,6 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
         email: true,
         DOB: true,
         image: true,
-        clockedIn: true,
         Contact: {
           select: {
             phoneNumber: true,
@@ -51,7 +50,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     if (!employee) {
       return NextResponse.json(
         { error: "Employee not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

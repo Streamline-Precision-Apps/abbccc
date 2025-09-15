@@ -231,6 +231,7 @@ export default function VerificationStep({
                     onClick={() => handleSubmit()}
                     background={"green"}
                     className=" w-full h-full py-2"
+                    disabled={loading}
                   >
                     <Titles size={"h2"}>{t("StartDay")}</Titles>
                   </Buttons>

@@ -5,11 +5,10 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useEmployeeData } from "@/hooks/(ManagerHooks)/useEmployeeData";
-import { format } from "date-fns";
-import { useSession } from "next-auth/react";
+
 import { useTranslations } from "next-intl";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import EmployeeInfo from "../_components/employeeInfo";
 import EmployeeTimeCards from "./EmployeeTimeCards";
 
@@ -17,17 +16,11 @@ export default function TeamMemberLayout() {
   const t = useTranslations("MyTeam");
   const router = useRouter();
   const { employeeId } = useParams();
-  const { data: session } = useSession();
   const { id } = useParams();
   const urls = useSearchParams();
   const rPath = urls.get("rPath");
   const timeCard = urls.get("timeCard");
 
-  const manager = useMemo(
-    () => `${session?.user?.firstName} ${session?.user?.lastName}`,
-    [session],
-  );
-  const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const [activeTab, setActiveTab] = useState(1);
 
   const {
@@ -92,7 +85,7 @@ export default function TeamMemberLayout() {
                 <Titles size={"lg"}> {t("TimeCards")}</Titles>
               </NewTab>
             </Holds>
-            <Holds className="h-full w-full row-start-2 row-end-13 bg-white rounded-b-xl">
+            <Holds className="h-full w-full row-start-2 row-end-13 overflow-y-auto no-scrollbar bg-white rounded-b-xl">
               {activeTab === 1 && (
                 <EmployeeInfo
                   employee={employee}
