@@ -33,7 +33,7 @@ const NModalVariants = cva("", {
       xlW: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[80%]",
       xlWS: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[40%] max-w-lg ",
       xlWS1:
-        "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[55%] max-w-lg ",
+        "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[65%] max-w-lg ",
       page: "fixed z-9999 rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
       screen:
         "fixed z-9999 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-screen h-dvh",
@@ -88,7 +88,7 @@ const NModals: FC<NModalProps> = ({
         <div
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            NModalVariants({ background, position, size, className })
+            NModalVariants({ background, position, size, className }),
           )}
           {...props}
         >

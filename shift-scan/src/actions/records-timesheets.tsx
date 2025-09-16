@@ -296,6 +296,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
   const editorId = formData.get("editorId") as string;
   const changesJson = formData.get("changes") as string;
   const changeReason = formData.get("changeReason") as string;
+  const wasStatusChanged = formData.get("wasStatusChanged") === "true";
+  const numberOfChanges = Number(formData.get("numberOfChanges")) || 0;
 
   if (!id || !dataJson) {
     throw new Error("Timesheet ID and data are required for update.");
@@ -327,6 +329,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
           changedBy: editorId,
           changes: changes,
           changeReason: changeReason || "No reason provided",
+          wasStatusChange: wasStatusChanged,
+          numberOfChanges: numberOfChanges,
         },
       });
     }

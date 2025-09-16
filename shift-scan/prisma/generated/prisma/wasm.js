@@ -456,7 +456,9 @@ exports.Prisma.TimeSheetChangeLogScalarFieldEnum = {
   changedBy: 'changedBy',
   changedAt: 'changedAt',
   changes: 'changes',
-  changeReason: 'changeReason'
+  changeReason: 'changeReason',
+  wasStatusChange: 'wasStatusChange',
+  numberOfChanges: 'numberOfChanges'
 };
 
 exports.Prisma.UserScalarFieldEnum = {

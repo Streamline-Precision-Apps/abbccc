@@ -17,7 +17,7 @@ interface EditableFieldsProps
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => void;
   isChanged: boolean;
   onRevert?: () => void;
@@ -56,7 +56,7 @@ const EditableFieldsVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const EditableFields: FC<EditableFieldsProps> = ({
@@ -90,7 +90,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
         <div
           className={cn(
             EditableFieldsVariants({ variant, size, className }),
-            "w-full"
+            "w-full",
           )}
         >
           {/* Input container with flex-1 to take available space */}
@@ -103,7 +103,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
               checked={checked}
               onChange={onChange}
               placeholder={placeholder || ""}
-              className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
+              className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray text-sm"
               max={max}
               min={min}
               readOnly={readonly}
@@ -129,7 +129,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
         <div
           className={cn(
             EditableFieldsVariants({ variant, size, className }),
-            "w-full"
+            "w-full",
           )}
         >
           {/* Input container with flex-1 to take available space */}
@@ -142,7 +142,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
               checked={checked}
               onChange={onChange}
               placeholder={placeholder || ""}
-              className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
+              className="text-sm h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
               minLength={minLength}
               maxLength={maxLength}
               pattern={pattern}
@@ -172,7 +172,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
       <div
         className={cn(
           EditableFieldsVariants({ variant, size, className }),
-          "w-full"
+          "w-full",
         )}
       >
         {/* Textarea container with flex-1 to take available space */}
@@ -183,7 +183,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
             disabled={disable}
             onChange={onChange}
             placeholder={placeholder || ""}
-            className="h-full w-full min-h-[100px] border-none focus:outline-hidden px-3 py-2 bg-transparent disabled:bg-app-gray resize-none"
+            className="text-sm h-full w-full min-h-[100px] border-none focus:outline-hidden px-3 py-2 bg-transparent disabled:bg-app-gray resize-none"
             readOnly={readonly}
             rows={rows}
           />
@@ -210,7 +210,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
       <div
         className={cn(
           EditableFieldsVariants({ variant, size, className }),
-          "w-full"
+          "w-full",
         )}
       >
         {/* Select container with flex-1 to take available space */}
@@ -220,7 +220,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
             name={name}
             disabled={disable}
             onChange={onChange}
-            className="h-full w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
+            className="h-full text-sm w-full border-none focus:outline-hidden px-3 bg-transparent disabled:bg-app-gray"
           >
             {options.map((option, index) => (
               <option key={index} value={option.value}>

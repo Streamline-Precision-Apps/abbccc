@@ -56,8 +56,9 @@ export default function ProfilePage({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
   const [activeTab, setActiveTab] = useState(1);
-  const [signatureBase64String, setSignatureBase64String] =
-    useState<string>("");
+  const [signatureBase64String, setSignatureBase64String] = useState<
+    string | null
+  >(null);
   // Fetch Employee Data
   const [data, setData] = useState<UserSettings | null>(null);
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);

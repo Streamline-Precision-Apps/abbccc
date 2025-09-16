@@ -1166,9 +1166,11 @@
   "Hamburger-ChangePassword": {
     "ChangePassword": "Change Password",
     "PasswordRequirements": "Password Requirements",
-    "NumberCriteriaLabel": "123",
-    "SpecialCharacterCriteriaLabel": "symbol",
-    "LengthCriteriaLabel": "8+ Length",
+    "NumberCriteriaLabel": "At Least One numeral (0-9)",
+    "SpecialCharacterCriteriaLabel": "At Least One special character",
+    "CapitalCriteriaLabel": "At Least One capital letter (A-Z)",
+    "LowerCriteriaLabel": "At Least One lowercase letter (a-z)",
+    "LengthCriteriaLabel": "Minimum 8 characters",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password"
   },

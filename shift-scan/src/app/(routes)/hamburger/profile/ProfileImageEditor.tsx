@@ -175,7 +175,7 @@ export default function ProfileImageEditor({
         await handleUpload(blob); // Pass Blob to handleUpload
         console.log(" handleUpload completed");
 
-        localStorage.removeItem("userProfileImage");
+        localStorage.setItem("userProfileImage", "Updating");
         resetState();
       }, "image/png");
     } catch (error) {
@@ -208,8 +208,9 @@ export default function ProfileImageEditor({
       const formData = new FormData();
       formData.append("userId", employee.id);
       formData.append("file", file, "profile.png");
+      formData.append("folder", "profileImages");
 
-      const res = await fetch("/api/uploadProfilePicture", {
+      const res = await fetch("/api/uploadBlobs", {
         method: "POST",
         body: formData,
       });
@@ -243,8 +244,8 @@ export default function ProfileImageEditor({
   return (
     <>
       {/* Profile Image with Camera Button */}
-      <Holds className="w-full  relative">
-        <Holds className="w-[80px] h-[80px] relative">
+      <div className="w-full flex justify-center relative">
+        <div className="w-[80px] h-[80px] relative">
           <Images
             titleImg={
               loading
@@ -261,27 +262,28 @@ export default function ProfileImageEditor({
           {uploading && (
             <Holds className="h-full w-full absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 rounded-full z-10"></Holds>
           )}
-          <Holds className="absolute bottom-2 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-9 w-9 border-[3px] p-1 justify-center items-center border-black bg-app-gray">
+          <Holds className="absolute bottom-2 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-8 w-8 border-[2px] p-0.5 justify-center items-center border-black bg-app-gray">
             <Images
               titleImg="/camera.svg"
               titleImgAlt="camera"
               onClick={() => setIsOpen(true)}
             />
           </Holds>
-        </Holds>
-      </Holds>
+        </div>
+      </div>
 
       {/* Main Modal */}
       <NModals
         size={"screen"}
-        background={"takeABreak"}
+        background={"noOpacity"}
         isOpen={isOpen}
         handleClose={() => {
           setIsOpen(false);
           resetState();
         }}
+        className="bg-black bg-linear-to-b from-app-dark-blue to-app-blue"
       >
-        <Holds background={"white"} className={`px-4 h-full `}>
+        <Holds className={` p-4 h-full bg-slate-100  rounded-lg `}>
           {isSaving && (
             <Holds
               background={"white"}

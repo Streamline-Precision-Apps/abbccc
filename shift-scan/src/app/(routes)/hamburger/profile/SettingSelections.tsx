@@ -82,8 +82,8 @@ export default function SettingSelections({
     );
   }
   return (
-    <Grids rows={"7"} className="w-full h-full pt-3">
-      <Holds className="row-start-1 row-end-7 h-full ">
+    <>
+      <Holds className=" h-full pt-5">
         {/*---------------------Language Settings------------------------------*/}
         <Holds background="white" className="h-fit pb-3">
           <Contents width="section">
@@ -203,17 +203,17 @@ export default function SettingSelections({
       </Holds>
 
       {/*---------------------Change Password------------------------------*/}
-      <Holds className="row-start-7 row-end-8 ">
+      <Holds className="py-5">
         <Contents width="section">
           <Buttons
             onClick={() => router.push("/hamburger/changePassword")}
             background="orange"
             className="py-2"
           >
-            <Titles size={"h4"}>{t("ChangePassword")}</Titles>
+            <Titles size={"sm"}>{t("ChangePassword")}</Titles>
           </Buttons>
         </Contents>
       </Holds>
-    </Grids>
+    </>
   );
 }

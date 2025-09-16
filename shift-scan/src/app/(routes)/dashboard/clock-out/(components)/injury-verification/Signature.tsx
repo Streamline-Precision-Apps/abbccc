@@ -1,6 +1,6 @@
 "use client";
 
-import { uploadSignature } from "@/actions/userActions";
+import { updateUserSignature } from "@/actions/userActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRef, useState, useEffect, Dispatch, SetStateAction } from "react";
 
 type SignatureProps = {
-  setBase64String: Dispatch<SetStateAction<string>>;
+  setBase64String: Dispatch<SetStateAction<string | null>>;
   closeModal?: () => void;
 };
 
@@ -59,13 +59,6 @@ export default function Signature({
   }
 
   const employee = session?.user?.id;
-
-  const saveSignature = async () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const signatureBase64String = canvas.toDataURL("image/png");
-    await uploadSignature(employee.toString(), signatureBase64String);
-  };
 
   // 🔹 Convert touch coordinates to match mouse event behavior
   const getTouchPos = (canvas: HTMLCanvasElement, touchEvent: TouchEvent) => {
@@ -136,7 +129,7 @@ export default function Signature({
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-      setBase64String("");
+      setBase64String(null);
     }
   };
 
@@ -144,12 +137,60 @@ export default function Signature({
   const handleSave = async () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const base64string = canvas.toDataURL("image/png");
-      setBase64String(base64string);
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          console.log("Blob conversion failed");
+
+          return;
+        }
+
+        await handleUpload(blob); // Pass Blob to handleUpload
+        console.log(" handleUpload completed");
+      }, "image/png");
     }
     if (closeModal) {
-      saveSignature();
       closeModal();
+    }
+  };
+
+  const handleUpload = async (file: Blob) => {
+    if (!employee) {
+      console.log("[handleUpload] No employee id");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("userId", employee);
+      formData.append("file", file, "profile.png");
+      formData.append("folder", "signatures");
+
+      const res = await fetch("/api/uploadBlobs", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url } = await res.json();
+      // Add cache-busting param to break browser cache
+      const cacheBustedUrl = `${url}?t=${Date.now()}`;
+
+      // Update local state for immediate UI update
+      setBase64String(cacheBustedUrl);
+
+      // 4. Update user image URL in your database
+      const updatingDb = await updateUserSignature(employee, cacheBustedUrl);
+
+      if (!updatingDb.success) {
+        throw new Error("Error updating url in DB");
+      }
+
+      return cacheBustedUrl;
+    } catch (err) {
+      console.error("[Error uploading new image or updating DB:", err);
     }
   };
 

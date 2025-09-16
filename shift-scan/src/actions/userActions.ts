@@ -390,3 +390,24 @@ export async function updateUserImage(id: string, imageUrl: string) {
     return { success: false };
   }
 }
+
+export async function updateUserSignature(id: string, imageUrl: string) {
+  try {
+    if (!id || !imageUrl) {
+      throw new Error("Invalid credentials");
+    }
+
+    await prisma.user.update({
+      where: { id },
+      data: {
+        signature: imageUrl,
+      },
+    });
+
+    revalidatePath("/hamburger/profile");
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating user image URL in DB", error);
+    return { success: false };
+  }
+}
