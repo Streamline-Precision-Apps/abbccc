@@ -25,6 +25,7 @@ const getFirebaseAdmin = () => {
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount as ServiceAccount),
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     });
   }
 

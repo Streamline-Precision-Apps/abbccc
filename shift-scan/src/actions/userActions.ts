@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { Permission } from "@/lib/enums";
 import { revalidatePath } from "next/cache";
 import { compare } from "bcrypt-ts";
+import { success } from "zod";
 
 export async function createUser(formData: FormData) {
   try {
@@ -365,5 +366,27 @@ export default async function updateUserAccountInfo(formData: FormData) {
   } catch (error) {
     console.error("Error updating user account info:", error);
     return false;
+  }
+}
+
+// Update user image URL in the database
+export async function updateUserImage(id: string, imageUrl: string) {
+  try {
+    if (!id || !imageUrl) {
+      throw new Error("Invalid credentials");
+    }
+
+    await prisma.user.update({
+      where: { id },
+      data: {
+        image: imageUrl,
+      },
+    });
+
+    revalidatePath("/hamburger/profile");
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating user image URL in DB", error);
+    return { success: false };
   }
 }
