@@ -3,7 +3,6 @@ import { Labels } from "@/components/(reusable)/labels";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { NModals } from "@/components/(reusable)/newmodals";
-import SignOutModal from "@/app/(routes)/admins/_pages/sidebar/SignOutModal";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
@@ -21,6 +20,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { signOut } from "next-auth/react";
+import { formatPhoneNumber } from "@/utils/phoneNumberFormater";
+import { formatPhoneNumberSetter } from "@/utils/phoneNumberSetFormatter";
+import { getRawPhoneNumber } from "@/utils/getRawPhoneNumberString";
 
 type Employee = {
   id: string;
@@ -45,8 +47,8 @@ export default function AccountInformation({
   reloadEmployee,
 }: {
   employee?: Employee;
-  signatureBase64String: string;
-  setSignatureBase64String: Dispatch<SetStateAction<string>>;
+  signatureBase64String: string | null;
+  setSignatureBase64String: Dispatch<SetStateAction<string | null>>;
   userId: string;
   reloadEmployee: () => Promise<void>;
 }) {
@@ -85,10 +87,12 @@ export default function AccountInformation({
         cameraAccess: undefined,
         locationAccess: undefined,
         language: undefined,
-        phoneNumber: formState.phoneNumber,
+        phoneNumber: getRawPhoneNumber(formState.phoneNumber),
         email: formState.email,
         emergencyContact: formState.emergencyContact,
-        emergencyContactNumber: formState.emergencyContactNumber,
+        emergencyContactNumber: getRawPhoneNumber(
+          formState.emergencyContactNumber,
+        ),
       });
       await reloadEmployee();
       setEditContactModalOpen(false);
@@ -111,50 +115,53 @@ export default function AccountInformation({
   };
 
   return (
-    <Grids rows={"7"} className="w-full h-full">
-      <Holds className="w-full h-full row-start-1 row-end-7 ">
+    <Holds className="h-full pt-2">
+      <Holds className="h-full">
         <Contents width={"section"}>
           {/* Editable fields open modal on click */}
-          <Holds className="cursor-pointer" onClick={openEditContactModal}>
-            <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
+          <Holds onClick={openEditContactModal} className="pb-3">
+            <p className="text-xs">{t("PhoneNumber")}</p>
             <EditableFields
-              value={employee?.Contact?.phoneNumber || ""}
+              value={formatPhoneNumber(employee?.Contact?.phoneNumber || "")}
               isChanged={false}
               onChange={() => {}}
             />
           </Holds>
-          <Holds className="cursor-pointer" onClick={openEditContactModal}>
-            <Labels size={"p6"}>{t("Email")}</Labels>
+          <Holds onClick={openEditContactModal} className="pb-3">
+            <p className="text-xs">{t("Email")}</p>
             <EditableFields
               value={employee?.email || ""}
               isChanged={false}
               onChange={() => {}}
             />
           </Holds>
-          <Holds className="cursor-pointer" onClick={openEditContactModal}>
-            <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
+          <Holds onClick={openEditContactModal} className="pb-3">
+            <p className="text-xs">{t("EmergencyContact")}</p>
             <EditableFields
               value={employee?.Contact?.emergencyContact || ""}
               isChanged={false}
               onChange={() => {}}
             />
           </Holds>
-          <Holds className="cursor-pointer" onClick={openEditContactModal}>
-            <Labels size={"p6"}>{t("EmergencyContactNumber")}</Labels>
+          <Holds onClick={openEditContactModal} className="pb-3">
+            <p className="text-xs">{t("EmergencyContactNumber")}</p>
             <EditableFields
-              value={employee?.Contact?.emergencyContactNumber || ""}
+              value={formatPhoneNumber(
+                employee?.Contact?.emergencyContactNumber || "",
+              )}
               isChanged={false}
               onChange={() => {}}
             />
           </Holds>
-          <Holds className="w-full h-full py-5 ">
+          <Holds className="w-full h-full pt-2 ">
             <Holds className="w-full h-fit rounded-[10px] border-[3px] border-black justify-center items-center relative ">
-              <Images
-                titleImg={signatureBase64String}
-                titleImgAlt={t("Signature")}
-                className="justify-center items-center "
-                size={"50"}
-              />
+              {signatureBase64String && (
+                <img
+                  src={signatureBase64String}
+                  alt={t("Signature")}
+                  className="justify-center items-center max-w-28 h-auto object-contain"
+                />
+              )}
               <Holds
                 background={"orange"}
                 className="absolute top-1 right-1 w-fit h-fit rounded-full border-[3px] border-black p-2"
@@ -171,7 +178,7 @@ export default function AccountInformation({
         </Contents>
       </Holds>
 
-      <Holds className="row-start-7 row-end-8 ">
+      <Holds className="pb-5">
         <Contents width="section">
           <Buttons
             onClick={() => setIsOpen2(true)}
@@ -179,7 +186,7 @@ export default function AccountInformation({
             size={"full"}
             className="py-2"
           >
-            <Titles size={"h4"}>{t("SignOut")}</Titles>
+            <Titles size={"sm"}>{t("SignOut")}</Titles>
           </Buttons>
         </Contents>
       </Holds>
@@ -190,59 +197,68 @@ export default function AccountInformation({
         size={"xlWS1"}
         isOpen={editContactModalOpen}
       >
-        <Holds className="w-full h-full justify-center items-center">
-          <Contents width="section">
-            <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
-            <EditableFields
-              value={formState.phoneNumber}
-              isChanged={false}
-              onChange={(e) =>
-                setFormState((s) => ({ ...s, phoneNumber: e.target.value }))
-              }
-            />
-            <Labels size={"p6"}>{t("Email")}</Labels>
-            <EditableFields
-              value={formState.email}
-              isChanged={false}
-              onChange={(e) =>
-                setFormState((s) => ({ ...s, email: e.target.value }))
-              }
-            />
-            <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
-            <EditableFields
-              value={formState.emergencyContact}
-              isChanged={false}
-              onChange={(e) =>
-                setFormState((s) => ({
-                  ...s,
-                  emergencyContact: e.target.value,
-                }))
-              }
-            />
-            <Labels size={"p6"}>{t("EmergencyContactNumber")}</Labels>
-            <EditableFields
-              value={formState.emergencyContactNumber}
-              isChanged={false}
-              onChange={(e) =>
-                setFormState((s) => ({
-                  ...s,
-                  emergencyContactNumber: e.target.value,
-                }))
-              }
-            />
-            <Holds position="row" className="mt-4 gap-2">
-              <Buttons
-                background="green"
-                onClick={handleSaveContact}
-                disabled={formLoading}
-              >
-                {formLoading ? t("Saving") : t("Save")}
-              </Buttons>
-              <Buttons background="red" onClick={handleDiscardContact}>
-                {t("Discard")}
-              </Buttons>
-            </Holds>
-          </Contents>
+        <Holds className="w-full h-full">
+          <Labels size={"sm"}>{t("PhoneNumber")}</Labels>
+          <EditableFields
+            value={formatPhoneNumber(formState.phoneNumber)}
+            isChanged={false}
+            maxLength={14}
+            onChange={(e) => {
+              const formatted = formatPhoneNumberSetter(e.target.value);
+              setFormState((s) => ({ ...s, phoneNumber: formatted }));
+            }}
+          />
+          <Labels size={"sm"}>{t("Email")}</Labels>
+          <EditableFields
+            value={formState.email}
+            isChanged={false}
+            onChange={(e) =>
+              setFormState((s) => ({ ...s, email: e.target.value }))
+            }
+          />
+          <Labels size={"sm"}>{t("EmergencyContact")}</Labels>
+          <EditableFields
+            value={formState.emergencyContact}
+            isChanged={false}
+            onChange={(e) => {
+              const formatted = formatPhoneNumberSetter(e.target.value);
+              setFormState((s) => ({
+                ...s,
+                emergencyContact: formatted,
+              }));
+            }}
+          />
+          <Labels size={"sm"}>{t("EmergencyContactNumber")}</Labels>
+          <EditableFields
+            value={formatPhoneNumber(formState.emergencyContactNumber)}
+            isChanged={false}
+            maxLength={14}
+            onChange={(e) =>
+              setFormState((s) => ({
+                ...s,
+                emergencyContactNumber: e.target.value,
+              }))
+            }
+          />
+          <Holds position="row" className="mt-5 gap-4">
+            <Buttons
+              shadow={"none"}
+              background="green"
+              onClick={handleSaveContact}
+              disabled={formLoading}
+              className="py-2"
+            >
+              {formLoading ? t("Saving") : t("Save")}
+            </Buttons>
+            <Buttons
+              shadow={"none"}
+              background="lightGray"
+              onClick={handleDiscardContact}
+              className="py-2"
+            >
+              {t("Cancel")}
+            </Buttons>
+          </Holds>
         </Holds>
       </NModals>
 
@@ -292,6 +308,6 @@ export default function AccountInformation({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Grids>
+    </Holds>
   );
 }

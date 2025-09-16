@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { Holds } from "../(reusable)/holds";
-import { Images } from "../(reusable)/images";
-import { PermissionsBadge } from "../(settings)/PermissionsBadge";
 
 export default function HamburgerMenuNew() {
   const [image, setImage] = useState("");
@@ -11,19 +9,20 @@ export default function HamburgerMenuNew() {
   useEffect(() => {
     const fetchImage = async () => {
       const CachedImage = localStorage.getItem("userProfileImage");
-      if (CachedImage) {
+      if (CachedImage && CachedImage !== "Updating") {
         setImage(CachedImage);
         return;
-      }
-      try {
-        const fetched = await fetch("/api/getUserImage");
-        const data = await fetched.json();
-        if (data.image) {
-          setImage(data.image);
-          localStorage.setItem("userProfileImage", data.image);
+      } else {
+        try {
+          const fetched = await fetch("/api/getUserImage");
+          const data = await fetched.json();
+          if (data.image) {
+            setImage(data.image);
+            localStorage.setItem("userProfileImage", data.image);
+          }
+        } catch (error) {
+          console.error("Error fetching image:", error);
         }
-      } catch (error) {
-        console.error("Error fetching image:", error);
       }
     };
     fetchImage();

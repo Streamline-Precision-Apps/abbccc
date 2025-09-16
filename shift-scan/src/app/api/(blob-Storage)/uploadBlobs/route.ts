@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const userId = formData.get("userId") as string;
     const file = formData.get("file") as Blob;
+    const folder = (formData.get("folder") as string) || "profileImages";
 
     if (!userId) {
       return NextResponse.json(
@@ -26,11 +27,18 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
 
     // Save to bucket
-    const fileRef = bucket.file(`profileImages/${userId}.png`); // replace 7 with employee ID
-    await fileRef.save(buffer, {
-      contentType: "image/png",
-      public: true, // optional: makes it publicly readable
-    });
+    const fileRef = bucket.file(`${folder}/${userId}.png`); // replace 7 with employee ID
+    if (folder === "docs") {
+      await fileRef.save(buffer, {
+        contentType: "application/pdf",
+        public: true, // optional: makes it publicly readable
+      });
+    } else {
+      await fileRef.save(buffer, {
+        contentType: "image/png",
+        public: true, // optional: makes it publicly readable
+      });
+    }
 
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileRef.name}`;
 

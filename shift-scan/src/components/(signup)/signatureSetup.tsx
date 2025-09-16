@@ -1,14 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Buttons } from "../(reusable)/buttons";
 import { uploadFirstSignature } from "@/actions/userActions";
-import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
-import { Grids } from "../(reusable)/grids";
-import { TitleBoxes } from "../(reusable)/titleBoxes";
-import { Contents } from "../(reusable)/contents";
-import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { Images } from "../(reusable)/images";
 import { ProgressBar } from "./progressBar";
@@ -29,7 +23,7 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
   totalSteps,
   currentStep,
 }) => {
-  const [base64String, setBase64String] = useState<string>("");
+  const [base64String, setBase64String] = useState<string | null>(null);
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showBanner, setShowBanner] = useState<boolean>(false);
@@ -66,7 +60,7 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
     } catch (error) {
       console.error("Error uploading signature:", error);
       setBannerMessage(
-        "There was an error uploading your signature. Please try again."
+        "There was an error uploading your signature. Please try again.",
       );
       setShowBanner(true);
     } finally {

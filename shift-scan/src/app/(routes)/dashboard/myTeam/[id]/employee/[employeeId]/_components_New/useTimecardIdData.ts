@@ -153,27 +153,33 @@ export function useTimecardIdData(id: string) {
   // Save the entire edited form to the server
   // Compare original and edited, return changes object
   const getChanges = useCallback(() => {
-    if (!original || !edited) return {};
+    if (!original || !edited) return { changes: {}, numberOfChanges: 0 };
     const changes: Record<string, { old: unknown; new: unknown }> = {};
+    let numberOfChanges = 0;
+
     if (original.startTime?.toString() !== edited.startTime?.toString()) {
       changes.startTime = { old: original.startTime, new: edited.startTime };
+      numberOfChanges++;
     }
     if (original.endTime?.toString() !== edited.endTime?.toString()) {
       changes.endTime = { old: original.endTime, new: edited.endTime };
+      numberOfChanges++;
     }
     if (original.Jobsite?.id !== edited.Jobsite?.id) {
       changes.Jobsite = {
         old: original.Jobsite?.name,
         new: edited.Jobsite?.name,
       };
+      numberOfChanges++;
     }
     if (original.CostCode?.id !== edited.CostCode?.id) {
       changes.CostCode = {
         old: original.CostCode?.name,
         new: edited.CostCode?.name,
       };
+      numberOfChanges++;
     }
-    return changes;
+    return { changes, numberOfChanges };
   }, [original, edited]);
 
   const save = useCallback(async () => {
@@ -222,8 +228,9 @@ export function useTimecardIdData(id: string) {
       }
 
       // Add changes object for logging
-      const changes = getChanges();
+      const { changes, numberOfChanges } = getChanges();
       formData.append("changes", JSON.stringify(changes));
+      formData.append("numberOfChanges", numberOfChanges.toString());
 
       const result = await updateTimesheetServerAction(formData);
 

@@ -20,7 +20,6 @@ import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
@@ -60,7 +59,7 @@ export default function EmployeeInfo({
               onClick={() => setShowModal(true)}
             />
             <Holds
-              background={employee?.clockedIn ? "green" : "red"}
+              background={employee?.clockedIn ? "green" : "lightGray"}
               className="absolute top-1 right-3 w-6 h-6 rounded-full p-1.5 border-[3px] border-black"
             />
           </div>

@@ -37630,10 +37630,12 @@ export namespace Prisma {
 
   export type TimeSheetChangeLogAvgAggregateOutputType = {
     timeSheetId: number | null
+    numberOfChanges: number | null
   }
 
   export type TimeSheetChangeLogSumAggregateOutputType = {
     timeSheetId: number | null
+    numberOfChanges: number | null
   }
 
   export type TimeSheetChangeLogMinAggregateOutputType = {
@@ -37642,6 +37644,8 @@ export namespace Prisma {
     changedBy: string | null
     changedAt: Date | null
     changeReason: string | null
+    wasStatusChange: boolean | null
+    numberOfChanges: number | null
   }
 
   export type TimeSheetChangeLogMaxAggregateOutputType = {
@@ -37650,6 +37654,8 @@ export namespace Prisma {
     changedBy: string | null
     changedAt: Date | null
     changeReason: string | null
+    wasStatusChange: boolean | null
+    numberOfChanges: number | null
   }
 
   export type TimeSheetChangeLogCountAggregateOutputType = {
@@ -37659,16 +37665,20 @@ export namespace Prisma {
     changedAt: number
     changes: number
     changeReason: number
+    wasStatusChange: number
+    numberOfChanges: number
     _all: number
   }
 
 
   export type TimeSheetChangeLogAvgAggregateInputType = {
     timeSheetId?: true
+    numberOfChanges?: true
   }
 
   export type TimeSheetChangeLogSumAggregateInputType = {
     timeSheetId?: true
+    numberOfChanges?: true
   }
 
   export type TimeSheetChangeLogMinAggregateInputType = {
@@ -37677,6 +37687,8 @@ export namespace Prisma {
     changedBy?: true
     changedAt?: true
     changeReason?: true
+    wasStatusChange?: true
+    numberOfChanges?: true
   }
 
   export type TimeSheetChangeLogMaxAggregateInputType = {
@@ -37685,6 +37697,8 @@ export namespace Prisma {
     changedBy?: true
     changedAt?: true
     changeReason?: true
+    wasStatusChange?: true
+    numberOfChanges?: true
   }
 
   export type TimeSheetChangeLogCountAggregateInputType = {
@@ -37694,6 +37708,8 @@ export namespace Prisma {
     changedAt?: true
     changes?: true
     changeReason?: true
+    wasStatusChange?: true
+    numberOfChanges?: true
     _all?: true
   }
 
@@ -37790,6 +37806,8 @@ export namespace Prisma {
     changedAt: Date
     changes: JsonValue
     changeReason: string | null
+    wasStatusChange: boolean
+    numberOfChanges: number
     _count: TimeSheetChangeLogCountAggregateOutputType | null
     _avg: TimeSheetChangeLogAvgAggregateOutputType | null
     _sum: TimeSheetChangeLogSumAggregateOutputType | null
@@ -37818,6 +37836,8 @@ export namespace Prisma {
     changedAt?: boolean
     changes?: boolean
     changeReason?: boolean
+    wasStatusChange?: boolean
+    numberOfChanges?: boolean
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheetChangeLog"]>
@@ -37829,6 +37849,8 @@ export namespace Prisma {
     changedAt?: boolean
     changes?: boolean
     changeReason?: boolean
+    wasStatusChange?: boolean
+    numberOfChanges?: boolean
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheetChangeLog"]>
@@ -37840,6 +37862,8 @@ export namespace Prisma {
     changedAt?: boolean
     changes?: boolean
     changeReason?: boolean
+    wasStatusChange?: boolean
+    numberOfChanges?: boolean
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["timeSheetChangeLog"]>
@@ -37851,9 +37875,11 @@ export namespace Prisma {
     changedAt?: boolean
     changes?: boolean
     changeReason?: boolean
+    wasStatusChange?: boolean
+    numberOfChanges?: boolean
   }
 
-  export type TimeSheetChangeLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "changedBy" | "changedAt" | "changes" | "changeReason", ExtArgs["result"]["timeSheetChangeLog"]>
+  export type TimeSheetChangeLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "changedBy" | "changedAt" | "changes" | "changeReason" | "wasStatusChange" | "numberOfChanges", ExtArgs["result"]["timeSheetChangeLog"]>
   export type TimeSheetChangeLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
@@ -37880,6 +37906,8 @@ export namespace Prisma {
       changedAt: Date
       changes: Prisma.JsonValue
       changeReason: string | null
+      wasStatusChange: boolean
+      numberOfChanges: number
     }, ExtArgs["result"]["timeSheetChangeLog"]>
     composites: {}
   }
@@ -38311,6 +38339,8 @@ export namespace Prisma {
     readonly changedAt: FieldRef<"TimeSheetChangeLog", 'DateTime'>
     readonly changes: FieldRef<"TimeSheetChangeLog", 'Json'>
     readonly changeReason: FieldRef<"TimeSheetChangeLog", 'String'>
+    readonly wasStatusChange: FieldRef<"TimeSheetChangeLog", 'Boolean'>
+    readonly numberOfChanges: FieldRef<"TimeSheetChangeLog", 'Int'>
   }
     
 
@@ -49493,7 +49523,9 @@ export namespace Prisma {
     changedBy: 'changedBy',
     changedAt: 'changedAt',
     changes: 'changes',
-    changeReason: 'changeReason'
+    changeReason: 'changeReason',
+    wasStatusChange: 'wasStatusChange',
+    numberOfChanges: 'numberOfChanges'
   };
 
   export type TimeSheetChangeLogScalarFieldEnum = (typeof TimeSheetChangeLogScalarFieldEnum)[keyof typeof TimeSheetChangeLogScalarFieldEnum]
@@ -52275,6 +52307,8 @@ export namespace Prisma {
     changedAt?: DateTimeFilter<"TimeSheetChangeLog"> | Date | string
     changes?: JsonFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableFilter<"TimeSheetChangeLog"> | string | null
+    wasStatusChange?: BoolFilter<"TimeSheetChangeLog"> | boolean
+    numberOfChanges?: IntFilter<"TimeSheetChangeLog"> | number
     TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -52286,6 +52320,8 @@ export namespace Prisma {
     changedAt?: SortOrder
     changes?: SortOrder
     changeReason?: SortOrderInput | SortOrder
+    wasStatusChange?: SortOrder
+    numberOfChanges?: SortOrder
     TimeSheet?: TimeSheetOrderByWithRelationInput
     User?: UserOrderByWithRelationInput
   }
@@ -52300,6 +52336,8 @@ export namespace Prisma {
     changedAt?: DateTimeFilter<"TimeSheetChangeLog"> | Date | string
     changes?: JsonFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableFilter<"TimeSheetChangeLog"> | string | null
+    wasStatusChange?: BoolFilter<"TimeSheetChangeLog"> | boolean
+    numberOfChanges?: IntFilter<"TimeSheetChangeLog"> | number
     TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
@@ -52311,6 +52349,8 @@ export namespace Prisma {
     changedAt?: SortOrder
     changes?: SortOrder
     changeReason?: SortOrderInput | SortOrder
+    wasStatusChange?: SortOrder
+    numberOfChanges?: SortOrder
     _count?: TimeSheetChangeLogCountOrderByAggregateInput
     _avg?: TimeSheetChangeLogAvgOrderByAggregateInput
     _max?: TimeSheetChangeLogMaxOrderByAggregateInput
@@ -52328,6 +52368,8 @@ export namespace Prisma {
     changedAt?: DateTimeWithAggregatesFilter<"TimeSheetChangeLog"> | Date | string
     changes?: JsonWithAggregatesFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableWithAggregatesFilter<"TimeSheetChangeLog"> | string | null
+    wasStatusChange?: BoolWithAggregatesFilter<"TimeSheetChangeLog"> | boolean
+    numberOfChanges?: IntWithAggregatesFilter<"TimeSheetChangeLog"> | number
   }
 
   export type UserWhereInput = {
@@ -55478,6 +55520,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
     TimeSheet: TimeSheetCreateNestedOneWithoutChangeLogsInput
     User: UserCreateNestedOneWithoutTimeSheetChangesInput
   }
@@ -55489,6 +55533,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
   }
 
   export type TimeSheetChangeLogUpdateInput = {
@@ -55496,6 +55542,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetChangesNestedInput
   }
@@ -55507,6 +55555,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type TimeSheetChangeLogCreateManyInput = {
@@ -55516,6 +55566,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
   }
 
   export type TimeSheetChangeLogUpdateManyMutationInput = {
@@ -55523,6 +55575,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type TimeSheetChangeLogUncheckedUpdateManyInput = {
@@ -55532,6 +55586,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserCreateInput = {
@@ -58460,10 +58516,13 @@ export namespace Prisma {
     changedAt?: SortOrder
     changes?: SortOrder
     changeReason?: SortOrder
+    wasStatusChange?: SortOrder
+    numberOfChanges?: SortOrder
   }
 
   export type TimeSheetChangeLogAvgOrderByAggregateInput = {
     timeSheetId?: SortOrder
+    numberOfChanges?: SortOrder
   }
 
   export type TimeSheetChangeLogMaxOrderByAggregateInput = {
@@ -58472,6 +58531,8 @@ export namespace Prisma {
     changedBy?: SortOrder
     changedAt?: SortOrder
     changeReason?: SortOrder
+    wasStatusChange?: SortOrder
+    numberOfChanges?: SortOrder
   }
 
   export type TimeSheetChangeLogMinOrderByAggregateInput = {
@@ -58480,10 +58541,13 @@ export namespace Prisma {
     changedBy?: SortOrder
     changedAt?: SortOrder
     changeReason?: SortOrder
+    wasStatusChange?: SortOrder
+    numberOfChanges?: SortOrder
   }
 
   export type TimeSheetChangeLogSumOrderByAggregateInput = {
     timeSheetId?: SortOrder
+    numberOfChanges?: SortOrder
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -66645,6 +66709,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
     User: UserCreateNestedOneWithoutTimeSheetChangesInput
   }
 
@@ -66654,6 +66720,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
   }
 
   export type TimeSheetChangeLogCreateOrConnectWithoutTimeSheetInput = {
@@ -66946,6 +67014,8 @@ export namespace Prisma {
     changedAt?: DateTimeFilter<"TimeSheetChangeLog"> | Date | string
     changes?: JsonFilter<"TimeSheetChangeLog">
     changeReason?: StringNullableFilter<"TimeSheetChangeLog"> | string | null
+    wasStatusChange?: BoolFilter<"TimeSheetChangeLog"> | boolean
+    numberOfChanges?: IntFilter<"TimeSheetChangeLog"> | number
   }
 
   export type MaintenanceCreateWithoutMaintenanceLogsInput = {
@@ -70236,6 +70306,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
     TimeSheet: TimeSheetCreateNestedOneWithoutChangeLogsInput
   }
 
@@ -70245,6 +70317,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
   }
 
   export type TimeSheetChangeLogCreateOrConnectWithoutUserInput = {
@@ -73503,6 +73577,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
   }
 
   export type EmployeeEquipmentLogUpdateWithoutTimeSheetInput = {
@@ -73645,6 +73721,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
     User?: UserUpdateOneRequiredWithoutTimeSheetChangesNestedInput
   }
 
@@ -73654,6 +73732,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetInput = {
@@ -73662,6 +73742,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type EmployeeEquipmentLogCreateManyMaintenanceInput = {
@@ -74076,6 +74158,8 @@ export namespace Prisma {
     changedAt?: Date | string
     changes: JsonNullValueInput | InputJsonValue
     changeReason?: string | null
+    wasStatusChange?: boolean
+    numberOfChanges?: number
   }
 
   export type TopicSubscriptionCreateManyUserInput = {
@@ -74471,6 +74555,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutChangeLogsNestedInput
   }
 
@@ -74480,6 +74566,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type TimeSheetChangeLogUncheckedUpdateManyWithoutUserInput = {
@@ -74488,6 +74576,8 @@ export namespace Prisma {
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     changes?: JsonNullValueInput | InputJsonValue
     changeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    wasStatusChange?: BoolFieldUpdateOperationsInput | boolean
+    numberOfChanges?: IntFieldUpdateOperationsInput | number
   }
 
   export type CrewUpdateWithoutUsersInput = {

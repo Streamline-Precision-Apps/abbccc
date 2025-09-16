@@ -27,6 +27,7 @@ const LabelVariants = cva(
         p7: "text-xs",
         p8: "text-[10px]",
         p9: "text-[8px]",
+        xs: "text-xs",
         sm: "text-sm",
         md: "text-base",
         lg: "text-lg",

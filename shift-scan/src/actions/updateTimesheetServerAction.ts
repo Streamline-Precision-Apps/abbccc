@@ -9,6 +9,7 @@ export async function updateTimesheetServerAction(formData: FormData) {
   const editorId = formData.get("editorId") as string;
   const changesJson = formData.get("changes") as string;
   const changeReason = formData.get("changeReason") as string;
+  const numberOfChanges = Number(formData.get("numberOfChanges")) || 0;
   // Form Values
   const startTime = formData.get("startTime") as string;
   const endTime = formData.get("endTime") as string | null;
@@ -35,6 +36,7 @@ export async function updateTimesheetServerAction(formData: FormData) {
             changedBy: editorId,
             changes: changes,
             changeReason: changeReason || "No reason provided",
+            numberOfChanges: numberOfChanges,
           },
           include: {
             User: {
