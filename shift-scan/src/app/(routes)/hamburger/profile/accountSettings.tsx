@@ -62,6 +62,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
   const [data, setData] = useState<UserSettings | null>(null);
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
   const [initialData, setInitialData] = useState<UserSettings | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Use the centralized permissions context
   const { permissions, requestCameraPermission, requestLocationPermission } =
@@ -205,7 +206,9 @@ export default function ProfilePage({ userId }: { userId: string }) {
           loading ? "animate-pulse" : ""
         }`}
       >
-        <TitleBoxes onClick={() => router.push(url)}>
+        <TitleBoxes
+          onClick={isOpen ? () => setIsOpen(false) : () => router.push(url)}
+        >
           {/* Profile Image Editor (Pass fetchEmployee as Prop) */}
 
           <ProfileImageEditor
@@ -213,6 +216,8 @@ export default function ProfilePage({ userId }: { userId: string }) {
             reloadEmployee={fetchEmployee}
             loading={loading}
             employeeName={employee?.firstName + " " + employee?.lastName}
+            setIsOpen={setIsOpen}
+            isOpen={isOpen}
           />
         </TitleBoxes>
       </Holds>

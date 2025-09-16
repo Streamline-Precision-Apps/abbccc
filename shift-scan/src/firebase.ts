@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getMessaging, getToken, isSupported } from "firebase/messaging";
 import { upsertFCMToken } from "./actions/NotificationActions";
+import { getStorage } from "firebase/storage";
 
 // Firebase project configuration
 const firebaseConfig = {
@@ -14,6 +15,8 @@ const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+const storage = getStorage(app);
 
 const messaging = async () => {
   const supported = await isSupported();
@@ -42,4 +45,4 @@ export const fetchToken = async () => {
   }
 };
 
-export { app, messaging };
+export { app, messaging, storage };

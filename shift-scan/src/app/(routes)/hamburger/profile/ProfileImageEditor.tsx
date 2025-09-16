@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -8,13 +7,13 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
-import { uploadImage } from "@/actions/userActions";
+import { updateUserImage } from "@/actions/userActions";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { set } from "date-fns";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/(animations)/spinner";
 import { usePermissions } from "@/app/context/PermissionsContext";
+import "@/app/globals.css";
 
 type Employee = {
   id: string;
@@ -31,19 +30,35 @@ export default function ProfileImageEditor({
   reloadEmployee,
   loading,
   employeeName,
+  setIsOpen,
+  isOpen,
 }: {
   employeeName: string;
   employee?: Employee;
   reloadEmployee: () => Promise<void>;
   loading: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isOpen: boolean;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<"select" | "camera" | "preview" | "crop">(
     "select",
+  );
+
+  // State for the displayed profile image
+  const [profileImageUrl, setProfileImageUrl] = useState<string>(
+    employee?.image || "",
   );
   const t = useTranslations("Hamburger-Profile");
   const [imageSrc, setImageSrc] = useState<string>("");
   const [cropImageSrc, setCropImageSrc] = useState<string>("");
+  // Update profileImageUrl when employee changes
+  useEffect(() => {
+    if (employee?.image) {
+      setProfileImageUrl(employee.image);
+    } else {
+      setProfileImageUrl("");
+    }
+  }, [employee]);
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
   const [crop, setCrop] = useState<Crop>();
   const imageRef = useRef<HTMLImageElement>(null);
@@ -52,6 +67,9 @@ export default function ProfileImageEditor({
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { requestCameraPermission } = usePermissions();
+
+  // firebase states
+  const [uploading, setUploading] = useState(false);
 
   // Camera management
   useEffect(() => {
@@ -137,23 +155,35 @@ export default function ProfileImageEditor({
   };
 
   const saveImage = async () => {
+    console.log("[saveImage] Start saving image");
     setIsSaving(true);
-    if (!imageSrc) return;
+    if (!canvasRef.current || !employee?.id) {
+      console.log(" Missing canvas or employee id");
+      return;
+    }
     try {
-      // Submit to server
-      const formData = new FormData();
-      formData.append("id", employee?.id || "");
-      formData.append("image", cropImageSrc);
-      await uploadImage(formData);
-      localStorage.removeItem("userProfileImage");
-      // Close and refresh
-      setIsOpen(false);
-      await reloadEmployee();
-      resetState();
+      // Convert canvas to Blob and upload
+      console.log("Converting canvas to Blob");
+      canvasRef.current.toBlob(async (blob) => {
+        if (!blob) {
+          console.log("Blob conversion failed");
+          setIsSaving(false);
+          return;
+        }
+
+        console.log("[Begin Handle Upload]");
+        await handleUpload(blob); // Pass Blob to handleUpload
+        console.log(" handleUpload completed");
+
+        localStorage.removeItem("userProfileImage");
+        resetState();
+      }, "image/png");
     } catch (error) {
-      console.error("Error saving image:", error);
+      console.error("[saveImage] Error saving image:", error);
     } finally {
       setIsSaving(false);
+      await reloadEmployee();
+      setIsOpen(false);
     }
   };
 
@@ -165,23 +195,72 @@ export default function ProfileImageEditor({
     stopCamera();
   };
 
+  // todo add firebase storage bucket here
+
+  const handleUpload = async (file: Blob) => {
+    setUploading(true);
+    if (!employee?.id) {
+      console.log("[handleUpload] No employee id");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("userId", employee.id);
+      formData.append("file", file, "profile.png");
+
+      const res = await fetch("/api/uploadProfilePicture", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url } = await res.json();
+      // Add cache-busting param to break browser cache
+      const cacheBustedUrl = `${url}?t=${Date.now()}`;
+
+      // Update local state for immediate UI update
+      setProfileImageUrl(cacheBustedUrl);
+
+      // 4. Update user image URL in your database
+      const updatingDb = await updateUserImage(employee.id, cacheBustedUrl);
+
+      if (!updatingDb.success) {
+        throw new Error("Error updating url in DB");
+      }
+
+      return cacheBustedUrl;
+    } catch (err) {
+      console.error("[Error uploading new image or updating DB:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <>
       {/* Profile Image with Camera Button */}
       <Holds className="w-full  relative">
-        <Holds className="w-[90px] h-[90px] relative">
+        <Holds className="w-[80px] h-[80px] relative">
           <Images
             titleImg={
               loading
                 ? "/profileEmpty.svg"
-                : employee?.image || "/profileEmpty.svg"
+                : profileImageUrl || "/profileEmpty.svg"
             }
             titleImgAlt="profile"
             onClick={() => setIsOpen(true)}
             className={`w-full h-full rounded-full object-cover ${
-              employee?.image && !loading ? "border-[3px] border-black" : ""
+              profileImageUrl && !loading ? "border-[3px] border-black" : ""
             }`}
           />
+          {/* Show spinner overlay if uploading */}
+          {uploading && (
+            <Holds className="h-full w-full absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 rounded-full z-10"></Holds>
+          )}
           <Holds className="absolute bottom-2 right-0 translate-x-1/4 translate-y-1/4 rounded-full h-9 w-9 border-[3px] p-1 justify-center items-center border-black bg-app-gray">
             <Images
               titleImg="/camera.svg"
@@ -202,7 +281,7 @@ export default function ProfileImageEditor({
           resetState();
         }}
       >
-        <Holds background={"white"} className={`p-5 h-full `}>
+        <Holds background={"white"} className={`px-4 h-full `}>
           {isSaving && (
             <Holds
               background={"white"}
@@ -212,17 +291,6 @@ export default function ProfileImageEditor({
             </Holds>
           )}
           {/* Back Button */}
-          <Holds>
-            <Images
-              position={"left"}
-              onClick={() =>
-                mode === "select" ? setIsOpen(false) : setMode("select")
-              }
-              titleImg="/arrowBack.svg"
-              titleImgAlt="backArrow"
-              className="w-10 h-10"
-            />
-          </Holds>
 
           <Contents width={"section"} className="h-full w-full">
             <Grids rows={"10"} className="h-full w-full">
@@ -298,7 +366,7 @@ export default function ProfileImageEditor({
                   </div>
                 ) : (
                   <img
-                    src={employee?.image || "/person.svg"}
+                    src={profileImageUrl || "/person.svg"}
                     alt="Current Profile"
                     className="w-[250px] h-[250px] object-cover rounded-full border-[3px] border-black"
                   />

@@ -33,9 +33,15 @@ const pwaConfig = {
 };
 
 const nextConfig = {
-  // experimental: {
-  //   //   serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
-  // },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+        pathname: "/v0/b/fcm-shift-scan.firebasestorage.app/o/**",
+      },
+    ],
+  },
 
   // Fix for web-push and other Node.js-only modules
   webpack: (config, { isServer }) => {
