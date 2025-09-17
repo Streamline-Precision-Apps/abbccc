@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { offlineManager, OfflineStatus, PendingAction } from '@/lib/offline-manager';
+import { LogItem } from '@/lib/types';
 
 /**
  * Hook to track online/offline status
@@ -135,13 +136,13 @@ export function usePendingActions() {
  * Hook to get offline data (timesheets, equipment logs, etc.)
  */
 export function useOfflineData() {
-  const [offlineTimesheet, setOfflineTimesheet] = useState<any>(null);
-  const [offlineEquipmentLogs, setOfflineEquipmentLogs] = useState<any[]>([]);
-  const [offlineDashboardData, setOfflineDashboardData] = useState<any>(null);
+  const [offlineTimesheet, setOfflineTimesheet] = useState<Record<string, unknown> | null>(null);
+  const [offlineEquipmentLogs, setOfflineEquipmentLogs] = useState<LogItem[]>([]);
+  const [offlineDashboardData, setOfflineDashboardData] = useState<Record<string, unknown> | null>(null);
 
   const refreshOfflineData = useCallback(() => {
     setOfflineTimesheet(offlineManager.getOfflineTimesheet());
-    setOfflineEquipmentLogs(offlineManager.getOfflineEquipmentLogs());
+    setOfflineEquipmentLogs(offlineManager.getOfflineEquipmentLogs() as LogItem[]);
     setOfflineDashboardData(offlineManager.getOfflineDashboardData());
   }, []);
 

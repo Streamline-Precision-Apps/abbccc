@@ -411,6 +411,14 @@ exports.Prisma.TruckingLogScalarFieldEnum = {
   truckNumber: 'truckNumber'
 };
 
+exports.Prisma.TruckLaborLogsScalarFieldEnum = {
+  id: 'id',
+  truckingLogId: 'truckingLogId',
+  type: 'type',
+  startTime: 'startTime',
+  endTime: 'endTime'
+};
+
 exports.Prisma.StateMileageScalarFieldEnum = {
   id: 'id',
   truckingLogId: 'truckingLogId',
@@ -740,6 +748,7 @@ exports.Prisma.ModelName = {
   TascoLog: 'TascoLog',
   TascoMaterialTypes: 'TascoMaterialTypes',
   TruckingLog: 'TruckingLog',
+  TruckLaborLogs: 'TruckLaborLogs',
   StateMileage: 'StateMileage',
   Material: 'Material',
   RefuelLog: 'RefuelLog',

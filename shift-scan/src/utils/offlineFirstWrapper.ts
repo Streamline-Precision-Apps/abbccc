@@ -10,7 +10,7 @@ const OFFLINE_TIMESHEET_KEY = "offline_timesheet_data";
 export interface OfflineTimesheet {
   id: string;
   actionName: string;
-  formData: { [key: string]: any };
+  formData: Record<string, unknown>;
   timestamp: number;
   status: "pending" | "syncing" | "synced" | "failed";
   retryCount?: number;
@@ -22,7 +22,7 @@ export interface OfflineTimesheet {
  * When offline: stores actions locally without database interaction
  * When online: executes actions normally and syncs any offline data
  */
-export async function executeOfflineFirstAction<T extends any[], R>(
+export async function executeOfflineFirstAction<T extends unknown[], R>(
   actionName: string,
   serverAction: (...args: T) => Promise<R>,
   ...args: T
@@ -34,7 +34,7 @@ export async function executeOfflineFirstAction<T extends any[], R>(
     const mockTimesheetId = `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Convert FormData to plain object for storage
-    const formDataObj: { [key: string]: any } = {};
+    const formDataObj: Record<string, unknown> = {};
     if (args[0] instanceof FormData) {
       const formData = args[0] as FormData;
       for (const [key, value] of formData.entries()) {
@@ -148,7 +148,11 @@ export async function syncOfflineActions(): Promise<{ success: number; failed: n
       // Reconstruct FormData from stored object
       const formData = new FormData();
       Object.entries(action.formData).forEach(([key, value]) => {
-        formData.append(key, value);
+        if (value instanceof Blob) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
+        }
       });
 
       // Import and execute the appropriate server action

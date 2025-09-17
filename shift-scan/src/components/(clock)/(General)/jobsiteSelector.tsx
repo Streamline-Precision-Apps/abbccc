@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
-import { useDBJobsite } from "@/app/context/dbCodeContext";
+import { useJobSite } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
@@ -23,23 +23,19 @@ export const JobsiteSelector = ({
 }: EquipmentSelectorProps) => {
   const [selectedJobsite, setSelectedJobsite] = useState<Option | null>(null);
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
-  const { jobsiteResults } = useDBJobsite();
+  // The new hook only provides selectedJobSite, not a list
+  const { selectedJobSite } = useJobSite();
   const t = useTranslations("Clock");
   useEffect(() => {
-    const options = jobsiteResults.map((jobSite) => ({
-      id: jobSite.id,
-      code: jobSite.qrId,
-      label: jobSite.name,
-    }));
-
-    setJobsiteOptions(options);
-  }, [jobsiteResults]);
+    // TODO: Implement proper jobsite data fetching
+    setJobsiteOptions([]);
+  }, []);
 
   // Initialize with the passed initialValue
   useEffect(() => {
     if (initialValue && jobsiteOptions.length > 0) {
       const foundOption = jobsiteOptions.find(
-        (opt) => opt.code === initialValue.code
+        (opt) => opt.code === initialValue.code,
       );
       if (foundOption) {
         setSelectedJobsite(foundOption);

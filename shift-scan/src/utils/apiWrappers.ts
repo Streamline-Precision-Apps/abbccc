@@ -4,6 +4,92 @@
 
 import { apiGet, executeOrQueueAction, fetchWithOfflineCache } from './offlineApi';
 
+// Interface definitions for API data types
+interface JobSiteData extends Record<string, unknown> {
+  id?: string;
+  qrId?: string;
+  code?: string;
+  name?: string;
+  description?: string;
+  comment?: string;
+  streetNumber?: string;
+  streetName?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
+  isActive?: boolean;
+  latitude?: number;
+  longitude?: number;
+  radiusMeters?: number;
+}
+
+interface CostCodeData extends Record<string, unknown> {
+  id?: string;
+  code?: string;
+  name?: string;
+  description?: string;
+  comment?: string;
+  isActive?: boolean;
+}
+
+interface TruckData extends Record<string, unknown> {
+  id?: string;
+  qrId?: string;
+  name?: string;
+  description?: string;
+  equipmentTag?: string;
+  make?: string;
+  model?: string;
+  year?: number;
+  licensePlate?: string;
+  vin?: string;
+  currentWeight?: number;
+  mileage?: number;
+}
+
+interface FormSubmissionData extends Record<string, unknown> {
+  formId?: string;
+  employeeId?: string;
+  responses?: Record<string, unknown>;
+  signature?: string;
+  submissionDate?: string;
+  location?: {
+    latitude?: number;
+    longitude?: number;
+  };
+}
+
+interface ClockData extends Record<string, unknown> {
+  userId?: string;
+  date?: string;
+  jobsiteId?: string;
+  costcode?: string;
+  startTime?: string;
+  endTime?: string;
+  workType?: string;
+  equipment?: string;
+  comment?: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  withinFence?: boolean;
+  materialType?: string;
+  laborType?: string;
+  shiftType?: string;
+}
+
+interface UserSettings extends Record<string, unknown> {
+  id?: string;
+  employeeId?: string;
+  notifications?: boolean;
+  language?: string;
+  theme?: string;
+  autoClockOut?: boolean;
+  gpsTracking?: boolean;
+  biometricAuth?: boolean;
+}
+
 // Equipment APIs
 export const equipmentApi = {
   getAll: () => apiGet('/api/getEquipment', { cacheKey: 'equipment-all' }),
@@ -37,7 +123,7 @@ export const jobSiteApi = {
   
   getRecent: () => apiGet('/api/getRecentJobsites', { cacheKey: 'jobsites-recent' }),
   
-  setJobSite: (jobSiteData: any) => executeOrQueueAction(
+  setJobSite: (jobSiteData: JobSiteData) => executeOrQueueAction(
     '/api/setJobSite',
     'POST',
     jobSiteData
@@ -50,7 +136,7 @@ export const costCodeApi = {
   
   getRecent: () => apiGet('/api/getRecentCostCodes', { cacheKey: 'costcodes-recent' }),
   
-  setCostCode: (costCodeData: any) => executeOrQueueAction(
+  setCostCode: (costCodeData: CostCodeData) => executeOrQueueAction(
     '/api/setCostCode',
     'POST',
     costCodeData
@@ -101,7 +187,7 @@ export const truckingApi = {
     { cacheKey: `trucking-details-${truckingLogId}` }
   ),
   
-  setTruck: (truckData: any) => executeOrQueueAction(
+  setTruck: (truckData: TruckData) => executeOrQueueAction(
     '/api/setTruck',
     'POST',
     truckData
@@ -161,7 +247,7 @@ export const cookieApi = {
 export const formsApi = {
   getComment: () => apiGet('/api/getComment', { cacheKey: 'form-comment' }),
   
-  submitForm: (formData: any) => executeOrQueueAction(
+  submitForm: (formData: FormSubmissionData) => executeOrQueueAction(
     '/api/submitForm',
     'POST',
     formData
@@ -174,13 +260,13 @@ export const clockApi = {
   
   clockoutDetails: () => apiGet('/api/clockoutDetails', { cacheKey: 'clockout-details' }),
   
-  clockIn: (clockData: any) => executeOrQueueAction(
+  clockIn: (clockData: ClockData) => executeOrQueueAction(
     '/api/clockIn',
     'POST',
     clockData
   ),
   
-  clockOut: (clockData: any) => executeOrQueueAction(
+  clockOut: (clockData: ClockData) => executeOrQueueAction(
     '/api/clockOut',
     'POST',
     clockData
@@ -191,7 +277,7 @@ export const clockApi = {
 export const settingsApi = {
   get: () => apiGet('/api/getSettings', { cacheKey: 'user-settings' }),
   
-  update: (settings: any) => executeOrQueueAction(
+  update: (settings: UserSettings) => executeOrQueueAction(
     '/api/updateSettings',
     'POST',
     settings

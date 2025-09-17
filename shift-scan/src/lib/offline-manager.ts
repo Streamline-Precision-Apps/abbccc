@@ -16,6 +16,19 @@ export interface OfflineStatus {
 
 export interface PendingAction {
   id: string;
+  action: string;
+  timestamp: number;
+  data: Record<string, unknown>;
+}
+
+interface ServiceWorkerResponse {
+  success?: boolean;
+  pendingActions?: PendingAction[];
+  [key: string]: unknown;
+}
+
+export interface PendingAction {
+  id: string;
   actionName: string;
   timestamp: number;
   retryCount: number;
@@ -47,7 +60,7 @@ class OfflineManager {
   /**
    * Send a message to the service worker and wait for response
    */
-  private async sendMessage(type: string, data?: any): Promise<any> {
+  private async sendMessage(type: string, data?: Record<string, unknown>): Promise<unknown> {
     return new Promise((resolve, reject) => {
       if (!this.serviceWorker) {
         reject(new Error('Service Worker not available'));
@@ -73,7 +86,7 @@ class OfflineManager {
    */
   async getOfflineStatus(): Promise<OfflineStatus> {
     try {
-      return await this.sendMessage('GET_OFFLINE_STATUS');
+      return await this.sendMessage('GET_OFFLINE_STATUS') as OfflineStatus;
     } catch (error) {
       console.error('Failed to get offline status:', error);
       return {
@@ -90,7 +103,7 @@ class OfflineManager {
    */
   async getPendingActions(): Promise<PendingAction[]> {
     try {
-      const result = await this.sendMessage('GET_PENDING_ACTIONS');
+      const result = await this.sendMessage('GET_PENDING_ACTIONS') as ServiceWorkerResponse;
       return result.pendingActions || [];
     } catch (error) {
       console.error('Failed to get pending actions:', error);
@@ -103,7 +116,7 @@ class OfflineManager {
    */
   async syncOfflineActions(): Promise<boolean> {
     try {
-      const result = await this.sendMessage('SYNC_OFFLINE_ACTIONS');
+      const result = await this.sendMessage('SYNC_OFFLINE_ACTIONS') as ServiceWorkerResponse;
       return result.success || false;
     } catch (error) {
       console.error('Failed to sync offline actions:', error);
@@ -116,7 +129,7 @@ class OfflineManager {
    */
   async clearOfflineData(): Promise<boolean> {
     try {
-      const result = await this.sendMessage('CLEAR_OFFLINE_DATA');
+      const result = await this.sendMessage('CLEAR_OFFLINE_DATA') as ServiceWorkerResponse;
       return result.success || false;
     } catch (error) {
       console.error('Failed to clear offline data:', error);
@@ -151,7 +164,7 @@ class OfflineManager {
   /**
    * Get offline timesheet data from localStorage
    */
-  getOfflineTimesheet(): any | null {
+  getOfflineTimesheet(): Record<string, unknown> | null {
     try {
       const data = localStorage.getItem('current_offline_timesheet');
       return data ? JSON.parse(data) : null;
@@ -164,7 +177,7 @@ class OfflineManager {
   /**
    * Get offline equipment logs from localStorage
    */
-  getOfflineEquipmentLogs(): any[] {
+  getOfflineEquipmentLogs(): Record<string, unknown>[] {
     try {
       const data = localStorage.getItem('offline_equipment_logs');
       return data ? JSON.parse(data) : [];
@@ -177,7 +190,7 @@ class OfflineManager {
   /**
    * Get offline dashboard data
    */
-  getOfflineDashboardData(): any | null {
+  getOfflineDashboardData(): Record<string, unknown> | null {
     try {
       const data = localStorage.getItem('offline_dashboard_data');
       return data ? JSON.parse(data) : null;
@@ -191,7 +204,7 @@ class OfflineManager {
    * Monitor offline status and automatically sync when back online
    */
   startAutoSync(onStatusChange?: (status: OfflineStatus) => void): () => void {
-    let intervalId: NodeJS.Timeout;
+  // prefer-const: intervalId is never reassigned
     
     const checkAndSync = async () => {
       const status = await this.getOfflineStatus();
@@ -218,8 +231,8 @@ class OfflineManager {
     // Check immediately
     checkAndSync();
 
-    // Check every 30 seconds
-    intervalId = setInterval(checkAndSync, 30000);
+  // Check every 30 seconds
+  const intervalId = setInterval(checkAndSync, 30000);
 
     // Also check when network status changes
     const networkCleanup = this.onNetworkChange((online) => {

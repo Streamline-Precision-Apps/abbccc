@@ -10,7 +10,7 @@ import { useOnlineStatus } from "@/hooks/useOnlineStatus";
  * @param args - Arguments to pass to the server action
  * @returns Promise that resolves when action is executed or queued
  */
-export async function executeServerAction<T extends any[], R>(
+export async function executeServerAction<T extends unknown[], R>(
   actionName: string,
   serverAction: (...args: T) => Promise<R>,
   ...args: T
@@ -30,13 +30,21 @@ export async function executeServerAction<T extends any[], R>(
     } catch (error) {
       console.warn(`Server action ${actionName} failed, queuing for offline sync:`, error);
       // If the action fails and we have a network issue, queue it
-      await queueServerAction(actionName, "POST", args);
+      // Convert args array to a Record for storage
+      const payload = args.length === 1 && args[0] instanceof FormData 
+        ? Object.fromEntries((args[0] as FormData).entries())
+        : { args: args };
+      await queueServerAction(actionName, "POST", payload);
       return;
     }
   } else {
     // If offline, queue the action
     console.log(`Offline: Queuing server action ${actionName}`);
-    await queueServerAction(actionName, "POST", args);
+    // Convert args array to a Record for storage
+    const payload = args.length === 1 && args[0] instanceof FormData 
+      ? Object.fromEntries((args[0] as FormData).entries())
+      : { args: args };
+    await queueServerAction(actionName, "POST", payload);
     return;
   }
 }
@@ -47,7 +55,7 @@ export async function executeServerAction<T extends any[], R>(
 export function useServerAction() {
   const isOnline = useOnlineStatus();
 
-  const execute = async <T extends any[], R>(
+  const execute = async <T extends unknown[], R>(
     actionName: string,
     serverAction: (...args: T) => Promise<R>,
     ...args: T
@@ -65,7 +73,7 @@ export function useServerAction() {
 /**
  * Higher-order function to wrap server actions with offline support
  */
-export function withOfflineSupport<T extends any[], R>(
+export function withOfflineSupport<T extends unknown[], R>(
   actionName: string,
   serverAction: (...args: T) => Promise<R>
 ) {

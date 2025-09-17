@@ -72,7 +72,7 @@ export async function fetchWithOfflineCache<T>(
 /**
  * Get recent timecard with offline support
  */
-export async function getRecentTimecardOffline(): Promise<any> {
+export async function getRecentTimecardOffline(): Promise<Record<string, unknown> | null> {
   return await fetchWithOfflineCache(
     CACHE_KEYS.RECENT_TIMECARD,
     async () => {
@@ -88,7 +88,7 @@ export async function getRecentTimecardOffline(): Promise<any> {
 /**
  * Get recent timecard for return with offline support
  */
-export async function getRecentTimecardReturnOffline(): Promise<any> {
+export async function getRecentTimecardReturnOffline(): Promise<Record<string, unknown> | null> {
   return await fetchWithOfflineCache(
     CACHE_KEYS.RECENT_TIMECARD_RETURN,
     async () => {
@@ -104,7 +104,7 @@ export async function getRecentTimecardReturnOffline(): Promise<any> {
 /**
  * Get logs with offline support
  */
-export async function getLogsOffline(): Promise<any[]> {
+export async function getLogsOffline(): Promise<Record<string, unknown>[]> {
   const result = await fetchWithOfflineCache(
     CACHE_KEYS.LOGS,
     async () => {
@@ -122,7 +122,7 @@ export async function getLogsOffline(): Promise<any[]> {
 /**
  * Get jobsites with offline support  
  */
-export async function getJobsitesOffline(): Promise<any[]> {
+export async function getJobsitesOffline(): Promise<Record<string, unknown>[]> {
   const result = await fetchWithOfflineCache(
     CACHE_KEYS.JOBSITES,
     async () => {
@@ -141,7 +141,7 @@ export async function getJobsitesOffline(): Promise<any[]> {
 /**
  * Get cost codes with offline support
  */
-export async function getCostCodesOffline(): Promise<any[]> {
+export async function getCostCodesOffline(): Promise<Record<string, unknown>[]> {
   const result = await fetchWithOfflineCache(
     CACHE_KEYS.COST_CODES,
     async () => {
@@ -160,7 +160,7 @@ export async function getCostCodesOffline(): Promise<any[]> {
 /**
  * Get equipment with offline support
  */
-export async function getEquipmentOffline(): Promise<any[]> {
+export async function getEquipmentOffline(): Promise<Record<string, unknown>[]> {
   const result = await fetchWithOfflineCache(
     CACHE_KEYS.EQUIPMENT,
     async () => {
@@ -199,7 +199,7 @@ export function hasOfflineTimesheetData(): boolean {
 /**
  * Get offline timesheet data for dashboard use
  */
-export function getOfflineTimesheetData(): any | null {
+export function getOfflineTimesheetData(): Record<string, unknown> | null {
   try {
     // First try current offline timesheet
     const currentOfflineTimesheet = localStorage.getItem('current_offline_timesheet');

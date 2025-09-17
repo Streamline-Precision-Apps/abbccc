@@ -2,11 +2,30 @@
 import { useCallback } from 'react';
 import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
 import { isOfflineTimesheet, getOfflineActionsStatus } from "@/utils/offlineFirstWrapper";
+import { LogItem } from "@/lib/types";
+
+// Define a flexible timesheet type for offline data
+interface OfflineTimesheetData {
+  id: string | number;
+  userId: string;
+  date: string;
+  startTime: string;
+  endTime: string | null;
+  status: string;
+  workType: string;
+  jobsiteId: string;
+  costCode: string;
+  jobsiteLabel?: string;
+  costCodeLabel?: string;
+  isOffline?: boolean;
+  offlineTimestamp?: number;
+  [key: string]: unknown;
+}
 
 export interface OfflineData {
-  logs: any[];
-  timesheet: any | null;
-  projects: any[];
+  logs: LogItem[];
+  timesheet: OfflineTimesheetData | null;
+  projects: Record<string, unknown>[];
   lastUpdate: number;
 }
 
@@ -78,7 +97,7 @@ export class OfflineDashboardData {
   /**
    * Generate mock timesheet data for offline mode
    */
-  static generateMockTimesheet(userId: string, workRole: string): any {
+  static generateMockTimesheet(userId: string, workRole: string): OfflineTimesheetData | null {
     // First, check if we have a current offline timesheet
     try {
       const currentOfflineTimesheet = localStorage.getItem('current_offline_timesheet');
@@ -119,10 +138,10 @@ export class OfflineDashboardData {
         endTime: null,
         status: 'DRAFT',
         workType: workRole.toUpperCase(),
-        jobsiteId: recentOfflineTimesheet.formData.jobsiteId || '',
-        costCode: recentOfflineTimesheet.formData.costcode || '',
-        jobsiteLabel: recentOfflineTimesheet.formData.jobsiteLabel || 'Offline Job Site',
-        costCodeLabel: recentOfflineTimesheet.formData.costCodeLabel || 'Offline Cost Code',
+        jobsiteId: (recentOfflineTimesheet.formData.jobsiteId as string) || '',
+        costCode: (recentOfflineTimesheet.formData.costcode as string) || '',
+        jobsiteLabel: (recentOfflineTimesheet.formData.jobsiteLabel as string) || 'Offline Job Site',
+        costCodeLabel: (recentOfflineTimesheet.formData.costCodeLabel as string) || 'Offline Cost Code',
         isOffline: true,
         offlineTimestamp: recentOfflineTimesheet.timestamp
       };
@@ -135,7 +154,7 @@ export class OfflineDashboardData {
   /**
    * Generate mock logs for offline mode
    */
-  static generateMockLogs(): any[] {
+  static generateMockLogs(): LogItem[] {
     // Return empty logs for offline mode - user hasn't created any logs yet
     return [];
   }

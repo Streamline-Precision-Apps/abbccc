@@ -118,21 +118,6 @@ enum Condition {
   USED
 }
 
-enum EquipmentState {
-  AVAILABLE
-  IN_USE
-  MAINTENANCE
-  NEEDS_REPAIR
-  RETIRED
-}
-
-enum EquipmentTags {
-  TRUCK
-  TRAILER
-  VEHICLE
-  EQUIPMENT
-}
-
 enum OwnershipType {
   OWNED
   LEASED
@@ -323,7 +308,7 @@ model TimeSheet {
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
-  ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
+  ChangeLogs            TimeSheetChangeLog[]   @relation("TimeSheetChanges") // Add relation to change logs
 }
 
 model MaintenanceLog {
@@ -384,24 +369,34 @@ model TascoMaterialTypes {
 }
 
 model TruckingLog {
-  id              String            @id @default(uuid())
-  timeSheetId     Int
-  laborType       String
-  taskName        String?
-  equipmentId     String?
-  startingMileage Int?
-  endingMileage   Int?
-  truckLaborLogId String?
-  trailerNumber   String?
-  truckNumber     String?
-  EquipmentHauled EquipmentHauled[]
-  Materials       Material[]
-  RefuelLogs      RefuelLog[]
-  StateMileages   StateMileage[]
-  Equipment       Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
-  TimeSheet       TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  Trailer         Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
-  Truck           Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+  id                String            @id @default(uuid())
+  timeSheetId       Int
+  laborType         String
+  taskName          String?
+  equipmentId       String?
+  startingMileage   Int?
+  endingMileage     Int?
+  truckLaborLogId   String?
+  trailerNumber     String?
+  truckNumber       String?
+  EquipmentHauled   EquipmentHauled[]
+  Materials         Material[]
+  RefuelLogs        RefuelLog[]
+  StateMileages     StateMileage[]
+  TruckingLaborLogs TruckLaborLogs[]
+  Equipment         Equipment?        @relation("HauledEquipment", fields: [equipmentId], references: [id])
+  TimeSheet         TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Trailer           Equipment?        @relation("TrailerEquipment", fields: [trailerNumber], references: [id])
+  Truck             Equipment?        @relation("TruckEquipment", fields: [truckNumber], references: [id])
+}
+
+model TruckLaborLogs {
+  id            String       @id @default(uuid())
+  truckingLogId String?
+  type          String
+  startTime     DateTime
+  endTime       DateTime?
+  TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
 
 model StateMileage {
@@ -465,7 +460,7 @@ model TimeSheetChangeLog {
   changeReason String? // Optional reason for the change
 
   // Relations
-  TimeSheet TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  TimeSheet TimeSheet @relation("TimeSheetChanges", fields: [timeSheetId], references: [id], onDelete: Cascade)
   User      User      @relation("ChangedByUser", fields: [changedBy], references: [id])
 
   @@index([timeSheetId])
@@ -582,6 +577,13 @@ enum Permission {
   SUPERADMIN
 }
 
+enum EquipmentTags {
+  TRUCK
+  TRAILER
+  VEHICLE
+  EQUIPMENT
+}
+
 enum IsActive {
   ACTIVE
   INACTIVE
@@ -613,6 +615,14 @@ enum EquipmentUsageType {
   MAINTENANCE
   LABOR
   GENERAL
+}
+
+enum EquipmentState {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  NEEDS_REPAIR
+  RETIRED
 }
 
 enum ApprovalStatus {

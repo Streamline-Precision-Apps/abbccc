@@ -52,21 +52,6 @@ enum Condition {
   USED
 }
 
-enum EquipmentState {
-  AVAILABLE
-  IN_USE
-  MAINTENANCE
-  NEEDS_REPAIR
-  RETIRED
-}
-
-enum EquipmentTags {
-  TRUCK
-  TRAILER
-  VEHICLE
-  EQUIPMENT
-}
-
 enum OwnershipType {
   OWNED
   LEASED

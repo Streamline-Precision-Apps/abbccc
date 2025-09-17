@@ -2,7 +2,7 @@ import Dexie, { Table } from 'dexie';
 
 export interface CachedApiResponse {
   key: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   ttl?: number; // Time to live in milliseconds
 }
@@ -11,7 +11,7 @@ export interface QueuedAction {
   id?: number;
   endpoint: string;
   method: string;
-  payload: any;
+  payload: Record<string, unknown> | null;
   timestamp: number;
   retryCount?: number;
   maxRetries?: number;

@@ -72,7 +72,7 @@ function isCacheValid(cachedItem: CachedApiResponse, defaultTtl = DEFAULT_TTL): 
  * @param fetcher - Function that returns a Promise with the data
  * @param options - Additional options for caching and fetching
  */
-export async function fetchWithOfflineCache<T = any>(
+export async function fetchWithOfflineCache<T = unknown>(
   key: string,
   fetcher: () => Promise<T>,
   options: { ttl?: number; forceRefresh?: boolean } = {}
@@ -84,7 +84,7 @@ export async function fetchWithOfflineCache<T = any>(
     try {
       const cached = await offlineDb.cachedApiResponses.get(key);
       if (cached && isCacheValid(cached, ttl)) {
-        return cached.data;
+        return cached.data as T;
       }
     } catch (error) {
       console.warn('Cache read error:', error);
@@ -114,7 +114,7 @@ export async function fetchWithOfflineCache<T = any>(
         const cached = await offlineDb.cachedApiResponses.get(key);
         if (cached) {
           console.warn('Serving stale cache due to fetch error:', fetchError);
-          return cached.data;
+          return cached.data as T;
         }
       } catch (cacheError) {
         console.warn('Cache fallback failed:', cacheError);
@@ -127,7 +127,7 @@ export async function fetchWithOfflineCache<T = any>(
     try {
       const cached = await offlineDb.cachedApiResponses.get(key);
       if (cached) {
-        return cached.data;
+        return cached.data as T;
       }
     } catch (cacheError) {
       console.warn('Offline cache read error:', cacheError);
@@ -143,7 +143,7 @@ export async function fetchWithOfflineCache<T = any>(
 /**
  * Enhanced API fetch function with automatic caching
  */
-export async function apiGet<T = any>(
+export async function apiGet<T = unknown>(
   endpoint: string,
   options: FetchOptions & { cacheKey?: string; ttl?: number } = {}
 ): Promise<T> {
@@ -177,7 +177,7 @@ export async function apiGet<T = any>(
 export async function queueServerAction(
   endpoint: string,
   method: string,
-  payload: any = null,
+  payload: Record<string, unknown> | null = null,
   options: { maxRetries?: number } = {}
 ): Promise<void> {
   const { maxRetries = MAX_RETRY_ATTEMPTS } = options;
@@ -202,10 +202,10 @@ export async function queueServerAction(
 /**
  * Executes a server action immediately if online, queues if offline
  */
-export async function executeOrQueueAction<T = any>(
+export async function executeOrQueueAction<T = unknown>(
   endpoint: string,
   method: string,
-  payload: any = null,
+  payload: Record<string, unknown> | null = null,
   options: FetchOptions & { maxRetries?: number } = {}
 ): Promise<T | null> {
   if (isOnline()) {

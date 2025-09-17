@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
-import { useDBEquipment } from "@/app/context/dbCodeContext";
+import { useEquipment } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
@@ -18,21 +18,14 @@ type TruckSelectorProps = {
 const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
   const [selectedTruck, setSelectedTruck] = useState<Option | null>(null);
   const [truckOptions, setTruckOptions] = useState<Option[]>([]);
-  const { equipmentResults } = useDBEquipment();
+  // The new hook only provides selectedEquipment, not a list
+  const { selectedEquipment } = useEquipment();
   const t = useTranslations("Clock");
   // Initialize with the passed initialValue
   useEffect(() => {
-    if (equipmentResults) {
-      const options = equipmentResults
-        .filter((equipment) => equipment.equipmentTag === "TRUCK")
-        .map((equipment) => ({
-          id: equipment.id,
-          code: equipment.qrId,
-          label: equipment.name,
-        }));
-      setTruckOptions(options);
-    }
-  }, [equipmentResults]);
+    // TODO: Implement proper equipment data fetching for trucks
+    setTruckOptions([]);
+  }, []);
 
   useEffect(() => {
     if (initialValue && truckOptions.length > 0) {

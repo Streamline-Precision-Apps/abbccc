@@ -9,7 +9,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import SlidingDiv from "@/components/(animations)/slideDelete";
-import { useDBJobsite } from "@/app/context/dbCodeContext";
+import { useJobSite } from "@/app/context/dbCodeContext";
 import SelectableModal from "@/components/(reusable)/selectableModal";
 import { useTranslations } from "next-intl";
 import { Titles } from "@/components/(reusable)/titles";
@@ -44,7 +44,7 @@ export default function MaterialList({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [editedMaterials, setEditedMaterials] = useState<Material[]>(
-    material || []
+    material || [],
   );
 
   const isMaterialComplete = (mat: Material): boolean => {
@@ -59,7 +59,7 @@ export default function MaterialList({
   // Handle Delete
   const handleDelete = async (materialId: string) => {
     const updatedMaterials = editedMaterials.filter(
-      (material) => material.id !== materialId
+      (material) => material.id !== materialId,
     );
     setEditedMaterials(updatedMaterials);
     setMaterial(updatedMaterials); // Sync with parent state
@@ -105,8 +105,8 @@ export default function MaterialList({
                   {mat.name === "Material"
                     ? `${mat.name} ${index + 1}`
                     : mat.name
-                    ? mat.name
-                    : t("NoMaterialTypeSelected")}
+                      ? mat.name
+                      : t("NoMaterialTypeSelected")}
                 </Texts>
               </Holds>
             </SlidingDiv>

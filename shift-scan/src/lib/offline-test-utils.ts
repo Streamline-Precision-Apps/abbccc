@@ -3,6 +3,14 @@
  * Helper functions for testing offline functionality in development
  */
 
+interface OfflineStats {
+  actionQueue: Record<string, unknown>[];
+  timesheets: Array<{ key: string; data: Record<string, unknown> }>;
+  equipmentLogs: Array<{ key: string; data: Record<string, unknown> }>;
+  otherOfflineData: Array<{ key: string; size: number; data: Record<string, unknown> }>;
+  totalStorageUsed: number;
+}
+
 export class OfflineTestUtils {
   /**
    * Simulate going offline (development only)
@@ -111,14 +119,8 @@ export class OfflineTestUtils {
   /**
    * Get detailed offline statistics
    */
-  static getOfflineStats(): any {
-    const stats: {
-      actionQueue: any[];
-      timesheets: Array<{ key: string; data: any }>;
-      equipmentLogs: Array<{ key: string; data: any }>;
-      otherOfflineData: Array<{ key: string; size: number; data: any }>;
-      totalStorageUsed: number;
-    } = {
+  static getOfflineStats(): OfflineStats {
+    const stats: OfflineStats = {
       actionQueue: [],
       timesheets: [],
       equipmentLogs: [],
@@ -273,16 +275,16 @@ export class OfflineTestUtils {
     
     if (stats.actionQueue.length > 0) {
       console.group('⏳ Action Queue Details');
-      stats.actionQueue.forEach((action: any, index: number) => {
-        console.log(`${index + 1}. ${action.actionName} (${action.status}) - ${new Date(action.timestamp).toLocaleString()}`);
+      stats.actionQueue.forEach((action: Record<string, unknown>, index: number) => {
+        console.log(`${index + 1}. ${action.actionName} (${action.status}) - ${new Date(action.timestamp as number).toLocaleString()}`);
       });
       console.groupEnd();
     }
 
     if (stats.timesheets.length > 0) {
       console.group('📝 Offline Timesheets');
-      stats.timesheets.forEach((ts: any, index: number) => {
-        console.log(`${index + 1}. ${ts.data.id} - ${ts.data.workType} (${new Date(ts.data.startTime).toLocaleString()})`);
+      stats.timesheets.forEach((ts: { key: string; data: Record<string, unknown> }, index: number) => {
+        console.log(`${index + 1}. ${ts.data.id} - ${ts.data.workType} (${new Date(ts.data.startTime as string).toLocaleString()})`);
       });
       console.groupEnd();
     }
@@ -292,8 +294,13 @@ export class OfflineTestUtils {
 }
 
 // Make available globally in development
+declare global {
+  interface Window {
+    OfflineTestUtils: typeof OfflineTestUtils;
+  }
+}
 if (process.env.NODE_ENV === 'development') {
-  (window as any).OfflineTestUtils = OfflineTestUtils;
+  window.OfflineTestUtils = OfflineTestUtils;
   console.log('🧪 OfflineTestUtils available on window.OfflineTestUtils');
   console.log('Example usage:');
   console.log('  OfflineTestUtils.testOfflineSync()');

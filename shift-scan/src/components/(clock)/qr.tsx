@@ -4,12 +4,19 @@ import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
-import { useDBJobsite } from "@/app/context/dbCodeContext";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
 
 type Option = {
   id: string;
   label: string;
   code: string;
+};
+
+// Minimal shape used from Jobsite summary API
+type JobsiteResult = {
+  id: string;
+  name: string;
+  qrId: string;
 };
 
 type QrReaderProps = {
@@ -42,10 +49,35 @@ export default function QR({
   const [scanCount, setScanCount] = useState(0);
   const router = useRouter();
 
-  // Custom hooks
-  const { jobsiteResults } = useDBJobsite();
+  // Locally fetched jobsite results (replaces deprecated useDBJobsite)
+  const [jobsiteResults, setJobsiteResults] = useState<JobsiteResult[]>([]);
   const { setScanResult } = useScanData();
   const { setscanEQResult } = useEQScanData();
+
+  // Fetch jobsites once (offline-aware)
+  useEffect(() => {
+    let isMounted = true;
+    const loadJobsites = async () => {
+      try {
+        const data = await fetchWithOfflineCache(
+          "getJobsiteSummary",
+          () =>
+            fetch("/api/getJobsiteSummary").then((res) =>
+              res.json() as Promise<JobsiteResult[]>,
+            ),
+        );
+        if (isMounted && Array.isArray(data)) {
+          setJobsiteResults(data);
+        }
+      } catch (err) {
+        console.error("Failed to load jobsite summary", err);
+      }
+    };
+    loadJobsites();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Performance patch: Override getContext to add willReadFrequently for 2d contexts
   useEffect(() => {

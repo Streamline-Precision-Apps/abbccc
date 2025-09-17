@@ -15,7 +15,7 @@ declare global {
   interface SyncEvent extends Event {
     tag: string;
     lastChance: boolean;
-    waitUntil(promise: Promise<any>): void;
+    waitUntil(promise: Promise<unknown>): void;
   }
 }
 

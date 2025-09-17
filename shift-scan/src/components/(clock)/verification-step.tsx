@@ -68,6 +68,7 @@ export default function VerificationStep({
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
+  const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
   const { isOnline, summary } = useEnhancedOfflineStatus();
 
@@ -88,7 +89,15 @@ export default function VerificationStep({
       );
       const data = await getRecentTimecardOffline();
       console.log("[TIMESHEET] Recent timesheet data:", data);
-      return data?.id || null;
+      
+      // Type guard to check if data has an id property that is a string
+      if (data && typeof data === 'object' && 'id' in data) {
+        const typedData = data as { id: unknown };
+        if (typeof typedData.id === 'string') {
+          return typedData.id;
+        }
+      }
+      return null;
     } catch (error) {
       console.error("Error fetching recent timesheet ID:", error);
       return null;
@@ -136,7 +145,6 @@ export default function VerificationStep({
         formData.append(
           "timeSheetComments",
           savedCommentData?.id.toString() || "",
-          savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs");
       }
@@ -150,7 +158,8 @@ export default function VerificationStep({
 
       // Update state and redirect
       const timesheetId = response || "";
-      setTimeSheetData({ id: timesheetId });
+      const timesheetIdNumber = timesheetId ? parseInt(timesheetId, 10) : 0;
+      setTimeSheetData({ id: timesheetIdNumber });
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 

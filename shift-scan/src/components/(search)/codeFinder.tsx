@@ -7,11 +7,7 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useCostCodeOptions } from "@/components/(search)/useCostCodeOptions"; // Updated import
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
-import {
-  useDBJobsite,
-  useDBCostcode,
-  useDBEquipment,
-} from "@/app/context/dbCodeContext";
+// Deprecated DB hooks removed; options come from useCostCodeOptions
 // import {
 //   useRecentDBJobsite,
 //   useRecentDBCostcode,
@@ -60,14 +56,7 @@ export default function CodeFinder({
   const { setCostCode } = useSavedCostCode();
   const { setscanEQResult } = useEQScanData();
 
-  const { jobsiteResults } = useDBJobsite();
-  // const { addRecentlyUsedJobCode } = useRecentDBJobsite();
-
-  const { costcodeResults } = useDBCostcode();
-  // const { addRecentlyUsedCostCode } = useRecentDBCostcode();
-
-  const { equipmentResults } = useDBEquipment();
-  // const { addRecentlyUsedEquipment } = useRecentDBEquipment();
+  // Deprecated results removed; using useCostCodeOptions
 
   const { setEquipmentId } = useOperator();
 
@@ -81,7 +70,7 @@ export default function CodeFinder({
 
     if (datatype === "costcode") {
       setCostCode(option.code);
-      const selectedCode = costcodeResults.find((c) => c.name === option.code);
+  // Optionally resolve details via API if needed
       // if (selectedCode) addRecentlyUsedCostCode(selectedCode);
     }
 
@@ -90,9 +79,7 @@ export default function CodeFinder({
         qrCode: option.code,
         name: option.label, // You might want to provide a default name or get it from somewhere
       });
-      const selectedJobCode = jobsiteResults.find(
-        (j) => j.qrId === option.code,
-      );
+      // Optionally resolve details via API if needed
       // if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
 
@@ -105,9 +92,7 @@ export default function CodeFinder({
         qrCode: option.code,
         name: option.label, // You might want to provide a default name or get it from somewhere
       });
-      const selectedJobCode = jobsiteResults.find(
-        (j) => j.qrId === option.code,
-      );
+      // Optionally resolve details via API if needed
       // if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
 
@@ -122,11 +107,7 @@ export default function CodeFinder({
       } else {
         setscanEQResult({ data: option.code });
       }
-      if (equipmentResults) {
-        const selectedEquipment = equipmentResults.find(
-          (e) => e.qrId === option.code,
-        );
-      }
+      // Optionally resolve details via API if needed
       // if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
 

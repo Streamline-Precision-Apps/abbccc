@@ -156,14 +156,24 @@ export function OfflineStatusComponent({
                 Current offline timesheet
               </summary>
               <div className="mt-2 text-xs text-gray-600">
-                <div>ID: {offlineTimesheet.id}</div>
-                <div>Type: {offlineTimesheet.workType}</div>
+                <div>ID: {String(offlineTimesheet.id || "N/A")}</div>
+                <div>Type: {String(offlineTimesheet.workType || "N/A")}</div>
                 <div>
-                  Start: {new Date(offlineTimesheet.startTime).toLocaleString()}
+                  Start:{" "}
+                  {offlineTimesheet.startTime
+                    ? new Date(
+                        String(offlineTimesheet.startTime),
+                      ).toLocaleString()
+                    : "N/A"}
                 </div>
-                {offlineTimesheet.endTime && (
+                {Boolean(offlineTimesheet.endTime) && (
                   <div>
-                    End: {new Date(offlineTimesheet.endTime).toLocaleString()}
+                    End:{" "}
+                    {offlineTimesheet.endTime
+                      ? new Date(
+                          String(offlineTimesheet.endTime),
+                        ).toLocaleString()
+                      : "N/A"}
                   </div>
                 )}
               </div>

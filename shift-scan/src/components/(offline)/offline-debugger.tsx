@@ -8,7 +8,34 @@ import {
 import {
   isOfflineTimesheet,
   getOfflineActionsStatus,
+  OfflineTimesheet,
 } from "@/utils/offlineFirstWrapper";
+
+// Define debug data structure
+interface OfflineTimesheetData {
+  id?: string;
+  workType?: string;
+  jobsiteLabel?: string;
+  costCodeLabel?: string;
+  costCode?: string;
+  [key: string]: unknown;
+}
+
+interface DebugData {
+  isOnline: boolean;
+  hasOfflineData: boolean;
+  offlineTimesheet: OfflineTimesheetData | null;
+  currentOfflineTimesheet: OfflineTimesheetData | null;
+  offlineDashboardData: Record<string, unknown> | null;
+  cachedRecentTimecard: Record<string, unknown> | null;
+  offlineActionsStatus: {
+    pending: OfflineTimesheet[];
+    syncing: OfflineTimesheet[];
+    failed: OfflineTimesheet[];
+    total: number;
+  };
+  timestamp: string;
+}
 
 interface OfflineDebuggerProps {
   showDetails?: boolean;
@@ -18,7 +45,7 @@ export default function OfflineDebugger({
   showDetails = false,
 }: OfflineDebuggerProps) {
   const { isOnline, offlineStatus, summary } = useEnhancedOfflineStatus();
-  const [debugData, setDebugData] = useState<any>(null);
+  const [debugData, setDebugData] = useState<DebugData | null>(null);
   const [isVisible, setIsVisible] = useState(showDetails);
 
   useEffect(() => {
@@ -114,20 +141,21 @@ export default function OfflineDebugger({
             </div>
           )}
 
-          {debugData?.offlineActionsStatus?.pending?.length > 0 && (
-            <div className="mb-2">
-              <strong>Pending Actions:</strong>
-              <div className="bg-yellow-100 p-2 rounded mt-1 max-h-20 overflow-auto">
-                {debugData.offlineActionsStatus.pending.map(
-                  (action: any, index: number) => (
-                    <div key={index} className="text-xs">
-                      {action.actionName} - {action.id}
-                    </div>
-                  ),
-                )}
+          {debugData?.offlineActionsStatus?.pending &&
+            debugData.offlineActionsStatus.pending.length > 0 && (
+              <div className="mb-2">
+                <strong>Pending Actions:</strong>
+                <div className="bg-yellow-100 p-2 rounded mt-1 max-h-20 overflow-auto">
+                  {debugData.offlineActionsStatus.pending.map(
+                    (action: OfflineTimesheet, index: number) => (
+                      <div key={index} className="text-xs">
+                        {action.actionName} - {action.id}
+                      </div>
+                    ),
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           <div className="text-gray-500">
             Last updated: {debugData?.timestamp}

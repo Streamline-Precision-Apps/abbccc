@@ -6,6 +6,13 @@ import {
   retryFailedActions 
 } from '@/utils/offlineFirstWrapper';
 
+// Global window interface extension
+declare global {
+  interface Window {
+    OfflineDevUtils: typeof OfflineDevUtils;
+  }
+}
+
 /**
  * Development utilities for testing offline functionality
  * Only use these functions during development/testing
@@ -99,7 +106,7 @@ export const OfflineDevUtils = {
 
 // Make utilities available globally in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  (window as any).OfflineDevUtils = OfflineDevUtils;
+  window.OfflineDevUtils = OfflineDevUtils;
 }
 
 export default OfflineDevUtils;

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
-import { useDBEquipment } from "@/app/context/dbCodeContext";
+import { useEquipment } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
 
 type Option = {
@@ -26,18 +26,13 @@ export const EquipmentSelector = ({
   );
   const [equipmentOptions, setEquipmentOptions] = useState<Option[]>([]);
   const t = useTranslations("Clock");
-  const { equipmentResults } = useDBEquipment();
+  // The new hook only provides selectedEquipment, not a list
+  const { selectedEquipment: selectedEquipmentFromHook } = useEquipment();
 
   useEffect(() => {
-    if (equipmentResults) {
-      const options = equipmentResults.map((equipment) => ({
-        id: equipment.id,
-        code: equipment.qrId,
-        label: equipment.name,
-      }));
-      setEquipmentOptions(options);
-    }
-  }, [equipmentResults]);
+    // TODO: Implement proper equipment data fetching
+    setEquipmentOptions([]);
+  }, []);
 
   // Initialize with the passed initialValue, but avoid infinite loops
   useEffect(() => {

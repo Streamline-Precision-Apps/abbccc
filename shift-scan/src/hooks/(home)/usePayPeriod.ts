@@ -56,6 +56,7 @@ export const usePayPeriodData = (
         const pageViewResponse = await fetch(
           "/api/cookies?method=get&name=currentPageView",
         );
+        const pageViewData = await pageViewResponse.json();
         setPageView(pageViewData || "");
       } catch (error) {
         console.error("Error fetching data:", error);

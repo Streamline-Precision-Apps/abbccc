@@ -11,8 +11,8 @@ import { OfflineIndicator } from "@/components/offline-status";
 
 interface TimesheetFormProps {
   userId: string;
-  initialData?: any;
-  onSubmit?: (data: any) => void;
+  initialData?: FormData;
+  onSubmit?: (data: FormData) => void;
 }
 
 interface FormData {
@@ -145,8 +145,8 @@ export function OfflineEnhancedTimesheetForm({
         <OfflineIndicator className="mb-2" />
         {!isOnline && (
           <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded">
-            You're working offline. Your data will be saved locally and synced
-            when you're back online.
+            You&apos;re working offline. Your data will be saved locally and synced
+            when you&apos;re back online.
           </div>
         )}
         {status.pendingActions > 0 && isOnline && (
@@ -276,13 +276,13 @@ export function OfflineEnhancedTimesheetForm({
         {offlineTimesheet && (
           <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
             <strong>Current offline timesheet:</strong>
-            <div>Type: {offlineTimesheet.workType}</div>
+            <div>Type: {String(offlineTimesheet.workType || 'Unknown')}</div>
             <div>
-              Started: {new Date(offlineTimesheet.startTime).toLocaleString()}
+              Started: {new Date(String(offlineTimesheet.startTime || new Date())).toLocaleString()}
             </div>
-            {offlineTimesheet.endTime && (
+            {Boolean(offlineTimesheet.endTime) && (
               <div>
-                Ended: {new Date(offlineTimesheet.endTime).toLocaleString()}
+                Ended: {new Date(String(offlineTimesheet.endTime)).toLocaleString()}
               </div>
             )}
           </div>

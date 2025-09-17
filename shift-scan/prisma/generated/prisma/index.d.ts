@@ -129,6 +129,11 @@ export type TascoMaterialTypes = $Result.DefaultSelection<Prisma.$TascoMaterialT
  */
 export type TruckingLog = $Result.DefaultSelection<Prisma.$TruckingLogPayload>
 /**
+ * Model TruckLaborLogs
+ * 
+ */
+export type TruckLaborLogs = $Result.DefaultSelection<Prisma.$TruckLaborLogsPayload>
+/**
  * Model StateMileage
  * 
  */
@@ -211,27 +216,6 @@ export namespace $Enums {
 export type Condition = (typeof Condition)[keyof typeof Condition]
 
 
-export const EquipmentState: {
-  AVAILABLE: 'AVAILABLE',
-  IN_USE: 'IN_USE',
-  MAINTENANCE: 'MAINTENANCE',
-  NEEDS_REPAIR: 'NEEDS_REPAIR',
-  RETIRED: 'RETIRED'
-};
-
-export type EquipmentState = (typeof EquipmentState)[keyof typeof EquipmentState]
-
-
-export const EquipmentTags: {
-  TRUCK: 'TRUCK',
-  TRAILER: 'TRAILER',
-  VEHICLE: 'VEHICLE',
-  EQUIPMENT: 'EQUIPMENT'
-};
-
-export type EquipmentTags = (typeof EquipmentTags)[keyof typeof EquipmentTags]
-
-
 export const OwnershipType: {
   OWNED: 'OWNED',
   LEASED: 'LEASED'
@@ -256,6 +240,16 @@ export const Permission: {
 };
 
 export type Permission = (typeof Permission)[keyof typeof Permission]
+
+
+export const EquipmentTags: {
+  TRUCK: 'TRUCK',
+  TRAILER: 'TRAILER',
+  VEHICLE: 'VEHICLE',
+  EQUIPMENT: 'EQUIPMENT'
+};
+
+export type EquipmentTags = (typeof EquipmentTags)[keyof typeof EquipmentTags]
 
 
 export const IsActive: {
@@ -304,6 +298,17 @@ export const EquipmentUsageType: {
 };
 
 export type EquipmentUsageType = (typeof EquipmentUsageType)[keyof typeof EquipmentUsageType]
+
+
+export const EquipmentState: {
+  AVAILABLE: 'AVAILABLE',
+  IN_USE: 'IN_USE',
+  MAINTENANCE: 'MAINTENANCE',
+  NEEDS_REPAIR: 'NEEDS_REPAIR',
+  RETIRED: 'RETIRED'
+};
+
+export type EquipmentState = (typeof EquipmentState)[keyof typeof EquipmentState]
 
 
 export const ApprovalStatus: {
@@ -411,14 +416,6 @@ export type Condition = $Enums.Condition
 
 export const Condition: typeof $Enums.Condition
 
-export type EquipmentState = $Enums.EquipmentState
-
-export const EquipmentState: typeof $Enums.EquipmentState
-
-export type EquipmentTags = $Enums.EquipmentTags
-
-export const EquipmentTags: typeof $Enums.EquipmentTags
-
 export type OwnershipType = $Enums.OwnershipType
 
 export const OwnershipType: typeof $Enums.OwnershipType
@@ -430,6 +427,10 @@ export const materialUnit: typeof $Enums.materialUnit
 export type Permission = $Enums.Permission
 
 export const Permission: typeof $Enums.Permission
+
+export type EquipmentTags = $Enums.EquipmentTags
+
+export const EquipmentTags: typeof $Enums.EquipmentTags
 
 export type IsActive = $Enums.IsActive
 
@@ -450,6 +451,10 @@ export const LoadType: typeof $Enums.LoadType
 export type EquipmentUsageType = $Enums.EquipmentUsageType
 
 export const EquipmentUsageType: typeof $Enums.EquipmentUsageType
+
+export type EquipmentState = $Enums.EquipmentState
+
+export const EquipmentState: typeof $Enums.EquipmentState
 
 export type ApprovalStatus = $Enums.ApprovalStatus
 
@@ -834,6 +839,16 @@ export class PrismaClient<
     * ```
     */
   get truckingLog(): Prisma.TruckingLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.truckLaborLogs`: Exposes CRUD operations for the **TruckLaborLogs** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TruckLaborLogs
+    * const truckLaborLogs = await prisma.truckLaborLogs.findMany()
+    * ```
+    */
+  get truckLaborLogs(): Prisma.TruckLaborLogsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.stateMileage`: Exposes CRUD operations for the **StateMileage** model.
@@ -1437,6 +1452,7 @@ export namespace Prisma {
     TascoLog: 'TascoLog',
     TascoMaterialTypes: 'TascoMaterialTypes',
     TruckingLog: 'TruckingLog',
+    TruckLaborLogs: 'TruckLaborLogs',
     StateMileage: 'StateMileage',
     Material: 'Material',
     RefuelLog: 'RefuelLog',
@@ -1469,7 +1485,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "company" | "costCode" | "cCTag" | "crew" | "pdfDocument" | "documentTag" | "equipment" | "employeeEquipmentLog" | "formTemplate" | "formGrouping" | "formField" | "formFieldOption" | "formSubmission" | "formApproval" | "jobsite" | "report" | "reportRun" | "timeSheet" | "maintenanceLog" | "maintenance" | "tascoLog" | "tascoMaterialTypes" | "truckingLog" | "stateMileage" | "material" | "refuelLog" | "equipmentHauled" | "timeSheetChangeLog" | "user" | "userSettings" | "contacts" | "passwordResetToken" | "accountSetupToken" | "address" | "fCMToken" | "topicSubscription" | "notification"
+      modelProps: "company" | "costCode" | "cCTag" | "crew" | "pdfDocument" | "documentTag" | "equipment" | "employeeEquipmentLog" | "formTemplate" | "formGrouping" | "formField" | "formFieldOption" | "formSubmission" | "formApproval" | "jobsite" | "report" | "reportRun" | "timeSheet" | "maintenanceLog" | "maintenance" | "tascoLog" | "tascoMaterialTypes" | "truckingLog" | "truckLaborLogs" | "stateMileage" | "material" | "refuelLog" | "equipmentHauled" | "timeSheetChangeLog" | "user" | "userSettings" | "contacts" | "passwordResetToken" | "accountSetupToken" | "address" | "fCMToken" | "topicSubscription" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3175,6 +3191,80 @@ export namespace Prisma {
           }
         }
       }
+      TruckLaborLogs: {
+        payload: Prisma.$TruckLaborLogsPayload<ExtArgs>
+        fields: Prisma.TruckLaborLogsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TruckLaborLogsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TruckLaborLogsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>
+          }
+          findFirst: {
+            args: Prisma.TruckLaborLogsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TruckLaborLogsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>
+          }
+          findMany: {
+            args: Prisma.TruckLaborLogsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>[]
+          }
+          create: {
+            args: Prisma.TruckLaborLogsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>
+          }
+          createMany: {
+            args: Prisma.TruckLaborLogsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TruckLaborLogsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>[]
+          }
+          delete: {
+            args: Prisma.TruckLaborLogsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>
+          }
+          update: {
+            args: Prisma.TruckLaborLogsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>
+          }
+          deleteMany: {
+            args: Prisma.TruckLaborLogsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TruckLaborLogsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TruckLaborLogsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>[]
+          }
+          upsert: {
+            args: Prisma.TruckLaborLogsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TruckLaborLogsPayload>
+          }
+          aggregate: {
+            args: Prisma.TruckLaborLogsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTruckLaborLogs>
+          }
+          groupBy: {
+            args: Prisma.TruckLaborLogsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TruckLaborLogsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TruckLaborLogsCountArgs<ExtArgs>
+            result: $Utils.Optional<TruckLaborLogsCountAggregateOutputType> | number
+          }
+        }
+      }
       StateMileage: {
         payload: Prisma.$StateMileagePayload<ExtArgs>
         fields: Prisma.StateMileageFieldRefs
@@ -4326,6 +4416,7 @@ export namespace Prisma {
     tascoLog?: TascoLogOmit
     tascoMaterialTypes?: TascoMaterialTypesOmit
     truckingLog?: TruckingLogOmit
+    truckLaborLogs?: TruckLaborLogsOmit
     stateMileage?: StateMileageOmit
     material?: MaterialOmit
     refuelLog?: RefuelLogOmit
@@ -5131,6 +5222,7 @@ export namespace Prisma {
     Materials: number
     RefuelLogs: number
     StateMileages: number
+    TruckingLaborLogs: number
   }
 
   export type TruckingLogCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5138,6 +5230,7 @@ export namespace Prisma {
     Materials?: boolean | TruckingLogCountOutputTypeCountMaterialsArgs
     RefuelLogs?: boolean | TruckingLogCountOutputTypeCountRefuelLogsArgs
     StateMileages?: boolean | TruckingLogCountOutputTypeCountStateMileagesArgs
+    TruckingLaborLogs?: boolean | TruckingLogCountOutputTypeCountTruckingLaborLogsArgs
   }
 
   // Custom InputTypes
@@ -5177,6 +5270,13 @@ export namespace Prisma {
    */
   export type TruckingLogCountOutputTypeCountStateMileagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StateMileageWhereInput
+  }
+
+  /**
+   * TruckingLogCountOutputType without action
+   */
+  export type TruckingLogCountOutputTypeCountTruckingLaborLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TruckLaborLogsWhereInput
   }
 
 
@@ -31915,6 +32015,7 @@ export namespace Prisma {
     Materials?: boolean | TruckingLog$MaterialsArgs<ExtArgs>
     RefuelLogs?: boolean | TruckingLog$RefuelLogsArgs<ExtArgs>
     StateMileages?: boolean | TruckingLog$StateMileagesArgs<ExtArgs>
+    TruckingLaborLogs?: boolean | TruckingLog$TruckingLaborLogsArgs<ExtArgs>
     Equipment?: boolean | TruckingLog$EquipmentArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     Trailer?: boolean | TruckingLog$TrailerArgs<ExtArgs>
@@ -31975,6 +32076,7 @@ export namespace Prisma {
     Materials?: boolean | TruckingLog$MaterialsArgs<ExtArgs>
     RefuelLogs?: boolean | TruckingLog$RefuelLogsArgs<ExtArgs>
     StateMileages?: boolean | TruckingLog$StateMileagesArgs<ExtArgs>
+    TruckingLaborLogs?: boolean | TruckingLog$TruckingLaborLogsArgs<ExtArgs>
     Equipment?: boolean | TruckingLog$EquipmentArgs<ExtArgs>
     TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
     Trailer?: boolean | TruckingLog$TrailerArgs<ExtArgs>
@@ -32001,6 +32103,7 @@ export namespace Prisma {
       Materials: Prisma.$MaterialPayload<ExtArgs>[]
       RefuelLogs: Prisma.$RefuelLogPayload<ExtArgs>[]
       StateMileages: Prisma.$StateMileagePayload<ExtArgs>[]
+      TruckingLaborLogs: Prisma.$TruckLaborLogsPayload<ExtArgs>[]
       Equipment: Prisma.$EquipmentPayload<ExtArgs> | null
       TimeSheet: Prisma.$TimeSheetPayload<ExtArgs>
       Trailer: Prisma.$EquipmentPayload<ExtArgs> | null
@@ -32415,6 +32518,7 @@ export namespace Prisma {
     Materials<T extends TruckingLog$MaterialsArgs<ExtArgs> = {}>(args?: Subset<T, TruckingLog$MaterialsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     RefuelLogs<T extends TruckingLog$RefuelLogsArgs<ExtArgs> = {}>(args?: Subset<T, TruckingLog$RefuelLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefuelLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     StateMileages<T extends TruckingLog$StateMileagesArgs<ExtArgs> = {}>(args?: Subset<T, TruckingLog$StateMileagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StateMileagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    TruckingLaborLogs<T extends TruckingLog$TruckingLaborLogsArgs<ExtArgs> = {}>(args?: Subset<T, TruckingLog$TruckingLaborLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Equipment<T extends TruckingLog$EquipmentArgs<ExtArgs> = {}>(args?: Subset<T, TruckingLog$EquipmentArgs<ExtArgs>>): Prisma__EquipmentClient<$Result.GetResult<Prisma.$EquipmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     TimeSheet<T extends TimeSheetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheetDefaultArgs<ExtArgs>>): Prisma__TimeSheetClient<$Result.GetResult<Prisma.$TimeSheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     Trailer<T extends TruckingLog$TrailerArgs<ExtArgs> = {}>(args?: Subset<T, TruckingLog$TrailerArgs<ExtArgs>>): Prisma__EquipmentClient<$Result.GetResult<Prisma.$EquipmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -32950,6 +33054,30 @@ export namespace Prisma {
   }
 
   /**
+   * TruckingLog.TruckingLaborLogs
+   */
+  export type TruckingLog$TruckingLaborLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    where?: TruckLaborLogsWhereInput
+    orderBy?: TruckLaborLogsOrderByWithRelationInput | TruckLaborLogsOrderByWithRelationInput[]
+    cursor?: TruckLaborLogsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TruckLaborLogsScalarFieldEnum | TruckLaborLogsScalarFieldEnum[]
+  }
+
+  /**
    * TruckingLog.Equipment
    */
   export type TruckingLog$EquipmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -33022,6 +33150,1083 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TruckingLogInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TruckLaborLogs
+   */
+
+  export type AggregateTruckLaborLogs = {
+    _count: TruckLaborLogsCountAggregateOutputType | null
+    _min: TruckLaborLogsMinAggregateOutputType | null
+    _max: TruckLaborLogsMaxAggregateOutputType | null
+  }
+
+  export type TruckLaborLogsMinAggregateOutputType = {
+    id: string | null
+    truckingLogId: string | null
+    type: string | null
+    startTime: Date | null
+    endTime: Date | null
+  }
+
+  export type TruckLaborLogsMaxAggregateOutputType = {
+    id: string | null
+    truckingLogId: string | null
+    type: string | null
+    startTime: Date | null
+    endTime: Date | null
+  }
+
+  export type TruckLaborLogsCountAggregateOutputType = {
+    id: number
+    truckingLogId: number
+    type: number
+    startTime: number
+    endTime: number
+    _all: number
+  }
+
+
+  export type TruckLaborLogsMinAggregateInputType = {
+    id?: true
+    truckingLogId?: true
+    type?: true
+    startTime?: true
+    endTime?: true
+  }
+
+  export type TruckLaborLogsMaxAggregateInputType = {
+    id?: true
+    truckingLogId?: true
+    type?: true
+    startTime?: true
+    endTime?: true
+  }
+
+  export type TruckLaborLogsCountAggregateInputType = {
+    id?: true
+    truckingLogId?: true
+    type?: true
+    startTime?: true
+    endTime?: true
+    _all?: true
+  }
+
+  export type TruckLaborLogsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TruckLaborLogs to aggregate.
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TruckLaborLogs to fetch.
+     */
+    orderBy?: TruckLaborLogsOrderByWithRelationInput | TruckLaborLogsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TruckLaborLogsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TruckLaborLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TruckLaborLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TruckLaborLogs
+    **/
+    _count?: true | TruckLaborLogsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TruckLaborLogsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TruckLaborLogsMaxAggregateInputType
+  }
+
+  export type GetTruckLaborLogsAggregateType<T extends TruckLaborLogsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTruckLaborLogs]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTruckLaborLogs[P]>
+      : GetScalarType<T[P], AggregateTruckLaborLogs[P]>
+  }
+
+
+
+
+  export type TruckLaborLogsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TruckLaborLogsWhereInput
+    orderBy?: TruckLaborLogsOrderByWithAggregationInput | TruckLaborLogsOrderByWithAggregationInput[]
+    by: TruckLaborLogsScalarFieldEnum[] | TruckLaborLogsScalarFieldEnum
+    having?: TruckLaborLogsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TruckLaborLogsCountAggregateInputType | true
+    _min?: TruckLaborLogsMinAggregateInputType
+    _max?: TruckLaborLogsMaxAggregateInputType
+  }
+
+  export type TruckLaborLogsGroupByOutputType = {
+    id: string
+    truckingLogId: string | null
+    type: string
+    startTime: Date
+    endTime: Date | null
+    _count: TruckLaborLogsCountAggregateOutputType | null
+    _min: TruckLaborLogsMinAggregateOutputType | null
+    _max: TruckLaborLogsMaxAggregateOutputType | null
+  }
+
+  type GetTruckLaborLogsGroupByPayload<T extends TruckLaborLogsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TruckLaborLogsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TruckLaborLogsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TruckLaborLogsGroupByOutputType[P]>
+            : GetScalarType<T[P], TruckLaborLogsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TruckLaborLogsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    truckingLogId?: boolean
+    type?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    TruckingLog?: boolean | TruckLaborLogs$TruckingLogArgs<ExtArgs>
+  }, ExtArgs["result"]["truckLaborLogs"]>
+
+  export type TruckLaborLogsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    truckingLogId?: boolean
+    type?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    TruckingLog?: boolean | TruckLaborLogs$TruckingLogArgs<ExtArgs>
+  }, ExtArgs["result"]["truckLaborLogs"]>
+
+  export type TruckLaborLogsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    truckingLogId?: boolean
+    type?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    TruckingLog?: boolean | TruckLaborLogs$TruckingLogArgs<ExtArgs>
+  }, ExtArgs["result"]["truckLaborLogs"]>
+
+  export type TruckLaborLogsSelectScalar = {
+    id?: boolean
+    truckingLogId?: boolean
+    type?: boolean
+    startTime?: boolean
+    endTime?: boolean
+  }
+
+  export type TruckLaborLogsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "truckingLogId" | "type" | "startTime" | "endTime", ExtArgs["result"]["truckLaborLogs"]>
+  export type TruckLaborLogsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    TruckingLog?: boolean | TruckLaborLogs$TruckingLogArgs<ExtArgs>
+  }
+  export type TruckLaborLogsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    TruckingLog?: boolean | TruckLaborLogs$TruckingLogArgs<ExtArgs>
+  }
+  export type TruckLaborLogsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    TruckingLog?: boolean | TruckLaborLogs$TruckingLogArgs<ExtArgs>
+  }
+
+  export type $TruckLaborLogsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TruckLaborLogs"
+    objects: {
+      TruckingLog: Prisma.$TruckingLogPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      truckingLogId: string | null
+      type: string
+      startTime: Date
+      endTime: Date | null
+    }, ExtArgs["result"]["truckLaborLogs"]>
+    composites: {}
+  }
+
+  type TruckLaborLogsGetPayload<S extends boolean | null | undefined | TruckLaborLogsDefaultArgs> = $Result.GetResult<Prisma.$TruckLaborLogsPayload, S>
+
+  type TruckLaborLogsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TruckLaborLogsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TruckLaborLogsCountAggregateInputType | true
+    }
+
+  export interface TruckLaborLogsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TruckLaborLogs'], meta: { name: 'TruckLaborLogs' } }
+    /**
+     * Find zero or one TruckLaborLogs that matches the filter.
+     * @param {TruckLaborLogsFindUniqueArgs} args - Arguments to find a TruckLaborLogs
+     * @example
+     * // Get one TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TruckLaborLogsFindUniqueArgs>(args: SelectSubset<T, TruckLaborLogsFindUniqueArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TruckLaborLogs that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TruckLaborLogsFindUniqueOrThrowArgs} args - Arguments to find a TruckLaborLogs
+     * @example
+     * // Get one TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TruckLaborLogsFindUniqueOrThrowArgs>(args: SelectSubset<T, TruckLaborLogsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TruckLaborLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsFindFirstArgs} args - Arguments to find a TruckLaborLogs
+     * @example
+     * // Get one TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TruckLaborLogsFindFirstArgs>(args?: SelectSubset<T, TruckLaborLogsFindFirstArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TruckLaborLogs that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsFindFirstOrThrowArgs} args - Arguments to find a TruckLaborLogs
+     * @example
+     * // Get one TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TruckLaborLogsFindFirstOrThrowArgs>(args?: SelectSubset<T, TruckLaborLogsFindFirstOrThrowArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TruckLaborLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.findMany()
+     * 
+     * // Get first 10 TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const truckLaborLogsWithIdOnly = await prisma.truckLaborLogs.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TruckLaborLogsFindManyArgs>(args?: SelectSubset<T, TruckLaborLogsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TruckLaborLogs.
+     * @param {TruckLaborLogsCreateArgs} args - Arguments to create a TruckLaborLogs.
+     * @example
+     * // Create one TruckLaborLogs
+     * const TruckLaborLogs = await prisma.truckLaborLogs.create({
+     *   data: {
+     *     // ... data to create a TruckLaborLogs
+     *   }
+     * })
+     * 
+     */
+    create<T extends TruckLaborLogsCreateArgs>(args: SelectSubset<T, TruckLaborLogsCreateArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TruckLaborLogs.
+     * @param {TruckLaborLogsCreateManyArgs} args - Arguments to create many TruckLaborLogs.
+     * @example
+     * // Create many TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TruckLaborLogsCreateManyArgs>(args?: SelectSubset<T, TruckLaborLogsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TruckLaborLogs and returns the data saved in the database.
+     * @param {TruckLaborLogsCreateManyAndReturnArgs} args - Arguments to create many TruckLaborLogs.
+     * @example
+     * // Create many TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TruckLaborLogs and only return the `id`
+     * const truckLaborLogsWithIdOnly = await prisma.truckLaborLogs.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TruckLaborLogsCreateManyAndReturnArgs>(args?: SelectSubset<T, TruckLaborLogsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TruckLaborLogs.
+     * @param {TruckLaborLogsDeleteArgs} args - Arguments to delete one TruckLaborLogs.
+     * @example
+     * // Delete one TruckLaborLogs
+     * const TruckLaborLogs = await prisma.truckLaborLogs.delete({
+     *   where: {
+     *     // ... filter to delete one TruckLaborLogs
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TruckLaborLogsDeleteArgs>(args: SelectSubset<T, TruckLaborLogsDeleteArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TruckLaborLogs.
+     * @param {TruckLaborLogsUpdateArgs} args - Arguments to update one TruckLaborLogs.
+     * @example
+     * // Update one TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TruckLaborLogsUpdateArgs>(args: SelectSubset<T, TruckLaborLogsUpdateArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TruckLaborLogs.
+     * @param {TruckLaborLogsDeleteManyArgs} args - Arguments to filter TruckLaborLogs to delete.
+     * @example
+     * // Delete a few TruckLaborLogs
+     * const { count } = await prisma.truckLaborLogs.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TruckLaborLogsDeleteManyArgs>(args?: SelectSubset<T, TruckLaborLogsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TruckLaborLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TruckLaborLogsUpdateManyArgs>(args: SelectSubset<T, TruckLaborLogsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TruckLaborLogs and returns the data updated in the database.
+     * @param {TruckLaborLogsUpdateManyAndReturnArgs} args - Arguments to update many TruckLaborLogs.
+     * @example
+     * // Update many TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TruckLaborLogs and only return the `id`
+     * const truckLaborLogsWithIdOnly = await prisma.truckLaborLogs.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TruckLaborLogsUpdateManyAndReturnArgs>(args: SelectSubset<T, TruckLaborLogsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TruckLaborLogs.
+     * @param {TruckLaborLogsUpsertArgs} args - Arguments to update or create a TruckLaborLogs.
+     * @example
+     * // Update or create a TruckLaborLogs
+     * const truckLaborLogs = await prisma.truckLaborLogs.upsert({
+     *   create: {
+     *     // ... data to create a TruckLaborLogs
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TruckLaborLogs we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TruckLaborLogsUpsertArgs>(args: SelectSubset<T, TruckLaborLogsUpsertArgs<ExtArgs>>): Prisma__TruckLaborLogsClient<$Result.GetResult<Prisma.$TruckLaborLogsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TruckLaborLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsCountArgs} args - Arguments to filter TruckLaborLogs to count.
+     * @example
+     * // Count the number of TruckLaborLogs
+     * const count = await prisma.truckLaborLogs.count({
+     *   where: {
+     *     // ... the filter for the TruckLaborLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends TruckLaborLogsCountArgs>(
+      args?: Subset<T, TruckLaborLogsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TruckLaborLogsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TruckLaborLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TruckLaborLogsAggregateArgs>(args: Subset<T, TruckLaborLogsAggregateArgs>): Prisma.PrismaPromise<GetTruckLaborLogsAggregateType<T>>
+
+    /**
+     * Group by TruckLaborLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TruckLaborLogsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TruckLaborLogsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TruckLaborLogsGroupByArgs['orderBy'] }
+        : { orderBy?: TruckLaborLogsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TruckLaborLogsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTruckLaborLogsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TruckLaborLogs model
+   */
+  readonly fields: TruckLaborLogsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TruckLaborLogs.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TruckLaborLogsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    TruckingLog<T extends TruckLaborLogs$TruckingLogArgs<ExtArgs> = {}>(args?: Subset<T, TruckLaborLogs$TruckingLogArgs<ExtArgs>>): Prisma__TruckingLogClient<$Result.GetResult<Prisma.$TruckingLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TruckLaborLogs model
+   */
+  interface TruckLaborLogsFieldRefs {
+    readonly id: FieldRef<"TruckLaborLogs", 'String'>
+    readonly truckingLogId: FieldRef<"TruckLaborLogs", 'String'>
+    readonly type: FieldRef<"TruckLaborLogs", 'String'>
+    readonly startTime: FieldRef<"TruckLaborLogs", 'DateTime'>
+    readonly endTime: FieldRef<"TruckLaborLogs", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TruckLaborLogs findUnique
+   */
+  export type TruckLaborLogsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * Filter, which TruckLaborLogs to fetch.
+     */
+    where: TruckLaborLogsWhereUniqueInput
+  }
+
+  /**
+   * TruckLaborLogs findUniqueOrThrow
+   */
+  export type TruckLaborLogsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * Filter, which TruckLaborLogs to fetch.
+     */
+    where: TruckLaborLogsWhereUniqueInput
+  }
+
+  /**
+   * TruckLaborLogs findFirst
+   */
+  export type TruckLaborLogsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * Filter, which TruckLaborLogs to fetch.
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TruckLaborLogs to fetch.
+     */
+    orderBy?: TruckLaborLogsOrderByWithRelationInput | TruckLaborLogsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TruckLaborLogs.
+     */
+    cursor?: TruckLaborLogsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TruckLaborLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TruckLaborLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TruckLaborLogs.
+     */
+    distinct?: TruckLaborLogsScalarFieldEnum | TruckLaborLogsScalarFieldEnum[]
+  }
+
+  /**
+   * TruckLaborLogs findFirstOrThrow
+   */
+  export type TruckLaborLogsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * Filter, which TruckLaborLogs to fetch.
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TruckLaborLogs to fetch.
+     */
+    orderBy?: TruckLaborLogsOrderByWithRelationInput | TruckLaborLogsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TruckLaborLogs.
+     */
+    cursor?: TruckLaborLogsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TruckLaborLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TruckLaborLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TruckLaborLogs.
+     */
+    distinct?: TruckLaborLogsScalarFieldEnum | TruckLaborLogsScalarFieldEnum[]
+  }
+
+  /**
+   * TruckLaborLogs findMany
+   */
+  export type TruckLaborLogsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * Filter, which TruckLaborLogs to fetch.
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TruckLaborLogs to fetch.
+     */
+    orderBy?: TruckLaborLogsOrderByWithRelationInput | TruckLaborLogsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TruckLaborLogs.
+     */
+    cursor?: TruckLaborLogsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TruckLaborLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TruckLaborLogs.
+     */
+    skip?: number
+    distinct?: TruckLaborLogsScalarFieldEnum | TruckLaborLogsScalarFieldEnum[]
+  }
+
+  /**
+   * TruckLaborLogs create
+   */
+  export type TruckLaborLogsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TruckLaborLogs.
+     */
+    data: XOR<TruckLaborLogsCreateInput, TruckLaborLogsUncheckedCreateInput>
+  }
+
+  /**
+   * TruckLaborLogs createMany
+   */
+  export type TruckLaborLogsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TruckLaborLogs.
+     */
+    data: TruckLaborLogsCreateManyInput | TruckLaborLogsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TruckLaborLogs createManyAndReturn
+   */
+  export type TruckLaborLogsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * The data used to create many TruckLaborLogs.
+     */
+    data: TruckLaborLogsCreateManyInput | TruckLaborLogsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TruckLaborLogs update
+   */
+  export type TruckLaborLogsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TruckLaborLogs.
+     */
+    data: XOR<TruckLaborLogsUpdateInput, TruckLaborLogsUncheckedUpdateInput>
+    /**
+     * Choose, which TruckLaborLogs to update.
+     */
+    where: TruckLaborLogsWhereUniqueInput
+  }
+
+  /**
+   * TruckLaborLogs updateMany
+   */
+  export type TruckLaborLogsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TruckLaborLogs.
+     */
+    data: XOR<TruckLaborLogsUpdateManyMutationInput, TruckLaborLogsUncheckedUpdateManyInput>
+    /**
+     * Filter which TruckLaborLogs to update
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * Limit how many TruckLaborLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TruckLaborLogs updateManyAndReturn
+   */
+  export type TruckLaborLogsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * The data used to update TruckLaborLogs.
+     */
+    data: XOR<TruckLaborLogsUpdateManyMutationInput, TruckLaborLogsUncheckedUpdateManyInput>
+    /**
+     * Filter which TruckLaborLogs to update
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * Limit how many TruckLaborLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TruckLaborLogs upsert
+   */
+  export type TruckLaborLogsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TruckLaborLogs to update in case it exists.
+     */
+    where: TruckLaborLogsWhereUniqueInput
+    /**
+     * In case the TruckLaborLogs found by the `where` argument doesn't exist, create a new TruckLaborLogs with this data.
+     */
+    create: XOR<TruckLaborLogsCreateInput, TruckLaborLogsUncheckedCreateInput>
+    /**
+     * In case the TruckLaborLogs was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TruckLaborLogsUpdateInput, TruckLaborLogsUncheckedUpdateInput>
+  }
+
+  /**
+   * TruckLaborLogs delete
+   */
+  export type TruckLaborLogsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
+    /**
+     * Filter which TruckLaborLogs to delete.
+     */
+    where: TruckLaborLogsWhereUniqueInput
+  }
+
+  /**
+   * TruckLaborLogs deleteMany
+   */
+  export type TruckLaborLogsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TruckLaborLogs to delete
+     */
+    where?: TruckLaborLogsWhereInput
+    /**
+     * Limit how many TruckLaborLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TruckLaborLogs.TruckingLog
+   */
+  export type TruckLaborLogs$TruckingLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckingLog
+     */
+    select?: TruckingLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckingLog
+     */
+    omit?: TruckingLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckingLogInclude<ExtArgs> | null
+    where?: TruckingLogWhereInput
+  }
+
+  /**
+   * TruckLaborLogs without action
+   */
+  export type TruckLaborLogsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TruckLaborLogs
+     */
+    select?: TruckLaborLogsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TruckLaborLogs
+     */
+    omit?: TruckLaborLogsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckLaborLogsInclude<ExtArgs> | null
   }
 
 
@@ -49435,6 +50640,17 @@ export namespace Prisma {
   export type TruckingLogScalarFieldEnum = (typeof TruckingLogScalarFieldEnum)[keyof typeof TruckingLogScalarFieldEnum]
 
 
+  export const TruckLaborLogsScalarFieldEnum: {
+    id: 'id',
+    truckingLogId: 'truckingLogId',
+    type: 'type',
+    startTime: 'startTime',
+    endTime: 'endTime'
+  };
+
+  export type TruckLaborLogsScalarFieldEnum = (typeof TruckLaborLogsScalarFieldEnum)[keyof typeof TruckLaborLogsScalarFieldEnum]
+
+
   export const StateMileageScalarFieldEnum: {
     id: 'id',
     truckingLogId: 'truckingLogId',
@@ -51907,6 +53123,7 @@ export namespace Prisma {
     Materials?: MaterialListRelationFilter
     RefuelLogs?: RefuelLogListRelationFilter
     StateMileages?: StateMileageListRelationFilter
+    TruckingLaborLogs?: TruckLaborLogsListRelationFilter
     Equipment?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
     TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
     Trailer?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
@@ -51928,6 +53145,7 @@ export namespace Prisma {
     Materials?: MaterialOrderByRelationAggregateInput
     RefuelLogs?: RefuelLogOrderByRelationAggregateInput
     StateMileages?: StateMileageOrderByRelationAggregateInput
+    TruckingLaborLogs?: TruckLaborLogsOrderByRelationAggregateInput
     Equipment?: EquipmentOrderByWithRelationInput
     TimeSheet?: TimeSheetOrderByWithRelationInput
     Trailer?: EquipmentOrderByWithRelationInput
@@ -51952,6 +53170,7 @@ export namespace Prisma {
     Materials?: MaterialListRelationFilter
     RefuelLogs?: RefuelLogListRelationFilter
     StateMileages?: StateMileageListRelationFilter
+    TruckingLaborLogs?: TruckLaborLogsListRelationFilter
     Equipment?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
     TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
     Trailer?: XOR<EquipmentNullableScalarRelationFilter, EquipmentWhereInput> | null
@@ -51990,6 +53209,61 @@ export namespace Prisma {
     truckLaborLogId?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
     trailerNumber?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
     truckNumber?: StringNullableWithAggregatesFilter<"TruckingLog"> | string | null
+  }
+
+  export type TruckLaborLogsWhereInput = {
+    AND?: TruckLaborLogsWhereInput | TruckLaborLogsWhereInput[]
+    OR?: TruckLaborLogsWhereInput[]
+    NOT?: TruckLaborLogsWhereInput | TruckLaborLogsWhereInput[]
+    id?: StringFilter<"TruckLaborLogs"> | string
+    truckingLogId?: StringNullableFilter<"TruckLaborLogs"> | string | null
+    type?: StringFilter<"TruckLaborLogs"> | string
+    startTime?: DateTimeFilter<"TruckLaborLogs"> | Date | string
+    endTime?: DateTimeNullableFilter<"TruckLaborLogs"> | Date | string | null
+    TruckingLog?: XOR<TruckingLogNullableScalarRelationFilter, TruckingLogWhereInput> | null
+  }
+
+  export type TruckLaborLogsOrderByWithRelationInput = {
+    id?: SortOrder
+    truckingLogId?: SortOrderInput | SortOrder
+    type?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrderInput | SortOrder
+    TruckingLog?: TruckingLogOrderByWithRelationInput
+  }
+
+  export type TruckLaborLogsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TruckLaborLogsWhereInput | TruckLaborLogsWhereInput[]
+    OR?: TruckLaborLogsWhereInput[]
+    NOT?: TruckLaborLogsWhereInput | TruckLaborLogsWhereInput[]
+    truckingLogId?: StringNullableFilter<"TruckLaborLogs"> | string | null
+    type?: StringFilter<"TruckLaborLogs"> | string
+    startTime?: DateTimeFilter<"TruckLaborLogs"> | Date | string
+    endTime?: DateTimeNullableFilter<"TruckLaborLogs"> | Date | string | null
+    TruckingLog?: XOR<TruckingLogNullableScalarRelationFilter, TruckingLogWhereInput> | null
+  }, "id">
+
+  export type TruckLaborLogsOrderByWithAggregationInput = {
+    id?: SortOrder
+    truckingLogId?: SortOrderInput | SortOrder
+    type?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrderInput | SortOrder
+    _count?: TruckLaborLogsCountOrderByAggregateInput
+    _max?: TruckLaborLogsMaxOrderByAggregateInput
+    _min?: TruckLaborLogsMinOrderByAggregateInput
+  }
+
+  export type TruckLaborLogsScalarWhereWithAggregatesInput = {
+    AND?: TruckLaborLogsScalarWhereWithAggregatesInput | TruckLaborLogsScalarWhereWithAggregatesInput[]
+    OR?: TruckLaborLogsScalarWhereWithAggregatesInput[]
+    NOT?: TruckLaborLogsScalarWhereWithAggregatesInput | TruckLaborLogsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TruckLaborLogs"> | string
+    truckingLogId?: StringNullableWithAggregatesFilter<"TruckLaborLogs"> | string | null
+    type?: StringWithAggregatesFilter<"TruckLaborLogs"> | string
+    startTime?: DateTimeWithAggregatesFilter<"TruckLaborLogs"> | Date | string
+    endTime?: DateTimeNullableWithAggregatesFilter<"TruckLaborLogs"> | Date | string | null
   }
 
   export type StateMileageWhereInput = {
@@ -55114,6 +56388,7 @@ export namespace Prisma {
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
@@ -55135,6 +56410,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogUpdateInput = {
@@ -55148,6 +56424,7 @@ export namespace Prisma {
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
@@ -55169,6 +56446,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TruckingLogCreateManyInput = {
@@ -55204,6 +56482,61 @@ export namespace Prisma {
     truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
     trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
     truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TruckLaborLogsCreateInput = {
+    id?: string
+    type: string
+    startTime: Date | string
+    endTime?: Date | string | null
+    TruckingLog?: TruckingLogCreateNestedOneWithoutTruckingLaborLogsInput
+  }
+
+  export type TruckLaborLogsUncheckedCreateInput = {
+    id?: string
+    truckingLogId?: string | null
+    type: string
+    startTime: Date | string
+    endTime?: Date | string | null
+  }
+
+  export type TruckLaborLogsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    TruckingLog?: TruckingLogUpdateOneWithoutTruckingLaborLogsNestedInput
+  }
+
+  export type TruckLaborLogsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    truckingLogId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TruckLaborLogsCreateManyInput = {
+    id?: string
+    truckingLogId?: string | null
+    type: string
+    startTime: Date | string
+    endTime?: Date | string | null
+  }
+
+  export type TruckLaborLogsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TruckLaborLogsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    truckingLogId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type StateMileageCreateInput = {
@@ -58178,11 +59511,21 @@ export namespace Prisma {
     none?: StateMileageWhereInput
   }
 
+  export type TruckLaborLogsListRelationFilter = {
+    every?: TruckLaborLogsWhereInput
+    some?: TruckLaborLogsWhereInput
+    none?: TruckLaborLogsWhereInput
+  }
+
   export type MaterialOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type StateMileageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TruckLaborLogsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -58235,6 +59578,35 @@ export namespace Prisma {
     timeSheetId?: SortOrder
     startingMileage?: SortOrder
     endingMileage?: SortOrder
+  }
+
+  export type TruckingLogNullableScalarRelationFilter = {
+    is?: TruckingLogWhereInput | null
+    isNot?: TruckingLogWhereInput | null
+  }
+
+  export type TruckLaborLogsCountOrderByAggregateInput = {
+    id?: SortOrder
+    truckingLogId?: SortOrder
+    type?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+  }
+
+  export type TruckLaborLogsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    truckingLogId?: SortOrder
+    type?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+  }
+
+  export type TruckLaborLogsMinOrderByAggregateInput = {
+    id?: SortOrder
+    truckingLogId?: SortOrder
+    type?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type TruckingLogScalarRelationFilter = {
@@ -58342,11 +59714,6 @@ export namespace Prisma {
   export type TascoLogNullableScalarRelationFilter = {
     is?: TascoLogWhereInput | null
     isNot?: TascoLogWhereInput | null
-  }
-
-  export type TruckingLogNullableScalarRelationFilter = {
-    is?: TruckingLogWhereInput | null
-    isNot?: TruckingLogWhereInput | null
   }
 
   export type RefuelLogCountOrderByAggregateInput = {
@@ -61019,6 +62386,13 @@ export namespace Prisma {
     connect?: StateMileageWhereUniqueInput | StateMileageWhereUniqueInput[]
   }
 
+  export type TruckLaborLogsCreateNestedManyWithoutTruckingLogInput = {
+    create?: XOR<TruckLaborLogsCreateWithoutTruckingLogInput, TruckLaborLogsUncheckedCreateWithoutTruckingLogInput> | TruckLaborLogsCreateWithoutTruckingLogInput[] | TruckLaborLogsUncheckedCreateWithoutTruckingLogInput[]
+    connectOrCreate?: TruckLaborLogsCreateOrConnectWithoutTruckingLogInput | TruckLaborLogsCreateOrConnectWithoutTruckingLogInput[]
+    createMany?: TruckLaborLogsCreateManyTruckingLogInputEnvelope
+    connect?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+  }
+
   export type EquipmentCreateNestedOneWithoutHauledInLogsInput = {
     create?: XOR<EquipmentCreateWithoutHauledInLogsInput, EquipmentUncheckedCreateWithoutHauledInLogsInput>
     connectOrCreate?: EquipmentCreateOrConnectWithoutHauledInLogsInput
@@ -61069,6 +62443,13 @@ export namespace Prisma {
     connectOrCreate?: StateMileageCreateOrConnectWithoutTruckingLogInput | StateMileageCreateOrConnectWithoutTruckingLogInput[]
     createMany?: StateMileageCreateManyTruckingLogInputEnvelope
     connect?: StateMileageWhereUniqueInput | StateMileageWhereUniqueInput[]
+  }
+
+  export type TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput = {
+    create?: XOR<TruckLaborLogsCreateWithoutTruckingLogInput, TruckLaborLogsUncheckedCreateWithoutTruckingLogInput> | TruckLaborLogsCreateWithoutTruckingLogInput[] | TruckLaborLogsUncheckedCreateWithoutTruckingLogInput[]
+    connectOrCreate?: TruckLaborLogsCreateOrConnectWithoutTruckingLogInput | TruckLaborLogsCreateOrConnectWithoutTruckingLogInput[]
+    createMany?: TruckLaborLogsCreateManyTruckingLogInputEnvelope
+    connect?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
   }
 
   export type EquipmentHauledUpdateManyWithoutTruckingLogNestedInput = {
@@ -61125,6 +62506,20 @@ export namespace Prisma {
     update?: StateMileageUpdateWithWhereUniqueWithoutTruckingLogInput | StateMileageUpdateWithWhereUniqueWithoutTruckingLogInput[]
     updateMany?: StateMileageUpdateManyWithWhereWithoutTruckingLogInput | StateMileageUpdateManyWithWhereWithoutTruckingLogInput[]
     deleteMany?: StateMileageScalarWhereInput | StateMileageScalarWhereInput[]
+  }
+
+  export type TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput = {
+    create?: XOR<TruckLaborLogsCreateWithoutTruckingLogInput, TruckLaborLogsUncheckedCreateWithoutTruckingLogInput> | TruckLaborLogsCreateWithoutTruckingLogInput[] | TruckLaborLogsUncheckedCreateWithoutTruckingLogInput[]
+    connectOrCreate?: TruckLaborLogsCreateOrConnectWithoutTruckingLogInput | TruckLaborLogsCreateOrConnectWithoutTruckingLogInput[]
+    upsert?: TruckLaborLogsUpsertWithWhereUniqueWithoutTruckingLogInput | TruckLaborLogsUpsertWithWhereUniqueWithoutTruckingLogInput[]
+    createMany?: TruckLaborLogsCreateManyTruckingLogInputEnvelope
+    set?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    disconnect?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    delete?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    connect?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    update?: TruckLaborLogsUpdateWithWhereUniqueWithoutTruckingLogInput | TruckLaborLogsUpdateWithWhereUniqueWithoutTruckingLogInput[]
+    updateMany?: TruckLaborLogsUpdateManyWithWhereWithoutTruckingLogInput | TruckLaborLogsUpdateManyWithWhereWithoutTruckingLogInput[]
+    deleteMany?: TruckLaborLogsScalarWhereInput | TruckLaborLogsScalarWhereInput[]
   }
 
   export type EquipmentUpdateOneWithoutHauledInLogsNestedInput = {
@@ -61219,6 +62614,36 @@ export namespace Prisma {
     update?: StateMileageUpdateWithWhereUniqueWithoutTruckingLogInput | StateMileageUpdateWithWhereUniqueWithoutTruckingLogInput[]
     updateMany?: StateMileageUpdateManyWithWhereWithoutTruckingLogInput | StateMileageUpdateManyWithWhereWithoutTruckingLogInput[]
     deleteMany?: StateMileageScalarWhereInput | StateMileageScalarWhereInput[]
+  }
+
+  export type TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput = {
+    create?: XOR<TruckLaborLogsCreateWithoutTruckingLogInput, TruckLaborLogsUncheckedCreateWithoutTruckingLogInput> | TruckLaborLogsCreateWithoutTruckingLogInput[] | TruckLaborLogsUncheckedCreateWithoutTruckingLogInput[]
+    connectOrCreate?: TruckLaborLogsCreateOrConnectWithoutTruckingLogInput | TruckLaborLogsCreateOrConnectWithoutTruckingLogInput[]
+    upsert?: TruckLaborLogsUpsertWithWhereUniqueWithoutTruckingLogInput | TruckLaborLogsUpsertWithWhereUniqueWithoutTruckingLogInput[]
+    createMany?: TruckLaborLogsCreateManyTruckingLogInputEnvelope
+    set?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    disconnect?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    delete?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    connect?: TruckLaborLogsWhereUniqueInput | TruckLaborLogsWhereUniqueInput[]
+    update?: TruckLaborLogsUpdateWithWhereUniqueWithoutTruckingLogInput | TruckLaborLogsUpdateWithWhereUniqueWithoutTruckingLogInput[]
+    updateMany?: TruckLaborLogsUpdateManyWithWhereWithoutTruckingLogInput | TruckLaborLogsUpdateManyWithWhereWithoutTruckingLogInput[]
+    deleteMany?: TruckLaborLogsScalarWhereInput | TruckLaborLogsScalarWhereInput[]
+  }
+
+  export type TruckingLogCreateNestedOneWithoutTruckingLaborLogsInput = {
+    create?: XOR<TruckingLogCreateWithoutTruckingLaborLogsInput, TruckingLogUncheckedCreateWithoutTruckingLaborLogsInput>
+    connectOrCreate?: TruckingLogCreateOrConnectWithoutTruckingLaborLogsInput
+    connect?: TruckingLogWhereUniqueInput
+  }
+
+  export type TruckingLogUpdateOneWithoutTruckingLaborLogsNestedInput = {
+    create?: XOR<TruckingLogCreateWithoutTruckingLaborLogsInput, TruckingLogUncheckedCreateWithoutTruckingLaborLogsInput>
+    connectOrCreate?: TruckingLogCreateOrConnectWithoutTruckingLaborLogsInput
+    upsert?: TruckingLogUpsertWithoutTruckingLaborLogsInput
+    disconnect?: TruckingLogWhereInput | boolean
+    delete?: TruckingLogWhereInput | boolean
+    connect?: TruckingLogWhereUniqueInput
+    update?: XOR<XOR<TruckingLogUpdateToOneWithWhereWithoutTruckingLaborLogsInput, TruckingLogUpdateWithoutTruckingLaborLogsInput>, TruckingLogUncheckedUpdateWithoutTruckingLaborLogsInput>
   }
 
   export type TruckingLogCreateNestedOneWithoutStateMileagesInput = {
@@ -63897,6 +65322,7 @@ export namespace Prisma {
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
     Truck?: EquipmentCreateNestedOneWithoutUsedAsTruckInput
@@ -63916,6 +65342,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutEquipmentInput = {
@@ -63939,6 +65366,7 @@ export namespace Prisma {
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Truck?: EquipmentCreateNestedOneWithoutUsedAsTruckInput
@@ -63958,6 +65386,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutTrailerInput = {
@@ -63981,6 +65410,7 @@ export namespace Prisma {
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
@@ -64000,6 +65430,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutTruckInput = {
@@ -66608,6 +68039,7 @@ export namespace Prisma {
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
     Truck?: EquipmentCreateNestedOneWithoutUsedAsTruckInput
@@ -66627,6 +68059,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutTimeSheetInput = {
@@ -68191,6 +69624,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TruckLaborLogsCreateWithoutTruckingLogInput = {
+    id?: string
+    type: string
+    startTime: Date | string
+    endTime?: Date | string | null
+  }
+
+  export type TruckLaborLogsUncheckedCreateWithoutTruckingLogInput = {
+    id?: string
+    type: string
+    startTime: Date | string
+    endTime?: Date | string | null
+  }
+
+  export type TruckLaborLogsCreateOrConnectWithoutTruckingLogInput = {
+    where: TruckLaborLogsWhereUniqueInput
+    create: XOR<TruckLaborLogsCreateWithoutTruckingLogInput, TruckLaborLogsUncheckedCreateWithoutTruckingLogInput>
+  }
+
+  export type TruckLaborLogsCreateManyTruckingLogInputEnvelope = {
+    data: TruckLaborLogsCreateManyTruckingLogInput | TruckLaborLogsCreateManyTruckingLogInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EquipmentCreateWithoutHauledInLogsInput = {
     id?: string
     qrId: string
@@ -68593,6 +70050,33 @@ export namespace Prisma {
     stateLineMileage?: IntNullableFilter<"StateMileage"> | number | null
   }
 
+  export type TruckLaborLogsUpsertWithWhereUniqueWithoutTruckingLogInput = {
+    where: TruckLaborLogsWhereUniqueInput
+    update: XOR<TruckLaborLogsUpdateWithoutTruckingLogInput, TruckLaborLogsUncheckedUpdateWithoutTruckingLogInput>
+    create: XOR<TruckLaborLogsCreateWithoutTruckingLogInput, TruckLaborLogsUncheckedCreateWithoutTruckingLogInput>
+  }
+
+  export type TruckLaborLogsUpdateWithWhereUniqueWithoutTruckingLogInput = {
+    where: TruckLaborLogsWhereUniqueInput
+    data: XOR<TruckLaborLogsUpdateWithoutTruckingLogInput, TruckLaborLogsUncheckedUpdateWithoutTruckingLogInput>
+  }
+
+  export type TruckLaborLogsUpdateManyWithWhereWithoutTruckingLogInput = {
+    where: TruckLaborLogsScalarWhereInput
+    data: XOR<TruckLaborLogsUpdateManyMutationInput, TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogInput>
+  }
+
+  export type TruckLaborLogsScalarWhereInput = {
+    AND?: TruckLaborLogsScalarWhereInput | TruckLaborLogsScalarWhereInput[]
+    OR?: TruckLaborLogsScalarWhereInput[]
+    NOT?: TruckLaborLogsScalarWhereInput | TruckLaborLogsScalarWhereInput[]
+    id?: StringFilter<"TruckLaborLogs"> | string
+    truckingLogId?: StringNullableFilter<"TruckLaborLogs"> | string | null
+    type?: StringFilter<"TruckLaborLogs"> | string
+    startTime?: DateTimeFilter<"TruckLaborLogs"> | Date | string
+    endTime?: DateTimeNullableFilter<"TruckLaborLogs"> | Date | string | null
+  }
+
   export type EquipmentUpsertWithoutHauledInLogsInput = {
     update: XOR<EquipmentUpdateWithoutHauledInLogsInput, EquipmentUncheckedUpdateWithoutHauledInLogsInput>
     create: XOR<EquipmentCreateWithoutHauledInLogsInput, EquipmentUncheckedCreateWithoutHauledInLogsInput>
@@ -68930,6 +70414,90 @@ export namespace Prisma {
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
+  export type TruckingLogCreateWithoutTruckingLaborLogsInput = {
+    id?: string
+    laborType: string
+    taskName?: string | null
+    startingMileage?: number | null
+    endingMileage?: number | null
+    truckLaborLogId?: string | null
+    EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutTruckingLogInput
+    Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
+    RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
+    StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
+    TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
+    Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
+    Truck?: EquipmentCreateNestedOneWithoutUsedAsTruckInput
+  }
+
+  export type TruckingLogUncheckedCreateWithoutTruckingLaborLogsInput = {
+    id?: string
+    timeSheetId: number
+    laborType: string
+    taskName?: string | null
+    equipmentId?: string | null
+    startingMileage?: number | null
+    endingMileage?: number | null
+    truckLaborLogId?: string | null
+    trailerNumber?: string | null
+    truckNumber?: string | null
+    EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
+    Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
+    RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
+    StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+  }
+
+  export type TruckingLogCreateOrConnectWithoutTruckingLaborLogsInput = {
+    where: TruckingLogWhereUniqueInput
+    create: XOR<TruckingLogCreateWithoutTruckingLaborLogsInput, TruckingLogUncheckedCreateWithoutTruckingLaborLogsInput>
+  }
+
+  export type TruckingLogUpsertWithoutTruckingLaborLogsInput = {
+    update: XOR<TruckingLogUpdateWithoutTruckingLaborLogsInput, TruckingLogUncheckedUpdateWithoutTruckingLaborLogsInput>
+    create: XOR<TruckingLogCreateWithoutTruckingLaborLogsInput, TruckingLogUncheckedCreateWithoutTruckingLaborLogsInput>
+    where?: TruckingLogWhereInput
+  }
+
+  export type TruckingLogUpdateToOneWithWhereWithoutTruckingLaborLogsInput = {
+    where?: TruckingLogWhereInput
+    data: XOR<TruckingLogUpdateWithoutTruckingLaborLogsInput, TruckingLogUncheckedUpdateWithoutTruckingLaborLogsInput>
+  }
+
+  export type TruckingLogUpdateWithoutTruckingLaborLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    laborType?: StringFieldUpdateOperationsInput | string
+    taskName?: NullableStringFieldUpdateOperationsInput | string | null
+    startingMileage?: NullableIntFieldUpdateOperationsInput | number | null
+    endingMileage?: NullableIntFieldUpdateOperationsInput | number | null
+    truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
+    EquipmentHauled?: EquipmentHauledUpdateManyWithoutTruckingLogNestedInput
+    Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
+    RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
+    StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
+    TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
+    Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
+    Truck?: EquipmentUpdateOneWithoutUsedAsTruckNestedInput
+  }
+
+  export type TruckingLogUncheckedUpdateWithoutTruckingLaborLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    laborType?: StringFieldUpdateOperationsInput | string
+    taskName?: NullableStringFieldUpdateOperationsInput | string | null
+    equipmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    startingMileage?: NullableIntFieldUpdateOperationsInput | number | null
+    endingMileage?: NullableIntFieldUpdateOperationsInput | number | null
+    truckLaborLogId?: NullableStringFieldUpdateOperationsInput | string | null
+    trailerNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    truckNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
+    Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
+    RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
+    StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+  }
+
   export type TruckingLogCreateWithoutStateMileagesInput = {
     id?: string
     laborType: string
@@ -68940,6 +70508,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
@@ -68960,6 +70529,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutStateMileagesInput = {
@@ -68988,6 +70558,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
@@ -69008,6 +70579,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TruckingLogCreateWithoutMaterialsInput = {
@@ -69020,6 +70592,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
@@ -69040,6 +70613,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutMaterialsInput = {
@@ -69068,6 +70642,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
@@ -69088,6 +70663,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type EmployeeEquipmentLogCreateWithoutRefuelLogInput = {
@@ -69154,6 +70730,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
@@ -69174,6 +70751,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutTruckingLogInput
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutRefuelLogsInput = {
@@ -69268,6 +70846,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
@@ -69288,6 +70867,7 @@ export namespace Prisma {
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutTruckingLogNestedInput
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type EquipmentCreateWithoutEquipmentHauledInput = {
@@ -69381,6 +70961,7 @@ export namespace Prisma {
     Materials?: MaterialCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsCreateNestedManyWithoutTruckingLogInput
     Equipment?: EquipmentCreateNestedOneWithoutHauledInLogsInput
     TimeSheet: TimeSheetCreateNestedOneWithoutTruckingLogsInput
     Trailer?: EquipmentCreateNestedOneWithoutUsedAsTrailerInput
@@ -69401,6 +70982,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedCreateNestedManyWithoutTruckingLogInput
     RefuelLogs?: RefuelLogUncheckedCreateNestedManyWithoutTruckingLogInput
     StateMileages?: StateMileageUncheckedCreateNestedManyWithoutTruckingLogInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedCreateNestedManyWithoutTruckingLogInput
   }
 
   export type TruckingLogCreateOrConnectWithoutEquipmentHauledInput = {
@@ -69516,6 +71098,7 @@ export namespace Prisma {
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
@@ -69536,6 +71119,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TimeSheetCreateWithoutChangeLogsInput = {
@@ -72903,6 +74487,7 @@ export namespace Prisma {
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
     Truck?: EquipmentUpdateOneWithoutUsedAsTruckNestedInput
@@ -72922,6 +74507,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TruckingLogUncheckedUpdateManyWithoutEquipmentInput = {
@@ -72947,6 +74533,7 @@ export namespace Prisma {
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Truck?: EquipmentUpdateOneWithoutUsedAsTruckNestedInput
@@ -72966,6 +74553,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TruckingLogUncheckedUpdateManyWithoutTrailerInput = {
@@ -72991,6 +74579,7 @@ export namespace Prisma {
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     TimeSheet?: TimeSheetUpdateOneRequiredWithoutTruckingLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
@@ -73010,6 +74599,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TruckingLogUncheckedUpdateManyWithoutTruckInput = {
@@ -73606,6 +75196,7 @@ export namespace Prisma {
     Materials?: MaterialUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUpdateManyWithoutTruckingLogNestedInput
     Equipment?: EquipmentUpdateOneWithoutHauledInLogsNestedInput
     Trailer?: EquipmentUpdateOneWithoutUsedAsTrailerNestedInput
     Truck?: EquipmentUpdateOneWithoutUsedAsTruckNestedInput
@@ -73625,6 +75216,7 @@ export namespace Prisma {
     Materials?: MaterialUncheckedUpdateManyWithoutTruckingLogNestedInput
     RefuelLogs?: RefuelLogUncheckedUpdateManyWithoutTruckingLogNestedInput
     StateMileages?: StateMileageUncheckedUpdateManyWithoutTruckingLogNestedInput
+    TruckingLaborLogs?: TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogNestedInput
   }
 
   export type TruckingLogUncheckedUpdateManyWithoutTimeSheetInput = {
@@ -73850,6 +75442,13 @@ export namespace Prisma {
     stateLineMileage?: number | null
   }
 
+  export type TruckLaborLogsCreateManyTruckingLogInput = {
+    id?: string
+    type: string
+    startTime: Date | string
+    endTime?: Date | string | null
+  }
+
   export type EquipmentHauledUpdateWithoutTruckingLogInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73953,6 +75552,27 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     state?: NullableStringFieldUpdateOperationsInput | string | null
     stateLineMileage?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type TruckLaborLogsUpdateWithoutTruckingLogInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TruckLaborLogsUncheckedUpdateWithoutTruckingLogInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TruckLaborLogsUncheckedUpdateManyWithoutTruckingLogInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type EquipmentCreateManyCreatedByInput = {
