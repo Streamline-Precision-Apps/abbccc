@@ -22,7 +22,7 @@ const EquipmentSchema = z.array(
       "IN_USE",
       "RETIRED",
     ]),
-  })
+  }),
 );
 
 type EquipmentItem = z.infer<typeof EquipmentSchema>[number];
@@ -61,17 +61,18 @@ export const EquipmentListProvider = ({
         ) {
           const recentEquipmentList = await fetchWithOfflineCache(
             "getEquipmentList",
-            () => fetch("/api/getEquipmentList").then((res) => res.json())
+            () => fetch("/api/getEquipmentList").then((res) => res.json()),
           );
-          
+
           // Handle case when data is null (offline with no cache)
           if (recentEquipmentList === null) {
             console.warn("No cached equipment list data available offline");
             setEquipmentListResults([]);
           } else {
-            const validatedEquipmentList = EquipmentSchema.parse(recentEquipmentList);
+            const validatedEquipmentList =
+              EquipmentSchema.parse(recentEquipmentList);
             const isAvailableEquipment = validatedEquipmentList.filter(
-              (item) => item.state === "AVAILABLE"
+              (item) => item.state === "AVAILABLE",
             );
             setEquipmentListResults(isAvailableEquipment);
           }

@@ -34,20 +34,18 @@ export const JobsiteSelector = ({
   // The new hook only provides selectedJobSite, not a list
   const { selectedJobSite } = useJobSite();
   const t = useTranslations("Clock");
-  
+
   // Fetch jobsites with offline support
   useEffect(() => {
     let isMounted = true;
     const loadJobsites = async () => {
       try {
-        const data = await fetchWithOfflineCache(
-          "getJobsiteSummary",
-          () =>
-            fetch("/api/getJobsiteSummary").then((res) =>
-              res.json() as Promise<JobsiteResult[]>,
-            ),
+        const data = await fetchWithOfflineCache("getJobsiteSummary", () =>
+          fetch("/api/getJobsiteSummary").then(
+            (res) => res.json() as Promise<JobsiteResult[]>,
+          ),
         );
-        
+
         if (isMounted && data !== null) {
           // Handle case when data is null (offline with no cache)
           if (Array.isArray(data)) {
