@@ -27,12 +27,24 @@ model TimeSheet {
   wasInjured            Boolean?               @default(false)
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
+  Maintenance           mechanicProjects[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
   ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
+}
+
+// new prosed model
+model mechanicProjects {
+  id          Int       @id @default(autoincrement())
+  timeSheetId Int
+  hours       Float?
+  equipmentId String
+  description String? // full notes
+  TimeSheet   TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id])
 }
 
 model MaintenanceLog {

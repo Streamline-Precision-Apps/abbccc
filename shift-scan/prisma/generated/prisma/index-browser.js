@@ -352,6 +352,14 @@ exports.Prisma.TimeSheetScalarFieldEnum = {
   wasInjured: 'wasInjured'
 };
 
+exports.Prisma.MechanicProjectsScalarFieldEnum = {
+  id: 'id',
+  timeSheetId: 'timeSheetId',
+  hours: 'hours',
+  equipmentId: 'equipmentId',
+  description: 'description'
+};
+
 exports.Prisma.MaintenanceLogScalarFieldEnum = {
   id: 'id',
   timeSheetId: 'timeSheetId',
@@ -738,6 +746,7 @@ exports.Prisma.ModelName = {
   Report: 'Report',
   ReportRun: 'ReportRun',
   TimeSheet: 'TimeSheet',
+  mechanicProjects: 'mechanicProjects',
   MaintenanceLog: 'MaintenanceLog',
   Maintenance: 'Maintenance',
   TascoLog: 'TascoLog',

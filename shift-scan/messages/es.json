@@ -1388,6 +1388,24 @@
     "Delay": "Demora",
     "NoDelay": "Sin retraso",
     "DelayStatus": "Estado de retraso",
-    "SubmitProject": "Proyecto de envío"
+    "SubmitProject": "Proyecto de envío",
+    "HoursWorked": "Horas trabajadas",
+    "EnterHoursWorked": "Ingresar horas trabajadas...",
+    "RepairDescription": "Descripción de la reparación",
+    "DescribeRepair": "Describa la reparación...",
+    "Submit": "Enviar",
+    "CreateNewProject": "Crear nuevo proyecto",
+    "LoadingProjects": "Cargando proyectos...",
+    "Submitting": "Enviando...",
+    "Hours": "Horas",
+    "UpdateProject": "Actualizar proyecto",
+    "Update": "Actualizar",
+    "Updating": "Actualizando...",
+    "PullToRefresh": "Desliza para actualizar",
+    "ReleaseToRefresh": "Suelta para actualizar",
+    "RefreshingProjects": "Actualizando proyectos...",
+    "DeleteProject": "Eliminar proyecto",
+    "DeleteProjectConfirmation": "¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.",
+    "Deleting": "Eliminando..."
   }
 }

@@ -107,6 +107,7 @@ model Equipment {
   UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
   UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
+  Maintenance           mechanicProjects[]
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
@@ -319,12 +320,24 @@ model TimeSheet {
   wasInjured            Boolean?               @default(false)
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
+  Maintenance           mechanicProjects[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
   ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
+}
+
+// new prosed model
+model mechanicProjects {
+  id          Int       @id @default(autoincrement())
+  timeSheetId Int
+  hours       Float?
+  equipmentId String
+  description String? // full notes
+  TimeSheet   TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id])
 }
 
 model MaintenanceLog {
@@ -683,6 +696,13 @@ enum FormTemplateCategory {
   INCIDENT
   FINANCE
   OTHER
+  //  HR – hiring, onboarding, leave, evaluations
+  // Finance – payroll, reimbursements, invoices, taxes
+  // Operations – scheduling, approvals, workflows
+  // Compliance – policies, contracts, regulatory forms
+  // Clients – intake, feedback, orders, agreements
+  // IT – access requests, troubleshooting, equipment use
+  // Safety – incidents, inspections, maintenance
 }
 
 enum CreatedVia {

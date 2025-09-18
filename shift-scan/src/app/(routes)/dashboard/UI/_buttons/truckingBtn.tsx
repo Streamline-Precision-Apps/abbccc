@@ -27,11 +27,12 @@ export default function TruckingBtn({
             laborType === "truckDriver"
               ? "TruckDriver"
               : laborType === "manualLabor"
-              ? "ManualLabor"
-              : laborType === "operator"
-              ? "Operator"
-              : "TruckingAssistant"
+                ? "ManualLabor"
+                : laborType === "operator"
+                  ? "Operator"
+                  : "TruckingAssistant"
           }
+          textSize={"h6"}
           titleImg={"/trucking.svg"}
           titleImgAlt={"Trucking Icon"}
           color={"green"}
@@ -44,11 +45,12 @@ export default function TruckingBtn({
             laborType === "truckDriver"
               ? "TruckDriver"
               : laborType === "manualLabor"
-              ? "ManualLabor"
-              : laborType === "operator"
-              ? "Operator"
-              : "TruckingAssistant"
+                ? "ManualLabor"
+                : laborType === "operator"
+                  ? "Operator"
+                  : "TruckingAssistant"
           }
+          textSize={"h6"}
           titleImg={"/trucking.svg"}
           titleImgAlt={"Trucking Icon"}
           color={"green"}

@@ -23,7 +23,7 @@ export default function MechanicBtn({
   useEffect(() => {
     const checkCookie = async () => {
       const response = await fetch(
-        "/api/cookies?method=get&name=mechanicProjectID"
+        "/api/cookies?method=get&name=mechanicProjectID",
       );
       const data = await response.json();
       console.log(data);
@@ -40,11 +40,12 @@ export default function MechanicBtn({
           titleImg={"/mechanic.svg"}
           titleImgAlt={"Mechanic Icon"}
           color={"green"}
+          textSize={"h6"}
           handleEvent={() => {
             router.push(
               projectID
                 ? `/dashboard/mechanic/projects/${projectID}`
-                : "/dashboard/mechanic"
+                : "/dashboard/mechanic",
             );
           }}
         />
@@ -54,11 +55,12 @@ export default function MechanicBtn({
           titleImg={"/mechanic.svg"}
           titleImgAlt={"Mechanic Icon"}
           color={"green"}
+          textSize={"h6"}
           handleEvent={() => {
             router.push(
               projectID
                 ? `/dashboard/mechanic/projects/${projectID}`
-                : "/dashboard/mechanic"
+                : "/dashboard/mechanic",
             );
           }}
         />

@@ -104,6 +104,11 @@ export type ReportRun = $Result.DefaultSelection<Prisma.$ReportRunPayload>
  */
 export type TimeSheet = $Result.DefaultSelection<Prisma.$TimeSheetPayload>
 /**
+ * Model mechanicProjects
+ * 
+ */
+export type mechanicProjects = $Result.DefaultSelection<Prisma.$mechanicProjectsPayload>
+/**
  * Model MaintenanceLog
  * 
  */
@@ -787,6 +792,16 @@ export class PrismaClient<
   get timeSheet(): Prisma.TimeSheetDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.mechanicProjects`: Exposes CRUD operations for the **mechanicProjects** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MechanicProjects
+    * const mechanicProjects = await prisma.mechanicProjects.findMany()
+    * ```
+    */
+  get mechanicProjects(): Prisma.mechanicProjectsDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.maintenanceLog`: Exposes CRUD operations for the **MaintenanceLog** model.
     * Example usage:
     * ```ts
@@ -1433,6 +1448,7 @@ export namespace Prisma {
     Report: 'Report',
     ReportRun: 'ReportRun',
     TimeSheet: 'TimeSheet',
+    mechanicProjects: 'mechanicProjects',
     MaintenanceLog: 'MaintenanceLog',
     Maintenance: 'Maintenance',
     TascoLog: 'TascoLog',
@@ -1470,7 +1486,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "company" | "costCode" | "cCTag" | "crew" | "pdfDocument" | "documentTag" | "equipment" | "employeeEquipmentLog" | "formTemplate" | "formGrouping" | "formField" | "formFieldOption" | "formSubmission" | "formApproval" | "jobsite" | "report" | "reportRun" | "timeSheet" | "maintenanceLog" | "maintenance" | "tascoLog" | "tascoMaterialTypes" | "truckingLog" | "stateMileage" | "material" | "refuelLog" | "equipmentHauled" | "timeSheetChangeLog" | "user" | "userSettings" | "contacts" | "passwordResetToken" | "accountSetupToken" | "address" | "fCMToken" | "topicSubscription" | "notification"
+      modelProps: "company" | "costCode" | "cCTag" | "crew" | "pdfDocument" | "documentTag" | "equipment" | "employeeEquipmentLog" | "formTemplate" | "formGrouping" | "formField" | "formFieldOption" | "formSubmission" | "formApproval" | "jobsite" | "report" | "reportRun" | "timeSheet" | "mechanicProjects" | "maintenanceLog" | "maintenance" | "tascoLog" | "tascoMaterialTypes" | "truckingLog" | "stateMileage" | "material" | "refuelLog" | "equipmentHauled" | "timeSheetChangeLog" | "user" | "userSettings" | "contacts" | "passwordResetToken" | "accountSetupToken" | "address" | "fCMToken" | "topicSubscription" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2803,6 +2819,80 @@ export namespace Prisma {
           count: {
             args: Prisma.TimeSheetCountArgs<ExtArgs>
             result: $Utils.Optional<TimeSheetCountAggregateOutputType> | number
+          }
+        }
+      }
+      mechanicProjects: {
+        payload: Prisma.$mechanicProjectsPayload<ExtArgs>
+        fields: Prisma.mechanicProjectsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.mechanicProjectsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.mechanicProjectsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>
+          }
+          findFirst: {
+            args: Prisma.mechanicProjectsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.mechanicProjectsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>
+          }
+          findMany: {
+            args: Prisma.mechanicProjectsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>[]
+          }
+          create: {
+            args: Prisma.mechanicProjectsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>
+          }
+          createMany: {
+            args: Prisma.mechanicProjectsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.mechanicProjectsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>[]
+          }
+          delete: {
+            args: Prisma.mechanicProjectsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>
+          }
+          update: {
+            args: Prisma.mechanicProjectsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>
+          }
+          deleteMany: {
+            args: Prisma.mechanicProjectsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.mechanicProjectsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.mechanicProjectsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>[]
+          }
+          upsert: {
+            args: Prisma.mechanicProjectsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$mechanicProjectsPayload>
+          }
+          aggregate: {
+            args: Prisma.MechanicProjectsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMechanicProjects>
+          }
+          groupBy: {
+            args: Prisma.mechanicProjectsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MechanicProjectsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.mechanicProjectsCountArgs<ExtArgs>
+            result: $Utils.Optional<MechanicProjectsCountAggregateOutputType> | number
           }
         }
       }
@@ -4322,6 +4412,7 @@ export namespace Prisma {
     report?: ReportOmit
     reportRun?: ReportRunOmit
     timeSheet?: TimeSheetOmit
+    mechanicProjects?: mechanicProjectsOmit
     maintenanceLog?: MaintenanceLogOmit
     maintenance?: MaintenanceOmit
     tascoLog?: TascoLogOmit
@@ -4660,6 +4751,7 @@ export namespace Prisma {
     UsedAsTrailer: number
     UsedAsTruck: number
     DocumentTags: number
+    Maintenance: number
   }
 
   export type EquipmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4671,6 +4763,7 @@ export namespace Prisma {
     UsedAsTrailer?: boolean | EquipmentCountOutputTypeCountUsedAsTrailerArgs
     UsedAsTruck?: boolean | EquipmentCountOutputTypeCountUsedAsTruckArgs
     DocumentTags?: boolean | EquipmentCountOutputTypeCountDocumentTagsArgs
+    Maintenance?: boolean | EquipmentCountOutputTypeCountMaintenanceArgs
   }
 
   // Custom InputTypes
@@ -4738,6 +4831,13 @@ export namespace Prisma {
    */
   export type EquipmentCountOutputTypeCountDocumentTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DocumentTagWhereInput
+  }
+
+  /**
+   * EquipmentCountOutputType without action
+   */
+  export type EquipmentCountOutputTypeCountMaintenanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: mechanicProjectsWhereInput
   }
 
 
@@ -4961,6 +5061,7 @@ export namespace Prisma {
   export type TimeSheetCountOutputType = {
     EmployeeEquipmentLogs: number
     MaintenanceLogs: number
+    Maintenance: number
     TascoLogs: number
     TruckingLogs: number
     ChangeLogs: number
@@ -4969,6 +5070,7 @@ export namespace Prisma {
   export type TimeSheetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     EmployeeEquipmentLogs?: boolean | TimeSheetCountOutputTypeCountEmployeeEquipmentLogsArgs
     MaintenanceLogs?: boolean | TimeSheetCountOutputTypeCountMaintenanceLogsArgs
+    Maintenance?: boolean | TimeSheetCountOutputTypeCountMaintenanceArgs
     TascoLogs?: boolean | TimeSheetCountOutputTypeCountTascoLogsArgs
     TruckingLogs?: boolean | TimeSheetCountOutputTypeCountTruckingLogsArgs
     ChangeLogs?: boolean | TimeSheetCountOutputTypeCountChangeLogsArgs
@@ -4997,6 +5099,13 @@ export namespace Prisma {
    */
   export type TimeSheetCountOutputTypeCountMaintenanceLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MaintenanceLogWhereInput
+  }
+
+  /**
+   * TimeSheetCountOutputType without action
+   */
+  export type TimeSheetCountOutputTypeCountMaintenanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: mechanicProjectsWhereInput
   }
 
   /**
@@ -12407,6 +12516,7 @@ export namespace Prisma {
     UsedAsTrailer?: boolean | Equipment$UsedAsTrailerArgs<ExtArgs>
     UsedAsTruck?: boolean | Equipment$UsedAsTruckArgs<ExtArgs>
     DocumentTags?: boolean | Equipment$DocumentTagsArgs<ExtArgs>
+    Maintenance?: boolean | Equipment$MaintenanceArgs<ExtArgs>
     _count?: boolean | EquipmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["equipment"]>
 
@@ -12516,6 +12626,7 @@ export namespace Prisma {
     UsedAsTrailer?: boolean | Equipment$UsedAsTrailerArgs<ExtArgs>
     UsedAsTruck?: boolean | Equipment$UsedAsTruckArgs<ExtArgs>
     DocumentTags?: boolean | Equipment$DocumentTagsArgs<ExtArgs>
+    Maintenance?: boolean | Equipment$MaintenanceArgs<ExtArgs>
     _count?: boolean | EquipmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EquipmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12537,6 +12648,7 @@ export namespace Prisma {
       UsedAsTrailer: Prisma.$TruckingLogPayload<ExtArgs>[]
       UsedAsTruck: Prisma.$TruckingLogPayload<ExtArgs>[]
       DocumentTags: Prisma.$DocumentTagPayload<ExtArgs>[]
+      Maintenance: Prisma.$mechanicProjectsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12970,6 +13082,7 @@ export namespace Prisma {
     UsedAsTrailer<T extends Equipment$UsedAsTrailerArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$UsedAsTrailerArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckingLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     UsedAsTruck<T extends Equipment$UsedAsTruckArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$UsedAsTruckArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TruckingLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     DocumentTags<T extends Equipment$DocumentTagsArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$DocumentTagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Maintenance<T extends Equipment$MaintenanceArgs<ExtArgs> = {}>(args?: Subset<T, Equipment$MaintenanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13631,6 +13744,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DocumentTagScalarFieldEnum | DocumentTagScalarFieldEnum[]
+  }
+
+  /**
+   * Equipment.Maintenance
+   */
+  export type Equipment$MaintenanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    where?: mechanicProjectsWhereInput
+    orderBy?: mechanicProjectsOrderByWithRelationInput | mechanicProjectsOrderByWithRelationInput[]
+    cursor?: mechanicProjectsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MechanicProjectsScalarFieldEnum | MechanicProjectsScalarFieldEnum[]
   }
 
   /**
@@ -25821,6 +25958,7 @@ export namespace Prisma {
     wasInjured?: boolean
     EmployeeEquipmentLogs?: boolean | TimeSheet$EmployeeEquipmentLogsArgs<ExtArgs>
     MaintenanceLogs?: boolean | TimeSheet$MaintenanceLogsArgs<ExtArgs>
+    Maintenance?: boolean | TimeSheet$MaintenanceArgs<ExtArgs>
     TascoLogs?: boolean | TimeSheet$TascoLogsArgs<ExtArgs>
     CostCode?: boolean | CostCodeDefaultArgs<ExtArgs>
     Jobsite?: boolean | JobsiteDefaultArgs<ExtArgs>
@@ -25927,6 +26065,7 @@ export namespace Prisma {
   export type TimeSheetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     EmployeeEquipmentLogs?: boolean | TimeSheet$EmployeeEquipmentLogsArgs<ExtArgs>
     MaintenanceLogs?: boolean | TimeSheet$MaintenanceLogsArgs<ExtArgs>
+    Maintenance?: boolean | TimeSheet$MaintenanceArgs<ExtArgs>
     TascoLogs?: boolean | TimeSheet$TascoLogsArgs<ExtArgs>
     CostCode?: boolean | CostCodeDefaultArgs<ExtArgs>
     Jobsite?: boolean | JobsiteDefaultArgs<ExtArgs>
@@ -25951,6 +26090,7 @@ export namespace Prisma {
     objects: {
       EmployeeEquipmentLogs: Prisma.$EmployeeEquipmentLogPayload<ExtArgs>[]
       MaintenanceLogs: Prisma.$MaintenanceLogPayload<ExtArgs>[]
+      Maintenance: Prisma.$mechanicProjectsPayload<ExtArgs>[]
       TascoLogs: Prisma.$TascoLogPayload<ExtArgs>[]
       CostCode: Prisma.$CostCodePayload<ExtArgs>
       Jobsite: Prisma.$JobsitePayload<ExtArgs>
@@ -26381,6 +26521,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     EmployeeEquipmentLogs<T extends TimeSheet$EmployeeEquipmentLogsArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$EmployeeEquipmentLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeEquipmentLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     MaintenanceLogs<T extends TimeSheet$MaintenanceLogsArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$MaintenanceLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Maintenance<T extends TimeSheet$MaintenanceArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$MaintenanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TascoLogs<T extends TimeSheet$TascoLogsArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheet$TascoLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TascoLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     CostCode<T extends CostCodeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CostCodeDefaultArgs<ExtArgs>>): Prisma__CostCodeClient<$Result.GetResult<Prisma.$CostCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     Jobsite<T extends JobsiteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, JobsiteDefaultArgs<ExtArgs>>): Prisma__JobsiteClient<$Result.GetResult<Prisma.$JobsitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -26886,6 +27027,30 @@ export namespace Prisma {
   }
 
   /**
+   * TimeSheet.Maintenance
+   */
+  export type TimeSheet$MaintenanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    where?: mechanicProjectsWhereInput
+    orderBy?: mechanicProjectsOrderByWithRelationInput | mechanicProjectsOrderByWithRelationInput[]
+    cursor?: mechanicProjectsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MechanicProjectsScalarFieldEnum | MechanicProjectsScalarFieldEnum[]
+  }
+
+  /**
    * TimeSheet.TascoLogs
    */
   export type TimeSheet$TascoLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -26973,6 +27138,1114 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TimeSheetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model mechanicProjects
+   */
+
+  export type AggregateMechanicProjects = {
+    _count: MechanicProjectsCountAggregateOutputType | null
+    _avg: MechanicProjectsAvgAggregateOutputType | null
+    _sum: MechanicProjectsSumAggregateOutputType | null
+    _min: MechanicProjectsMinAggregateOutputType | null
+    _max: MechanicProjectsMaxAggregateOutputType | null
+  }
+
+  export type MechanicProjectsAvgAggregateOutputType = {
+    id: number | null
+    timeSheetId: number | null
+    hours: number | null
+  }
+
+  export type MechanicProjectsSumAggregateOutputType = {
+    id: number | null
+    timeSheetId: number | null
+    hours: number | null
+  }
+
+  export type MechanicProjectsMinAggregateOutputType = {
+    id: number | null
+    timeSheetId: number | null
+    hours: number | null
+    equipmentId: string | null
+    description: string | null
+  }
+
+  export type MechanicProjectsMaxAggregateOutputType = {
+    id: number | null
+    timeSheetId: number | null
+    hours: number | null
+    equipmentId: string | null
+    description: string | null
+  }
+
+  export type MechanicProjectsCountAggregateOutputType = {
+    id: number
+    timeSheetId: number
+    hours: number
+    equipmentId: number
+    description: number
+    _all: number
+  }
+
+
+  export type MechanicProjectsAvgAggregateInputType = {
+    id?: true
+    timeSheetId?: true
+    hours?: true
+  }
+
+  export type MechanicProjectsSumAggregateInputType = {
+    id?: true
+    timeSheetId?: true
+    hours?: true
+  }
+
+  export type MechanicProjectsMinAggregateInputType = {
+    id?: true
+    timeSheetId?: true
+    hours?: true
+    equipmentId?: true
+    description?: true
+  }
+
+  export type MechanicProjectsMaxAggregateInputType = {
+    id?: true
+    timeSheetId?: true
+    hours?: true
+    equipmentId?: true
+    description?: true
+  }
+
+  export type MechanicProjectsCountAggregateInputType = {
+    id?: true
+    timeSheetId?: true
+    hours?: true
+    equipmentId?: true
+    description?: true
+    _all?: true
+  }
+
+  export type MechanicProjectsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which mechanicProjects to aggregate.
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of mechanicProjects to fetch.
+     */
+    orderBy?: mechanicProjectsOrderByWithRelationInput | mechanicProjectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: mechanicProjectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` mechanicProjects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` mechanicProjects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned mechanicProjects
+    **/
+    _count?: true | MechanicProjectsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MechanicProjectsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MechanicProjectsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MechanicProjectsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MechanicProjectsMaxAggregateInputType
+  }
+
+  export type GetMechanicProjectsAggregateType<T extends MechanicProjectsAggregateArgs> = {
+        [P in keyof T & keyof AggregateMechanicProjects]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMechanicProjects[P]>
+      : GetScalarType<T[P], AggregateMechanicProjects[P]>
+  }
+
+
+
+
+  export type mechanicProjectsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: mechanicProjectsWhereInput
+    orderBy?: mechanicProjectsOrderByWithAggregationInput | mechanicProjectsOrderByWithAggregationInput[]
+    by: MechanicProjectsScalarFieldEnum[] | MechanicProjectsScalarFieldEnum
+    having?: mechanicProjectsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MechanicProjectsCountAggregateInputType | true
+    _avg?: MechanicProjectsAvgAggregateInputType
+    _sum?: MechanicProjectsSumAggregateInputType
+    _min?: MechanicProjectsMinAggregateInputType
+    _max?: MechanicProjectsMaxAggregateInputType
+  }
+
+  export type MechanicProjectsGroupByOutputType = {
+    id: number
+    timeSheetId: number
+    hours: number | null
+    equipmentId: string
+    description: string | null
+    _count: MechanicProjectsCountAggregateOutputType | null
+    _avg: MechanicProjectsAvgAggregateOutputType | null
+    _sum: MechanicProjectsSumAggregateOutputType | null
+    _min: MechanicProjectsMinAggregateOutputType | null
+    _max: MechanicProjectsMaxAggregateOutputType | null
+  }
+
+  type GetMechanicProjectsGroupByPayload<T extends mechanicProjectsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MechanicProjectsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MechanicProjectsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MechanicProjectsGroupByOutputType[P]>
+            : GetScalarType<T[P], MechanicProjectsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type mechanicProjectsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timeSheetId?: boolean
+    hours?: boolean
+    equipmentId?: boolean
+    description?: boolean
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    Equipment?: boolean | EquipmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["mechanicProjects"]>
+
+  export type mechanicProjectsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timeSheetId?: boolean
+    hours?: boolean
+    equipmentId?: boolean
+    description?: boolean
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    Equipment?: boolean | EquipmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["mechanicProjects"]>
+
+  export type mechanicProjectsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timeSheetId?: boolean
+    hours?: boolean
+    equipmentId?: boolean
+    description?: boolean
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    Equipment?: boolean | EquipmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["mechanicProjects"]>
+
+  export type mechanicProjectsSelectScalar = {
+    id?: boolean
+    timeSheetId?: boolean
+    hours?: boolean
+    equipmentId?: boolean
+    description?: boolean
+  }
+
+  export type mechanicProjectsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timeSheetId" | "hours" | "equipmentId" | "description", ExtArgs["result"]["mechanicProjects"]>
+  export type mechanicProjectsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    Equipment?: boolean | EquipmentDefaultArgs<ExtArgs>
+  }
+  export type mechanicProjectsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    Equipment?: boolean | EquipmentDefaultArgs<ExtArgs>
+  }
+  export type mechanicProjectsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    TimeSheet?: boolean | TimeSheetDefaultArgs<ExtArgs>
+    Equipment?: boolean | EquipmentDefaultArgs<ExtArgs>
+  }
+
+  export type $mechanicProjectsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "mechanicProjects"
+    objects: {
+      TimeSheet: Prisma.$TimeSheetPayload<ExtArgs>
+      Equipment: Prisma.$EquipmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      timeSheetId: number
+      hours: number | null
+      equipmentId: string
+      description: string | null
+    }, ExtArgs["result"]["mechanicProjects"]>
+    composites: {}
+  }
+
+  type mechanicProjectsGetPayload<S extends boolean | null | undefined | mechanicProjectsDefaultArgs> = $Result.GetResult<Prisma.$mechanicProjectsPayload, S>
+
+  type mechanicProjectsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<mechanicProjectsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MechanicProjectsCountAggregateInputType | true
+    }
+
+  export interface mechanicProjectsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['mechanicProjects'], meta: { name: 'mechanicProjects' } }
+    /**
+     * Find zero or one MechanicProjects that matches the filter.
+     * @param {mechanicProjectsFindUniqueArgs} args - Arguments to find a MechanicProjects
+     * @example
+     * // Get one MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends mechanicProjectsFindUniqueArgs>(args: SelectSubset<T, mechanicProjectsFindUniqueArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MechanicProjects that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {mechanicProjectsFindUniqueOrThrowArgs} args - Arguments to find a MechanicProjects
+     * @example
+     * // Get one MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends mechanicProjectsFindUniqueOrThrowArgs>(args: SelectSubset<T, mechanicProjectsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MechanicProjects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {mechanicProjectsFindFirstArgs} args - Arguments to find a MechanicProjects
+     * @example
+     * // Get one MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends mechanicProjectsFindFirstArgs>(args?: SelectSubset<T, mechanicProjectsFindFirstArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MechanicProjects that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {mechanicProjectsFindFirstOrThrowArgs} args - Arguments to find a MechanicProjects
+     * @example
+     * // Get one MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends mechanicProjectsFindFirstOrThrowArgs>(args?: SelectSubset<T, mechanicProjectsFindFirstOrThrowArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MechanicProjects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {mechanicProjectsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.findMany()
+     * 
+     * // Get first 10 MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const mechanicProjectsWithIdOnly = await prisma.mechanicProjects.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends mechanicProjectsFindManyArgs>(args?: SelectSubset<T, mechanicProjectsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MechanicProjects.
+     * @param {mechanicProjectsCreateArgs} args - Arguments to create a MechanicProjects.
+     * @example
+     * // Create one MechanicProjects
+     * const MechanicProjects = await prisma.mechanicProjects.create({
+     *   data: {
+     *     // ... data to create a MechanicProjects
+     *   }
+     * })
+     * 
+     */
+    create<T extends mechanicProjectsCreateArgs>(args: SelectSubset<T, mechanicProjectsCreateArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MechanicProjects.
+     * @param {mechanicProjectsCreateManyArgs} args - Arguments to create many MechanicProjects.
+     * @example
+     * // Create many MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends mechanicProjectsCreateManyArgs>(args?: SelectSubset<T, mechanicProjectsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MechanicProjects and returns the data saved in the database.
+     * @param {mechanicProjectsCreateManyAndReturnArgs} args - Arguments to create many MechanicProjects.
+     * @example
+     * // Create many MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MechanicProjects and only return the `id`
+     * const mechanicProjectsWithIdOnly = await prisma.mechanicProjects.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends mechanicProjectsCreateManyAndReturnArgs>(args?: SelectSubset<T, mechanicProjectsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MechanicProjects.
+     * @param {mechanicProjectsDeleteArgs} args - Arguments to delete one MechanicProjects.
+     * @example
+     * // Delete one MechanicProjects
+     * const MechanicProjects = await prisma.mechanicProjects.delete({
+     *   where: {
+     *     // ... filter to delete one MechanicProjects
+     *   }
+     * })
+     * 
+     */
+    delete<T extends mechanicProjectsDeleteArgs>(args: SelectSubset<T, mechanicProjectsDeleteArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MechanicProjects.
+     * @param {mechanicProjectsUpdateArgs} args - Arguments to update one MechanicProjects.
+     * @example
+     * // Update one MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends mechanicProjectsUpdateArgs>(args: SelectSubset<T, mechanicProjectsUpdateArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MechanicProjects.
+     * @param {mechanicProjectsDeleteManyArgs} args - Arguments to filter MechanicProjects to delete.
+     * @example
+     * // Delete a few MechanicProjects
+     * const { count } = await prisma.mechanicProjects.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends mechanicProjectsDeleteManyArgs>(args?: SelectSubset<T, mechanicProjectsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MechanicProjects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {mechanicProjectsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends mechanicProjectsUpdateManyArgs>(args: SelectSubset<T, mechanicProjectsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MechanicProjects and returns the data updated in the database.
+     * @param {mechanicProjectsUpdateManyAndReturnArgs} args - Arguments to update many MechanicProjects.
+     * @example
+     * // Update many MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MechanicProjects and only return the `id`
+     * const mechanicProjectsWithIdOnly = await prisma.mechanicProjects.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends mechanicProjectsUpdateManyAndReturnArgs>(args: SelectSubset<T, mechanicProjectsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MechanicProjects.
+     * @param {mechanicProjectsUpsertArgs} args - Arguments to update or create a MechanicProjects.
+     * @example
+     * // Update or create a MechanicProjects
+     * const mechanicProjects = await prisma.mechanicProjects.upsert({
+     *   create: {
+     *     // ... data to create a MechanicProjects
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MechanicProjects we want to update
+     *   }
+     * })
+     */
+    upsert<T extends mechanicProjectsUpsertArgs>(args: SelectSubset<T, mechanicProjectsUpsertArgs<ExtArgs>>): Prisma__mechanicProjectsClient<$Result.GetResult<Prisma.$mechanicProjectsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MechanicProjects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {mechanicProjectsCountArgs} args - Arguments to filter MechanicProjects to count.
+     * @example
+     * // Count the number of MechanicProjects
+     * const count = await prisma.mechanicProjects.count({
+     *   where: {
+     *     // ... the filter for the MechanicProjects we want to count
+     *   }
+     * })
+    **/
+    count<T extends mechanicProjectsCountArgs>(
+      args?: Subset<T, mechanicProjectsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MechanicProjectsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MechanicProjects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MechanicProjectsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MechanicProjectsAggregateArgs>(args: Subset<T, MechanicProjectsAggregateArgs>): Prisma.PrismaPromise<GetMechanicProjectsAggregateType<T>>
+
+    /**
+     * Group by MechanicProjects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {mechanicProjectsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends mechanicProjectsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: mechanicProjectsGroupByArgs['orderBy'] }
+        : { orderBy?: mechanicProjectsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, mechanicProjectsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMechanicProjectsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the mechanicProjects model
+   */
+  readonly fields: mechanicProjectsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for mechanicProjects.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__mechanicProjectsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    TimeSheet<T extends TimeSheetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TimeSheetDefaultArgs<ExtArgs>>): Prisma__TimeSheetClient<$Result.GetResult<Prisma.$TimeSheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    Equipment<T extends EquipmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EquipmentDefaultArgs<ExtArgs>>): Prisma__EquipmentClient<$Result.GetResult<Prisma.$EquipmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the mechanicProjects model
+   */
+  interface mechanicProjectsFieldRefs {
+    readonly id: FieldRef<"mechanicProjects", 'Int'>
+    readonly timeSheetId: FieldRef<"mechanicProjects", 'Int'>
+    readonly hours: FieldRef<"mechanicProjects", 'Float'>
+    readonly equipmentId: FieldRef<"mechanicProjects", 'String'>
+    readonly description: FieldRef<"mechanicProjects", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * mechanicProjects findUnique
+   */
+  export type mechanicProjectsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * Filter, which mechanicProjects to fetch.
+     */
+    where: mechanicProjectsWhereUniqueInput
+  }
+
+  /**
+   * mechanicProjects findUniqueOrThrow
+   */
+  export type mechanicProjectsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * Filter, which mechanicProjects to fetch.
+     */
+    where: mechanicProjectsWhereUniqueInput
+  }
+
+  /**
+   * mechanicProjects findFirst
+   */
+  export type mechanicProjectsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * Filter, which mechanicProjects to fetch.
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of mechanicProjects to fetch.
+     */
+    orderBy?: mechanicProjectsOrderByWithRelationInput | mechanicProjectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for mechanicProjects.
+     */
+    cursor?: mechanicProjectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` mechanicProjects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` mechanicProjects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of mechanicProjects.
+     */
+    distinct?: MechanicProjectsScalarFieldEnum | MechanicProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * mechanicProjects findFirstOrThrow
+   */
+  export type mechanicProjectsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * Filter, which mechanicProjects to fetch.
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of mechanicProjects to fetch.
+     */
+    orderBy?: mechanicProjectsOrderByWithRelationInput | mechanicProjectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for mechanicProjects.
+     */
+    cursor?: mechanicProjectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` mechanicProjects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` mechanicProjects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of mechanicProjects.
+     */
+    distinct?: MechanicProjectsScalarFieldEnum | MechanicProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * mechanicProjects findMany
+   */
+  export type mechanicProjectsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * Filter, which mechanicProjects to fetch.
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of mechanicProjects to fetch.
+     */
+    orderBy?: mechanicProjectsOrderByWithRelationInput | mechanicProjectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing mechanicProjects.
+     */
+    cursor?: mechanicProjectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` mechanicProjects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` mechanicProjects.
+     */
+    skip?: number
+    distinct?: MechanicProjectsScalarFieldEnum | MechanicProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * mechanicProjects create
+   */
+  export type mechanicProjectsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a mechanicProjects.
+     */
+    data: XOR<mechanicProjectsCreateInput, mechanicProjectsUncheckedCreateInput>
+  }
+
+  /**
+   * mechanicProjects createMany
+   */
+  export type mechanicProjectsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many mechanicProjects.
+     */
+    data: mechanicProjectsCreateManyInput | mechanicProjectsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * mechanicProjects createManyAndReturn
+   */
+  export type mechanicProjectsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * The data used to create many mechanicProjects.
+     */
+    data: mechanicProjectsCreateManyInput | mechanicProjectsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * mechanicProjects update
+   */
+  export type mechanicProjectsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a mechanicProjects.
+     */
+    data: XOR<mechanicProjectsUpdateInput, mechanicProjectsUncheckedUpdateInput>
+    /**
+     * Choose, which mechanicProjects to update.
+     */
+    where: mechanicProjectsWhereUniqueInput
+  }
+
+  /**
+   * mechanicProjects updateMany
+   */
+  export type mechanicProjectsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update mechanicProjects.
+     */
+    data: XOR<mechanicProjectsUpdateManyMutationInput, mechanicProjectsUncheckedUpdateManyInput>
+    /**
+     * Filter which mechanicProjects to update
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * Limit how many mechanicProjects to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * mechanicProjects updateManyAndReturn
+   */
+  export type mechanicProjectsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * The data used to update mechanicProjects.
+     */
+    data: XOR<mechanicProjectsUpdateManyMutationInput, mechanicProjectsUncheckedUpdateManyInput>
+    /**
+     * Filter which mechanicProjects to update
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * Limit how many mechanicProjects to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * mechanicProjects upsert
+   */
+  export type mechanicProjectsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the mechanicProjects to update in case it exists.
+     */
+    where: mechanicProjectsWhereUniqueInput
+    /**
+     * In case the mechanicProjects found by the `where` argument doesn't exist, create a new mechanicProjects with this data.
+     */
+    create: XOR<mechanicProjectsCreateInput, mechanicProjectsUncheckedCreateInput>
+    /**
+     * In case the mechanicProjects was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<mechanicProjectsUpdateInput, mechanicProjectsUncheckedUpdateInput>
+  }
+
+  /**
+   * mechanicProjects delete
+   */
+  export type mechanicProjectsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
+    /**
+     * Filter which mechanicProjects to delete.
+     */
+    where: mechanicProjectsWhereUniqueInput
+  }
+
+  /**
+   * mechanicProjects deleteMany
+   */
+  export type mechanicProjectsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which mechanicProjects to delete
+     */
+    where?: mechanicProjectsWhereInput
+    /**
+     * Limit how many mechanicProjects to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * mechanicProjects without action
+   */
+  export type mechanicProjectsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the mechanicProjects
+     */
+    select?: mechanicProjectsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the mechanicProjects
+     */
+    omit?: mechanicProjectsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: mechanicProjectsInclude<ExtArgs> | null
   }
 
 
@@ -49392,6 +50665,17 @@ export namespace Prisma {
   export type TimeSheetScalarFieldEnum = (typeof TimeSheetScalarFieldEnum)[keyof typeof TimeSheetScalarFieldEnum]
 
 
+  export const MechanicProjectsScalarFieldEnum: {
+    id: 'id',
+    timeSheetId: 'timeSheetId',
+    hours: 'hours',
+    equipmentId: 'equipmentId',
+    description: 'description'
+  };
+
+  export type MechanicProjectsScalarFieldEnum = (typeof MechanicProjectsScalarFieldEnum)[keyof typeof MechanicProjectsScalarFieldEnum]
+
+
   export const MaintenanceLogScalarFieldEnum: {
     id: 'id',
     timeSheetId: 'timeSheetId',
@@ -50454,6 +51738,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogListRelationFilter
     UsedAsTruck?: TruckingLogListRelationFilter
     DocumentTags?: DocumentTagListRelationFilter
+    Maintenance?: MechanicProjectsListRelationFilter
   }
 
   export type EquipmentOrderByWithRelationInput = {
@@ -50494,6 +51779,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogOrderByRelationAggregateInput
     UsedAsTruck?: TruckingLogOrderByRelationAggregateInput
     DocumentTags?: DocumentTagOrderByRelationAggregateInput
+    Maintenance?: mechanicProjectsOrderByRelationAggregateInput
   }
 
   export type EquipmentWhereUniqueInput = Prisma.AtLeast<{
@@ -50537,6 +51823,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogListRelationFilter
     UsedAsTruck?: TruckingLogListRelationFilter
     DocumentTags?: DocumentTagListRelationFilter
+    Maintenance?: MechanicProjectsListRelationFilter
   }, "id" | "qrId">
 
   export type EquipmentOrderByWithAggregationInput = {
@@ -51454,6 +52741,7 @@ export namespace Prisma {
     wasInjured?: BoolNullableFilter<"TimeSheet"> | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
     MaintenanceLogs?: MaintenanceLogListRelationFilter
+    Maintenance?: MechanicProjectsListRelationFilter
     TascoLogs?: TascoLogListRelationFilter
     CostCode?: XOR<CostCodeScalarRelationFilter, CostCodeWhereInput>
     Jobsite?: XOR<JobsiteScalarRelationFilter, JobsiteWhereInput>
@@ -51491,6 +52779,7 @@ export namespace Prisma {
     wasInjured?: SortOrderInput | SortOrder
     EmployeeEquipmentLogs?: EmployeeEquipmentLogOrderByRelationAggregateInput
     MaintenanceLogs?: MaintenanceLogOrderByRelationAggregateInput
+    Maintenance?: mechanicProjectsOrderByRelationAggregateInput
     TascoLogs?: TascoLogOrderByRelationAggregateInput
     CostCode?: CostCodeOrderByWithRelationInput
     Jobsite?: JobsiteOrderByWithRelationInput
@@ -51531,6 +52820,7 @@ export namespace Prisma {
     wasInjured?: BoolNullableFilter<"TimeSheet"> | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
     MaintenanceLogs?: MaintenanceLogListRelationFilter
+    Maintenance?: MechanicProjectsListRelationFilter
     TascoLogs?: TascoLogListRelationFilter
     CostCode?: XOR<CostCodeScalarRelationFilter, CostCodeWhereInput>
     Jobsite?: XOR<JobsiteScalarRelationFilter, JobsiteWhereInput>
@@ -51603,6 +52893,66 @@ export namespace Prisma {
     withinFenceIn?: BoolNullableWithAggregatesFilter<"TimeSheet"> | boolean | null
     withinFenceOut?: BoolNullableWithAggregatesFilter<"TimeSheet"> | boolean | null
     wasInjured?: BoolNullableWithAggregatesFilter<"TimeSheet"> | boolean | null
+  }
+
+  export type mechanicProjectsWhereInput = {
+    AND?: mechanicProjectsWhereInput | mechanicProjectsWhereInput[]
+    OR?: mechanicProjectsWhereInput[]
+    NOT?: mechanicProjectsWhereInput | mechanicProjectsWhereInput[]
+    id?: IntFilter<"mechanicProjects"> | number
+    timeSheetId?: IntFilter<"mechanicProjects"> | number
+    hours?: FloatNullableFilter<"mechanicProjects"> | number | null
+    equipmentId?: StringFilter<"mechanicProjects"> | string
+    description?: StringNullableFilter<"mechanicProjects"> | string | null
+    TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
+    Equipment?: XOR<EquipmentScalarRelationFilter, EquipmentWhereInput>
+  }
+
+  export type mechanicProjectsOrderByWithRelationInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrderInput | SortOrder
+    equipmentId?: SortOrder
+    description?: SortOrderInput | SortOrder
+    TimeSheet?: TimeSheetOrderByWithRelationInput
+    Equipment?: EquipmentOrderByWithRelationInput
+  }
+
+  export type mechanicProjectsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: mechanicProjectsWhereInput | mechanicProjectsWhereInput[]
+    OR?: mechanicProjectsWhereInput[]
+    NOT?: mechanicProjectsWhereInput | mechanicProjectsWhereInput[]
+    timeSheetId?: IntFilter<"mechanicProjects"> | number
+    hours?: FloatNullableFilter<"mechanicProjects"> | number | null
+    equipmentId?: StringFilter<"mechanicProjects"> | string
+    description?: StringNullableFilter<"mechanicProjects"> | string | null
+    TimeSheet?: XOR<TimeSheetScalarRelationFilter, TimeSheetWhereInput>
+    Equipment?: XOR<EquipmentScalarRelationFilter, EquipmentWhereInput>
+  }, "id">
+
+  export type mechanicProjectsOrderByWithAggregationInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrderInput | SortOrder
+    equipmentId?: SortOrder
+    description?: SortOrderInput | SortOrder
+    _count?: mechanicProjectsCountOrderByAggregateInput
+    _avg?: mechanicProjectsAvgOrderByAggregateInput
+    _max?: mechanicProjectsMaxOrderByAggregateInput
+    _min?: mechanicProjectsMinOrderByAggregateInput
+    _sum?: mechanicProjectsSumOrderByAggregateInput
+  }
+
+  export type mechanicProjectsScalarWhereWithAggregatesInput = {
+    AND?: mechanicProjectsScalarWhereWithAggregatesInput | mechanicProjectsScalarWhereWithAggregatesInput[]
+    OR?: mechanicProjectsScalarWhereWithAggregatesInput[]
+    NOT?: mechanicProjectsScalarWhereWithAggregatesInput | mechanicProjectsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"mechanicProjects"> | number
+    timeSheetId?: IntWithAggregatesFilter<"mechanicProjects"> | number
+    hours?: FloatNullableWithAggregatesFilter<"mechanicProjects"> | number | null
+    equipmentId?: StringWithAggregatesFilter<"mechanicProjects"> | string
+    description?: StringNullableWithAggregatesFilter<"mechanicProjects"> | string | null
   }
 
   export type MaintenanceLogWhereInput = {
@@ -53517,6 +54867,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateInput = {
@@ -53556,6 +54907,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUpdateInput = {
@@ -53595,6 +54947,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateInput = {
@@ -53634,6 +54987,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentCreateManyInput = {
@@ -54623,6 +55977,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
@@ -54660,6 +56015,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -54690,6 +56046,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -54727,6 +56084,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
@@ -54813,6 +56171,57 @@ export namespace Prisma {
     withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type mechanicProjectsCreateInput = {
+    hours?: number | null
+    description?: string | null
+    TimeSheet: TimeSheetCreateNestedOneWithoutMaintenanceInput
+    Equipment: EquipmentCreateNestedOneWithoutMaintenanceInput
+  }
+
+  export type mechanicProjectsUncheckedCreateInput = {
+    id?: number
+    timeSheetId: number
+    hours?: number | null
+    equipmentId: string
+    description?: string | null
+  }
+
+  export type mechanicProjectsUpdateInput = {
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    TimeSheet?: TimeSheetUpdateOneRequiredWithoutMaintenanceNestedInput
+    Equipment?: EquipmentUpdateOneRequiredWithoutMaintenanceNestedInput
+  }
+
+  export type mechanicProjectsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    equipmentId?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type mechanicProjectsCreateManyInput = {
+    id?: number
+    timeSheetId: number
+    hours?: number | null
+    equipmentId: string
+    description?: string | null
+  }
+
+  export type mechanicProjectsUpdateManyMutationInput = {
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type mechanicProjectsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    equipmentId?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MaintenanceLogCreateInput = {
@@ -56922,6 +58331,12 @@ export namespace Prisma {
     none?: TruckingLogWhereInput
   }
 
+  export type MechanicProjectsListRelationFilter = {
+    every?: mechanicProjectsWhereInput
+    some?: mechanicProjectsWhereInput
+    none?: mechanicProjectsWhereInput
+  }
+
   export type EmployeeEquipmentLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -56939,6 +58354,10 @@ export namespace Prisma {
   }
 
   export type TruckingLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type mechanicProjectsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -58000,6 +59419,47 @@ export namespace Prisma {
     clockOutLng?: SortOrder
   }
 
+  export type EquipmentScalarRelationFilter = {
+    is?: EquipmentWhereInput
+    isNot?: EquipmentWhereInput
+  }
+
+  export type mechanicProjectsCountOrderByAggregateInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrder
+    equipmentId?: SortOrder
+    description?: SortOrder
+  }
+
+  export type mechanicProjectsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrder
+  }
+
+  export type mechanicProjectsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrder
+    equipmentId?: SortOrder
+    description?: SortOrder
+  }
+
+  export type mechanicProjectsMinOrderByAggregateInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrder
+    equipmentId?: SortOrder
+    description?: SortOrder
+  }
+
+  export type mechanicProjectsSumOrderByAggregateInput = {
+    id?: SortOrder
+    timeSheetId?: SortOrder
+    hours?: SortOrder
+  }
+
   export type MaintenanceScalarRelationFilter = {
     is?: MaintenanceWhereInput
     isNot?: MaintenanceWhereInput
@@ -58048,11 +59508,6 @@ export namespace Prisma {
     in?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
     notIn?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
     not?: NestedEnumPriorityFilter<$PrismaModel> | $Enums.Priority
-  }
-
-  export type EquipmentScalarRelationFilter = {
-    is?: EquipmentWhereInput
-    isNot?: EquipmentWhereInput
   }
 
   export type MaintenanceCountOrderByAggregateInput = {
@@ -59545,6 +61000,13 @@ export namespace Prisma {
     connect?: DocumentTagWhereUniqueInput | DocumentTagWhereUniqueInput[]
   }
 
+  export type mechanicProjectsCreateNestedManyWithoutEquipmentInput = {
+    create?: XOR<mechanicProjectsCreateWithoutEquipmentInput, mechanicProjectsUncheckedCreateWithoutEquipmentInput> | mechanicProjectsCreateWithoutEquipmentInput[] | mechanicProjectsUncheckedCreateWithoutEquipmentInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutEquipmentInput | mechanicProjectsCreateOrConnectWithoutEquipmentInput[]
+    createMany?: mechanicProjectsCreateManyEquipmentInputEnvelope
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+  }
+
   export type EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput = {
     create?: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput> | EmployeeEquipmentLogCreateWithoutEquipmentInput[] | EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput[]
     connectOrCreate?: EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput | EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput[]
@@ -59598,6 +61060,13 @@ export namespace Prisma {
     create?: XOR<DocumentTagCreateWithoutEquipmentInput, DocumentTagUncheckedCreateWithoutEquipmentInput> | DocumentTagCreateWithoutEquipmentInput[] | DocumentTagUncheckedCreateWithoutEquipmentInput[]
     connectOrCreate?: DocumentTagCreateOrConnectWithoutEquipmentInput | DocumentTagCreateOrConnectWithoutEquipmentInput[]
     connect?: DocumentTagWhereUniqueInput | DocumentTagWhereUniqueInput[]
+  }
+
+  export type mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput = {
+    create?: XOR<mechanicProjectsCreateWithoutEquipmentInput, mechanicProjectsUncheckedCreateWithoutEquipmentInput> | mechanicProjectsCreateWithoutEquipmentInput[] | mechanicProjectsUncheckedCreateWithoutEquipmentInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutEquipmentInput | mechanicProjectsCreateOrConnectWithoutEquipmentInput[]
+    createMany?: mechanicProjectsCreateManyEquipmentInputEnvelope
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
   }
 
   export type NullableEnumOwnershipTypeFieldUpdateOperationsInput = {
@@ -59761,6 +61230,20 @@ export namespace Prisma {
     deleteMany?: DocumentTagScalarWhereInput | DocumentTagScalarWhereInput[]
   }
 
+  export type mechanicProjectsUpdateManyWithoutEquipmentNestedInput = {
+    create?: XOR<mechanicProjectsCreateWithoutEquipmentInput, mechanicProjectsUncheckedCreateWithoutEquipmentInput> | mechanicProjectsCreateWithoutEquipmentInput[] | mechanicProjectsUncheckedCreateWithoutEquipmentInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutEquipmentInput | mechanicProjectsCreateOrConnectWithoutEquipmentInput[]
+    upsert?: mechanicProjectsUpsertWithWhereUniqueWithoutEquipmentInput | mechanicProjectsUpsertWithWhereUniqueWithoutEquipmentInput[]
+    createMany?: mechanicProjectsCreateManyEquipmentInputEnvelope
+    set?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    disconnect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    delete?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    update?: mechanicProjectsUpdateWithWhereUniqueWithoutEquipmentInput | mechanicProjectsUpdateWithWhereUniqueWithoutEquipmentInput[]
+    updateMany?: mechanicProjectsUpdateManyWithWhereWithoutEquipmentInput | mechanicProjectsUpdateManyWithWhereWithoutEquipmentInput[]
+    deleteMany?: mechanicProjectsScalarWhereInput | mechanicProjectsScalarWhereInput[]
+  }
+
   export type EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput = {
     create?: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput> | EmployeeEquipmentLogCreateWithoutEquipmentInput[] | EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput[]
     connectOrCreate?: EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput | EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput[]
@@ -59870,6 +61353,20 @@ export namespace Prisma {
     update?: DocumentTagUpdateWithWhereUniqueWithoutEquipmentInput | DocumentTagUpdateWithWhereUniqueWithoutEquipmentInput[]
     updateMany?: DocumentTagUpdateManyWithWhereWithoutEquipmentInput | DocumentTagUpdateManyWithWhereWithoutEquipmentInput[]
     deleteMany?: DocumentTagScalarWhereInput | DocumentTagScalarWhereInput[]
+  }
+
+  export type mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput = {
+    create?: XOR<mechanicProjectsCreateWithoutEquipmentInput, mechanicProjectsUncheckedCreateWithoutEquipmentInput> | mechanicProjectsCreateWithoutEquipmentInput[] | mechanicProjectsUncheckedCreateWithoutEquipmentInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutEquipmentInput | mechanicProjectsCreateOrConnectWithoutEquipmentInput[]
+    upsert?: mechanicProjectsUpsertWithWhereUniqueWithoutEquipmentInput | mechanicProjectsUpsertWithWhereUniqueWithoutEquipmentInput[]
+    createMany?: mechanicProjectsCreateManyEquipmentInputEnvelope
+    set?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    disconnect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    delete?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    update?: mechanicProjectsUpdateWithWhereUniqueWithoutEquipmentInput | mechanicProjectsUpdateWithWhereUniqueWithoutEquipmentInput[]
+    updateMany?: mechanicProjectsUpdateManyWithWhereWithoutEquipmentInput | mechanicProjectsUpdateManyWithWhereWithoutEquipmentInput[]
+    deleteMany?: mechanicProjectsScalarWhereInput | mechanicProjectsScalarWhereInput[]
   }
 
   export type EquipmentCreateNestedOneWithoutEmployeeEquipmentLogsInput = {
@@ -60540,6 +62037,13 @@ export namespace Prisma {
     connect?: MaintenanceLogWhereUniqueInput | MaintenanceLogWhereUniqueInput[]
   }
 
+  export type mechanicProjectsCreateNestedManyWithoutTimeSheetInput = {
+    create?: XOR<mechanicProjectsCreateWithoutTimeSheetInput, mechanicProjectsUncheckedCreateWithoutTimeSheetInput> | mechanicProjectsCreateWithoutTimeSheetInput[] | mechanicProjectsUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutTimeSheetInput | mechanicProjectsCreateOrConnectWithoutTimeSheetInput[]
+    createMany?: mechanicProjectsCreateManyTimeSheetInputEnvelope
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+  }
+
   export type TascoLogCreateNestedManyWithoutTimeSheetInput = {
     create?: XOR<TascoLogCreateWithoutTimeSheetInput, TascoLogUncheckedCreateWithoutTimeSheetInput> | TascoLogCreateWithoutTimeSheetInput[] | TascoLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TascoLogCreateOrConnectWithoutTimeSheetInput | TascoLogCreateOrConnectWithoutTimeSheetInput[]
@@ -60593,6 +62097,13 @@ export namespace Prisma {
     connect?: MaintenanceLogWhereUniqueInput | MaintenanceLogWhereUniqueInput[]
   }
 
+  export type mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput = {
+    create?: XOR<mechanicProjectsCreateWithoutTimeSheetInput, mechanicProjectsUncheckedCreateWithoutTimeSheetInput> | mechanicProjectsCreateWithoutTimeSheetInput[] | mechanicProjectsUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutTimeSheetInput | mechanicProjectsCreateOrConnectWithoutTimeSheetInput[]
+    createMany?: mechanicProjectsCreateManyTimeSheetInputEnvelope
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+  }
+
   export type TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput = {
     create?: XOR<TascoLogCreateWithoutTimeSheetInput, TascoLogUncheckedCreateWithoutTimeSheetInput> | TascoLogCreateWithoutTimeSheetInput[] | TascoLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TascoLogCreateOrConnectWithoutTimeSheetInput | TascoLogCreateOrConnectWithoutTimeSheetInput[]
@@ -60640,6 +62151,20 @@ export namespace Prisma {
     update?: MaintenanceLogUpdateWithWhereUniqueWithoutTimeSheetInput | MaintenanceLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
     updateMany?: MaintenanceLogUpdateManyWithWhereWithoutTimeSheetInput | MaintenanceLogUpdateManyWithWhereWithoutTimeSheetInput[]
     deleteMany?: MaintenanceLogScalarWhereInput | MaintenanceLogScalarWhereInput[]
+  }
+
+  export type mechanicProjectsUpdateManyWithoutTimeSheetNestedInput = {
+    create?: XOR<mechanicProjectsCreateWithoutTimeSheetInput, mechanicProjectsUncheckedCreateWithoutTimeSheetInput> | mechanicProjectsCreateWithoutTimeSheetInput[] | mechanicProjectsUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutTimeSheetInput | mechanicProjectsCreateOrConnectWithoutTimeSheetInput[]
+    upsert?: mechanicProjectsUpsertWithWhereUniqueWithoutTimeSheetInput | mechanicProjectsUpsertWithWhereUniqueWithoutTimeSheetInput[]
+    createMany?: mechanicProjectsCreateManyTimeSheetInputEnvelope
+    set?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    disconnect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    delete?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    update?: mechanicProjectsUpdateWithWhereUniqueWithoutTimeSheetInput | mechanicProjectsUpdateWithWhereUniqueWithoutTimeSheetInput[]
+    updateMany?: mechanicProjectsUpdateManyWithWhereWithoutTimeSheetInput | mechanicProjectsUpdateManyWithWhereWithoutTimeSheetInput[]
+    deleteMany?: mechanicProjectsScalarWhereInput | mechanicProjectsScalarWhereInput[]
   }
 
   export type TascoLogUpdateManyWithoutTimeSheetNestedInput = {
@@ -60736,6 +62261,20 @@ export namespace Prisma {
     deleteMany?: MaintenanceLogScalarWhereInput | MaintenanceLogScalarWhereInput[]
   }
 
+  export type mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput = {
+    create?: XOR<mechanicProjectsCreateWithoutTimeSheetInput, mechanicProjectsUncheckedCreateWithoutTimeSheetInput> | mechanicProjectsCreateWithoutTimeSheetInput[] | mechanicProjectsUncheckedCreateWithoutTimeSheetInput[]
+    connectOrCreate?: mechanicProjectsCreateOrConnectWithoutTimeSheetInput | mechanicProjectsCreateOrConnectWithoutTimeSheetInput[]
+    upsert?: mechanicProjectsUpsertWithWhereUniqueWithoutTimeSheetInput | mechanicProjectsUpsertWithWhereUniqueWithoutTimeSheetInput[]
+    createMany?: mechanicProjectsCreateManyTimeSheetInputEnvelope
+    set?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    disconnect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    delete?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    connect?: mechanicProjectsWhereUniqueInput | mechanicProjectsWhereUniqueInput[]
+    update?: mechanicProjectsUpdateWithWhereUniqueWithoutTimeSheetInput | mechanicProjectsUpdateWithWhereUniqueWithoutTimeSheetInput[]
+    updateMany?: mechanicProjectsUpdateManyWithWhereWithoutTimeSheetInput | mechanicProjectsUpdateManyWithWhereWithoutTimeSheetInput[]
+    deleteMany?: mechanicProjectsScalarWhereInput | mechanicProjectsScalarWhereInput[]
+  }
+
   export type TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput = {
     create?: XOR<TascoLogCreateWithoutTimeSheetInput, TascoLogUncheckedCreateWithoutTimeSheetInput> | TascoLogCreateWithoutTimeSheetInput[] | TascoLogUncheckedCreateWithoutTimeSheetInput[]
     connectOrCreate?: TascoLogCreateOrConnectWithoutTimeSheetInput | TascoLogCreateOrConnectWithoutTimeSheetInput[]
@@ -60776,6 +62315,34 @@ export namespace Prisma {
     update?: TimeSheetChangeLogUpdateWithWhereUniqueWithoutTimeSheetInput | TimeSheetChangeLogUpdateWithWhereUniqueWithoutTimeSheetInput[]
     updateMany?: TimeSheetChangeLogUpdateManyWithWhereWithoutTimeSheetInput | TimeSheetChangeLogUpdateManyWithWhereWithoutTimeSheetInput[]
     deleteMany?: TimeSheetChangeLogScalarWhereInput | TimeSheetChangeLogScalarWhereInput[]
+  }
+
+  export type TimeSheetCreateNestedOneWithoutMaintenanceInput = {
+    create?: XOR<TimeSheetCreateWithoutMaintenanceInput, TimeSheetUncheckedCreateWithoutMaintenanceInput>
+    connectOrCreate?: TimeSheetCreateOrConnectWithoutMaintenanceInput
+    connect?: TimeSheetWhereUniqueInput
+  }
+
+  export type EquipmentCreateNestedOneWithoutMaintenanceInput = {
+    create?: XOR<EquipmentCreateWithoutMaintenanceInput, EquipmentUncheckedCreateWithoutMaintenanceInput>
+    connectOrCreate?: EquipmentCreateOrConnectWithoutMaintenanceInput
+    connect?: EquipmentWhereUniqueInput
+  }
+
+  export type TimeSheetUpdateOneRequiredWithoutMaintenanceNestedInput = {
+    create?: XOR<TimeSheetCreateWithoutMaintenanceInput, TimeSheetUncheckedCreateWithoutMaintenanceInput>
+    connectOrCreate?: TimeSheetCreateOrConnectWithoutMaintenanceInput
+    upsert?: TimeSheetUpsertWithoutMaintenanceInput
+    connect?: TimeSheetWhereUniqueInput
+    update?: XOR<XOR<TimeSheetUpdateToOneWithWhereWithoutMaintenanceInput, TimeSheetUpdateWithoutMaintenanceInput>, TimeSheetUncheckedUpdateWithoutMaintenanceInput>
+  }
+
+  export type EquipmentUpdateOneRequiredWithoutMaintenanceNestedInput = {
+    create?: XOR<EquipmentCreateWithoutMaintenanceInput, EquipmentUncheckedCreateWithoutMaintenanceInput>
+    connectOrCreate?: EquipmentCreateOrConnectWithoutMaintenanceInput
+    upsert?: EquipmentUpsertWithoutMaintenanceInput
+    connect?: EquipmentWhereUniqueInput
+    update?: XOR<XOR<EquipmentUpdateToOneWithWhereWithoutMaintenanceInput, EquipmentUpdateWithoutMaintenanceInput>, EquipmentUncheckedUpdateWithoutMaintenanceInput>
   }
 
   export type MaintenanceCreateNestedOneWithoutMaintenanceLogsInput = {
@@ -63100,6 +64667,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
@@ -63135,6 +64703,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -63562,6 +65131,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutDocumentTagsInput = {
@@ -63600,6 +65170,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUncheckedCreateNestedManyWithoutEquipmentInput
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutDocumentTagsInput = {
@@ -64094,6 +65665,29 @@ export namespace Prisma {
     create: XOR<DocumentTagCreateWithoutEquipmentInput, DocumentTagUncheckedCreateWithoutEquipmentInput>
   }
 
+  export type mechanicProjectsCreateWithoutEquipmentInput = {
+    hours?: number | null
+    description?: string | null
+    TimeSheet: TimeSheetCreateNestedOneWithoutMaintenanceInput
+  }
+
+  export type mechanicProjectsUncheckedCreateWithoutEquipmentInput = {
+    id?: number
+    timeSheetId: number
+    hours?: number | null
+    description?: string | null
+  }
+
+  export type mechanicProjectsCreateOrConnectWithoutEquipmentInput = {
+    where: mechanicProjectsWhereUniqueInput
+    create: XOR<mechanicProjectsCreateWithoutEquipmentInput, mechanicProjectsUncheckedCreateWithoutEquipmentInput>
+  }
+
+  export type mechanicProjectsCreateManyEquipmentInputEnvelope = {
+    data: mechanicProjectsCreateManyEquipmentInput | mechanicProjectsCreateManyEquipmentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutEquipmentInput = {
     update: XOR<UserUpdateWithoutEquipmentInput, UserUncheckedUpdateWithoutEquipmentInput>
     create: XOR<UserCreateWithoutEquipmentInput, UserUncheckedCreateWithoutEquipmentInput>
@@ -64394,6 +65988,33 @@ export namespace Prisma {
     data: XOR<DocumentTagUpdateManyMutationInput, DocumentTagUncheckedUpdateManyWithoutEquipmentInput>
   }
 
+  export type mechanicProjectsUpsertWithWhereUniqueWithoutEquipmentInput = {
+    where: mechanicProjectsWhereUniqueInput
+    update: XOR<mechanicProjectsUpdateWithoutEquipmentInput, mechanicProjectsUncheckedUpdateWithoutEquipmentInput>
+    create: XOR<mechanicProjectsCreateWithoutEquipmentInput, mechanicProjectsUncheckedCreateWithoutEquipmentInput>
+  }
+
+  export type mechanicProjectsUpdateWithWhereUniqueWithoutEquipmentInput = {
+    where: mechanicProjectsWhereUniqueInput
+    data: XOR<mechanicProjectsUpdateWithoutEquipmentInput, mechanicProjectsUncheckedUpdateWithoutEquipmentInput>
+  }
+
+  export type mechanicProjectsUpdateManyWithWhereWithoutEquipmentInput = {
+    where: mechanicProjectsScalarWhereInput
+    data: XOR<mechanicProjectsUpdateManyMutationInput, mechanicProjectsUncheckedUpdateManyWithoutEquipmentInput>
+  }
+
+  export type mechanicProjectsScalarWhereInput = {
+    AND?: mechanicProjectsScalarWhereInput | mechanicProjectsScalarWhereInput[]
+    OR?: mechanicProjectsScalarWhereInput[]
+    NOT?: mechanicProjectsScalarWhereInput | mechanicProjectsScalarWhereInput[]
+    id?: IntFilter<"mechanicProjects"> | number
+    timeSheetId?: IntFilter<"mechanicProjects"> | number
+    hours?: FloatNullableFilter<"mechanicProjects"> | number | null
+    equipmentId?: StringFilter<"mechanicProjects"> | string
+    description?: StringNullableFilter<"mechanicProjects"> | string | null
+  }
+
   export type EquipmentCreateWithoutEmployeeEquipmentLogsInput = {
     id?: string
     qrId: string
@@ -64430,6 +66051,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutEmployeeEquipmentLogsInput = {
@@ -64468,6 +66090,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutEmployeeEquipmentLogsInput = {
@@ -64546,6 +66169,7 @@ export namespace Prisma {
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
@@ -64582,6 +66206,7 @@ export namespace Prisma {
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -64660,6 +66285,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutEmployeeEquipmentLogsInput = {
@@ -64698,6 +66324,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type MaintenanceUpsertWithoutEmployeeEquipmentLogInput = {
@@ -64788,6 +66415,7 @@ export namespace Prisma {
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -64824,6 +66452,7 @@ export namespace Prisma {
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
@@ -65991,6 +67620,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
@@ -66026,6 +67656,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -66471,6 +68102,29 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type mechanicProjectsCreateWithoutTimeSheetInput = {
+    hours?: number | null
+    description?: string | null
+    Equipment: EquipmentCreateNestedOneWithoutMaintenanceInput
+  }
+
+  export type mechanicProjectsUncheckedCreateWithoutTimeSheetInput = {
+    id?: number
+    hours?: number | null
+    equipmentId: string
+    description?: string | null
+  }
+
+  export type mechanicProjectsCreateOrConnectWithoutTimeSheetInput = {
+    where: mechanicProjectsWhereUniqueInput
+    create: XOR<mechanicProjectsCreateWithoutTimeSheetInput, mechanicProjectsUncheckedCreateWithoutTimeSheetInput>
+  }
+
+  export type mechanicProjectsCreateManyTimeSheetInputEnvelope = {
+    data: mechanicProjectsCreateManyTimeSheetInput | mechanicProjectsCreateManyTimeSheetInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TascoLogCreateWithoutTimeSheetInput = {
     id?: string
     shiftType: string
@@ -66779,6 +68433,22 @@ export namespace Prisma {
     comment?: StringNullableFilter<"MaintenanceLog"> | string | null
   }
 
+  export type mechanicProjectsUpsertWithWhereUniqueWithoutTimeSheetInput = {
+    where: mechanicProjectsWhereUniqueInput
+    update: XOR<mechanicProjectsUpdateWithoutTimeSheetInput, mechanicProjectsUncheckedUpdateWithoutTimeSheetInput>
+    create: XOR<mechanicProjectsCreateWithoutTimeSheetInput, mechanicProjectsUncheckedCreateWithoutTimeSheetInput>
+  }
+
+  export type mechanicProjectsUpdateWithWhereUniqueWithoutTimeSheetInput = {
+    where: mechanicProjectsWhereUniqueInput
+    data: XOR<mechanicProjectsUpdateWithoutTimeSheetInput, mechanicProjectsUncheckedUpdateWithoutTimeSheetInput>
+  }
+
+  export type mechanicProjectsUpdateManyWithWhereWithoutTimeSheetInput = {
+    where: mechanicProjectsScalarWhereInput
+    data: XOR<mechanicProjectsUpdateManyMutationInput, mechanicProjectsUncheckedUpdateManyWithoutTimeSheetInput>
+  }
+
   export type TascoLogUpsertWithWhereUniqueWithoutTimeSheetInput = {
     where: TascoLogWhereUniqueInput
     update: XOR<TascoLogUpdateWithoutTimeSheetInput, TascoLogUncheckedUpdateWithoutTimeSheetInput>
@@ -67018,6 +68688,328 @@ export namespace Prisma {
     numberOfChanges?: IntFilter<"TimeSheetChangeLog"> | number
   }
 
+  export type TimeSheetCreateWithoutMaintenanceInput = {
+    date: Date | string
+    nu?: string
+    Fp?: string
+    startTime: Date | string
+    endTime?: Date | string | null
+    comment?: string | null
+    statusComment?: string | null
+    location?: string | null
+    status?: $Enums.ApprovalStatus
+    workType: $Enums.WorkType
+    editedByUserId?: string | null
+    newTimeSheetId?: string | null
+    createdByAdmin?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clockInLat?: number | null
+    clockInLng?: number | null
+    clockOutLat?: number | null
+    clockOutLng?: number | null
+    withinFenceIn?: boolean | null
+    withinFenceOut?: boolean | null
+    wasInjured?: boolean | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
+    MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
+    CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
+    Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
+    User: UserCreateNestedOneWithoutTimeSheetsInput
+    TruckingLogs?: TruckingLogCreateNestedManyWithoutTimeSheetInput
+    ChangeLogs?: TimeSheetChangeLogCreateNestedManyWithoutTimeSheetInput
+  }
+
+  export type TimeSheetUncheckedCreateWithoutMaintenanceInput = {
+    id?: number
+    date: Date | string
+    userId: string
+    jobsiteId: string
+    costcode: string
+    nu?: string
+    Fp?: string
+    startTime: Date | string
+    endTime?: Date | string | null
+    comment?: string | null
+    statusComment?: string | null
+    location?: string | null
+    status?: $Enums.ApprovalStatus
+    workType: $Enums.WorkType
+    editedByUserId?: string | null
+    newTimeSheetId?: string | null
+    createdByAdmin?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clockInLat?: number | null
+    clockInLng?: number | null
+    clockOutLat?: number | null
+    clockOutLng?: number | null
+    withinFenceIn?: boolean | null
+    withinFenceOut?: boolean | null
+    wasInjured?: boolean | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
+  }
+
+  export type TimeSheetCreateOrConnectWithoutMaintenanceInput = {
+    where: TimeSheetWhereUniqueInput
+    create: XOR<TimeSheetCreateWithoutMaintenanceInput, TimeSheetUncheckedCreateWithoutMaintenanceInput>
+  }
+
+  export type EquipmentCreateWithoutMaintenanceInput = {
+    id?: string
+    qrId: string
+    code?: string | null
+    name: string
+    description?: string | null
+    memo?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    make?: string | null
+    model?: string | null
+    year?: string | null
+    color?: string | null
+    serialNumber?: string | null
+    acquiredDate?: Date | string | null
+    acquiredCondition?: $Enums.Condition | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    registrationExpiration?: Date | string | null
+    equipmentTag?: $Enums.EquipmentTags
+    overWeight?: boolean | null
+    currentWeight?: number | null
+    state?: $Enums.EquipmentState
+    isDisabledByAdmin?: boolean
+    creationReason?: string | null
+    approvalStatus?: $Enums.ApprovalStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdVia?: $Enums.CreatedVia
+    createdBy?: UserCreateNestedOneWithoutEquipmentInput
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
+    EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
+    Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
+    TascoLogs?: TascoLogCreateNestedManyWithoutEquipmentInput
+    HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
+    UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
+    UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
+    DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+  }
+
+  export type EquipmentUncheckedCreateWithoutMaintenanceInput = {
+    id?: string
+    qrId: string
+    code?: string | null
+    name: string
+    description?: string | null
+    memo?: string | null
+    ownershipType?: $Enums.OwnershipType | null
+    make?: string | null
+    model?: string | null
+    year?: string | null
+    color?: string | null
+    serialNumber?: string | null
+    acquiredDate?: Date | string | null
+    acquiredCondition?: $Enums.Condition | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    registrationExpiration?: Date | string | null
+    equipmentTag?: $Enums.EquipmentTags
+    overWeight?: boolean | null
+    currentWeight?: number | null
+    state?: $Enums.EquipmentState
+    isDisabledByAdmin?: boolean
+    creationReason?: string | null
+    approvalStatus?: $Enums.ApprovalStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdVia?: $Enums.CreatedVia
+    createdById?: string | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
+    EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
+    TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
+    HauledInLogs?: TruckingLogUncheckedCreateNestedManyWithoutEquipmentInput
+    UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
+    UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
+    DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+  }
+
+  export type EquipmentCreateOrConnectWithoutMaintenanceInput = {
+    where: EquipmentWhereUniqueInput
+    create: XOR<EquipmentCreateWithoutMaintenanceInput, EquipmentUncheckedCreateWithoutMaintenanceInput>
+  }
+
+  export type TimeSheetUpsertWithoutMaintenanceInput = {
+    update: XOR<TimeSheetUpdateWithoutMaintenanceInput, TimeSheetUncheckedUpdateWithoutMaintenanceInput>
+    create: XOR<TimeSheetCreateWithoutMaintenanceInput, TimeSheetUncheckedCreateWithoutMaintenanceInput>
+    where?: TimeSheetWhereInput
+  }
+
+  export type TimeSheetUpdateToOneWithWhereWithoutMaintenanceInput = {
+    where?: TimeSheetWhereInput
+    data: XOR<TimeSheetUpdateWithoutMaintenanceInput, TimeSheetUncheckedUpdateWithoutMaintenanceInput>
+  }
+
+  export type TimeSheetUpdateWithoutMaintenanceInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    nu?: StringFieldUpdateOperationsInput | string
+    Fp?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
+    MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
+    CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
+    Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
+    User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
+    TruckingLogs?: TruckingLogUpdateManyWithoutTimeSheetNestedInput
+    ChangeLogs?: TimeSheetChangeLogUpdateManyWithoutTimeSheetNestedInput
+  }
+
+  export type TimeSheetUncheckedUpdateWithoutMaintenanceInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    jobsiteId?: StringFieldUpdateOperationsInput | string
+    costcode?: StringFieldUpdateOperationsInput | string
+    nu?: StringFieldUpdateOperationsInput | string
+    Fp?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    statusComment?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    workType?: EnumWorkTypeFieldUpdateOperationsInput | $Enums.WorkType
+    editedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    newTimeSheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clockInLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockInLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLat?: NullableFloatFieldUpdateOperationsInput | number | null
+    clockOutLng?: NullableFloatFieldUpdateOperationsInput | number | null
+    withinFenceIn?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+  }
+
+  export type EquipmentUpsertWithoutMaintenanceInput = {
+    update: XOR<EquipmentUpdateWithoutMaintenanceInput, EquipmentUncheckedUpdateWithoutMaintenanceInput>
+    create: XOR<EquipmentCreateWithoutMaintenanceInput, EquipmentUncheckedCreateWithoutMaintenanceInput>
+    where?: EquipmentWhereInput
+  }
+
+  export type EquipmentUpdateToOneWithWhereWithoutMaintenanceInput = {
+    where?: EquipmentWhereInput
+    data: XOR<EquipmentUpdateWithoutMaintenanceInput, EquipmentUncheckedUpdateWithoutMaintenanceInput>
+  }
+
+  export type EquipmentUpdateWithoutMaintenanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    qrId?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
+    state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
+    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    createdBy?: UserUpdateOneWithoutEquipmentNestedInput
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
+    EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
+    Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
+    TascoLogs?: TascoLogUpdateManyWithoutEquipmentNestedInput
+    HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
+    UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
+    UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
+    DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+  }
+
+  export type EquipmentUncheckedUpdateWithoutMaintenanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    qrId?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    acquiredDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationExpiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
+    overWeight?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    currentWeight?: NullableFloatFieldUpdateOperationsInput | number | null
+    state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
+    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
+    creationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdVia?: EnumCreatedViaFieldUpdateOperationsInput | $Enums.CreatedVia
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
+    EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
+    TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
+    HauledInLogs?: TruckingLogUncheckedUpdateManyWithoutEquipmentNestedInput
+    UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
+    UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
+    DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+  }
+
   export type MaintenanceCreateWithoutMaintenanceLogsInput = {
     id?: string
     equipmentIssue?: string | null
@@ -67089,6 +69081,7 @@ export namespace Prisma {
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
@@ -67125,6 +69118,7 @@ export namespace Prisma {
     withinFenceOut?: boolean | null
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -67308,6 +69302,7 @@ export namespace Prisma {
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -67344,6 +69339,7 @@ export namespace Prisma {
     withinFenceOut?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
@@ -67508,6 +69504,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutMaintenancesInput = {
@@ -67546,6 +69543,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutMaintenancesInput = {
@@ -67644,6 +69642,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutMaintenancesInput = {
@@ -67682,6 +69681,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type MaintenanceLogUpsertWithWhereUniqueWithoutMaintenanceInput = {
@@ -67762,6 +69762,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutTascoLogsInput = {
@@ -67800,6 +69801,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutTascoLogsInput = {
@@ -67847,6 +69849,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
     User: UserCreateNestedOneWithoutTimeSheetsInput
@@ -67883,6 +69886,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
@@ -67967,6 +69971,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutTascoLogsInput = {
@@ -68005,6 +70010,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type TascoMaterialTypesUpsertWithoutTascoLogInput = {
@@ -68064,6 +70070,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -68100,6 +70107,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
@@ -68298,6 +70306,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutHauledInLogsInput = {
@@ -68336,6 +70345,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutHauledInLogsInput = {
@@ -68368,6 +70378,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
@@ -68404,6 +70415,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
@@ -68449,6 +70461,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutUsedAsTrailerInput = {
@@ -68487,6 +70500,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUncheckedCreateNestedManyWithoutEquipmentInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutUsedAsTrailerInput = {
@@ -68530,6 +70544,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogCreateNestedManyWithoutEquipmentInput
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutUsedAsTruckInput = {
@@ -68568,6 +70583,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUncheckedCreateNestedManyWithoutEquipmentInput
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutUsedAsTruckInput = {
@@ -68711,6 +70727,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutHauledInLogsInput = {
@@ -68749,6 +70766,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type TimeSheetUpsertWithoutTruckingLogsInput = {
@@ -68787,6 +70805,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -68823,6 +70842,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
@@ -68874,6 +70894,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutUsedAsTrailerInput = {
@@ -68912,6 +70933,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUncheckedUpdateManyWithoutEquipmentNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUpsertWithoutUsedAsTruckInput = {
@@ -68961,6 +70983,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutUsedAsTruckInput = {
@@ -68999,6 +71022,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUncheckedUpdateManyWithoutEquipmentNestedInput
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type TruckingLogCreateWithoutStateMileagesInput = {
@@ -69397,6 +71421,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutEquipmentHauledInput = {
@@ -69435,6 +71460,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutEquipmentHauledInput = {
@@ -69526,6 +71552,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutEquipmentHauledInput = {
@@ -69564,6 +71591,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type TruckingLogUpsertWithoutEquipmentHauledInput = {
@@ -69634,6 +71662,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
@@ -69670,6 +71699,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
   }
@@ -69800,6 +71830,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -69836,6 +71867,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
   }
@@ -70009,6 +72041,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentUncheckedCreateWithoutCreatedByInput = {
@@ -70047,6 +72080,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedCreateNestedManyWithoutTrailerInput
     UsedAsTruck?: TruckingLogUncheckedCreateNestedManyWithoutTruckInput
     DocumentTags?: DocumentTagUncheckedCreateNestedManyWithoutEquipmentInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutEquipmentInput
   }
 
   export type EquipmentCreateOrConnectWithoutCreatedByInput = {
@@ -70251,6 +72285,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogCreateNestedManyWithoutTimeSheetInput
     CostCode: CostCodeCreateNestedOneWithoutTimesheetsInput
     Jobsite: JobsiteCreateNestedOneWithoutTimeSheetsInput
@@ -70286,6 +72321,7 @@ export namespace Prisma {
     wasInjured?: boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutTimeSheetInput
     MaintenanceLogs?: MaintenanceLogUncheckedCreateNestedManyWithoutTimeSheetInput
+    Maintenance?: mechanicProjectsUncheckedCreateNestedManyWithoutTimeSheetInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutTimeSheetInput
     TruckingLogs?: TruckingLogUncheckedCreateNestedManyWithoutTimeSheetInput
     ChangeLogs?: TimeSheetChangeLogUncheckedCreateNestedManyWithoutTimeSheetInput
@@ -72275,6 +74311,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -72310,6 +74347,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
@@ -72617,6 +74655,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUpdateManyWithoutEquipmentNestedInput
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutDocumentTagsInput = {
@@ -72655,6 +74694,7 @@ export namespace Prisma {
     HauledInLogs?: TruckingLogUncheckedUpdateManyWithoutEquipmentNestedInput
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateManyWithoutDocumentTagsInput = {
@@ -72810,6 +74850,13 @@ export namespace Prisma {
     endingMileage?: number | null
     truckLaborLogId?: string | null
     trailerNumber?: string | null
+  }
+
+  export type mechanicProjectsCreateManyEquipmentInput = {
+    id?: number
+    timeSheetId: number
+    hours?: number | null
+    description?: string | null
   }
 
   export type EmployeeEquipmentLogUpdateWithoutEquipmentInput = {
@@ -73116,6 +75163,26 @@ export namespace Prisma {
     tagName?: StringFieldUpdateOperationsInput | string
   }
 
+  export type mechanicProjectsUpdateWithoutEquipmentInput = {
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    TimeSheet?: TimeSheetUpdateOneRequiredWithoutMaintenanceNestedInput
+  }
+
+  export type mechanicProjectsUncheckedUpdateWithoutEquipmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type mechanicProjectsUncheckedUpdateManyWithoutEquipmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSheetId?: IntFieldUpdateOperationsInput | number
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type FormSubmissionCreateManyFormTemplateInput = {
     id?: number
     title?: string | null
@@ -73390,6 +75457,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     User?: UserUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -73425,6 +75493,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
@@ -73549,6 +75618,13 @@ export namespace Prisma {
     comment?: string | null
   }
 
+  export type mechanicProjectsCreateManyTimeSheetInput = {
+    id?: number
+    hours?: number | null
+    equipmentId: string
+    description?: string | null
+  }
+
   export type TascoLogCreateManyTimeSheetInput = {
     id?: string
     shiftType: string
@@ -73638,6 +75714,26 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type mechanicProjectsUpdateWithoutTimeSheetInput = {
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    Equipment?: EquipmentUpdateOneRequiredWithoutMaintenanceNestedInput
+  }
+
+  export type mechanicProjectsUncheckedUpdateWithoutTimeSheetInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    equipmentId?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type mechanicProjectsUncheckedUpdateManyWithoutTimeSheetInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    hours?: NullableFloatFieldUpdateOperationsInput | number | null
+    equipmentId?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TascoLogUpdateWithoutTimeSheetInput = {
@@ -74214,6 +76310,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateWithoutCreatedByInput = {
@@ -74252,6 +76349,7 @@ export namespace Prisma {
     UsedAsTrailer?: TruckingLogUncheckedUpdateManyWithoutTrailerNestedInput
     UsedAsTruck?: TruckingLogUncheckedUpdateManyWithoutTruckNestedInput
     DocumentTags?: DocumentTagUncheckedUpdateManyWithoutEquipmentNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutEquipmentNestedInput
   }
 
   export type EquipmentUncheckedUpdateManyWithoutCreatedByInput = {
@@ -74482,6 +76580,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUpdateManyWithoutTimeSheetNestedInput
     CostCode?: CostCodeUpdateOneRequiredWithoutTimesheetsNestedInput
     Jobsite?: JobsiteUpdateOneRequiredWithoutTimeSheetsNestedInput
@@ -74517,6 +76616,7 @@ export namespace Prisma {
     wasInjured?: NullableBoolFieldUpdateOperationsInput | boolean | null
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     MaintenanceLogs?: MaintenanceLogUncheckedUpdateManyWithoutTimeSheetNestedInput
+    Maintenance?: mechanicProjectsUncheckedUpdateManyWithoutTimeSheetNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     TruckingLogs?: TruckingLogUncheckedUpdateManyWithoutTimeSheetNestedInput
     ChangeLogs?: TimeSheetChangeLogUncheckedUpdateManyWithoutTimeSheetNestedInput
