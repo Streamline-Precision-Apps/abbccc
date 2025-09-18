@@ -5,6 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { ApprovalStatus } from "@/lib/enums";
 import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 import { Prisma } from "../../prisma/generated/prisma";
+import { auth } from "@/auth";
 
 export type TimesheetSubmission = {
   form: {
@@ -267,11 +268,37 @@ export async function adminDeleteTimesheet(id: number) {
 export async function adminUpdateTimesheetStatus(
   id: number,
   status: "APPROVED" | "REJECTED",
+  changes: Record<
+    string,
+    {
+      old: unknown;
+      new: unknown;
+    }
+  >,
 ) {
   try {
+    const session = await auth();
+    const changedBy = session?.user?.id;
+
+    if (!changedBy) {
+      throw new Error("User not authenticated");
+    }
+
     await prisma.timeSheet.update({
       where: { id },
-      data: { status: status as ApprovalStatus },
+      data: {
+        status: status as ApprovalStatus,
+        ChangeLogs: {
+          create: {
+            changeReason: `Timesheet ${status === "APPROVED" ? "approved" : "denied"} on dashboard.`,
+            changes: JSON.stringify(changes), // Convert the changes object to a JSON string,
+            changedBy,
+            changedAt: new Date(),
+            numberOfChanges: 1,
+            wasStatusChange: true,
+          },
+        },
+      },
     });
     revalidateTag("timesheets");
     return { success: true };

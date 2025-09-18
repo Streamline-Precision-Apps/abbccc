@@ -9,7 +9,6 @@ import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { EXPORT_FIELDS } from "@/app/(routes)/admins/timesheets/_components/Export/ExportModal";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
-import { ref } from "process";
 
 /**
  * Timesheet domain entity.
@@ -145,6 +144,7 @@ export default function AdminTimesheets() {
         setAllTimesheets(data.timesheets);
         setTotalPages(data.totalPages);
         setTotal(data.total);
+        setApprovalInbox(data.pendingTimesheets);
       }
     } catch (error) {
       console.error("Error fetching timesheets:", error);
@@ -153,28 +153,10 @@ export default function AdminTimesheets() {
     }
   };
 
-  // Fetch count of pending timesheets for inbox badge
-  const fetchTimesheetsPending = async () => {
-    try {
-      const response = await fetch(`/api/getAllTimesheetsPending`, {
-        next: { tags: ["timesheets"] },
-      });
-      const data = await response.json();
-      setApprovalInbox(Array.isArray(data) ? { length: data.length } : data);
-    } catch (error) {
-      console.error("Error fetching timesheets:", error);
-    }
-  };
-
   // Fetch timesheets when page/pageSize changes or when showPendingOnly toggles
   useEffect(() => {
     fetchTimesheets(showPendingOnly);
   }, [page, pageSize, showPendingOnly, searchTerm, refreshKey]);
-
-  // Only update approval inbox count on initial mount and manual refresh
-  useEffect(() => {
-    fetchTimesheetsPending();
-  }, [refreshKey]);
 
   // Filter timesheets based on searchTerm and date range
   const filteredTimesheets = allTimesheets.filter((ts) => {
@@ -233,7 +215,11 @@ export default function AdminTimesheets() {
   ) => {
     setStatusLoading((prev) => ({ ...prev, [id]: action }));
     try {
-      const res = await adminUpdateTimesheetStatus(id, action);
+      // add who approved/denied it
+      const changes: Record<string, { old: unknown; new: unknown }> = {};
+      changes.status = { old: "PENDING", new: action };
+
+      const res = await adminUpdateTimesheetStatus(id, action, changes);
       if (!res || res.success !== true)
         throw new Error("Failed to update timesheet status");
       setAllTimesheets((prev) =>
@@ -244,7 +230,8 @@ export default function AdminTimesheets() {
         { duration: 3000 },
       );
       // Only update approval inbox count after approval/denial
-      fetchTimesheetsPending();
+      await fetchTimesheets(); // Refresh to get updated pending count
+      await refresh(); // Also refresh dashboard data
     } catch (e) {
       toast.error(
         `Failed to ${action === "APPROVED" ? "approve" : "deny"} timesheet.`,

@@ -216,11 +216,22 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
       return (
         <div className=" text-xs text-center">
           {ChangeLogs > 0 && (
-            <span
-              className={`font-semibold bg-red-500 rounded-full px-2 py-1 text-white`}
-            >
-              {ChangeLogs}
-            </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className={`font-semibold bg-red-500 rounded-full px-2 py-1 text-white`}
+                >
+                  {ChangeLogs}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                align="center"
+                className="w-[120px] justify-center"
+              >
+                <div className="text-xs text-center">{`${ChangeLogs} ${ChangeLogs === 1 ? "change detected" : "changes detected"}`}</div>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       );
