@@ -993,15 +993,8 @@ export async function ClockOutComment({ userId }: { userId: string }) {
       createdAt: "desc", // Sort by most recent submission date
     },
     select: {
-      id: true,
-      endTime: true,
+      comment: true,
     },
   });
-
-  const timesheetId = timesheet?.id;
-  const timeSheet = await prisma.timeSheet.findUnique({
-    where: { id: timesheetId },
-    select: { comment: true },
-  });
-  return timeSheet?.comment || "";
+  return timesheet?.comment || "";
 }

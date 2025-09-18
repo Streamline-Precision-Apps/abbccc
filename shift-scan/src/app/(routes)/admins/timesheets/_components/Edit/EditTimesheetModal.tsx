@@ -235,7 +235,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           }),
         });
         await response.json();
-        refresh();
+        await refresh();
       }
 
       if (onUpdated) onUpdated();
