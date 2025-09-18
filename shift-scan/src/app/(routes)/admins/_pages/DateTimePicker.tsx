@@ -15,11 +15,13 @@ export function DateTimePicker({
   onChange,
   label,
   font = "font-semibold",
+  row = true,
 }: {
   value?: string;
   onChange: (val: string) => void;
   label: string;
   font?: "font-semibold" | "font-bold" | "font-normal";
+  row?: boolean;
 }) {
   // Always derive date and time from value prop
   const dateValue = value ? new Date(value) : undefined;
@@ -69,7 +71,7 @@ export function DateTimePicker({
   return (
     <div className="w-full">
       <label className={`block text-xs ${font} mb-1`}>{label}</label>
-      <div className="w-full flex gap-2">
+      <div className={`w-full flex ${row ? "flex-row" : "flex-col"} gap-2`}>
         <Popover>
           <PopoverTrigger asChild>
             <Button

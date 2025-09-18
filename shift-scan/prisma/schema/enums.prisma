@@ -104,6 +104,13 @@ enum FormTemplateCategory {
   INCIDENT
   FINANCE
   OTHER
+  //  HR – hiring, onboarding, leave, evaluations
+  // Finance – payroll, reimbursements, invoices, taxes
+  // Operations – scheduling, approvals, workflows
+  // Compliance – policies, contracts, regulatory forms
+  // Clients – intake, feedback, orders, agreements
+  // IT – access requests, troubleshooting, equipment use
+  // Safety – incidents, inspections, maintenance
 }
 
 enum CreatedVia {

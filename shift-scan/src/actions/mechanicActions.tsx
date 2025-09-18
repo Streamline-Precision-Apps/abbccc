@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { Priority } from "@/lib/enums";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { ca } from "zod/v4/locales/index.cjs";
 
 // This Updates the selected staus of the project in the database
 export async function setProjectSelected(id: string, selected: boolean) {
@@ -352,6 +353,89 @@ export async function setEngineerComment(comment: string, id: string) {
         comment,
       },
     });
+    return true;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return false;
+  }
+}
+
+// new actions
+export async function createProject(formData: FormData) {
+  try {
+    const equipmentId = formData.get("equipmentId") as string;
+    const hours = Number(formData.get("hours") as string);
+    const description = formData.get("description") as string;
+    const timeSheetId = Number(formData.get("timecardId") as string);
+
+    if (!equipmentId || !hours || !description || !timeSheetId) {
+      throw new Error("All fields are required.");
+    }
+
+    await prisma.mechanicProjects.create({
+      data: {
+        timeSheetId,
+        equipmentId,
+        hours,
+        description,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error creating project:", error);
+    return false;
+  }
+}
+
+export async function updateProject(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    const equipmentId = formData.get("equipmentId") as string;
+    const hours = Number(formData.get("hours") as string);
+    const description = formData.get("description") as string;
+
+    const updateData: {
+      equipmentId?: string;
+      hours?: number;
+      description?: string;
+      timeSheetId?: number;
+    } = {};
+
+    if (equipmentId) updateData.equipmentId = equipmentId;
+    if (hours) updateData.hours = hours;
+    if (description) updateData.description = description;
+
+    if (Object.keys(updateData).length === 0) {
+      throw new Error("No fields to update.");
+    }
+
+    await prisma.mechanicProjects.update({
+      where: { id: Number(id) },
+      data: updateData,
+    });
+
+    revalidatePath("/dashboard/mechanic");
+
+    return true;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return false;
+  }
+}
+
+export async function deleteProject(projectId: number) {
+  try {
+    if (!projectId) {
+      throw new Error("Project ID is required.");
+    }
+
+    await prisma.mechanicProjects.delete({
+      where: { id: projectId },
+    });
+
+    revalidatePath("/dashboard/mechanic");
+
     return true;
   } catch (error) {
     console.error("Error updating project:", error);

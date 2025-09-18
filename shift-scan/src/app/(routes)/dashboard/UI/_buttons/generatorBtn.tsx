@@ -9,6 +9,7 @@ export default function GeneratorBtn() {
       titleImg="/qrCode.svg"
       titleImgAlt="QR Code"
       text={"QR"}
+      textSize={"h6"}
       background={"lightBlue"}
       translation={"Widgets"}
       href="/dashboard/qr-generator?rPath=/dashboard"

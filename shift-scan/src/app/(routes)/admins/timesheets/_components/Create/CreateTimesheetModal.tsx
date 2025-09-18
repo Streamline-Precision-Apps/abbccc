@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MaintenanceSection } from "./MaintenanceSection";
+// import { MaintenanceSection } from "./MaintenanceSection";
 import { TruckingSection } from "./TruckingSection";
 import { TascoSection } from "./TascoSection";
 import { LaborSection } from "./LaborSection";
@@ -12,7 +12,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { X } from "lucide-react";
 
 // Type for mechanic project summary (expand as needed)
-type MechanicProjectSummary = { id: string };
+// type MechanicProjectSummary = { id: string };
 
 export function CreateTimesheetModal({
   onClose,
@@ -30,6 +30,7 @@ export function CreateTimesheetModal({
     startTime: null as Date | null,
     endTime: null as Date | null,
     workType: "",
+    comments: "",
   });
   const [users, setUsers] = useState<
     { id: string; firstName: string; lastName: string }[]
@@ -51,14 +52,14 @@ export function CreateTimesheetModal({
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   // New states for logs
-  type MaintenanceLogDraft = {
-    startTime: string;
-    endTime: string;
-    maintenanceId: string;
-  };
-  const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceLogDraft[]>(
-    [{ maintenanceId: "", startTime: "", endTime: "" }],
-  );
+  // type MaintenanceLogDraft = {
+  //   startTime: string;
+  //   endTime: string;
+  //   maintenanceId: string;
+  // };
+  // const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceLogDraft[]>(
+  //   [{ maintenanceId: "", startTime: "", endTime: "" }],
+  // );
   // Trucking log type
   type TruckingMaterialDraft = {
     location: string;
@@ -145,27 +146,27 @@ export function CreateTimesheetModal({
     { equipment: { id: "", name: "" }, startTime: "", endTime: "" },
   ]);
   // Equipment/project options for maintenance logs
-  const [maintenanceEquipmentOptions, setMaintenanceEquipmentOptions] =
-    useState<{ value: string; label: string }[]>([]);
+  // const [maintenanceEquipmentOptions, setMaintenanceEquipmentOptions] =
+  //   useState<{ value: string; label: string }[]>([]);
 
-  useEffect(() => {
-    async function fetchEquipment() {
-      try {
-        const res = await fetch("/api/getMechanicProjectSummary");
-        if (!res.ok) return setMaintenanceEquipmentOptions([]);
-        const data = await res.json();
-        // Flatten to [{ value: id, label: Equipment.name }]
-        const options = (data as MechanicProjectSummary[]).map((m) => ({
-          value: m.id,
-          label: `#${m.id}`,
-        }));
-        setMaintenanceEquipmentOptions(options);
-      } catch {
-        setMaintenanceEquipmentOptions([]);
-      }
-    }
-    fetchEquipment();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchEquipment() {
+  //     try {
+  //       const res = await fetch("/api/getMechanicProjectSummary");
+  //       if (!res.ok) return setMaintenanceEquipmentOptions([]);
+  //       const data = await res.json();
+  //       // Flatten to [{ value: id, label: Equipment.name }]
+  //       const options = (data as MechanicProjectSummary[]).map((m) => ({
+  //         value: m.id,
+  //         label: `#${m.id}`,
+  //       }));
+  //       setMaintenanceEquipmentOptions(options);
+  //     } catch {
+  //       setMaintenanceEquipmentOptions([]);
+  //     }
+  //   }
+  //   fetchEquipment();
+  // }, []);
 
   // Helper to map users/jobsites to combobox options
   const userOptions = users.map((u) => ({
@@ -357,7 +358,7 @@ export function CreateTimesheetModal({
           startTime: form.startTime ? form.startTime.toISOString() : null,
           endTime: form.endTime ? form.endTime.toISOString() : null,
         },
-        maintenanceLogs,
+        // maintenanceLogs,
         truckingLogs: mappedTruckingLogs,
         tascoLogs: mappedTascoLogs,
         laborLogs,
@@ -390,7 +391,7 @@ export function CreateTimesheetModal({
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg p-6 min-w-[700px] max-h-[90vh] overflow-y-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto no-scrollbar">
           <div className="mb-4 relative">
             <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
             <Button
@@ -402,6 +403,7 @@ export function CreateTimesheetModal({
             >
               <X width={20} height={20} />
             </Button>
+
             <div className="w-full justify-center items-center mt-4">
               <Spinner />
             </div>
@@ -413,7 +415,7 @@ export function CreateTimesheetModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[700px] max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto no-scrollbar">
         <div className="mb-4 relative">
           <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
           <Button
@@ -447,13 +449,13 @@ export function CreateTimesheetModal({
           />
 
           {/* Conditional log sections */}
-          {form.workType === "MECHANIC" && (
+          {/* {form.workType === "MECHANIC" && (
             <MaintenanceSection
               maintenanceLogs={maintenanceLogs}
               setMaintenanceLogs={setMaintenanceLogs}
               maintenanceEquipmentOptions={maintenanceEquipmentOptions}
             />
-          )}
+          )} */}
           {form.workType === "TRUCK_DRIVER" && (
             <TruckingSection
               truckingLogs={truckingLogs}

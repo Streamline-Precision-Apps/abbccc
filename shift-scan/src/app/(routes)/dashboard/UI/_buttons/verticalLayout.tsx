@@ -31,7 +31,17 @@ export default function VerticalLayout({
   titleImgAlt: string;
   text: string;
   handleEvent?: () => void;
-  textSize?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  textSize?:
+    | "h1"
+    | "h2"
+    | "h3"
+    | "h4"
+    | "h5"
+    | "h6"
+    | "lg"
+    | "md"
+    | "sm"
+    | "xs";
 }) {
   const t = useTranslations("Widgets");
   return (

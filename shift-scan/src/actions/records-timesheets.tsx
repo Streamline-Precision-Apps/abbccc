@@ -15,12 +15,13 @@ export type TimesheetSubmission = {
     startTime: string | null;
     endTime: string | null;
     workType: string;
+    comments: string;
   };
-  maintenanceLogs: Array<{
-    startTime: string;
-    endTime: string;
-    maintenanceId: string;
-  }>;
+  // maintenanceLogs: Array<{
+  //   startTime: string;
+  //   endTime: string;
+  //   maintenanceId: string;
+  // }>;
   truckingLogs: Array<{
     truckNumber: string;
     trailerNumber: string | null;
@@ -85,25 +86,26 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
         ? new Date(data.form.startTime)
         : new Date(),
       endTime: data.form.endTime ? new Date(data.form.endTime) : new Date(),
+      comment: data.form.comments,
     };
     const timesheet = await tx.timeSheet.create({
       data: timesheetData,
     });
 
-    // Maintenance Logs
-    for (const log of data.maintenanceLogs) {
-      if (!log.maintenanceId) continue;
-      const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
-        TimeSheet: { connect: { id: timesheet.id } },
-        User: { connect: { id: data.form.user.id } },
-        Maintenance: { connect: { id: log.maintenanceId } },
-        startTime: log.startTime ? new Date(log.startTime) : new Date(),
-        endTime: log.endTime ? new Date(log.endTime) : new Date(),
-      };
-      await tx.maintenanceLog.create({
-        data: maintenanceLogData,
-      });
-    }
+    // Maintenance Logs no need for now
+    // for (const log of data.maintenanceLogs) {
+    //   if (!log.maintenanceId) continue;
+    //   const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
+    //     TimeSheet: { connect: { id: timesheet.id } },
+    //     User: { connect: { id: data.form.user.id } },
+    //     Maintenance: { connect: { id: log.maintenanceId } },
+    //     startTime: log.startTime ? new Date(log.startTime) : new Date(),
+    //     endTime: log.endTime ? new Date(log.endTime) : new Date(),
+    //   };
+    //   await tx.maintenanceLog.create({
+    //     data: maintenanceLogData,
+    //   });
+    // }
 
     // Trucking Logs
     for (const tlog of data.truckingLogs) {

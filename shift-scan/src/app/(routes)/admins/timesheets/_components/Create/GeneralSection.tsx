@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
 import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { SingleCombobox } from "@/components/ui/single-combobox";
+import { Textarea } from "@/components/ui/textarea";
 export default function GeneralSection({
   form,
   setForm,
@@ -52,6 +53,7 @@ export default function GeneralSection({
     startTime: Date | null;
     endTime: Date | null;
     workType: string;
+    comments: string;
   };
   setForm: Dispatch<
     SetStateAction<{
@@ -72,6 +74,7 @@ export default function GeneralSection({
       startTime: Date | null;
       endTime: Date | null;
       workType: string;
+      comments: string;
     }>
   >;
   handleChange: (
@@ -94,13 +97,13 @@ export default function GeneralSection({
   return (
     <>
       {/* Creation Date (disabled) */}
-      <div className="min-w-[350px]">
+      <div className="w-full">
         <label className="block font-semibold mb-1">Creation Date</label>
         <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-fit justify-start text-left font-normal"
+              className="w-1/2 justify-start text-left font-normal"
               disabled
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
@@ -126,7 +129,7 @@ export default function GeneralSection({
         </Popover>
       </div>
       {/* User */}
-      <div className="w-[350px]">
+      <div className="w-full">
         <SingleCombobox
           label="User"
           options={userOptions}
@@ -143,7 +146,7 @@ export default function GeneralSection({
         />
       </div>
       {/* Jobsite */}
-      <div className="w-[350px]">
+      <div className="w-full">
         <SingleCombobox
           label="Jobsite"
           options={jobsiteOptions}
@@ -161,7 +164,7 @@ export default function GeneralSection({
         />
       </div>
       {/* Costcode */}
-      <div className="w-[350px]">
+      <div className="w-full">
         <SingleCombobox
           label="Cost Code"
           options={costCodeOptions}
@@ -179,30 +182,47 @@ export default function GeneralSection({
         />
       </div>
       {/* Start Date & Time */}
-      <DateTimePicker
-        label="Start Time"
-        value={form.startTime ? form.startTime.toISOString() : undefined}
-        onChange={(val) => {
-          setForm({
-            ...form,
-            startTime: val ? new Date(val) : null,
-          });
-        }}
-      />
-      {/* End Date & Time */}
-      <DateTimePicker
-        label="End Time"
-        value={form.endTime ? form.endTime.toISOString() : undefined}
-        onChange={(val) => {
-          setForm({
-            ...form,
-            endTime: val ? new Date(val) : null,
-          });
-        }}
-      />
+      <div className="mb-2">
+        <DateTimePicker
+          label="Start Time"
+          value={form.startTime ? form.startTime.toISOString() : undefined}
+          onChange={(val) => {
+            setForm({
+              ...form,
+              startTime: val ? new Date(val) : null,
+            });
+          }}
+        />
+      </div>
+      <div className="mb-2">
+        {/* End Date & Time */}
+        <DateTimePicker
+          label="End Time"
+          value={form.endTime ? form.endTime.toISOString() : undefined}
+          onChange={(val) => {
+            setForm({
+              ...form,
+              endTime: val ? new Date(val) : null,
+            });
+          }}
+        />
+      </div>
+      {/* Comments */}
+      <div className="w-full mb-4">
+        <label className="block font-semibold text-sm mb-1">
+          Comments <span className="text-red-600">*</span>
+        </label>
+        <Textarea
+          value={form.comments}
+          onChange={(e) => setForm({ ...form, comments: e.target.value })}
+          placeholder="Enter comments"
+        />
+      </div>
       {/* work type */}
-      <div className="w-[350px] mb-4">
-        <label className="block font-semibold mb-1">Work Type*</label>
+      <div className="w-full mb-4">
+        <label className="block font-semibold text-sm mb-1">
+          Work Type <span className="text-red-600">*</span>
+        </label>
         <Select
           value={form.workType}
           onValueChange={(val) => setForm({ ...form, workType: val })}

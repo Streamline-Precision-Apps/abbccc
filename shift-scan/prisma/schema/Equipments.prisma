@@ -41,6 +41,7 @@ model Equipment {
   UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
   UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
+  Maintenance           mechanicProjects[]
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
